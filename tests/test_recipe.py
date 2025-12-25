@@ -44,21 +44,13 @@ class TestRecipe:
 
     def test_recipe_with_diet_label(self) -> None:
         """Test recipe creation with diet label."""
-        recipe = Recipe(
-            title="Veggie Pasta",
-            url="https://example.com/veggie",
-            diet_label=DietLabel.VEGGIE,
-        )
+        recipe = Recipe(title="Veggie Pasta", url="https://example.com/veggie", diet_label=DietLabel.VEGGIE)
         assert recipe.diet_label == DietLabel.VEGGIE
         assert recipe.diet_label.value == "veggie"
 
     def test_recipe_with_meal_label(self) -> None:
         """Test recipe creation with meal label."""
-        recipe = Recipe(
-            title="Chocolate Cake",
-            url="https://example.com/cake",
-            meal_label=MealLabel.DESSERT,
-        )
+        recipe = Recipe(title="Chocolate Cake", url="https://example.com/cake", meal_label=MealLabel.DESSERT)
         assert recipe.meal_label == MealLabel.DESSERT
         assert recipe.meal_label.value == "dessert"
 
