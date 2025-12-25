@@ -36,10 +36,4 @@ def sample_recipe() -> Recipe:
 @pytest.fixture
 def sample_ingredients() -> list[str]:
     """Provide sample ingredients for tests."""
-    return [
-        "2 cups flour",
-        "1 cup sugar",
-        "3 eggs",
-        "1/2 cup butter",
-        "1 tsp vanilla extract",
-    ]
+    return ["2 cups flour", "1 cup sugar", "3 eggs", "1/2 cup butter", "1 tsp vanilla extract"]

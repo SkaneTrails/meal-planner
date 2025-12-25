@@ -1,16 +1,21 @@
 """Recipe scraping service using recipe-scrapers library."""
 
+from collections.abc import Callable
+from typing import TypeVar
+
 import httpx
 from recipe_scrapers import scrape_html
 
 from app.models.recipe import Recipe
 
+T = TypeVar("T")
 
-def _safe_get(func, default=None):
+
+def _safe_get(func: Callable[[], T], default: T | None = None) -> T | None:
     """Safely call a scraper method, returning default if it raises an exception."""
     try:
         return func()
-    except Exception:  # noqa: BLE001
+    except Exception:
         return default
 
 
@@ -51,7 +56,7 @@ def scrape_recipe(url: str) -> Recipe | None:
             cook_time=_safe_get(scraper.cook_time),
             total_time=_safe_get(scraper.total_time),
         )
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         # Log the error for debugging
         import sys
 
