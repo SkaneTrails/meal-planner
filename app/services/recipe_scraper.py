@@ -1,22 +1,28 @@
 """Recipe scraping service using recipe-scrapers library."""
 
 from collections.abc import Callable
-from typing import TypeVar
 
 import httpx
 from recipe_scrapers import scrape_html
 
 from app.models.recipe import Recipe
 
-T = TypeVar("T")
 
-
-def _safe_get(func: Callable[[], T], default: T | None = None) -> T | None:
+def _safe_get[T](func: Callable[[], T], default: T) -> T:
     """Safely call a scraper method, returning default if it raises an exception."""
+    try:
+        result = func()
+        return result if result is not None else default
+    except Exception:
+        return default
+
+
+def _safe_get_optional[T](func: Callable[[], T]) -> T | None:
+    """Safely call a scraper method, returning None if it raises an exception."""
     try:
         return func()
     except Exception:
-        return default
+        return None
 
 
 def scrape_recipe(url: str) -> Recipe | None:
@@ -50,11 +56,11 @@ def scrape_recipe(url: str) -> Recipe | None:
             url=url,
             ingredients=_safe_get(scraper.ingredients, []),
             instructions=instructions,
-            image_url=_safe_get(scraper.image),
-            servings=_safe_int(_safe_get(scraper.yields)),
-            prep_time=_safe_get(scraper.prep_time),
-            cook_time=_safe_get(scraper.cook_time),
-            total_time=_safe_get(scraper.total_time),
+            image_url=_safe_get_optional(scraper.image),
+            servings=_safe_int(_safe_get_optional(scraper.yields)),
+            prep_time=_safe_get_optional(scraper.prep_time),
+            cook_time=_safe_get_optional(scraper.cook_time),
+            total_time=_safe_get_optional(scraper.total_time),
         )
     except Exception as e:
         # Log the error for debugging

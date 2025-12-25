@@ -60,6 +60,9 @@ def get_recipe(recipe_id: str) -> Recipe | None:
         return None
 
     data = doc.to_dict()
+    if data is None:
+        return None
+
     return Recipe(
         title=data.get("title", ""),
         url=data.get("url", ""),
@@ -89,6 +92,8 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
+        if data is None:
+            continue
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -120,8 +125,9 @@ def delete_recipe(recipe_id: str) -> bool:
     """
     db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+    doc = doc_ref.get()
 
-    if not doc_ref.get().exists:
+    if not doc.exists:
         return False
 
     doc_ref.delete()
