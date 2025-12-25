@@ -11,7 +11,7 @@ import streamlit as st
 
 from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList
 from app.models.meal_plan import MealType
-from app.models.recipe import Recipe
+from app.models.recipe import DietLabel, MealLabel, Recipe
 
 st.set_page_config(page_title="Meal Planner", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
@@ -22,12 +22,12 @@ if "grocery_list" not in st.session_state:
     st.session_state.grocery_list = GroceryList()
 if "selected_recipe" not in st.session_state:
     st.session_state.selected_recipe = None
-if "cooking_mode" not in st.session_state:
-    st.session_state.cooking_mode = False
-if "cooking_step" not in st.session_state:
-    st.session_state.cooking_step = 0
 if "week_offset" not in st.session_state:
     st.session_state.week_offset = 0
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "🏠 Home"
+if "meal_selector" not in st.session_state:
+    st.session_state.meal_selector = None  # (date_str, meal_type) when selecting a meal
 
 
 def get_week_dates(offset: int = 0) -> list[date]:
@@ -47,13 +47,25 @@ def load_recipes() -> list[tuple[str, Recipe]]:
         return []
 
 
-# Sidebar navigation
+# Sidebar navigation with sections instead of radio buttons
 st.sidebar.title("🍽️ Meal Planner")
 st.sidebar.markdown("*Your personal recipe & meal planning assistant*")
 st.sidebar.divider()
 
-pages = ["🏠 Home", "📚 Recipes", "📅 Meal Plan", "🛒 Grocery List", "👨‍🍳 Cooking Mode"]
-page = st.sidebar.radio("Navigate", pages, label_visibility="collapsed")
+pages = ["🏠 Home", "📚 Recipes", "📅 Meal Plan", "🛒 Grocery List"]
+
+for p in pages:
+    is_current = st.session_state.current_page == p
+    if st.sidebar.button(
+        p,
+        key=f"nav_{p}",
+        use_container_width=True,
+        type="primary" if is_current else "secondary",
+    ):
+        st.session_state.current_page = p
+        st.rerun()
+
+page = st.session_state.current_page
 
 st.sidebar.divider()
 st.sidebar.markdown("Made with ❤️ and Streamlit")
@@ -72,7 +84,7 @@ if page == "🏠 Home":
         recipes = load_recipes()
         st.metric("Saved Recipes", len(recipes))
         if st.button("Browse Recipes", use_container_width=True):
-            st.session_state.page = "📚 Recipes"
+            st.session_state.current_page = "📚 Recipes"
             st.rerun()
 
     with col2:
@@ -84,14 +96,14 @@ if page == "🏠 Home":
         total_slots = len(week_dates) * 3  # breakfast, lunch, dinner
         st.metric("Meals Planned", f"{planned_meals}/{total_slots}")
         if st.button("Plan Meals", use_container_width=True):
-            st.session_state.page = "📅 Meal Plan"
+            st.session_state.current_page = "📅 Meal Plan"
             st.rerun()
 
     with col3:
         st.markdown("### 🛒 Shopping")
         st.metric("Items to Buy", len(st.session_state.grocery_list.get_unchecked()))
         if st.button("View List", use_container_width=True):
-            st.session_state.page = "🛒 Grocery List"
+            st.session_state.current_page = "🛒 Grocery List"
             st.rerun()
 
     st.divider()
@@ -129,14 +141,14 @@ if page == "🏠 Home":
             if recipe_id in recipe_dict:
                 recipe = recipe_dict[recipe_id]
                 st.success(f"Tonight: **{recipe.title}**")
-                if st.button("Start Cooking 👨‍🍳"):
+                if st.button("View Recipe 📖"):
                     st.session_state.selected_recipe = (recipe_id, recipe)
-                    st.session_state.cooking_mode = True
-                    st.session_state.cooking_step = 0
+                    st.session_state.current_page = "📚 Recipes"
                     st.rerun()
         else:
             st.info("No dinner planned for today")
             if st.button("Plan Tonight's Dinner"):
+                st.session_state.current_page = "📅 Meal Plan"
                 st.rerun()
 
 # =============================================================================
@@ -182,6 +194,23 @@ elif page == "📚 Recipes":
 
                     st.markdown(f"**{recipe.title}**")
 
+                    # Show labels
+                    labels = []
+                    if recipe.diet_label:
+                        diet_icons = {"veggie": "🥬", "fish": "🐟", "meat": "🥩"}
+                        labels.append(diet_icons.get(recipe.diet_label.value, "") + recipe.diet_label.value)
+                    if recipe.meal_label:
+                        meal_icons = {
+                            "breakfast": "🌅",
+                            "starter": "🥗",
+                            "meal": "🍽️",
+                            "dessert": "🍰",
+                            "drink": "🥤",
+                        }
+                        labels.append(meal_icons.get(recipe.meal_label.value, "") + recipe.meal_label.value)
+                    if labels:
+                        st.caption(" | ".join(labels))
+
                     time_info = []
                     if recipe.prep_time:
                         time_info.append(f"⏱️ Prep: {recipe.prep_time}m")
@@ -197,6 +226,7 @@ elif page == "📚 Recipes":
                     with bcol1:
                         if st.button("📖 View", key=f"view_{recipe_id}", use_container_width=True):
                             st.session_state.selected_recipe = (recipe_id, recipe)
+                            st.rerun()
                     with bcol2:
                         if st.button("🗑️", key=f"del_{recipe_id}", use_container_width=True):
                             try:
@@ -227,12 +257,21 @@ elif page == "📚 Recipes":
                         if recipe.total_time_calculated:
                             st.write(f"⏰ Total: {recipe.total_time_calculated} min")
 
-                        st.markdown(f"[🔗 Original Recipe]({recipe.url})")
+                        # Show labels
+                        if recipe.diet_label:
+                            diet_icons = {"veggie": "🥬", "fish": "🐟", "meat": "🥩"}
+                            st.write(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
+                        if recipe.meal_label:
+                            meal_icons = {
+                                "breakfast": "🌅",
+                                "starter": "🥗",
+                                "meal": "🍽️",
+                                "dessert": "🍰",
+                                "drink": "🥤",
+                            }
+                            st.write(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
 
-                        if st.button("👨‍🍳 Start Cooking", type="primary", use_container_width=True):
-                            st.session_state.cooking_mode = True
-                            st.session_state.cooking_step = 0
-                            st.rerun()
+                        st.markdown(f"[🔗 Original Recipe]({recipe.url})")
 
                     with col2:
                         st.markdown("### 🥗 Ingredients")
@@ -307,6 +346,92 @@ elif page == "📚 Recipes":
                     st.session_state.temp_recipe = None
                     st.rerun()
 
+        st.divider()
+
+        # Manual recipe entry
+        st.subheader("✍️ Add Recipe Manually")
+
+        with st.form("manual_recipe_form"):
+            manual_title = st.text_input("Recipe Title *", placeholder="e.g., Grandma's Apple Pie")
+            manual_image_url = st.text_input("Image URL (optional)", placeholder="https://...")
+
+            mcol1, mcol2, mcol3 = st.columns(3)
+            with mcol1:
+                manual_servings = st.number_input("Servings", min_value=1, value=4)
+            with mcol2:
+                manual_prep_time = st.number_input("Prep Time (min)", min_value=0, value=15)
+            with mcol3:
+                manual_cook_time = st.number_input("Cook Time (min)", min_value=0, value=30)
+
+            # Labels (optional)
+            st.markdown("**Labels (optional)**")
+            label_col1, label_col2 = st.columns(2)
+            with label_col1:
+                diet_label_option = st.selectbox(
+                    "🥗 Diet Type",
+                    ["None", "Veggie", "Fish", "Meat"],
+                    key="manual_diet_label",
+                )
+            with label_col2:
+                meal_label_option = st.selectbox(
+                    "🍽️ Meal Type",
+                    ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink"],
+                    key="manual_meal_label",
+                )
+
+            manual_ingredients = st.text_area(
+                "Ingredients *",
+                placeholder="Enter one ingredient per line:\n2 cups flour\n1 cup sugar\n3 eggs",
+                height=150,
+            )
+            manual_instructions = st.text_area(
+                "Instructions *",
+                placeholder="Enter one step per line:\nPreheat oven to 350°F\nMix dry ingredients\nAdd wet ingredients",
+                height=150,
+            )
+
+            submitted = st.form_submit_button("💾 Save Recipe", type="primary", use_container_width=True)
+
+            if submitted:
+                if not manual_title or not manual_ingredients or not manual_instructions:
+                    st.error("Please fill in all required fields (Title, Ingredients, Instructions)")
+                else:
+                    ingredients_list = [ing.strip() for ing in manual_ingredients.strip().split("\n") if ing.strip()]
+                    instructions_list = [
+                        inst.strip() for inst in manual_instructions.strip().split("\n") if inst.strip()
+                    ]
+
+                    # Convert label selections to enum values
+                    diet_label_value = None
+                    if diet_label_option != "None":
+                        diet_label_value = DietLabel(diet_label_option.lower())
+
+                    meal_label_value = None
+                    if meal_label_option != "None":
+                        meal_label_value = MealLabel(meal_label_option.lower())
+
+                    manual_recipe = Recipe(
+                        title=manual_title,
+                        url="manual-entry",
+                        ingredients=ingredients_list,
+                        instructions=instructions_list,
+                        image_url=manual_image_url if manual_image_url else None,
+                        servings=manual_servings,
+                        prep_time=manual_prep_time if manual_prep_time > 0 else None,
+                        cook_time=manual_cook_time if manual_cook_time > 0 else None,
+                        diet_label=diet_label_value,
+                        meal_label=meal_label_value,
+                    )
+
+                    try:
+                        from app.storage.recipe_storage import save_recipe
+
+                        save_recipe(manual_recipe)
+                        st.success(f"✅ Saved: **{manual_title}**")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Could not save: {e}")
+
 # =============================================================================
 # MEAL PLAN PAGE
 # =============================================================================
@@ -336,58 +461,106 @@ elif page == "📅 Meal Plan":
 
     # Load recipes for selection
     recipes = load_recipes()
+    recipe_dict = dict(recipes)
     recipe_options = {rid: r.title for rid, r in recipes}
-    recipe_options_list = ["", *list(recipe_options.keys())]
 
     # Meal type icons
     meal_icons = {MealType.BREAKFAST: "🌅", MealType.LUNCH: "☀️", MealType.DINNER: "🌙", MealType.SNACK: "🍎"}
 
     # Weekly grid
-    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    weekend_names = ["Sat", "Sun"]
     meal_types = [MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER]
+    today = datetime.now(tz=UTC).date()
 
-    # Header row
-    header_cols = st.columns([1] + [1] * 7)
+    # Helper function to render a meal tile
+    def render_meal_tile(d: date, meal_type: MealType, col_key: str):
+        key = (d.isoformat(), meal_type.value)
+        current_recipe_id = st.session_state.meal_plan.get(key, "")
+
+        if current_recipe_id and current_recipe_id in recipe_dict:
+            recipe = recipe_dict[current_recipe_id]
+            with st.container(border=True):
+                if recipe.image_url:
+                    st.image(recipe.image_url, use_container_width=True)
+                st.caption(recipe.title[:25] + "..." if len(recipe.title) > 25 else recipe.title)
+                if st.button("❌", key=f"clear_{col_key}_{d}_{meal_type.value}", help="Remove"):
+                    del st.session_state.meal_plan[key]
+                    st.rerun()
+        else:
+            with st.container(border=True):
+                st.markdown(
+                    "<div style='height: 60px; display: flex; align-items: center; justify-content: center; "
+                    "color: #888;'>Empty</div>",
+                    unsafe_allow_html=True,
+                )
+                if st.button("➕", key=f"add_{col_key}_{d}_{meal_type.value}", help="Add meal"):
+                    st.session_state.meal_selector = (d.isoformat(), meal_type.value)
+                    st.session_state.current_page = "📖 Browse Recipes"
+                    st.rerun()
+
+    # Show summary directly without meal selector popup (now handled on browse page)
+    # WEEKDAYS (Mon-Fri) - First Row
+    st.markdown("#### Weekdays")
+
+    # Header row for weekdays
+    header_cols = st.columns([1] + [1] * 5)
     with header_cols[0]:
         st.write("")
-    for i, (day, d) in enumerate(zip(days, week_dates, strict=False)):
+    for i, (day, d) in enumerate(zip(weekday_names, week_dates[:5], strict=False)):
         with header_cols[i + 1]:
-            is_today = d == datetime.now(tz=UTC).date()
+            is_today = d == today
             if is_today:
-                st.markdown(f"**{day}**  \n**{d.day}** 📍")
+                st.markdown(
+                    f"<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); "
+                    f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
+                    f"<strong>{day}</strong><br/><strong>{d.day}</strong> 📍</div>",
+                    unsafe_allow_html=True,
+                )
             else:
                 st.markdown(f"**{day}**  \n{d.day}")
 
-    # Meal rows
+    # Meal rows for weekdays
     for meal_type in meal_types:
-        row_cols = st.columns([1] + [1] * 7)
+        row_cols = st.columns([1] + [1] * 5)
         with row_cols[0]:
             st.markdown(f"{meal_icons[meal_type]} **{meal_type.value.title()}**")
 
-        for i, d in enumerate(week_dates):
+        for i, d in enumerate(week_dates[:5]):
             with row_cols[i + 1]:
-                key = (d.isoformat(), meal_type.value)
-                current_recipe_id = st.session_state.meal_plan.get(key, "")
+                render_meal_tile(d, meal_type, "weekday")
 
-                # Find index for selectbox
-                try:
-                    current_index = recipe_options_list.index(current_recipe_id) if current_recipe_id else 0
-                except ValueError:
-                    current_index = 0
+    st.divider()
 
-                selected = st.selectbox(
-                    f"{meal_type.value}_{d}",
-                    recipe_options_list,
-                    index=current_index,
-                    format_func=lambda x: recipe_options.get(x, "Select...") if x else "Select...",
-                    key=f"meal_{d}_{meal_type.value}",
-                    label_visibility="collapsed",
+    # WEEKEND (Sat-Sun) - Second Row
+    st.markdown("#### Weekend")
+
+    # Header row for weekend
+    weekend_header_cols = st.columns([1] + [1] * 2 + [2])  # Extra space to balance
+    with weekend_header_cols[0]:
+        st.write("")
+    for i, (day, d) in enumerate(zip(weekend_names, week_dates[5:], strict=False)):
+        with weekend_header_cols[i + 1]:
+            is_today = d == today
+            if is_today:
+                st.markdown(
+                    f"<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); "
+                    f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
+                    f"<strong>{day}</strong><br/><strong>{d.day}</strong> 📍</div>",
+                    unsafe_allow_html=True,
                 )
+            else:
+                st.markdown(f"**{day}**  \n{d.day}")
 
-                if selected:
-                    st.session_state.meal_plan[key] = selected
-                elif key in st.session_state.meal_plan:
-                    del st.session_state.meal_plan[key]
+    # Meal rows for weekend
+    for meal_type in meal_types:
+        weekend_row_cols = st.columns([1] + [1] * 2 + [2])
+        with weekend_row_cols[0]:
+            st.markdown(f"{meal_icons[meal_type]} **{meal_type.value.title()}**")
+
+        for i, d in enumerate(week_dates[5:]):
+            with weekend_row_cols[i + 1]:
+                render_meal_tile(d, meal_type, "weekend")
 
     st.divider()
 
@@ -436,7 +609,6 @@ elif page == "📅 Meal Plan":
 
                 st.session_state.grocery_list = grocery_list
                 st.success(f"Generated list with {len(grocery_list.items)} items!")
-                st.balloons()
 
         if st.button("Clear Week", use_container_width=True):
             for d in week_dates:
@@ -496,22 +668,33 @@ elif page == "🛒 Grocery List":
             GroceryCategory.OTHER: "📦",
         }
 
-        # Display by category
-        # For now, all items are in OTHER since we don't have categorization
+        # Display by category - unchecked items first, checked items at bottom
         st.subheader("📝 Shopping List")
 
-        for i, item in enumerate(grocery_list.items):
-            col1, col2 = st.columns([0.1, 0.9])
+        # Sort items: unchecked first, then checked
+        unchecked_items = [(i, item) for i, item in enumerate(grocery_list.items) if not item.checked]
+        checked_items_list = [(i, item) for i, item in enumerate(grocery_list.items) if item.checked]
+        sorted_items = unchecked_items + checked_items_list
+
+        for original_idx, item in sorted_items:
+            col1, col2 = st.columns([0.05, 0.95])
             with col1:
-                checked = st.checkbox("", value=item.checked, key=f"check_{i}", label_visibility="collapsed")
-                grocery_list.items[i].checked = checked
+                new_checked = st.checkbox(
+                    "", value=item.checked, key=f"check_{original_idx}", label_visibility="collapsed"
+                )
+                if new_checked != grocery_list.items[original_idx].checked:
+                    grocery_list.items[original_idx].checked = new_checked
+                    st.rerun()  # Rerun to move item to correct position
             with col2:
-                if checked:
-                    st.markdown(f"~~{item.name}~~")
-                else:
-                    st.write(item.name)
                 if item.recipe_sources:
-                    st.caption(f"From: {', '.join(item.recipe_sources)}")
+                    source_text = f"  —  *From: {', '.join(item.recipe_sources)}*"
+                else:
+                    source_text = ""
+
+                if item.checked:
+                    st.markdown(f"~~{item.name}~~{source_text}")
+                else:
+                    st.markdown(f"{item.name}{source_text}")
 
         # Add custom item
         st.divider()
@@ -522,86 +705,123 @@ elif page == "🛒 Grocery List":
             st.rerun()
 
 # =============================================================================
-# COOKING MODE PAGE
+# BROWSE RECIPES PAGE (for meal selection)
 # =============================================================================
-elif page == "👨‍🍳 Cooking Mode":
-    st.title("👨‍🍳 Cooking Mode")
+elif page == "📖 Browse Recipes":
+    st.title("📖 Browse Recipes")
 
-    if not st.session_state.selected_recipe:
-        st.info("Select a recipe to start cooking!")
-
-        # Show recent recipes
-        recipes = load_recipes()
-        if recipes:
-            st.subheader("Choose a recipe")
-            for recipe_id, recipe in recipes[:6]:
-                if st.button(f"🍽️ {recipe.title}", key=f"cook_{recipe_id}", use_container_width=True):
-                    st.session_state.selected_recipe = (recipe_id, recipe)
-                    st.session_state.cooking_step = 0
-                    st.rerun()
-    else:
-        recipe_id, recipe = st.session_state.selected_recipe
-        step = st.session_state.cooking_step
-        total_steps = len(recipe.instructions)
-
-        # Exit cooking mode button
-        if st.button("← Exit Cooking Mode"):
-            st.session_state.selected_recipe = None
-            st.session_state.cooking_step = 0
+    # Show context if selecting for a meal
+    if st.session_state.meal_selector:
+        sel_date, sel_meal = st.session_state.meal_selector
+        st.info(f"📅 Selecting recipe for **{sel_meal.title()}** on **{sel_date}**")
+        if st.button("← Cancel Selection"):
+            st.session_state.meal_selector = None
+            st.session_state.current_page = "📅 Meal Plan"
             st.rerun()
+        st.divider()
 
-        st.markdown(f"## {recipe.title}")
-        st.progress((step + 1) / total_steps if total_steps > 0 else 0)
+    recipes = load_recipes()
 
-        # Tab for ingredients vs instructions
-        tab1, tab2 = st.tabs(["📝 Steps", "🥗 Ingredients"])
+    if not recipes:
+        st.warning("No recipes yet! Add some recipes first.")
+        if st.button("Go to Recipes", use_container_width=True):
+            st.session_state.current_page = "📚 Recipes"
+            st.rerun()
+    else:
+        # Filter options
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            search = st.text_input("🔍 Search", placeholder="Search recipes...")
+        with col2:
+            diet_filter = st.selectbox(
+                "🥗 Diet",
+                ["All", "Veggie", "Fish", "Meat"],
+                key="browse_diet_filter",
+            )
+        with col3:
+            meal_filter = st.selectbox(
+                "🍽️ Type",
+                ["All", "Breakfast", "Starter", "Meal", "Dessert", "Drink"],
+                key="browse_meal_filter",
+            )
 
-        with tab1:
-            if total_steps > 0:
-                st.markdown(f"### Step {step + 1} of {total_steps}")
-                st.divider()
+        # Filter recipes
+        filtered_recipes = recipes
+        if search:
+            filtered_recipes = [(rid, r) for rid, r in filtered_recipes if search.lower() in r.title.lower()]
+        if diet_filter != "All":
+            diet_value = diet_filter.lower()
+            filtered_recipes = [
+                (rid, r)
+                for rid, r in filtered_recipes
+                if r.diet_label and r.diet_label.value == diet_value
+            ]
+        if meal_filter != "All":
+            meal_value = meal_filter.lower()
+            filtered_recipes = [
+                (rid, r)
+                for rid, r in filtered_recipes
+                if r.meal_label and r.meal_label.value == meal_value
+            ]
 
-                # Large text for current step
-                st.markdown(
-                    f"<div style='font-size: 1.5em; line-height: 1.6;'>{recipe.instructions[step]}</div>",
-                    unsafe_allow_html=True,
-                )
+        st.caption(f"Showing {len(filtered_recipes)} recipes")
+        st.divider()
 
-                st.divider()
+        # Display recipes in grid
+        if filtered_recipes:
+            cols = st.columns(3)
+            for i, (recipe_id, recipe) in enumerate(filtered_recipes):
+                with cols[i % 3]:
+                    with st.container(border=True):
+                        if recipe.image_url:
+                            st.image(recipe.image_url, use_container_width=True)
+                        else:
+                            st.markdown(
+                                "<div style='height: 150px; background: #f0f0f0; display: flex; "
+                                "align-items: center; justify-content: center; font-size: 3em;'>🍽️</div>",
+                                unsafe_allow_html=True,
+                            )
 
-                # Navigation
-                col1, col2, col3 = st.columns([1, 2, 1])
+                        st.markdown(f"**{recipe.title}**")
 
-                with col1:
-                    if step > 0 and st.button("⬅️ Previous", use_container_width=True):
-                        st.session_state.cooking_step -= 1
-                        st.rerun()
+                        # Show labels
+                        labels = []
+                        if recipe.diet_label:
+                            diet_icons = {"veggie": "🥬", "fish": "🐟", "meat": "🥩"}
+                            labels.append(diet_icons.get(recipe.diet_label.value, "") + " " + recipe.diet_label.value)
+                        if recipe.meal_label:
+                            meal_icons = {
+                                "breakfast": "🌅",
+                                "starter": "🥗",
+                                "meal": "🍽️",
+                                "dessert": "🍰",
+                                "drink": "🥤",
+                            }
+                            labels.append(meal_icons.get(recipe.meal_label.value, "") + " " + recipe.meal_label.value)
+                        if labels:
+                            st.caption(" | ".join(labels))
 
-                with col2:
-                    st.caption(f"Step {step + 1} / {total_steps}")
+                        # Time info
+                        time_info = []
+                        if recipe.prep_time:
+                            time_info.append(f"⏱️ {recipe.prep_time}m")
+                        if recipe.cook_time:
+                            time_info.append(f"🍳 {recipe.cook_time}m")
+                        if time_info:
+                            st.caption(" | ".join(time_info))
 
-                with col3:
-                    if step < total_steps - 1:
-                        if st.button("Next ➡️", type="primary", use_container_width=True):
-                            st.session_state.cooking_step += 1
-                            st.rerun()
-                    elif st.button("🎉 Done!", type="primary", use_container_width=True):
-                        st.balloons()
-                        st.success("Congratulations! Enjoy your meal! 🍽️")
-
-                # Quick jump
-                st.divider()
-                st.caption("Jump to step:")
-                step_cols = st.columns(min(total_steps, 10))
-                for i, col in enumerate(step_cols[:total_steps]):
-                    with col:
-                        if st.button(str(i + 1), key=f"jump_{i}"):
-                            st.session_state.cooking_step = i
-                            st.rerun()
-            else:
-                st.warning("No instructions available for this recipe.")
-
-        with tab2:
-            st.markdown("### Ingredients")
-            for ing in recipe.ingredients:
-                st.checkbox(ing, key=f"cook_ing_{ing[:30]}")
+                        # Action button
+                        if st.session_state.meal_selector:
+                            if st.button("✅ Select", key=f"browse_select_{recipe_id}", use_container_width=True):
+                                sel_date, sel_meal = st.session_state.meal_selector
+                                st.session_state.meal_plan[(sel_date, sel_meal)] = recipe_id
+                                st.session_state.meal_selector = None
+                                st.session_state.current_page = "📅 Meal Plan"
+                                st.rerun()
+                        else:
+                            if st.button("📖 View", key=f"browse_view_{recipe_id}", use_container_width=True):
+                                st.session_state.selected_recipe = (recipe_id, recipe)
+                                st.session_state.current_page = "📚 Recipes"
+                                st.rerun()
+        else:
+            st.info("No recipes match your filters.")
