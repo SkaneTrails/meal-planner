@@ -5,7 +5,7 @@ from typing import cast
 
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
-from app.models.recipe import Recipe
+from app.models.recipe import DietLabel, MealLabel, Recipe
 from app.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
 
 
@@ -36,6 +36,8 @@ def save_recipe(recipe: Recipe) -> str:
             "cuisine": recipe.cuisine,
             "category": recipe.category,
             "tags": recipe.tags,
+            "diet_label": recipe.diet_label.value if recipe.diet_label else None,
+            "meal_label": recipe.meal_label.value if recipe.meal_label else None,
             "created_at": datetime.now(tz=UTC),
             "updated_at": datetime.now(tz=UTC),
         }
@@ -76,6 +78,8 @@ def get_recipe(recipe_id: str) -> Recipe | None:
         cuisine=data.get("cuisine"),
         category=data.get("category"),
         tags=data.get("tags", []),
+        diet_label=DietLabel(data["diet_label"]) if data.get("diet_label") else None,
+        meal_label=MealLabel(data["meal_label"]) if data.get("meal_label") else None,
     )
 
 
@@ -105,6 +109,8 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
             cuisine=data.get("cuisine"),
             category=data.get("category"),
             tags=data.get("tags", []),
+            diet_label=DietLabel(data["diet_label"]) if data.get("diet_label") else None,
+            meal_label=MealLabel(data["meal_label"]) if data.get("meal_label") else None,
         )
         recipes.append((doc.id, recipe))
 
@@ -167,6 +173,8 @@ def search_recipes(query: str) -> list[tuple[str, Recipe]]:
             cuisine=data.get("cuisine"),
             category=data.get("category"),
             tags=data.get("tags", []),
+            diet_label=DietLabel(data["diet_label"]) if data.get("diet_label") else None,
+            meal_label=MealLabel(data["meal_label"]) if data.get("meal_label") else None,
         )
         recipes.append((doc.id, recipe))
 
