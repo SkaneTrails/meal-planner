@@ -1,0 +1,149 @@
+name: Security Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # Run weekly on Mondays at 6 AM UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write # For uploading SARIF to GitHub Security
+
+jobs:
+  license-scan:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Install dependencies
+        run: uv sync --frozen --all-extras
+
+      - name: Generate SBOM
+        run: |
+          echo "Generating Software Bill of Materials..."
+          uv pip list --format json > sbom-packages.json
+          echo "📦 SBOM generated: sbom-packages.json"
+
+      - name: Scan for problematic licenses
+        run: |
+          echo "Scanning for GPL, LGPL, and other copyleft licenses..."
+
+          # Install pip-licenses for license detection
+          uv pip install pip-licenses
+
+          # Generate license report
+          uv run pip-licenses \
+            --format=json \
+            --with-urls \
+            --with-description \
+            --output-file=licenses.json
+
+          # Check for problematic licenses
+          PROBLEMATIC_LICENSES="GPL|LGPL|AGPL|SSPL|Commons Clause"
+
+          if uv run pip-licenses --format=plain | grep -iE "$PROBLEMATIC_LICENSES"; then
+            echo "::error::❌ Found problematic copyleft licenses!"
+            echo "The following packages have GPL/LGPL/AGPL licenses:"
+            uv run pip-licenses --format=markdown | grep -iE "$PROBLEMATIC_LICENSES" || true
+            exit 1
+          else
+            echo "✅ No problematic licenses found"
+          fi
+
+      - name: Upload SBOM as artifact
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: sbom-licenses
+          path: |
+            sbom-packages.json
+            licenses.json
+          retention-days: 30
+
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    env:
+      TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db:2
+      TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db:1
+      TRIVY_CACHE_DIR: ${{ github.workspace }}/.cache/trivy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@e6c2c5e321ed9123bda567646e2f96565e34abe1 # v0.2.4
+        with:
+          cache: true
+
+      - name: Create cache directory
+        run: mkdir -p ${{ env.TRIVY_CACHE_DIR }}
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Trivy cache
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: ${{ env.TRIVY_CACHE_DIR }}
+          key: cache-trivy-${{ steps.date.outputs.date }}
+          restore-keys: cache-trivy-
+
+      - name: Run Trivy vulnerability scan
+        run: |
+          trivy --version
+          echo "Scanning Python dependencies for vulnerabilities..."
+          trivy fs \
+            --format json \
+            --output trivy-results.json \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --exit-code 0 \
+            --cache-dir ${{ env.TRIVY_CACHE_DIR }} \
+            --scanners vuln,secret,misconfig \
+            .
+
+      - name: Check results
+        run: |
+          if [ "$(jq '[.Results[]? | select(.Vulnerabilities) | .Vulnerabilities | length] | add // 0' trivy-results.json)" -gt "0" ]; then
+            echo "⚠️ Vulnerabilities found"
+            trivy fs --format table .
+            # Don't fail on vulnerabilities, just report them
+          else
+            echo "✅ No vulnerabilities found"
+          fi
+
+      - name: Generate SARIF report
+        run: |
+          trivy convert --format sarif --output trivy-results.sarif trivy-results.json
+
+      - name: Upload Trivy results to GitHub Security
+        if: always()
+        continue-on-error: true # May fail on repos without code scanning enabled
+        uses: github/codeql-action/upload-sarif@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-scan
+
+      - name: Upload Trivy results as artifact
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: trivy-scan-results
+          path: |
+            trivy-results.json
+            trivy-results.sarif
+          retention-days: 30

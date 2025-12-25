@@ -1,0 +1,60 @@
+# Python
+.DS_Store
+.ruff_cache
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+*.env
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Terraform (uncomment if using)
+# *.tfstate
+# *.tfstate.*
+# *.tfvars
+# .terraform/
+# terraform.tfplan
+# terraform.tfplan.json
+# crash.log
+# crash.*.log
+# override.tf
+# override.tf.json
+# *_override.tf
+# *_override.tf.json
+
+# GCP (uncomment if using)
+# gcloud-config/
+# service-account-key.json
+# *.json.enc
+# credentials.json
+# key.json
+
+# Docker
+.dockerignore
+
+# Logs
+*.log
+.mypy_cache/

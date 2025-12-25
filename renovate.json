@@ -1,0 +1,53 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    "docker:pinDigests"
+  ],
+  "rebaseWhen": "behind-base-branch",
+  "branchPrefix": "renovate/",
+  "labels": ["🧹 renovate", "📦 type: dependencies"],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "🤖 Renovate Dependency Dashboard",
+  "minimumReleaseAge": "3 days",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "Auto-merge minor, patch, pin, and digest updates",
+      "automerge": true,
+      "platformAutomerge": true,
+      "automergeStrategy": "squash",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+    },
+    {
+      "matchDatasources": ["pypi"],
+      "registryUrls": ["https://pypi.org/simple"]
+    },
+    {
+      "groupName": "Python testing tools",
+      "groupSlug": "python-testing",
+      "matchPackageNames": ["pytest*", "coverage", "pytest-cov", "pytest-mock", "pytest-xdist"],
+      "matchManagers": ["pep621", "pip_requirements", "pip-compile"]
+    },
+    {
+      "groupName": "Linting tools",
+      "groupSlug": "linting",
+      "matchPackageNames": ["ruff", "deptry", "pre-commit"],
+      "matchManagers": ["pep621", "pip_requirements", "pip-compile"]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "groupSlug": "github-actions",
+      "matchManagers": ["github-actions"],
+      "addLabels": ["🔧 type: ci"]
+    },
+    {
+      "groupName": "Pre-commit hooks",
+      "groupSlug": "pre-commit",
+      "matchManagers": ["pre-commit"],
+      "addLabels": ["🔧 type: ci"]
+    }
+  ]
+}
