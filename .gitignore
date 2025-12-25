@@ -58,3 +58,7 @@ coverage.xml
 # Logs
 *.log
 .mypy_cache/
+
+# Local data storage
+data/*
+!data/.gitkeep

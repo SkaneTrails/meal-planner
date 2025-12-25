@@ -1,12 +1,17 @@
-# My Project
+# Meal Planner
 
-> TODO: Replace this with your project description
+A recipe collector and weekly meal planner that automatically extracts ingredients and procedures from recipe URLs.
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
+- 🔗 **Recipe Import** - Share a recipe URL and automatically extract:
+  - Ingredients list
+  - Cooking procedure/instructions
+  - Dish photo
+  - Prep time, cook time, servings
+- 📅 **Weekly Meal Planning** - Plan your meals for the week
+- 🛒 **Grocery List** - Auto-generate shopping lists from your meal plan
+- 📚 **Recipe Library** - Save and organize your favorite recipes
 
 ## Quick Start
 
@@ -26,21 +31,16 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 # Clone and set up
-git clone https://github.com/YOUR-USERNAME/my-project.git
-cd my-project
+git clone https://github.com/SkaneTrails/meal-planner.git
+cd meal-planner
 uv sync --extra dev  # Install all dependencies including dev tools
 ```
 
 ### Running the App
 
 ```bash
-# Activate virtual environment
-source .venv/bin/activate  # Linux/macOS
-# or
-.venv\Scripts\activate     # Windows
-
-# Run the application
-uv run python app/main.py
+# Run the Streamlit app
+uv run streamlit run app/main.py
 ```
 
 ### Development
@@ -63,20 +63,35 @@ uv run ruff format
 ## Project Structure
 
 ```
-├── app/                    # Application code
-│   ├── __init__.py
-│   └── main.py
-├── tests/                  # Test files
-│   ├── conftest.py
-│   └── test_*.py
-├── docs/                   # Documentation
-├── .github/
-│   ├── workflows/          # CI/CD workflows
-│   └── copilot-instructions.md
-├── pyproject.toml          # Project configuration
-├── renovate.json           # Dependency update configuration
-└── README.md
+├── app/
+│   ├── main.py              # Streamlit app entry point
+│   ├── models/              # Data models (Recipe, Ingredient, MealPlan)
+│   ├── services/            # Business logic
+│   │   ├── recipe_scraper.py    # Extract recipes from URLs
+│   │   ├── meal_planner.py      # Weekly planning logic
+│   │   └── grocery_list.py      # Shopping list generation
+│   └── storage/             # Data persistence
+├── tests/
+├── docs/
+└── data/                    # Local data storage (gitignored)
 ```
+
+## How It Works
+
+1. **Add a Recipe**: Paste a recipe URL → the app scrapes ingredients, instructions, and image
+2. **Plan Your Week**: Drag recipes into your weekly calendar
+3. **Generate Grocery List**: Click to combine all ingredients, grouped by category
+
+## Supported Recipe Sites
+
+Uses [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) library which supports 400+ recipe websites including:
+
+- AllRecipes
+- BBC Good Food
+- Epicurious
+- Food Network
+- Serious Eats
+- And many more...
 
 ## Contributing
 
