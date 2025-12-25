@@ -1,8 +1,9 @@
 """Recipe storage service using Firestore."""
 
 from datetime import UTC, datetime
+from typing import cast
 
-from google.cloud.firestore_v1 import FieldFilter
+from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
 from app.models.recipe import Recipe
 from app.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
@@ -54,7 +55,7 @@ def get_recipe(recipe_id: str) -> Recipe | None:
         The recipe if found, None otherwise.
     """
     db = get_firestore_client()
-    doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()
+    doc = cast("DocumentSnapshot", db.collection(RECIPES_COLLECTION).document(recipe_id).get())
 
     if not doc.exists:
         return None
@@ -62,7 +63,6 @@ def get_recipe(recipe_id: str) -> Recipe | None:
     data = doc.to_dict()
     if data is None:
         return None
-
     return Recipe(
         title=data.get("title", ""),
         url=data.get("url", ""),
@@ -92,8 +92,6 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
-        if data is None:
-            continue
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -125,9 +123,8 @@ def delete_recipe(recipe_id: str) -> bool:
     """
     db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
-    doc = doc_ref.get()
 
-    if not doc.exists:
+    if not cast("DocumentSnapshot", doc_ref.get()).exists:
         return False
 
     doc_ref.delete()
