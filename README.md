@@ -87,11 +87,13 @@ uv run ruff format
 Uses [recipe-scrapers](https://github.com/hhursev/recipe-scrapers) library which supports 400+ recipe websites including:
 
 ### Prioritized Sites
+
 - 🇸🇪 **ICA.se** - Swedish grocery store recipes
 - 🇮🇹 **GialloZafferano** - Italian recipes (ricette.giallozafferano.it)
 - 🍽️ **HelloFresh** - All regions (.com, .se, .it, .de, .co.uk, etc.)
 
 ### Other Popular Sites
+
 - AllRecipes
 - BBC Good Food
 - Epicurious
