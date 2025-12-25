@@ -1,0 +1,113 @@
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build" ]
+
+[project]
+name = "my-project"  # TODO: Replace with your project name
+version = "0.1.0"
+description = "A Python project"  # TODO: Add project description
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.14.2"
+classifiers = [
+  "Private :: Do Not Upload",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+  # Add your project dependencies here
+  "python-dotenv>=1.0.0",
+]
+
+optional-dependencies.dev = [
+  "deptry>=0.24.0",
+  "pre-commit>=3.6.0",
+  "pyproject-fmt>=2.11.0",
+  "ruff>=0.11.0",
+  "my-project[test]",  # TODO: Replace with your project name
+  "ty>=0.0.5",
+]
+optional-dependencies.test = [
+  "pytest>=8.0.0",
+  "pytest-cov>=4.1.0",
+  "pytest-mock>=3.12.0",
+  "pytest-xdist>=3.5.0",
+]
+
+[dependency-groups]
+dev = [
+  "my-project[dev]",  # TODO: Replace with your project name
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+target-version = "py313"  # Ruff doesn't support py314 yet, py313 is compatible
+
+line-length = 120
+indent-width = 4
+cache-dir = ".cache/.ruff_cache"
+
+format.indent-style = "space"
+format.quote-style = "double"
+format.line-ending = "lf"
+format.skip-magic-trailing-comma = true
+
+lint.select = [
+  "ALL",  # include all the rules, including new ones
+]
+lint.ignore = [
+  "ANN401",  # Any type (acceptable for dynamic types)
+  "BLE001",  # Blind exception (acceptable with proper error handling)
+  "COM812",  # Trailing comma conflicts with formatter
+  "D",       # Docstring rules (enable if needed)
+  "E501",    # Line too long (handled by formatter)
+  "INP001",  # Implicit namespace package
+  "PLC0415", # Import not at top-level (needed for optional dependencies)
+  "S311",    # Random for non-crypto (not used for security purposes)
+  "T201",    # Print statements (enable if prints should be avoided)
+  "TRY300",  # Consider else block (style preference)
+]
+
+lint.per-file-ignores."tests/**/*.py" = [
+  "ANN001",  # Missing type annotation for function argument
+  "ARG001",  # Unused function argument (fixtures used for side effects)
+  "ARG002",  # Unused method argument (fixtures used for side effects)
+  "PLR2004", # Allow magic values in tests
+  "S101",    # Allow assert in tests (required for pytest)
+]
+
+lint.flake8-quotes.inline-quotes = "double"
+lint.isort.combine-as-imports = true
+lint.isort.split-on-trailing-comma = false
+
+[tool.deptry]
+known_first_party = [ "my-project" ]  # TODO: Replace with your project name
+
+[tool.pytest.ini_options]
+testpaths = [ "tests" ]
+python_files = [ "test_*.py" ]
+python_functions = [ "test_*" ]
+filterwarnings = [ "error" ]
+addopts = "-W error --strict-markers"
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "integration: marks tests as integration tests",
+]
+
+[tool.coverage.run]
+source = [ "app" ]
+branch = true
+omit = [
+  "tests/*",
+  "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if __name__ == .__main__.:",
+  "raise NotImplementedError",
+  "if TYPE_CHECKING:",
+]

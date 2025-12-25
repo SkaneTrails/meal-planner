@@ -1,0 +1,5 @@
+# GitHub Action Lint configuration
+# See: https://github.com/rhysd/actionlint
+
+self-hosted-runner:
+  - ubuntu-latest
