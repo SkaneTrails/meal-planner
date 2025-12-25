@@ -89,6 +89,8 @@ lint.isort.split-on-trailing-comma = false
 
 [tool.deptry]
 known_first_party = [ "meal-planner" ]
+pep621_dev_dependency_groups = [ "dev" ]
+ignore = [ "DEP002" ]
 
 [tool.pytest.ini_options]
 testpaths = [ "tests" ]

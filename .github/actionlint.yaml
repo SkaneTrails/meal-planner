@@ -2,4 +2,5 @@
 # See: https://github.com/rhysd/actionlint
 
 self-hosted-runner:
-  - ubuntu-latest
+  labels:
+    - ubuntu-latest
