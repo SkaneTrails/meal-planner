@@ -1,6 +1,6 @@
 """Recipe storage service using Firestore."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from google.cloud.firestore_v1 import FieldFilter
 
@@ -21,22 +21,24 @@ def save_recipe(recipe: Recipe) -> str:
     db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document()
 
-    doc_ref.set({
-        "title": recipe.title,
-        "url": recipe.url,
-        "ingredients": recipe.ingredients,
-        "instructions": recipe.instructions,
-        "image_url": recipe.image_url,
-        "servings": recipe.servings,
-        "prep_time": recipe.prep_time,
-        "cook_time": recipe.cook_time,
-        "total_time": recipe.total_time,
-        "cuisine": recipe.cuisine,
-        "category": recipe.category,
-        "tags": recipe.tags,
-        "created_at": datetime.now(tz=datetime.UTC),
-        "updated_at": datetime.now(tz=datetime.UTC),
-    })
+    doc_ref.set(
+        {
+            "title": recipe.title,
+            "url": recipe.url,
+            "ingredients": recipe.ingredients,
+            "instructions": recipe.instructions,
+            "image_url": recipe.image_url,
+            "servings": recipe.servings,
+            "prep_time": recipe.prep_time,
+            "cook_time": recipe.cook_time,
+            "total_time": recipe.total_time,
+            "cuisine": recipe.cuisine,
+            "category": recipe.category,
+            "tags": recipe.tags,
+            "created_at": datetime.now(tz=UTC),
+            "updated_at": datetime.now(tz=UTC),
+        }
+    )
 
     return doc_ref.id
 
@@ -58,6 +60,9 @@ def get_recipe(recipe_id: str) -> Recipe | None:
         return None
 
     data = doc.to_dict()
+    if data is None:
+        return None
+
     return Recipe(
         title=data.get("title", ""),
         url=data.get("url", ""),
@@ -87,6 +92,8 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
+        if data is None:
+            continue
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -118,8 +125,9 @@ def delete_recipe(recipe_id: str) -> bool:
     """
     db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+    doc = doc_ref.get()
 
-    if not doc_ref.get().exists:
+    if not doc.exists:
         return False
 
     doc_ref.delete()

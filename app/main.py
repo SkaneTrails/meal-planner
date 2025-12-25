@@ -1,13 +1,14 @@
 """Meal Planner - Recipe collector and weekly meal planner."""
 
+import sys
+from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import streamlit as st
 
-st.set_page_config(
-    page_title="Meal Planner",
-    page_icon="🍽️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+st.set_page_config(page_title="Meal Planner", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
 st.title("🍽️ Meal Planner")
 st.markdown("*Recipe collector and weekly meal planner*")
@@ -28,14 +29,19 @@ if page == "📚 Recipes":
             with st.spinner("Extracting recipe..."):
                 try:
                     from app.services.recipe_scraper import scrape_recipe
-                    from app.storage.recipe_storage import save_recipe
 
                     recipe = scrape_recipe(url)
                     if recipe:
-                        # Save to Firestore
-                        recipe_id = save_recipe(recipe)
-                        st.success(f"✅ Imported and saved: {recipe.title}")
-                        st.caption(f"Recipe ID: {recipe_id}")
+                        # Try to save to Firestore
+                        try:
+                            from app.storage.recipe_storage import save_recipe
+
+                            recipe_id = save_recipe(recipe)
+                            st.success(f"✅ Imported and saved: {recipe.title}")
+                            st.caption(f"Recipe ID: {recipe_id}")
+                        except Exception as storage_err:
+                            st.success(f"✅ Imported: {recipe.title}")
+                            st.warning(f"⚠️ Could not save to database: {storage_err}")
 
                         if recipe.image_url:
                             st.image(recipe.image_url, width=300)
@@ -52,7 +58,7 @@ if page == "📚 Recipes":
                             st.write(f"{i}. {step}")
                     else:
                         st.error("Could not extract recipe from this URL")
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:
                     st.error(f"Error importing recipe: {e}")
         else:
             st.warning("Please enter a URL")
@@ -75,20 +81,23 @@ if page == "📚 Recipes":
                     with col2:
                         st.write(f"**URL:** [{recipe.url}]({recipe.url})")
                         st.write(f"**Servings:** {recipe.servings or 'N/A'}")
-                        st.write(f"**Prep:** {recipe.prep_time or 'N/A'} min | **Cook:** {recipe.cook_time or 'N/A'} min")
+                        st.write(
+                            f"**Prep:** {recipe.prep_time or 'N/A'} min | **Cook:** {recipe.cook_time or 'N/A'} min"
+                        )
 
                     st.write("**Ingredients:**")
-                    for ing in recipe.ingredients[:5]:  # Show first 5
+                    ingredient_preview_count = 5
+                    for ing in recipe.ingredients[:ingredient_preview_count]:
                         st.write(f"- {ing}")
-                    if len(recipe.ingredients) > 5:
-                        st.caption(f"... and {len(recipe.ingredients) - 5} more")
+                    if len(recipe.ingredients) > ingredient_preview_count:
+                        st.caption(f"... and {len(recipe.ingredients) - ingredient_preview_count} more")
 
                     if st.button("🗑️ Delete", key=f"delete_{recipe_id}"):
                         delete_recipe(recipe_id)
                         st.rerun()
         else:
             st.info("No recipes saved yet. Import your first recipe above!")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         st.warning(f"Could not load recipes: {e}")
         st.info("Make sure you're authenticated with Google Cloud.")
 

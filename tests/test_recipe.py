@@ -16,12 +16,7 @@ class TestRecipe:
 
     def test_recipe_total_time_calculated(self) -> None:
         """Test total time calculation from prep and cook time."""
-        recipe = Recipe(
-            title="Test Recipe",
-            url="https://example.com/test",
-            prep_time=15,
-            cook_time=30,
-        )
+        recipe = Recipe(title="Test Recipe", url="https://example.com/test", prep_time=15, cook_time=30)
         assert recipe.total_time_calculated == 45
 
     def test_recipe_total_time_explicit(self) -> None:
@@ -37,11 +32,7 @@ class TestRecipe:
 
     def test_recipe_total_time_partial(self) -> None:
         """Test total time when only one time is provided."""
-        recipe = Recipe(
-            title="Test Recipe",
-            url="https://example.com/test",
-            prep_time=15,
-        )
+        recipe = Recipe(title="Test Recipe", url="https://example.com/test", prep_time=15)
         assert recipe.total_time_calculated == 15
 
     def test_recipe_default_lists(self) -> None:
