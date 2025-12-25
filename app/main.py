@@ -28,11 +28,17 @@ if page == "📚 Recipes":
             with st.spinner("Extracting recipe..."):
                 try:
                     from app.services.recipe_scraper import scrape_recipe
+                    from app.storage.recipe_storage import save_recipe
 
                     recipe = scrape_recipe(url)
                     if recipe:
-                        st.success(f"✅ Imported: {recipe.title}")
-                        st.image(recipe.image_url, width=300)
+                        # Save to Firestore
+                        recipe_id = save_recipe(recipe)
+                        st.success(f"✅ Imported and saved: {recipe.title}")
+                        st.caption(f"Recipe ID: {recipe_id}")
+
+                        if recipe.image_url:
+                            st.image(recipe.image_url, width=300)
                         st.write(f"**Servings:** {recipe.servings}")
                         st.write(f"**Prep time:** {recipe.prep_time} min")
                         st.write(f"**Cook time:** {recipe.cook_time} min")
@@ -51,10 +57,41 @@ if page == "📚 Recipes":
         else:
             st.warning("Please enter a URL")
 
-    # Display saved recipes
+    # Display saved recipes from Firestore
     st.divider()
     st.subheader("Saved Recipes")
-    st.info("No recipes saved yet. Import your first recipe above!")
+
+    try:
+        from app.storage.recipe_storage import delete_recipe, get_all_recipes
+
+        recipes = get_all_recipes()
+        if recipes:
+            for recipe_id, recipe in recipes:
+                with st.expander(f"🍽️ {recipe.title}"):
+                    col1, col2 = st.columns([1, 2])
+                    with col1:
+                        if recipe.image_url:
+                            st.image(recipe.image_url, width=200)
+                    with col2:
+                        st.write(f"**URL:** [{recipe.url}]({recipe.url})")
+                        st.write(f"**Servings:** {recipe.servings or 'N/A'}")
+                        st.write(f"**Prep:** {recipe.prep_time or 'N/A'} min | **Cook:** {recipe.cook_time or 'N/A'} min")
+
+                    st.write("**Ingredients:**")
+                    for ing in recipe.ingredients[:5]:  # Show first 5
+                        st.write(f"- {ing}")
+                    if len(recipe.ingredients) > 5:
+                        st.caption(f"... and {len(recipe.ingredients) - 5} more")
+
+                    if st.button("🗑️ Delete", key=f"delete_{recipe_id}"):
+                        delete_recipe(recipe_id)
+                        st.rerun()
+        else:
+            st.info("No recipes saved yet. Import your first recipe above!")
+    except Exception as e:  # noqa: BLE001
+        st.warning(f"Could not load recipes: {e}")
+        st.info("Make sure you're authenticated with Google Cloud.")
+
 
 elif page == "📅 Weekly Plan":
     st.header("📅 Weekly Meal Plan")
