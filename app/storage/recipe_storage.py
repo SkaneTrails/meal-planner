@@ -1,6 +1,6 @@
 """Recipe storage service using Firestore."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from google.cloud.firestore_v1 import FieldFilter
 
@@ -34,8 +34,8 @@ def save_recipe(recipe: Recipe) -> str:
         "cuisine": recipe.cuisine,
         "category": recipe.category,
         "tags": recipe.tags,
-        "created_at": datetime.now(tz=datetime.UTC),
-        "updated_at": datetime.now(tz=datetime.UTC),
+        "created_at": datetime.now(tz=UTC),
+        "updated_at": datetime.now(tz=UTC),
     })
 
     return doc_ref.id

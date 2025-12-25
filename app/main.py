@@ -1,5 +1,11 @@
 """Meal Planner - Recipe collector and weekly meal planner."""
 
+import sys
+from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import streamlit as st
 
 st.set_page_config(
@@ -28,14 +34,19 @@ if page == "📚 Recipes":
             with st.spinner("Extracting recipe..."):
                 try:
                     from app.services.recipe_scraper import scrape_recipe
-                    from app.storage.recipe_storage import save_recipe
 
                     recipe = scrape_recipe(url)
                     if recipe:
-                        # Save to Firestore
-                        recipe_id = save_recipe(recipe)
-                        st.success(f"✅ Imported and saved: {recipe.title}")
-                        st.caption(f"Recipe ID: {recipe_id}")
+                        # Try to save to Firestore
+                        try:
+                            from app.storage.recipe_storage import save_recipe
+
+                            recipe_id = save_recipe(recipe)
+                            st.success(f"✅ Imported and saved: {recipe.title}")
+                            st.caption(f"Recipe ID: {recipe_id}")
+                        except Exception as storage_err:  # noqa: BLE001
+                            st.success(f"✅ Imported: {recipe.title}")
+                            st.warning(f"⚠️ Could not save to database: {storage_err}")
 
                         if recipe.image_url:
                             st.image(recipe.image_url, width=300)
