@@ -46,6 +46,34 @@ def save_recipe(recipe: Recipe) -> str:
     return doc_ref.id
 
 
+def update_recipe_labels(recipe_id: str, diet_label: DietLabel | None, meal_label: MealLabel | None) -> bool:
+    """
+    Update the labels of an existing recipe.
+
+    Args:
+        recipe_id: The Firestore document ID.
+        diet_label: The new diet label (or None to remove).
+        meal_label: The new meal label (or None to remove).
+
+    Returns:
+        True if updated, False if recipe not found.
+    """
+    db = get_firestore_client()
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+
+    if not cast("DocumentSnapshot", doc_ref.get()).exists:
+        return False
+
+    doc_ref.update(
+        {
+            "diet_label": diet_label.value if diet_label else None,
+            "meal_label": meal_label.value if meal_label else None,
+            "updated_at": datetime.now(tz=UTC),
+        }
+    )
+    return True
+
+
 def get_recipe(recipe_id: str) -> Recipe | None:
     """
     Get a recipe by ID.
