@@ -1,6 +1,6 @@
 """Tests for recipe model."""
 
-from app.models.recipe import Recipe
+from app.models.recipe import DietLabel, MealLabel, Recipe
 
 
 class TestRecipe:
@@ -41,3 +41,32 @@ class TestRecipe:
         assert recipe.ingredients == []
         assert recipe.instructions == []
         assert recipe.tags == []
+
+    def test_recipe_with_diet_label(self) -> None:
+        """Test recipe creation with diet label."""
+        recipe = Recipe(title="Veggie Pasta", url="https://example.com/veggie", diet_label=DietLabel.VEGGIE)
+        assert recipe.diet_label == DietLabel.VEGGIE
+        assert recipe.diet_label.value == "veggie"
+
+    def test_recipe_with_meal_label(self) -> None:
+        """Test recipe creation with meal label."""
+        recipe = Recipe(title="Chocolate Cake", url="https://example.com/cake", meal_label=MealLabel.DESSERT)
+        assert recipe.meal_label == MealLabel.DESSERT
+        assert recipe.meal_label.value == "dessert"
+
+    def test_recipe_with_all_labels(self) -> None:
+        """Test recipe creation with both diet and meal labels."""
+        recipe = Recipe(
+            title="Fish Starter",
+            url="https://example.com/fish-starter",
+            diet_label=DietLabel.FISH,
+            meal_label=MealLabel.STARTER,
+        )
+        assert recipe.diet_label == DietLabel.FISH
+        assert recipe.meal_label == MealLabel.STARTER
+
+    def test_recipe_labels_default_none(self) -> None:
+        """Test that labels default to None."""
+        recipe = Recipe(title="Simple Recipe", url="https://example.com")
+        assert recipe.diet_label is None
+        assert recipe.meal_label is None
