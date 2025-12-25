@@ -59,9 +59,7 @@ class TestGroceryList:
 
     def test_add_item_merge_existing(self) -> None:
         """Test that adding duplicate item merges recipe sources."""
-        grocery_list = GroceryList(
-            items=[GroceryItem(name="flour", recipe_sources=["Recipe A"])]
-        )
+        grocery_list = GroceryList(items=[GroceryItem(name="flour", recipe_sources=["Recipe A"])])
         grocery_list.add_item(GroceryItem(name="Flour", recipe_sources=["Recipe B"]))
         assert len(grocery_list.items) == 1
         assert grocery_list.items[0].recipe_sources == ["Recipe A", "Recipe B"]
