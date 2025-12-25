@@ -58,6 +58,6 @@ class GroceryList:
             if existing.name.lower() == item.name.lower():
                 # Merge recipe sources
                 existing.recipe_sources.extend(item.recipe_sources)
-                # TODO: Merge quantities intelligently
+                # Future enhancement: Merge quantities intelligently
                 return
         self.items.append(item)

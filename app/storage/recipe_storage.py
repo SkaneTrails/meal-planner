@@ -21,22 +21,24 @@ def save_recipe(recipe: Recipe) -> str:
     db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document()
 
-    doc_ref.set({
-        "title": recipe.title,
-        "url": recipe.url,
-        "ingredients": recipe.ingredients,
-        "instructions": recipe.instructions,
-        "image_url": recipe.image_url,
-        "servings": recipe.servings,
-        "prep_time": recipe.prep_time,
-        "cook_time": recipe.cook_time,
-        "total_time": recipe.total_time,
-        "cuisine": recipe.cuisine,
-        "category": recipe.category,
-        "tags": recipe.tags,
-        "created_at": datetime.now(tz=UTC),
-        "updated_at": datetime.now(tz=UTC),
-    })
+    doc_ref.set(
+        {
+            "title": recipe.title,
+            "url": recipe.url,
+            "ingredients": recipe.ingredients,
+            "instructions": recipe.instructions,
+            "image_url": recipe.image_url,
+            "servings": recipe.servings,
+            "prep_time": recipe.prep_time,
+            "cook_time": recipe.cook_time,
+            "total_time": recipe.total_time,
+            "cuisine": recipe.cuisine,
+            "category": recipe.category,
+            "tags": recipe.tags,
+            "created_at": datetime.now(tz=UTC),
+            "updated_at": datetime.now(tz=UTC),
+        }
+    )
 
     return doc_ref.id
 
