@@ -1,15 +1,18 @@
 """Meal plan storage service using Firestore."""
 
-from datetime import UTC, date, datetime
-from typing import Any, cast
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, cast
 
-from google.cloud.firestore_v1 import DocumentSnapshot
+if TYPE_CHECKING:
+    from google.cloud.firestore_v1 import DocumentSnapshot
 
-from app.models.meal_plan import MealType
 from app.storage.firestore_client import MEAL_PLANS_COLLECTION, get_firestore_client
 
 # Use a single document ID for the meal plan (can be extended for multi-user later)
 MEAL_PLAN_DOC_ID = "default_meal_plan"
+
+# Expected number of parts when splitting meal key (date_str, meal_type_str)
+_MEAL_KEY_PARTS = 2
 
 
 def _meal_plan_to_firestore(meal_plan: dict[tuple[str, str], str]) -> dict[str, Any]:
@@ -46,7 +49,7 @@ def _firestore_to_meal_plan(data: dict[str, Any]) -> dict[tuple[str, str], str]:
 
     for key, value in meals.items():
         parts = key.rsplit("_", 1)
-        if len(parts) == 2:
+        if len(parts) == _MEAL_KEY_PARTS:
             date_str, meal_type_str = parts
             result[(date_str, meal_type_str)] = value
 
