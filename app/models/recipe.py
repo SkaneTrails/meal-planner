@@ -1,25 +1,6 @@
 """Recipe data model."""
 
 from dataclasses import dataclass, field
-from enum import Enum
-
-
-class DietLabel(Enum):
-    """Diet type labels for recipes."""
-
-    VEGGIE = "veggie"
-    FISH = "fish"
-    MEAT = "meat"
-
-
-class MealLabel(Enum):
-    """Meal type labels for recipes."""
-
-    BREAKFAST = "breakfast"
-    STARTER = "starter"
-    MEAL = "meal"
-    DESSERT = "dessert"
-    DRINK = "drink"
 
 
 @dataclass
@@ -38,8 +19,6 @@ class Recipe:
     cuisine: str | None = None
     category: str | None = None
     tags: list[str] = field(default_factory=list)
-    diet_label: DietLabel | None = None  # veggie/fish/meat
-    meal_label: MealLabel | None = None  # breakfast/starter/meal/dessert/drink
 
     @property
     def total_time_calculated(self) -> int | None:
