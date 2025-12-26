@@ -21,6 +21,7 @@ dependencies = [
   "python-dotenv>=1",
   "recipe-scrapers>=15",
   "streamlit>=1.28",
+  "streamlit-sortables>=0.3.1",
 ]
 
 optional-dependencies.dev = [
