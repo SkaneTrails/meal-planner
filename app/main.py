@@ -267,39 +267,36 @@ elif page == "📚 Recipes":
             if portion_key not in st.session_state:
                 st.session_state[portion_key] = original_servings
 
-            pcol1, pcol2, pcol3 = st.columns([1, 2, 1])
-            with pcol1:
-                if (
-                    st.button("-", key=f"dec_portions_{recipe_id}", use_container_width=True)
-                    and st.session_state[portion_key] > 1
-                ):
+            current_portions = st.session_state[portion_key]
+            portion_label = "portion" if current_portions == 1 else "portions"
+
+            # Compact portion controls aligned left
+            portion_text = f"{current_portions} {portion_label}"
+            if current_portions != original_servings:
+                portion_text += f" (originally {original_servings})"
+
+            st.markdown(
+                f"""
+                <div style='display: flex; align-items: center; gap: 8px; margin-bottom: 10px;'>
+                    <span style='font-size: 14px;'>{portion_text}</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            btn_col1, btn_col2, _ = st.columns([1, 1, 6])
+            with btn_col1:
+                if st.button("-", key=f"dec_portions_{recipe_id}") and current_portions > 1:
                     st.session_state[portion_key] -= 1
                     st.rerun()
-            with pcol2:
-                current_portions = st.session_state[portion_key]
-                portion_label = "portion" if current_portions == 1 else "portions"
-                if current_portions != original_servings:
-                    st.markdown(
-                        f"<div style='text-align: center; padding: 8px;'>"
-                        f"<strong>{current_portions}</strong> {portion_label} "
-                        f"<span style='color: gray;'>(originally {original_servings})</span></div>",
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    st.markdown(
-                        f"<div style='text-align: center; padding: 8px;'>"
-                        f"<strong>{current_portions}</strong> {portion_label}</div>",
-                        unsafe_allow_html=True,
-                    )
-            with pcol3:
-                if st.button("+", key=f"inc_portions_{recipe_id}", use_container_width=True):
+            with btn_col2:
+                if st.button("+", key=f"inc_portions_{recipe_id}"):
                     st.session_state[portion_key] += 1
                     st.rerun()
 
             # Scale ingredients if portions changed
             from app.services.ingredient_parser import scale_ingredients
 
-            current_portions = st.session_state[portion_key]
             if current_portions != original_servings:
                 scaled_ingredients = scale_ingredients(recipe.ingredients, original_servings, current_portions)
             else:

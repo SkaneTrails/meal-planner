@@ -17,12 +17,7 @@ class ParsedIngredient:
     def scale(self, factor: float) -> "ParsedIngredient":
         """Return a new ParsedIngredient scaled by the given factor."""
         new_quantity = self.quantity * factor if self.quantity else None
-        return ParsedIngredient(
-            quantity=new_quantity,
-            unit=self.unit,
-            name=self.name,
-            original=self.original,
-        )
+        return ParsedIngredient(quantity=new_quantity, unit=self.unit, name=self.name, original=self.original)
 
     def format(self) -> str:
         """Format the ingredient as a display string."""
@@ -43,13 +38,7 @@ def format_quantity(qty: float) -> str:
         return str(int(qty))
 
     # Common fractions to display nicely
-    fraction_map = {
-        0.25: "1/4",
-        0.33: "1/3",
-        0.5: "1/2",
-        0.67: "2/3",
-        0.75: "3/4",
-    }
+    fraction_map = {0.25: "1/4", 0.33: "1/3", 0.5: "1/2", 0.67: "2/3", 0.75: "3/4"}
 
     # Check for whole number + fraction
     whole = int(qty)

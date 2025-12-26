@@ -1,7 +1,5 @@
 """Tests for ingredient parsing and portion scaling."""
 
-import pytest
-
 from app.services.ingredient_parser import (
     ParsedIngredient,
     format_quantity,
