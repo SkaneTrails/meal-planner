@@ -5,7 +5,7 @@ from typing import cast
 
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
-from app.models.recipe import Recipe
+from app.models.recipe import DietLabel, MealLabel, Recipe
 from app.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
 
 
@@ -36,6 +36,8 @@ def save_recipe(recipe: Recipe) -> str:
             "cuisine": recipe.cuisine,
             "category": recipe.category,
             "tags": recipe.tags,
+            "diet_label": recipe.diet_label.value if recipe.diet_label else None,
+            "meal_label": recipe.meal_label.value if recipe.meal_label else None,
             "created_at": datetime.now(tz=UTC),
             "updated_at": datetime.now(tz=UTC),
         }
@@ -63,6 +65,22 @@ def get_recipe(recipe_id: str) -> Recipe | None:
     data = doc.to_dict()
     if data is None:
         return None
+
+    # Parse enum values
+    diet_label = None
+    if data.get("diet_label"):
+        try:
+            diet_label = DietLabel(data["diet_label"])
+        except ValueError:
+            pass
+
+    meal_label = None
+    if data.get("meal_label"):
+        try:
+            meal_label = MealLabel(data["meal_label"])
+        except ValueError:
+            pass
+
     return Recipe(
         title=data.get("title", ""),
         url=data.get("url", ""),
@@ -76,6 +94,8 @@ def get_recipe(recipe_id: str) -> Recipe | None:
         cuisine=data.get("cuisine"),
         category=data.get("category"),
         tags=data.get("tags", []),
+        diet_label=diet_label,
+        meal_label=meal_label,
     )
 
 
@@ -92,6 +112,22 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
+
+        # Parse enum values
+        diet_label = None
+        if data.get("diet_label"):
+            try:
+                diet_label = DietLabel(data["diet_label"])
+            except ValueError:
+                pass
+
+        meal_label = None
+        if data.get("meal_label"):
+            try:
+                meal_label = MealLabel(data["meal_label"])
+            except ValueError:
+                pass
+
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -105,6 +141,8 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
             cuisine=data.get("cuisine"),
             category=data.get("category"),
             tags=data.get("tags", []),
+            diet_label=diet_label,
+            meal_label=meal_label,
         )
         recipes.append((doc.id, recipe))
 
@@ -154,6 +192,22 @@ def search_recipes(query: str) -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
+
+        # Parse enum values
+        diet_label = None
+        if data.get("diet_label"):
+            try:
+                diet_label = DietLabel(data["diet_label"])
+            except ValueError:
+                pass
+
+        meal_label = None
+        if data.get("meal_label"):
+            try:
+                meal_label = MealLabel(data["meal_label"])
+            except ValueError:
+                pass
+
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -167,6 +221,8 @@ def search_recipes(query: str) -> list[tuple[str, Recipe]]:
             cuisine=data.get("cuisine"),
             category=data.get("category"),
             tags=data.get("tags", []),
+            diet_label=diet_label,
+            meal_label=meal_label,
         )
         recipes.append((doc.id, recipe))
 
