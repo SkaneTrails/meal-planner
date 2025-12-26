@@ -10,9 +10,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import streamlit as st
 
 from app.icons import inject_bootstrap_icons_css, svg_icon
-from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList
+from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
 from app.models.meal_plan import MealType
 from app.models.recipe import DietLabel, MealLabel, Recipe
+from app.services.ingredient_parser import parse_ingredient
 from app.storage.meal_plan_storage import delete_meal, load_meal_plan, update_meal
 
 st.set_page_config(page_title="Plate & Plan", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
@@ -103,7 +104,7 @@ st.markdown(
 
     /* Increase small text sizes */
     /* Captions and small labels */
-    [data-testid="stCaptionContainer"], 
+    [data-testid="stCaptionContainer"],
     .stCaption,
     small {
         font-size: 0.95rem !important;
@@ -156,7 +157,7 @@ st.markdown(
     /* ============================================= */
     /* RESPONSIVE STYLES - Mobile First Approach    */
     /* ============================================= */
-    
+
     /* MOBILE PHONES (up to 768px) */
     @media (max-width: 768px) {
         /* Larger touch targets for buttons */
@@ -164,19 +165,19 @@ st.markdown(
             min-height: 44px !important;
             padding: 10px 16px !important;
         }
-        
+
         /* Larger text for readability */
         [data-testid="stMarkdownContainer"] p,
         [data-testid="stMarkdownContainer"] span {
             font-size: 1rem !important;
         }
-        
+
         /* Recipe titles bigger on mobile */
         [data-testid="stMarkdownContainer"] strong,
         [data-testid="stMarkdownContainer"] b {
             font-size: 1.1rem !important;
         }
-        
+
         /* Headers */
         [data-testid="stMarkdownContainer"] h1 {
             font-size: 1.5rem !important;
@@ -187,23 +188,20 @@ st.markdown(
         [data-testid="stMarkdownContainer"] h3 {
             font-size: 1.15rem !important;
         }
-        
+
         /* Form inputs taller */
         input, textarea, select {
             min-height: 44px !important;
             font-size: 16px !important; /* Prevents iOS zoom */
         }
-        
-        /* Sidebar adjustments */
-        section[data-testid="stSidebar"] {
-            min-width: 250px !important;
-        }
+
+        /* Sidebar text adjustments */
         section[data-testid="stSidebar"] p,
         section[data-testid="stSidebar"] span,
         section[data-testid="stSidebar"] label {
             font-size: 1rem !important;
         }
-        
+
         /* Tab buttons */
         button[data-baseweb="tab"] {
             padding: 12px 8px !important;
@@ -211,49 +209,49 @@ st.markdown(
         button[data-baseweb="tab"] p {
             font-size: 0.9rem !important;
         }
-        
+
         /* Card containers - more padding */
         [data-testid="stVerticalBlock"] > div[data-testid="element-container"] {
             padding: 4px !important;
         }
-        
+
         /* Images in cards */
         [data-testid="stImage"] {
             border-radius: 8px !important;
         }
     }
-    
+
     /* TABLETS (769px to 1024px) */
     @media (min-width: 769px) and (max-width: 1024px) {
         [data-testid="stMarkdownContainer"] p,
         [data-testid="stMarkdownContainer"] span {
             font-size: 0.95rem !important;
         }
-        
+
         [data-testid="stMarkdownContainer"] h2 {
             font-size: 1.5rem !important;
         }
         [data-testid="stMarkdownContainer"] h3 {
             font-size: 1.25rem !important;
         }
-        
+
         button {
             min-height: 40px !important;
         }
     }
-    
+
     /* LARGE DESKTOPS (1400px+) */
     @media (min-width: 1400px) {
         [data-testid="stMarkdownContainer"] p,
         [data-testid="stMarkdownContainer"] span {
             font-size: 1rem !important;
         }
-        
+
         [data-testid="stMarkdownContainer"] strong,
         [data-testid="stMarkdownContainer"] b {
             font-size: 1.2rem !important;
         }
-        
+
         [data-testid="stMarkdownContainer"] h2 {
             font-size: 2rem !important;
         }
@@ -310,7 +308,7 @@ logo_path = Path(__file__).parent / "assets" / "images" / "logo.png"
 if logo1_path.exists():
     import base64
 
-    with open(logo1_path, "rb") as f:
+    with logo1_path.open("rb") as f:
         logo1_b64 = base64.b64encode(f.read()).decode()
     st.markdown(
         f"""
@@ -329,7 +327,7 @@ if logo1_path.exists():
         [data-testid="stSidebar"][aria-expanded="true"] ~ section .main-logo {{
             left: calc(21rem + 20px);
         }}
-        
+
         /* Mobile styles (phone) */
         @media (max-width: 768px) {{
             .main-logo {{
@@ -338,7 +336,7 @@ if logo1_path.exists():
                 left: 10px;
             }}
         }}
-        
+
         /* Tablet styles */
         @media (min-width: 769px) and (max-width: 1024px) {{
             .main-logo {{
@@ -546,6 +544,27 @@ elif page == "Recipes":
             if recipe.url and recipe.url != "manual-entry":
                 st.markdown(f"[:material/link: Original Recipe]({recipe.url})")
 
+            # Add to Meal Plan section
+            st.divider()
+            st.markdown("### :material/calendar_add_on: Add to Plan")
+
+            today_date = datetime.now(tz=UTC).date()
+            max_date = today_date + timedelta(days=13)
+
+            selected_date = st.date_input(
+                "Date", value=today_date, min_value=today_date, max_value=max_date, key=f"add_plan_date_{recipe_id}"
+            )
+            meal_options = {"Breakfast": MealType.BREAKFAST, "Lunch": MealType.LUNCH, "Dinner": MealType.DINNER}
+            selected_meal_str = st.selectbox(
+                "Meal", options=list(meal_options.keys()), key=f"add_plan_meal_{recipe_id}"
+            )
+            if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", use_container_width=True):
+                selected_meal = meal_options[selected_meal_str]
+                key = (selected_date.isoformat(), selected_meal.value)
+                st.session_state.meal_plan[key] = recipe_id
+                update_meal(selected_date.isoformat(), selected_meal.value, recipe_id)
+                st.toast(f"Added to {selected_meal_str} on {selected_date.strftime('%a %b %d')}!")
+
         with col2:
             st.markdown(f"## {recipe.title}")
 
@@ -565,7 +584,7 @@ elif page == "Recipes":
             recipes = load_recipes()
 
             # Search and filter
-            filter_col1, filter_col2, filter_col3, filter_col4 = st.columns([3, 1, 1, 1])
+            filter_col1, filter_col2, filter_col3, filter_col4, filter_col5 = st.columns([3, 1, 1, 1, 1])
             with filter_col1:
                 search = st.text_input(":material/search: Search recipes", placeholder="Search by name...")
             with filter_col2:
@@ -575,7 +594,11 @@ elif page == "Recipes":
                     ":material/restaurant:", ["All", "Breakfast", "Starter", "Meal", "Dessert", "Drink"], key="lib_meal"
                 )
             with filter_col4:
-                sort_by = st.selectbox("Sort by", ["Newest", "A-Z", "Z-A"])
+                time_filter = st.selectbox(
+                    ":material/schedule:", ["All", "≤15 min", "≤30 min", "≤45 min", "≤60 min"], key="lib_time"
+                )
+            with filter_col5:
+                sort_by = st.selectbox("Sort by", ["Newest", "A-Z", "Z-A", "Quickest"])
 
             # Filter recipes
             if search:
@@ -586,20 +609,28 @@ elif page == "Recipes":
             if meal_filter != "All":
                 meal_val = meal_filter.lower()
                 recipes = [(rid, r) for rid, r in recipes if r.meal_label and r.meal_label.value == meal_val]
+            if time_filter != "All":
+                time_limits = {"≤15 min": 15, "≤30 min": 30, "≤45 min": 45, "≤60 min": 60}
+                max_time = time_limits[time_filter]
+                recipes = [
+                    (rid, r) for rid, r in recipes if r.total_time_calculated and r.total_time_calculated <= max_time
+                ]
 
             # Sort recipes
             if sort_by == "A-Z":
                 recipes = sorted(recipes, key=lambda x: x[1].title)
             elif sort_by == "Z-A":
                 recipes = sorted(recipes, key=lambda x: x[1].title, reverse=True)
+            elif sort_by == "Quickest":
+                recipes = sorted(recipes, key=lambda x: x[1].total_time_calculated or 999)
 
             st.caption(f"Showing {len(recipes)} recipes")
 
             if recipes:
-                # Display as grid
-                cols = st.columns(3)
+                # Display as grid (4 columns for compact view)
+                cols = st.columns(4)
                 for i, (recipe_id, recipe) in enumerate(recipes):
-                    with cols[i % 3], st.container(border=True):
+                    with cols[i % 4], st.container(border=True):
                         if recipe.image_url:
                             st.image(recipe.image_url, use_container_width=True)
                         else:
@@ -871,8 +902,8 @@ elif page == "Meal Plan":
 
     def render_custom_input_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
         """Render the custom text input form for a meal tile."""
-        with st.container(border=True, height=450):
-            st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
             custom_text = st.text_input(
                 "What's planned?",
                 key=f"custom_input_{col_key}_{d}_{meal_type.value}",
@@ -897,9 +928,9 @@ elif page == "Meal Plan":
 
     def render_custom_meal_tile(key: tuple, col_key: str, d: date, meal_type: MealType, custom_text: str) -> None:
         """Render a meal tile with custom text."""
-        with st.container(border=True, height=450):
+        with st.container(border=True):
             st.markdown(
-                f"<div style='height: 300px; display: flex; align-items: center; justify-content: center; "
+                f"<div style='height: 80px; display: flex; align-items: center; justify-content: center; "
                 f"font-style: italic;'>{custom_text}</div>",
                 unsafe_allow_html=True,
             )
@@ -919,17 +950,37 @@ elif page == "Meal Plan":
         default_portions = recipe.servings or 4
         current_portions = st.session_state.meal_portions.get(key, default_portions)
 
-        with st.container(border=True, height=450):
+        with st.container(border=True):
+            # Fixed height image container for consistent tile sizing
             if recipe.image_url:
-                st.image(recipe.image_url, use_container_width=True)
+                st.markdown(
+                    f"""<div style='height: 200px; overflow: hidden; display: flex;
+                    align-items: center; justify-content: center;'>
+                    <img src='{recipe.image_url}' style='width: 100%; height: 100%; object-fit: cover;'/>
+                    </div>""",
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
             title_display = (
                 recipe.title[:title_max_length] + "..." if len(recipe.title) > title_max_length else recipe.title
             )
             st.caption(title_display)
 
-            # Portion controls
-            _, pcol1, pcol2, pcol3, _ = st.columns([2, 1, 1, 1, 2])
-            with pcol1:
+            # Combined portion controls and action buttons on one row
+            view_col, dec_col, port_col, inc_col, close_col = st.columns([1, 1, 1, 1, 1])
+            with view_col:
+                if st.button(
+                    "",
+                    key=f"view_{col_key}_{d}_{meal_type.value}",
+                    help="View recipe",
+                    icon=":material/visibility:",
+                    type="secondary",
+                ):
+                    st.session_state.selected_recipe = (recipe_id, recipe)
+                    st.session_state.current_page = "Recipes"
+                    st.rerun()
+            with dec_col:
                 if (
                     st.button(
                         "", key=f"dec_port_{col_key}_{d}_{meal_type.value}", help="Less", icon=":material/remove:"
@@ -938,22 +989,13 @@ elif page == "Meal Plan":
                 ):
                     st.session_state.meal_portions[key] = current_portions - 1
                     st.rerun()
-            with pcol2:
+            with port_col:
                 st.caption(f":material/group: {current_portions}")
-            with pcol3:
+            with inc_col:
                 if st.button("", key=f"inc_port_{col_key}_{d}_{meal_type.value}", help="More", icon=":material/add:"):
                     st.session_state.meal_portions[key] = current_portions + 1
                     st.rerun()
-
-            btn_col1, _, btn_col2 = st.columns([1, 3, 1])
-            with btn_col1:
-                if st.button(
-                    "", key=f"view_{col_key}_{d}_{meal_type.value}", help="View recipe", icon=":material/visibility:"
-                ):
-                    st.session_state.selected_recipe = (recipe_id, recipe)
-                    st.session_state.current_page = "Recipes"
-                    st.rerun()
-            with btn_col2:
+            with close_col:
                 if st.button("", key=f"clear_{col_key}_{d}_{meal_type.value}", help="Remove", icon=":material/close:"):
                     del st.session_state.meal_plan[key]
                     if key in st.session_state.meal_portions:
@@ -974,8 +1016,11 @@ elif page == "Meal Plan":
         """Render an empty meal tile with action buttons."""
         import random
 
-        with st.container(border=True, height=450):
-            st.markdown("<div style='height: 180px;'></div>", unsafe_allow_html=True)
+        with st.container(border=True):
+            # Fixed height to match recipe tiles (image 200px + title ~30px + buttons ~50px)
+            # Top spacer to center buttons vertically
+            st.markdown("<div style='height: 115px;'></div>", unsafe_allow_html=True)
+            # Centered buttons
             _, btn_col1, btn_col2, btn_col3, _ = st.columns([1, 1, 1, 1, 1])
             with btn_col1:
                 if st.button(
@@ -1001,6 +1046,8 @@ elif page == "Meal Plan":
                 ):
                     st.session_state.custom_meal_input = key
                     st.rerun()
+            # Bottom spacer to match total height
+            st.markdown("<div style='height: 115px;'></div>", unsafe_allow_html=True)
 
     def render_meal_tile(d: date, meal_type: MealType, col_key: str) -> None:
         """Render a single meal tile in the weekly grid."""
@@ -1015,17 +1062,18 @@ elif page == "Meal Plan":
             render_empty_tile(key, col_key, d, meal_type)
 
     # Show summary directly without meal selector popup (now handled on browse page)
-    
+
     # Detect if likely mobile (we can't detect directly, but we can use st.columns behavior)
     # For mobile, show a vertical day-by-day layout
     # Add a toggle for users to switch between views
     if "meal_plan_view" not in st.session_state:
         st.session_state.meal_plan_view = "week"  # "week" or "day"
-    
-    view_col1, view_col2, view_col3 = st.columns([1, 1, 1])
+
+    # Centered view toggle buttons
+    _, view_col1, view_col2, _ = st.columns([1, 1, 1, 1])
     with view_col1:
         if st.button(
-            ":material/calendar_view_week: Week View",
+            ":material/calendar_view_week: Week",
             use_container_width=True,
             type="primary" if st.session_state.meal_plan_view == "week" else "secondary",
         ):
@@ -1033,48 +1081,80 @@ elif page == "Meal Plan":
             st.rerun()
     with view_col2:
         if st.button(
-            ":material/calendar_today: Day View",
+            ":material/calendar_today: Day",
             use_container_width=True,
             type="primary" if st.session_state.meal_plan_view == "day" else "secondary",
         ):
             st.session_state.meal_plan_view = "day"
             st.rerun()
-    
+
     st.write("")
-    
+
     if st.session_state.meal_plan_view == "day":
-        # DAY VIEW - Mobile friendly, shows one day at a time
+        # DAY VIEW - Mobile friendly, compact one day at a time
         if "selected_day_index" not in st.session_state:
-            # Default to today if it's in the current week, otherwise Monday
             today_index = next((i for i, d in enumerate(week_dates) if d == today), 0)
             st.session_state.selected_day_index = today_index
-        
-        # Day selector
-        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+        # Compact day selector
+        day_names = ["M", "T", "W", "T", "F", "S", "S"]
+        full_day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         day_cols = st.columns(7)
-        for i, (day_name, d) in enumerate(zip(day_names, week_dates, strict=False)):
+        for i, (_day_name, d) in enumerate(zip(day_names, week_dates, strict=False)):
             with day_cols[i]:
                 is_selected = st.session_state.selected_day_index == i
                 is_today = d == today
                 btn_type = "primary" if is_selected else "secondary"
-                label = f"**{day_name}**\n{d.day}" if is_today else f"{day_name}\n{d.day}"
+                label = f"{d.day}"
                 if st.button(label, key=f"day_btn_{i}", use_container_width=True, type=btn_type):
                     st.session_state.selected_day_index = i
                     st.rerun()
-        
-        st.divider()
-        
-        # Show selected day's meals
+
+        # Show selected day's meals - compact inline view
         selected_date = week_dates[st.session_state.selected_day_index]
-        selected_day_name = day_names[st.session_state.selected_day_index]
-        
-        st.markdown(f"### {selected_day_name}, {selected_date.strftime('%B %d')}")
-        
-        for meal_type in meal_types:
-            st.markdown(f"**{meal_type.value.title()}**")
-            render_meal_tile(selected_date, meal_type, "day_view")
-            st.write("")
-    
+        selected_day_name = full_day_names[st.session_state.selected_day_index]
+
+        st.markdown(f"**{selected_day_name}, {selected_date.strftime('%b %d')}**")
+
+        # Compact meal display - 3 columns for the 3 meals
+        meal_cols = st.columns(3)
+        for i, meal_type in enumerate(meal_types):
+            with meal_cols[i]:
+                key = (selected_date.isoformat(), meal_type.value)
+                current_value = st.session_state.meal_plan.get(key, "")
+
+                # Meal type header
+                meal_icons = {
+                    "breakfast": ":material/coffee:",
+                    "lunch": ":material/restaurant:",
+                    "dinner": ":material/dinner_dining:",
+                }
+                st.markdown(f"{meal_icons.get(meal_type.value, '')} **{meal_type.value.title()}**")
+
+                if current_value:
+                    if current_value.startswith("custom:"):
+                        st.caption(f"_{current_value[7:]}_")
+                    elif current_value in recipe_dict:
+                        recipe = recipe_dict[current_value]
+                        if recipe.image_url:
+                            st.image(recipe.image_url, use_container_width=True)
+                        st.caption(
+                            recipe.title[:title_max_length] + "..."
+                            if len(recipe.title) > title_max_length
+                            else recipe.title
+                        )
+                    # Remove button
+                    if st.button(":material/close:", key=f"rm_day_{selected_date}_{meal_type.value}", help="Remove"):
+                        del st.session_state.meal_plan[key]
+                        delete_meal(selected_date.isoformat(), meal_type.value)
+                        st.rerun()
+                else:
+                    st.caption("_Empty_")
+                    if st.button(":material/add:", key=f"add_day_{selected_date}_{meal_type.value}", help="Add"):
+                        st.session_state.meal_selector = (selected_date.isoformat(), meal_type.value)
+                        st.session_state.current_page = "Recipes"
+                        st.rerun()
+
     else:
         # WEEK VIEW - Original desktop layout
         # WEEKDAYS (Mon-Fri) - First Row
@@ -1187,7 +1267,14 @@ elif page == "Meal Plan":
                     if rid in recipe_dict:
                         recipe = recipe_dict[rid]
                         for ing in recipe.ingredients:
-                            item = GroceryItem(name=ing, recipe_sources=[recipe.title])
+                            # Parse the ingredient to extract quantity, unit, and name
+                            parsed = parse_ingredient(ing)
+                            qty_source = QuantitySource(quantity=parsed.quantity, unit=parsed.unit, recipe=recipe.title)
+                            item = GroceryItem(
+                                name=parsed.name if parsed.name else ing,
+                                recipe_sources=[recipe.title],
+                                quantity_sources=[qty_source],
+                            )
                             grocery_list.add_item(item)
 
                 st.session_state.grocery_list = grocery_list
@@ -1255,27 +1342,48 @@ elif page == "Grocery List":
         # Display by category - unchecked items first, checked items at bottom
         st.subheader(":material/checklist: Shopping List")
 
-        # Sort items: unchecked first, then checked
-        unchecked_items = [(i, item) for i, item in enumerate(grocery_list.items) if not item.checked]
-        checked_items_list = [(i, item) for i, item in enumerate(grocery_list.items) if item.checked]
-        sorted_items = unchecked_items + checked_items_list
+        # Simple list display with checkboxes and move buttons
+        for i, item in enumerate(grocery_list.items):
+            cols = st.columns([0.06, 0.06, 0.08, 0.80])
 
-        for original_idx, item in sorted_items:
-            col1, col2 = st.columns([0.05, 0.95])
-            with col1:
-                new_checked = st.checkbox(
-                    "", value=item.checked, key=f"check_{original_idx}", label_visibility="collapsed"
+            # Move up button
+            with cols[0]:
+                if i > 0 and st.button("↑", key=f"up_{i}", help="Move up"):
+                    grocery_list.items[i], grocery_list.items[i - 1] = (
+                        grocery_list.items[i - 1],
+                        grocery_list.items[i],
+                    )
+                    st.rerun()
+
+            # Move down button
+            with cols[1]:
+                if i < len(grocery_list.items) - 1 and st.button("↓", key=f"down_{i}", help="Move down"):
+                    grocery_list.items[i], grocery_list.items[i + 1] = (
+                        grocery_list.items[i + 1],
+                        grocery_list.items[i],
+                    )
+                    st.rerun()
+
+            # Checkbox
+            with cols[2]:
+                new_checked = st.checkbox("", value=item.checked, key=f"check_{i}", label_visibility="collapsed")
+                if new_checked != item.checked:
+                    grocery_list.items[i].checked = new_checked
+                    st.rerun()
+
+            # Item text
+            with cols[3]:
+                source_text = (
+                    f'<span style="color: #888; font-size: 0.85em;">  —  {", ".join(item.recipe_sources)}</span>'
+                    if item.recipe_sources
+                    else ""
                 )
-                if new_checked != grocery_list.items[original_idx].checked:
-                    grocery_list.items[original_idx].checked = new_checked
-                    st.rerun()  # Rerun to move item to correct position
-            with col2:
-                source_text = f"  —  *From: {', '.join(item.recipe_sources)}*" if item.recipe_sources else ""
+                display = item.display_text
 
                 if item.checked:
-                    st.markdown(f"~~{item.name}~~{source_text}")
+                    st.markdown(f"~~{display}~~{source_text}", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"{item.name}{source_text}")
+                    st.markdown(f"**{display}**{source_text}", unsafe_allow_html=True)
 
         # Add custom item
         st.divider()
@@ -1320,11 +1428,11 @@ elif page == "📖 Browse Recipes":
         st.caption(f"Showing {len(filtered_recipes)} recipes")
         st.divider()
 
-        # Display recipes in grid
+        # Display recipes in grid (4 columns for compact view)
         if filtered_recipes:
-            cols = st.columns(3)
+            cols = st.columns(4)
             for i, (recipe_id, recipe) in enumerate(filtered_recipes):
-                with cols[i % 3], st.container(border=True):
+                with cols[i % 4], st.container(border=True):
                     if recipe.image_url:
                         st.image(recipe.image_url, use_container_width=True)
                     else:

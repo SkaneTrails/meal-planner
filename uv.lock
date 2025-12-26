@@ -614,6 +614,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "recipe-scrapers" },
     { name = "streamlit" },
+    { name = "streamlit-sortables" },
 ]
 
 [package.optional-dependencies]
@@ -644,22 +645,23 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.24.0" },
-    { name = "google-cloud-firestore", specifier = ">=2.19.0" },
-    { name = "httpx", specifier = ">=0.27.0" },
+    { name = "deptry", marker = "extra == 'dev'", specifier = ">=0.24" },
+    { name = "google-cloud-firestore", specifier = ">=2.19" },
+    { name = "httpx", specifier = ">=0.27" },
     { name = "meal-planner", extras = ["test"], marker = "extra == 'dev'" },
-    { name = "pillow", specifier = ">=10.0.0" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.6.0" },
-    { name = "pyproject-fmt", marker = "extra == 'dev'", specifier = ">=2.11.0" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0.0" },
-    { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=4.1.0" },
-    { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.12.0" },
-    { name = "pytest-xdist", marker = "extra == 'test'", specifier = ">=3.5.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "recipe-scrapers", specifier = ">=15.0.0" },
-    { name = "respx", marker = "extra == 'test'", specifier = ">=0.22.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.0" },
-    { name = "streamlit", specifier = ">=1.28.0" },
+    { name = "pillow", specifier = ">=10" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.6" },
+    { name = "pyproject-fmt", marker = "extra == 'dev'", specifier = ">=2.11" },
+    { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
+    { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=4.1" },
+    { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.12" },
+    { name = "pytest-xdist", marker = "extra == 'test'", specifier = ">=3.5" },
+    { name = "python-dotenv", specifier = ">=1" },
+    { name = "recipe-scrapers", specifier = ">=15" },
+    { name = "respx", marker = "extra == 'test'", specifier = ">=0.22" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11" },
+    { name = "streamlit", specifier = ">=1.28" },
+    { name = "streamlit-sortables", specifier = ">=0.3.1" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.5" },
 ]
 provides-extras = ["dev", "test"]
@@ -1287,6 +1289,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/43/20/434aaceccc6e1912671d869926103051330437adba72d538d787a07727ef/streamlit-1.52.2.tar.gz", hash = "sha256:64a4dda8bc5cdd37bfd490e93bb53da35aaef946fcfc283a7980dacdf165108b", size = 8584178, upload-time = "2025-12-17T17:07:59.642Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c0/95/6b7873f0267973ebd55ba9cd33a690b35a116f2779901ef6185a0e21864d/streamlit-1.52.2-py3-none-any.whl", hash = "sha256:a16bb4fbc9781e173ce9dfbd8ffb189c174f148f9ca4fb8fa56423e84e193fc8", size = 9025937, upload-time = "2025-12-17T17:07:57.67Z" },
+]
+
+[[package]]
+name = "streamlit-sortables"
+version = "0.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "streamlit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/11/10/00c3ae0f183d41bb3608157283a2c92e4f4db87cb21a73e96b3c2c2ca58f/streamlit_sortables-0.3.1.tar.gz", hash = "sha256:9bed78f4407f2b9b1ddead8b6459d1af839aab427b7b5fe4c091e6870630acfe", size = 564139, upload-time = "2025-01-13T07:37:44.533Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/b4/edbef9fa8e49f5df2745a178c44b23553d8472c22fb23f44f6949d544410/streamlit_sortables-0.3.1-py3-none-any.whl", hash = "sha256:1847b2fa2041762b6442e21224bd8c0316c5412e4eb3a38fa748cf7ced834d49", size = 570356, upload-time = "2025-01-13T07:37:42.852Z" },
 ]
 
 [[package]]
