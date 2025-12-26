@@ -19,6 +19,8 @@ st.set_page_config(page_title="Meal Planner", page_icon="🍽️", layout="wide"
 # Initialize session state
 if "meal_plan" not in st.session_state:
     st.session_state.meal_plan = load_meal_plan()  # Load from Firestore
+if "meal_portions" not in st.session_state:
+    st.session_state.meal_portions = {}  # {(date_str, meal_type): portions}
 if "grocery_list" not in st.session_state:
     st.session_state.grocery_list = GroceryList()
 if "selected_recipe" not in st.session_state:
@@ -256,9 +258,55 @@ elif page == "📚 Recipes":
         with col2:
             st.markdown(f"## {recipe.title}")
 
+            # Portion scaling
             st.markdown("### 🥗 Ingredients")
-            for idx, ing in enumerate(recipe.ingredients):
-                st.checkbox(ing, key=f"ing_{recipe_id}_{idx}_{ing[:20]}")
+            original_servings = recipe.servings or 4  # Default to 4 if not specified
+            portion_key = f"portions_{recipe_id}"
+
+            # Initialize portion state if not set
+            if portion_key not in st.session_state:
+                st.session_state[portion_key] = original_servings
+
+            pcol1, pcol2, pcol3 = st.columns([1, 2, 1])
+            with pcol1:
+                if (
+                    st.button("-", key=f"dec_portions_{recipe_id}", use_container_width=True)
+                    and st.session_state[portion_key] > 1
+                ):
+                    st.session_state[portion_key] -= 1
+                    st.rerun()
+            with pcol2:
+                current_portions = st.session_state[portion_key]
+                portion_label = "portion" if current_portions == 1 else "portions"
+                if current_portions != original_servings:
+                    st.markdown(
+                        f"<div style='text-align: center; padding: 8px;'>"
+                        f"<strong>{current_portions}</strong> {portion_label} "
+                        f"<span style='color: gray;'>(originally {original_servings})</span></div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(
+                        f"<div style='text-align: center; padding: 8px;'>"
+                        f"<strong>{current_portions}</strong> {portion_label}</div>",
+                        unsafe_allow_html=True,
+                    )
+            with pcol3:
+                if st.button("+", key=f"inc_portions_{recipe_id}", use_container_width=True):
+                    st.session_state[portion_key] += 1
+                    st.rerun()
+
+            # Scale ingredients if portions changed
+            from app.services.ingredient_parser import scale_ingredients
+
+            current_portions = st.session_state[portion_key]
+            if current_portions != original_servings:
+                scaled_ingredients = scale_ingredients(recipe.ingredients, original_servings, current_portions)
+            else:
+                scaled_ingredients = recipe.ingredients
+
+            for idx, ing in enumerate(scaled_ingredients):
+                st.checkbox(ing, key=f"ing_{recipe_id}_{idx}_{hash(ing)}")
 
             st.markdown("### 📝 Instructions")
             for i, step in enumerate(recipe.instructions, 1):
@@ -574,40 +622,74 @@ elif page == "📅 Meal Plan":
                     st.session_state.custom_meal_input = None
                     st.rerun()
 
+    def render_custom_meal_tile(key: tuple, col_key: str, d: date, meal_type: MealType, custom_text: str) -> None:
+        """Render a meal tile with custom text."""
+        with st.container(border=True):
+            st.markdown(
+                f"<div style='height: 60px; display: flex; align-items: center; justify-content: center; "
+                f"font-style: italic;'>📝 {custom_text}</div>",
+                unsafe_allow_html=True,
+            )
+            if st.button("❌", key=f"clear_{col_key}_{d}_{meal_type.value}", help="Remove"):
+                del st.session_state.meal_plan[key]
+                if key in st.session_state.meal_portions:
+                    del st.session_state.meal_portions[key]
+                delete_meal(d.isoformat(), meal_type.value)
+                st.rerun()
+
+    def render_recipe_meal_tile(  # noqa: PLR0913
+        key: tuple, col_key: str, d: date, meal_type: MealType, recipe_id: str, recipe: Recipe
+    ) -> None:
+        """Render a meal tile with a recipe and portion controls."""
+        default_portions = recipe.servings or 4
+        current_portions = st.session_state.meal_portions.get(key, default_portions)
+
+        with st.container(border=True):
+            if recipe.image_url:
+                st.image(recipe.image_url, use_container_width=True)
+            title_display = (
+                recipe.title[:title_max_length] + "..." if len(recipe.title) > title_max_length else recipe.title
+            )
+            st.caption(title_display)
+
+            # Portion controls
+            pcol1, pcol2, pcol3 = st.columns([1, 2, 1])
+            with pcol1:
+                if (
+                    st.button("-", key=f"dec_port_{col_key}_{d}_{meal_type.value}", help="Less")
+                    and current_portions > 1
+                ):
+                    st.session_state.meal_portions[key] = current_portions - 1
+                    st.rerun()
+            with pcol2:
+                st.caption(f"👥 {current_portions}")
+            with pcol3:
+                if st.button("+", key=f"inc_port_{col_key}_{d}_{meal_type.value}", help="More"):
+                    st.session_state.meal_portions[key] = current_portions + 1
+                    st.rerun()
+
+            btn_col1, btn_col2 = st.columns(2)
+            with btn_col1:
+                if st.button("🔍", key=f"view_{col_key}_{d}_{meal_type.value}", help="View recipe"):
+                    st.session_state.selected_recipe = (recipe_id, recipe)
+                    st.session_state.current_page = "📚 Recipes"
+                    st.rerun()
+            with btn_col2:
+                if st.button("❌", key=f"clear_{col_key}_{d}_{meal_type.value}", help="Remove"):
+                    del st.session_state.meal_plan[key]
+                    if key in st.session_state.meal_portions:
+                        del st.session_state.meal_portions[key]
+                    delete_meal(d.isoformat(), meal_type.value)
+                    st.rerun()
+
     def render_filled_tile(key: tuple, col_key: str, d: date, meal_type: MealType, current_value: str) -> None:
         """Render a meal tile that has a recipe or custom text assigned."""
         if current_value.startswith("custom:"):
             custom_text = current_value[7:]  # Remove "custom:" prefix
-            with st.container(border=True):
-                st.markdown(
-                    f"<div style='height: 60px; display: flex; align-items: center; justify-content: center; "
-                    f"font-style: italic;'>📝 {custom_text}</div>",
-                    unsafe_allow_html=True,
-                )
-                if st.button("❌", key=f"clear_{col_key}_{d}_{meal_type.value}", help="Remove"):
-                    del st.session_state.meal_plan[key]
-                    delete_meal(d.isoformat(), meal_type.value)
-                    st.rerun()
+            render_custom_meal_tile(key, col_key, d, meal_type, custom_text)
         elif current_value in recipe_dict:
             recipe = recipe_dict[current_value]
-            with st.container(border=True):
-                if recipe.image_url:
-                    st.image(recipe.image_url, use_container_width=True)
-                title_display = (
-                    recipe.title[:title_max_length] + "..." if len(recipe.title) > title_max_length else recipe.title
-                )
-                st.caption(title_display)
-                btn_col1, btn_col2 = st.columns(2)
-                with btn_col1:
-                    if st.button("🔍", key=f"view_{col_key}_{d}_{meal_type.value}", help="View recipe"):
-                        st.session_state.selected_recipe = recipe
-                        st.session_state.current_page = "Recipes"
-                        st.rerun()
-                with btn_col2:
-                    if st.button("❌", key=f"clear_{col_key}_{d}_{meal_type.value}", help="Remove"):
-                        del st.session_state.meal_plan[key]
-                        delete_meal(d.isoformat(), meal_type.value)
-                        st.rerun()
+            render_recipe_meal_tile(key, col_key, d, meal_type, current_value, recipe)
 
     def render_empty_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
         """Render an empty meal tile with action buttons."""
@@ -749,16 +831,31 @@ elif page == "📅 Meal Plan":
             if not unique_recipes:
                 st.warning("Plan some meals first!")
             else:
-                # Generate grocery list from planned recipes
+                from app.services.ingredient_parser import scale_ingredients
+
+                # Generate grocery list from planned recipes with portion scaling
                 grocery_list = GroceryList()
                 recipe_dict = dict(recipes)
 
-                for rid in unique_recipes:
-                    if rid in recipe_dict:
-                        recipe = recipe_dict[rid]
-                        for ing in recipe.ingredients:
-                            item = GroceryItem(name=ing, recipe_sources=[recipe.title])
-                            grocery_list.add_item(item)
+                # Collect all meal instances with their portions
+                for d in week_dates:
+                    for mt in meal_types:
+                        key = (d.isoformat(), mt.value)
+                        if key in st.session_state.meal_plan:
+                            rid = st.session_state.meal_plan[key]
+                            if rid in recipe_dict and not rid.startswith("custom:"):
+                                recipe = recipe_dict[rid]
+                                original_servings = recipe.servings or 4
+                                current_portions = st.session_state.meal_portions.get(key, original_servings)
+
+                                # Scale ingredients based on portions
+                                scaled_ingredients = scale_ingredients(
+                                    recipe.ingredients, original_servings, current_portions
+                                )
+
+                                for ing in scaled_ingredients:
+                                    item = GroceryItem(name=ing, recipe_sources=[recipe.title])
+                                    grocery_list.add_item(item)
 
                 st.session_state.grocery_list = grocery_list
                 st.success(f"Generated list with {len(grocery_list.items)} items!")
