@@ -77,9 +77,7 @@ def svg_icon(name: str, size: int = 16, color: str = "currentColor") -> str:
     svg = svg.replace('width="16"', f'width="{size}"')
     svg = svg.replace('height="16"', f'height="{size}"')
     # Replace color
-    svg = svg.replace('fill="currentColor"', f'fill="{color}"')
-
-    return svg
+    return svg.replace('fill="currentColor"', f'fill="{color}"')
 
 
 def load_svg_from_file(filepath: str | Path, size: int = 16, color: str = "currentColor") -> str:
@@ -100,9 +98,7 @@ def load_svg_from_file(filepath: str | Path, size: int = 16, color: str = "curre
     svg = path.read_text()
     svg = svg.replace('width="16"', f'width="{size}"')
     svg = svg.replace('height="16"', f'height="{size}"')
-    svg = svg.replace('fill="currentColor"', f'fill="{color}"')
-
-    return svg
+    return svg.replace('fill="currentColor"', f'fill="{color}"')
 
 
 def inject_bootstrap_icons_css() -> str:
@@ -150,7 +146,7 @@ EMOJI_TO_ICON = {
     "❌": "x-circle-fill",
     "⬅️": "arrow-left",
     "➡️": "arrow-right",
-    "➕": "plus-circle-fill",
+    "➕": "plus-circle-fill",  # noqa: RUF001
     "🔍": "search",
     "❤️": "heart-fill",
     "⭐": "star-fill",
