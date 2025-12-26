@@ -38,8 +38,8 @@ class Recipe:
     cuisine: str | None = None
     category: str | None = None
     tags: list[str] = field(default_factory=list)
-    diet_label: DietLabel | None = None  # veggie/fish/meat
-    meal_label: MealLabel | None = None  # breakfast/starter/meal/dessert/drink
+    diet_label: DietLabel | None = None
+    meal_label: MealLabel | None = None
 
     @property
     def total_time_calculated(self) -> int | None:

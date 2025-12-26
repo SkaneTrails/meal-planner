@@ -1,5 +1,6 @@
 """Recipe storage service using Firestore."""
 
+import contextlib
 from datetime import UTC, datetime
 from typing import cast
 
@@ -46,34 +47,6 @@ def save_recipe(recipe: Recipe) -> str:
     return doc_ref.id
 
 
-def update_recipe_labels(recipe_id: str, diet_label: DietLabel | None, meal_label: MealLabel | None) -> bool:
-    """
-    Update the labels of an existing recipe.
-
-    Args:
-        recipe_id: The Firestore document ID.
-        diet_label: The new diet label (or None to remove).
-        meal_label: The new meal label (or None to remove).
-
-    Returns:
-        True if updated, False if recipe not found.
-    """
-    db = get_firestore_client()
-    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
-
-    if not cast("DocumentSnapshot", doc_ref.get()).exists:
-        return False
-
-    doc_ref.update(
-        {
-            "diet_label": diet_label.value if diet_label else None,
-            "meal_label": meal_label.value if meal_label else None,
-            "updated_at": datetime.now(tz=UTC),
-        }
-    )
-    return True
-
-
 def get_recipe(recipe_id: str) -> Recipe | None:
     """
     Get a recipe by ID.
@@ -93,6 +66,18 @@ def get_recipe(recipe_id: str) -> Recipe | None:
     data = doc.to_dict()
     if data is None:
         return None
+
+    # Parse enum values
+    diet_label = None
+    if data.get("diet_label"):
+        with contextlib.suppress(ValueError):
+            diet_label = DietLabel(data["diet_label"])
+
+    meal_label = None
+    if data.get("meal_label"):
+        with contextlib.suppress(ValueError):
+            meal_label = MealLabel(data["meal_label"])
+
     return Recipe(
         title=data.get("title", ""),
         url=data.get("url", ""),
@@ -106,8 +91,8 @@ def get_recipe(recipe_id: str) -> Recipe | None:
         cuisine=data.get("cuisine"),
         category=data.get("category"),
         tags=data.get("tags", []),
-        diet_label=DietLabel(data["diet_label"]) if data.get("diet_label") else None,
-        meal_label=MealLabel(data["meal_label"]) if data.get("meal_label") else None,
+        diet_label=diet_label,
+        meal_label=meal_label,
     )
 
 
@@ -124,6 +109,18 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
+
+        # Parse enum values
+        diet_label = None
+        if data.get("diet_label"):
+            with contextlib.suppress(ValueError):
+                diet_label = DietLabel(data["diet_label"])
+
+        meal_label = None
+        if data.get("meal_label"):
+            with contextlib.suppress(ValueError):
+                meal_label = MealLabel(data["meal_label"])
+
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -137,8 +134,8 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
             cuisine=data.get("cuisine"),
             category=data.get("category"),
             tags=data.get("tags", []),
-            diet_label=DietLabel(data["diet_label"]) if data.get("diet_label") else None,
-            meal_label=MealLabel(data["meal_label"]) if data.get("meal_label") else None,
+            diet_label=diet_label,
+            meal_label=meal_label,
         )
         recipes.append((doc.id, recipe))
 
@@ -188,6 +185,18 @@ def search_recipes(query: str) -> list[tuple[str, Recipe]]:
     recipes = []
     for doc in docs:
         data = doc.to_dict()
+
+        # Parse enum values
+        diet_label = None
+        if data.get("diet_label"):
+            with contextlib.suppress(ValueError):
+                diet_label = DietLabel(data["diet_label"])
+
+        meal_label = None
+        if data.get("meal_label"):
+            with contextlib.suppress(ValueError):
+                meal_label = MealLabel(data["meal_label"])
+
         recipe = Recipe(
             title=data.get("title", ""),
             url=data.get("url", ""),
@@ -201,8 +210,8 @@ def search_recipes(query: str) -> list[tuple[str, Recipe]]:
             cuisine=data.get("cuisine"),
             category=data.get("category"),
             tags=data.get("tags", []),
-            diet_label=DietLabel(data["diet_label"]) if data.get("diet_label") else None,
-            meal_label=MealLabel(data["meal_label"]) if data.get("meal_label") else None,
+            diet_label=diet_label,
+            meal_label=meal_label,
         )
         recipes.append((doc.id, recipe))
 
