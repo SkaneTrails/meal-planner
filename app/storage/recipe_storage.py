@@ -1,5 +1,6 @@
 """Recipe storage service using Firestore."""
 
+import contextlib
 from datetime import UTC, datetime
 from typing import cast
 
@@ -69,17 +70,13 @@ def get_recipe(recipe_id: str) -> Recipe | None:
     # Parse enum values
     diet_label = None
     if data.get("diet_label"):
-        try:
+        with contextlib.suppress(ValueError):
             diet_label = DietLabel(data["diet_label"])
-        except ValueError:
-            pass
 
     meal_label = None
     if data.get("meal_label"):
-        try:
+        with contextlib.suppress(ValueError):
             meal_label = MealLabel(data["meal_label"])
-        except ValueError:
-            pass
 
     return Recipe(
         title=data.get("title", ""),
@@ -116,17 +113,13 @@ def get_all_recipes() -> list[tuple[str, Recipe]]:
         # Parse enum values
         diet_label = None
         if data.get("diet_label"):
-            try:
+            with contextlib.suppress(ValueError):
                 diet_label = DietLabel(data["diet_label"])
-            except ValueError:
-                pass
 
         meal_label = None
         if data.get("meal_label"):
-            try:
+            with contextlib.suppress(ValueError):
                 meal_label = MealLabel(data["meal_label"])
-            except ValueError:
-                pass
 
         recipe = Recipe(
             title=data.get("title", ""),
@@ -196,17 +189,13 @@ def search_recipes(query: str) -> list[tuple[str, Recipe]]:
         # Parse enum values
         diet_label = None
         if data.get("diet_label"):
-            try:
+            with contextlib.suppress(ValueError):
                 diet_label = DietLabel(data["diet_label"])
-            except ValueError:
-                pass
 
         meal_label = None
         if data.get("meal_label"):
-            try:
+            with contextlib.suppress(ValueError):
                 meal_label = MealLabel(data["meal_label"])
-            except ValueError:
-                pass
 
         recipe = Recipe(
             title=data.get("title", ""),

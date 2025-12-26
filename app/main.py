@@ -163,7 +163,13 @@ NAV_PAGES = {
 
 for page_name, page_info in NAV_PAGES.items():
     is_current = st.session_state.current_page == page_name
-    if st.sidebar.button(page_name, key=f"nav_{page_info['key']}", use_container_width=True, type="primary" if is_current else "secondary", icon=f":material/{page_info['icon']}:" if not is_current else None):
+    if st.sidebar.button(
+        page_name,
+        key=f"nav_{page_info['key']}",
+        use_container_width=True,
+        type="primary" if is_current else "secondary",
+        icon=f":material/{page_info['icon']}:" if not is_current else None,
+    ):
         st.session_state.current_page = page_name
         # Clear selected recipe when navigating to Recipes page to show the list
         if page_name == "Recipes":
@@ -174,24 +180,20 @@ page = st.session_state.current_page
 
 st.sidebar.divider()
 st.sidebar.markdown(
-    f'Made with {svg_icon("heart-fill", size=14, color="#e74c3c")} and Streamlit',
-    unsafe_allow_html=True,
+    f"Made with {svg_icon('heart-fill', size=14, color='#e74c3c')} and Streamlit", unsafe_allow_html=True
 )
 
 # =============================================================================
 # HOME PAGE
 # =============================================================================
 if page == "Home":
-    st.markdown(
-        f'<h1>{svg_icon("house", size=32)} Welcome to Plate & Plan</h1>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<h1>{svg_icon('house', size=32)} Welcome to Plate & Plan</h1>", unsafe_allow_html=True)
     st.markdown("Plan your meals, organize recipes, and generate smart grocery lists.")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(f"### :material/menu_book: Recipe Library")
+        st.markdown("### :material/menu_book: Recipe Library")
         recipes = load_recipes()
         st.metric("Saved Recipes", len(recipes))
         if st.button("Browse Recipes", use_container_width=True):
@@ -199,7 +201,7 @@ if page == "Home":
             st.rerun()
 
     with col2:
-        st.markdown(f"### :material/calendar_month: This Week")
+        st.markdown("### :material/calendar_month: This Week")
         week_dates = get_week_dates()
         planned_meals = sum(
             1 for d in week_dates for mt in MealType if (d.isoformat(), mt.value) in st.session_state.meal_plan
@@ -211,7 +213,7 @@ if page == "Home":
             st.rerun()
 
     with col3:
-        st.markdown(f"### :material/shopping_cart: Shopping")
+        st.markdown("### :material/shopping_cart: Shopping")
         st.metric("Items to Buy", len(st.session_state.grocery_list.get_unchecked()))
         if st.button("View List", use_container_width=True):
             st.session_state.current_page = "Grocery List"
@@ -284,10 +286,7 @@ if page == "Home":
 # RECIPES PAGE
 # =============================================================================
 elif page == "Recipes":
-    st.markdown(
-        f'<h1>{svg_icon("book", size=32)} Recipe Library</h1>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<h1>{svg_icon('book', size=32)} Recipe Library</h1>", unsafe_allow_html=True)
 
     # Check if we're viewing a specific recipe
     if st.session_state.selected_recipe:
@@ -319,7 +318,11 @@ elif page == "Recipes":
 
             # Show labels
             if recipe.diet_label:
-                diet_icons = {"veggie": ":material/eco:", "fish": ":material/set_meal:", "meat": ":material/kebab_dining:"}
+                diet_icons = {
+                    "veggie": ":material/eco:",
+                    "fish": ":material/set_meal:",
+                    "meat": ":material/kebab_dining:",
+                }
                 st.write(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
             if recipe.meal_label:
                 meal_icons = {
@@ -398,8 +401,14 @@ elif page == "Recipes":
                         # Show labels
                         labels = []
                         if recipe.diet_label:
-                            diet_icons = {"veggie": ":material/eco:", "fish": ":material/set_meal:", "meat": ":material/kebab_dining:"}
-                            labels.append(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
+                            diet_icons = {
+                                "veggie": ":material/eco:",
+                                "fish": ":material/set_meal:",
+                                "meat": ":material/kebab_dining:",
+                            }
+                            labels.append(
+                                f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}"
+                            )
                         if recipe.meal_label:
                             meal_icons = {
                                 "breakfast": ":material/egg_alt:",
@@ -408,7 +417,9 @@ elif page == "Recipes":
                                 "dessert": ":material/cake:",
                                 "drink": ":material/local_cafe:",
                             }
-                            labels.append(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
+                            labels.append(
+                                f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}"
+                            )
                         if labels:
                             st.caption(" | ".join(labels))
 
@@ -425,11 +436,15 @@ elif page == "Recipes":
 
                         bcol1, bcol2 = st.columns(2)
                         with bcol1:
-                            if st.button("", key=f"view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"):
+                            if st.button(
+                                "", key=f"view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"
+                            ):
                                 st.session_state.selected_recipe = (recipe_id, recipe)
                                 st.rerun()
                         with bcol2:
-                            if st.button("", key=f"del_{recipe_id}", use_container_width=True, icon=":material/delete:"):
+                            if st.button(
+                                "", key=f"del_{recipe_id}", use_container_width=True, icon=":material/delete:"
+                            ):
                                 try:
                                     from app.storage.recipe_storage import delete_recipe
 
@@ -489,7 +504,9 @@ elif page == "Recipes":
                 with col2:
                     st.markdown(f"### {recipe.title}")
                     st.write(f":material/group: Servings: {recipe.servings or 'N/A'}")
-                    st.write(f":material/timer: Prep: {recipe.prep_time or 'N/A'} min | :material/skillet: Cook: {recipe.cook_time or 'N/A'} min")
+                    st.write(
+                        f":material/timer: Prep: {recipe.prep_time or 'N/A'} min | :material/skillet: Cook: {recipe.cook_time or 'N/A'} min"
+                    )
                     # Show applied labels
                     if recipe.diet_label:
                         st.write(f":material/nutrition: {recipe.diet_label.value.title()}")
@@ -562,7 +579,9 @@ elif page == "Recipes":
                     height=150,
                 )
 
-                submitted = st.form_submit_button("Save Recipe", type="primary", use_container_width=True, icon=":material/save:")
+                submitted = st.form_submit_button(
+                    "Save Recipe", type="primary", use_container_width=True, icon=":material/save:"
+                )
 
                 if submitted:
                     if not manual_title or not manual_ingredients or not manual_instructions:
@@ -601,10 +620,7 @@ elif page == "Recipes":
 # MEAL PLAN PAGE
 # =============================================================================
 elif page == "Meal Plan":
-    st.markdown(
-        f'<h1>{svg_icon("calendar-week", size=32)} Weekly Meal Plan</h1>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<h1>{svg_icon('calendar-week', size=32)} Weekly Meal Plan</h1>", unsafe_allow_html=True)
 
     # Week navigation - centered
     _, nav_col1, nav_col2, nav_col3, _ = st.columns([2, 1, 2, 1, 2])
@@ -616,11 +632,12 @@ elif page == "Meal Plan":
         week_dates = get_week_dates(st.session_state.week_offset)
         week_start = week_dates[0].strftime("%b %d")
         week_end = week_dates[-1].strftime("%b %d, %Y")
-        st.markdown(f"<h3 style='text-align: center; margin: 0;'>{week_start} - {week_end}</h3>", unsafe_allow_html=True)
-        if st.session_state.week_offset != 0:
-            if st.button("Today", use_container_width=True):
-                st.session_state.week_offset = 0
-                st.rerun()
+        st.markdown(
+            f"<h3 style='text-align: center; margin: 0;'>{week_start} - {week_end}</h3>", unsafe_allow_html=True
+        )
+        if st.session_state.week_offset != 0 and st.button("Today", use_container_width=True):
+            st.session_state.week_offset = 0
+            st.rerun()
     with nav_col3:
         if st.button("", help="Next Week", icon=":material/chevron_right:", use_container_width=True):
             st.session_state.week_offset += 1
@@ -654,14 +671,18 @@ elif page == "Meal Plan":
             )
             input_col1, input_col2 = st.columns(2)
             with input_col1:
-                if st.button("", key=f"save_custom_{col_key}_{d}_{meal_type.value}", help="Save", icon=":material/check:"):
+                if st.button(
+                    "", key=f"save_custom_{col_key}_{d}_{meal_type.value}", help="Save", icon=":material/check:"
+                ):
                     if custom_text:
                         st.session_state.meal_plan[key] = f"custom:{custom_text}"
                         update_meal(d.isoformat(), meal_type.value, f"custom:{custom_text}")
                     st.session_state.custom_meal_input = None
                     st.rerun()
             with input_col2:
-                if st.button("", key=f"cancel_custom_{col_key}_{d}_{meal_type.value}", help="Cancel", icon=":material/close:"):
+                if st.button(
+                    "", key=f"cancel_custom_{col_key}_{d}_{meal_type.value}", help="Cancel", icon=":material/close:"
+                ):
                     st.session_state.custom_meal_input = None
                     st.rerun()
 
@@ -701,7 +722,9 @@ elif page == "Meal Plan":
             _, pcol1, pcol2, pcol3, _ = st.columns([2, 1, 1, 1, 2])
             with pcol1:
                 if (
-                    st.button("", key=f"dec_port_{col_key}_{d}_{meal_type.value}", help="Less", icon=":material/remove:")
+                    st.button(
+                        "", key=f"dec_port_{col_key}_{d}_{meal_type.value}", help="Less", icon=":material/remove:"
+                    )
                     and current_portions > 1
                 ):
                     st.session_state.meal_portions[key] = current_portions - 1
@@ -715,7 +738,9 @@ elif page == "Meal Plan":
 
             btn_col1, _, btn_col2 = st.columns([1, 3, 1])
             with btn_col1:
-                if st.button("", key=f"view_{col_key}_{d}_{meal_type.value}", help="View recipe", icon=":material/visibility:"):
+                if st.button(
+                    "", key=f"view_{col_key}_{d}_{meal_type.value}", help="View recipe", icon=":material/visibility:"
+                ):
                     st.session_state.selected_recipe = (recipe_id, recipe)
                     st.session_state.current_page = "Recipes"
                     st.rerun()
@@ -741,18 +766,19 @@ elif page == "Meal Plan":
         import random
 
         with st.container(border=True, height=450):
-            st.markdown(
-                "<div style='height: 180px;'></div>",
-                unsafe_allow_html=True,
-            )
+            st.markdown("<div style='height: 180px;'></div>", unsafe_allow_html=True)
             _, btn_col1, btn_col2, btn_col3, _ = st.columns([1, 1, 1, 1, 1])
             with btn_col1:
-                if st.button("", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"):
+                if st.button(
+                    "", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"
+                ):
                     st.session_state.meal_selector = (d.isoformat(), meal_type.value)
                     st.session_state.current_page = "Recipes"
                     st.rerun()
             with btn_col2:
-                if st.button("", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random recipe", icon=":material/casino:"):
+                if st.button(
+                    "", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random recipe", icon=":material/casino:"
+                ):
                     if all_recipes:
                         random_rid, _ = random.choice(all_recipes)
                         st.session_state.meal_plan[key] = random_rid
@@ -761,7 +787,9 @@ elif page == "Meal Plan":
                     else:
                         st.toast("No recipes available!")
             with btn_col3:
-                if st.button("", key=f"custom_{col_key}_{d}_{meal_type.value}", help="Write custom", icon=":material/edit:"):
+                if st.button(
+                    "", key=f"custom_{col_key}_{d}_{meal_type.value}", help="Write custom", icon=":material/edit:"
+                ):
                     st.session_state.custom_meal_input = key
                     st.rerun()
 
@@ -802,7 +830,10 @@ elif page == "Meal Plan":
     for meal_type in meal_types:
         row_cols = st.columns([0.5] + [1] * 5)
         with row_cols[0]:
-            st.markdown(f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>", unsafe_allow_html=True)
+            st.markdown(
+                f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
+                unsafe_allow_html=True,
+            )
 
         for i, d in enumerate(week_dates[:5]):
             with row_cols[i + 1]:
@@ -834,7 +865,10 @@ elif page == "Meal Plan":
     for meal_type in meal_types:
         weekend_row_cols = st.columns([0.5] + [1] * 5)
         with weekend_row_cols[0]:
-            st.markdown(f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>", unsafe_allow_html=True)
+            st.markdown(
+                f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
+                unsafe_allow_html=True,
+            )
 
         for i, d in enumerate(week_dates[5:]):
             with weekend_row_cols[i + 1]:
@@ -901,10 +935,7 @@ elif page == "Meal Plan":
 # GROCERY LIST PAGE
 # =============================================================================
 elif page == "Grocery List":
-    st.markdown(
-        f'<h1>{svg_icon("cart3", size=32)} Grocery List</h1>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<h1>{svg_icon('cart3', size=32)} Grocery List</h1>", unsafe_allow_html=True)
 
     grocery_list = st.session_state.grocery_list
 
@@ -987,10 +1018,7 @@ elif page == "Grocery List":
 # BROWSE RECIPES PAGE (for meal selection)
 # =============================================================================
 elif page == "📖 Browse Recipes":
-    st.markdown(
-        f'<h1>{svg_icon("book", size=32)} Browse Recipes</h1>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f"<h1>{svg_icon('book', size=32)} Browse Recipes</h1>", unsafe_allow_html=True)
 
     # Show context if selecting for a meal
     if st.session_state.meal_selector:
@@ -1040,8 +1068,14 @@ elif page == "📖 Browse Recipes":
                     # Show labels
                     labels = []
                     if recipe.diet_label:
-                        diet_icons = {"veggie": ":material/eco:", "fish": ":material/set_meal:", "meat": ":material/kebab_dining:"}
-                        labels.append(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
+                        diet_icons = {
+                            "veggie": ":material/eco:",
+                            "fish": ":material/set_meal:",
+                            "meat": ":material/kebab_dining:",
+                        }
+                        labels.append(
+                            f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}"
+                        )
                     if recipe.meal_label:
                         meal_icons = {
                             "breakfast": ":material/egg_alt:",
@@ -1050,7 +1084,9 @@ elif page == "📖 Browse Recipes":
                             "dessert": ":material/cake:",
                             "drink": ":material/local_cafe:",
                         }
-                        labels.append(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
+                        labels.append(
+                            f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}"
+                        )
                     if labels:
                         st.caption(" | ".join(labels))
 
@@ -1065,14 +1101,21 @@ elif page == "📖 Browse Recipes":
 
                     # Action button
                     if st.session_state.meal_selector:
-                        if st.button("Select", key=f"browse_select_{recipe_id}", use_container_width=True, icon=":material/check:"):
+                        if st.button(
+                            "Select",
+                            key=f"browse_select_{recipe_id}",
+                            use_container_width=True,
+                            icon=":material/check:",
+                        ):
                             sel_date, sel_meal = st.session_state.meal_selector
                             st.session_state.meal_plan[(sel_date, sel_meal)] = recipe_id
                             update_meal(sel_date, sel_meal, recipe_id)
                             st.session_state.meal_selector = None
                             st.session_state.current_page = "Meal Plan"
                             st.rerun()
-                    elif st.button("", key=f"browse_view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"):
+                    elif st.button(
+                        "", key=f"browse_view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"
+                    ):
                         st.session_state.selected_recipe = (recipe_id, recipe)
                         st.session_state.current_page = "Recipes"
                         st.rerun()
