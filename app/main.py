@@ -100,6 +100,167 @@ st.markdown(
     button[kind="primaryFormSubmit"] [data-testid="stIconMaterial"] {
         color: white !important;
     }
+
+    /* Increase small text sizes */
+    /* Captions and small labels */
+    [data-testid="stCaptionContainer"], 
+    .stCaption,
+    small {
+        font-size: 0.95rem !important;
+    }
+    /* Selectbox labels and options */
+    [data-testid="stSelectbox"] label,
+    [data-testid="stMultiSelect"] label,
+    [data-baseweb="select"] span {
+        font-size: 0.95rem !important;
+    }
+    /* Expander headers */
+    [data-testid="stExpander"] summary span {
+        font-size: 1rem !important;
+    }
+    /* Markdown small text and badges */
+    [data-testid="stMarkdownContainer"] p,
+    [data-testid="stMarkdownContainer"] span {
+        font-size: 0.95rem !important;
+    }
+    /* Tab labels */
+    button[data-baseweb="tab"] p {
+        font-size: 1rem !important;
+    }
+    /* Column metric labels */
+    [data-testid="stMetricLabel"] {
+        font-size: 0.95rem !important;
+    }
+    /* Sidebar text */
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] label {
+        font-size: 0.95rem !important;
+    }
+
+    /* Recipe/dish titles - bold text in cards */
+    [data-testid="stMarkdownContainer"] strong,
+    [data-testid="stMarkdownContainer"] b {
+        font-size: 1.15rem !important;
+        font-weight: 600 !important;
+    }
+    /* H2 titles (recipe detail view) */
+    [data-testid="stMarkdownContainer"] h2 {
+        font-size: 1.75rem !important;
+    }
+    /* H3 titles (preview, week header) */
+    [data-testid="stMarkdownContainer"] h3 {
+        font-size: 1.4rem !important;
+    }
+
+    /* ============================================= */
+    /* RESPONSIVE STYLES - Mobile First Approach    */
+    /* ============================================= */
+    
+    /* MOBILE PHONES (up to 768px) */
+    @media (max-width: 768px) {
+        /* Larger touch targets for buttons */
+        button {
+            min-height: 44px !important;
+            padding: 10px 16px !important;
+        }
+        
+        /* Larger text for readability */
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] span {
+            font-size: 1rem !important;
+        }
+        
+        /* Recipe titles bigger on mobile */
+        [data-testid="stMarkdownContainer"] strong,
+        [data-testid="stMarkdownContainer"] b {
+            font-size: 1.1rem !important;
+        }
+        
+        /* Headers */
+        [data-testid="stMarkdownContainer"] h1 {
+            font-size: 1.5rem !important;
+        }
+        [data-testid="stMarkdownContainer"] h2 {
+            font-size: 1.3rem !important;
+        }
+        [data-testid="stMarkdownContainer"] h3 {
+            font-size: 1.15rem !important;
+        }
+        
+        /* Form inputs taller */
+        input, textarea, select {
+            min-height: 44px !important;
+            font-size: 16px !important; /* Prevents iOS zoom */
+        }
+        
+        /* Sidebar adjustments */
+        section[data-testid="stSidebar"] {
+            min-width: 250px !important;
+        }
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] span,
+        section[data-testid="stSidebar"] label {
+            font-size: 1rem !important;
+        }
+        
+        /* Tab buttons */
+        button[data-baseweb="tab"] {
+            padding: 12px 8px !important;
+        }
+        button[data-baseweb="tab"] p {
+            font-size: 0.9rem !important;
+        }
+        
+        /* Card containers - more padding */
+        [data-testid="stVerticalBlock"] > div[data-testid="element-container"] {
+            padding: 4px !important;
+        }
+        
+        /* Images in cards */
+        [data-testid="stImage"] {
+            border-radius: 8px !important;
+        }
+    }
+    
+    /* TABLETS (769px to 1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] span {
+            font-size: 0.95rem !important;
+        }
+        
+        [data-testid="stMarkdownContainer"] h2 {
+            font-size: 1.5rem !important;
+        }
+        [data-testid="stMarkdownContainer"] h3 {
+            font-size: 1.25rem !important;
+        }
+        
+        button {
+            min-height: 40px !important;
+        }
+    }
+    
+    /* LARGE DESKTOPS (1400px+) */
+    @media (min-width: 1400px) {
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] span {
+            font-size: 1rem !important;
+        }
+        
+        [data-testid="stMarkdownContainer"] strong,
+        [data-testid="stMarkdownContainer"] b {
+            font-size: 1.2rem !important;
+        }
+        
+        [data-testid="stMarkdownContainer"] h2 {
+            font-size: 2rem !important;
+        }
+        [data-testid="stMarkdownContainer"] h3 {
+            font-size: 1.5rem !important;
+        }
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -141,8 +302,56 @@ def load_recipes() -> list[tuple[str, Recipe]]:
         return []
 
 
-# Sidebar navigation with logo and sections
+# Logo paths
+logo1_path = Path(__file__).parent / "assets" / "images" / "logo1.png"
 logo_path = Path(__file__).parent / "assets" / "images" / "logo.png"
+
+# Display logo1 in top-left corner of main content area
+if logo1_path.exists():
+    import base64
+
+    with open(logo1_path, "rb") as f:
+        logo1_b64 = base64.b64encode(f.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .main-logo {{
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            z-index: 999;
+            width: 70px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }}
+        /* Adjust position when sidebar is expanded */
+        [data-testid="stSidebar"][aria-expanded="true"] ~ section .main-logo {{
+            left: calc(21rem + 20px);
+        }}
+        
+        /* Mobile styles (phone) */
+        @media (max-width: 768px) {{
+            .main-logo {{
+                width: 50px;
+                top: 50px;
+                left: 10px;
+            }}
+        }}
+        
+        /* Tablet styles */
+        @media (min-width: 769px) and (max-width: 1024px) {{
+            .main-logo {{
+                width: 60px;
+            }}
+        }}
+        </style>
+        <img src="data:image/png;base64,{logo1_b64}" class="main-logo" alt="Logo">
+        """,
+        unsafe_allow_html=True,
+    )
+
+# Sidebar navigation with logo and sections
 if logo_path.exists():
     st.sidebar.image(str(logo_path), use_container_width=True)
 else:
@@ -806,75 +1015,137 @@ elif page == "Meal Plan":
             render_empty_tile(key, col_key, d, meal_type)
 
     # Show summary directly without meal selector popup (now handled on browse page)
-    # WEEKDAYS (Mon-Fri) - First Row
-    st.markdown("#### Weekdays")
+    
+    # Detect if likely mobile (we can't detect directly, but we can use st.columns behavior)
+    # For mobile, show a vertical day-by-day layout
+    # Add a toggle for users to switch between views
+    if "meal_plan_view" not in st.session_state:
+        st.session_state.meal_plan_view = "week"  # "week" or "day"
+    
+    view_col1, view_col2, view_col3 = st.columns([1, 1, 1])
+    with view_col1:
+        if st.button(
+            ":material/calendar_view_week: Week View",
+            use_container_width=True,
+            type="primary" if st.session_state.meal_plan_view == "week" else "secondary",
+        ):
+            st.session_state.meal_plan_view = "week"
+            st.rerun()
+    with view_col2:
+        if st.button(
+            ":material/calendar_today: Day View",
+            use_container_width=True,
+            type="primary" if st.session_state.meal_plan_view == "day" else "secondary",
+        ):
+            st.session_state.meal_plan_view = "day"
+            st.rerun()
+    
+    st.write("")
+    
+    if st.session_state.meal_plan_view == "day":
+        # DAY VIEW - Mobile friendly, shows one day at a time
+        if "selected_day_index" not in st.session_state:
+            # Default to today if it's in the current week, otherwise Monday
+            today_index = next((i for i, d in enumerate(week_dates) if d == today), 0)
+            st.session_state.selected_day_index = today_index
+        
+        # Day selector
+        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        day_cols = st.columns(7)
+        for i, (day_name, d) in enumerate(zip(day_names, week_dates, strict=False)):
+            with day_cols[i]:
+                is_selected = st.session_state.selected_day_index == i
+                is_today = d == today
+                btn_type = "primary" if is_selected else "secondary"
+                label = f"**{day_name}**\n{d.day}" if is_today else f"{day_name}\n{d.day}"
+                if st.button(label, key=f"day_btn_{i}", use_container_width=True, type=btn_type):
+                    st.session_state.selected_day_index = i
+                    st.rerun()
+        
+        st.divider()
+        
+        # Show selected day's meals
+        selected_date = week_dates[st.session_state.selected_day_index]
+        selected_day_name = day_names[st.session_state.selected_day_index]
+        
+        st.markdown(f"### {selected_day_name}, {selected_date.strftime('%B %d')}")
+        
+        for meal_type in meal_types:
+            st.markdown(f"**{meal_type.value.title()}**")
+            render_meal_tile(selected_date, meal_type, "day_view")
+            st.write("")
+    
+    else:
+        # WEEK VIEW - Original desktop layout
+        # WEEKDAYS (Mon-Fri) - First Row
+        st.markdown("#### Weekdays")
 
-    # Header row for weekdays
-    header_cols = st.columns([0.5] + [1] * 5)
-    with header_cols[0]:
-        st.write("")
-    for i, (day, d) in enumerate(zip(weekday_names, week_dates[:5], strict=False)):
-        with header_cols[i + 1]:
-            is_today = d == today
-            if is_today:
+        # Header row for weekdays
+        header_cols = st.columns([0.5] + [1] * 5)
+        with header_cols[0]:
+            st.write("")
+        for i, (day, d) in enumerate(zip(weekday_names, week_dates[:5], strict=False)):
+            with header_cols[i + 1]:
+                is_today = d == today
+                if is_today:
+                    st.markdown(
+                        f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
+                        f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
+                        f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(f"**{day}**  \n{d.day}")
+
+        # Meal rows for weekdays
+        for meal_type in meal_types:
+            row_cols = st.columns([0.5] + [1] * 5)
+            with row_cols[0]:
                 st.markdown(
-                    f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
-                    f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
-                    f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
+                    f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
                     unsafe_allow_html=True,
                 )
-            else:
-                st.markdown(f"**{day}**  \n{d.day}")
 
-    # Meal rows for weekdays
-    for meal_type in meal_types:
-        row_cols = st.columns([0.5] + [1] * 5)
-        with row_cols[0]:
-            st.markdown(
-                f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
-                unsafe_allow_html=True,
-            )
+            for i, d in enumerate(week_dates[:5]):
+                with row_cols[i + 1]:
+                    render_meal_tile(d, meal_type, "weekday")
 
-        for i, d in enumerate(week_dates[:5]):
-            with row_cols[i + 1]:
-                render_meal_tile(d, meal_type, "weekday")
+        st.divider()
 
-    st.divider()
+        # WEEKEND (Sat-Sun) - Second Row
+        st.markdown("#### Weekend")
 
-    # WEEKEND (Sat-Sun) - Second Row
-    st.markdown("#### Weekend")
+        # Header row for weekend (same total width as weekdays)
+        weekend_header_cols = st.columns([0.5] + [1] * 5)
+        with weekend_header_cols[0]:
+            st.write("")
+        for i, (day, d) in enumerate(zip(weekend_names, week_dates[5:], strict=False)):
+            with weekend_header_cols[i + 1]:
+                is_today = d == today
+                if is_today:
+                    st.markdown(
+                        f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
+                        f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
+                        f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(f"**{day}**  \n{d.day}")
 
-    # Header row for weekend (same total width as weekdays)
-    weekend_header_cols = st.columns([0.5] + [1] * 5)
-    with weekend_header_cols[0]:
-        st.write("")
-    for i, (day, d) in enumerate(zip(weekend_names, week_dates[5:], strict=False)):
-        with weekend_header_cols[i + 1]:
-            is_today = d == today
-            if is_today:
+        # Meal rows for weekend (same total width as weekdays)
+        for meal_type in meal_types:
+            weekend_row_cols = st.columns([0.5] + [1] * 5)
+            with weekend_row_cols[0]:
                 st.markdown(
-                    f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
-                    f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
-                    f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
+                    f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
                     unsafe_allow_html=True,
                 )
-            else:
-                st.markdown(f"**{day}**  \n{d.day}")
 
-    # Meal rows for weekend (same total width as weekdays)
-    for meal_type in meal_types:
-        weekend_row_cols = st.columns([0.5] + [1] * 5)
-        with weekend_row_cols[0]:
-            st.markdown(
-                f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
-                unsafe_allow_html=True,
-            )
+            for i, d in enumerate(week_dates[5:]):
+                with weekend_row_cols[i + 1]:
+                    render_meal_tile(d, meal_type, "weekend")
 
-        for i, d in enumerate(week_dates[5:]):
-            with weekend_row_cols[i + 1]:
-                render_meal_tile(d, meal_type, "weekend")
-
-    st.divider()
+        st.divider()
 
     # Summary and actions
     col1, col2 = st.columns(2)
