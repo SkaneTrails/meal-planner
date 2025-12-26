@@ -1,6 +1,6 @@
 """Tests for grocery list model."""
 
-from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList
+from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
 
 
 class TestGroceryItem:
@@ -20,6 +20,33 @@ class TestGroceryItem:
         """Test display text formatting with name only."""
         item = GroceryItem(name="salt")
         assert item.display_text == "salt"
+
+    def test_display_text_with_quantity_sources(self) -> None:
+        """Test display text with quantity sources from multiple recipes."""
+        item = GroceryItem(
+            name="oranges",
+            quantity_sources=[
+                QuantitySource(quantity=3, unit=None, recipe="Recipe A"),
+                QuantitySource(quantity=4, unit=None, recipe="Recipe B"),
+            ],
+        )
+        assert item.display_text == "3+4 oranges"
+
+    def test_display_text_with_quantity_sources_and_unit(self) -> None:
+        """Test display text with quantity sources with units."""
+        item = GroceryItem(
+            name="flour",
+            quantity_sources=[
+                QuantitySource(quantity=2, unit="cups", recipe="Recipe A"),
+                QuantitySource(quantity=1, unit="cups", recipe="Recipe B"),
+            ],
+        )
+        assert item.display_text == "2+1 cups flour"
+
+    def test_display_text_single_quantity_source(self) -> None:
+        """Test display text with a single quantity source."""
+        item = GroceryItem(name="milk", quantity_sources=[QuantitySource(quantity=1, unit="cup", recipe="Recipe A")])
+        assert item.display_text == "1 cup milk"
 
 
 class TestGroceryList:
@@ -63,3 +90,31 @@ class TestGroceryList:
         grocery_list.add_item(GroceryItem(name="Flour", recipe_sources=["Recipe B"]))
         assert len(grocery_list.items) == 1
         assert grocery_list.items[0].recipe_sources == ["Recipe A", "Recipe B"]
+
+    def test_add_item_merge_quantity_sources(self) -> None:
+        """Test that adding duplicate item merges quantity sources."""
+        grocery_list = GroceryList()
+        grocery_list.add_item(
+            GroceryItem(
+                name="oranges",
+                recipe_sources=["Recipe A"],
+                quantity_sources=[QuantitySource(quantity=3, unit=None, recipe="Recipe A")],
+            )
+        )
+        grocery_list.add_item(
+            GroceryItem(
+                name="oranges",
+                recipe_sources=["Recipe B"],
+                quantity_sources=[QuantitySource(quantity=4, unit=None, recipe="Recipe B")],
+            )
+        )
+        assert len(grocery_list.items) == 1
+        assert len(grocery_list.items[0].quantity_sources) == 2
+        assert grocery_list.items[0].display_text == "3+4 oranges"
+
+    def test_add_item_no_duplicate_recipe_sources(self) -> None:
+        """Test that duplicate recipe sources are not added."""
+        grocery_list = GroceryList(items=[GroceryItem(name="salt", recipe_sources=["Recipe A"])])
+        grocery_list.add_item(GroceryItem(name="salt", recipe_sources=["Recipe A"]))
+        assert len(grocery_list.items) == 1
+        assert grocery_list.items[0].recipe_sources == ["Recipe A"]
