@@ -1029,7 +1029,7 @@ elif page == "Meal Plan":
                     "", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"
                 ):
                     st.session_state.meal_selector = (d.isoformat(), meal_type.value)
-                    st.session_state.current_page = "Recipes"
+                    st.session_state.current_page = "📖 Browse Recipes"
                     st.rerun()
             with btn_col2:
                 if st.button(
@@ -1168,7 +1168,7 @@ elif page == "Meal Plan":
                     st.caption("_Empty_")
                     if st.button(":material/add:", key=f"add_day_{selected_date}_{meal_type.value}", help="Add"):
                         st.session_state.meal_selector = (selected_date.isoformat(), meal_type.value)
-                        st.session_state.current_page = "Recipes"
+                        st.session_state.current_page = "📖 Browse Recipes"
                         st.rerun()
 
     else:
