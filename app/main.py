@@ -1359,15 +1359,16 @@ elif page == "Meal Plan":
 
     with col2:
         st.subheader(":material/shopping_cart: Generate Grocery List")
-        st.write("Create a shopping list from your planned meals.")
+        st.write("Add ingredients from this week's meals to your shopping list.")
 
-        if st.button(":material/shopping_cart: Generate List", type="primary", use_container_width=True):
+        if st.button(":material/shopping_cart: Add to List", type="primary", use_container_width=True):
             if not unique_recipes:
                 st.warning("Plan some meals first!")
             else:
-                # Generate grocery list from planned recipes
-                grocery_list = GroceryList()
+                # Add to existing grocery list (don't replace)
+                grocery_list = st.session_state.grocery_list
                 recipe_dict = dict(recipes)
+                items_added = 0
 
                 for rid in unique_recipes:
                     if rid in recipe_dict:
@@ -1382,9 +1383,10 @@ elif page == "Meal Plan":
                                 quantity_sources=[qty_source],
                             )
                             grocery_list.add_item(item)
+                            items_added += 1
 
                 st.session_state.grocery_list = grocery_list
-                st.success(f":material/check_circle: Generated list with {len(grocery_list.items)} items!")
+                st.success(f":material/check_circle: Added {items_added} items! Total: {len(grocery_list.items)}")
 
         if st.button("Clear Week", use_container_width=True, icon=":material/delete_sweep:"):
             for d in week_dates:
