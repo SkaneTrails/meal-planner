@@ -498,19 +498,25 @@ if page == "Home":
             with st.spinner("Extracting recipe..."):
                 try:
                     from app.services.recipe_scraper import scrape_recipe
-                    from app.storage.recipe_storage import save_recipe
+                    from app.storage.recipe_storage import find_recipe_by_url, save_recipe
 
-                    recipe = scrape_recipe(url)
-                    if recipe:
-                        # Apply labels
-                        if home_diet_label != "None":
-                            recipe.diet_label = DietLabel(home_diet_label.lower())
-                        if home_meal_label != "None":
-                            recipe.meal_label = MealLabel(home_meal_label.lower())
-                        save_recipe(recipe)
-                        st.success(f":material/check_circle: Imported: **{recipe.title}**")
+                    # Check if recipe already exists
+                    existing = find_recipe_by_url(url)
+                    if existing:
+                        doc_id, existing_recipe = existing
+                        st.warning(f":material/info: Recipe already exists: **{existing_recipe.title}**")
                     else:
-                        st.error("Could not extract recipe from this URL")
+                        recipe = scrape_recipe(url)
+                        if recipe:
+                            # Apply labels
+                            if home_diet_label != "None":
+                                recipe.diet_label = DietLabel(home_diet_label.lower())
+                            if home_meal_label != "None":
+                                recipe.meal_label = MealLabel(home_meal_label.lower())
+                            save_recipe(recipe)
+                            st.success(f":material/check_circle: Imported: **{recipe.title}**")
+                        else:
+                            st.error("Could not extract recipe from this URL")
                 except Exception as e:
                     st.error(f"Error: {e}")
 
@@ -762,18 +768,25 @@ elif page == "Recipes":
                 with st.spinner("Extracting recipe..."):
                     try:
                         from app.services.recipe_scraper import scrape_recipe
+                        from app.storage.recipe_storage import find_recipe_by_url
 
-                        recipe = scrape_recipe(url)
-                        if recipe:
-                            # Apply labels before storing temp
-                            if url_diet_label != "None":
-                                recipe.diet_label = DietLabel(url_diet_label.lower())
-                            if url_meal_label != "None":
-                                recipe.meal_label = MealLabel(url_meal_label.lower())
-                            st.session_state.temp_recipe = recipe
-                            st.success("Recipe extracted! Review below and save.")
+                        # Check if recipe already exists
+                        existing = find_recipe_by_url(url)
+                        if existing:
+                            doc_id, existing_recipe = existing
+                            st.warning(f":material/info: Recipe already exists: **{existing_recipe.title}**")
                         else:
-                            st.error("Could not extract recipe. Try a different URL.")
+                            recipe = scrape_recipe(url)
+                            if recipe:
+                                # Apply labels before storing temp
+                                if url_diet_label != "None":
+                                    recipe.diet_label = DietLabel(url_diet_label.lower())
+                                if url_meal_label != "None":
+                                    recipe.meal_label = MealLabel(url_meal_label.lower())
+                                st.session_state.temp_recipe = recipe
+                                st.success("Recipe extracted! Review below and save.")
+                            else:
+                                st.error("Could not extract recipe. Try a different URL.")
                     except Exception as e:
                         st.error(f"Error: {e}")
 
@@ -1058,10 +1071,47 @@ elif page == "Meal Plan":
             recipe = recipe_dict[current_value]
             render_recipe_meal_tile(key, col_key, d, meal_type, current_value, recipe)
 
-    def render_empty_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
-        """Render an empty meal tile with action buttons."""
+    def get_weighted_random_recipe() -> str | None:
+        """Get a random recipe, weighted against recently used ones."""
         import random
 
+        if not all_recipes:
+            return None
+
+        # Count how many times each recipe is used in current meal plan
+        usage_count: dict[str, int] = {}
+        for rid in st.session_state.meal_plan.values():
+            if rid and not rid.startswith("custom:"):
+                usage_count[rid] = usage_count.get(rid, 0) + 1
+
+        # Build weighted list - unused recipes get weight 10, used ones get weight 1/(usage+1)
+        weights = []
+        recipe_ids = []
+        for rid, _ in all_recipes:
+            recipe_ids.append(rid)
+            usage = usage_count.get(rid, 0)
+            if usage == 0:
+                weights.append(10.0)  # High weight for unused
+            else:
+                weights.append(1.0 / (usage + 1))  # Lower weight for more used
+
+        # Normalize weights
+        total_weight = sum(weights)
+        if total_weight == 0:
+            return random.choice(recipe_ids)
+
+        # Weighted random selection
+        r = random.random() * total_weight
+        cumulative = 0
+        for rid, weight in zip(recipe_ids, weights, strict=False):
+            cumulative += weight
+            if r <= cumulative:
+                return rid
+
+        return recipe_ids[-1] if recipe_ids else None
+
+    def render_empty_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
+        """Render an empty meal tile with action buttons."""
         with st.container(border=True):
             # Fixed height to match recipe tiles (image 200px + title ~30px + buttons ~50px)
             # Top spacer to center buttons vertically
@@ -1079,8 +1129,8 @@ elif page == "Meal Plan":
                 if st.button(
                     "", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random recipe", icon=":material/casino:"
                 ):
-                    if all_recipes:
-                        random_rid, _ = random.choice(all_recipes)
+                    random_rid = get_weighted_random_recipe()
+                    if random_rid:
                         st.session_state.meal_plan[key] = random_rid
                         update_meal(d.isoformat(), meal_type.value, random_rid)
                         st.rerun()
