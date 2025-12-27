@@ -19,34 +19,122 @@ from app.storage.meal_plan_storage import delete_meal, load_day_notes, load_meal
 
 # Pantry staples - items likely already at home (English, Swedish, Italian variants)
 PANTRY_STAPLES = {
-    "sugar", "socker", "zucchero",
-    "olive oil", "olivolja", "olio d'oliva", "olio di oliva", "olio",
-    "oil", "olja", "vegetable oil", "rapsolja", "canola oil", "sunflower oil", "solrosolja",
-    "mayonnaise", "mayo", "majonnäs", "maionese",
-    "sesame seeds", "sesamfrön", "sesamfrö", "semi di sesamo", "sesame",
-    "egg", "eggs", "ägg", "uovo", "uova",
-    "salt", "sale",
-    "pepper", "black pepper", "peppar", "svartpeppar", "pepe", "pepe nero",
-    "water", "vatten", "acqua",
-    "butter", "smör", "burro",
-    "stock", "broth", "bouillon", "buljong", "chicken stock", "beef stock", "vegetable stock",
-    "kycklingbuljong", "grönsaksbuljong", "brodo", "brodo di pollo", "brodo vegetale",
-    "flour", "mjöl", "vetemjöl", "farina",
-    "milk", "mjölk", "latte",
-    "margarine", "margarin",
-    "balsamic vinegar", "balsamvinäger", "aceto balsamico",
-    "vinegar", "vinäger", "ättika", "aceto",
-    "ketchup", "tomato ketchup",
-    "chili", "chilli", "chili flakes", "chiliflingor", "peperoncino", "chili powder",
-    "garlic", "garlic clove", "garlic cloves", "vitlök", "vitlöksklyfta", "aglio", "spicchio d'aglio",
-    "soy sauce", "sojasås", "salsa di soia",
-    "honey", "honung", "miele",
-    "mustard", "senap", "senape",
-    "worcestershire sauce", "worcestersås",
-    "rice", "ris", "riso",
-    "pasta", "spaghetti", "penne", "fusilli",
-    "onion", "onions", "lök", "gul lök", "rödlök", "cipolla",
-    "white wine", "red wine", "vitt vin", "rött vin", "vino bianco", "vino rosso",
+    "sugar",
+    "socker",
+    "zucchero",
+    "olive oil",
+    "olivolja",
+    "olio d'oliva",
+    "olio di oliva",
+    "olio",
+    "oil",
+    "olja",
+    "vegetable oil",
+    "rapsolja",
+    "canola oil",
+    "sunflower oil",
+    "solrosolja",
+    "mayonnaise",
+    "mayo",
+    "majonnäs",
+    "maionese",
+    "sesame seeds",
+    "sesamfrön",
+    "sesamfrö",
+    "semi di sesamo",
+    "sesame",
+    "egg",
+    "eggs",
+    "ägg",
+    "uovo",
+    "uova",
+    "salt",
+    "sale",
+    "pepper",
+    "black pepper",
+    "peppar",
+    "svartpeppar",
+    "pepe",
+    "pepe nero",
+    "water",
+    "vatten",
+    "acqua",
+    "butter",
+    "smör",
+    "burro",
+    "stock",
+    "broth",
+    "bouillon",
+    "buljong",
+    "chicken stock",
+    "beef stock",
+    "vegetable stock",
+    "kycklingbuljong",
+    "grönsaksbuljong",
+    "brodo",
+    "brodo di pollo",
+    "brodo vegetale",
+    "flour",
+    "mjöl",
+    "vetemjöl",
+    "farina",
+    "milk",
+    "mjölk",
+    "latte",
+    "margarine",
+    "margarin",
+    "balsamic vinegar",
+    "balsamvinäger",
+    "aceto balsamico",
+    "vinegar",
+    "vinäger",
+    "ättika",
+    "aceto",
+    "ketchup",
+    "tomato ketchup",
+    "chili",
+    "chilli",
+    "chili flakes",
+    "chiliflingor",
+    "peperoncino",
+    "chili powder",
+    "garlic",
+    "garlic clove",
+    "garlic cloves",
+    "vitlök",
+    "vitlöksklyfta",
+    "aglio",
+    "spicchio d'aglio",
+    "soy sauce",
+    "sojasås",
+    "salsa di soia",
+    "honey",
+    "honung",
+    "miele",
+    "mustard",
+    "senap",
+    "senape",
+    "worcestershire sauce",
+    "worcestersås",
+    "rice",
+    "ris",
+    "riso",
+    "pasta",
+    "spaghetti",
+    "penne",
+    "fusilli",
+    "onion",
+    "onions",
+    "lök",
+    "gul lök",
+    "rödlök",
+    "cipolla",
+    "white wine",
+    "red wine",
+    "vitt vin",
+    "rött vin",
+    "vino bianco",
+    "vino rosso",
 }
 
 
@@ -115,19 +203,13 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
             st.markdown("### :material/grocery: Ingredients")
             st.caption("One ingredient per line")
             ingredients_text = st.text_area(
-                "Ingredients",
-                value="\n".join(recipe.ingredients),
-                height=200,
-                label_visibility="collapsed",
+                "Ingredients", value="\n".join(recipe.ingredients), height=200, label_visibility="collapsed"
             )
 
             st.markdown("### :material/format_list_numbered: Instructions")
             st.caption("One step per line")
             instructions_text = st.text_area(
-                "Instructions",
-                value="\n".join(recipe.instructions),
-                height=250,
-                label_visibility="collapsed",
+                "Instructions", value="\n".join(recipe.instructions), height=250, label_visibility="collapsed"
             )
 
         submitted = st.form_submit_button(":material/save: Save Changes", use_container_width=True, type="primary")
@@ -656,6 +738,11 @@ if page == "Home":
 elif page == "Recipes":
     st.markdown(f"<h1>{svg_icon('book', size=32)} Recipe Library</h1>", unsafe_allow_html=True)
 
+    # Show success toast if recipe was just saved
+    if st.session_state.get("recipe_saved_message"):
+        st.toast(st.session_state.recipe_saved_message)
+        st.session_state.recipe_saved_message = None
+
     # Check if we're viewing a specific recipe
     if st.session_state.selected_recipe:
         recipe_id, recipe = st.session_state.selected_recipe
@@ -758,10 +845,31 @@ elif page == "Recipes":
                     st.markdown(f"**Step {i}:** {step}")
 
     else:
-        # Tabs for different views
-        tab1, tab2 = st.tabs([":material/folder: All Recipes", ":material/add: Add Recipe"])
+        # View switcher (using buttons instead of tabs for programmatic control)
+        if "recipes_view" not in st.session_state:
+            st.session_state.recipes_view = "all"
 
-        with tab1:
+        view_col1, view_col2, _ = st.columns([1, 1, 4])
+        with view_col1:
+            if st.button(
+                ":material/folder: All Recipes",
+                use_container_width=True,
+                type="primary" if st.session_state.recipes_view == "all" else "secondary",
+            ):
+                st.session_state.recipes_view = "all"
+                st.rerun()
+        with view_col2:
+            if st.button(
+                ":material/add: Add Recipe",
+                use_container_width=True,
+                type="primary" if st.session_state.recipes_view == "add" else "secondary",
+            ):
+                st.session_state.recipes_view = "add"
+                st.rerun()
+
+        st.divider()
+
+        if st.session_state.recipes_view == "all":
             recipes = load_recipes()
 
             # Search and filter
@@ -874,9 +982,9 @@ elif page == "Recipes":
                                 except Exception as e:
                                     st.error(str(e))
             else:
-                st.info("No recipes yet! Add your first recipe in the 'Add Recipe' tab.")
+                st.info("No recipes yet! Add your first recipe using the 'Add Recipe' button above.")
 
-        with tab2:
+        elif st.session_state.recipes_view == "add":
             st.subheader(":material/link: Import from URL")
             url = st.text_input("Recipe URL", placeholder="https://www.allrecipes.com/recipe/...")
 
@@ -1015,6 +1123,8 @@ elif page == "Recipes":
                     if not manual_title or not manual_ingredients or not manual_instructions:
                         st.error("Please fill in all required fields (Title, Ingredients, Instructions)")
                     else:
+                        import uuid
+
                         ingredients_list = [
                             ing.strip() for ing in manual_ingredients.strip().split("\n") if ing.strip()
                         ]
@@ -1024,7 +1134,7 @@ elif page == "Recipes":
 
                         manual_recipe = Recipe(
                             title=manual_title,
-                            url="manual-entry",
+                            url=f"manual-entry-{uuid.uuid4().hex[:8]}",
                             ingredients=ingredients_list,
                             instructions=instructions_list,
                             image_url=manual_image_url if manual_image_url else None,
@@ -1039,7 +1149,9 @@ elif page == "Recipes":
                             from app.storage.recipe_storage import save_recipe
 
                             save_recipe(manual_recipe)
-                            st.success(f":material/check_circle: Saved: **{manual_title}**")
+                            st.session_state.recipe_saved_message = f"✓ Saved: {manual_title}"
+                            st.session_state.selected_recipe = None
+                            st.session_state.recipes_view = "all"
                             st.rerun()
                         except Exception as e:
                             st.error(f"Could not save: {e}")
@@ -1474,10 +1586,7 @@ elif page == "Meal Plan":
         # Notes row for weekend
         weekend_notes_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
         with weekend_notes_cols[0]:
-            st.markdown(
-                "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
-                unsafe_allow_html=True,
-            )
+            st.markdown("<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>", unsafe_allow_html=True)
         for i, d in enumerate(week_dates[:2]):
             with weekend_notes_cols[i + 1]:
                 note_key = d.isoformat()
@@ -1532,10 +1641,7 @@ elif page == "Meal Plan":
         # Notes row for weekdays
         notes_cols = st.columns([0.5] + [1] * 5)
         with notes_cols[0]:
-            st.markdown(
-                "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
-                unsafe_allow_html=True,
-            )
+            st.markdown("<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>", unsafe_allow_html=True)
         for i, d in enumerate(week_dates[2:]):
             with notes_cols[i + 1]:
                 note_key = d.isoformat()
