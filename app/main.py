@@ -17,6 +17,9 @@ from app.models.recipe import DietLabel, MealLabel, Recipe
 from app.services.ingredient_parser import parse_ingredient
 from app.storage.meal_plan_storage import delete_meal, load_day_notes, load_meal_plan, update_day_note, update_meal
 
+# Default placeholder image for recipes without images (food icon from Unsplash)
+DEFAULT_RECIPE_IMAGE = "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=300&fit=crop&auto=format"
+
 # Pantry staples - items likely already at home (English, Swedish, Italian variants)
 PANTRY_STAPLES = {
     "sugar",
@@ -780,8 +783,7 @@ elif page == "Recipes":
             col1, col2 = st.columns([1, 2])
 
             with col1:
-                if recipe.image_url:
-                    st.image(recipe.image_url, use_container_width=True)
+                st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
 
                 st.markdown("### Quick Info")
                 if recipe.servings:
@@ -920,10 +922,7 @@ elif page == "Recipes":
                 cols = st.columns(4)
                 for i, (recipe_id, recipe) in enumerate(recipes):
                     with cols[i % 4], st.container(border=True):
-                        if recipe.image_url:
-                            st.image(recipe.image_url, use_container_width=True)
-                        else:
-                            st.markdown(":material/restaurant:", unsafe_allow_html=True)
+                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
 
                         st.markdown(f"**{recipe.title}**")
 
@@ -1035,8 +1034,7 @@ elif page == "Recipes":
 
                 col1, col2 = st.columns([1, 2])
                 with col1:
-                    if recipe.image_url:
-                        st.image(recipe.image_url, width=250)
+                    st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, width=250)
                 with col2:
                     st.markdown(f"### {recipe.title}")
                     st.write(f":material/group: Servings: {recipe.servings or 'N/A'}")
@@ -1252,16 +1250,14 @@ elif page == "Meal Plan":
 
         with st.container(border=True):
             # Fixed height image container for consistent tile sizing
-            if recipe.image_url:
-                st.markdown(
-                    f"""<div style='height: 200px; overflow: hidden; display: flex;
-                    align-items: center; justify-content: center;'>
-                    <img src='{recipe.image_url}' style='width: 100%; height: 100%; object-fit: cover;'/>
-                    </div>""",
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
+            image_url = recipe.image_url or DEFAULT_RECIPE_IMAGE
+            st.markdown(
+                f"""<div style='height: 200px; overflow: hidden; display: flex;
+                align-items: center; justify-content: center;'>
+                <img src='{image_url}' style='width: 100%; height: 100%; object-fit: cover;'/>
+                </div>""",
+                unsafe_allow_html=True,
+            )
             title_display = (
                 recipe.title[:title_max_length] + "..." if len(recipe.title) > title_max_length else recipe.title
             )
@@ -1542,8 +1538,7 @@ elif page == "Meal Plan":
                         st.caption(f"_{current_value[7:]}_")
                     elif current_value in recipe_dict:
                         recipe = recipe_dict[current_value]
-                        if recipe.image_url:
-                            st.image(recipe.image_url, use_container_width=True)
+                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
                         st.caption(
                             recipe.title[:title_max_length] + "..."
                             if len(recipe.title) > title_max_length
