@@ -328,10 +328,12 @@ if "custom_meal_input" not in st.session_state:
 
 
 def get_week_dates(offset: int = 0) -> list[date]:
-    """Get dates for the current week (Monday to Sunday)."""
+    """Get dates for the current week (Saturday to Friday)."""
     today = datetime.now(tz=UTC).date() + timedelta(weeks=offset)
-    monday = today - timedelta(days=today.weekday())
-    return [monday + timedelta(days=i) for i in range(7)]
+    # Saturday is weekday 5, so we need to find the most recent Saturday
+    days_since_saturday = (today.weekday() + 2) % 7
+    saturday = today - timedelta(days=days_since_saturday)
+    return [saturday + timedelta(days=i) for i in range(7)]
 
 
 def load_recipes() -> list[tuple[str, Recipe]]:
@@ -934,9 +936,9 @@ elif page == "Meal Plan":
     recipe_dict = dict(recipes)
     recipe_options = {rid: r.title for rid, r in recipes}
 
-    # Weekly grid
-    weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    # Weekly grid (Saturday to Friday)
     weekend_names = ["Sat", "Sun"]
+    weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri"]
     meal_types = [MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER]
     today = datetime.now(tz=UTC).date()
     title_max_length = 25
@@ -1140,9 +1142,9 @@ elif page == "Meal Plan":
             today_index = next((i for i, d in enumerate(week_dates) if d == today), 0)
             st.session_state.selected_day_index = today_index
 
-        # Compact day selector
-        day_names = ["M", "T", "W", "T", "F", "S", "S"]
-        full_day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        # Compact day selector (Saturday to Friday)
+        day_names = ["S", "S", "M", "T", "W", "T", "F"]
+        full_day_names = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
         day_cols = st.columns(7)
         for i, (_day_name, d) in enumerate(zip(day_names, week_dates, strict=False)):
             with day_cols[i]:
@@ -1215,14 +1217,72 @@ elif page == "Meal Plan":
 
     else:
         # WEEK VIEW - Original desktop layout
-        # WEEKDAYS (Mon-Fri) - First Row
+        # WEEKEND (Sat-Sun) - First Row
+        st.markdown("#### Weekend")
+
+        # Header row for weekend
+        weekend_header_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
+        with weekend_header_cols[0]:
+            st.write("")
+        for i, (day, d) in enumerate(zip(weekend_names, week_dates[:2], strict=False)):
+            with weekend_header_cols[i + 1]:
+                is_today = d == today
+                if is_today:
+                    st.markdown(
+                        f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
+                        f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
+                        f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(f"**{day}**  \n{d.day}")
+
+        # Notes row for weekend
+        weekend_notes_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
+        with weekend_notes_cols[0]:
+            st.markdown(
+                "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
+                unsafe_allow_html=True,
+            )
+        for i, d in enumerate(week_dates[:2]):
+            with weekend_notes_cols[i + 1]:
+                note_key = d.isoformat()
+                current_note = st.session_state.day_notes.get(note_key, "")
+                new_note = st.text_input(
+                    "Note",
+                    value=current_note,
+                    key=f"note_weekend_{note_key}",
+                    label_visibility="collapsed",
+                    placeholder="e.g. office, home...",
+                    max_chars=50,
+                )
+                if new_note != current_note:
+                    st.session_state.day_notes[note_key] = new_note
+                    update_day_note(note_key, new_note)
+
+        # Meal rows for weekend
+        for meal_type in meal_types:
+            weekend_row_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
+            with weekend_row_cols[0]:
+                st.markdown(
+                    f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
+                    unsafe_allow_html=True,
+                )
+
+            for i, d in enumerate(week_dates[:2]):
+                with weekend_row_cols[i + 1]:
+                    render_meal_tile(d, meal_type, "weekend")
+
+        st.divider()
+
+        # WEEKDAYS (Mon-Fri) - Second Row
         st.markdown("#### Weekdays")
 
         # Header row for weekdays
         header_cols = st.columns([0.5] + [1] * 5)
         with header_cols[0]:
             st.write("")
-        for i, (day, d) in enumerate(zip(weekday_names, week_dates[:5], strict=False)):
+        for i, (day, d) in enumerate(zip(weekday_names, week_dates[2:], strict=False)):
             with header_cols[i + 1]:
                 is_today = d == today
                 if is_today:
@@ -1242,7 +1302,7 @@ elif page == "Meal Plan":
                 "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
                 unsafe_allow_html=True,
             )
-        for i, d in enumerate(week_dates[:5]):
+        for i, d in enumerate(week_dates[2:]):
             with notes_cols[i + 1]:
                 note_key = d.isoformat()
                 current_note = st.session_state.day_notes.get(note_key, "")
@@ -1267,67 +1327,9 @@ elif page == "Meal Plan":
                     unsafe_allow_html=True,
                 )
 
-            for i, d in enumerate(week_dates[:5]):
+            for i, d in enumerate(week_dates[2:]):
                 with row_cols[i + 1]:
                     render_meal_tile(d, meal_type, "weekday")
-
-        st.divider()
-
-        # WEEKEND (Sat-Sun) - Second Row
-        st.markdown("#### Weekend")
-
-        # Header row for weekend (same total width as weekdays)
-        weekend_header_cols = st.columns([0.5] + [1] * 5)
-        with weekend_header_cols[0]:
-            st.write("")
-        for i, (day, d) in enumerate(zip(weekend_names, week_dates[5:], strict=False)):
-            with weekend_header_cols[i + 1]:
-                is_today = d == today
-                if is_today:
-                    st.markdown(
-                        f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
-                        f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
-                        f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    st.markdown(f"**{day}**  \n{d.day}")
-
-        # Notes row for weekend
-        weekend_notes_cols = st.columns([0.5] + [1] * 5)
-        with weekend_notes_cols[0]:
-            st.markdown(
-                "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
-                unsafe_allow_html=True,
-            )
-        for i, d in enumerate(week_dates[5:]):
-            with weekend_notes_cols[i + 1]:
-                note_key = d.isoformat()
-                current_note = st.session_state.day_notes.get(note_key, "")
-                new_note = st.text_input(
-                    "Note",
-                    value=current_note,
-                    key=f"note_weekend_{note_key}",
-                    label_visibility="collapsed",
-                    placeholder="e.g. office, home...",
-                    max_chars=50,
-                )
-                if new_note != current_note:
-                    st.session_state.day_notes[note_key] = new_note
-                    update_day_note(note_key, new_note)
-
-        # Meal rows for weekend (same total width as weekdays)
-        for meal_type in meal_types:
-            weekend_row_cols = st.columns([0.5] + [1] * 5)
-            with weekend_row_cols[0]:
-                st.markdown(
-                    f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
-                    unsafe_allow_html=True,
-                )
-
-            for i, d in enumerate(week_dates[5:]):
-                with weekend_row_cols[i + 1]:
-                    render_meal_tile(d, meal_type, "weekend")
 
         st.divider()
 
@@ -1441,11 +1443,33 @@ elif page == "Grocery List":
         with left_col:
             st.subheader(":material/checklist: Shopping List")
             if shopping_items:
-                for i, item in shopping_items:
-                    cols = st.columns([0.08, 0.92])
+                for idx, (i, item) in enumerate(shopping_items):
+                    cols = st.columns([0.05, 0.05, 0.08, 0.82])
+
+                    # Move up button
+                    with cols[0]:
+                        if idx > 0:
+                            prev_i = shopping_items[idx - 1][0]
+                            if st.button("↑", key=f"up_{i}", help="Move up"):
+                                grocery_list.items[i], grocery_list.items[prev_i] = (
+                                    grocery_list.items[prev_i],
+                                    grocery_list.items[i],
+                                )
+                                st.rerun()
+
+                    # Move down button
+                    with cols[1]:
+                        if idx < len(shopping_items) - 1:
+                            next_i = shopping_items[idx + 1][0]
+                            if st.button("↓", key=f"down_{i}", help="Move down"):
+                                grocery_list.items[i], grocery_list.items[next_i] = (
+                                    grocery_list.items[next_i],
+                                    grocery_list.items[i],
+                                )
+                                st.rerun()
 
                     # Checkbox
-                    with cols[0]:
+                    with cols[2]:
                         new_checked = st.checkbox(
                             "", value=item.checked, key=f"check_{i}", label_visibility="collapsed"
                         )
@@ -1454,7 +1478,7 @@ elif page == "Grocery List":
                             st.rerun()
 
                     # Item text (without recipe sources)
-                    with cols[1]:
+                    with cols[3]:
                         display = item.display_text
                         if item.checked:
                             st.markdown(f"~~{display}~~", unsafe_allow_html=True)
