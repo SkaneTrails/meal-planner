@@ -1,5 +1,6 @@
 """Meal Planner - Recipe collector and weekly meal planner inspired by Samsung Food."""
 
+import re
 import sys
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -10,11 +11,52 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import streamlit as st
 
 from app.icons import inject_bootstrap_icons_css, svg_icon
-from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
+from app.models.grocery_list import GroceryItem, GroceryList, QuantitySource
 from app.models.meal_plan import MealType
 from app.models.recipe import DietLabel, MealLabel, Recipe
 from app.services.ingredient_parser import parse_ingredient
 from app.storage.meal_plan_storage import delete_meal, load_day_notes, load_meal_plan, update_day_note, update_meal
+
+# Pantry staples - items likely already at home (English, Swedish, Italian variants)
+PANTRY_STAPLES = {
+    "sugar", "socker", "zucchero",
+    "olive oil", "olivolja", "olio d'oliva", "olio di oliva", "olio",
+    "oil", "olja", "vegetable oil", "rapsolja", "canola oil", "sunflower oil", "solrosolja",
+    "mayonnaise", "mayo", "majonnäs", "maionese",
+    "sesame seeds", "sesamfrön", "sesamfrö", "semi di sesamo", "sesame",
+    "egg", "eggs", "ägg", "uovo", "uova",
+    "salt", "sale",
+    "pepper", "black pepper", "peppar", "svartpeppar", "pepe", "pepe nero",
+    "water", "vatten", "acqua",
+    "butter", "smör", "burro",
+    "stock", "broth", "bouillon", "buljong", "chicken stock", "beef stock", "vegetable stock",
+    "kycklingbuljong", "grönsaksbuljong", "brodo", "brodo di pollo", "brodo vegetale",
+    "flour", "mjöl", "vetemjöl", "farina",
+    "milk", "mjölk", "latte",
+    "margarine", "margarin",
+    "balsamic vinegar", "balsamvinäger", "aceto balsamico",
+    "vinegar", "vinäger", "ättika", "aceto",
+    "ketchup", "tomato ketchup",
+    "chili", "chilli", "chili flakes", "chiliflingor", "peperoncino", "chili powder",
+    "garlic", "garlic clove", "garlic cloves", "vitlök", "vitlöksklyfta", "aglio", "spicchio d'aglio",
+    "soy sauce", "sojasås", "salsa di soia",
+    "honey", "honung", "miele",
+    "mustard", "senap", "senape",
+    "worcestershire sauce", "worcestersås",
+    "rice", "ris", "riso",
+    "pasta", "spaghetti", "penne", "fusilli",
+    "onion", "onions", "lök", "gul lök", "rödlök", "cipolla",
+    "white wine", "red wine", "vitt vin", "rött vin", "vino bianco", "vino rosso",
+}
+
+
+def is_pantry_staple(item_name: str) -> bool:
+    """Check if an item is a pantry staple (likely already at home)."""
+    name_lower = item_name.lower().strip()
+    if name_lower in PANTRY_STAPLES:
+        return True
+    return any(re.search(rf"\b{re.escape(staple)}\b", name_lower) for staple in PANTRY_STAPLES)
+
 
 st.set_page_config(page_title="Plate & Plan", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
@@ -1389,71 +1431,71 @@ elif page == "Grocery List":
 
         st.divider()
 
-        # Category icons
-        category_icons = {
-            GroceryCategory.PRODUCE: ":material/eco:",
-            GroceryCategory.MEAT_SEAFOOD: ":material/kebab_dining:",
-            GroceryCategory.DAIRY: ":material/water_drop:",
-            GroceryCategory.BAKERY: ":material/bakery_dining:",
-            GroceryCategory.PANTRY: ":material/kitchen:",
-            GroceryCategory.FROZEN: ":material/ac_unit:",
-            GroceryCategory.BEVERAGES: ":material/local_cafe:",
-            GroceryCategory.OTHER: ":material/inventory_2:",
-        }
+        # Split items into shopping list and pantry staples
+        shopping_items = [(i, item) for i, item in enumerate(grocery_list.items) if not is_pantry_staple(item.name)]
+        pantry_items = [(i, item) for i, item in enumerate(grocery_list.items) if is_pantry_staple(item.name)]
 
-        # Display by category - unchecked items first, checked items at bottom
-        st.subheader(":material/checklist: Shopping List")
+        # Two-column layout
+        left_col, right_col = st.columns([2, 1])
 
-        # Simple list display with checkboxes and move buttons
-        for i, item in enumerate(grocery_list.items):
-            cols = st.columns([0.06, 0.06, 0.08, 0.80])
+        with left_col:
+            st.subheader(":material/checklist: Shopping List")
+            if shopping_items:
+                for i, item in shopping_items:
+                    cols = st.columns([0.08, 0.92])
 
-            # Move up button
-            with cols[0]:
-                if i > 0 and st.button("↑", key=f"up_{i}", help="Move up"):
-                    grocery_list.items[i], grocery_list.items[i - 1] = (
-                        grocery_list.items[i - 1],
-                        grocery_list.items[i],
-                    )
-                    st.rerun()
+                    # Checkbox
+                    with cols[0]:
+                        new_checked = st.checkbox(
+                            "", value=item.checked, key=f"check_{i}", label_visibility="collapsed"
+                        )
+                        if new_checked != item.checked:
+                            grocery_list.items[i].checked = new_checked
+                            st.rerun()
 
-            # Move down button
-            with cols[1]:
-                if i < len(grocery_list.items) - 1 and st.button("↓", key=f"down_{i}", help="Move down"):
-                    grocery_list.items[i], grocery_list.items[i + 1] = (
-                        grocery_list.items[i + 1],
-                        grocery_list.items[i],
-                    )
-                    st.rerun()
+                    # Item text (without recipe sources)
+                    with cols[1]:
+                        display = item.display_text
+                        if item.checked:
+                            st.markdown(f"~~{display}~~", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"**{display}**", unsafe_allow_html=True)
+            else:
+                st.caption("No items to buy - everything is in your pantry!")
 
-            # Checkbox
-            with cols[2]:
-                new_checked = st.checkbox("", value=item.checked, key=f"check_{i}", label_visibility="collapsed")
-                if new_checked != item.checked:
-                    grocery_list.items[i].checked = new_checked
-                    st.rerun()
+            # Add custom item
+            st.divider()
+            st.markdown("**:material/add: Add Item**")
+            new_item = st.text_input("Item name", placeholder="e.g., Milk, Bread...", label_visibility="collapsed")
+            if st.button("Add", icon=":material/add_shopping_cart:") and new_item:
+                grocery_list.items.append(GroceryItem(name=new_item))
+                st.rerun()
 
-            # Item text
-            with cols[3]:
-                source_text = (
-                    f'<span style="color: #888; font-size: 0.85em;">  —  {", ".join(item.recipe_sources)}</span>'
-                    if item.recipe_sources
-                    else ""
-                )
-                display = item.display_text
+        with right_col:
+            st.subheader(":material/home: Pantry Staples")
+            st.caption("Items you likely have at home")
+            if pantry_items:
+                for i, item in pantry_items:
+                    cols = st.columns([0.12, 0.88])
 
-                if item.checked:
-                    st.markdown(f"~~{display}~~{source_text}", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"**{display}**{source_text}", unsafe_allow_html=True)
+                    # Checkbox
+                    with cols[0]:
+                        new_checked = st.checkbox(
+                            "", value=item.checked, key=f"pantry_check_{i}", label_visibility="collapsed"
+                        )
+                        if new_checked != item.checked:
+                            grocery_list.items[i].checked = new_checked
+                            st.rerun()
 
-        # Add custom item
-        st.divider()
-        st.subheader(":material/add: Add Item")
-        new_item = st.text_input("Item name", placeholder="e.g., Milk, Bread...")
-        if st.button("Add", icon=":material/add_shopping_cart:") and new_item:
-            grocery_list.items.append(GroceryItem(name=new_item))
-            st.rerun()
+                    # Item text (without recipe sources)
+                    with cols[1]:
+                        display = item.display_text
+                        if item.checked:
+                            st.markdown(f"~~{display}~~", unsafe_allow_html=True)
+                        else:
+                            st.markdown(display, unsafe_allow_html=True)
+            else:
+                st.caption("No pantry staples in this list")
 
 # =============================================================================
 # BROWSE RECIPES PAGE (for meal selection)
