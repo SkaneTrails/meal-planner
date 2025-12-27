@@ -1,5 +1,6 @@
 """Meal Planner - Recipe collector and weekly meal planner inspired by Samsung Food."""
 
+import re
 import sys
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -10,11 +11,246 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import streamlit as st
 
 from app.icons import inject_bootstrap_icons_css, svg_icon
-from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
+from app.models.grocery_list import GroceryItem, GroceryList, QuantitySource
 from app.models.meal_plan import MealType
 from app.models.recipe import DietLabel, MealLabel, Recipe
 from app.services.ingredient_parser import parse_ingredient
-from app.storage.meal_plan_storage import delete_meal, load_meal_plan, update_meal
+from app.storage.meal_plan_storage import delete_meal, load_day_notes, load_meal_plan, update_day_note, update_meal
+
+# Default placeholder image for recipes without images (food icon from Unsplash)
+DEFAULT_RECIPE_IMAGE = "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=300&fit=crop&auto=format"
+
+# Pantry staples - items likely already at home (English, Swedish, Italian variants)
+PANTRY_STAPLES = {
+    "sugar",
+    "socker",
+    "zucchero",
+    "olive oil",
+    "olivolja",
+    "olio d'oliva",
+    "olio di oliva",
+    "olio",
+    "oil",
+    "olja",
+    "vegetable oil",
+    "rapsolja",
+    "canola oil",
+    "sunflower oil",
+    "solrosolja",
+    "mayonnaise",
+    "mayo",
+    "majonnäs",
+    "maionese",
+    "sesame seeds",
+    "sesamfrön",
+    "sesamfrö",
+    "semi di sesamo",
+    "sesame",
+    "egg",
+    "eggs",
+    "ägg",
+    "uovo",
+    "uova",
+    "salt",
+    "sale",
+    "pepper",
+    "black pepper",
+    "peppar",
+    "svartpeppar",
+    "pepe",
+    "pepe nero",
+    "water",
+    "vatten",
+    "acqua",
+    "butter",
+    "smör",
+    "burro",
+    "stock",
+    "broth",
+    "bouillon",
+    "buljong",
+    "chicken stock",
+    "beef stock",
+    "vegetable stock",
+    "kycklingbuljong",
+    "grönsaksbuljong",
+    "brodo",
+    "brodo di pollo",
+    "brodo vegetale",
+    "flour",
+    "mjöl",
+    "vetemjöl",
+    "farina",
+    "milk",
+    "mjölk",
+    "latte",
+    "margarine",
+    "margarin",
+    "balsamic vinegar",
+    "balsamvinäger",
+    "aceto balsamico",
+    "vinegar",
+    "vinäger",
+    "ättika",
+    "aceto",
+    "ketchup",
+    "tomato ketchup",
+    "chili",
+    "chilli",
+    "chili flakes",
+    "chiliflingor",
+    "peperoncino",
+    "chili powder",
+    "garlic",
+    "garlic clove",
+    "garlic cloves",
+    "vitlök",
+    "vitlöksklyfta",
+    "aglio",
+    "spicchio d'aglio",
+    "soy sauce",
+    "sojasås",
+    "salsa di soia",
+    "honey",
+    "honung",
+    "miele",
+    "mustard",
+    "senap",
+    "senape",
+    "worcestershire sauce",
+    "worcestersås",
+    "rice",
+    "ris",
+    "riso",
+    "pasta",
+    "spaghetti",
+    "penne",
+    "fusilli",
+    "onion",
+    "onions",
+    "lök",
+    "gul lök",
+    "rödlök",
+    "cipolla",
+    "white wine",
+    "red wine",
+    "vitt vin",
+    "rött vin",
+    "vino bianco",
+    "vino rosso",
+}
+
+
+def is_pantry_staple(item_name: str) -> bool:
+    """Check if an item is a pantry staple (likely already at home)."""
+    name_lower = item_name.lower().strip()
+    if name_lower in PANTRY_STAPLES:
+        return True
+    return any(re.search(rf"\b{re.escape(staple)}\b", name_lower) for staple in PANTRY_STAPLES)
+
+
+def _count_recent_recipe_usage(meal_plan: dict[tuple[str, str], str], days: int) -> dict[str, int]:
+    """Count recipe usage for past meals within the last N days (future meals don't count)."""
+    from datetime import UTC, datetime, timedelta
+
+    usage_count: dict[str, int] = {}
+    today = datetime.now(tz=UTC).date()
+    cutoff_date = today - timedelta(days=days)
+
+    for (date_str, _meal_type), rid in meal_plan.items():
+        if rid and not rid.startswith("custom:"):
+            try:
+                year, month, day = map(int, date_str.split("-"))
+                from datetime import date
+
+                meal_date = date(year, month, day)
+                # Only count past meals (already eaten), not future planned ones
+                if cutoff_date <= meal_date < today:
+                    usage_count[rid] = usage_count.get(rid, 0) + 1
+            except (ValueError, TypeError):
+                continue
+    return usage_count
+
+
+def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
+    """Render a form for editing an existing recipe."""
+    from app.models.recipe import DietLabel, MealLabel, Recipe
+    from app.storage.recipe_storage import update_recipe
+
+    with st.form(key=f"edit_recipe_form_{recipe_id}"):
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            st.markdown("### Recipe Info")
+            title = st.text_input("Title", value=recipe.title)
+            image_url = st.text_input("Image URL", value=recipe.image_url or "")
+            url = st.text_input("Source URL", value=recipe.url or "")
+
+            st.markdown("### Timing")
+            servings = st.number_input("Servings", min_value=1, value=recipe.servings or 4)
+            prep_time = st.number_input("Prep Time (min)", min_value=0, value=recipe.prep_time or 0)
+            cook_time = st.number_input("Cook Time (min)", min_value=0, value=recipe.cook_time or 0)
+
+            st.markdown("### Labels")
+            diet_options = ["None", "Veggie", "Fish", "Meat"]
+            current_diet = recipe.diet_label.value.title() if recipe.diet_label else "None"
+            diet_idx = diet_options.index(current_diet) if current_diet in diet_options else 0
+            diet = st.selectbox("Diet Type", diet_options, index=diet_idx)
+
+            meal_options = ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink"]
+            current_meal = recipe.meal_label.value.title() if recipe.meal_label else "None"
+            meal_idx = meal_options.index(current_meal) if current_meal in meal_options else 0
+            meal = st.selectbox("Meal Type", meal_options, index=meal_idx)
+
+        with col2:
+            st.markdown("### :material/grocery: Ingredients")
+            st.caption("One ingredient per line")
+            ingredients_text = st.text_area(
+                "Ingredients", value="\n".join(recipe.ingredients), height=200, label_visibility="collapsed"
+            )
+
+            st.markdown("### :material/format_list_numbered: Instructions")
+            st.caption("One step per line")
+            instructions_text = st.text_area(
+                "Instructions", value="\n".join(recipe.instructions), height=250, label_visibility="collapsed"
+            )
+
+        submitted = st.form_submit_button(":material/save: Save Changes", use_container_width=True, type="primary")
+
+        if submitted:
+            if not title.strip():
+                st.error("Title is required")
+            else:
+                ingredients = [ing.strip() for ing in ingredients_text.split("\n") if ing.strip()]
+                instructions = [step.strip() for step in instructions_text.split("\n") if step.strip()]
+
+                diet_label = None
+                if diet != "None":
+                    diet_label = DietLabel(diet.lower())
+
+                meal_label = None
+                if meal != "None":
+                    meal_label = MealLabel(meal.lower())
+
+                updated_recipe = Recipe(
+                    title=title.strip(),
+                    url=url.strip() or recipe.url,
+                    ingredients=ingredients,
+                    instructions=instructions,
+                    image_url=image_url.strip() or None,
+                    servings=servings if servings > 0 else None,
+                    prep_time=prep_time if prep_time > 0 else None,
+                    cook_time=cook_time if cook_time > 0 else None,
+                    diet_label=diet_label,
+                    meal_label=meal_label,
+                )
+
+                update_recipe(recipe_id, updated_recipe)
+                st.session_state[f"edit_mode_{recipe_id}"] = False
+                st.session_state.selected_recipe = (recipe_id, updated_recipe)
+                st.success("Recipe updated!")
+                st.rerun()
+
 
 st.set_page_config(page_title="Plate & Plan", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
@@ -277,6 +513,8 @@ if "week_offset" not in st.session_state:
     st.session_state.week_offset = 0
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Home"
+if "day_notes" not in st.session_state:
+    st.session_state.day_notes = load_day_notes()  # Load from Firestore
 if "meal_selector" not in st.session_state:
     st.session_state.meal_selector = None  # (date_str, meal_type) when selecting a meal
 if "custom_meal_input" not in st.session_state:
@@ -284,10 +522,12 @@ if "custom_meal_input" not in st.session_state:
 
 
 def get_week_dates(offset: int = 0) -> list[date]:
-    """Get dates for the current week (Monday to Sunday)."""
+    """Get dates for the current week (Saturday to Friday)."""
     today = datetime.now(tz=UTC).date() + timedelta(weeks=offset)
-    monday = today - timedelta(days=today.weekday())
-    return [monday + timedelta(days=i) for i in range(7)]
+    # Saturday is weekday 5, so we need to find the most recent Saturday
+    days_since_saturday = (today.weekday() + 2) % 7
+    saturday = today - timedelta(days=days_since_saturday)
+    return [saturday + timedelta(days=i) for i in range(7)]
 
 
 def load_recipes() -> list[tuple[str, Recipe]]:
@@ -452,19 +692,25 @@ if page == "Home":
             with st.spinner("Extracting recipe..."):
                 try:
                     from app.services.recipe_scraper import scrape_recipe
-                    from app.storage.recipe_storage import save_recipe
+                    from app.storage.recipe_storage import find_recipe_by_url, save_recipe
 
-                    recipe = scrape_recipe(url)
-                    if recipe:
-                        # Apply labels
-                        if home_diet_label != "None":
-                            recipe.diet_label = DietLabel(home_diet_label.lower())
-                        if home_meal_label != "None":
-                            recipe.meal_label = MealLabel(home_meal_label.lower())
-                        save_recipe(recipe)
-                        st.success(f":material/check_circle: Imported: **{recipe.title}**")
+                    # Check if recipe already exists
+                    existing = find_recipe_by_url(url)
+                    if existing:
+                        doc_id, existing_recipe = existing
+                        st.warning(f":material/info: Recipe already exists: **{existing_recipe.title}**")
                     else:
-                        st.error("Could not extract recipe from this URL")
+                        recipe = scrape_recipe(url)
+                        if recipe:
+                            # Apply labels
+                            if home_diet_label != "None":
+                                recipe.diet_label = DietLabel(home_diet_label.lower())
+                            if home_meal_label != "None":
+                                recipe.meal_label = MealLabel(home_meal_label.lower())
+                            save_recipe(recipe)
+                            st.success(f":material/check_circle: Imported: **{recipe.title}**")
+                        else:
+                            st.error("Could not extract recipe from this URL")
                 except Exception as e:
                     st.error(f"Error: {e}")
 
@@ -495,6 +741,11 @@ if page == "Home":
 elif page == "Recipes":
     st.markdown(f"<h1>{svg_icon('book', size=32)} Recipe Library</h1>", unsafe_allow_html=True)
 
+    # Show success toast if recipe was just saved
+    if st.session_state.get("recipe_saved_message"):
+        st.toast(st.session_state.recipe_saved_message)
+        st.session_state.recipe_saved_message = None
+
     # Check if we're viewing a specific recipe
     if st.session_state.selected_recipe:
         recipe_id, recipe = st.session_state.selected_recipe
@@ -506,81 +757,121 @@ elif page == "Recipes":
 
         st.divider()
 
-        # Recipe detail view
-        col1, col2 = st.columns([1, 2])
+        # Initialize edit mode state
+        edit_mode_key = f"edit_mode_{recipe_id}"
+        if edit_mode_key not in st.session_state:
+            st.session_state[edit_mode_key] = False
 
-        with col1:
-            if recipe.image_url:
-                st.image(recipe.image_url, use_container_width=True)
-
-            st.markdown("### Quick Info")
-            if recipe.servings:
-                st.write(f":material/group: Serves: {recipe.servings}")
-            if recipe.prep_time:
-                st.write(f":material/timer: Prep: {recipe.prep_time} min")
-            if recipe.cook_time:
-                st.write(f":material/skillet: Cook: {recipe.cook_time} min")
-            if recipe.total_time_calculated:
-                st.write(f":material/schedule: Total: {recipe.total_time_calculated} min")
-
-            # Show labels
-            if recipe.diet_label:
-                diet_icons = {
-                    "veggie": ":material/eco:",
-                    "fish": ":material/set_meal:",
-                    "meat": ":material/kebab_dining:",
-                }
-                st.write(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
-            if recipe.meal_label:
-                meal_icons = {
-                    "breakfast": ":material/egg_alt:",
-                    "starter": ":material/soup_kitchen:",
-                    "meal": ":material/restaurant:",
-                    "dessert": ":material/cake:",
-                    "drink": ":material/local_cafe:",
-                }
-                st.write(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
-
-            if recipe.url and recipe.url != "manual-entry":
-                st.markdown(f"[:material/link: Original Recipe]({recipe.url})")
-
-            # Add to Meal Plan section
-            st.divider()
-            st.markdown("### :material/calendar_add_on: Add to Plan")
-
-            today_date = datetime.now(tz=UTC).date()
-            max_date = today_date + timedelta(days=13)
-
-            selected_date = st.date_input(
-                "Date", value=today_date, min_value=today_date, max_value=max_date, key=f"add_plan_date_{recipe_id}"
-            )
-            meal_options = {"Breakfast": MealType.BREAKFAST, "Lunch": MealType.LUNCH, "Dinner": MealType.DINNER}
-            selected_meal_str = st.selectbox(
-                "Meal", options=list(meal_options.keys()), key=f"add_plan_meal_{recipe_id}"
-            )
-            if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", use_container_width=True):
-                selected_meal = meal_options[selected_meal_str]
-                key = (selected_date.isoformat(), selected_meal.value)
-                st.session_state.meal_plan[key] = recipe_id
-                update_meal(selected_date.isoformat(), selected_meal.value, recipe_id)
-                st.toast(f"Added to {selected_meal_str} on {selected_date.strftime('%a %b %d')}!")
-
-        with col2:
+        # Toggle edit mode button
+        col_title, col_edit = st.columns([4, 1])
+        with col_title:
             st.markdown(f"## {recipe.title}")
+        with col_edit:
+            if st.session_state[edit_mode_key]:
+                if st.button(":material/close: Cancel", key=f"cancel_edit_{recipe_id}", use_container_width=True):
+                    st.session_state[edit_mode_key] = False
+                    st.rerun()
+            elif st.button(":material/edit: Edit", key=f"edit_recipe_{recipe_id}", use_container_width=True):
+                st.session_state[edit_mode_key] = True
+                st.rerun()
 
-            st.markdown("### :material/grocery: Ingredients")
-            for idx, ing in enumerate(recipe.ingredients):
-                st.checkbox(ing, key=f"ing_{recipe_id}_{idx}_{ing[:20]}")
+        if st.session_state[edit_mode_key]:
+            # Edit mode
+            _render_recipe_edit_form(recipe_id, recipe)
+        else:
+            # View mode - Recipe detail view
+            col1, col2 = st.columns([1, 2])
 
-            st.markdown("### :material/format_list_numbered: Instructions")
-            for i, step in enumerate(recipe.instructions, 1):
-                st.markdown(f"**Step {i}:** {step}")
+            with col1:
+                st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
+
+                st.markdown("### Quick Info")
+                if recipe.servings:
+                    st.write(f":material/group: Serves: {recipe.servings}")
+                if recipe.prep_time:
+                    st.write(f":material/timer: Prep: {recipe.prep_time} min")
+                if recipe.cook_time:
+                    st.write(f":material/skillet: Cook: {recipe.cook_time} min")
+                if recipe.total_time_calculated:
+                    st.write(f":material/schedule: Total: {recipe.total_time_calculated} min")
+
+                # Show labels
+                if recipe.diet_label:
+                    diet_icons = {
+                        "veggie": ":material/eco:",
+                        "fish": ":material/set_meal:",
+                        "meat": ":material/kebab_dining:",
+                    }
+                    st.write(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
+                if recipe.meal_label:
+                    meal_icons = {
+                        "breakfast": ":material/egg_alt:",
+                        "starter": ":material/soup_kitchen:",
+                        "meal": ":material/restaurant:",
+                        "dessert": ":material/cake:",
+                        "drink": ":material/local_cafe:",
+                    }
+                    st.write(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
+
+                if recipe.url and recipe.url != "manual-entry":
+                    st.markdown(f"[:material/link: Original Recipe]({recipe.url})")
+
+                # Add to Meal Plan section
+                st.divider()
+                st.markdown("### :material/calendar_add_on: Add to Plan")
+
+                today_date = datetime.now(tz=UTC).date()
+                max_date = today_date + timedelta(days=13)
+
+                selected_date = st.date_input(
+                    "Date", value=today_date, min_value=today_date, max_value=max_date, key=f"add_plan_date_{recipe_id}"
+                )
+                meal_options = {"Lunch": MealType.LUNCH, "Dinner": MealType.DINNER}
+                selected_meal_str = st.selectbox(
+                    "Meal", options=list(meal_options.keys()), key=f"add_plan_meal_{recipe_id}"
+                )
+                if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", use_container_width=True):
+                    selected_meal = meal_options[selected_meal_str]
+                    key = (selected_date.isoformat(), selected_meal.value)
+                    st.session_state.meal_plan[key] = recipe_id
+                    update_meal(selected_date.isoformat(), selected_meal.value, recipe_id)
+                    st.toast(f"Added to {selected_meal_str} on {selected_date.strftime('%a %b %d')}!")
+
+            with col2:
+                st.markdown("### :material/grocery: Ingredients")
+                for idx, ing in enumerate(recipe.ingredients):
+                    st.checkbox(ing, key=f"ing_{recipe_id}_{idx}_{ing[:20]}")
+
+                st.markdown("### :material/format_list_numbered: Instructions")
+                for i, step in enumerate(recipe.instructions, 1):
+                    st.markdown(f"**Step {i}:** {step}")
 
     else:
-        # Tabs for different views
-        tab1, tab2 = st.tabs([":material/folder: All Recipes", ":material/add: Add Recipe"])
+        # View switcher (using buttons instead of tabs for programmatic control)
+        if "recipes_view" not in st.session_state:
+            st.session_state.recipes_view = "all"
 
-        with tab1:
+        view_col1, view_col2, _ = st.columns([1, 1, 4])
+        with view_col1:
+            if st.button(
+                ":material/folder: All Recipes",
+                use_container_width=True,
+                type="primary" if st.session_state.recipes_view == "all" else "secondary",
+            ):
+                st.session_state.recipes_view = "all"
+                st.rerun()
+        with view_col2:
+            if st.button(
+                ":material/add: Add Recipe",
+                use_container_width=True,
+                type="primary" if st.session_state.recipes_view == "add" else "secondary",
+            ):
+                st.session_state.recipes_view = "add"
+                st.rerun()
+
+        st.divider()
+
+        if st.session_state.recipes_view == "all":
             recipes = load_recipes()
 
             # Search and filter
@@ -631,10 +922,7 @@ elif page == "Recipes":
                 cols = st.columns(4)
                 for i, (recipe_id, recipe) in enumerate(recipes):
                     with cols[i % 4], st.container(border=True):
-                        if recipe.image_url:
-                            st.image(recipe.image_url, use_container_width=True)
-                        else:
-                            st.markdown(":material/restaurant:", unsafe_allow_html=True)
+                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
 
                         st.markdown(f"**{recipe.title}**")
 
@@ -693,9 +981,9 @@ elif page == "Recipes":
                                 except Exception as e:
                                     st.error(str(e))
             else:
-                st.info("No recipes yet! Add your first recipe in the 'Add Recipe' tab.")
+                st.info("No recipes yet! Add your first recipe using the 'Add Recipe' button above.")
 
-        with tab2:
+        elif st.session_state.recipes_view == "add":
             st.subheader(":material/link: Import from URL")
             url = st.text_input("Recipe URL", placeholder="https://www.allrecipes.com/recipe/...")
 
@@ -716,18 +1004,25 @@ elif page == "Recipes":
                 with st.spinner("Extracting recipe..."):
                     try:
                         from app.services.recipe_scraper import scrape_recipe
+                        from app.storage.recipe_storage import find_recipe_by_url
 
-                        recipe = scrape_recipe(url)
-                        if recipe:
-                            # Apply labels before storing temp
-                            if url_diet_label != "None":
-                                recipe.diet_label = DietLabel(url_diet_label.lower())
-                            if url_meal_label != "None":
-                                recipe.meal_label = MealLabel(url_meal_label.lower())
-                            st.session_state.temp_recipe = recipe
-                            st.success("Recipe extracted! Review below and save.")
+                        # Check if recipe already exists
+                        existing = find_recipe_by_url(url)
+                        if existing:
+                            doc_id, existing_recipe = existing
+                            st.warning(f":material/info: Recipe already exists: **{existing_recipe.title}**")
                         else:
-                            st.error("Could not extract recipe. Try a different URL.")
+                            recipe = scrape_recipe(url)
+                            if recipe:
+                                # Apply labels before storing temp
+                                if url_diet_label != "None":
+                                    recipe.diet_label = DietLabel(url_diet_label.lower())
+                                if url_meal_label != "None":
+                                    recipe.meal_label = MealLabel(url_meal_label.lower())
+                                st.session_state.temp_recipe = recipe
+                                st.success("Recipe extracted! Review below and save.")
+                            else:
+                                st.error("Could not extract recipe. Try a different URL.")
                     except Exception as e:
                         st.error(f"Error: {e}")
 
@@ -739,8 +1034,7 @@ elif page == "Recipes":
 
                 col1, col2 = st.columns([1, 2])
                 with col1:
-                    if recipe.image_url:
-                        st.image(recipe.image_url, width=250)
+                    st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, width=250)
                 with col2:
                     st.markdown(f"### {recipe.title}")
                     st.write(f":material/group: Servings: {recipe.servings or 'N/A'}")
@@ -827,6 +1121,8 @@ elif page == "Recipes":
                     if not manual_title or not manual_ingredients or not manual_instructions:
                         st.error("Please fill in all required fields (Title, Ingredients, Instructions)")
                     else:
+                        import uuid
+
                         ingredients_list = [
                             ing.strip() for ing in manual_ingredients.strip().split("\n") if ing.strip()
                         ]
@@ -836,7 +1132,7 @@ elif page == "Recipes":
 
                         manual_recipe = Recipe(
                             title=manual_title,
-                            url="manual-entry",
+                            url=f"manual-entry-{uuid.uuid4().hex[:8]}",
                             ingredients=ingredients_list,
                             instructions=instructions_list,
                             image_url=manual_image_url if manual_image_url else None,
@@ -851,7 +1147,9 @@ elif page == "Recipes":
                             from app.storage.recipe_storage import save_recipe
 
                             save_recipe(manual_recipe)
-                            st.success(f":material/check_circle: Saved: **{manual_title}**")
+                            st.session_state.recipe_saved_message = f"✓ Saved: {manual_title}"
+                            st.session_state.selected_recipe = None
+                            st.session_state.recipes_view = "all"
                             st.rerun()
                         except Exception as e:
                             st.error(f"Could not save: {e}")
@@ -890,10 +1188,10 @@ elif page == "Meal Plan":
     recipe_dict = dict(recipes)
     recipe_options = {rid: r.title for rid, r in recipes}
 
-    # Weekly grid
-    weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    # Weekly grid (Saturday to Friday)
     weekend_names = ["Sat", "Sun"]
-    meal_types = [MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER]
+    weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    meal_types = [MealType.LUNCH, MealType.DINNER]
     today = datetime.now(tz=UTC).date()
     title_max_length = 25
 
@@ -952,16 +1250,14 @@ elif page == "Meal Plan":
 
         with st.container(border=True):
             # Fixed height image container for consistent tile sizing
-            if recipe.image_url:
-                st.markdown(
-                    f"""<div style='height: 200px; overflow: hidden; display: flex;
-                    align-items: center; justify-content: center;'>
-                    <img src='{recipe.image_url}' style='width: 100%; height: 100%; object-fit: cover;'/>
-                    </div>""",
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
+            image_url = recipe.image_url or DEFAULT_RECIPE_IMAGE
+            st.markdown(
+                f"""<div style='height: 200px; overflow: hidden; display: flex;
+                align-items: center; justify-content: center;'>
+                <img src='{image_url}' style='width: 100%; height: 100%; object-fit: cover;'/>
+                </div>""",
+                unsafe_allow_html=True,
+            )
             title_display = (
                 recipe.title[:title_max_length] + "..." if len(recipe.title) > title_max_length else recipe.title
             )
@@ -1012,42 +1308,134 @@ elif page == "Meal Plan":
             recipe = recipe_dict[current_value]
             render_recipe_meal_tile(key, col_key, d, meal_type, current_value, recipe)
 
-    def render_empty_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
-        """Render an empty meal tile with action buttons."""
+    def get_week_meals_for_copy() -> dict[str, str]:
+        """Get a dict of display names to recipe IDs for meals already planned this week."""
+        week_dates = get_week_dates(st.session_state.week_offset)
+        meals_dict: dict[str, str] = {}
+        seen_recipes: set[str] = set()
+
+        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        meal_names = {"breakfast": "🌅", "lunch": "☀️", "dinner": "🌙"}
+
+        for d in week_dates:
+            for meal_type in [MealType.LUNCH, MealType.DINNER]:
+                key = (d.isoformat(), meal_type.value)
+                recipe_id = st.session_state.meal_plan.get(key, "")
+                if recipe_id and not recipe_id.startswith("custom:") and recipe_id not in seen_recipes:
+                    if recipe_id not in recipe_dict:
+                        continue
+                    recipe = recipe_dict[recipe_id]
+                    day_name = day_names[d.weekday()]
+                    meal_icon = meal_names.get(meal_type.value, "")
+                    display = f"{day_name} {meal_icon} {recipe.title}"
+                    meals_dict[display] = recipe_id
+                    seen_recipes.add(recipe_id)
+
+        return meals_dict
+
+    def get_weighted_random_recipe() -> str | None:
+        """Get a random recipe, weighted against ones eaten in the last 2 months."""
         import random
 
+        from app.storage.meal_plan_storage import load_meal_plan
+
+        if not all_recipes:
+            return None
+
+        usage_count = _count_recent_recipe_usage(load_meal_plan(), days=60)
+
+        # Build weighted list - unused recipes get weight 3, used ones get lower weight
+        # Weight formula: 3 / (usage + 1) - so unused=3, used once=1.5, twice=1, etc.
+        weights = []
+        recipe_ids = []
+        for rid, _ in all_recipes:
+            recipe_ids.append(rid)
+            usage = usage_count.get(rid, 0)
+            weights.append(3.0 / (usage + 1))
+
+        total_weight = sum(weights)
+        if total_weight == 0:
+            return random.choice(recipe_ids)
+
+        # Weighted random selection
+        r = random.random() * total_weight
+        cumulative = 0
+        for rid, weight in zip(recipe_ids, weights, strict=False):
+            cumulative += weight
+            if r <= cumulative:
+                return rid
+
+        return recipe_ids[-1] if recipe_ids else None
+
+    def _render_copy_mode_ui(key: tuple, col_key: str, d: date, meal_type: MealType, copy_mode_key: str) -> None:
+        """Render the copy-from-week selection UI."""
+        week_meals = get_week_meals_for_copy()
+        if not week_meals:
+            st.session_state[copy_mode_key] = False
+            st.rerun()
+            return
+
+        st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
+        selected = st.selectbox(
+            "Copy from:",
+            options=["", *list(week_meals.keys())],
+            key=f"copy_select_{col_key}_{d}_{meal_type.value}",
+            label_visibility="collapsed",
+        )
+        sel_col1, sel_col2 = st.columns(2)
+        with sel_col1:
+            if st.button("", key=f"confirm_copy_{col_key}", help="Copy", icon=":material/check:"):
+                if selected and selected in week_meals:
+                    recipe_id = week_meals[selected]
+                    st.session_state.meal_plan[key] = recipe_id
+                    update_meal(d.isoformat(), meal_type.value, recipe_id)
+                st.session_state[copy_mode_key] = False
+                st.rerun()
+        with sel_col2:
+            if st.button("", key=f"cancel_copy_{col_key}", help="Cancel", icon=":material/close:"):
+                st.session_state[copy_mode_key] = False
+                st.rerun()
+        st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
+
+    def _render_empty_tile_buttons(key: tuple, col_key: str, d: date, meal_type: MealType, copy_mode_key: str) -> None:
+        """Render the action buttons for an empty meal tile."""
+        st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
+        _, btn_col1, btn_col2, btn_col3, btn_col4, _ = st.columns([1, 1, 1, 1, 1, 1])
+        with btn_col1:
+            if st.button("", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"):
+                st.session_state.meal_selector = (d.isoformat(), meal_type.value)
+                st.session_state.current_page = "📖 Browse Recipes"
+                st.rerun()
+        with btn_col2:
+            if st.button("", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random", icon=":material/casino:"):
+                random_rid = get_weighted_random_recipe()
+                if random_rid:
+                    st.session_state.meal_plan[key] = random_rid
+                    update_meal(d.isoformat(), meal_type.value, random_rid)
+                    st.rerun()
+                else:
+                    st.toast("No recipes available!")
+        with btn_col3:
+            week_meals = get_week_meals_for_copy()
+            if week_meals and st.button(
+                "", key=f"copy_{col_key}_{d}_{meal_type.value}", help="Copy from week", icon=":material/content_copy:"
+            ):
+                st.session_state[copy_mode_key] = True
+                st.rerun()
+        with btn_col4:
+            if st.button("", key=f"custom_{col_key}_{d}_{meal_type.value}", help="Custom", icon=":material/edit:"):
+                st.session_state.custom_meal_input = key
+                st.rerun()
+        st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
+
+    def render_empty_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
+        """Render an empty meal tile with action buttons."""
         with st.container(border=True):
-            # Fixed height to match recipe tiles (image 200px + title ~30px + buttons ~50px)
-            # Top spacer to center buttons vertically
-            st.markdown("<div style='height: 115px;'></div>", unsafe_allow_html=True)
-            # Centered buttons
-            _, btn_col1, btn_col2, btn_col3, _ = st.columns([1, 1, 1, 1, 1])
-            with btn_col1:
-                if st.button(
-                    "", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"
-                ):
-                    st.session_state.meal_selector = (d.isoformat(), meal_type.value)
-                    st.session_state.current_page = "Recipes"
-                    st.rerun()
-            with btn_col2:
-                if st.button(
-                    "", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random recipe", icon=":material/casino:"
-                ):
-                    if all_recipes:
-                        random_rid, _ = random.choice(all_recipes)
-                        st.session_state.meal_plan[key] = random_rid
-                        update_meal(d.isoformat(), meal_type.value, random_rid)
-                        st.rerun()
-                    else:
-                        st.toast("No recipes available!")
-            with btn_col3:
-                if st.button(
-                    "", key=f"custom_{col_key}_{d}_{meal_type.value}", help="Write custom", icon=":material/edit:"
-                ):
-                    st.session_state.custom_meal_input = key
-                    st.rerun()
-            # Bottom spacer to match total height
-            st.markdown("<div style='height: 115px;'></div>", unsafe_allow_html=True)
+            copy_mode_key = f"copy_from_week_{key}"
+            if st.session_state.get(copy_mode_key):
+                _render_copy_mode_ui(key, col_key, d, meal_type, copy_mode_key)
+            else:
+                _render_empty_tile_buttons(key, col_key, d, meal_type, copy_mode_key)
 
     def render_meal_tile(d: date, meal_type: MealType, col_key: str) -> None:
         """Render a single meal tile in the weekly grid."""
@@ -1096,9 +1484,9 @@ elif page == "Meal Plan":
             today_index = next((i for i, d in enumerate(week_dates) if d == today), 0)
             st.session_state.selected_day_index = today_index
 
-        # Compact day selector
-        day_names = ["M", "T", "W", "T", "F", "S", "S"]
-        full_day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        # Compact day selector (Saturday to Friday)
+        day_names = ["S", "S", "M", "T", "W", "T", "F"]
+        full_day_names = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
         day_cols = st.columns(7)
         for i, (_day_name, d) in enumerate(zip(day_names, week_dates, strict=False)):
             with day_cols[i]:
@@ -1115,6 +1503,20 @@ elif page == "Meal Plan":
         selected_day_name = full_day_names[st.session_state.selected_day_index]
 
         st.markdown(f"**{selected_day_name}, {selected_date.strftime('%b %d')}**")
+
+        # Notes input for day view
+        note_key = selected_date.isoformat()
+        current_note = st.session_state.day_notes.get(note_key, "")
+        new_note = st.text_input(
+            "📝 Day notes",
+            value=current_note,
+            key=f"note_day_{note_key}",
+            placeholder="e.g. office, home, climb day...",
+            max_chars=50,
+        )
+        if new_note != current_note:
+            st.session_state.day_notes[note_key] = new_note
+            update_day_note(note_key, new_note)
 
         # Compact meal display - 3 columns for the 3 meals
         meal_cols = st.columns(3)
@@ -1136,8 +1538,7 @@ elif page == "Meal Plan":
                         st.caption(f"_{current_value[7:]}_")
                     elif current_value in recipe_dict:
                         recipe = recipe_dict[current_value]
-                        if recipe.image_url:
-                            st.image(recipe.image_url, use_container_width=True)
+                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
                         st.caption(
                             recipe.title[:title_max_length] + "..."
                             if len(recipe.title) > title_max_length
@@ -1152,54 +1553,19 @@ elif page == "Meal Plan":
                     st.caption("_Empty_")
                     if st.button(":material/add:", key=f"add_day_{selected_date}_{meal_type.value}", help="Add"):
                         st.session_state.meal_selector = (selected_date.isoformat(), meal_type.value)
-                        st.session_state.current_page = "Recipes"
+                        st.session_state.current_page = "📖 Browse Recipes"
                         st.rerun()
 
     else:
         # WEEK VIEW - Original desktop layout
-        # WEEKDAYS (Mon-Fri) - First Row
-        st.markdown("#### Weekdays")
-
-        # Header row for weekdays
-        header_cols = st.columns([0.5] + [1] * 5)
-        with header_cols[0]:
-            st.write("")
-        for i, (day, d) in enumerate(zip(weekday_names, week_dates[:5], strict=False)):
-            with header_cols[i + 1]:
-                is_today = d == today
-                if is_today:
-                    st.markdown(
-                        f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
-                        f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
-                        f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    st.markdown(f"**{day}**  \n{d.day}")
-
-        # Meal rows for weekdays
-        for meal_type in meal_types:
-            row_cols = st.columns([0.5] + [1] * 5)
-            with row_cols[0]:
-                st.markdown(
-                    f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
-                    unsafe_allow_html=True,
-                )
-
-            for i, d in enumerate(week_dates[:5]):
-                with row_cols[i + 1]:
-                    render_meal_tile(d, meal_type, "weekday")
-
-        st.divider()
-
-        # WEEKEND (Sat-Sun) - Second Row
+        # WEEKEND (Sat-Sun) - First Row
         st.markdown("#### Weekend")
 
-        # Header row for weekend (same total width as weekdays)
-        weekend_header_cols = st.columns([0.5] + [1] * 5)
+        # Header row for weekend
+        weekend_header_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
         with weekend_header_cols[0]:
             st.write("")
-        for i, (day, d) in enumerate(zip(weekend_names, week_dates[5:], strict=False)):
+        for i, (day, d) in enumerate(zip(weekend_names, week_dates[:2], strict=False)):
             with weekend_header_cols[i + 1]:
                 is_today = d == today
                 if is_today:
@@ -1212,18 +1578,93 @@ elif page == "Meal Plan":
                 else:
                     st.markdown(f"**{day}**  \n{d.day}")
 
-        # Meal rows for weekend (same total width as weekdays)
+        # Notes row for weekend
+        weekend_notes_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
+        with weekend_notes_cols[0]:
+            st.markdown("<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>", unsafe_allow_html=True)
+        for i, d in enumerate(week_dates[:2]):
+            with weekend_notes_cols[i + 1]:
+                note_key = d.isoformat()
+                current_note = st.session_state.day_notes.get(note_key, "")
+                new_note = st.text_input(
+                    "Note",
+                    value=current_note,
+                    key=f"note_weekend_{note_key}",
+                    label_visibility="collapsed",
+                    placeholder="e.g. office, home...",
+                    max_chars=50,
+                )
+                if new_note != current_note:
+                    st.session_state.day_notes[note_key] = new_note
+                    update_day_note(note_key, new_note)
+
+        # Meal rows for weekend
         for meal_type in meal_types:
-            weekend_row_cols = st.columns([0.5] + [1] * 5)
+            weekend_row_cols = st.columns([0.5] + [1] * 2 + [1] * 3)
             with weekend_row_cols[0]:
                 st.markdown(
                     f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
                     unsafe_allow_html=True,
                 )
 
-            for i, d in enumerate(week_dates[5:]):
+            for i, d in enumerate(week_dates[:2]):
                 with weekend_row_cols[i + 1]:
                     render_meal_tile(d, meal_type, "weekend")
+
+        st.divider()
+
+        # WEEKDAYS (Mon-Fri) - Second Row
+        st.markdown("#### Weekdays")
+
+        # Header row for weekdays
+        header_cols = st.columns([0.5] + [1] * 5)
+        with header_cols[0]:
+            st.write("")
+        for i, (day, d) in enumerate(zip(weekday_names, week_dates[2:], strict=False)):
+            with header_cols[i + 1]:
+                is_today = d == today
+                if is_today:
+                    st.markdown(
+                        f"<div style='background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%); "
+                        f"padding: 8px; border-radius: 8px; text-align: center; color: white;'>"
+                        f"<strong>{day}</strong><br/><strong>{d.day}</strong></div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(f"**{day}**  \n{d.day}")
+
+        # Notes row for weekdays
+        notes_cols = st.columns([0.5] + [1] * 5)
+        with notes_cols[0]:
+            st.markdown("<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>", unsafe_allow_html=True)
+        for i, d in enumerate(week_dates[2:]):
+            with notes_cols[i + 1]:
+                note_key = d.isoformat()
+                current_note = st.session_state.day_notes.get(note_key, "")
+                new_note = st.text_input(
+                    "Note",
+                    value=current_note,
+                    key=f"note_weekday_{note_key}",
+                    label_visibility="collapsed",
+                    placeholder="e.g. office, home...",
+                    max_chars=50,
+                )
+                if new_note != current_note:
+                    st.session_state.day_notes[note_key] = new_note
+                    update_day_note(note_key, new_note)
+
+        # Meal rows for weekdays
+        for meal_type in meal_types:
+            row_cols = st.columns([0.5] + [1] * 5)
+            with row_cols[0]:
+                st.markdown(
+                    f"<span style='color: #1a1a1a; font-weight: 600;'>{meal_type.value.title()}</span>",
+                    unsafe_allow_html=True,
+                )
+
+            for i, d in enumerate(week_dates[2:]):
+                with row_cols[i + 1]:
+                    render_meal_tile(d, meal_type, "weekday")
 
         st.divider()
 
@@ -1239,29 +1680,37 @@ elif page == "Meal Plan":
 
         # List unique recipes for the week
         unique_recipes = set()
+        custom_meals = set()
         for d in week_dates:
             for mt in meal_types:
                 key = (d.isoformat(), mt.value)
                 if key in st.session_state.meal_plan:
-                    unique_recipes.add(st.session_state.meal_plan[key])
+                    meal_value = st.session_state.meal_plan[key]
+                    if meal_value.startswith("custom:"):
+                        custom_meals.add(meal_value[7:])  # Remove "custom:" prefix
+                    else:
+                        unique_recipes.add(meal_value)
 
-        if unique_recipes:
-            st.write("**Recipes this week:**")
+        if unique_recipes or custom_meals:
+            st.write("**Meals this week:**")
             for rid in unique_recipes:
-                title = recipe_options.get(rid, "Unknown")
+                title = recipe_options.get(rid, rid)
                 st.write(f"- {title}")
+            for custom_name in custom_meals:
+                st.write(f"- {custom_name}")
 
     with col2:
         st.subheader(":material/shopping_cart: Generate Grocery List")
-        st.write("Create a shopping list from your planned meals.")
+        st.write("Add ingredients from this week's meals to your shopping list.")
 
-        if st.button(":material/shopping_cart: Generate List", type="primary", use_container_width=True):
+        if st.button(":material/shopping_cart: Add to List", type="primary", use_container_width=True):
             if not unique_recipes:
                 st.warning("Plan some meals first!")
             else:
-                # Generate grocery list from planned recipes
-                grocery_list = GroceryList()
+                # Add to existing grocery list (don't replace)
+                grocery_list = st.session_state.grocery_list
                 recipe_dict = dict(recipes)
+                items_added = 0
 
                 for rid in unique_recipes:
                     if rid in recipe_dict:
@@ -1276,9 +1725,10 @@ elif page == "Meal Plan":
                                 quantity_sources=[qty_source],
                             )
                             grocery_list.add_item(item)
+                            items_added += 1
 
                 st.session_state.grocery_list = grocery_list
-                st.success(f":material/check_circle: Generated list with {len(grocery_list.items)} items!")
+                st.success(f":material/check_circle: Added {items_added} items! Total: {len(grocery_list.items)}")
 
         if st.button("Clear Week", use_container_width=True, icon=":material/delete_sweep:"):
             for d in week_dates:
@@ -1327,71 +1777,93 @@ elif page == "Grocery List":
 
         st.divider()
 
-        # Category icons
-        category_icons = {
-            GroceryCategory.PRODUCE: ":material/eco:",
-            GroceryCategory.MEAT_SEAFOOD: ":material/kebab_dining:",
-            GroceryCategory.DAIRY: ":material/water_drop:",
-            GroceryCategory.BAKERY: ":material/bakery_dining:",
-            GroceryCategory.PANTRY: ":material/kitchen:",
-            GroceryCategory.FROZEN: ":material/ac_unit:",
-            GroceryCategory.BEVERAGES: ":material/local_cafe:",
-            GroceryCategory.OTHER: ":material/inventory_2:",
-        }
+        # Split items into shopping list and pantry staples
+        shopping_items = [(i, item) for i, item in enumerate(grocery_list.items) if not is_pantry_staple(item.name)]
+        pantry_items = [(i, item) for i, item in enumerate(grocery_list.items) if is_pantry_staple(item.name)]
 
-        # Display by category - unchecked items first, checked items at bottom
-        st.subheader(":material/checklist: Shopping List")
+        # Two-column layout
+        left_col, right_col = st.columns([2, 1])
 
-        # Simple list display with checkboxes and move buttons
-        for i, item in enumerate(grocery_list.items):
-            cols = st.columns([0.06, 0.06, 0.08, 0.80])
+        with left_col:
+            st.subheader(":material/checklist: Shopping List")
+            if shopping_items:
+                for idx, (i, item) in enumerate(shopping_items):
+                    cols = st.columns([0.05, 0.05, 0.08, 0.82])
 
-            # Move up button
-            with cols[0]:
-                if i > 0 and st.button("↑", key=f"up_{i}", help="Move up"):
-                    grocery_list.items[i], grocery_list.items[i - 1] = (
-                        grocery_list.items[i - 1],
-                        grocery_list.items[i],
-                    )
-                    st.rerun()
+                    # Move up button
+                    with cols[0]:
+                        if idx > 0:
+                            prev_i = shopping_items[idx - 1][0]
+                            if st.button("↑", key=f"up_{i}", help="Move up"):
+                                grocery_list.items[i], grocery_list.items[prev_i] = (
+                                    grocery_list.items[prev_i],
+                                    grocery_list.items[i],
+                                )
+                                st.rerun()
 
-            # Move down button
-            with cols[1]:
-                if i < len(grocery_list.items) - 1 and st.button("↓", key=f"down_{i}", help="Move down"):
-                    grocery_list.items[i], grocery_list.items[i + 1] = (
-                        grocery_list.items[i + 1],
-                        grocery_list.items[i],
-                    )
-                    st.rerun()
+                    # Move down button
+                    with cols[1]:
+                        if idx < len(shopping_items) - 1:
+                            next_i = shopping_items[idx + 1][0]
+                            if st.button("↓", key=f"down_{i}", help="Move down"):
+                                grocery_list.items[i], grocery_list.items[next_i] = (
+                                    grocery_list.items[next_i],
+                                    grocery_list.items[i],
+                                )
+                                st.rerun()
 
-            # Checkbox
-            with cols[2]:
-                new_checked = st.checkbox("", value=item.checked, key=f"check_{i}", label_visibility="collapsed")
-                if new_checked != item.checked:
-                    grocery_list.items[i].checked = new_checked
-                    st.rerun()
+                    # Checkbox
+                    with cols[2]:
+                        new_checked = st.checkbox(
+                            "", value=item.checked, key=f"check_{i}", label_visibility="collapsed"
+                        )
+                        if new_checked != item.checked:
+                            grocery_list.items[i].checked = new_checked
+                            st.rerun()
 
-            # Item text
-            with cols[3]:
-                source_text = (
-                    f'<span style="color: #888; font-size: 0.85em;">  —  {", ".join(item.recipe_sources)}</span>'
-                    if item.recipe_sources
-                    else ""
-                )
-                display = item.display_text
+                    # Item text (without recipe sources)
+                    with cols[3]:
+                        display = item.display_text
+                        if item.checked:
+                            st.markdown(f"~~{display}~~", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"**{display}**", unsafe_allow_html=True)
+            else:
+                st.caption("No items to buy - everything is in your pantry!")
 
-                if item.checked:
-                    st.markdown(f"~~{display}~~{source_text}", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"**{display}**{source_text}", unsafe_allow_html=True)
+            # Add custom item
+            st.divider()
+            st.markdown("**:material/add: Add Item**")
+            new_item = st.text_input("Item name", placeholder="e.g., Milk, Bread...", label_visibility="collapsed")
+            if st.button("Add", icon=":material/add_shopping_cart:") and new_item:
+                grocery_list.items.append(GroceryItem(name=new_item))
+                st.rerun()
 
-        # Add custom item
-        st.divider()
-        st.subheader(":material/add: Add Item")
-        new_item = st.text_input("Item name", placeholder="e.g., Milk, Bread...")
-        if st.button("Add", icon=":material/add_shopping_cart:") and new_item:
-            grocery_list.items.append(GroceryItem(name=new_item))
-            st.rerun()
+        with right_col:
+            st.subheader(":material/home: Pantry Staples")
+            st.caption("Items you likely have at home")
+            if pantry_items:
+                for i, item in pantry_items:
+                    cols = st.columns([0.12, 0.88])
+
+                    # Checkbox
+                    with cols[0]:
+                        new_checked = st.checkbox(
+                            "", value=item.checked, key=f"pantry_check_{i}", label_visibility="collapsed"
+                        )
+                        if new_checked != item.checked:
+                            grocery_list.items[i].checked = new_checked
+                            st.rerun()
+
+                    # Item text (without recipe sources)
+                    with cols[1]:
+                        display = item.display_text
+                        if item.checked:
+                            st.markdown(f"~~{display}~~", unsafe_allow_html=True)
+                        else:
+                            st.markdown(display, unsafe_allow_html=True)
+            else:
+                st.caption("No pantry staples in this list")
 
 # =============================================================================
 # BROWSE RECIPES PAGE (for meal selection)
