@@ -161,6 +161,38 @@ def save_recipe(recipe: Recipe) -> str:
     return doc_ref.id
 
 
+def update_recipe(recipe_id: str, recipe: Recipe) -> None:
+    """
+    Update an existing recipe in Firestore.
+
+    Args:
+        recipe_id: The Firestore document ID.
+        recipe: The updated recipe data.
+    """
+    db = get_firestore_client()
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+
+    doc_ref.update(
+        {
+            "title": recipe.title,
+            "url": recipe.url,
+            "ingredients": recipe.ingredients,
+            "instructions": recipe.instructions,
+            "image_url": recipe.image_url,
+            "servings": recipe.servings,
+            "prep_time": recipe.prep_time,
+            "cook_time": recipe.cook_time,
+            "total_time": recipe.total_time,
+            "cuisine": recipe.cuisine,
+            "category": recipe.category,
+            "tags": recipe.tags,
+            "diet_label": recipe.diet_label.value if recipe.diet_label else None,
+            "meal_label": recipe.meal_label.value if recipe.meal_label else None,
+            "updated_at": datetime.now(tz=UTC),
+        }
+    )
+
+
 def get_recipe(recipe_id: str) -> Recipe | None:
     """
     Get a recipe by ID.
