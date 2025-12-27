@@ -14,7 +14,7 @@ from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, Q
 from app.models.meal_plan import MealType
 from app.models.recipe import DietLabel, MealLabel, Recipe
 from app.services.ingredient_parser import parse_ingredient
-from app.storage.meal_plan_storage import delete_meal, load_meal_plan, update_meal
+from app.storage.meal_plan_storage import delete_meal, load_day_notes, load_meal_plan, update_day_note, update_meal
 
 st.set_page_config(page_title="Plate & Plan", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
@@ -277,6 +277,8 @@ if "week_offset" not in st.session_state:
     st.session_state.week_offset = 0
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Home"
+if "day_notes" not in st.session_state:
+    st.session_state.day_notes = load_day_notes()  # Load from Firestore
 if "meal_selector" not in st.session_state:
     st.session_state.meal_selector = None  # (date_str, meal_type) when selecting a meal
 if "custom_meal_input" not in st.session_state:
@@ -1116,6 +1118,20 @@ elif page == "Meal Plan":
 
         st.markdown(f"**{selected_day_name}, {selected_date.strftime('%b %d')}**")
 
+        # Notes input for day view
+        note_key = selected_date.isoformat()
+        current_note = st.session_state.day_notes.get(note_key, "")
+        new_note = st.text_input(
+            "📝 Day notes",
+            value=current_note,
+            key=f"note_day_{note_key}",
+            placeholder="e.g. office, home, climb day...",
+            max_chars=50,
+        )
+        if new_note != current_note:
+            st.session_state.day_notes[note_key] = new_note
+            update_day_note(note_key, new_note)
+
         # Compact meal display - 3 columns for the 3 meals
         meal_cols = st.columns(3)
         for i, meal_type in enumerate(meal_types):
@@ -1177,6 +1193,29 @@ elif page == "Meal Plan":
                 else:
                     st.markdown(f"**{day}**  \n{d.day}")
 
+        # Notes row for weekdays
+        notes_cols = st.columns([0.5] + [1] * 5)
+        with notes_cols[0]:
+            st.markdown(
+                "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
+                unsafe_allow_html=True,
+            )
+        for i, d in enumerate(week_dates[:5]):
+            with notes_cols[i + 1]:
+                note_key = d.isoformat()
+                current_note = st.session_state.day_notes.get(note_key, "")
+                new_note = st.text_input(
+                    "Note",
+                    value=current_note,
+                    key=f"note_weekday_{note_key}",
+                    label_visibility="collapsed",
+                    placeholder="e.g. office, home...",
+                    max_chars=50,
+                )
+                if new_note != current_note:
+                    st.session_state.day_notes[note_key] = new_note
+                    update_day_note(note_key, new_note)
+
         # Meal rows for weekdays
         for meal_type in meal_types:
             row_cols = st.columns([0.5] + [1] * 5)
@@ -1211,6 +1250,29 @@ elif page == "Meal Plan":
                     )
                 else:
                     st.markdown(f"**{day}**  \n{d.day}")
+
+        # Notes row for weekend
+        weekend_notes_cols = st.columns([0.5] + [1] * 5)
+        with weekend_notes_cols[0]:
+            st.markdown(
+                "<span style='color: #666; font-size: 0.85em;'>📝 Notes</span>",
+                unsafe_allow_html=True,
+            )
+        for i, d in enumerate(week_dates[5:]):
+            with weekend_notes_cols[i + 1]:
+                note_key = d.isoformat()
+                current_note = st.session_state.day_notes.get(note_key, "")
+                new_note = st.text_input(
+                    "Note",
+                    value=current_note,
+                    key=f"note_weekend_{note_key}",
+                    label_visibility="collapsed",
+                    placeholder="e.g. office, home...",
+                    max_chars=50,
+                )
+                if new_note != current_note:
+                    st.session_state.day_notes[note_key] = new_note
+                    update_day_note(note_key, new_note)
 
         # Meal rows for weekend (same total width as weekdays)
         for meal_type in meal_types:
