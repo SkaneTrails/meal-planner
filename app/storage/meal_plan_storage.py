@@ -124,3 +124,46 @@ def delete_meal(date_str: str, meal_type_str: str) -> None:
 
     key = f"meals.{date_str}_{meal_type_str}"
     doc_ref.update({key: DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
+
+
+def load_day_notes() -> dict[str, str]:
+    """
+    Load day notes from Firestore.
+
+    Returns:
+        Dictionary with date_str keys and note text values.
+    """
+    db = get_firestore_client()
+    doc = cast("DocumentSnapshot", db.collection(MEAL_PLANS_COLLECTION).document(MEAL_PLAN_DOC_ID).get())
+
+    if not doc.exists:
+        return {}
+
+    data = doc.to_dict()
+    if data is None:
+        return {}
+
+    return data.get("notes", {})
+
+
+def update_day_note(date_str: str, note: str) -> None:
+    """
+    Update or delete a single day's note in Firestore.
+
+    Args:
+        date_str: The ISO date string for the note.
+        note: The note text. If empty, the note is deleted.
+    """
+    from google.cloud.firestore_v1 import DELETE_FIELD
+
+    db = get_firestore_client()
+    doc_ref = db.collection(MEAL_PLANS_COLLECTION).document(MEAL_PLAN_DOC_ID)
+
+    if note:
+        # Set or update the note
+        doc_ref.set({"notes": {date_str: note}, "updated_at": datetime.now(tz=UTC)}, merge=True)
+    else:
+        # Delete the note if empty
+        doc = cast("DocumentSnapshot", doc_ref.get())
+        if doc.exists:
+            doc_ref.update({f"notes.{date_str}": DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
