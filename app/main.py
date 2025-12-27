@@ -58,6 +58,115 @@ def is_pantry_staple(item_name: str) -> bool:
     return any(re.search(rf"\b{re.escape(staple)}\b", name_lower) for staple in PANTRY_STAPLES)
 
 
+def _count_recent_recipe_usage(meal_plan: dict[tuple[str, str], str], days: int) -> dict[str, int]:
+    """Count recipe usage for past meals within the last N days (future meals don't count)."""
+    from datetime import UTC, datetime, timedelta
+
+    usage_count: dict[str, int] = {}
+    today = datetime.now(tz=UTC).date()
+    cutoff_date = today - timedelta(days=days)
+
+    for (date_str, _meal_type), rid in meal_plan.items():
+        if rid and not rid.startswith("custom:"):
+            try:
+                year, month, day = map(int, date_str.split("-"))
+                from datetime import date
+
+                meal_date = date(year, month, day)
+                # Only count past meals (already eaten), not future planned ones
+                if cutoff_date <= meal_date < today:
+                    usage_count[rid] = usage_count.get(rid, 0) + 1
+            except (ValueError, TypeError):
+                continue
+    return usage_count
+
+
+def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
+    """Render a form for editing an existing recipe."""
+    from app.models.recipe import DietLabel, MealLabel, Recipe
+    from app.storage.recipe_storage import update_recipe
+
+    with st.form(key=f"edit_recipe_form_{recipe_id}"):
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            st.markdown("### Recipe Info")
+            title = st.text_input("Title", value=recipe.title)
+            image_url = st.text_input("Image URL", value=recipe.image_url or "")
+            url = st.text_input("Source URL", value=recipe.url or "")
+
+            st.markdown("### Timing")
+            servings = st.number_input("Servings", min_value=1, value=recipe.servings or 4)
+            prep_time = st.number_input("Prep Time (min)", min_value=0, value=recipe.prep_time or 0)
+            cook_time = st.number_input("Cook Time (min)", min_value=0, value=recipe.cook_time or 0)
+
+            st.markdown("### Labels")
+            diet_options = ["None", "Veggie", "Fish", "Meat"]
+            current_diet = recipe.diet_label.value.title() if recipe.diet_label else "None"
+            diet_idx = diet_options.index(current_diet) if current_diet in diet_options else 0
+            diet = st.selectbox("Diet Type", diet_options, index=diet_idx)
+
+            meal_options = ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink"]
+            current_meal = recipe.meal_label.value.title() if recipe.meal_label else "None"
+            meal_idx = meal_options.index(current_meal) if current_meal in meal_options else 0
+            meal = st.selectbox("Meal Type", meal_options, index=meal_idx)
+
+        with col2:
+            st.markdown("### :material/grocery: Ingredients")
+            st.caption("One ingredient per line")
+            ingredients_text = st.text_area(
+                "Ingredients",
+                value="\n".join(recipe.ingredients),
+                height=200,
+                label_visibility="collapsed",
+            )
+
+            st.markdown("### :material/format_list_numbered: Instructions")
+            st.caption("One step per line")
+            instructions_text = st.text_area(
+                "Instructions",
+                value="\n".join(recipe.instructions),
+                height=250,
+                label_visibility="collapsed",
+            )
+
+        submitted = st.form_submit_button(":material/save: Save Changes", use_container_width=True, type="primary")
+
+        if submitted:
+            if not title.strip():
+                st.error("Title is required")
+            else:
+                ingredients = [ing.strip() for ing in ingredients_text.split("\n") if ing.strip()]
+                instructions = [step.strip() for step in instructions_text.split("\n") if step.strip()]
+
+                diet_label = None
+                if diet != "None":
+                    diet_label = DietLabel(diet.lower())
+
+                meal_label = None
+                if meal != "None":
+                    meal_label = MealLabel(meal.lower())
+
+                updated_recipe = Recipe(
+                    title=title.strip(),
+                    url=url.strip() or recipe.url,
+                    ingredients=ingredients,
+                    instructions=instructions,
+                    image_url=image_url.strip() or None,
+                    servings=servings if servings > 0 else None,
+                    prep_time=prep_time if prep_time > 0 else None,
+                    cook_time=cook_time if cook_time > 0 else None,
+                    diet_label=diet_label,
+                    meal_label=meal_label,
+                )
+
+                update_recipe(recipe_id, updated_recipe)
+                st.session_state[f"edit_mode_{recipe_id}"] = False
+                st.session_state.selected_recipe = (recipe_id, updated_recipe)
+                st.success("Recipe updated!")
+                st.rerun()
+
+
 st.set_page_config(page_title="Plate & Plan", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
 # Inject Bootstrap Icons CSS for custom icons
@@ -558,75 +667,95 @@ elif page == "Recipes":
 
         st.divider()
 
-        # Recipe detail view
-        col1, col2 = st.columns([1, 2])
+        # Initialize edit mode state
+        edit_mode_key = f"edit_mode_{recipe_id}"
+        if edit_mode_key not in st.session_state:
+            st.session_state[edit_mode_key] = False
 
-        with col1:
-            if recipe.image_url:
-                st.image(recipe.image_url, use_container_width=True)
-
-            st.markdown("### Quick Info")
-            if recipe.servings:
-                st.write(f":material/group: Serves: {recipe.servings}")
-            if recipe.prep_time:
-                st.write(f":material/timer: Prep: {recipe.prep_time} min")
-            if recipe.cook_time:
-                st.write(f":material/skillet: Cook: {recipe.cook_time} min")
-            if recipe.total_time_calculated:
-                st.write(f":material/schedule: Total: {recipe.total_time_calculated} min")
-
-            # Show labels
-            if recipe.diet_label:
-                diet_icons = {
-                    "veggie": ":material/eco:",
-                    "fish": ":material/set_meal:",
-                    "meat": ":material/kebab_dining:",
-                }
-                st.write(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
-            if recipe.meal_label:
-                meal_icons = {
-                    "breakfast": ":material/egg_alt:",
-                    "starter": ":material/soup_kitchen:",
-                    "meal": ":material/restaurant:",
-                    "dessert": ":material/cake:",
-                    "drink": ":material/local_cafe:",
-                }
-                st.write(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
-
-            if recipe.url and recipe.url != "manual-entry":
-                st.markdown(f"[:material/link: Original Recipe]({recipe.url})")
-
-            # Add to Meal Plan section
-            st.divider()
-            st.markdown("### :material/calendar_add_on: Add to Plan")
-
-            today_date = datetime.now(tz=UTC).date()
-            max_date = today_date + timedelta(days=13)
-
-            selected_date = st.date_input(
-                "Date", value=today_date, min_value=today_date, max_value=max_date, key=f"add_plan_date_{recipe_id}"
-            )
-            meal_options = {"Breakfast": MealType.BREAKFAST, "Lunch": MealType.LUNCH, "Dinner": MealType.DINNER}
-            selected_meal_str = st.selectbox(
-                "Meal", options=list(meal_options.keys()), key=f"add_plan_meal_{recipe_id}"
-            )
-            if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", use_container_width=True):
-                selected_meal = meal_options[selected_meal_str]
-                key = (selected_date.isoformat(), selected_meal.value)
-                st.session_state.meal_plan[key] = recipe_id
-                update_meal(selected_date.isoformat(), selected_meal.value, recipe_id)
-                st.toast(f"Added to {selected_meal_str} on {selected_date.strftime('%a %b %d')}!")
-
-        with col2:
+        # Toggle edit mode button
+        col_title, col_edit = st.columns([4, 1])
+        with col_title:
             st.markdown(f"## {recipe.title}")
+        with col_edit:
+            if st.session_state[edit_mode_key]:
+                if st.button(":material/close: Cancel", key=f"cancel_edit_{recipe_id}", use_container_width=True):
+                    st.session_state[edit_mode_key] = False
+                    st.rerun()
+            elif st.button(":material/edit: Edit", key=f"edit_recipe_{recipe_id}", use_container_width=True):
+                st.session_state[edit_mode_key] = True
+                st.rerun()
 
-            st.markdown("### :material/grocery: Ingredients")
-            for idx, ing in enumerate(recipe.ingredients):
-                st.checkbox(ing, key=f"ing_{recipe_id}_{idx}_{ing[:20]}")
+        if st.session_state[edit_mode_key]:
+            # Edit mode
+            _render_recipe_edit_form(recipe_id, recipe)
+        else:
+            # View mode - Recipe detail view
+            col1, col2 = st.columns([1, 2])
 
-            st.markdown("### :material/format_list_numbered: Instructions")
-            for i, step in enumerate(recipe.instructions, 1):
-                st.markdown(f"**Step {i}:** {step}")
+            with col1:
+                if recipe.image_url:
+                    st.image(recipe.image_url, use_container_width=True)
+
+                st.markdown("### Quick Info")
+                if recipe.servings:
+                    st.write(f":material/group: Serves: {recipe.servings}")
+                if recipe.prep_time:
+                    st.write(f":material/timer: Prep: {recipe.prep_time} min")
+                if recipe.cook_time:
+                    st.write(f":material/skillet: Cook: {recipe.cook_time} min")
+                if recipe.total_time_calculated:
+                    st.write(f":material/schedule: Total: {recipe.total_time_calculated} min")
+
+                # Show labels
+                if recipe.diet_label:
+                    diet_icons = {
+                        "veggie": ":material/eco:",
+                        "fish": ":material/set_meal:",
+                        "meat": ":material/kebab_dining:",
+                    }
+                    st.write(f"{diet_icons.get(recipe.diet_label.value, '')} {recipe.diet_label.value.title()}")
+                if recipe.meal_label:
+                    meal_icons = {
+                        "breakfast": ":material/egg_alt:",
+                        "starter": ":material/soup_kitchen:",
+                        "meal": ":material/restaurant:",
+                        "dessert": ":material/cake:",
+                        "drink": ":material/local_cafe:",
+                    }
+                    st.write(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
+
+                if recipe.url and recipe.url != "manual-entry":
+                    st.markdown(f"[:material/link: Original Recipe]({recipe.url})")
+
+                # Add to Meal Plan section
+                st.divider()
+                st.markdown("### :material/calendar_add_on: Add to Plan")
+
+                today_date = datetime.now(tz=UTC).date()
+                max_date = today_date + timedelta(days=13)
+
+                selected_date = st.date_input(
+                    "Date", value=today_date, min_value=today_date, max_value=max_date, key=f"add_plan_date_{recipe_id}"
+                )
+                meal_options = {"Lunch": MealType.LUNCH, "Dinner": MealType.DINNER}
+                selected_meal_str = st.selectbox(
+                    "Meal", options=list(meal_options.keys()), key=f"add_plan_meal_{recipe_id}"
+                )
+                if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", use_container_width=True):
+                    selected_meal = meal_options[selected_meal_str]
+                    key = (selected_date.isoformat(), selected_meal.value)
+                    st.session_state.meal_plan[key] = recipe_id
+                    update_meal(selected_date.isoformat(), selected_meal.value, recipe_id)
+                    st.toast(f"Added to {selected_meal_str} on {selected_date.strftime('%a %b %d')}!")
+
+            with col2:
+                st.markdown("### :material/grocery: Ingredients")
+                for idx, ing in enumerate(recipe.ingredients):
+                    st.checkbox(ing, key=f"ing_{recipe_id}_{idx}_{ing[:20]}")
+
+                st.markdown("### :material/format_list_numbered: Instructions")
+                for i, step in enumerate(recipe.instructions, 1):
+                    st.markdown(f"**Step {i}:** {step}")
 
     else:
         # Tabs for different views
@@ -952,7 +1081,7 @@ elif page == "Meal Plan":
     # Weekly grid (Saturday to Friday)
     weekend_names = ["Sat", "Sun"]
     weekday_names = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-    meal_types = [MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER]
+    meal_types = [MealType.LUNCH, MealType.DINNER]
     today = datetime.now(tz=UTC).date()
     title_max_length = 25
 
@@ -1071,31 +1200,51 @@ elif page == "Meal Plan":
             recipe = recipe_dict[current_value]
             render_recipe_meal_tile(key, col_key, d, meal_type, current_value, recipe)
 
+    def get_week_meals_for_copy() -> dict[str, str]:
+        """Get a dict of display names to recipe IDs for meals already planned this week."""
+        week_dates = get_week_dates(st.session_state.week_offset)
+        meals_dict: dict[str, str] = {}
+        seen_recipes: set[str] = set()
+
+        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        meal_names = {"breakfast": "🌅", "lunch": "☀️", "dinner": "🌙"}
+
+        for d in week_dates:
+            for meal_type in [MealType.LUNCH, MealType.DINNER]:
+                key = (d.isoformat(), meal_type.value)
+                recipe_id = st.session_state.meal_plan.get(key, "")
+                if recipe_id and not recipe_id.startswith("custom:") and recipe_id not in seen_recipes:
+                    if recipe_id not in recipe_dict:
+                        continue
+                    recipe = recipe_dict[recipe_id]
+                    day_name = day_names[d.weekday()]
+                    meal_icon = meal_names.get(meal_type.value, "")
+                    display = f"{day_name} {meal_icon} {recipe.title}"
+                    meals_dict[display] = recipe_id
+                    seen_recipes.add(recipe_id)
+
+        return meals_dict
+
     def get_weighted_random_recipe() -> str | None:
-        """Get a random recipe, weighted against recently used ones."""
+        """Get a random recipe, weighted against ones eaten in the last 2 months."""
         import random
+
+        from app.storage.meal_plan_storage import load_meal_plan
 
         if not all_recipes:
             return None
 
-        # Count how many times each recipe is used in current meal plan
-        usage_count: dict[str, int] = {}
-        for rid in st.session_state.meal_plan.values():
-            if rid and not rid.startswith("custom:"):
-                usage_count[rid] = usage_count.get(rid, 0) + 1
+        usage_count = _count_recent_recipe_usage(load_meal_plan(), days=60)
 
-        # Build weighted list - unused recipes get weight 10, used ones get weight 1/(usage+1)
+        # Build weighted list - unused recipes get weight 3, used ones get lower weight
+        # Weight formula: 3 / (usage + 1) - so unused=3, used once=1.5, twice=1, etc.
         weights = []
         recipe_ids = []
         for rid, _ in all_recipes:
             recipe_ids.append(rid)
             usage = usage_count.get(rid, 0)
-            if usage == 0:
-                weights.append(10.0)  # High weight for unused
-            else:
-                weights.append(1.0 / (usage + 1))  # Lower weight for more used
+            weights.append(3.0 / (usage + 1))
 
-        # Normalize weights
         total_weight = sum(weights)
         if total_weight == 0:
             return random.choice(recipe_ids)
@@ -1110,40 +1259,75 @@ elif page == "Meal Plan":
 
         return recipe_ids[-1] if recipe_ids else None
 
+    def _render_copy_mode_ui(key: tuple, col_key: str, d: date, meal_type: MealType, copy_mode_key: str) -> None:
+        """Render the copy-from-week selection UI."""
+        week_meals = get_week_meals_for_copy()
+        if not week_meals:
+            st.session_state[copy_mode_key] = False
+            st.rerun()
+            return
+
+        st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
+        selected = st.selectbox(
+            "Copy from:",
+            options=["", *list(week_meals.keys())],
+            key=f"copy_select_{col_key}_{d}_{meal_type.value}",
+            label_visibility="collapsed",
+        )
+        sel_col1, sel_col2 = st.columns(2)
+        with sel_col1:
+            if st.button("", key=f"confirm_copy_{col_key}", help="Copy", icon=":material/check:"):
+                if selected and selected in week_meals:
+                    recipe_id = week_meals[selected]
+                    st.session_state.meal_plan[key] = recipe_id
+                    update_meal(d.isoformat(), meal_type.value, recipe_id)
+                st.session_state[copy_mode_key] = False
+                st.rerun()
+        with sel_col2:
+            if st.button("", key=f"cancel_copy_{col_key}", help="Cancel", icon=":material/close:"):
+                st.session_state[copy_mode_key] = False
+                st.rerun()
+        st.markdown("<div style='height: 60px;'></div>", unsafe_allow_html=True)
+
+    def _render_empty_tile_buttons(key: tuple, col_key: str, d: date, meal_type: MealType, copy_mode_key: str) -> None:
+        """Render the action buttons for an empty meal tile."""
+        st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
+        _, btn_col1, btn_col2, btn_col3, btn_col4, _ = st.columns([1, 1, 1, 1, 1, 1])
+        with btn_col1:
+            if st.button("", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"):
+                st.session_state.meal_selector = (d.isoformat(), meal_type.value)
+                st.session_state.current_page = "📖 Browse Recipes"
+                st.rerun()
+        with btn_col2:
+            if st.button("", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random", icon=":material/casino:"):
+                random_rid = get_weighted_random_recipe()
+                if random_rid:
+                    st.session_state.meal_plan[key] = random_rid
+                    update_meal(d.isoformat(), meal_type.value, random_rid)
+                    st.rerun()
+                else:
+                    st.toast("No recipes available!")
+        with btn_col3:
+            week_meals = get_week_meals_for_copy()
+            if week_meals and st.button(
+                "", key=f"copy_{col_key}_{d}_{meal_type.value}", help="Copy from week", icon=":material/content_copy:"
+            ):
+                st.session_state[copy_mode_key] = True
+                st.rerun()
+        with btn_col4:
+            if st.button("", key=f"custom_{col_key}_{d}_{meal_type.value}", help="Custom", icon=":material/edit:"):
+                st.session_state.custom_meal_input = key
+                st.rerun()
+        st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
+
     def render_empty_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
         """Render an empty meal tile with action buttons."""
         with st.container(border=True):
-            # Fixed height to match recipe tiles (image 200px + title ~30px + buttons ~50px)
-            # Top spacer to center buttons vertically
-            st.markdown("<div style='height: 115px;'></div>", unsafe_allow_html=True)
-            # Centered buttons
-            _, btn_col1, btn_col2, btn_col3, _ = st.columns([1, 1, 1, 1, 1])
-            with btn_col1:
-                if st.button(
-                    "", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"
-                ):
-                    st.session_state.meal_selector = (d.isoformat(), meal_type.value)
-                    st.session_state.current_page = "📖 Browse Recipes"
-                    st.rerun()
-            with btn_col2:
-                if st.button(
-                    "", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random recipe", icon=":material/casino:"
-                ):
-                    random_rid = get_weighted_random_recipe()
-                    if random_rid:
-                        st.session_state.meal_plan[key] = random_rid
-                        update_meal(d.isoformat(), meal_type.value, random_rid)
-                        st.rerun()
-                    else:
-                        st.toast("No recipes available!")
-            with btn_col3:
-                if st.button(
-                    "", key=f"custom_{col_key}_{d}_{meal_type.value}", help="Write custom", icon=":material/edit:"
-                ):
-                    st.session_state.custom_meal_input = key
-                    st.rerun()
-            # Bottom spacer to match total height
-            st.markdown("<div style='height: 115px;'></div>", unsafe_allow_html=True)
+            copy_mode_key = f"copy_from_week_{key}"
+            if st.session_state.get(copy_mode_key):
+                _render_copy_mode_ui(key, col_key, d, meal_type, copy_mode_key)
+            else:
+                _render_empty_tile_buttons(key, col_key, d, meal_type, copy_mode_key)
 
     def render_meal_tile(d: date, meal_type: MealType, col_key: str) -> None:
         """Render a single meal tile in the weekly grid."""
@@ -1395,17 +1579,24 @@ elif page == "Meal Plan":
 
         # List unique recipes for the week
         unique_recipes = set()
+        custom_meals = set()
         for d in week_dates:
             for mt in meal_types:
                 key = (d.isoformat(), mt.value)
                 if key in st.session_state.meal_plan:
-                    unique_recipes.add(st.session_state.meal_plan[key])
+                    meal_value = st.session_state.meal_plan[key]
+                    if meal_value.startswith("custom:"):
+                        custom_meals.add(meal_value[7:])  # Remove "custom:" prefix
+                    else:
+                        unique_recipes.add(meal_value)
 
-        if unique_recipes:
-            st.write("**Recipes this week:**")
+        if unique_recipes or custom_meals:
+            st.write("**Meals this week:**")
             for rid in unique_recipes:
-                title = recipe_options.get(rid, "Unknown")
+                title = recipe_options.get(rid, rid)
                 st.write(f"- {title}")
+            for custom_name in custom_meals:
+                st.write(f"- {custom_name}")
 
     with col2:
         st.subheader(":material/shopping_cart: Generate Grocery List")
