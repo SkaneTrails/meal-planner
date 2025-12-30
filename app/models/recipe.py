@@ -20,6 +20,8 @@ class MealLabel(Enum):
     MEAL = "meal"
     DESSERT = "dessert"
     DRINK = "drink"
+    SAUCE = "sauce"
+    PICKLE = "pickle"
 
 
 @dataclass
