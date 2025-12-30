@@ -197,7 +197,7 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
             diet_idx = diet_options.index(current_diet) if current_diet in diet_options else 0
             diet = st.selectbox("Diet Type", diet_options, index=diet_idx)
 
-            meal_options = ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle"]
+            meal_options = ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle", "Grill"]
             current_meal = recipe.meal_label.value.title() if recipe.meal_label else "None"
             meal_idx = meal_options.index(current_meal) if current_meal in meal_options else 0
             meal = st.selectbox("Meal Type", meal_options, index=meal_idx)
@@ -684,7 +684,7 @@ if page == "Home":
         with label_col2:
             home_meal_label = st.selectbox(
                 ":material/restaurant: Meal Type",
-                ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle"],
+                ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle", "Grill"],
                 key="home_meal_label",
             )
 
@@ -812,6 +812,7 @@ elif page == "Recipes":
                         "drink": ":material/local_cafe:",
                         "sauce": ":material/nutrition:",
                         "pickle": ":material/eco:",
+                        "grill": ":material/outdoor_grill:",
                     }
                     st.write(f"{meal_icons.get(recipe.meal_label.value, '')} {recipe.meal_label.value.title()}")
 
@@ -885,7 +886,7 @@ elif page == "Recipes":
             with filter_col3:
                 meal_filter = st.selectbox(
                     ":material/restaurant:",
-                    ["All", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle"],
+                    ["All", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle", "Grill"],
                     key="lib_meal",
                 )
             with filter_col4:
@@ -1000,7 +1001,7 @@ elif page == "Recipes":
             with label_col2:
                 url_meal_label = st.selectbox(
                     ":material/restaurant: Meal Type",
-                    ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle"],
+                    ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle", "Grill"],
                     key="url_meal_label",
                 )
 
@@ -1102,7 +1103,7 @@ elif page == "Recipes":
                 with label_col2:
                     manual_meal_label = st.selectbox(
                         ":material/restaurant: Meal Type",
-                        ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle"],
+                        ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle", "Grill"],
                         key="manual_meal_label",
                     )
 
