@@ -1200,8 +1200,8 @@ elif page == "Meal Plan":
     today = datetime.now(tz=UTC).date()
     title_max_length = 25
 
-    # Use all recipes for random selection (no meal_label filtering)
-    all_recipes = recipes
+    # Filter recipes for random selection - only Meal and Grill types
+    all_recipes = [(rid, r) for rid, r in recipes if r.meal_label and r.meal_label.value in ("meal", "grill")]
 
     def render_custom_input_tile(key: tuple, col_key: str, d: date, meal_type: MealType) -> None:
         """Render the custom text input form for a meal tile."""
