@@ -215,7 +215,7 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
                 "Instructions", value="\n".join(recipe.instructions), height=250, label_visibility="collapsed"
             )
 
-        submitted = st.form_submit_button(":material/save: Save Changes", use_container_width=True, type="primary")
+        submitted = st.form_submit_button(":material/save: Save Changes", width="stretch", type="primary")
 
         if submitted:
             if not title.strip():
@@ -268,10 +268,10 @@ def confirm_delete_recipe(recipe_id: str, recipe_title: str) -> None:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width="stretch"):
             st.rerun()
     with col2:
-        if st.button("Delete", use_container_width=True, type="primary"):
+        if st.button("Delete", width="stretch", type="primary"):
             try:
                 delete_recipe(recipe_id)
                 st.session_state.selected_recipe = None
@@ -288,10 +288,10 @@ def confirm_clear_week(week_dates: list, meal_types: list) -> None:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width="stretch"):
             st.rerun()
     with col2:
-        if st.button("Clear All", use_container_width=True, type="primary"):
+        if st.button("Clear All", width="stretch", type="primary"):
             for d in week_dates:
                 for mt in meal_types:
                     key = (d.isoformat(), mt.value)
@@ -660,7 +660,7 @@ if logo1_path.exists():
 
 # Sidebar navigation with logo and sections
 if logo_path.exists():
-    st.sidebar.image(str(logo_path), use_container_width=True)
+    st.sidebar.image(str(logo_path), width="stretch")
 else:
     st.sidebar.markdown(
         f'<h1 style="display: flex; align-items: center; gap: 8px;">{svg_icon("cup-hot", size=28)} Plate & Plan</h1>',
@@ -682,7 +682,7 @@ for page_name, page_info in NAV_PAGES.items():
     if st.sidebar.button(
         page_name,
         key=f"nav_{page_info['key']}",
-        use_container_width=True,
+        width="stretch",
         type="primary" if is_current else "secondary",
         icon=f":material/{page_info['icon']}:" if not is_current else None,
     ):
@@ -719,7 +719,7 @@ if page == "Home":
         st.markdown("### :material/menu_book: Recipe Library")
         recipes = load_recipes()
         st.metric("Saved Recipes", len(recipes))
-        if st.button("Browse Recipes", use_container_width=True):
+        if st.button("Browse Recipes", width="stretch"):
             st.session_state.current_page = "Recipes"
             scroll_to_top()
             st.rerun()
@@ -732,7 +732,7 @@ if page == "Home":
         )
         total_slots = len(week_dates) * 3  # breakfast, lunch, dinner
         st.metric("Meals Planned", f"{planned_meals}/{total_slots}")
-        if st.button("Plan Meals", use_container_width=True):
+        if st.button("Plan Meals", width="stretch"):
             st.session_state.current_page = "Meal Plan"
             scroll_to_top()
             st.rerun()
@@ -740,7 +740,7 @@ if page == "Home":
     with col3:
         st.markdown("### :material/shopping_cart: Shopping")
         st.metric("Items to Buy", len(st.session_state.grocery_list.get_unchecked()))
-        if st.button("View List", use_container_width=True):
+        if st.button("View List", width="stretch"):
             st.session_state.current_page = "Grocery List"
             scroll_to_top()
             st.rerun()
@@ -850,10 +850,10 @@ elif page == "Recipes":
             st.markdown(f"## {recipe.title}")
         with col_edit:
             if st.session_state[edit_mode_key]:
-                if st.button(":material/close: Cancel", key=f"cancel_edit_{recipe_id}", use_container_width=True):
+                if st.button(":material/close: Cancel", key=f"cancel_edit_{recipe_id}", width="stretch"):
                     st.session_state[edit_mode_key] = False
                     st.rerun()
-            elif st.button(":material/edit: Edit", key=f"edit_recipe_{recipe_id}", use_container_width=True):
+            elif st.button(":material/edit: Edit", key=f"edit_recipe_{recipe_id}", width="stretch"):
                 st.session_state[edit_mode_key] = True
                 st.rerun()
 
@@ -865,7 +865,7 @@ elif page == "Recipes":
             col1, col2 = st.columns([1, 2])
 
             with col1:
-                st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
+                st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, width="stretch")
 
                 st.markdown("### Quick Info")
                 if recipe.servings:
@@ -915,7 +915,7 @@ elif page == "Recipes":
                 selected_meal_str = st.selectbox(
                     "Meal", options=list(meal_options.keys()), key=f"add_plan_meal_{recipe_id}"
                 )
-                if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", use_container_width=True):
+                if st.button(":material/add: Add to Plan", key=f"add_to_plan_{recipe_id}", width="stretch"):
                     selected_meal = meal_options[selected_meal_str]
                     key = (selected_date.isoformat(), selected_meal.value)
                     st.session_state.meal_plan[key] = recipe_id
@@ -940,7 +940,7 @@ elif page == "Recipes":
         with view_col1:
             if st.button(
                 ":material/folder: All Recipes",
-                use_container_width=True,
+                width="stretch",
                 type="primary" if st.session_state.recipes_view == "all" else "secondary",
             ):
                 st.session_state.recipes_view = "all"
@@ -948,7 +948,7 @@ elif page == "Recipes":
         with view_col2:
             if st.button(
                 ":material/add: Add Recipe",
-                use_container_width=True,
+                width="stretch",
                 type="primary" if st.session_state.recipes_view == "add" else "secondary",
             ):
                 st.session_state.recipes_view = "add"
@@ -1009,7 +1009,7 @@ elif page == "Recipes":
                 cols = st.columns(4)
                 for i, (recipe_id, recipe) in enumerate(recipes):
                     with cols[i % 4], st.container(border=True):
-                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
+                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, width="stretch")
 
                         st.markdown(f"**{recipe.title}**")
 
@@ -1051,15 +1051,11 @@ elif page == "Recipes":
 
                         bcol1, bcol2 = st.columns(2)
                         with bcol1:
-                            if st.button(
-                                "", key=f"view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"
-                            ):
+                            if st.button("", key=f"view_{recipe_id}", width="stretch", icon=":material/menu_book:"):
                                 st.session_state.selected_recipe = (recipe_id, recipe)
                                 st.rerun()
                         with bcol2:
-                            if st.button(
-                                "", key=f"del_{recipe_id}", use_container_width=True, icon=":material/delete:"
-                            ):
+                            if st.button("", key=f"del_{recipe_id}", width="stretch", icon=":material/delete:"):
                                 confirm_delete_recipe(recipe_id, recipe.title)
             else:
                 st.info("No recipes yet! Add your first recipe using the 'Add Recipe' button above.")
@@ -1138,7 +1134,7 @@ elif page == "Recipes":
 
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button("", type="primary", use_container_width=True, icon=":material/save:"):
+                    if st.button("", type="primary", width="stretch", icon=":material/save:"):
                         try:
                             from app.storage.recipe_storage import save_recipe
 
@@ -1149,7 +1145,7 @@ elif page == "Recipes":
                         except Exception as e:
                             st.error(f"Could not save: {e}")
                 with col2:
-                    if st.button("", use_container_width=True, icon=":material/delete:"):
+                    if st.button("", width="stretch", icon=":material/delete:"):
                         st.session_state.temp_recipe = None
                         st.rerun()
 
@@ -1195,7 +1191,7 @@ elif page == "Recipes":
                 )
 
                 submitted = st.form_submit_button(
-                    "Save Recipe", type="primary", use_container_width=True, icon=":material/save:"
+                    "Save Recipe", type="primary", width="stretch", icon=":material/save:"
                 )
 
                 if submitted:
@@ -1244,7 +1240,7 @@ elif page == "Meal Plan":
     # Week navigation - centered
     _, nav_col1, nav_col2, nav_col3, _ = st.columns([2, 1, 2, 1, 2])
     with nav_col1:
-        if st.button("", help="Previous Week", icon=":material/chevron_left:", use_container_width=True):
+        if st.button("", help="Previous Week", icon=":material/chevron_left:", width="stretch"):
             st.session_state.week_offset -= 1
             st.rerun()
     with nav_col2:
@@ -1254,11 +1250,11 @@ elif page == "Meal Plan":
         st.markdown(
             f"<h3 style='text-align: center; margin: 0;'>{week_start} - {week_end}</h3>", unsafe_allow_html=True
         )
-        if st.session_state.week_offset != 0 and st.button("Today", use_container_width=True):
+        if st.session_state.week_offset != 0 and st.button("Today", width="stretch"):
             st.session_state.week_offset = 0
             st.rerun()
     with nav_col3:
-        if st.button("", help="Next Week", icon=":material/chevron_right:", use_container_width=True):
+        if st.button("", help="Next Week", icon=":material/chevron_right:", width="stretch"):
             st.session_state.week_offset += 1
             st.rerun()
 
@@ -1545,7 +1541,7 @@ elif page == "Meal Plan":
     with view_col1:
         if st.button(
             ":material/calendar_view_week: Week",
-            use_container_width=True,
+            width="stretch",
             type="primary" if st.session_state.meal_plan_view == "week" else "secondary",
         ):
             st.session_state.meal_plan_view = "week"
@@ -1553,7 +1549,7 @@ elif page == "Meal Plan":
     with view_col2:
         if st.button(
             ":material/calendar_today: Day",
-            use_container_width=True,
+            width="stretch",
             type="primary" if st.session_state.meal_plan_view == "day" else "secondary",
         ):
             st.session_state.meal_plan_view = "day"
@@ -1577,7 +1573,7 @@ elif page == "Meal Plan":
                 is_today = d == today
                 btn_type = "primary" if is_selected else "secondary"
                 label = f"{d.day}"
-                if st.button(label, key=f"day_btn_{i}", use_container_width=True, type=btn_type):
+                if st.button(label, key=f"day_btn_{i}", width="stretch", type=btn_type):
                     st.session_state.selected_day_index = i
                     st.rerun()
 
@@ -1621,7 +1617,7 @@ elif page == "Meal Plan":
                         st.caption(f"_{current_value[7:]}_")
                     elif current_value in recipe_dict:
                         recipe = recipe_dict[current_value]
-                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, use_container_width=True)
+                        st.image(recipe.image_url or DEFAULT_RECIPE_IMAGE, width="stretch")
                         st.caption(
                             recipe.title[:title_max_length] + "..."
                             if len(recipe.title) > title_max_length
@@ -1787,7 +1783,7 @@ elif page == "Meal Plan":
         st.subheader(":material/shopping_cart: Generate Grocery List")
         st.write("Add ingredients from this week's meals to your shopping list.")
 
-        if st.button(":material/shopping_cart: Add to List", type="primary", use_container_width=True):
+        if st.button(":material/shopping_cart: Add to List", type="primary", width="stretch"):
             if not unique_recipes:
                 st.warning("Plan some meals first!")
             else:
@@ -1814,7 +1810,7 @@ elif page == "Meal Plan":
                 st.session_state.grocery_list = grocery_list
                 st.success(f":material/check_circle: Added {items_added} items! Total: {len(grocery_list.items)}")
 
-        if st.button("Clear Week", use_container_width=True, icon=":material/delete_sweep:"):
+        if st.button("Clear Week", width="stretch", icon=":material/delete_sweep:"):
             confirm_clear_week(week_dates, meal_types)
 
 # =============================================================================
@@ -1839,17 +1835,17 @@ elif page == "Grocery List":
         # Actions
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("Check All", use_container_width=True, icon=":material/check_box:"):
+            if st.button("Check All", width="stretch", icon=":material/check_box:"):
                 for item in grocery_list.items:
                     item.checked = True
                 st.rerun()
         with col2:
-            if st.button("Uncheck All", use_container_width=True, icon=":material/check_box_outline_blank:"):
+            if st.button("Uncheck All", width="stretch", icon=":material/check_box_outline_blank:"):
                 for item in grocery_list.items:
                     item.checked = False
                 st.rerun()
         with col3:
-            if st.button("Clear List", use_container_width=True, icon=":material/delete:"):
+            if st.button("Clear List", width="stretch", icon=":material/delete:"):
                 st.session_state.grocery_list = GroceryList()
                 st.rerun()
 
@@ -1964,7 +1960,7 @@ elif page == "📖 Browse Recipes":
 
     if not recipes:
         st.warning("No recipes yet! Add some recipes first.")
-        if st.button("Go to Recipes", use_container_width=True):
+        if st.button("Go to Recipes", width="stretch"):
             st.session_state.current_page = "Recipes"
             scroll_to_top()
             st.rerun()
@@ -1986,7 +1982,7 @@ elif page == "📖 Browse Recipes":
             for i, (recipe_id, recipe) in enumerate(filtered_recipes):
                 with cols[i % 4], st.container(border=True):
                     if recipe.image_url:
-                        st.image(recipe.image_url, use_container_width=True)
+                        st.image(recipe.image_url, width="stretch")
                     else:
                         st.markdown(
                             "<div style='height: 150px; background: #f0f0f0; display: flex; "
@@ -2033,10 +2029,7 @@ elif page == "📖 Browse Recipes":
                     # Action button
                     if st.session_state.meal_selector:
                         if st.button(
-                            "Select",
-                            key=f"browse_select_{recipe_id}",
-                            use_container_width=True,
-                            icon=":material/check:",
+                            "Select", key=f"browse_select_{recipe_id}", width="stretch", icon=":material/check:"
                         ):
                             sel_date, sel_meal = st.session_state.meal_selector
                             st.session_state.meal_plan[(sel_date, sel_meal)] = recipe_id
@@ -2045,9 +2038,7 @@ elif page == "📖 Browse Recipes":
                             st.session_state.current_page = "Meal Plan"
                             scroll_to_top()
                             st.rerun()
-                    elif st.button(
-                        "", key=f"browse_view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"
-                    ):
+                    elif st.button("", key=f"browse_view_{recipe_id}", width="stretch", icon=":material/menu_book:"):
                         st.session_state.selected_recipe = (recipe_id, recipe)
                         st.session_state.current_page = "Recipes"
                         scroll_to_top()
