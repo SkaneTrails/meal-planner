@@ -549,6 +549,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 # Initialize session state
 if "meal_plan" not in st.session_state:
     st.session_state.meal_plan = load_meal_plan()  # Load from Firestore
@@ -583,11 +584,13 @@ def scroll_to_top() -> None:
 def _render_scroll_script() -> None:
     """Render the scroll-to-top script if requested."""
     if st.session_state.scroll_to_top:
-        st.markdown(
+        import streamlit.components.v1 as components
+
+        components.html(
             """<script>
             window.parent.document.querySelector('section.main').scrollTo(0, 0);
             </script>""",
-            unsafe_allow_html=True,
+            height=0,
         )
         st.session_state.scroll_to_top = False
 
