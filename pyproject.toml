@@ -22,6 +22,7 @@ dependencies = [
   "recipe-scrapers>=15",
   "streamlit>=1.28",
   "streamlit-sortables>=0.3.1",
+  "watchdog>=6.0.0",
 ]
 
 optional-dependencies.dev = [
