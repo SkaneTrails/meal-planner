@@ -254,6 +254,53 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
 
 st.set_page_config(page_title="Plate & Plan", page_icon="🍽️", layout="wide", initial_sidebar_state="expanded")
 
+
+# =============================================================================
+# CONFIRMATION DIALOGS
+# =============================================================================
+@st.dialog("Delete Recipe")
+def confirm_delete_recipe(recipe_id: str, recipe_title: str) -> None:
+    """Show confirmation dialog for recipe deletion."""
+    from app.storage.recipe_storage import delete_recipe
+
+    st.warning(f"Are you sure you want to delete **{recipe_title}**?")
+    st.caption("This action cannot be undone.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Cancel", use_container_width=True):
+            st.rerun()
+    with col2:
+        if st.button("Delete", use_container_width=True, type="primary"):
+            try:
+                delete_recipe(recipe_id)
+                st.session_state.selected_recipe = None
+                st.rerun()
+            except Exception as e:
+                st.error(str(e))
+
+
+@st.dialog("Clear Week")
+def confirm_clear_week(week_dates: list, meal_types: list) -> None:
+    """Show confirmation dialog for clearing all meals in a week."""
+    st.warning("Are you sure you want to clear all meals for this week?")
+    st.caption("This will remove all planned meals from the week.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Cancel", use_container_width=True):
+            st.rerun()
+    with col2:
+        if st.button("Clear All", use_container_width=True, type="primary"):
+            for d in week_dates:
+                for mt in meal_types:
+                    key = (d.isoformat(), mt.value)
+                    if key in st.session_state.meal_plan:
+                        del st.session_state.meal_plan[key]
+                        delete_meal(d.isoformat(), mt.value)
+            st.rerun()
+
+
 # Inject Bootstrap Icons CSS for custom icons
 st.markdown(inject_bootstrap_icons_css(), unsafe_allow_html=True)
 
@@ -1013,13 +1060,7 @@ elif page == "Recipes":
                             if st.button(
                                 "", key=f"del_{recipe_id}", use_container_width=True, icon=":material/delete:"
                             ):
-                                try:
-                                    from app.storage.recipe_storage import delete_recipe
-
-                                    delete_recipe(recipe_id)
-                                    st.rerun()
-                                except Exception as e:
-                                    st.error(str(e))
+                                confirm_delete_recipe(recipe_id, recipe.title)
             else:
                 st.info("No recipes yet! Add your first recipe using the 'Add Recipe' button above.")
 
@@ -1774,13 +1815,7 @@ elif page == "Meal Plan":
                 st.success(f":material/check_circle: Added {items_added} items! Total: {len(grocery_list.items)}")
 
         if st.button("Clear Week", use_container_width=True, icon=":material/delete_sweep:"):
-            for d in week_dates:
-                for mt in meal_types:
-                    key = (d.isoformat(), mt.value)
-                    if key in st.session_state.meal_plan:
-                        del st.session_state.meal_plan[key]
-                        delete_meal(d.isoformat(), mt.value)
-            st.rerun()
+            confirm_clear_week(week_dates, meal_types)
 
 # =============================================================================
 # GROCERY LIST PAGE
