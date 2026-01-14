@@ -519,6 +519,28 @@ if "meal_selector" not in st.session_state:
     st.session_state.meal_selector = None  # (date_str, meal_type) when selecting a meal
 if "custom_meal_input" not in st.session_state:
     st.session_state.custom_meal_input = None  # (date_str, meal_type) when entering custom text
+if "scroll_to_top" not in st.session_state:
+    st.session_state.scroll_to_top = False
+
+
+def scroll_to_top() -> None:
+    """Mark that the page should scroll to top on next render.
+
+    Call this before st.rerun() when navigating to ensure the page starts at top.
+    """
+    st.session_state.scroll_to_top = True
+
+
+def _render_scroll_script() -> None:
+    """Render the scroll-to-top script if requested."""
+    if st.session_state.scroll_to_top:
+        st.markdown(
+            """<script>
+            window.parent.document.querySelector('section.main').scrollTo(0, 0);
+            </script>""",
+            unsafe_allow_html=True,
+        )
+        st.session_state.scroll_to_top = False
 
 
 def get_week_dates(offset: int = 0) -> list[date]:
@@ -621,7 +643,14 @@ for page_name, page_info in NAV_PAGES.items():
         # Clear selected recipe when navigating to Recipes page to show the list
         if page_name == "Recipes":
             st.session_state.selected_recipe = None
+        # Clear stale recipe preview when navigating away from Recipes page
+        if page_name != "Recipes" and "temp_recipe" in st.session_state:
+            st.session_state.temp_recipe = None
+        scroll_to_top()
         st.rerun()
+
+# Render scroll-to-top script if requested
+_render_scroll_script()
 
 page = st.session_state.current_page
 
@@ -645,6 +674,7 @@ if page == "Home":
         st.metric("Saved Recipes", len(recipes))
         if st.button("Browse Recipes", use_container_width=True):
             st.session_state.current_page = "Recipes"
+            scroll_to_top()
             st.rerun()
 
     with col2:
@@ -657,6 +687,7 @@ if page == "Home":
         st.metric("Meals Planned", f"{planned_meals}/{total_slots}")
         if st.button("Plan Meals", use_container_width=True):
             st.session_state.current_page = "Meal Plan"
+            scroll_to_top()
             st.rerun()
 
     with col3:
@@ -664,6 +695,7 @@ if page == "Home":
         st.metric("Items to Buy", len(st.session_state.grocery_list.get_unchecked()))
         if st.button("View List", use_container_width=True):
             st.session_state.current_page = "Grocery List"
+            scroll_to_top()
             st.rerun()
 
     st.divider()
@@ -728,11 +760,13 @@ if page == "Home":
                 if st.button("View Recipe", icon=":material/menu_book:"):
                     st.session_state.selected_recipe = (recipe_id, recipe)
                     st.session_state.current_page = "Recipes"
+                    scroll_to_top()
                     st.rerun()
         else:
             st.info("No dinner planned for today")
             if st.button("Plan Tonight's Dinner"):
                 st.session_state.current_page = "Meal Plan"
+                scroll_to_top()
                 st.rerun()
 
 # =============================================================================
@@ -753,6 +787,7 @@ elif page == "Recipes":
         # Back button
         if st.button("← Back to Recipes"):
             st.session_state.selected_recipe = None
+            scroll_to_top()
             st.rerun()
 
         st.divider()
@@ -1280,6 +1315,7 @@ elif page == "Meal Plan":
                 ):
                     st.session_state.selected_recipe = (recipe_id, recipe)
                     st.session_state.current_page = "Recipes"
+                    scroll_to_top()
                     st.rerun()
             with dec_col:
                 if (
@@ -1410,6 +1446,7 @@ elif page == "Meal Plan":
             if st.button("", key=f"add_{col_key}_{d}_{meal_type.value}", help="Select recipe", icon=":material/add:"):
                 st.session_state.meal_selector = (d.isoformat(), meal_type.value)
                 st.session_state.current_page = "📖 Browse Recipes"
+                scroll_to_top()
                 st.rerun()
         with btn_col2:
             if st.button("", key=f"random_{col_key}_{d}_{meal_type.value}", help="Random", icon=":material/casino:"):
@@ -1559,6 +1596,7 @@ elif page == "Meal Plan":
                     if st.button(":material/add:", key=f"add_day_{selected_date}_{meal_type.value}", help="Add"):
                         st.session_state.meal_selector = (selected_date.isoformat(), meal_type.value)
                         st.session_state.current_page = "📖 Browse Recipes"
+                        scroll_to_top()
                         st.rerun()
 
     else:
@@ -1883,6 +1921,7 @@ elif page == "📖 Browse Recipes":
         if st.button("← Cancel Selection"):
             st.session_state.meal_selector = None
             st.session_state.current_page = "Meal Plan"
+            scroll_to_top()
             st.rerun()
         st.divider()
 
@@ -1892,6 +1931,7 @@ elif page == "📖 Browse Recipes":
         st.warning("No recipes yet! Add some recipes first.")
         if st.button("Go to Recipes", use_container_width=True):
             st.session_state.current_page = "Recipes"
+            scroll_to_top()
             st.rerun()
     else:
         # Filter options
@@ -1968,12 +2008,14 @@ elif page == "📖 Browse Recipes":
                             update_meal(sel_date, sel_meal, recipe_id)
                             st.session_state.meal_selector = None
                             st.session_state.current_page = "Meal Plan"
+                            scroll_to_top()
                             st.rerun()
                     elif st.button(
                         "", key=f"browse_view_{recipe_id}", use_container_width=True, icon=":material/menu_book:"
                     ):
                         st.session_state.selected_recipe = (recipe_id, recipe)
                         st.session_state.current_page = "Recipes"
+                        scroll_to_top()
                         st.rerun()
         else:
             st.info("No recipes match your filters.")
