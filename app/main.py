@@ -272,12 +272,13 @@ def confirm_delete_recipe(recipe_id: str, recipe_title: str) -> None:
             st.rerun()
     with col2:
         if st.button("Delete", width="stretch", type="primary"):
-            try:
-                delete_recipe(recipe_id)
-                st.session_state.selected_recipe = None
-                st.rerun()
-            except Exception as e:
-                st.error(str(e))
+            with st.spinner("Deleting..."):
+                try:
+                    delete_recipe(recipe_id)
+                    st.session_state.selected_recipe = None
+                    st.rerun()
+                except Exception as e:
+                    st.error(str(e))
 
 
 @st.dialog("Clear Week")
@@ -292,13 +293,14 @@ def confirm_clear_week(week_dates: list, meal_types: list) -> None:
             st.rerun()
     with col2:
         if st.button("Clear All", width="stretch", type="primary"):
-            for d in week_dates:
-                for mt in meal_types:
-                    key = (d.isoformat(), mt.value)
-                    if key in st.session_state.meal_plan:
-                        del st.session_state.meal_plan[key]
-                        delete_meal(d.isoformat(), mt.value)
-            st.rerun()
+            with st.spinner("Clearing meals..."):
+                for d in week_dates:
+                    for mt in meal_types:
+                        key = (d.isoformat(), mt.value)
+                        if key in st.session_state.meal_plan:
+                            del st.session_state.meal_plan[key]
+                            delete_meal(d.isoformat(), mt.value)
+                st.rerun()
 
 
 # Inject Bootstrap Icons CSS for custom icons
@@ -1135,15 +1137,16 @@ elif page == "Recipes":
                 col1, col2 = st.columns(2)
                 with col1:
                     if st.button("", type="primary", width="stretch", icon=":material/save:"):
-                        try:
-                            from app.storage.recipe_storage import save_recipe
+                        with st.spinner("Saving recipe..."):
+                            try:
+                                from app.storage.recipe_storage import save_recipe
 
-                            save_recipe(recipe)
-                            st.success("Recipe saved!")
-                            st.session_state.temp_recipe = None
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Could not save: {e}")
+                                save_recipe(recipe)
+                                st.success("Recipe saved!")
+                                st.session_state.temp_recipe = None
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Could not save: {e}")
                 with col2:
                     if st.button("", width="stretch", icon=":material/delete:"):
                         st.session_state.temp_recipe = None
@@ -1220,16 +1223,17 @@ elif page == "Recipes":
                             meal_label=MealLabel(manual_meal_label.lower()) if manual_meal_label != "None" else None,
                         )
 
-                        try:
-                            from app.storage.recipe_storage import save_recipe
+                        with st.spinner("Saving recipe..."):
+                            try:
+                                from app.storage.recipe_storage import save_recipe
 
-                            save_recipe(manual_recipe)
-                            st.session_state.recipe_saved_message = f"✓ Saved: {manual_title}"
-                            st.session_state.selected_recipe = None
-                            st.session_state.recipes_view = "all"
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Could not save: {e}")
+                                save_recipe(manual_recipe)
+                                st.session_state.recipe_saved_message = f"✓ Saved: {manual_title}"
+                                st.session_state.selected_recipe = None
+                                st.session_state.recipes_view = "all"
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Could not save: {e}")
 
 # =============================================================================
 # MEAL PLAN PAGE
