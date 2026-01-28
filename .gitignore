@@ -95,3 +95,7 @@ mobile/ios/
 functions/*/node_modules/
 functions/*/__pycache__/
 functions/*/.venv/
+
+# Local environment variables
+mobile/.env
+mobile/.env.local

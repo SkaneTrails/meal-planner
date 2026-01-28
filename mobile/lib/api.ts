@@ -3,6 +3,7 @@
  * Provides typed methods for all API endpoints.
  */
 
+import { Platform } from 'react-native';
 import type {
   Recipe,
   RecipeCreate,
@@ -17,7 +18,16 @@ import type {
 } from './types';
 
 // API base URL - configurable for different environments
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
+// On web, always use localhost since it runs on the same machine
+// On mobile, use the env variable (which should be your machine's IP)
+const getApiBaseUrl = (): string => {
+  if (Platform.OS === 'web') {
+    return 'http://localhost:8000';
+  }
+  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 const API_PREFIX = '/api/v1';
 
 // Default user ID until auth is implemented
