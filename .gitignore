@@ -62,3 +62,36 @@ coverage.xml
 # Local data storage
 data/*
 !data/.gitkeep
+
+# Node.js / React Native / Expo
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Expo
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Metro bundler
+.metro-health-check*
+
+# Build outputs
+mobile/android/
+mobile/ios/
+*.apk
+*.aab
+*.ipa
+
+# Cloud Functions
+functions/*/node_modules/
+functions/*/__pycache__/
+functions/*/.venv/
