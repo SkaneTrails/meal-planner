@@ -177,53 +177,13 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
     from app.models.recipe import DietLabel, MealLabel, Recipe
     from app.storage.recipe_storage import update_recipe
 
-    # Image upload OUTSIDE the form (file_uploader doesn't work well in forms)
-    st.markdown("#### Recipe Image")
-
-    # Determine current image state
-    current_has_image = bool(recipe.image_url)
-    current_is_url = current_has_image and not recipe.image_url.startswith("data:")
-
-    if current_has_image:
-        default_option = "Image URL" if current_is_url else "Keep current image"
-        options = ["Keep current image", "Image URL", "Upload new image", "Remove image"]
-    else:
-        default_option = "No image"
-        options = ["No image", "Image URL", "Upload image"]
-
-    image_option = st.radio(
-        "Image option",
-        options,
-        index=options.index(default_option),
-        horizontal=True,
-        key=f"edit_image_option_{recipe_id}",
-        label_visibility="collapsed",
-    )
-
-    edit_image_url = None
-    edit_uploaded_image = None
-
-    if image_option == "Image URL":
-        edit_image_url = st.text_input(
-            "Image URL",
-            value=recipe.image_url if current_is_url else "",
-            key=f"edit_image_url_{recipe_id}",
-        )
-    elif image_option in ("Upload image", "Upload new image"):
-        edit_uploaded_image = st.file_uploader(
-            "Upload an image",
-            type=["jpg", "jpeg", "png", "webp"],
-            key=f"edit_image_upload_{recipe_id}",
-        )
-        if edit_uploaded_image:
-            st.image(edit_uploaded_image, width=200, caption="Preview")
-
     with st.form(key=f"edit_recipe_form_{recipe_id}"):
         col1, col2 = st.columns([1, 2])
 
         with col1:
             st.markdown("### Recipe Info")
             title = st.text_input("Title", value=recipe.title)
+            image_url = st.text_input("Image URL", value=recipe.image_url or "")
             url = st.text_input("Source URL", value=recipe.url or "")
 
             st.markdown("### Timing")
@@ -261,8 +221,6 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
             if not title.strip():
                 st.error("Title is required")
             else:
-                import base64
-
                 ingredients = [ing.strip() for ing in ingredients_text.split("\n") if ing.strip()]
                 instructions = [step.strip() for step in instructions_text.split("\n") if step.strip()]
 
@@ -274,25 +232,12 @@ def _render_recipe_edit_form(recipe_id: str, recipe: "Recipe") -> None:
                 if meal != "None":
                     meal_label = MealLabel(meal.lower())
 
-                # Determine final image URL based on selection
-                final_image_url = None
-                if image_option == "Keep current image":
-                    final_image_url = recipe.image_url
-                elif image_option == "Image URL" and edit_image_url:
-                    final_image_url = edit_image_url.strip()
-                elif image_option in ("Upload image", "Upload new image") and edit_uploaded_image is not None:
-                    image_data = edit_uploaded_image.read()
-                    image_type = edit_uploaded_image.type or "image/jpeg"
-                    base64_image = base64.b64encode(image_data).decode("utf-8")
-                    final_image_url = f"data:{image_type};base64,{base64_image}"
-                # "Remove image" or "No image" keeps final_image_url as None
-
                 updated_recipe = Recipe(
                     title=title.strip(),
                     url=url.strip() or recipe.url,
                     ingredients=ingredients,
                     instructions=instructions,
-                    image_url=final_image_url,
+                    image_url=image_url.strip() or None,
                     servings=servings if servings > 0 else None,
                     prep_time=prep_time if prep_time > 0 else None,
                     cook_time=cook_time if cook_time > 0 else None,
@@ -669,53 +614,6 @@ def load_recipes() -> list[tuple[str, Recipe]]:
         return []
 
 
-def get_next_two_meals() -> list[tuple[date, MealType, str, Recipe]]:
-    """Get the next 2 upcoming meals from the meal plan.
-
-    Returns:
-        List of tuples: (date, meal_type, recipe_id, recipe)
-    """
-    max_meals = 2
-    today = datetime.now(tz=UTC).date()
-    meals = []
-    recipes_dict = dict(load_recipes())
-
-    # Check today's lunch and dinner first
-    for meal_type in [MealType.LUNCH, MealType.DINNER]:
-        key = (today.isoformat(), meal_type.value)
-        if key in st.session_state.meal_plan:
-            recipe_id = st.session_state.meal_plan[key]
-            if recipe_id in recipes_dict:
-                meals.append((today, meal_type, recipe_id, recipes_dict[recipe_id]))
-                if len(meals) == max_meals:
-                    return meals
-
-    # If we need more meals, check tomorrow
-    tomorrow = today + timedelta(days=1)
-    for meal_type in [MealType.BREAKFAST, MealType.LUNCH, MealType.DINNER]:
-        if len(meals) == max_meals:
-            break
-        key = (tomorrow.isoformat(), meal_type.value)
-        if key in st.session_state.meal_plan:
-            recipe_id = st.session_state.meal_plan[key]
-            if recipe_id in recipes_dict:
-                meals.append((tomorrow, meal_type, recipe_id, recipes_dict[recipe_id]))
-
-    return meals
-
-
-def get_random_inspiration_recipe() -> tuple[str, Recipe] | None:
-    """Get a random recipe that is NOT Meal or Grill label."""
-    import random
-
-    recipes = load_recipes()
-    # Filter out Meal and Grill labels
-    filtered = [(rid, recipe) for rid, recipe in recipes if recipe.meal_label not in [MealLabel.MEAL, MealLabel.GRILL]]
-    if filtered:
-        return random.choice(filtered)
-    return None
-
-
 # Logo paths
 logo1_path = Path(__file__).parent / "assets" / "images" / "logo1.png"
 logo_path = Path(__file__).parent / "assets" / "images" / "logo.png"
@@ -823,10 +721,7 @@ if page == "Home":
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(
-            f"<h3 style='display:flex;align-items:center;gap:8px;'>{svg_icon('book', size=32)} Recipe Library</h3>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("### :material/menu_book: Recipe Library")
         recipes = load_recipes()
         st.metric("Saved Recipes", len(recipes))
         if st.button("Browse Recipes", width="stretch"):
@@ -835,10 +730,7 @@ if page == "Home":
             st.rerun()
 
     with col2:
-        st.markdown(
-            f"<h3 style='display:flex;align-items:center;gap:8px;'>{svg_icon('calendar_week', size=32)} This Week</h3>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("### :material/calendar_month: This Week")
         week_dates = get_week_dates()
         planned_meals = sum(
             1 for d in week_dates for mt in MealType if (d.isoformat(), mt.value) in st.session_state.meal_plan
@@ -851,10 +743,7 @@ if page == "Home":
             st.rerun()
 
     with col3:
-        st.markdown(
-            f"<h3 style='display:flex;align-items:center;gap:8px;'>{svg_icon('cart', size=32)} Shopping</h3>",
-            unsafe_allow_html=True,
-        )
+        st.markdown("### :material/shopping_cart: Shopping")
         st.metric("Items to Buy", len(st.session_state.grocery_list.get_unchecked()))
         if st.button("View List", width="stretch"):
             st.session_state.current_page = "Grocery List"
@@ -863,65 +752,74 @@ if page == "Home":
 
     st.divider()
 
-    # Next 2 meals + inspiration in 3 columns
-    next_meals = get_next_two_meals()
-    inspiration = get_random_inspiration_recipe()
+    # Quick actions
+    st.subheader(":material/bolt: Quick Actions")
+    qcol1, qcol2 = st.columns(2)
 
-    cols = st.columns(3, gap="small")
+    with qcol1:
+        st.markdown("#### :material/link: Import Recipe from URL")
+        url = st.text_input("Paste a recipe URL", placeholder="https://www.ica.se/recept/...", key="home_url")
 
-    # Meal 1
-    with cols[0]:
-        if next_meals:
-            meal_date, meal_type, recipe_id, recipe = next_meals[0]
-            with st.container(border=True):
-                day_name = meal_date.strftime("%a")
-                st.markdown(f"<small>**{day_name}, {meal_type.value.title()}**</small>", unsafe_allow_html=True)
-                image_url = recipe.image_url or DEFAULT_RECIPE_IMAGE
-                st.image(image_url, use_container_width=True)
-                st.markdown(f"<small>**{recipe.title}**</small>", unsafe_allow_html=True)
-                if st.button("View", key=f"next_meal_1_{recipe_id}", use_container_width=True):
+        label_col1, label_col2 = st.columns(2)
+        with label_col1:
+            home_diet_label = st.selectbox(
+                ":material/nutrition: Diet Type", ["None", "Veggie", "Fish", "Meat"], key="home_diet_label"
+            )
+        with label_col2:
+            home_meal_label = st.selectbox(
+                ":material/restaurant: Meal Type",
+                ["None", "Breakfast", "Starter", "Meal", "Dessert", "Drink", "Sauce", "Pickle", "Grill"],
+                key="home_meal_label",
+            )
+
+        if st.button("Import", type="primary", key="home_import") and url:
+            with st.spinner("Extracting recipe..."):
+                try:
+                    from app.services.recipe_scraper import scrape_recipe
+                    from app.storage.recipe_storage import find_recipe_by_url, save_recipe
+
+                    # Check if recipe already exists
+                    existing = find_recipe_by_url(url)
+                    if existing:
+                        doc_id, existing_recipe = existing
+                        st.warning(f":material/info: Recipe already exists: **{existing_recipe.title}**")
+                    else:
+                        recipe = scrape_recipe(url)
+                        if recipe:
+                            # Apply labels
+                            if home_diet_label != "None":
+                                recipe.diet_label = DietLabel(home_diet_label.lower())
+                            if home_meal_label != "None":
+                                recipe.meal_label = MealLabel(home_meal_label.lower())
+                            save_recipe(recipe)
+                            st.success(f":material/check_circle: Imported: **{recipe.title}**")
+                        else:
+                            st.error("Could not extract recipe from this URL")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+    with qcol2:
+        st.markdown("#### :material/dinner_dining: What's for dinner?")
+        today = datetime.now(tz=UTC).date()
+        dinner_key = (today.isoformat(), MealType.DINNER.value)
+        if dinner_key in st.session_state.meal_plan:
+            recipe_id = st.session_state.meal_plan[dinner_key]
+            recipes = load_recipes()
+            recipe_dict = dict(recipes)
+            if recipe_id in recipe_dict:
+                recipe = recipe_dict[recipe_id]
+                st.success(f"Tonight: **{recipe.title}**")
+                if st.button("View Recipe", icon=":material/menu_book:"):
                     st.session_state.selected_recipe = (recipe_id, recipe)
                     st.session_state.current_page = "Recipes"
                     scroll_to_top()
                     st.rerun()
         else:
-            st.info("No meal planned")
-
-    # Meal 2
-    with cols[1]:
-        if len(next_meals) > 1:
-            meal_date, meal_type, recipe_id, recipe = next_meals[1]
-            with st.container(border=True):
-                day_name = meal_date.strftime("%a")
-                st.markdown(f"<small>**{day_name}, {meal_type.value.title()}**</small>", unsafe_allow_html=True)
-                image_url = recipe.image_url or DEFAULT_RECIPE_IMAGE
-                st.image(image_url, use_container_width=True)
-                st.markdown(f"<small>**{recipe.title}**</small>", unsafe_allow_html=True)
-                if st.button("View", key=f"next_meal_2_{recipe_id}", use_container_width=True):
-                    st.session_state.selected_recipe = (recipe_id, recipe)
-                    st.session_state.current_page = "Recipes"
-                    scroll_to_top()
-                    st.rerun()
-        else:
-            st.info("No meal planned")
-
-    # Inspiration
-    with cols[2]:
-        if inspiration:
-            recipe_id, recipe = inspiration
-            with st.container(border=True):
-                st.markdown("<small>**✨ Inspiration**</small>", unsafe_allow_html=True)
-                image_url = recipe.image_url or DEFAULT_RECIPE_IMAGE
-                st.image(image_url, use_container_width=True)
-                st.markdown(f"<small>**{recipe.title}**</small>", unsafe_allow_html=True)
-                if st.button("Try", key=f"inspiration_{recipe_id}", use_container_width=True):
-                    st.session_state.selected_recipe = (recipe_id, recipe)
-                    st.session_state.current_page = "Recipes"
-                    scroll_to_top()
-                    st.rerun()
-        else:
-            st.info("No recipes yet")
-
+            st.info("No dinner planned for today")
+            if st.button("Plan Tonight's Dinner"):
+                st.session_state.current_page = "Meal Plan"
+                scroll_to_top()
+                st.rerun()
 
 # =============================================================================
 # RECIPES PAGE
@@ -1262,30 +1160,9 @@ elif page == "Recipes":
             # Manual recipe entry
             st.subheader(":material/edit: Add Recipe Manually")
 
-            # Image options OUTSIDE the form (file_uploader doesn't work well in forms)
-            image_option = st.radio(
-                "Recipe Image (optional)",
-                ["No image", "Image URL", "Upload image"],
-                horizontal=True,
-                key="manual_image_option",
-            )
-
-            manual_image_url = None
-            uploaded_image = None
-
-            if image_option == "Image URL":
-                manual_image_url = st.text_input("Image URL", placeholder="https://...", key="manual_image_url")
-            elif image_option == "Upload image":
-                uploaded_image = st.file_uploader(
-                    "Upload an image",
-                    type=["jpg", "jpeg", "png", "webp"],
-                    key="manual_image_upload",
-                )
-                if uploaded_image:
-                    st.image(uploaded_image, width=200, caption="Preview")
-
             with st.form("manual_recipe_form"):
                 manual_title = st.text_input("Recipe Title *", placeholder="e.g., Grandma's Apple Pie")
+                manual_image_url = st.text_input("Image URL (optional)", placeholder="https://...")
 
                 mcol1, mcol2, mcol3 = st.columns(3)
                 with mcol1:
@@ -1327,7 +1204,6 @@ elif page == "Recipes":
                     if not manual_title or not manual_ingredients or not manual_instructions:
                         st.error("Please fill in all required fields (Title, Ingredients, Instructions)")
                     else:
-                        import base64
                         import uuid
 
                         ingredients_list = [
@@ -1337,23 +1213,12 @@ elif page == "Recipes":
                             inst.strip() for inst in manual_instructions.strip().split("\n") if inst.strip()
                         ]
 
-                        # Handle image: either URL or uploaded file converted to data URI
-                        final_image_url = None
-                        if manual_image_url:
-                            final_image_url = manual_image_url
-                        elif uploaded_image is not None:
-                            # Convert uploaded image to base64 data URI
-                            image_data = uploaded_image.read()
-                            image_type = uploaded_image.type or "image/jpeg"
-                            base64_image = base64.b64encode(image_data).decode("utf-8")
-                            final_image_url = f"data:{image_type};base64,{base64_image}"
-
                         manual_recipe = Recipe(
                             title=manual_title,
                             url=f"manual-entry-{uuid.uuid4().hex[:8]}",
                             ingredients=ingredients_list,
                             instructions=instructions_list,
-                            image_url=final_image_url,
+                            image_url=manual_image_url if manual_image_url else None,
                             servings=manual_servings,
                             prep_time=manual_prep_time if manual_prep_time > 0 else None,
                             cook_time=manual_cook_time if manual_cook_time > 0 else None,

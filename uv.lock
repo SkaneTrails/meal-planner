@@ -651,6 +651,7 @@ dependencies = [
     { name = "streamlit" },
     { name = "streamlit-sortables" },
     { name = "uvicorn" },
+    { name = "watchdog" },
 ]
 
 [package.optional-dependencies]
@@ -702,6 +703,7 @@ requires-dist = [
     { name = "streamlit-sortables", specifier = ">=0.3.1" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.5" },
     { name = "uvicorn", specifier = ">=0.34" },
+    { name = "watchdog", specifier = ">=6.0.0" },
 ]
 provides-extras = ["dev", "test"]
 
