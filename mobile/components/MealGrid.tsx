@@ -7,6 +7,13 @@ import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { MealType, Recipe } from '@/lib/types';
 
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 interface MealCellProps {
   date: string;
   mealType: MealType;
@@ -133,8 +140,8 @@ export function DayColumn({
           const mealData = meals[mealType] || {};
           return (
             <MealCell
-              key={`${date.toISOString()}-${mealType}`}
-              date={date.toISOString().split('T')[0]}
+              key={`${formatDateLocal(date)}-${mealType}`}
+              date={formatDateLocal(date)}
               mealType={mealType}
               recipe={mealData.recipe}
               customText={mealData.customText}

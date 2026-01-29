@@ -13,6 +13,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 import { useMealPlan, useRecipes, useClearMealPlan } from '@/lib/hooks';
 import { DayColumn } from '@/components';
 import type { MealType, Recipe } from '@/lib/types';
@@ -66,7 +73,7 @@ export default function MealPlanScreen() {
 
   // Build meal data for each day
   const getMealsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = formatDateLocal(date);
     const meals: Record<MealType, { recipe?: Recipe; customText?: string }> = {
       breakfast: {},
       lunch: {},
@@ -116,7 +123,7 @@ export default function MealPlanScreen() {
   };
 
   const handleMealPress = (date: Date, mealType: MealType) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = formatDateLocal(date);
     router.push({
       pathname: '/select-recipe',
       params: { date: dateStr, mealType },
