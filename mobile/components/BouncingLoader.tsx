@@ -1,17 +1,10 @@
 /**
  * Bouncing dots loader animation.
+ * Uses React Native's built-in Animated API.
  */
 
-import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
-  withSequence,
-  withDelay,
-} from 'react-native-reanimated';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 
 interface BouncingLoaderProps {
   color?: string;
@@ -19,40 +12,43 @@ interface BouncingLoaderProps {
 }
 
 export function BouncingLoader({ color = '#C4A77D', size = 12 }: BouncingLoaderProps) {
-  const bounce1 = useSharedValue(0);
-  const bounce2 = useSharedValue(0);
-  const bounce3 = useSharedValue(0);
+  const bounce1 = useRef(new Animated.Value(0)).current;
+  const bounce2 = useRef(new Animated.Value(0)).current;
+  const bounce3 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const bounceAnimation = (delay: number) =>
-      withDelay(
-        delay,
-        withRepeat(
-          withSequence(
-            withTiming(-12, { duration: 300 }),
-            withTiming(0, { duration: 300 })
-          ),
-          -1,
-          false
-        )
+    const createBounceAnimation = (animatedValue: Animated.Value, delay: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(animatedValue, {
+            toValue: -12,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ])
       );
+    };
 
-    bounce1.value = bounceAnimation(0);
-    bounce2.value = bounceAnimation(150);
-    bounce3.value = bounceAnimation(300);
+    const anim1 = createBounceAnimation(bounce1, 0);
+    const anim2 = createBounceAnimation(bounce2, 150);
+    const anim3 = createBounceAnimation(bounce3, 300);
+
+    anim1.start();
+    anim2.start();
+    anim3.start();
+
+    return () => {
+      anim1.stop();
+      anim2.stop();
+      anim3.stop();
+    };
   }, [bounce1, bounce2, bounce3]);
-
-  const animatedStyle1 = useAnimatedStyle(() => ({
-    transform: [{ translateY: bounce1.value }],
-  }));
-
-  const animatedStyle2 = useAnimatedStyle(() => ({
-    transform: [{ translateY: bounce2.value }],
-  }));
-
-  const animatedStyle3 = useAnimatedStyle(() => ({
-    transform: [{ translateY: bounce3.value }],
-  }));
 
   const dotStyle = {
     width: size,
@@ -64,9 +60,9 @@ export function BouncingLoader({ color = '#C4A77D', size = 12 }: BouncingLoaderP
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[dotStyle, animatedStyle1]} />
-      <Animated.View style={[dotStyle, animatedStyle2]} />
-      <Animated.View style={[dotStyle, animatedStyle3]} />
+      <Animated.View style={[dotStyle, { transform: [{ translateY: bounce1 }] }]} />
+      <Animated.View style={[dotStyle, { transform: [{ translateY: bounce2 }] }]} />
+      <Animated.View style={[dotStyle, { transform: [{ translateY: bounce3 }] }]} />
     </View>
   );
 }

@@ -14,7 +14,7 @@ _MEAL_KEY_PARTS = 2
 
 def _get_meal_plan_doc_id(user_id: str) -> str:
     """Get the document ID for a user's meal plan."""
-    return f"meal_plan_{user_id}"
+    return f"{user_id}_meal_plan"
 
 
 def save_meal_plan(user_id: str, meals: dict[str, str], notes: dict[str, str] | None = None) -> None:
