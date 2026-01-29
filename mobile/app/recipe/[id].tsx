@@ -11,6 +11,7 @@ import {
   Pressable,
   Alert,
   Share,
+  Linking,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -259,7 +260,9 @@ export default function RecipeDetailScreen() {
           {/* Source link */}
           {recipe.url && (
             <Pressable
-              onPress={handleShare}
+              onPress={() => Linking.openURL(recipe.url).catch(() => {
+                Alert.alert('Error', 'Could not open the recipe URL');
+              })}
               className="flex-row items-center justify-center py-3 border-t border-gray-200"
             >
               <Ionicons name="link-outline" size={20} color="#6b7280" />

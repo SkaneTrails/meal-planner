@@ -1,12 +1,69 @@
 """Recipe scraping service using recipe-scrapers library."""
 
+import ipaddress
 import re
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from urllib.parse import urlparse
 
 import httpx
 from recipe_scrapers import scrape_html
+
+# Blocked IP ranges for SSRF protection
+BLOCKED_IP_RANGES = [
+    ipaddress.ip_network("10.0.0.0/8"),      # Private
+    ipaddress.ip_network("172.16.0.0/12"),   # Private
+    ipaddress.ip_network("192.168.0.0/16"),  # Private
+    ipaddress.ip_network("127.0.0.0/8"),     # Loopback
+    ipaddress.ip_network("169.254.0.0/16"),  # Link-local / Cloud metadata
+    ipaddress.ip_network("0.0.0.0/8"),       # Current network
+    ipaddress.ip_network("224.0.0.0/4"),     # Multicast
+    ipaddress.ip_network("240.0.0.0/4"),     # Reserved
+    ipaddress.ip_network("100.64.0.0/10"),   # Shared address space
+]
+
+BLOCKED_HOSTNAMES = {
+    "localhost",
+    "metadata",
+    "metadata.google",
+    "metadata.google.internal",
+    "169.254.169.254",  # Cloud metadata endpoint
+}
+
+
+def _is_safe_url(url: str) -> bool:
+    """Validate URL to prevent SSRF attacks."""
+    try:
+        parsed = urlparse(url)
+
+        # Only allow http and https schemes
+        if parsed.scheme not in ("http", "https"):
+            return False
+
+        hostname = parsed.hostname
+        if not hostname:
+            return False
+
+        # Check blocked hostnames
+        hostname_lower = hostname.lower()
+        if hostname_lower in BLOCKED_HOSTNAMES:
+            return False
+
+        # Try to resolve hostname to IP and check against blocked ranges
+        try:
+            ip = ipaddress.ip_address(hostname)
+            for blocked_range in BLOCKED_IP_RANGES:
+                if ip in blocked_range:
+                    return False
+        except ValueError:
+            # Not an IP address, check if hostname looks suspicious
+            if any(blocked in hostname_lower for blocked in ("internal", "local", "metadata")):
+                return False
+
+        return True
+    except Exception:
+        return False
 
 
 @dataclass
@@ -61,6 +118,11 @@ def scrape_recipe(url: str) -> Recipe | None:
     Returns:
         A Recipe object if successful, None otherwise.
     """
+    # SSRF protection: validate URL before fetching
+    if not _is_safe_url(url):
+        print(f"URL blocked by security policy: {url}", file=sys.stderr)
+        return None
+
     try:
         response = httpx.get(url, follow_redirects=True, timeout=30.0)
         response.raise_for_status()
@@ -68,7 +130,7 @@ def scrape_recipe(url: str) -> Recipe | None:
 
         scraper = scrape_html(html, org_url=url)
 
-        instructions = _safe_get(scraper.instructions_list, [])
+        instructions: list[str] = _safe_get(scraper.instructions_list, [])
         if not instructions:
             raw_instructions = _safe_get(scraper.instructions, "")
             instructions = [step.strip() for step in raw_instructions.split("\n") if step.strip()]

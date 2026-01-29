@@ -20,13 +20,15 @@ import type { MealType, Recipe } from '@/lib/types';
 function getWeekDates(weekOffset: number = 0): Date[] {
   const today = new Date();
   const currentDay = today.getDay();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - currentDay + 1 + weekOffset * 7);
+  // Calculate days since Saturday (Sat=0 in our week, so Sat->0, Sun->1, Mon->2, etc.)
+  const daysSinceSaturday = (currentDay + 1) % 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() - daysSinceSaturday + weekOffset * 7);
 
   const dates: Date[] = [];
   for (let i = 0; i < 7; i++) {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + i);
+    const date = new Date(saturday);
+    date.setDate(saturday.getDate() + i);
     dates.push(date);
   }
   return dates;
@@ -44,8 +46,6 @@ export default function MealPlanScreen() {
   const [weekOffset, setWeekOffset] = useState(0);
 
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
-  const startDate = weekDates[0].toISOString().split('T')[0];
-  const endDate = weekDates[6].toISOString().split('T')[0];
 
   const {
     data: mealPlan,

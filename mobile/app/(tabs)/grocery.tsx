@@ -15,15 +15,17 @@ import { GroceryListView } from '@/components';
 function getWeekDates(): { start: string; end: string } {
   const today = new Date();
   const currentDay = today.getDay();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - currentDay + 1);
+  // Calculate days since Saturday (Sat=0 in our week, so Sat->0, Sun->1, Mon->2, etc.)
+  const daysSinceSaturday = (currentDay + 1) % 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() - daysSinceSaturday);
 
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
+  const friday = new Date(saturday);
+  friday.setDate(saturday.getDate() + 6);
 
   return {
-    start: monday.toISOString().split('T')[0],
-    end: sunday.toISOString().split('T')[0],
+    start: saturday.toISOString().split('T')[0],
+    end: friday.toISOString().split('T')[0],
   };
 }
 
