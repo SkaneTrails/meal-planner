@@ -1,12 +1,10 @@
-______________________________________________________________________
-
+---
 ## name: pr-review-workflow description: Handle post-push PR workflows: review comments, feedback, and CI status using GitHub CLI and APIs. license: MIT
 
 # Skill: PR Review Workflow
 
 This skill defines how to handle pull request review workflows after pushing changes.
-
-______________________________________________________________________
+---
 
 ## Activation context
 
@@ -16,7 +14,7 @@ This skill activates when:
 - The developer asks about PR comments, review feedback, or CI status.
 - The developer mentions "check comments", "review feedback", "CI status", or "workflow status".
 
-______________________________________________________________________
+---
 
 ## 1. Post-push workflow
 
@@ -45,7 +43,7 @@ For CI status, offer to check:
 
 Do not consider a comment "handled" until ALL steps are complete. After fixing and pushing, return to sections 4 and 6 to reply and resolve.
 
-______________________________________________________________________
+---
 
 ## 2. Fetching PR comments
 
@@ -104,7 +102,7 @@ Propose fetching overall review status:
 gh pr view <PR> --json reviews -q '.reviews[] | {author: .author.login, state: .state, body: .body}'
 ```
 
-______________________________________________________________________
+---
 
 ## 3. Assessing and summarizing comments
 
@@ -166,7 +164,7 @@ Before making any changes based on review comments:
 
 This prevents silently skipping valid feedback or applying incorrect suggestions.
 
-______________________________________________________________________
+---
 
 ## 4. Responding to comments
 
@@ -248,7 +246,7 @@ When multiple comments need addressing:
 
 > **REMINDER:** Replying and resolving are separate operations. Never skip the resolve loop.
 
-______________________________________________________________________
+---
 
 ## 5. Checking CI/workflow status
 
@@ -295,7 +293,7 @@ Present CI status like:
 > `lint.yml` failed due to unused import in `src/api/routes.py:15`.
 > Would you like me to fix this?
 
-______________________________________________________________________
+---
 
 ## 6. Iterative workflow
 
@@ -311,7 +309,7 @@ After addressing comments and fixing CI issues:
 
 **The workflow is incomplete if you stop after pushing.** Reviewers see unresolved threads as outstanding issues. Always complete the reply→resolve loop before moving on or reporting completion to the developer.
 
-______________________________________________________________________
+---
 
 ## 7. Command reference
 
@@ -326,7 +324,7 @@ ______________________________________________________________________
 | View failed workflow logs                 | `gh run view <run_id> --log-failed`                                             |
 | Re-run failed workflow                    | `gh run rerun <run_id> --failed`                                                |
 
-______________________________________________________________________
+---
 
 ## 8. Creating PRs with multi-line bodies
 
@@ -354,7 +352,7 @@ gh pr create --editor
 
 This opens the system editor for title and body input.
 
-______________________________________________________________________
+---
 
 ## 9. Multi-repo workflow
 
@@ -367,7 +365,7 @@ When working across multiple repositories with the same or similar files (e.g., 
 1. **Commit and push to all repos.** Use a loop to ensure consistency.
 1. **Reply to and resolve comments in ALL repos.** Each repo's PR has its own review threads that must be addressed individually.
 
-______________________________________________________________________
+---
 
 ## 10. Skåne Trails project context
 

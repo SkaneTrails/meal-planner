@@ -84,9 +84,9 @@ def get_recipe(recipe_id: str) -> None:
 
 def display_recipe(recipe_id: str, data: dict) -> None:
     """Display a recipe in a readable format."""
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"RECIPE ID: {recipe_id}")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"Title: {data.get('title', 'N/A')}")
     print(f"URL: {data.get('url', 'N/A')}")
     print(f"Servings: {data.get('servings', 'N/A')}")
@@ -110,7 +110,7 @@ def display_recipe(recipe_id: str, data: dict) -> None:
         print(f"  {i}. {step_preview}")
 
     print(f"\nImage: {data.get('image_url', 'N/A')}")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
 
 def mark_processed(recipe_id: str) -> None:
@@ -171,7 +171,7 @@ def show_status() -> None:
     # Count recipes in target database
     target_count = sum(1 for _ in target_db.collection(RECIPES_COLLECTION).stream())
 
-    print(f"\n📊 Recipe Review Progress")
+    print("\n📊 Recipe Review Progress")
     print(f"   Source database: {SOURCE_DATABASE}")
     print(f"   Target database: {TARGET_DATABASE}")
     print(f"   Total recipes:       {total}")

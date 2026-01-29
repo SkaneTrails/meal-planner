@@ -16,7 +16,7 @@ classifiers = [
 ]
 dependencies = [
   "google-cloud-firestore>=2.19",
-  "google-genai>=1.60.0",
+  "google-genai>=1.60",
   "google-generativeai>=0.8.6",
   "httpx>=0.27",
   "pillow>=10",
@@ -24,7 +24,7 @@ dependencies = [
   "recipe-scrapers>=15",
   "streamlit>=1.28",
   "streamlit-sortables>=0.3.1",
-  "watchdog>=6.0.0",
+  "watchdog>=6",
 ]
 
 optional-dependencies.dev = [
@@ -79,6 +79,17 @@ lint.ignore = [
   "TRY300",  # Consider else block (style preference)
 ]
 
+lint.per-file-ignores."scripts/**/*.py" = [
+  "ANN",    # No type annotations required for scripts
+  "B007",   # Unused loop variable ok in scripts
+  "C901",   # Complex functions ok in scripts
+  "E402",   # Module-level import not at top (needed for sys.path manipulation)
+  "FBT",    # Boolean positional args ok in scripts
+  "PLR",    # Refactor rules relaxed for scripts
+  "PTH",    # pathlib not required for simple scripts
+  "SIM105", # contextlib.suppress not required
+]
+
 lint.per-file-ignores."tests/**/*.py" = [
   "ANN001",  # Missing type annotation for function argument
   "ARG001",  # Unused function argument (fixtures used for side effects)
@@ -95,6 +106,7 @@ lint.isort.split-on-trailing-comma = false
 known_first_party = [ "meal-planner" ]
 pep621_dev_dependency_groups = [ "dev" ]
 ignore = [ "DEP002" ]
+exclude = [ "scripts/", ".venv/" ]
 
 [tool.pytest.ini_options]
 testpaths = [ "tests" ]
