@@ -54,8 +54,8 @@ export function MealCell({
       onLongPress={onLongPress}
       className={`
         p-3 rounded-lg border min-h-[80px]
-        ${hasContent 
-          ? 'bg-primary-50 border-primary-200' 
+        ${hasContent
+          ? 'bg-primary-50 border-primary-200'
           : 'bg-gray-50 border-gray-200 border-dashed'
         }
       `}

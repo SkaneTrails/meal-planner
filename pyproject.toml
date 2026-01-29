@@ -17,6 +17,7 @@ classifiers = [
 dependencies = [
   "fastapi>=0.115",
   "google-cloud-firestore>=2.19",
+  "google-genai>=1.60",
   "httpx>=0.27",
   "pillow>=10",
   "pydantic>=2.10",
@@ -25,7 +26,7 @@ dependencies = [
   "streamlit>=1.28",
   "streamlit-sortables>=0.3.1",
   "uvicorn>=0.34",
-  "watchdog>=6.0.0",
+  "watchdog>=6",
 ]
 
 optional-dependencies.dev = [
@@ -80,6 +81,15 @@ lint.ignore = [
   "TRY300",  # Consider else block (style preference)
 ]
 
+lint.per-file-ignores."scripts/**/*.py" = [
+  "C901",    # Complex functions ok in CLI scripts (main, process_batch)
+  "E402",    # Module-level import not at top (needed for sys.path manipulation)
+  "PLR0911", # Too many return statements ok in CLI argument parsing
+  "PLR0912", # Too many branches ok in CLI argument parsing
+  "PLR0915", # Too many statements ok in batch processing scripts
+  "PLR2004", # Magic numbers ok in CLI arg parsing
+]
+
 lint.per-file-ignores."tests/**/*.py" = [
   "ANN001",  # Missing type annotation for function argument
   "ARG001",  # Unused function argument (fixtures used for side effects)
@@ -96,7 +106,7 @@ lint.isort.split-on-trailing-comma = false
 known_first_party = [ "meal-planner" ]
 pep621_dev_dependency_groups = [ "dev" ]
 ignore = [ "DEP002" ]
-extend_exclude = [ "functions" ]
+extend_exclude = [ ".venv/", "functions/", "scripts/" ]
 
 [tool.pytest.ini_options]
 testpaths = [ "tests" ]

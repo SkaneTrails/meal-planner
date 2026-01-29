@@ -30,7 +30,7 @@ export function useMealPlan(userId: string = DEFAULT_USER_ID) {
  */
 export function useUpdateMealPlan(userId: string = DEFAULT_USER_ID) {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (updates: MealPlanUpdate) => api.updateMealPlan(updates, userId),
     onSuccess: (data) => {
@@ -44,7 +44,7 @@ export function useUpdateMealPlan(userId: string = DEFAULT_USER_ID) {
  */
 export function useUpdateMeal(userId: string = DEFAULT_USER_ID) {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (request: MealUpdateRequest) => api.updateMeal(request, userId),
     onSuccess: (data) => {
@@ -58,7 +58,7 @@ export function useUpdateMeal(userId: string = DEFAULT_USER_ID) {
  */
 export function useUpdateNote(userId: string = DEFAULT_USER_ID) {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (request: NoteUpdateRequest) => api.updateNote(request, userId),
     onSuccess: (data) => {
@@ -72,7 +72,7 @@ export function useUpdateNote(userId: string = DEFAULT_USER_ID) {
  */
 export function useClearMealPlan(userId: string = DEFAULT_USER_ID) {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: () => api.clearMealPlan(userId),
     onSuccess: () => {
@@ -86,7 +86,7 @@ export function useClearMealPlan(userId: string = DEFAULT_USER_ID) {
  */
 export function useSetMeal(userId: string = DEFAULT_USER_ID) {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ date, mealType, recipeId, customText }: {
       date: string;
@@ -108,7 +108,7 @@ export function useSetMeal(userId: string = DEFAULT_USER_ID) {
  */
 export function useRemoveMeal(userId: string = DEFAULT_USER_ID) {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ date, mealType }: { date: string; mealType: string }) => {
       return api.updateMeal({ date, meal_type: mealType, value: null }, userId);
