@@ -96,11 +96,11 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-background">
         {/* Search bar */}
-        <View className="bg-white px-4 py-3 border-b border-gray-200">
-          <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-2">
-            <Ionicons name="search" size={20} color="#9ca3af" />
+        <View className="bg-peach-50 px-4 py-3 border-b border-sage-200">
+          <View className="flex-row items-center bg-white rounded-xl px-4 py-2 border border-sage-100">
+            <Ionicons name="search" size={20} color="#ADB380" />
             <TextInput
               className="flex-1 ml-2 text-base text-gray-900"
               placeholder="Search recipes..."
@@ -110,20 +110,20 @@ export default function SelectRecipeScreen() {
             />
             {searchQuery !== '' && (
               <Pressable onPress={() => setSearchQuery('')}>
-                <Ionicons name="close-circle" size={20} color="#9ca3af" />
+                <Ionicons name="close-circle" size={20} color="#ADB380" />
               </Pressable>
             )}
           </View>
         </View>
 
         {/* Custom text input */}
-        <View className="px-4 py-3 bg-white border-b border-gray-200">
-          <Text className="text-sm font-medium text-gray-500 mb-2">
+        <View className="px-4 py-3 bg-peach-50 border-b border-sage-200">
+          <Text className="text-sm font-medium text-sage-600 mb-2">
             Or enter custom text
           </Text>
           <View className="flex-row items-center">
             <TextInput
-              className="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-base text-gray-900"
+              className="flex-1 bg-white rounded-xl px-4 py-3 text-base text-gray-900 border border-sage-100"
               placeholder="e.g., Leftovers, Eating out..."
               placeholderTextColor="#9ca3af"
               value={customText}
@@ -133,7 +133,7 @@ export default function SelectRecipeScreen() {
               onPress={handleSetCustomText}
               disabled={!customText.trim() || setMeal.isPending}
               className={`ml-2 px-4 py-3 rounded-xl ${
-                customText.trim() ? 'bg-primary-500' : 'bg-gray-300'
+                customText.trim() ? 'bg-sage-400' : 'bg-sage-200'
               }`}
             >
               <Text className="text-white font-medium">Add</Text>
@@ -155,7 +155,7 @@ export default function SelectRecipeScreen() {
           contentContainerStyle={{ padding: 16 }}
           ListEmptyComponent={
             <View className="items-center py-16">
-              <Ionicons name="book-outline" size={64} color="#d1d5db" />
+              <Ionicons name="book-outline" size={64} color="#ADB380" />
               <Text className="text-gray-500 text-lg mt-4 text-center">
                 {searchQuery ? 'No recipes match your search' : 'No recipes yet'}
               </Text>
@@ -164,7 +164,7 @@ export default function SelectRecipeScreen() {
                   router.back();
                   router.push('/add-recipe');
                 }}
-                className="mt-4 px-6 py-3 bg-primary-500 rounded-full"
+                className="mt-4 px-6 py-3 bg-sage-400 rounded-full"
               >
                 <Text className="text-white font-semibold">Add a Recipe</Text>
               </Pressable>
@@ -173,14 +173,14 @@ export default function SelectRecipeScreen() {
         />
 
         {/* Remove meal button */}
-        <View className="p-4 bg-white border-t border-gray-200">
+        <View className="p-4 bg-peach-50 border-t border-sage-200">
           <Pressable
             onPress={handleRemoveMeal}
             disabled={removeMeal.isPending}
-            className="flex-row items-center justify-center py-3 rounded-xl border border-red-300 bg-red-50"
+            className="flex-row items-center justify-center py-3 rounded-xl border border-peach-500 bg-peach-100"
           >
-            <Ionicons name="trash-outline" size={20} color="#ef4444" />
-            <Text className="ml-2 font-medium text-red-500">
+            <Ionicons name="trash-outline" size={20} color="#a87a3a" />
+            <Text className="ml-2 font-medium text-peach-700">
               Clear This Meal
             </Text>
           </Pressable>

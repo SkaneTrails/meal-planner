@@ -63,7 +63,7 @@ export default function AddRecipeScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-background"
     >
       <ScrollView
         className="flex-1"
@@ -71,14 +71,14 @@ export default function AddRecipeScreen() {
         keyboardShouldPersistTaps="handled"
       >
         {/* Instructions */}
-        <View className="bg-primary-50 rounded-xl p-4 mb-6">
+        <View className="bg-sage-100 rounded-xl p-4 mb-6">
           <View className="flex-row items-center mb-2">
-            <Ionicons name="information-circle" size={24} color="#22c55e" />
-            <Text className="ml-2 font-semibold text-primary-800">
+            <Ionicons name="information-circle" size={24} color="#7A8A5D" />
+            <Text className="ml-2 font-semibold text-sage-800">
               Import from URL
             </Text>
           </View>
-          <Text className="text-primary-700 text-sm">
+          <Text className="text-sage-700 text-sm">
             Paste a recipe URL from any major cooking website. We'll automatically
             extract the title, ingredients, instructions, and more.
           </Text>
@@ -89,8 +89,8 @@ export default function AddRecipeScreen() {
           <Text className="text-sm font-medium text-gray-700 mb-2">
             Recipe URL
           </Text>
-          <View className="flex-row items-center bg-white rounded-xl border border-gray-200 px-4">
-            <Ionicons name="link" size={20} color="#9ca3af" />
+          <View className="flex-row items-center bg-peach-50 rounded-xl border border-sage-200 px-4">
+            <Ionicons name="link" size={20} color="#ADB380" />
             <TextInput
               className="flex-1 py-4 px-3 text-base text-gray-900"
               placeholder="https://example.com/recipe..."
@@ -105,7 +105,7 @@ export default function AddRecipeScreen() {
             />
             {url !== '' && (
               <Pressable onPress={() => setUrl('')} disabled={isPending}>
-                <Ionicons name="close-circle" size={20} color="#9ca3af" />
+                <Ionicons name="close-circle" size={20} color="#ADB380" />
               </Pressable>
             )}
           </View>
@@ -116,7 +116,7 @@ export default function AddRecipeScreen() {
           onPress={handleImport}
           disabled={!url || isPending}
           className={`py-4 rounded-xl flex-row items-center justify-center ${
-            url && !isPending ? 'bg-primary-500' : 'bg-gray-300'
+            url && !isPending ? 'bg-sage-400' : 'bg-sage-200'
           }`}
         >
           {isPending ? (
@@ -138,7 +138,7 @@ export default function AddRecipeScreen() {
 
         {/* Supported sites */}
         <View className="mt-8">
-          <Text className="text-sm font-medium text-gray-500 mb-3">
+          <Text className="text-sm font-medium text-sage-500 mb-3">
             Supported Sites (400+)
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -155,9 +155,9 @@ export default function AddRecipeScreen() {
             ].map((site) => (
               <View
                 key={site}
-                className="bg-white px-3 py-1.5 rounded-full border border-gray-200"
+                className="bg-peach-50 px-3 py-1.5 rounded-full border border-sage-200"
               >
-                <Text className="text-xs text-gray-600">{site}</Text>
+                <Text className="text-xs text-sage-600">{site}</Text>
               </View>
             ))}
           </View>

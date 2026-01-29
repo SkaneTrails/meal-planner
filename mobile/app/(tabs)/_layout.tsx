@@ -10,14 +10,14 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#22c55e',
+        tabBarActiveTintColor: '#7A8A5D', // Darker sage
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e5e7eb',
+          backgroundColor: '#F5F5DC', // Beige background
+          borderTopColor: '#d5d9c4',
         },
         headerStyle: {
-          backgroundColor: '#22c55e',
+          backgroundColor: '#ADB380', // Sage green
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {

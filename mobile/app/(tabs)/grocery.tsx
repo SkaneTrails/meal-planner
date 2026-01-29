@@ -81,9 +81,9 @@ export default function GroceryScreen() {
   const checkedCount = checkedItems.size;
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-background">
       {/* Header with stats */}
-      <View className="bg-white px-4 py-3 border-b border-gray-200">
+      <View className="bg-peach-50 px-4 py-3 border-b border-sage-200">
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-sm text-gray-500">This week's shopping</Text>
@@ -97,19 +97,19 @@ export default function GroceryScreen() {
           {checkedCount > 0 && (
             <Pressable
               onPress={handleClearChecked}
-              className="flex-row items-center px-3 py-2 rounded-lg bg-gray-100"
+              className="flex-row items-center px-3 py-2 rounded-lg bg-white border border-sage-200"
             >
-              <Ionicons name="refresh" size={16} color="#6b7280" />
-              <Text className="ml-1 text-sm text-gray-600">Reset</Text>
+              <Ionicons name="refresh" size={16} color="#7A8A5D" />
+              <Text className="ml-1 text-sm text-sage-600">Reset</Text>
             </Pressable>
           )}
         </View>
 
         {/* Progress bar */}
         {totalItems > 0 && (
-          <View className="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <View className="mt-3 h-2 bg-sage-100 rounded-full overflow-hidden">
             <View
-              className="h-full bg-primary-500 rounded-full"
+              className="h-full bg-sage-400 rounded-full"
               style={{ width: `${(checkedCount / totalItems) * 100}%` }}
             />
           </View>
@@ -126,14 +126,14 @@ export default function GroceryScreen() {
         <View className="flex-1 items-center justify-center p-8">
           {isLoading ? (
             <>
-              <Ionicons name="hourglass-outline" size={64} color="#d1d5db" />
+              <Ionicons name="hourglass-outline" size={64} color="#ADB380" />
               <Text className="text-gray-500 text-lg mt-4">
                 Loading grocery list...
               </Text>
             </>
           ) : (
             <>
-              <Ionicons name="cart-outline" size={64} color="#d1d5db" />
+              <Ionicons name="cart-outline" size={64} color="#ADB380" />
               <Text className="text-gray-500 text-lg mt-4 text-center">
                 Plan some meals to generate your grocery list
               </Text>

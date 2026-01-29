@@ -55,8 +55,8 @@ export function MealCell({
       className={`
         p-3 rounded-lg border min-h-[80px]
         ${hasContent 
-          ? 'bg-primary-50 border-primary-200' 
-          : 'bg-gray-50 border-gray-200 border-dashed'
+          ? 'bg-sage-100 border-sage-300' 
+          : 'bg-peach-50 border-sage-200 border-dashed'
         }
       `}
     >
@@ -64,11 +64,11 @@ export function MealCell({
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
           size={14}
-          color={hasContent ? '#15803d' : '#9ca3af'}
+          color={hasContent ? '#7A8A5D' : '#ADB380'}
         />
         <Text
           className={`text-xs ml-1 ${
-            hasContent ? 'text-primary-700' : 'text-gray-400'
+            hasContent ? 'text-sage-700' : 'text-sage-400'
           }`}
         >
           {MEAL_TYPE_LABELS[mealType]}
@@ -84,7 +84,7 @@ export function MealCell({
         </Text>
       ) : (
         <View className="flex-1 justify-center items-center">
-          <Ionicons name="add" size={20} color="#9ca3af" />
+          <Ionicons name="add" size={20} color="#ADB380" />
         </View>
       )}
     </Pressable>
@@ -117,11 +117,11 @@ export function DayColumn({
       {/* Day header */}
       <View
         className={`items-center py-2 mb-2 rounded-lg ${
-          isToday ? 'bg-primary-500' : 'bg-gray-100'
+          isToday ? 'bg-sage-400' : 'bg-peach-100'
         }`}
       >
         <Text
-          className={`text-xs ${isToday ? 'text-white' : 'text-gray-500'}`}
+          className={`text-xs ${isToday ? 'text-white' : 'text-sage-600'}`}
         >
           {dayName}
         </Text>
@@ -154,8 +154,8 @@ export function DayColumn({
 
       {/* Note indicator */}
       {note && (
-        <View className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
-          <Text className="text-xs text-yellow-800" numberOfLines={2}>
+        <View className="mt-2 p-2 bg-peach-200 rounded border border-peach-400">
+          <Text className="text-xs text-peach-800" numberOfLines={2}>
             {note}
           </Text>
         </View>

@@ -30,27 +30,27 @@ export default function HomeScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-gray-50"
+      className="flex-1 bg-background"
       refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
+        <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor="#7A8A5D" />
       }
     >
       {/* Welcome header */}
-      <View className="bg-primary-500 px-6 py-8 rounded-b-3xl">
+      <View className="bg-sage-400 px-6 py-8 rounded-b-3xl">
         <Text className="text-white text-2xl font-bold">
           Welcome to Meal Planner
         </Text>
-        <Text className="text-primary-100 mt-2">
+        <Text className="text-sage-100 mt-2">
           Plan your meals, save time & money
         </Text>
       </View>
 
       {/* Stats cards */}
       <View className="flex-row px-4 -mt-6">
-        <View className="flex-1 bg-white rounded-xl p-4 mr-2 shadow-sm border border-gray-100">
+        <View className="flex-1 bg-peach-50 rounded-xl p-4 mr-2 shadow-sm border border-peach-200">
           <View className="flex-row items-center">
-            <View className="bg-primary-100 p-2 rounded-full">
-              <Ionicons name="book" size={20} color="#22c55e" />
+            <View className="bg-sage-200 p-2 rounded-full">
+              <Ionicons name="book" size={20} color="#7A8A5D" />
             </View>
             <View className="ml-3">
               <Text className="text-2xl font-bold text-gray-900">
@@ -61,10 +61,10 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View className="flex-1 bg-white rounded-xl p-4 ml-2 shadow-sm border border-gray-100">
+        <View className="flex-1 bg-peach-50 rounded-xl p-4 ml-2 shadow-sm border border-peach-200">
           <View className="flex-row items-center">
-            <View className="bg-blue-100 p-2 rounded-full">
-              <Ionicons name="calendar" size={20} color="#3b82f6" />
+            <View className="bg-peach-300 p-2 rounded-full">
+              <Ionicons name="calendar" size={20} color="#a87a3a" />
             </View>
             <View className="ml-3">
               <Text className="text-2xl font-bold text-gray-900">
@@ -84,30 +84,30 @@ export default function HomeScreen() {
         <View className="flex-row gap-3">
           <Pressable
             onPress={() => router.push('/add-recipe')}
-            className="flex-1 bg-white rounded-xl p-4 border border-gray-200 items-center"
+            className="flex-1 bg-peach-50 rounded-xl p-4 border border-sage-200 items-center"
           >
-            <View className="bg-primary-100 p-3 rounded-full mb-2">
-              <Ionicons name="add" size={24} color="#22c55e" />
+            <View className="bg-sage-200 p-3 rounded-full mb-2">
+              <Ionicons name="add" size={24} color="#7A8A5D" />
             </View>
             <Text className="text-sm font-medium text-gray-900">Add Recipe</Text>
           </Pressable>
 
           <Pressable
             onPress={() => router.push('/meal-plan')}
-            className="flex-1 bg-white rounded-xl p-4 border border-gray-200 items-center"
+            className="flex-1 bg-peach-50 rounded-xl p-4 border border-sage-200 items-center"
           >
-            <View className="bg-blue-100 p-3 rounded-full mb-2">
-              <Ionicons name="calendar-outline" size={24} color="#3b82f6" />
+            <View className="bg-peach-300 p-3 rounded-full mb-2">
+              <Ionicons name="calendar-outline" size={24} color="#a87a3a" />
             </View>
             <Text className="text-sm font-medium text-gray-900">Plan Meals</Text>
           </Pressable>
 
           <Pressable
             onPress={() => router.push('/grocery')}
-            className="flex-1 bg-white rounded-xl p-4 border border-gray-200 items-center"
+            className="flex-1 bg-peach-50 rounded-xl p-4 border border-sage-200 items-center"
           >
-            <View className="bg-orange-100 p-3 rounded-full mb-2">
-              <Ionicons name="cart-outline" size={24} color="#f97316" />
+            <View className="bg-sage-400 p-3 rounded-full mb-2">
+              <Ionicons name="cart-outline" size={24} color="#ffffff" />
             </View>
             <Text className="text-sm font-medium text-gray-900">Grocery List</Text>
           </Pressable>
@@ -121,19 +121,19 @@ export default function HomeScreen() {
             Recent Recipes
           </Text>
           <Pressable onPress={() => router.push('/recipes')}>
-            <Text className="text-primary-500 font-medium">See all</Text>
+            <Text className="text-sage-600 font-medium">See all</Text>
           </Pressable>
         </View>
 
         {recentRecipes.length === 0 ? (
-          <View className="bg-white rounded-xl p-8 border border-gray-200 items-center">
-            <Ionicons name="book-outline" size={48} color="#d1d5db" />
+          <View className="bg-peach-50 rounded-xl p-8 border border-sage-200 items-center">
+            <Ionicons name="book-outline" size={48} color="#ADB380" />
             <Text className="text-gray-500 mt-4 text-center">
               No recipes yet. Import your first recipe to get started!
             </Text>
             <Pressable
               onPress={() => router.push('/add-recipe')}
-              className="bg-primary-500 px-6 py-3 rounded-full mt-4"
+              className="bg-sage-400 px-6 py-3 rounded-full mt-4"
             >
               <Text className="text-white font-semibold">Add Recipe</Text>
             </Pressable>

@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Meal Planner Color Palette */
+:root {
+  --color-background: #F5F5DC;
+  --color-sage: #ADB380;
+  --color-sage-dark: #7A8A5D;
+  --color-peach: #EFD5A9;
+}
