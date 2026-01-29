@@ -176,7 +176,7 @@ Skills in `.github/skills/` provide domain-specific instructions:
 | Skill                 | Purpose                                                         |
 | --------------------- | --------------------------------------------------------------- |
 | `recipe-improvement/` | Cooking techniques, equipment optimization, dietary preferences |
-| `pr-review-workflow/` | PR comment handling, CI status, GitHub API patterns             |
+| `pr-review-workflow/` | PR creation, review comments, CI status, GitHub API patterns    |
 | `working-context/`    | Track tasks and discovered issues across conversations          |
 
 ## Development Workflows
