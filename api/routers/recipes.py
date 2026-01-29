@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from api.models.recipe import Recipe, RecipeCreate, RecipeScrapeRequest, RecipeUpdate
 from api.storage import recipe_storage
+from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
@@ -23,17 +24,22 @@ async def list_recipes(
     search: Annotated[str | None, Query(description="Search recipes by title")] = None,
     *,
     include_duplicates: Annotated[bool, Query(description="Include duplicate URLs")] = False,
+    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> list[Recipe]:
     """Get all recipes, optionally filtered by search query."""
+    database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
     if search:
-        return recipe_storage.search_recipes(search)
-    return recipe_storage.get_all_recipes(include_duplicates=include_duplicates)
+        return recipe_storage.search_recipes(search, database=database)
+    return recipe_storage.get_all_recipes(include_duplicates=include_duplicates, database=database)
 
 
 @router.get("/{recipe_id}")
-async def get_recipe(recipe_id: str) -> Recipe:
+async def get_recipe(
+    recipe_id: str, *, enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False
+) -> Recipe:
     """Get a single recipe by ID."""
-    recipe = recipe_storage.get_recipe(recipe_id)
+    database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
+    recipe = recipe_storage.get_recipe(recipe_id, database=database)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
     return recipe
