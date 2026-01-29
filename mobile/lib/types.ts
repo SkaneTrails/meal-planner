@@ -97,7 +97,7 @@ export interface NoteUpdateRequest {
 }
 
 // Grocery types
-export type GroceryCategory = 
+export type GroceryCategory =
   | 'produce'
   | 'meat_seafood'
   | 'dairy'
