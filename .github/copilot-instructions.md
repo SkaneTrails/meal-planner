@@ -13,16 +13,23 @@ You are collaborating with a human who may make changes between your edits:
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
 - **Never work directly on main** - Always create a feature branch for changes
 
-## Keeping Instructions Current
+## Keeping Documentation Current
 
-When reviewing PRs, check if changes affect this documentation:
+**Before creating a PR**, check if changes require documentation updates:
+
+- `docs/DEVELOPMENT.md` - New tools, scripts, or workflows
+- `.github/copilot-instructions.md` - New patterns, conventions, or architectural decisions
+- `README.md` - User-facing feature changes
+
+**Triggers for documentation updates:**
 
 - New/renamed/removed workflows in `.github/workflows/`
 - Changes to code style tools (ruff, pre-commit hooks, etc.)
 - New dependencies or architectural patterns
+- New scripts in `scripts/`
 - Changes to testing patterns or conventions
 
-If any of these change, suggest updating `.github/copilot-instructions.md` in your review.
+Include documentation updates in the same PR as the feature.
 
 ## Project Overview
 
