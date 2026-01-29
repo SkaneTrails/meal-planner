@@ -31,21 +31,26 @@ coverage.xml
 *.swo
 *~
 
-# Terraform (uncomment if using)
-# *.tfstate
-# *.tfstate.*
-# *.tfvars
-# .terraform/
-# terraform.tfplan
-# terraform.tfplan.json
-# crash.log
-# crash.*.log
-# override.tf
-# override.tf.json
-# *_override.tf
-# *_override.tf.json
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.terraform/
+.terraform.lock.hcl
+terraform.tfplan
+terraform.tfplan.json
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
 
-# GCP (uncomment if using)
+# Terraform user access files (contain personal emails)
+infra/**/access/users.txt
+
+# GCP credentials (if using service accounts locally)
 # gcloud-config/
 # service-account-key.json
 # *.json.enc
