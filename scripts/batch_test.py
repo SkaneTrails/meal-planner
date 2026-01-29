@@ -81,10 +81,10 @@ def main() -> None:
         with output_file.open("w", encoding="utf-8") as f:
             json.dump(enhanced, f, ensure_ascii=False, indent=2)
 
-        # Rate limit pause
+        # Rate limit pause (4s for free tier: 15 req/min)
         if i < len(RECIPES):
-            print("  Waiting 3s for rate limit...")
-            time.sleep(3)
+            print("  Waiting 4s for rate limit...")
+            time.sleep(4)
 
     # Summary
     print("\n" + "=" * 60)
