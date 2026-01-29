@@ -164,3 +164,71 @@ uv run pytest tests/test_recipe.py -v
 - [ ] Recipe editing and manual entry
 - [ ] Export grocery list to various formats
 - [ ] User accounts and cloud sync
+
+---
+
+## Recipe Enhancement Architecture
+
+The app includes AI-powered recipe enhancement using Gemini. The prompt system is designed for multi-tenant use.
+
+### Design Principles
+
+- **Public repo ready**: Anyone can clone, apply terraform, and run their own instance
+- **Core vs User config**: Separate universal improvements from household-specific preferences
+- **Additive equipment model**: Baseline is stove + oven; users list additional equipment they HAVE
+
+### Prompt Structure
+
+```
+config/prompts/
+  core/                    # Committed, English, applies to ALL users
+    base.md                # Role, output JSON schema
+    formatting.md          # Fractions (½ not 0.5), ingredient order, spices last
+    timeline.md            # When/how to use ⏱️ timeline format
+    hellofresh-spices.md   # Spice blend substitution tables
+  
+  user/
+    example.yaml           # Committed - example household config
+    household.yaml         # Gitignored - actual user config
+```
+
+### User Configuration Schema
+
+```yaml
+household:
+  size: 2
+  language: sv  # Recipe output language
+
+dietary:
+  mode: flexitarian  # omnivore | flexitarian | vegetarian | vegan
+  lactose: lactose-free  # normal | lactose-free | dairy-free
+  gluten: normal
+  allergies: []
+  
+  flexitarian:
+    meat_split: 50  # % meat vs vegetarian
+    minced_meat: vegetarian
+    fish: keep
+
+equipment:
+  # Baseline assumed: stove, oven
+  oven:
+    has_convection: true
+    temp_adjustment: -20
+  additional:
+    - airfryer:
+        model: "Xiaomi Smart Air Fryer 4.5L"
+        capacity_liters: 4.5
+
+proteins:
+  chicken_alternative: "Quorn"
+  beef_alternative: "Oumph The Chunk"
+  minced_alternative: "Sojafärs"
+```
+
+### Key Rules
+
+- **Core prompts**: Always in English, no household-specific content
+- **User config**: Can use any language for output, contains all personal preferences
+- **Equipment**: Never suggest equipment not in user's config
+- **Dietary modes**: Prompt logic adapts based on mode (e.g., flexitarian = split proteins)
