@@ -35,9 +35,7 @@ async def list_recipes(
 
 @router.get("/{recipe_id}")
 async def get_recipe(
-    recipe_id: str,
-    *,
-    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
+    recipe_id: str, *, enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False
 ) -> Recipe:
     """Get a single recipe by ID."""
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
