@@ -65,12 +65,18 @@ uv run ruff format
 ```
 ├── app/
 │   ├── main.py              # Streamlit app entry point
-│   ├── models/              # Data models (Recipe, Ingredient, MealPlan)
+│   ├── models/              # Data models (Recipe, MealPlan, GroceryList)
 │   ├── services/            # Business logic
 │   │   ├── recipe_scraper.py    # Extract recipes from URLs
-│   │   ├── meal_planner.py      # Weekly planning logic
-│   │   └── grocery_list.py      # Shopping list generation
-│   └── storage/             # Data persistence
+│   │   └── ingredient_parser.py # Parse ingredient strings
+│   └── storage/             # Firestore persistence
+│       ├── firestore_client.py
+│       ├── recipe_storage.py
+│       └── meal_plan_storage.py
+├── scripts/                 # CLI tools
+│   ├── recipe_enhancer.py   # Gemini AI recipe enhancement
+│   ├── recipe_reviewer.py   # Manual recipe review helper
+│   └── ...
 ├── tests/
 ├── docs/
 └── data/                    # Local data storage (gitignored)

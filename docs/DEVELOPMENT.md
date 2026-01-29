@@ -62,18 +62,37 @@ uv run ty check app/
 
 ```
 ├── app/                    # Application code
-│   ├── __init__.py
-│   └── main.py
+│   ├── main.py             # Streamlit app entry point
+│   ├── icons.py            # Icon constants
+│   ├── models/             # Data models (dataclasses)
+│   │   ├── recipe.py
+│   │   ├── meal_plan.py
+│   │   └── grocery_list.py
+│   ├── services/           # Business logic
+│   │   ├── recipe_scraper.py
+│   │   └── ingredient_parser.py
+│   └── storage/            # Firestore persistence
+│       ├── firestore_client.py
+│       ├── recipe_storage.py
+│       └── meal_plan_storage.py
+├── scripts/                # CLI tools
+│   ├── recipe_enhancer.py  # Gemini AI recipe enhancement
+│   ├── recipe_reviewer.py  # Manual recipe review helper
+│   ├── batch_test.py       # Batch testing for enhancer
+│   └── test_gemini.py      # Gemini API test script
 ├── tests/                  # Test files
-│   ├── __init__.py
-│   ├── conftest.py        # Shared fixtures
+│   ├── conftest.py         # Shared fixtures
 │   └── test_*.py
 ├── docs/                   # Documentation
 ├── .github/
-│   ├── workflows/         # CI/CD
+│   ├── workflows/          # CI/CD (tests.yml, security-checks.yml)
+│   ├── skills/             # AI agent instructions
+│   │   ├── recipe-improvement/
+│   │   ├── pr-review-workflow/
+│   │   └── working-context/
 │   └── copilot-instructions.md
-├── pyproject.toml         # Project config
-└── renovate.json          # Dependency updates
+├── pyproject.toml          # Project config
+└── renovate.json           # Dependency updates
 ```
 
 ## Adding Dependencies
@@ -113,8 +132,25 @@ uv run python scripts/recipe_enhancer.py <recipe_id> --dry-run
 # Batch process multiple recipes
 uv run python scripts/recipe_enhancer.py --batch 10
 
+# Batch with custom delay (default 4.0s for free tier rate limits)
+uv run python scripts/recipe_enhancer.py --batch 10 --delay 5.0
+
 # List available recipes
 uv run python scripts/recipe_enhancer.py --list
+```
+
+### Other Scripts
+
+```bash
+# Manual recipe review workflow
+uv run python scripts/recipe_reviewer.py next      # Get next unprocessed recipe
+uv run python scripts/recipe_reviewer.py status    # Show review progress
+
+# Test Gemini integration
+uv run python scripts/test_gemini.py
+
+# Batch test on sample recipes
+uv run python scripts/batch_test.py
 ```
 
 ### What It Does
