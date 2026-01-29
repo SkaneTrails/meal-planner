@@ -14,6 +14,7 @@ import {
   Linking,
   Modal,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,28 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan } from '@/lib/hooks';
 import { BouncingLoader } from '@/components';
 import type { DietLabel, MealLabel, MealType } from '@/lib/types';
+
+// All diet label options
+const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] = [
+  { value: null, label: 'None', emoji: '➖' },
+  { value: 'veggie', label: 'Vegetarian', emoji: '🥬' },
+  { value: 'fish', label: 'Seafood', emoji: '🐟' },
+  { value: 'meat', label: 'Meat', emoji: '🥩' },
+];
+
+// All meal label options
+const MEAL_OPTIONS: { value: MealLabel | null; label: string }[] = [
+  { value: null, label: 'None' },
+  { value: 'breakfast', label: 'Breakfast' },
+  { value: 'starter', label: 'Starter' },
+  { value: 'salad', label: 'Salad' },
+  { value: 'meal', label: 'Main Course' },
+  { value: 'dessert', label: 'Dessert' },
+  { value: 'drink', label: 'Drink' },
+  { value: 'sauce', label: 'Sauce' },
+  { value: 'pickle', label: 'Pickle' },
+  { value: 'grill', label: 'Grill' },
+];
 
 // Helper to format date for meal key
 function formatDateLocal(date: Date): string {
@@ -129,10 +152,80 @@ export default function RecipeDetailScreen() {
   const setMeal = useSetMeal();
   
   const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
   const { data: mealPlan } = useMealPlan();
+  
+  // Edit form state
+  const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(null);
+  const [editMealLabel, setEditMealLabel] = useState<MealLabel | null>(null);
+  const [editPrepTime, setEditPrepTime] = useState('');
+  const [editCookTime, setEditCookTime] = useState('');
+  const [editServings, setEditServings] = useState('');
+  const [editTags, setEditTags] = useState('');
+  const [newTag, setNewTag] = useState('');
+  
+  // Initialize edit form when opening modal
+  const openEditModal = () => {
+    if (recipe) {
+      setEditDietLabel(recipe.diet_label);
+      setEditMealLabel(recipe.meal_label);
+      setEditPrepTime(recipe.prep_time?.toString() || '');
+      setEditCookTime(recipe.cook_time?.toString() || '');
+      setEditServings(recipe.servings?.toString() || '');
+      setEditTags(recipe.tags.join(', '));
+    }
+    setShowEditModal(true);
+  };
+  
+  const handleSaveEdit = async () => {
+    if (!id) return;
+    setIsSavingEdit(true);
+    try {
+      // Parse tags from comma-separated string
+      const tagsArray = editTags
+        .split(',')
+        .map(t => t.trim().toLowerCase().replace(/^#/, ''))
+        .filter(t => t.length > 0);
+      
+      await updateRecipe.mutateAsync({
+        id,
+        updates: {
+          diet_label: editDietLabel,
+          meal_label: editMealLabel,
+          prep_time: editPrepTime ? parseInt(editPrepTime, 10) : null,
+          cook_time: editCookTime ? parseInt(editCookTime, 10) : null,
+          servings: editServings ? parseInt(editServings, 10) : null,
+          tags: tagsArray,
+        },
+      });
+      setShowEditModal(false);
+      Alert.alert('Saved', 'Recipe details updated');
+    } catch {
+      Alert.alert('Error', 'Failed to save changes');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+  
+  const handleAddTag = () => {
+    const tag = newTag.trim().toLowerCase().replace(/^#/, '');
+    if (tag && !editTags.toLowerCase().includes(tag)) {
+      setEditTags(prev => prev ? `${prev}, ${tag}` : tag);
+    }
+    setNewTag('');
+  };
+  
+  const handleRemoveTag = (tagToRemove: string) => {
+    const tagsArray = editTags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.toLowerCase() !== tagToRemove.toLowerCase());
+    setEditTags(tagsArray.join(', '));
+  };
   
   // Helper to check if a meal slot is taken
   const getMealForSlot = (date: Date, mealType: MealType): string | null => {
@@ -469,6 +562,9 @@ export default function RecipeDetailScreen() {
           title: recipe.title,
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Pressable onPress={openEditModal} style={{ padding: 8 }}>
+                <Ionicons name="create-outline" size={24} color="white" />
+              </Pressable>
               <Pressable onPress={() => setShowPlanModal(true)} style={{ padding: 8 }}>
                 <Ionicons name="calendar-outline" size={24} color="white" />
               </Pressable>
@@ -896,6 +992,285 @@ export default function RecipeDetailScreen() {
                   </View>
                 );
               })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal
+        visible={showEditModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowEditModal(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+          <View style={{ 
+            backgroundColor: '#fff', 
+            borderTopLeftRadius: 24, 
+            borderTopRightRadius: 24,
+            paddingTop: 20,
+            paddingBottom: 40,
+            maxHeight: '90%',
+          }}>
+            {/* Header */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 20 }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728' }}>Edit Recipe</Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <Pressable 
+                  onPress={() => setShowEditModal(false)} 
+                  style={{ paddingHorizontal: 16, paddingVertical: 8 }}
+                >
+                  <Text style={{ fontSize: 15, color: '#6b7280' }}>Cancel</Text>
+                </Pressable>
+                <Pressable 
+                  onPress={handleSaveEdit}
+                  disabled={isSavingEdit}
+                  style={({ pressed }) => ({ 
+                    backgroundColor: pressed ? '#3D2D1F' : '#4A3728', 
+                    paddingHorizontal: 16, 
+                    paddingVertical: 8, 
+                    borderRadius: 8,
+                    opacity: isSavingEdit ? 0.6 : 1,
+                  })}
+                >
+                  {isSavingEdit ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>Save</Text>
+                  )}
+                </Pressable>
+              </View>
+            </View>
+
+            <ScrollView style={{ paddingHorizontal: 20 }} keyboardShouldPersistTaps="handled">
+              {/* Diet Type */}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Diet Type
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                  {DIET_OPTIONS.map(({ value, label, emoji }) => {
+                    const isSelected = editDietLabel === value;
+                    return (
+                      <Pressable
+                        key={label}
+                        onPress={() => setEditDietLabel(value)}
+                        style={({ pressed }) => ({
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          backgroundColor: isSelected ? '#4A3728' : pressed ? '#F5E6D3' : '#F9F5F0',
+                          paddingHorizontal: 14,
+                          paddingVertical: 10,
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: isSelected ? '#4A3728' : '#E8D5C4',
+                        })}
+                      >
+                        <Text style={{ marginRight: 6 }}>{emoji}</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: isSelected ? '#fff' : '#4A3728' }}>
+                          {label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+
+              {/* Meal Type */}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Meal Type
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                  {MEAL_OPTIONS.map(({ value, label }) => {
+                    const isSelected = editMealLabel === value;
+                    return (
+                      <Pressable
+                        key={label}
+                        onPress={() => setEditMealLabel(value)}
+                        style={({ pressed }) => ({
+                          backgroundColor: isSelected ? '#4A3728' : pressed ? '#F5E6D3' : '#F9F5F0',
+                          paddingHorizontal: 14,
+                          paddingVertical: 10,
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: isSelected ? '#4A3728' : '#E8D5C4',
+                        })}
+                      >
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: isSelected ? '#fff' : '#4A3728' }}>
+                          {label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+
+              {/* Time & Servings */}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Time & Servings
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>Prep (min)</Text>
+                    <TextInput
+                      value={editPrepTime}
+                      onChangeText={setEditPrepTime}
+                      placeholder="—"
+                      placeholderTextColor="#d1d5db"
+                      keyboardType="number-pad"
+                      style={{
+                        backgroundColor: '#F9F5F0',
+                        borderRadius: 12,
+                        paddingHorizontal: 14,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: '#4A3728',
+                        textAlign: 'center',
+                        borderWidth: 1,
+                        borderColor: '#E8D5C4',
+                      }}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>Cook (min)</Text>
+                    <TextInput
+                      value={editCookTime}
+                      onChangeText={setEditCookTime}
+                      placeholder="—"
+                      placeholderTextColor="#d1d5db"
+                      keyboardType="number-pad"
+                      style={{
+                        backgroundColor: '#F9F5F0',
+                        borderRadius: 12,
+                        paddingHorizontal: 14,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: '#4A3728',
+                        textAlign: 'center',
+                        borderWidth: 1,
+                        borderColor: '#E8D5C4',
+                      }}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>Servings</Text>
+                    <TextInput
+                      value={editServings}
+                      onChangeText={setEditServings}
+                      placeholder="—"
+                      placeholderTextColor="#d1d5db"
+                      keyboardType="number-pad"
+                      style={{
+                        backgroundColor: '#F9F5F0',
+                        borderRadius: 12,
+                        paddingHorizontal: 14,
+                        paddingVertical: 12,
+                        fontSize: 16,
+                        color: '#4A3728',
+                        textAlign: 'center',
+                        borderWidth: 1,
+                        borderColor: '#E8D5C4',
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              {/* Tags */}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Tags
+                </Text>
+                
+                {/* Add new tag input */}
+                <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+                  <TextInput
+                    value={newTag}
+                    onChangeText={setNewTag}
+                    placeholder="Add a tag..."
+                    placeholderTextColor="#9ca3af"
+                    autoCapitalize="none"
+                    onSubmitEditing={handleAddTag}
+                    returnKeyType="done"
+                    style={{
+                      flex: 1,
+                      backgroundColor: '#F9F5F0',
+                      borderRadius: 12,
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
+                      fontSize: 15,
+                      color: '#4A3728',
+                      borderWidth: 1,
+                      borderColor: '#E8D5C4',
+                    }}
+                  />
+                  <Pressable
+                    onPress={handleAddTag}
+                    disabled={!newTag.trim()}
+                    style={({ pressed }) => ({
+                      backgroundColor: newTag.trim() ? (pressed ? '#3D2D1F' : '#4A3728') : '#E5E7EB',
+                      paddingHorizontal: 16,
+                      borderRadius: 12,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    })}
+                  >
+                    <Ionicons name="add" size={24} color={newTag.trim() ? '#fff' : '#9ca3af'} />
+                  </Pressable>
+                </View>
+
+                {/* Current tags */}
+                {editTags && (
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                    {editTags.split(',').map((tag) => {
+                      const trimmedTag = tag.trim();
+                      if (!trimmedTag) return null;
+                      return (
+                        <View
+                          key={trimmedTag}
+                          style={{ 
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            backgroundColor: '#4A3728', 
+                            paddingLeft: 12, 
+                            paddingRight: 6,
+                            paddingVertical: 6, 
+                            borderRadius: 16,
+                          }}
+                        >
+                          <Text style={{ fontSize: 13, fontWeight: '500', color: '#fff', marginRight: 6 }}>
+                            #{trimmedTag}
+                          </Text>
+                          <Pressable
+                            onPress={() => handleRemoveTag(trimmedTag)}
+                            style={({ pressed }) => ({
+                              width: 20,
+                              height: 20,
+                              borderRadius: 10,
+                              backgroundColor: pressed ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            })}
+                          >
+                            <Ionicons name="close" size={14} color="#fff" />
+                          </Pressable>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+                
+                {!editTags && (
+                  <Text style={{ fontSize: 14, color: '#9ca3af', fontStyle: 'italic' }}>
+                    No tags yet. Add some to organize your recipes!
+                  </Text>
+                )}
+              </View>
+
+              <View style={{ height: 40 }} />
             </ScrollView>
           </View>
         </View>
