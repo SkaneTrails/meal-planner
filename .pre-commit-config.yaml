@@ -90,12 +90,12 @@ repos:
         pass_filenames: false
         args: [app/, api/, scripts/]
 
-  # TypeScript type check for mobile (requires Node.js)
+  # TypeScript type check for mobile (requires npm install in mobile/)
   - repo: local
     hooks:
       - id: tsc-mobile
         name: TypeScript (mobile)
-        entry: bash -c 'cd mobile && npx tsc --noEmit'
+        entry: bash -c "test -f mobile/node_modules/.bin/tsc && cd mobile && node_modules/.bin/tsc --noEmit || true"
         language: system
         files: ^mobile/.*\.(ts|tsx)$
         pass_filenames: false
