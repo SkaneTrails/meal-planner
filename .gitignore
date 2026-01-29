@@ -60,7 +60,7 @@ coverage.xml
 .mypy_cache/
 
 # Copilot working context (local only)
-.copilot-todo.md
+.copilot-tasks.md
 
 # Local data storage
 data/*

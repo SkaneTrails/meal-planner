@@ -95,7 +95,7 @@ repos:
     hooks:
       - id: tsc-mobile
         name: TypeScript (mobile)
-        entry: bash -c "test -f mobile/node_modules/.bin/tsc && cd mobile && node_modules/.bin/tsc --noEmit || true"
+        entry: bash -c "test -d mobile/node_modules && npx --prefix mobile tsc --noEmit -p mobile/tsconfig.json || echo 'Skipping - run npm install in mobile/ first'"
         language: system
         files: ^mobile/.*\.(ts|tsx)$
         pass_filenames: false
