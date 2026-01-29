@@ -39,7 +39,12 @@ For CI status, offer to check:
 - [ ] Committed with descriptive message
 - [ ] Pushed to remote
 - [ ] Replied to comment with commit SHA
-- [ ] Thread resolved via GraphQL API (inline review comments only - top-level PR comments cannot be resolved)
+- [ ] **Thread resolved via GraphQL API immediately after replying**
+
+> **⚠️ CRITICAL: Reply + Resolve are INSEPARABLE.**
+> After replying to a comment, you MUST resolve the thread in the same operation.
+> Never batch replies without also batching resolutions. The resolve loop must run
+> immediately after the reply loop - not "later" or "at the end".
 
 Do not consider a comment "handled" until ALL steps are complete. After fixing and pushing, return to sections 4 and 6 to reply and resolve.
 
