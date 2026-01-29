@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Quick test script to compare Gemini Flash recipe improvements with manual review.
 
