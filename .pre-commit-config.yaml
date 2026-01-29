@@ -40,6 +40,7 @@ repos:
       - id: check-ast
       - id: check-added-large-files
         args: [--maxkb=150]
+        exclude: ^mobile/
       - id: detect-private-key
       - id: debug-statements
 

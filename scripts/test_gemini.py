@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Load .env file
 from dotenv import load_dotenv
@@ -172,7 +172,7 @@ Förbättra detta recept enligt reglerna:
         return None
 
 
-def main():
+def main() -> None:
     print("=" * 60)
     print("🧪 Gemini Flash Recipe Enhancement Test")
     print("=" * 60)
@@ -221,8 +221,8 @@ def main():
     print(f"  Tags: {', '.join(meta.get('tags', []))}")
 
     # Save full output for comparison
-    output_file = f"data/gemini_test_recipe_{index}.json"
-    with open(output_file, "w", encoding="utf-8") as f:
+    output_file = Path(f"data/gemini_test_recipe_{index}.json")
+    with output_file.open("w", encoding="utf-8") as f:
         json.dump(enhanced, f, ensure_ascii=False, indent=2)
     print(f"\n💾 Full output saved to: {output_file}")
 

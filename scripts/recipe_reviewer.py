@@ -182,7 +182,7 @@ def show_status() -> None:
     print(f"   Progress:            {((processed + skipped) / total * 100):.1f}%\n")
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         print(__doc__)
         return

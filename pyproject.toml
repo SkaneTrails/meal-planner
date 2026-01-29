@@ -15,15 +15,18 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
+  "fastapi>=0.115",
   "google-cloud-firestore>=2.19",
   "google-genai>=1.60",
   "google-generativeai>=0.8.6",
   "httpx>=0.27",
   "pillow>=10",
+  "pydantic>=2.10",
   "python-dotenv>=1",
   "recipe-scrapers>=15",
   "streamlit>=1.28",
   "streamlit-sortables>=0.3.1",
+  "uvicorn>=0.34",
   "watchdog>=6",
 ]
 
@@ -80,14 +83,12 @@ lint.ignore = [
 ]
 
 lint.per-file-ignores."scripts/**/*.py" = [
-  "ANN",    # No type annotations required for scripts
-  "B007",   # Unused loop variable ok in scripts
-  "C901",   # Complex functions ok in scripts
-  "E402",   # Module-level import not at top (needed for sys.path manipulation)
-  "FBT",    # Boolean positional args ok in scripts
-  "PLR",    # Refactor rules relaxed for scripts
-  "PTH",    # pathlib not required for simple scripts
-  "SIM105", # contextlib.suppress not required
+  "C901",    # Complex functions ok in CLI scripts (main, process_batch)
+  "E402",    # Module-level import not at top (needed for sys.path manipulation)
+  "PLR0911", # Too many return statements ok in CLI argument parsing
+  "PLR0912", # Too many branches ok in CLI argument parsing
+  "PLR0915", # Too many statements ok in batch processing scripts
+  "PLR2004", # Magic numbers ok in CLI arg parsing
 ]
 
 lint.per-file-ignores."tests/**/*.py" = [
@@ -106,7 +107,7 @@ lint.isort.split-on-trailing-comma = false
 known_first_party = [ "meal-planner" ]
 pep621_dev_dependency_groups = [ "dev" ]
 ignore = [ "DEP002" ]
-exclude = [ "scripts/", ".venv/" ]
+extend_exclude = [ ".venv/", "functions/", "scripts/" ]
 
 [tool.pytest.ini_options]
 testpaths = [ "tests" ]
