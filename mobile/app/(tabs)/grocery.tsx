@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useGroceryList } from '@/lib/hooks';
-import { GroceryListView, GradientBackground } from '@/components';
+import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -135,7 +135,7 @@ export default function GroceryScreen() {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           {isLoading ? (
             <>
-              <Ionicons name="hourglass-outline" size={56} color="#4A3728" />
+              <BouncingLoader size={14} />
               <Text style={{ color: '#6b7280', fontSize: 17, marginTop: 16 }}>
                 Loading grocery list...
               </Text>

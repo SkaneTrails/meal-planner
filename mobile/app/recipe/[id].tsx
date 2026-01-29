@@ -16,6 +16,7 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecipe, useDeleteRecipe, useEnhancedMode } from '@/lib/hooks';
+import { BouncingLoader } from '@/components';
 import type { DietLabel, MealLabel } from '@/lib/types';
 
 const DIET_LABELS: Record<DietLabel, { emoji: string; label: string }> = {
@@ -83,7 +84,7 @@ export default function RecipeDetailScreen() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5E6D3' }}>
-        <Ionicons name="hourglass-outline" size={48} color="#4A3728" />
+        <BouncingLoader size={14} />
         <Text style={{ color: '#4A3728', fontSize: 15, marginTop: 16 }}>Loading recipe...</Text>
       </View>
     );

@@ -75,8 +75,8 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
   }
 
   // Grid card layout - square cards with image taking most of the space
-  // Image height is ~70% of card, text takes ~30%
-  const imageHeight = cardSize ? cardSize * 0.7 : 128;
+  // Image height is ~75% of card, text takes ~25%
+  const imageHeight = cardSize ? cardSize * 0.75 : 128;
   
   return (
     <Pressable
@@ -99,8 +99,8 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
         style={{ width: '100%', height: imageHeight }}
         resizeMode="cover"
       />
-      <View style={{ flex: 1, padding: 10, justifyContent: 'center' }}>
-        <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728', lineHeight: 18 }} numberOfLines={2}>
+      <View style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 6, justifyContent: 'center' }}>
+        <Text style={{ fontSize: 13, fontWeight: '600', color: '#4A3728', lineHeight: 16 }} numberOfLines={2}>
           {recipe.title}
         </Text>
 

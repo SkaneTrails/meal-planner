@@ -111,6 +111,7 @@ export default function RecipesScreen() {
   const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
   const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
   const [sortBy, setSortBy] = useState('newest');
+  const [showAllRecipes, setShowAllRecipes] = useState(true);
   
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
@@ -210,7 +211,7 @@ export default function RecipesScreen() {
           <Ionicons name="search" size={18} color="#9ca3af" />
           <Text style={{ marginLeft: 8, fontSize: 15, color: '#6b7280' }}>Search recipes</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 12 }}>
           <TextInput
             style={{ flex: 1, fontSize: 15, color: '#4A3728' }}
             placeholder="Search by name..."

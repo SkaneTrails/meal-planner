@@ -3,12 +3,13 @@
  * Food delivery app inspired design with gradient background.
  */
 
-import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, RefreshControl, TextInput } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecipes, useMealPlan, useGroceryList } from '@/lib/hooks';
 import { GradientBackground } from '@/components';
+import type { Recipe } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -44,6 +45,7 @@ export default function HomeScreen() {
   const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes();
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const [recipeUrl, setRecipeUrl] = useState('');
+  const [inspirationIndex, setInspirationIndex] = useState(0);
 
   const { start, end } = useMemo(() => getWeekDates(), []);
   const { data: groceryList } = useGroceryList(undefined, { start_date: start, end_date: end });
@@ -54,6 +56,29 @@ export default function HomeScreen() {
     refetchRecipes();
     refetchMealPlan();
   };
+
+  // Filter inspiration recipes (exclude meal and grill categories - starters, desserts, drinks, sauces, pickles, breakfast)
+  const inspirationRecipes = useMemo(() => {
+    return recipes.filter(
+      (recipe: Recipe) => recipe.meal_label && recipe.meal_label !== 'meal' && recipe.meal_label !== 'grill'
+    );
+  }, [recipes]);
+
+  // Get current inspiration recipe
+  const inspirationRecipe = useMemo(() => {
+    if (inspirationRecipes.length === 0) return null;
+    return inspirationRecipes[inspirationIndex % inspirationRecipes.length];
+  }, [inspirationRecipes, inspirationIndex]);
+
+  // Shuffle to get a new random inspiration
+  const shuffleInspiration = useCallback(() => {
+    if (inspirationRecipes.length <= 1) return;
+    let newIndex: number;
+    do {
+      newIndex = Math.floor(Math.random() * inspirationRecipes.length);
+    } while (newIndex === inspirationIndex && inspirationRecipes.length > 1);
+    setInspirationIndex(newIndex);
+  }, [inspirationRecipes.length, inspirationIndex]);
 
   // Count meals planned this week (max 21: 7 days x 3 meals)
   const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
@@ -201,6 +226,45 @@ export default function HomeScreen() {
           </View>
         </View>
       </View>
+
+      {/* Inspiration section */}
+      {inspirationRecipes.length > 0 && inspirationRecipe && (
+        <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="bulb" size={18} color="#eab308" />
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#4A3728', marginLeft: 6 }}>Inspiration</Text>
+            </View>
+            <Pressable
+              onPress={shuffleInspiration}
+              style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8D5C4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 }}
+            >
+              <Ionicons name="shuffle" size={16} color="#4A3728" />
+              <Text style={{ color: '#4A3728', fontWeight: '600', fontSize: 13, marginLeft: 4 }}>Shuffle</Text>
+            </Pressable>
+          </View>
+
+          <Pressable
+            onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
+            style={{ backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden' }}
+          >
+            <Image
+              source={{ uri: inspirationRecipe.image_url || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400' }}
+              style={{ width: '100%', height: 140 }}
+              resizeMode="cover"
+            />
+            <View style={{ padding: 14 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: '#4A3728' }} numberOfLines={1}>
+                {inspirationRecipe.title}
+              </Text>
+              <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
+                {inspirationRecipe.meal_label ? inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1) : ''}
+                {inspirationRecipe.diet_label && ` • ${inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}`}
+              </Text>
+            </View>
+          </Pressable>
+        </View>
+      )}
 
       <View style={{ height: 32 }} />
       </ScrollView>
