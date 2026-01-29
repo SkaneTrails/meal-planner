@@ -21,7 +21,7 @@ def get_firestore_client(database: str = DEFAULT_DATABASE) -> firestore.Client:
         database: The database ID to connect to. Use "(default)" for the default database
                   or "meal-planner" for the AI-enhanced recipes database.
     """
-    global _clients  # noqa: PLW0603
+    global _clients  # noqa: PLW0602
     if database not in _clients:
         # Check for emulator
         emulator_host = os.getenv("FIRESTORE_EMULATOR_HOST")
