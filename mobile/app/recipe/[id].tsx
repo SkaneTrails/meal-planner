@@ -2,7 +2,7 @@
  * Recipe detail screen.
  */
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,45 @@ import {
   Alert,
   Share,
   Linking,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode } from '@/lib/hooks';
+import * as ImagePicker from 'expo-image-picker';
+import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan } from '@/lib/hooks';
 import { BouncingLoader } from '@/components';
-import type { DietLabel, MealLabel } from '@/lib/types';
+import type { DietLabel, MealLabel, MealType } from '@/lib/types';
+
+// Helper to format date for meal key
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Get current week dates (Saturday to Friday)
+function getWeekDates(weekOffset: number = 0): Date[] {
+  const today = new Date();
+  const currentDay = today.getDay();
+  const daysSinceSaturday = (currentDay + 1) % 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() - daysSinceSaturday + weekOffset * 7);
+  
+  const dates: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(saturday);
+    date.setDate(saturday.getDate() + i);
+    dates.push(date);
+  }
+  return dates;
+}
+
+const MEAL_TYPES: { type: MealType; label: string }[] = [
+  { type: 'lunch', label: 'Lunch' },
+  { type: 'dinner', label: 'Dinner' },
+];
 
 const DIET_LABELS: Record<DietLabel, { emoji: string; label: string; color: string; bgColor: string }> = {
   veggie: { emoji: '🥬', label: 'Vegetarian', color: '#166534', bgColor: '#DCFCE7' },  // pastel green
@@ -93,6 +126,173 @@ export default function RecipeDetailScreen() {
   const { data: recipe, isLoading, error } = useRecipe(id, isEnhanced);
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
+  const setMeal = useSetMeal();
+  
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [isUpdatingImage, setIsUpdatingImage] = useState(false);
+  const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
+  const { data: mealPlan } = useMealPlan();
+  
+  // Helper to check if a meal slot is taken
+  const getMealForSlot = (date: Date, mealType: MealType): string | null => {
+    if (!mealPlan?.meals) return null;
+    const dateStr = formatDateLocal(date);
+    const key = `${dateStr}_${mealType}`;
+    return mealPlan.meals[key] || null;
+  };
+  
+  // Check if date is in the past
+  const isPastDate = (date: Date): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+    return checkDate < today;
+  };
+
+  const handlePickImage = async () => {
+    // Ask user for permission and show options
+    Alert.alert(
+      'Change Recipe Photo',
+      'Choose an option',
+      [
+        {
+          text: 'Take Photo',
+          onPress: async () => {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            if (status !== 'granted') {
+              Alert.alert('Permission needed', 'Camera permission is required to take photos');
+              return;
+            }
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ['images'],
+              allowsEditing: true,
+              aspect: [16, 9],
+              quality: 0.8,
+            });
+            if (!result.canceled && result.assets[0]) {
+              await saveImage(result.assets[0].uri);
+            }
+          },
+        },
+        {
+          text: 'Choose from Library',
+          onPress: async () => {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+              Alert.alert('Permission needed', 'Photo library permission is required');
+              return;
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ['images'],
+              allowsEditing: true,
+              aspect: [16, 9],
+              quality: 0.8,
+            });
+            if (!result.canceled && result.assets[0]) {
+              await saveImage(result.assets[0].uri);
+            }
+          },
+        },
+        {
+          text: 'Enter URL',
+          onPress: () => {
+            Alert.prompt(
+              'Image URL',
+              'Enter the URL of the image',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Save',
+                  onPress: async (url?: string) => {
+                    if (url && url.trim()) {
+                      await saveImageUrl(url.trim());
+                    }
+                  },
+                },
+              ],
+              'plain-text',
+              recipe?.image_url || ''
+            );
+          },
+        },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  };
+
+  const saveImage = async (localUri: string) => {
+    // Upload to cloud storage via API
+    setIsUpdatingImage(true);
+    try {
+      const { api } = await import('@/lib/api');
+      await api.uploadRecipeImage(id!, localUri, isEnhanced);
+      // Refetch the recipe to get updated image URL
+      // The mutation will invalidate the cache
+      await updateRecipe.mutateAsync({
+        id: id!,
+        updates: {}, // Empty update just to trigger cache refresh
+      });
+      Alert.alert('Success', 'Recipe photo uploaded!');
+    } catch (err) {
+      // Fallback: save local URI if upload fails
+      console.warn('Upload failed, saving local URI:', err);
+      try {
+        await updateRecipe.mutateAsync({
+          id: id!,
+          updates: { image_url: localUri },
+        });
+        Alert.alert('Saved Locally', 'Photo saved locally (upload to cloud failed)');
+      } catch {
+        Alert.alert('Error', 'Failed to update photo');
+      }
+    } finally {
+      setIsUpdatingImage(false);
+    }
+  };
+
+  const saveImageUrl = async (url: string) => {
+    setIsUpdatingImage(true);
+    try {
+      await updateRecipe.mutateAsync({
+        id: id!,
+        updates: { image_url: url },
+      });
+      Alert.alert('Success', 'Recipe photo updated!');
+    } catch {
+      Alert.alert('Error', 'Failed to update photo');
+    } finally {
+      setIsUpdatingImage(false);
+    }
+  };
+
+  const handlePlanMeal = async (date: Date, mealType: MealType) => {
+    if (!id) return;
+    try {
+      await setMeal.mutateAsync({
+        date: formatDateLocal(date),
+        mealType: mealType,
+        recipeId: id,
+      });
+      setShowPlanModal(false);
+      Alert.alert('Added!', `${recipe?.title} added to ${mealType} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`);
+    } catch {
+      Alert.alert('Error', 'Failed to add to meal plan');
+    }
+  };
+
+  const handleClearMeal = async (date: Date, mealType: MealType) => {
+    try {
+      await setMeal.mutateAsync({
+        date: formatDateLocal(date),
+        mealType: mealType,
+        recipeId: undefined,
+      });
+    } catch {
+      Alert.alert('Error', 'Failed to clear meal');
+    }
+  };
 
   const handleThumbUp = async () => {
     if (!id) return;
@@ -269,6 +469,9 @@ export default function RecipeDetailScreen() {
           title: recipe.title,
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Pressable onPress={() => setShowPlanModal(true)} style={{ padding: 8 }}>
+                <Ionicons name="calendar-outline" size={24} color="white" />
+              </Pressable>
               <Pressable onPress={handleShare} style={{ padding: 8 }}>
                 <Ionicons name="share-outline" size={24} color="white" />
               </Pressable>
@@ -281,12 +484,40 @@ export default function RecipeDetailScreen() {
       />
 
       <ScrollView style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
-        {/* Hero image */}
-        <Image
-          source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-          style={{ width: '100%', height: 280 }}
-          resizeMode="cover"
-        />
+        {/* Hero image with camera button next to it */}
+        <View style={{ position: 'relative' }}>
+          <Image
+            source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
+            style={{ width: '100%', height: 280 }}
+            resizeMode="cover"
+          />
+          {/* Camera button floating on right side */}
+          <Pressable 
+            onPress={handlePickImage}
+            style={({ pressed }) => ({
+              position: 'absolute',
+              bottom: 48,
+              right: 16,
+              backgroundColor: pressed ? 'rgba(74, 55, 40, 1)' : 'rgba(74, 55, 40, 0.85)',
+              borderRadius: 24,
+              width: 48,
+              height: 48,
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 4,
+              elevation: 4,
+            })}
+          >
+            {isUpdatingImage ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Ionicons name="camera" size={22} color="#fff" />
+            )}
+          </Pressable>
+        </View>
 
         {/* Content */}
         <View style={{ 
@@ -499,7 +730,6 @@ export default function RecipeDetailScreen() {
                 justifyContent: 'center', 
                 paddingVertical: 16, 
                 marginTop: 8,
-                marginBottom: 20,
                 backgroundColor: '#F5E6D3',
                 borderRadius: 14,
               }}
@@ -510,8 +740,166 @@ export default function RecipeDetailScreen() {
               </Text>
             </Pressable>
           )}
+
+          {/* Add to Meal Plan button */}
+          <Pressable
+            onPress={() => setShowPlanModal(true)}
+            style={({ pressed }) => ({ 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              paddingVertical: 16, 
+              marginTop: 12,
+              marginBottom: 20,
+              backgroundColor: pressed ? '#3D2D1F' : '#4A3728',
+              borderRadius: 14,
+              shadowColor: '#4A3728',
+              shadowOffset: { width: 0, height: 3 },
+              shadowOpacity: 0.25,
+              shadowRadius: 6,
+              elevation: 4,
+            })}
+          >
+            <Ionicons name="calendar" size={20} color="#fff" />
+            <Text style={{ color: '#fff', marginLeft: 10, fontSize: 16, fontWeight: '600' }}>
+              Add to Meal Plan
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
+
+      {/* Plan Modal */}
+      <Modal
+        visible={showPlanModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowPlanModal(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+          <View style={{ 
+            backgroundColor: '#fff', 
+            borderTopLeftRadius: 24, 
+            borderTopRightRadius: 24,
+            paddingTop: 20,
+            paddingBottom: 40,
+            maxHeight: '80%',
+          }}>
+            {/* Header */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 16 }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728' }}>Add to Meal Plan</Text>
+              <Pressable onPress={() => setShowPlanModal(false)} style={{ padding: 8 }}>
+                <Ionicons name="close" size={24} color="#6b7280" />
+              </Pressable>
+            </View>
+            
+            {/* Week navigation */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 16, gap: 20 }}>
+              <Pressable
+                onPress={() => setWeekOffset(0)}
+                disabled={weekOffset === 0}
+                style={{ padding: 8, opacity: weekOffset === 0 ? 0.3 : 1 }}
+              >
+                <Ionicons name="chevron-back" size={24} color="#4A3728" />
+              </Pressable>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
+                {weekOffset === 0 ? 'This Week' : 'Next Week'}
+              </Text>
+              <Pressable
+                onPress={() => setWeekOffset(1)}
+                disabled={weekOffset === 1}
+                style={{ padding: 8, opacity: weekOffset === 1 ? 0.3 : 1 }}
+              >
+                <Ionicons name="chevron-forward" size={24} color="#4A3728" />
+              </Pressable>
+            </View>
+            
+            <Text style={{ fontSize: 15, color: '#6b7280', paddingHorizontal: 20, marginBottom: 16 }}>
+              Select a day and meal for "{recipe.title}"
+            </Text>
+
+            <ScrollView style={{ paddingHorizontal: 20 }}>
+              {weekDates.map((date) => {
+                const isToday = date.toDateString() === new Date().toDateString();
+                const isPast = isPastDate(date);
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                return (
+                  <View key={date.toISOString()} style={{ marginBottom: 16, opacity: isPast ? 0.4 : 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                      {isToday && (
+                        <View style={{ backgroundColor: '#4A3728', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, marginRight: 8 }}>
+                          <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>TODAY</Text>
+                        </View>
+                      )}
+                      <Text style={{ fontSize: 15, fontWeight: '600', color: isToday ? '#4A3728' : '#6b7280' }}>
+                        {dayName} · {monthDay}
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                      {MEAL_TYPES.map(({ type, label }) => {
+                        const existingMeal = getMealForSlot(date, type);
+                        const isTaken = !!existingMeal;
+                        
+                        return (
+                          <View key={type} style={{ flex: 1, flexDirection: 'row', gap: 4 }}>
+                            <Pressable
+                              onPress={() => handlePlanMeal(date, type)}
+                              disabled={isPast}
+                              style={({ pressed }) => ({
+                                flex: 1,
+                                backgroundColor: isTaken 
+                                  ? '#E8D5C4' 
+                                  : pressed 
+                                    ? '#E8D5C4' 
+                                    : '#F5E6D3',
+                                paddingVertical: 12,
+                                borderRadius: isTaken ? 10 : 12,
+                                borderTopRightRadius: isTaken ? 0 : 12,
+                                borderBottomRightRadius: isTaken ? 0 : 12,
+                                alignItems: 'center',
+                                borderWidth: isTaken ? 2 : 0,
+                                borderRightWidth: isTaken ? 0 : 0,
+                                borderColor: '#4A3728',
+                              })}
+                            >
+                              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                                {isTaken && <Ionicons name="checkmark-circle" size={16} color="#4A3728" />}
+                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>{label}</Text>
+                              </View>
+                            </Pressable>
+                            {isTaken && !isPast && (
+                              <Pressable
+                                onPress={() => handleClearMeal(date, type)}
+                                style={({ pressed }) => ({
+                                  backgroundColor: pressed ? '#DC2626' : '#FEE2E2',
+                                  paddingHorizontal: 10,
+                                  borderRadius: 10,
+                                  borderTopLeftRadius: 0,
+                                  borderBottomLeftRadius: 0,
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  borderWidth: 2,
+                                  borderLeftWidth: 0,
+                                  borderColor: '#4A3728',
+                                })}
+                              >
+                                {({ pressed }) => (
+                                  <Ionicons name="trash-outline" size={16} color={pressed ? '#fff' : '#DC2626'} />
+                                )}
+                              </Pressable>
+                            )}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

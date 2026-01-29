@@ -31,7 +31,7 @@ export default function SelectRecipeScreen() {
   const { date, mealType, mode } = useLocalSearchParams<{
     date: string;
     mealType: MealType;
-    mode?: 'library' | 'copy';
+    mode?: 'library' | 'copy' | 'quick';
   }>();
   const router = useRouter();
   const { isEnhanced } = useEnhancedMode();
@@ -53,7 +53,27 @@ export default function SelectRecipeScreen() {
     );
   }, [recipes, searchQuery]);
 
-  // Get existing meals from meal plan that can be copied
+  // Get current week date range
+  const currentWeekDates = useMemo(() => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const daysSinceMonday = (currentDay + 6) % 7;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysSinceMonday);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    
+    const formatDate = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    return { start: formatDate(monday), end: formatDate(sunday) };
+  }, []);
+
+  // Get existing meals from meal plan that can be copied (current week only)
   const existingMeals = useMemo(() => {
     if (!mealPlan?.meals) return [];
     
@@ -65,6 +85,9 @@ export default function SelectRecipeScreen() {
       // Don't show the current slot we're trying to fill
       if (key === `${date}_${mealType}`) return;
       
+      // Only show meals from current week
+      if (dateStr < currentWeekDates.start || dateStr > currentWeekDates.end) return;
+      
       if (value.startsWith('custom:')) {
         meals.push({ key, date: dateStr, mealType: type, customText: value.slice(7) });
       } else {
@@ -75,9 +98,9 @@ export default function SelectRecipeScreen() {
       }
     });
     
-    // Sort by date descending (most recent first)
-    return meals.sort((a, b) => b.date.localeCompare(a.date));
-  }, [mealPlan, recipes, date, mealType]);
+    // Sort by date ascending (start of week first)
+    return meals.sort((a, b) => a.date.localeCompare(b.date));
+  }, [mealPlan, recipes, date, mealType, currentWeekDates]);
 
   const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
     weekday: 'long',
@@ -157,49 +180,120 @@ export default function SelectRecipeScreen() {
       />
 
       <View style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
-        {/* Tab switcher */}
-        <View style={{ backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 12, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-          <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
-            <Pressable
-              onPress={() => setActiveTab('library')}
-              style={{
-                flex: 1,
-                paddingVertical: 10,
-                borderRadius: 10,
-                backgroundColor: activeTab === 'library' ? '#4A3728' : '#F5E6D3',
-                alignItems: 'center',
-              }}
-            >
-              <Text style={{ 
-                fontSize: 14, 
-                fontWeight: '600', 
-                color: activeTab === 'library' ? '#fff' : '#4A3728' 
-              }}>
-                📚 From Library
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setActiveTab('copy')}
-              style={{
-                flex: 1,
-                paddingVertical: 10,
-                borderRadius: 10,
-                backgroundColor: activeTab === 'copy' ? '#4A3728' : '#F5E6D3',
-                alignItems: 'center',
-              }}
-            >
-              <Text style={{ 
-                fontSize: 14, 
-                fontWeight: '600', 
-                color: activeTab === 'copy' ? '#fff' : '#4A3728' 
-              }}>
-                📋 Copy Meal
-              </Text>
-            </Pressable>
+        {/* Tab switcher - only show if no mode specified */}
+        {!mode && (
+          <View style={{ backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 12, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+              <Pressable
+                onPress={() => setActiveTab('library')}
+                style={{
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 10,
+                  backgroundColor: activeTab === 'library' ? '#4A3728' : '#F5E6D3',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 14, 
+                  fontWeight: '600', 
+                  color: activeTab === 'library' ? '#fff' : '#4A3728' 
+                }}>
+                  📚 From Library
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setActiveTab('copy')}
+                style={{
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 10,
+                  backgroundColor: activeTab === 'copy' ? '#4A3728' : '#F5E6D3',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 14, 
+                  fontWeight: '600', 
+                  color: activeTab === 'copy' ? '#fff' : '#4A3728' 
+                }}>
+                  📋 Copy Meal
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
+        )}
 
-        {activeTab === 'library' ? (
+        {/* Quick mode - just show text input */}
+        {mode === 'quick' ? (
+          <View style={{ flex: 1, padding: 20 }}>
+            <View style={{ 
+              backgroundColor: '#fff', 
+              borderRadius: 20, 
+              padding: 24,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 4,
+            }}>
+              <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                <View style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  backgroundColor: '#F5E6D3',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 12,
+                }}>
+                  <Ionicons name="create-outline" size={28} color="#4A3728" />
+                </View>
+                <Text style={{ fontSize: 18, fontWeight: '600', color: '#4A3728' }}>
+                  Quick Meal
+                </Text>
+                <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>
+                  What are you having?
+                </Text>
+              </View>
+              
+              <TextInput
+                style={{
+                  backgroundColor: '#F5E6D3',
+                  borderRadius: 14,
+                  paddingHorizontal: 18,
+                  paddingVertical: 16,
+                  fontSize: 16,
+                  color: '#4A3728',
+                  marginBottom: 16,
+                }}
+                placeholder="e.g., Leftovers, Eating out, Pasta..."
+                placeholderTextColor="#9ca3af"
+                value={customText}
+                onChangeText={setCustomText}
+                autoFocus
+                returnKeyType="done"
+                onSubmitEditing={handleSetCustomText}
+              />
+              
+              <Pressable
+                onPress={handleSetCustomText}
+                disabled={!customText.trim() || setMeal.isPending}
+                style={({ pressed }) => ({
+                  backgroundColor: customText.trim() ? '#4A3728' : '#E5E7EB',
+                  borderRadius: 14,
+                  paddingVertical: 16,
+                  alignItems: 'center',
+                  opacity: pressed ? 0.9 : 1,
+                })}
+              >
+                <Text style={{ fontSize: 16, fontWeight: '600', color: customText.trim() ? '#fff' : '#9CA3AF' }}>
+                  Add Meal
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : activeTab === 'library' ? (
           <>
             {/* Search bar */}
             <View style={{ backgroundColor: '#fff', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>

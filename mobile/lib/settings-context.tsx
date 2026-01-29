@@ -8,8 +8,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
+export type AppLanguage = 'en' | 'sv' | 'it';
+
+export const LANGUAGES: { code: AppLanguage; label: string; flag: string }[] = [
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'sv', label: 'Svenska', flag: '🇸🇪' },
+  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+];
+
 interface Settings {
   itemsAtHome: string[]; // List of ingredients always at home (won't appear in grocery list)
+  language: AppLanguage; // App language
 }
 
 interface SettingsContextType {
@@ -18,10 +27,12 @@ interface SettingsContextType {
   addItemAtHome: (item: string) => Promise<void>;
   removeItemAtHome: (item: string) => Promise<void>;
   isItemAtHome: (item: string) => boolean;
+  setLanguage: (language: AppLanguage) => Promise<void>;
 }
 
 const defaultSettings: Settings = {
   itemsAtHome: [],
+  language: 'en',
 };
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
@@ -87,6 +98,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     );
   }, [settings.itemsAtHome]);
 
+  const setLanguage = useCallback(async (language: AppLanguage) => {
+    const newSettings = {
+      ...settings,
+      language,
+    };
+    await saveSettings(newSettings);
+  }, [settings, saveSettings]);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -95,6 +114,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         addItemAtHome,
         removeItemAtHome,
         isItemAtHome,
+        setLanguage,
       }}
     >
       {children}

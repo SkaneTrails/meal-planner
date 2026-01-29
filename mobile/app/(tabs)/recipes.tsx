@@ -58,11 +58,11 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
   const { width } = useWindowDimensions();
   
   // Calculate number of columns based on screen width
-  // Larger card width (~300px) for bigger tiles
-  const minCardWidth = 300;
+  // Card width for readable titles with time info
+  const minCardWidth = 185;
   const padding = 16;
   const availableWidth = width - padding;
-  const numColumns = Math.max(1, Math.floor(availableWidth / minCardWidth));
+  const numColumns = Math.max(2, Math.floor(availableWidth / minCardWidth));
   const cardWidth = (availableWidth - (numColumns - 1) * 8) / numColumns;
 
   return (

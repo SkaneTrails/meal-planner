@@ -172,43 +172,47 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             </View>
           )}
         </View>
-        <View style={{ flex: 1, paddingHorizontal: 12, paddingVertical: 8, justifyContent: 'center' }}>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728', lineHeight: 18, letterSpacing: -0.2 }} numberOfLines={2}>
-            {recipe.title}
-          </Text>
-
-          {/* Time and rating badges */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 6, justifyContent: 'center' }}>
+          {/* Title row with time aligned right */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
+            <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#4A3728', lineHeight: 17, letterSpacing: -0.3 }} numberOfLines={2}>
+              {recipe.title}
+            </Text>
             {totalTime && (
               <View style={{ 
                 flexDirection: 'row', 
                 alignItems: 'center',
                 backgroundColor: '#F5E6D3',
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 8,
+                paddingHorizontal: 6,
+                paddingVertical: 3,
+                borderRadius: 6,
+                marginTop: 1,
               }}>
-                <Ionicons name="time-outline" size={12} color="#4A3728" />
-                <Text style={{ fontSize: 12, fontWeight: '500', color: '#4A3728', marginLeft: 4 }}>{totalTime}m</Text>
+                <Ionicons name="time-outline" size={11} color="#4A3728" />
+                <Text style={{ fontSize: 11, fontWeight: '500', color: '#4A3728', marginLeft: 3 }}>{totalTime}m</Text>
               </View>
             )}
-            {recipe.rating && (
+          </View>
+
+          {/* Rating badge */}
+          {recipe.rating && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
               <View style={{ 
                 flexDirection: 'row', 
                 alignItems: 'center',
                 backgroundColor: recipe.rating >= 3 ? '#DCFCE7' : '#FEE2E2',
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 8,
+                paddingHorizontal: 6,
+                paddingVertical: 3,
+                borderRadius: 6,
               }}>
                 <Ionicons 
                   name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'} 
-                  size={12} 
+                  size={11} 
                   color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'} 
                 />
               </View>
-            )}
-          </View>
+            </View>
+          )}
         </View>
       </Animated.View>
     </Pressable>

@@ -16,13 +16,17 @@ import {
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { GradientBackground } from '@/components';
-import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal } from '@/lib/hooks';
+import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote } from '@/lib/hooks';
 import type { MealType, Recipe } from '@/lib/types';
+
+// Quick note suggestions
+const NOTE_SUGGESTIONS = ['🏢 Office', '🏠 Home', '🏃 Gym', '🍽️ Dinner out', '✈️ Travel', '🎉 Party'];
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
 
@@ -82,6 +86,8 @@ export default function MealPlanScreen() {
   const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
   const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [showJumpButton, setShowJumpButton] = useState(false);
+  const [editingNoteDate, setEditingNoteDate] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState('');
   const scrollViewRef = useRef<ScrollView>(null);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
 
@@ -152,6 +158,37 @@ export default function MealPlanScreen() {
   const { isEnhanced } = useEnhancedMode();
   const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
   const setMeal = useSetMeal();
+  const updateNote = useUpdateNote();
+
+  // Get note for a specific date
+  const getNoteForDate = (date: Date): string | null => {
+    if (!mealPlan || !mealPlan.notes) return null;
+    const dateStr = formatDateLocal(date);
+    return mealPlan.notes[dateStr] || null;
+  };
+
+  // Handle note editing
+  const handleStartEditNote = (date: Date) => {
+    const dateStr = formatDateLocal(date);
+    setEditingNoteDate(dateStr);
+    setNoteText(getNoteForDate(date) || '');
+  };
+
+  const handleSaveNote = () => {
+    if (editingNoteDate) {
+      updateNote.mutate({ date: editingNoteDate, note: noteText.trim() });
+      setEditingNoteDate(null);
+      setNoteText('');
+    }
+  };
+
+  const handleQuickNote = (date: Date, note: string) => {
+    const dateStr = formatDateLocal(date);
+    const currentNote = getNoteForDate(date) || '';
+    // Toggle: if already has this note, remove it; otherwise set it
+    const newNote = currentNote === note ? '' : note;
+    updateNote.mutate({ date: dateStr, note: newNote });
+  };
 
   // Create a map of recipe IDs to recipes
   const recipeMap = useMemo(() => {
@@ -184,23 +221,11 @@ export default function MealPlanScreen() {
     const dateStr = formatDateLocal(date);
     
     if (mode === 'quick') {
-      // Show quick text input alert
-      Alert.prompt(
-        'Quick Meal',
-        'What are you having?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Add',
-            onPress: (text: string | undefined) => {
-              if (text?.trim()) {
-                setMeal.mutate({ date: dateStr, mealType, customText: text.trim() });
-              }
-            },
-          },
-        ],
-        'plain-text'
-      );
+      // Navigate to select-recipe with quick mode
+      router.push({
+        pathname: '/select-recipe',
+        params: { date: dateStr, mealType, mode: 'quick' },
+      });
       return;
     }
     
@@ -367,22 +392,111 @@ export default function MealPlanScreen() {
             
             return (
               <View key={date.toISOString()} style={{ marginBottom: 28 }}>
-                {/* Day header */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
-                  {isToday && (
-                    <View style={{ backgroundColor: '#4A3728', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
-                      <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>TODAY</Text>
-                    </View>
-                  )}
-                  <Text style={{ 
-                    fontSize: 16, 
-                    fontWeight: '600', 
-                    color: isToday ? '#4A3728' : '#6b7280',
-                    letterSpacing: -0.2,
-                  }}>
-                    {formatDayHeader(date)}
-                  </Text>
-                </View>
+                {/* Day header with note */}
+                {(() => {
+                  const dateStr = formatDateLocal(date);
+                  const note = getNoteForDate(date);
+                  const isEditing = editingNoteDate === dateStr;
+
+                  return (
+                    <>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isEditing ? 8 : 14 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          {isToday && (
+                            <View style={{ backgroundColor: '#4A3728', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
+                              <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>TODAY</Text>
+                            </View>
+                          )}
+                          <Text style={{ 
+                            fontSize: 16, 
+                            fontWeight: '600', 
+                            color: isToday ? '#4A3728' : '#6b7280',
+                            letterSpacing: -0.2,
+                          }}>
+                            {formatDayHeader(date)}
+                          </Text>
+                        </View>
+
+                        {/* Note pill on right side */}
+                        {!isEditing && (
+                          <Pressable onPress={() => handleStartEditNote(date)}>
+                            {note ? (
+                              <View style={{ 
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                backgroundColor: '#f0f9ff',
+                                paddingHorizontal: 10,
+                                paddingVertical: 4,
+                                borderRadius: 12,
+                              }}>
+                                <Text style={{ fontSize: 12, color: '#0369a1' }}>{note}</Text>
+                              </View>
+                            ) : (
+                              <Text style={{ fontSize: 12, color: '#d1d5db' }}>+ note</Text>
+                            )}
+                          </Pressable>
+                        )}
+                      </View>
+
+                      {/* Note editor (below header when editing) */}
+                      {isEditing && (
+                        <View style={{ marginBottom: 12 }}>
+                          <View style={{ 
+                            flexDirection: 'row', 
+                            alignItems: 'center',
+                            backgroundColor: '#f9f5f0',
+                            borderRadius: 12,
+                            padding: 10,
+                            gap: 8,
+                          }}>
+                            <TextInput
+                              value={noteText}
+                              onChangeText={setNoteText}
+                              placeholder="Add a note..."
+                              style={{
+                                flex: 1,
+                                fontSize: 14,
+                                color: '#4A3728',
+                                padding: 0,
+                              }}
+                              autoFocus
+                            />
+                            <Pressable onPress={handleSaveNote}>
+                              <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>Save</Text>
+                            </Pressable>
+                            <Pressable onPress={() => { setEditingNoteDate(null); setNoteText(''); }}>
+                              <Text style={{ fontSize: 14, color: '#9ca3af' }}>Cancel</Text>
+                            </Pressable>
+                          </View>
+                          <ScrollView 
+                            horizontal 
+                            showsHorizontalScrollIndicator={false}
+                            style={{ marginTop: 8 }}
+                          >
+                            <View style={{ flexDirection: 'row', gap: 6 }}>
+                              {NOTE_SUGGESTIONS.map((suggestion) => (
+                                <Pressable
+                                  key={suggestion}
+                                  onPress={() => setNoteText(suggestion)}
+                                  style={{
+                                    backgroundColor: noteText === suggestion ? '#e8dfd4' : '#fff',
+                                    paddingHorizontal: 12,
+                                    paddingVertical: 6,
+                                    borderRadius: 16,
+                                    borderWidth: 1,
+                                    borderColor: '#e5e7eb',
+                                  }}
+                                >
+                                  <Text style={{ fontSize: 13, color: '#4A3728' }}>{suggestion}</Text>
+                                </Pressable>
+                              ))}
+                            </View>
+                          </ScrollView>
+                        </View>
+                      )}
+                    </>
+                  );
+                })()}
 
                 {/* Meals for this day */}
                 {MEAL_TYPES.map(({ type, label }) => {

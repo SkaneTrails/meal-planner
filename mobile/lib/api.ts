@@ -123,6 +123,46 @@ class ApiClient {
     });
   }
 
+  async uploadRecipeImage(id: string, imageUri: string, enhanced: boolean = false): Promise<Recipe> {
+    const url = `${this.baseUrl}${API_PREFIX}/recipes/${id}/image${enhanced ? '?enhanced=true' : ''}`;
+    
+    // Create form data for image upload
+    const formData = new FormData();
+    
+    // Get file info from URI
+    const uriParts = imageUri.split('.');
+    const fileType = uriParts[uriParts.length - 1];
+    
+    formData.append('file', {
+      uri: imageUri,
+      name: `recipe_${id}.${fileType}`,
+      type: `image/${fileType === 'jpg' ? 'jpeg' : fileType}`,
+    } as unknown as Blob);
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      let error;
+      try {
+        error = await response.json();
+      } catch {
+        error = { detail: `HTTP ${response.status}: ${response.statusText}` };
+      }
+      throw new ApiClientError(
+        typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail),
+        response.status
+      );
+    }
+    
+    return response.json();
+  }
+
   // Meal Plan endpoints
   async getMealPlan(userId: string = DEFAULT_USER_ID): Promise<MealPlan> {
     return this.request<MealPlan>(`/meal-plans/${userId}`);

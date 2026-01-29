@@ -57,7 +57,17 @@ export default function GroceryScreen() {
   const { isEnhanced } = useEnhancedMode();
   const { isItemAtHome, settings } = useSettings();
   const { data: mealPlan } = useMealPlan();
-  const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
+  // Fetch both enhanced and non-enhanced recipes to ensure we find all recipes regardless of which mode was used when planning
+  const { data: enhancedRecipes = [] } = useRecipes(undefined, true);
+  const { data: regularRecipes = [] } = useRecipes(undefined, false);
+  
+  // Combine both recipe lists, prefer enhanced if available
+  const recipes = useMemo(() => {
+    const recipeMap = new Map(regularRecipes.map(r => [r.id, r]));
+    // Enhanced recipes override regular ones
+    enhancedRecipes.forEach(r => recipeMap.set(r.id, r));
+    return Array.from(recipeMap.values());
+  }, [enhancedRecipes, regularRecipes]);
 
   // Filter function to hide items that are "at home"
   const filterOutItemsAtHome = useCallback((itemName: string) => {
