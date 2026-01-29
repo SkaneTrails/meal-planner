@@ -232,7 +232,7 @@ def delete_recipe(recipe_id: str) -> bool:
     return True
 
 
-def search_recipes(query: str) -> list[Recipe]:
+def search_recipes(query: str, database: str = DEFAULT_DATABASE) -> list[Recipe]:
     """
     Search recipes by title (case-sensitive prefix match).
 
@@ -241,11 +241,12 @@ def search_recipes(query: str) -> list[Recipe]:
 
     Args:
         query: The search query.
+        database: The database to search in.
 
     Returns:
         List of matching recipes.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     docs = (
         db.collection(RECIPES_COLLECTION)
         .where(filter=FieldFilter("title", ">=", query))

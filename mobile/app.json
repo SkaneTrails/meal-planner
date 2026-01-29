@@ -22,8 +22,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#22c55e"
       },
-      "package": "com.mealplanner.app",
-      "usesCleartextTraffic": true
+      "package": "com.mealplanner.app"
     },
     "web": {
       "bundler": "metro",

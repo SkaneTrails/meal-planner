@@ -29,7 +29,7 @@ async def list_recipes(
     """Get all recipes, optionally filtered by search query."""
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
     if search:
-        return recipe_storage.search_recipes(search)
+        return recipe_storage.search_recipes(search, database=database)
     return recipe_storage.get_all_recipes(include_duplicates=include_duplicates, database=database)
 
 
