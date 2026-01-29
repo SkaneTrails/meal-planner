@@ -562,9 +562,6 @@ export default function RecipeDetailScreen() {
           title: recipe.title,
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Pressable onPress={openEditModal} style={{ padding: 8 }}>
-                <Ionicons name="create-outline" size={24} color="white" />
-              </Pressable>
               <Pressable onPress={() => setShowPlanModal(true)} style={{ padding: 8 }}>
                 <Ionicons name="calendar-outline" size={24} color="white" />
               </Pressable>
@@ -642,30 +639,54 @@ export default function RecipeDetailScreen() {
             />
           </View>
 
-          {/* Meta info */}
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 14, gap: 10 }}>
+          {/* Meta info with edit button */}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 14, gap: 10, alignItems: 'center' }}>
             {recipe.diet_label && (
-              <View style={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
-                paddingHorizontal: 14, 
-                paddingVertical: 8, 
-                borderRadius: 12,
-              }}>
+              <Pressable 
+                onPress={openEditModal}
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
+                  paddingHorizontal: 14, 
+                  paddingVertical: 8, 
+                  borderRadius: 12,
+                }}
+              >
                 <Text style={{ marginRight: 6, fontSize: 14 }}>{DIET_LABELS[recipe.diet_label].emoji}</Text>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: DIET_LABELS[recipe.diet_label].color }}>
                   {DIET_LABELS[recipe.diet_label].label}
                 </Text>
-              </View>
+              </Pressable>
             )}
             {recipe.meal_label && (
-              <View style={{ backgroundColor: '#E8D5C4', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}>
+              <Pressable 
+                onPress={openEditModal}
+                style={{ backgroundColor: '#E8D5C4', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}
+              >
                 <Text style={{ fontSize: 13, fontWeight: '600', color: '#4A3728' }}>
                   {MEAL_LABELS[recipe.meal_label]}
                 </Text>
-              </View>
+              </Pressable>
             )}
+            {/* Edit button - always visible */}
+            <Pressable
+              onPress={openEditModal}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 20,
+                borderWidth: 1,
+                borderColor: '#E8D5C4',
+                borderStyle: 'dashed',
+              })}
+            >
+              <Ionicons name="create-outline" size={16} color="#4A3728" />
+              <Text style={{ fontSize: 13, fontWeight: '500', color: '#4A3728', marginLeft: 4 }}>Edit</Text>
+            </Pressable>
           </View>
 
           {/* Time and servings */}
