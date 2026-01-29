@@ -178,6 +178,8 @@ uv run pytest tests/test_recipe.py -v
 
 The app includes AI-powered recipe enhancement using Gemini. The prompt system is designed for multi-tenant use.
 
+> **Note:** The prompt structure below describes the planned architecture. Currently, the system prompt is embedded in `scripts/recipe_enhancer.py`. Separating prompts into external files is planned for future work.
+
 ### Design Principles
 
 - **Public repo ready**: Anyone can clone, apply terraform, and run their own instance
