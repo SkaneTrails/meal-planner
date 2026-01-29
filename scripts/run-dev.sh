@@ -22,11 +22,11 @@ echo ""
 ./scripts/run-function.sh &
 FUNCTION_PID=$!
 
+# Cleanup on exit (must be set before any blocking command)
+trap "kill $FUNCTION_PID 2>/dev/null" EXIT INT TERM
+
 # Give function time to start
 sleep 2
 
 # Start API (foreground)
 ./scripts/run-api.sh
-
-# Cleanup on exit
-trap "kill $FUNCTION_PID 2>/dev/null" EXIT

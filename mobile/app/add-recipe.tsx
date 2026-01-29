@@ -15,13 +15,12 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useScrapeRecipe, useCreateRecipe } from '@/lib/hooks';
+import { useScrapeRecipe } from '@/lib/hooks';
 
 export default function AddRecipeScreen() {
   const router = useRouter();
   const [url, setUrl] = useState('');
   const scrapeRecipe = useScrapeRecipe();
-  const createRecipe = useCreateRecipe();
 
   const isValidUrl = (text: string) => {
     try {

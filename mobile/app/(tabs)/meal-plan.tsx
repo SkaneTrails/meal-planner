@@ -51,7 +51,7 @@ export default function MealPlanScreen() {
     data: mealPlan,
     isLoading: mealPlanLoading,
     refetch: refetchMealPlan,
-  } = useMealPlan(startDate, endDate);
+  } = useMealPlan();
   const { data: recipes = [] } = useRecipes();
   const clearMealPlan = useClearMealPlan();
 
@@ -74,16 +74,27 @@ export default function MealPlanScreen() {
       snack: {},
     };
 
-    if (!mealPlan) return meals;
+    if (!mealPlan || !mealPlan.meals) return meals;
 
-    for (const meal of mealPlan.meals) {
-      if (meal.date === dateStr) {
-        const recipe = meal.recipe_id ? recipeMap[meal.recipe_id] : undefined;
-        meals[meal.meal_type] = {
-          recipe,
-          customText: meal.custom_text || undefined,
-        };
+    for (const [key, value] of Object.entries(mealPlan.meals)) {
+      const [entryDate, entryMealType] = key.split('_');
+      if (entryDate !== dateStr) continue;
+      if (
+        entryMealType !== 'breakfast' &&
+        entryMealType !== 'lunch' &&
+        entryMealType !== 'dinner' &&
+        entryMealType !== 'snack'
+      ) {
+        continue;
       }
+
+      const mealType = entryMealType as MealType;
+      const isCustom = value.startsWith('custom:');
+      const recipe = !isCustom ? recipeMap[value] : undefined;
+
+      meals[mealType] = recipe
+        ? { recipe }
+        : { customText: isCustom ? value.slice(7) : value };
     }
 
     return meals;
@@ -98,7 +109,7 @@ export default function MealPlanScreen() {
         {
           text: 'Clear',
           style: 'destructive',
-          onPress: () => clearMealPlan.mutate({ startDate, endDate }),
+          onPress: () => clearMealPlan.mutate(),
         },
       ]
     );

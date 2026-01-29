@@ -231,11 +231,12 @@ async def generate_grocery_list(
     """Generate a grocery list from a user's meal plan.
 
     If start_date is not provided, uses today as start.
-    If end_date is not provided, uses start_date + days.
+    If end_date is not provided, uses an inclusive range of `days` starting at start_date
+    (i.e., end_date = start_date + timedelta(days=days - 1)).
     """
     # Determine date range
     effective_start = start_date if start_date is not None else _get_today()
-    effective_end = end_date if end_date is not None else effective_start + timedelta(days=days)
+    effective_end = end_date if end_date is not None else effective_start + timedelta(days=days - 1)
 
     # Load meal plan
     meals, _ = meal_plan_storage.load_meal_plan(user_id)

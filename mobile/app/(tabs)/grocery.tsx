@@ -7,7 +7,6 @@ import {
   View,
   Text,
   Pressable,
-  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useGroceryList } from '@/lib/hooks';
@@ -35,8 +34,10 @@ export default function GroceryScreen() {
   const {
     data: groceryList,
     isLoading,
-    refetch,
-  } = useGroceryList(start, end);
+  } = useGroceryList(undefined, {
+    start_date: start,
+    end_date: end,
+  });
 
   // Apply local checked state to grocery list
   const groceryListWithChecked = useMemo(() => {
