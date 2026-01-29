@@ -75,9 +75,11 @@ def get_next_recipe() -> None:
 def get_recipe(recipe_id: str) -> None:
     """Get a specific recipe by ID."""
     db = get_source_db()
-    doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()
+    doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if doc.exists:
-        display_recipe(doc.id, doc.to_dict())
+        data = doc.to_dict()
+        if data is not None:
+            display_recipe(doc.id, data)
     else:
         print(f"❌ Recipe not found: {recipe_id}")
 
@@ -137,13 +139,16 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     target_db = get_target_db()
 
     # Get original recipe from source
-    source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()
+    source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if not source_doc.exists:
         print(f"❌ Recipe not found in source: {recipe_id}")
         return
 
     # Merge original data with updates
     original_data = source_doc.to_dict()
+    if original_data is None:
+        print(f"❌ Recipe data is empty: {recipe_id}")
+        return
     improved_data = {**original_data, **updates}
     improved_data["original_id"] = recipe_id  # Track source recipe ID
     improved_data["improved"] = True

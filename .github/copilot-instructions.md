@@ -15,29 +15,50 @@ You are collaborating with a human who may make changes between your edits:
 
 ## Keeping Documentation Current
 
-> **⚠️ CRITICAL: Documentation updates are MANDATORY, not optional.**
-> If you change code that affects any item below, you MUST update the corresponding docs
-> in the SAME commit or PR. Outdated documentation is a bug.
+> **🚨 BLOCKING REQUIREMENT: Update docs BEFORE pushing.**
+> Documentation updates are not optional. They are part of the definition of done.
+> A PR with code changes but outdated docs is **incomplete and must not be merged**.
 
-**Files to check before every PR:**
+### Pre-Push Checklist (MANDATORY)
+
+Before running `git push`, verify ALL applicable items:
+
+- [ ] **Architecture changes** → Update `copilot-instructions.md` Architecture section
+- [ ] **New/changed scripts** → Update `docs/DEVELOPMENT.md` and `copilot-instructions.md`
+- [ ] **New directories** → Update project structure in BOTH docs
+- [ ] **New dependencies** → Document in `copilot-instructions.md` Key Dependencies
+- [ ] **New API endpoints** → Update `docs/DEVELOPMENT.md` API section
+- [ ] **User-facing changes** → Update `README.md`
+- [ ] **New skills** → Add to skills table in `copilot-instructions.md`
+
+### Documentation Files
 
 | File                              | Update when...                                           |
 | --------------------------------- | -------------------------------------------------------- |
-| `docs/DEVELOPMENT.md`             | New scripts, tools, commands, or workflows               |
-| `.github/copilot-instructions.md` | New patterns, conventions, architecture, or dependencies |
+| `.github/copilot-instructions.md` | Architecture, dependencies, patterns, conventions        |
+| `docs/DEVELOPMENT.md`             | Scripts, commands, workflows, API usage                  |
+| `README.md`                       | User-facing features, quick start, project overview      |
 | `.github/skills/**/*.md`          | New skills or changes to existing skill behavior         |
-| `README.md`                       | User-facing feature changes                              |
 
-**Triggers requiring documentation updates:**
+### Triggers Requiring Documentation Updates
 
+- New/renamed/removed directories (`api/`, `mobile/`, `functions/`, etc.)
 - New/renamed/removed files in `scripts/`
 - New/renamed/removed files in `.github/skills/`
 - New/renamed/removed workflows in `.github/workflows/`
-- Changes to `pyproject.toml` dependencies
+- Changes to `pyproject.toml` or `package.json` dependencies
 - New services, storage backends, or API endpoints
 - Changes to code style tools or conventions
 
-**Self-check:** Before marking a PR ready, ask: "If someone reads only the docs, will they understand the current state of the project?"
+### Enforcement
+
+**Before pushing, ask yourself:**
+
+1. "Does the Architecture section reflect what actually exists?"
+2. "Are all current directories documented in the project structure?"
+3. "Can someone clone this repo and understand how to run everything?"
+
+**If the answer is NO to any question, update the docs first.**
 
 ## Project Overview
 
@@ -49,54 +70,96 @@ You are collaborating with a human who may make changes between your edits:
 
 ## Architecture
 
+The project is a multi-platform meal planning system with three main interfaces:
+
+| Platform | Directory | Stack | Purpose |
+|----------|-----------|-------|--------|
+| Web (legacy) | `app/` | Streamlit | Original web UI |
+| Mobile | `mobile/` | React Native + Expo | iOS/Android app |
+| API | `api/` | FastAPI | REST backend for mobile |
+| Functions | `functions/` | Google Cloud Functions | Serverless recipe scraping |
+
 ### Application Structure
 
 ```
-app/
+api/                     # FastAPI REST backend
+├── main.py              # FastAPI app entry point
+├── models/              # Pydantic models
+│   ├── recipe.py
+│   ├── meal_plan.py
+│   └── grocery_list.py
+├── routers/             # API route handlers
+│   ├── recipes.py
+│   ├── meal_plans.py
+│   └── grocery.py
+├── services/            # Business logic
+│   └── ingredient_parser.py
+└── storage/             # Firestore persistence
+    ├── firestore_client.py
+    ├── recipe_storage.py
+    └── meal_plan_storage.py
+
+app/                     # Streamlit web app (legacy)
 ├── main.py              # Streamlit app entry point
 ├── icons.py             # Icon constants
 ├── models/              # Data models (dataclasses)
-│   ├── recipe.py        # Recipe model
-│   ├── meal_plan.py     # MealPlan, PlannedMeal models
-│   └── grocery_list.py  # GroceryList, GroceryItem models
 ├── services/            # Business logic
-│   ├── recipe_scraper.py    # Extract recipes from URLs
-│   └── ingredient_parser.py # Parse ingredient strings
 └── storage/             # Firestore persistence
-    ├── firestore_client.py  # Firestore connection
-    ├── recipe_storage.py    # Recipe CRUD operations
-    └── meal_plan_storage.py # Meal plan CRUD operations
 
-scripts/                 # CLI tools (not part of app)
+mobile/                  # React Native mobile app
+├── app/                 # Expo Router screens
+│   ├── (tabs)/          # Tab navigation screens
+│   ├── recipe/[id].tsx  # Recipe detail screen
+│   ├── add-recipe.tsx   # Add recipe screen
+│   └── select-recipe.tsx
+├── components/          # Reusable UI components
+├── lib/                 # Utilities, hooks, API client
+│   ├── api.ts           # REST API client
+│   ├── hooks/           # React Query hooks
+│   └── types.ts         # TypeScript types
+└── package.json
+
+functions/               # Google Cloud Functions
+└── scrape_recipe/       # Recipe scraping function
+    ├── main.py
+    ├── recipe_scraper.py
+    └── requirements.txt
+
+scripts/                 # CLI tools
 ├── recipe_enhancer.py   # Gemini AI recipe enhancement
 ├── recipe_reviewer.py   # Manual recipe review helper
 ├── batch_test.py        # Batch testing for enhancer
-└── test_gemini.py       # Gemini API test script
+├── test_gemini.py       # Gemini API test script
+├── run-api.sh           # Start FastAPI server
+├── run-dev.sh           # Start all dev services
+└── run-function.sh      # Run Cloud Function locally
 ```
 
 ### Key Dependencies
 
-**Web UI:**
-
-- **streamlit** - Web UI framework
-- **streamlit-sortables** - Drag-and-drop UI components
-
-**Backend/API:**
+**Python Backend (api/, app/, scripts/):**
 
 - **fastapi** - REST API framework
 - **uvicorn** - ASGI server
 - **pydantic** - Data validation
-
-**Data & Storage:**
-
+- **streamlit** - Web UI framework (legacy)
 - **google-cloud-firestore** - Firestore database client
 - **google-genai** - Gemini AI for recipe enhancement
-
-**Recipe Processing:**
-
 - **recipe-scrapers** - Extract recipes from 400+ websites
 - **httpx** - HTTP client
 - **pillow** - Image processing
+
+**Mobile (mobile/):**
+
+- **expo** - React Native framework
+- **expo-router** - File-based routing
+- **@tanstack/react-query** - Data fetching/caching
+- **nativewind** - Tailwind CSS for React Native
+
+**Cloud Functions (functions/):**
+
+- **functions-framework** - Google Cloud Functions runtime
+- **recipe-scrapers** - Recipe extraction
 
 ### Data Flow
 
@@ -113,7 +176,7 @@ Skills in `.github/skills/` provide domain-specific instructions:
 | Skill                 | Purpose                                                         |
 | --------------------- | --------------------------------------------------------------- |
 | `recipe-improvement/` | Cooking techniques, equipment optimization, dietary preferences |
-| `pr-review-workflow/` | PR comment handling, CI status, GitHub API patterns             |
+| `pr-review-workflow/` | PR creation, review comments, CI status, GitHub API patterns    |
 | `working-context/`    | Track tasks and discovered issues across conversations          |
 
 ## Development Workflows
@@ -121,8 +184,30 @@ Skills in `.github/skills/` provide domain-specific instructions:
 ### Running the App
 
 ```bash
-uv sync                              # Install dependencies
-uv run streamlit run app/main.py     # Run the app
+# Install Python dependencies
+uv sync
+
+# Run Streamlit web app (legacy)
+uv run streamlit run app/main.py
+
+# Run FastAPI backend
+./scripts/run-api.sh
+# Or manually:
+uv run uvicorn api.main:app --reload --port 8000
+
+# Run all dev services (API + mobile)
+./scripts/run-dev.sh
+
+# Run Cloud Function locally
+./scripts/run-function.sh
+```
+
+### Running the Mobile App
+
+```bash
+cd mobile
+npm install
+npx expo start
 ```
 
 ### Code Quality Tools
