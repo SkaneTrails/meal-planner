@@ -153,7 +153,7 @@ export default function SelectRecipeScreen() {
           contentContainerStyle={{ padding: 16 }}
           ListEmptyComponent={
             <View style={{ alignItems: 'center', paddingVertical: 64 }}>
-              <Ionicons name="book-outline" size="56" color="#4A3728" />
+              <Ionicons name="book-outline" size={56} color="#4A3728" />
               <Text style={{ color: '#6b7280', fontSize: 17, marginTop: 16, textAlign: 'center' }}>
                 {searchQuery ? 'No recipes match your search' : 'No recipes yet'}
               </Text>

@@ -18,7 +18,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { RecipeCard, GradientBackground } from '@/components';
-import type { DietLabel, MealLabel } from '@/lib/types';
+import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 const DIET_OPTIONS: { value: DietLabel | null; label: string }[] = [
   { value: null, label: 'All' },
@@ -43,7 +43,7 @@ const SORT_OPTIONS = [
 
 // Responsive Recipe Grid component
 interface RecipeGridProps {
-  recipes: any[];
+  recipes: Recipe[];
   isLoading: boolean;
   onRefresh: () => void;
   onRecipePress: (id: string) => void;
@@ -111,7 +111,6 @@ export default function RecipesScreen() {
   const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
   const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
   const [sortBy, setSortBy] = useState('newest');
-  const [showAllRecipes, setShowAllRecipes] = useState(true);
   
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
