@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Recipe Enhancer - Enhance recipes with Gemini AI and save to Firestore.
 

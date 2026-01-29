@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Batch test recipe enhancer on 10 diverse recipes."""
 
 import json
