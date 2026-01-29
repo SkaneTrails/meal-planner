@@ -13,14 +13,13 @@ Options:
     --dry-run       Preview changes without saving
     --batch [N]     Process N unenhanced recipes (or all if N not specified)
     --include-enhanced  Include already-enhanced recipes in batch mode
-    --delay SECONDS Delay between API calls in batch mode (default: 1.0)
+    --delay SECONDS Delay between API calls in batch mode (default: 4.0 for free tier)
 
 Setup:
 1. Get free API key from https://aistudio.google.com/apikey
 2. Add to .env file: GOOGLE_API_KEY=your-key-here
 """
 
-import contextlib
 import json
 import os
 import sys
@@ -35,11 +34,14 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 try:
     from google import genai
     from google.genai import types
-except ImportError:
-    print("❌ google-genai not installed. Run: uv add google-genai")
-    sys.exit(1)
+except ImportError as exc:
+    msg = "google-genai is not installed. Install it with: uv add google-genai"
+    raise ImportError(msg) from exc
 
 from google.cloud import firestore
+
+# Default Gemini model for recipe enhancement
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 # System prompt for recipe enhancement
 SYSTEM_PROMPT = """Du är en expert på att förbättra recept för ett svenskt hushåll. Du optimerar för smak, timing och praktisk matlagning.
@@ -210,21 +212,32 @@ def get_firestore_client() -> firestore.Client:
 
 
 def get_unenhanced_recipes(limit: int | None = None, *, include_enhanced: bool = False) -> list[tuple[str, dict]]:
-    """Get recipes that haven't been enhanced yet."""
+    """Get recipes that haven't been enhanced yet.
+
+    Note: Firestore inequality queries exclude documents missing the field,
+    so we use client-side filtering to include recipes without 'enhanced' field.
+    """
     db = get_firestore_client()
     query = db.collection("recipes")
 
-    if not include_enhanced:
-        query = query.where("enhanced", "!=", True)  # noqa: FBT003
-
-    if limit:
+    if limit and include_enhanced:
+        # When including all, we can use server-side limit
         query = query.limit(limit)
 
-    recipes = []
+    recipes: list[tuple[str, dict]] = []
     for doc in query.stream():
         data = doc.to_dict()
         data["id"] = doc.id
+
+        # Client-side filtering: include if enhanced=False or field missing
+        if not include_enhanced and data.get("enhanced", False):
+            continue
+
         recipes.append((doc.id, data))
+
+        # Apply limit client-side when filtering
+        if limit and not include_enhanced and len(recipes) >= limit:
+            break
 
     return recipes
 
@@ -281,15 +294,36 @@ Förbättra detta recept enligt reglerna:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=DEFAULT_MODEL,
             contents=recipe_text,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3
             ),
         )
-        return json.loads(response.text)
+    except TimeoutError as e:
+        print(f"❌ Gemini API request timed out: {e}")
+        return None
     except Exception as e:
-        print(f"❌ Gemini API error: {e}")
+        status = getattr(e, "status", None)
+        message = str(e)
+        if status == 429 or "429" in message:
+            print(
+                "❌ Gemini API rate limit exceeded (HTTP 429). "
+                "Consider reducing batch size or increasing the --delay between calls."
+            )
+        else:
+            print(f"❌ Gemini API error while generating content: {e}")
+        return None
+
+    if not hasattr(response, "text") or response.text is None:
+        print("❌ Gemini API returned an invalid response (missing text content).")
+        return None
+
+    try:
+        return json.loads(response.text)
+    except json.JSONDecodeError as e:
+        print(f"❌ Failed to parse Gemini API JSON response: {e}")
+        print(f"Raw response text: {getattr(response, 'text', '')!r}")
         return None
 
 
@@ -311,7 +345,7 @@ def save_recipe(recipe_id: str, enhanced: dict) -> bool:
     }
 
     try:
-        db.collection("recipes").document(recipe_id).update(doc_data)
+        db.collection("recipes").document(recipe_id).set(doc_data, merge=True)
         return True
     except Exception as e:
         print(f"❌ Firestore error: {e}")
@@ -444,13 +478,16 @@ def main() -> None:
     dry_run = "--dry-run" in sys.argv
     include_enhanced = "--include-enhanced" in sys.argv
 
-    # Parse delay
-    delay = 1.0
+    # Parse delay (default 4.0s for free tier: 15 req/min)
+    delay = 4.0
     if "--delay" in sys.argv:
         delay_idx = sys.argv.index("--delay")
         if delay_idx + 1 < len(sys.argv):
-            with contextlib.suppress(ValueError):
+            try:
                 delay = float(sys.argv[delay_idx + 1])
+            except ValueError:
+                invalid_value = sys.argv[delay_idx + 1]
+                print(f"⚠️  Invalid value for --delay: {invalid_value!r}. Using default delay of {delay} seconds.")
 
     # List command
     if arg == "--list":
