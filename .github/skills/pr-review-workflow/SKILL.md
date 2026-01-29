@@ -374,18 +374,18 @@ After addressing comments and fixing CI issues:
 
 ## 7. Command reference
 
-| Task                                              | Command                                                                         |
-| ------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Get PR number                                     | `gh pr view --json number -q '.number'`                                         |
-| Get PR comments (top-level only)                  | `gh pr view <PR> --json comments`                                               |
-| **Get review threads + resolution (PREFERRED)**   | `gh api graphql -f query='{ repository(...) { pullRequest(...) { reviewThreads(first:100) { nodes { id isResolved comments(first:5) { nodes { body path } } } } } } }'` |
-| Get inline review comments (REST, no resolution)  | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                    |
-| Get review status                                 | `gh pr view <PR> --json reviews`                                                |
-| Reply to inline comment                           | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments -X POST -f body="..." -F in_reply_to=<ID>` |
-| Resolve thread                                    | `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<ID>"}) { thread { isResolved } } }'` |
-| List workflow runs                                | `gh run list --branch <branch> --limit 5`                                       |
-| View failed workflow logs                         | `gh run view <run_id> --log-failed`                                             |
-| Re-run failed workflow                            | `gh run rerun <run_id> --failed`                                                |
+| Task                                             | Command                                                                                                                                                                 |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Get PR number                                    | `gh pr view --json number -q '.number'`                                                                                                                                 |
+| Get PR comments (top-level only)                 | `gh pr view <PR> --json comments`                                                                                                                                       |
+| **Get review threads + resolution (PREFERRED)**  | `gh api graphql -f query='{ repository(...) { pullRequest(...) { reviewThreads(first:100) { nodes { id isResolved comments(first:5) { nodes { body path } } } } } } }'` |
+| Get inline review comments (REST, no resolution) | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                                                                                                            |
+| Get review status                                | `gh pr view <PR> --json reviews`                                                                                                                                        |
+| Reply to inline comment                          | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments -X POST -f body="..." -F in_reply_to=<ID>`                                                                             |
+| Resolve thread                                   | `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<ID>"}) { thread { isResolved } } }'`                                                       |
+| List workflow runs                               | `gh run list --branch <branch> --limit 5`                                                                                                                               |
+| View failed workflow logs                        | `gh run view <run_id> --log-failed`                                                                                                                                     |
+| Re-run failed workflow                           | `gh run rerun <run_id> --failed`                                                                                                                                        |
 
 ---
 

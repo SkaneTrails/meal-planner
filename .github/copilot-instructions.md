@@ -21,12 +21,12 @@ You are collaborating with a human who may make changes between your edits:
 
 **Files to check before every PR:**
 
-| File | Update when... |
-|------|----------------|
-| `docs/DEVELOPMENT.md` | New scripts, tools, commands, or workflows |
+| File                              | Update when...                                           |
+| --------------------------------- | -------------------------------------------------------- |
+| `docs/DEVELOPMENT.md`             | New scripts, tools, commands, or workflows               |
 | `.github/copilot-instructions.md` | New patterns, conventions, architecture, or dependencies |
-| `.github/skills/**/*.md` | New skills or changes to existing skill behavior |
-| `README.md` | User-facing feature changes |
+| `.github/skills/**/*.md`          | New skills or changes to existing skill behavior         |
+| `README.md`                       | User-facing feature changes                              |
 
 **Triggers requiring documentation updates:**
 
@@ -77,19 +77,23 @@ scripts/                 # CLI tools (not part of app)
 ### Key Dependencies
 
 **Web UI:**
+
 - **streamlit** - Web UI framework
 - **streamlit-sortables** - Drag-and-drop UI components
 
 **Backend/API:**
+
 - **fastapi** - REST API framework
 - **uvicorn** - ASGI server
 - **pydantic** - Data validation
 
 **Data & Storage:**
+
 - **google-cloud-firestore** - Firestore database client
 - **google-genai** - Gemini AI for recipe enhancement
 
 **Recipe Processing:**
+
 - **recipe-scrapers** - Extract recipes from 400+ websites
 - **httpx** - HTTP client
 - **pillow** - Image processing
@@ -106,11 +110,11 @@ scripts/                 # CLI tools (not part of app)
 
 Skills in `.github/skills/` provide domain-specific instructions:
 
-| Skill | Purpose |
-|-------|--------|
+| Skill                 | Purpose                                                         |
+| --------------------- | --------------------------------------------------------------- |
 | `recipe-improvement/` | Cooking techniques, equipment optimization, dietary preferences |
-| `pr-review-workflow/` | PR comment handling, CI status, GitHub API patterns |
-| `working-context/` | Track tasks and discovered issues across conversations |
+| `pr-review-workflow/` | PR comment handling, CI status, GitHub API patterns             |
+| `working-context/`    | Track tasks and discovered issues across conversations          |
 
 ## Development Workflows
 
