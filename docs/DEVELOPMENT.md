@@ -89,6 +89,50 @@ uv add --optional dev package-name
 uv add --optional test package-name
 ```
 
+## Recipe Enhancement with Gemini
+
+The project includes AI-powered recipe enhancement using Google's Gemini 2.5 Flash.
+
+### Setup
+
+1. Get a free API key from https://aistudio.google.com/apikey
+2. Add to `.env` file:
+   ```
+   GOOGLE_API_KEY=your-key-here
+   ```
+
+### Usage
+
+```bash
+# Enhance a single recipe (interactive)
+uv run python scripts/recipe_enhancer.py <recipe_id>
+
+# Preview changes without saving
+uv run python scripts/recipe_enhancer.py <recipe_id> --dry-run
+
+# Batch process multiple recipes
+uv run python scripts/recipe_enhancer.py --batch 10
+
+# List available recipes
+uv run python scripts/recipe_enhancer.py --list
+```
+
+### What It Does
+
+- Protein substitution (50% meat / 50% vegetarian alternatives)
+- Airfryer optimization with timing instructions
+- Timeline format for complex multi-step recipes
+- HelloFresh spice blend replacement with individual ingredients
+- Lactose-free dairy substitutions
+- Ingredient formatting (fractions, no duplicates, spices last)
+
+### Configuration
+
+Household preferences are configured in the system prompt within `scripts/recipe_enhancer.py`.
+See `.github/copilot-instructions.md` for the multi-tenant architecture plan.
+
+---
+
 ## Troubleshooting
 
 ### Common Issues
