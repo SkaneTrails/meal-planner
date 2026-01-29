@@ -77,14 +77,14 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
   // Grid card layout - square cards with image taking most of the space
   // Image height is ~75% of card, text takes ~25%
   const imageHeight = cardSize ? cardSize * 0.75 : 128;
-  
+
   return (
     <Pressable
       onPress={onPress}
-      style={{ 
-        backgroundColor: '#fff', 
-        borderRadius: 20, 
-        overflow: 'hidden', 
+      style={{
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        overflow: 'hidden',
         width: cardSize,
         height: cardSize,
         shadowColor: '#000',

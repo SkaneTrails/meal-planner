@@ -55,7 +55,7 @@ interface RecipeGridProps {
 
 function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilter }: RecipeGridProps) {
   const { width } = useWindowDimensions();
-  
+
   // Calculate number of columns based on screen width
   // Larger card width (~300px) for bigger tiles
   const minCardWidth = 300;
@@ -112,7 +112,7 @@ export default function RecipesScreen() {
   const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [showAllRecipes, setShowAllRecipes] = useState(true);
-  
+
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
 
@@ -154,15 +154,15 @@ export default function RecipesScreen() {
         </View>
 
         {/* AI Enhanced toggle */}
-        <View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'center', 
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: isEnhanced ? '#4A3728' : '#fff', 
-          borderRadius: 12, 
-          paddingHorizontal: 16, 
+          backgroundColor: isEnhanced ? '#4A3728' : '#fff',
+          borderRadius: 12,
+          paddingHorizontal: 16,
           paddingVertical: 12,
-          marginBottom: 16 
+          marginBottom: 16
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <Ionicons name="sparkles" size={20} color={isEnhanced ? '#FFD700' : '#4A3728'} />

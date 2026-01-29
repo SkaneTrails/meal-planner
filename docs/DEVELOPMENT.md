@@ -25,6 +25,45 @@ uv sync --extra dev
 uv run pre-commit install
 ```
 
+## Running the Application
+
+### Streamlit Web App (Legacy)
+
+```bash
+uv run streamlit run app/main.py
+```
+
+### FastAPI Backend
+
+```bash
+# Using the script
+./scripts/run-api.sh
+
+# Or manually
+uv run uvicorn api.main:app --reload --port 8000
+```
+
+### Mobile App
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+### All Services (Development)
+
+```bash
+# Starts API + mobile with hot reload
+./scripts/run-dev.sh
+```
+
+### Cloud Function (Local)
+
+```bash
+./scripts/run-function.sh
+```
+
 ## Development Workflow
 
 ### Running Tests
@@ -60,39 +99,58 @@ uv run ty check app/
 
 ## Project Structure
 
+The project is a multi-platform meal planning system:
+
 ```
-├── app/                    # Application code
-│   ├── main.py             # Streamlit app entry point
-│   ├── icons.py            # Icon constants
-│   ├── models/             # Data models (dataclasses)
-│   │   ├── recipe.py
-│   │   ├── meal_plan.py
-│   │   └── grocery_list.py
-│   ├── services/           # Business logic
-│   │   ├── recipe_scraper.py
-│   │   └── ingredient_parser.py
-│   └── storage/            # Firestore persistence
-│       ├── firestore_client.py
-│       ├── recipe_storage.py
-│       └── meal_plan_storage.py
-├── scripts/                # CLI tools
-│   ├── recipe_enhancer.py  # Gemini AI recipe enhancement
-│   ├── recipe_reviewer.py  # Manual recipe review helper
-│   ├── batch_test.py       # Batch testing for enhancer
-│   └── test_gemini.py      # Gemini API test script
-├── tests/                  # Test files
-│   ├── conftest.py         # Shared fixtures
-│   └── test_*.py
-├── docs/                   # Documentation
-├── .github/
-│   ├── workflows/          # CI/CD (tests.yml, security-checks.yml)
-│   ├── skills/             # AI agent instructions
-│   │   ├── recipe-improvement/
-│   │   ├── pr-review-workflow/
-│   │   └── working-context/
-│   └── copilot-instructions.md
-├── pyproject.toml          # Project config
-└── renovate.json           # Dependency updates
+api/                     # FastAPI REST backend
+├── main.py              # FastAPI app entry point
+├── models/              # Pydantic models
+├── routers/             # API route handlers
+├── services/            # Business logic
+└── storage/             # Firestore persistence
+
+app/                     # Streamlit web app (legacy)
+├── main.py              # Streamlit app entry point
+├── icons.py             # Icon constants
+├── models/              # Data models (dataclasses)
+├── services/            # Business logic
+└── storage/             # Firestore persistence
+
+mobile/                  # React Native mobile app
+├── app/                 # Expo Router screens
+│   └── (tabs)/          # Tab navigation screens
+├── components/          # Reusable UI components
+├── lib/                 # Utilities, hooks, API client
+└── package.json
+
+functions/               # Google Cloud Functions
+└── scrape_recipe/       # Recipe scraping function
+
+scripts/                 # CLI tools
+├── recipe_enhancer.py   # Gemini AI recipe enhancement
+├── recipe_reviewer.py   # Manual recipe review helper
+├── batch_test.py        # Batch testing for enhancer
+├── test_gemini.py       # Gemini API test script
+├── run-api.sh           # Start FastAPI server
+├── run-dev.sh           # Start all dev services
+└── run-function.sh      # Run Cloud Function locally
+
+tests/                   # Test files
+├── conftest.py          # Shared fixtures
+└── test_*.py
+
+docs/                    # Documentation
+
+.github/
+├── workflows/           # CI/CD (tests.yml, security-checks.yml)
+├── skills/              # AI agent instructions
+│   ├── recipe-improvement/
+│   ├── pr-review-workflow/
+│   └── working-context/
+└── copilot-instructions.md
+
+pyproject.toml           # Python project config
+renovate.json            # Dependency updates
 ```
 
 ## Adding Dependencies
