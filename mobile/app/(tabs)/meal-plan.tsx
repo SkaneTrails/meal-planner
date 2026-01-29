@@ -11,8 +11,11 @@ import {
   RefreshControl,
   Pressable,
   Image,
+  Modal,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { GradientBackground } from '@/components';
 import { useMealPlan, useRecipes } from '@/lib/hooks';
@@ -69,6 +72,8 @@ const MEAL_TYPES: { type: MealType; label: string }[] = [
 export default function MealPlanScreen() {
   const router = useRouter();
   const [weekOffset, setWeekOffset] = useState(0);
+  const [showGroceryModal, setShowGroceryModal] = useState(false);
+  const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
 
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
@@ -114,12 +119,60 @@ export default function MealPlanScreen() {
     });
   };
 
+  const handleToggleMeal = (date: Date, mealType: MealType) => {
+    const dateStr = formatDateLocal(date);
+    const key = `${dateStr}_${mealType}`;
+    setSelectedMeals((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+      } else {
+        newSet.add(key);
+      }
+      return newSet;
+    });
+  };
+
+  const handleCreateGroceryList = async () => {
+    if (selectedMeals.size === 0) {
+      Alert.alert('No meals selected', 'Please select at least one meal to create a grocery list.');
+      return;
+    }
+
+    // Save selected meals to AsyncStorage
+    try {
+      const mealsArray = Array.from(selectedMeals);
+      console.log('[MealPlan] Saving meals to storage:', mealsArray);
+      await AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(mealsArray));
+      console.log('[MealPlan] Saved successfully, navigating...');
+      
+      setShowGroceryModal(false);
+      
+      // Small delay to ensure storage is written
+      setTimeout(() => {
+        router.push('/(tabs)/grocery');
+      }, 100);
+    } catch (error) {
+      console.error('[MealPlan] Error saving:', error);
+      Alert.alert('Error', 'Failed to save selections');
+    }
+  };
+
   return (
     <GradientBackground>
       <View style={{ flex: 1 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
-          <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728' }}>Weekly Menu</Text>
+        <View style={{ paddingHorizontal: 20, paddingTop: 50, paddingBottom: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728' }}>Weekly Menu</Text>
+            <Pressable
+              onPress={() => setShowGroceryModal(true)}
+              style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#4A3728', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12 }}
+            >
+              <Ionicons name="cart" size={16} color="#fff" />
+              <Text style={{ marginLeft: 6, fontSize: 13, fontWeight: '600', color: '#fff' }}>Create List</Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* Week selector */}
@@ -258,6 +311,116 @@ export default function MealPlanScreen() {
             );
           })}
         </ScrollView>
+
+        {/* Grocery list selection modal */}
+        <Modal
+          visible={showGroceryModal}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowGroceryModal(false)}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+            <View style={{ backgroundColor: '#F5E6D3', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '80%' }}>
+              {/* Modal header */}
+              <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728' }}>Select Meals</Text>
+                  <Pressable onPress={() => setShowGroceryModal(false)}>
+                    <Ionicons name="close" size={24} color="#4A3728" />
+                  </Pressable>
+                </View>
+                <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
+                  Choose which meals to include in your grocery list
+                </Text>
+              </View>
+
+              {/* Meal list */}
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+                {weekDates.map((date) => {
+                  const hasAnyMeal = MEAL_TYPES.some((mt) => {
+                    const meal = getMealForSlot(date, mt.type);
+                    return meal?.recipe || meal?.customText;
+                  });
+
+                  if (!hasAnyMeal) return null;
+
+                  return (
+                    <View key={date.toISOString()} style={{ marginBottom: 16 }}>
+                      <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginBottom: 8 }}>
+                        {formatDayHeader(date)}
+                      </Text>
+                      {MEAL_TYPES.map(({ type, label }) => {
+                        const meal = getMealForSlot(date, type);
+                        const hasContent = meal?.recipe || meal?.customText;
+                        if (!hasContent) return null;
+
+                        const title = meal?.recipe?.title || meal?.customText || '';
+                        const dateStr = formatDateLocal(date);
+                        const key = `${dateStr}_${type}`;
+                        const isSelected = selectedMeals.has(key);
+
+                        return (
+                          <Pressable
+                            key={type}
+                            onPress={() => handleToggleMeal(date, type)}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              backgroundColor: '#fff',
+                              borderRadius: 12,
+                              padding: 12,
+                              marginBottom: 8,
+                            }}
+                          >
+                            {/* Checkbox */}
+                            <View
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 6,
+                                borderWidth: 2,
+                                borderColor: isSelected ? '#4A3728' : '#e5e7eb',
+                                backgroundColor: isSelected ? '#4A3728' : '#fff',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginRight: 12,
+                              }}
+                            >
+                              {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
+                            </View>
+
+                            <View style={{ flex: 1 }}>
+                              <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>{title}</Text>
+                              <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{label}</Text>
+                            </View>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  );
+                })}
+              </ScrollView>
+
+              {/* Modal footer */}
+              <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+                <Pressable
+                  onPress={handleCreateGroceryList}
+                  style={{
+                    backgroundColor: selectedMeals.size > 0 ? '#4A3728' : '#E8D5C4',
+                    paddingVertical: 14,
+                    borderRadius: 12,
+                    alignItems: 'center',
+                  }}
+                  disabled={selectedMeals.size === 0}
+                >
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff' }}>
+                    Create Grocery List ({selectedMeals.size} meals)
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </GradientBackground>
   );

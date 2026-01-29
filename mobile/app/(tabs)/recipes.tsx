@@ -116,8 +116,8 @@ export default function RecipesScreen() {
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
 
-  // Fetch recipes with enhanced flag from global context
-  const { data: recipes = [], isLoading, refetch } = useRecipes(undefined, isEnhanced);
+  // Fetch recipes
+  const { data: recipes = [], isLoading, refetch } = useRecipes();
 
   // Filter and sort recipes
   const filteredRecipes = useMemo(() => {
@@ -147,7 +147,7 @@ export default function RecipesScreen() {
     <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 50, paddingBottom: 4 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
           <Ionicons name="book-outline" size={22} color="#4A3728" />
           <Text style={{ fontSize: 22, fontWeight: '700', color: '#4A3728', marginLeft: 8 }}>Recipe Library</Text>

@@ -96,7 +96,7 @@ export default function HomeScreen() {
     <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: 24, paddingTop: 50 }}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor="#4A3728" />
         }
