@@ -12,15 +12,15 @@ from recipe_scrapers import scrape_html
 
 # Blocked IP ranges for SSRF protection
 BLOCKED_IP_RANGES = [
-    ipaddress.ip_network("10.0.0.0/8"),      # Private
-    ipaddress.ip_network("172.16.0.0/12"),   # Private
+    ipaddress.ip_network("10.0.0.0/8"),  # Private
+    ipaddress.ip_network("172.16.0.0/12"),  # Private
     ipaddress.ip_network("192.168.0.0/16"),  # Private
-    ipaddress.ip_network("127.0.0.0/8"),     # Loopback
+    ipaddress.ip_network("127.0.0.0/8"),  # Loopback
     ipaddress.ip_network("169.254.0.0/16"),  # Link-local / Cloud metadata
-    ipaddress.ip_network("0.0.0.0/8"),       # Current network
-    ipaddress.ip_network("224.0.0.0/4"),     # Multicast
-    ipaddress.ip_network("240.0.0.0/4"),     # Reserved
-    ipaddress.ip_network("100.64.0.0/10"),   # Shared address space
+    ipaddress.ip_network("0.0.0.0/8"),  # Current network
+    ipaddress.ip_network("224.0.0.0/4"),  # Multicast
+    ipaddress.ip_network("240.0.0.0/4"),  # Reserved
+    ipaddress.ip_network("100.64.0.0/10"),  # Shared address space
 ]
 
 BLOCKED_HOSTNAMES = {
