@@ -24,7 +24,7 @@ RECIPES = [
 ]
 
 
-def main():
+def main() -> None:
     results = []
 
     for i, (recipe_id, name) in enumerate(RECIPES, 1):
@@ -78,8 +78,8 @@ def main():
         results.append(result)
 
         # Save individual result
-        output_file = f"data/batch_test_{recipe_id}.json"
-        with open(output_file, "w", encoding="utf-8") as f:
+        output_file = Path(f"data/batch_test_{recipe_id}.json")
+        with output_file.open("w", encoding="utf-8") as f:
             json.dump(enhanced, f, ensure_ascii=False, indent=2)
 
         # Rate limit pause
@@ -108,7 +108,8 @@ def main():
     print(f"Spices at end: {len(spices_end)}/{len(success)}")
 
     # Save summary
-    with open("data/batch_test_summary.json", "w", encoding="utf-8") as f:
+    summary_file = Path("data/batch_test_summary.json")
+    with summary_file.open("w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 
     print("\nDetailed results saved to data/batch_test_*.json")

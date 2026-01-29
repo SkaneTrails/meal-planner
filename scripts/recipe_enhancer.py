@@ -20,6 +20,7 @@ Setup:
 2. Add to .env file: GOOGLE_API_KEY=your-key-here
 """
 
+import contextlib
 import json
 import os
 import sys
@@ -203,18 +204,18 @@ Alla kryddor grupperas i slutet av ingredienslistan:
 """
 
 
-def get_firestore_client():
+def get_firestore_client() -> firestore.Client:
     """Get Firestore client for the default database."""
     return firestore.Client(database="(default)")
 
 
-def get_unenhanced_recipes(limit: int | None = None, include_enhanced: bool = False) -> list[tuple[str, dict]]:
+def get_unenhanced_recipes(limit: int | None = None, *, include_enhanced: bool = False) -> list[tuple[str, dict]]:
     """Get recipes that haven't been enhanced yet."""
     db = get_firestore_client()
     query = db.collection("recipes")
 
     if not include_enhanced:
-        query = query.where("enhanced", "!=", True)
+        query = query.where("enhanced", "!=", True)  # noqa: FBT003
 
     if limit:
         query = query.limit(limit)
@@ -228,14 +229,14 @@ def get_unenhanced_recipes(limit: int | None = None, include_enhanced: bool = Fa
     return recipes
 
 
-def list_recipes(limit: int = 20):
+def list_recipes(limit: int = 20) -> None:
     """List recipes from Firestore."""
     db = get_firestore_client()
     recipes = db.collection("recipes").limit(limit).stream()
 
     print(f"\n📚 Recipes (first {limit}):")
     print("-" * 60)
-    for i, doc in enumerate(recipes):
+    for doc in recipes:
         data = doc.to_dict()
         title = data.get("title", "Untitled")[:50]
         print(f"  {doc.id}: {title}")
@@ -317,7 +318,7 @@ def save_recipe(recipe_id: str, enhanced: dict) -> bool:
         return False
 
 
-def display_diff(original: dict, enhanced: dict):
+def display_diff(original: dict, enhanced: dict) -> None:
     """Display changes between original and enhanced recipe."""
     print("\n" + "=" * 60)
     print("📋 ORIGINAL → ENHANCED")
@@ -357,13 +358,13 @@ def display_diff(original: dict, enhanced: dict):
     print("\n" + "=" * 60)
 
 
-def process_batch(limit: int | None, include_enhanced: bool, delay: float, dry_run: bool):
+def process_batch(limit: int | None, *, include_enhanced: bool, delay: float, dry_run: bool) -> None:
     """Process multiple recipes in batch mode."""
     print("\n🔄 Batch Processing Mode")
     print("-" * 60)
 
     # Get recipes to process
-    recipes = get_unenhanced_recipes(limit, include_enhanced)
+    recipes = get_unenhanced_recipes(limit, include_enhanced=include_enhanced)
 
     if not recipes:
         print("✅ No recipes to process!")
@@ -434,7 +435,7 @@ def process_batch(limit: int | None, include_enhanced: bool, delay: float, dry_r
     print("=" * 60)
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         print(__doc__)
         return
@@ -448,10 +449,8 @@ def main():
     if "--delay" in sys.argv:
         delay_idx = sys.argv.index("--delay")
         if delay_idx + 1 < len(sys.argv):
-            try:
+            with contextlib.suppress(ValueError):
                 delay = float(sys.argv[delay_idx + 1])
-            except ValueError:
-                pass
 
     # List command
     if arg == "--list":
@@ -469,7 +468,7 @@ def main():
             if a.isdigit():
                 limit = int(a)
                 break
-        process_batch(limit, include_enhanced, delay, dry_run)
+        process_batch(limit, include_enhanced=include_enhanced, delay=delay, dry_run=dry_run)
         return
 
     # Get recipe by ID
@@ -503,8 +502,8 @@ def main():
     if dry_run:
         print("\n🔍 DRY RUN - No changes saved")
         # Save to file for inspection
-        output_file = f"data/enhanced_{recipe_id}.json"
-        with open(output_file, "w", encoding="utf-8") as f:
+        output_file = Path(f"data/enhanced_{recipe_id}.json")
+        with output_file.open("w", encoding="utf-8") as f:
             json.dump(enhanced, f, ensure_ascii=False, indent=2)
         print(f"   Preview saved to: {output_file}")
         return
