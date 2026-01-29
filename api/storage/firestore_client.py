@@ -4,32 +4,40 @@ import os
 
 from google.cloud import firestore
 
-# Firestore client singleton
-_db: firestore.Client | None = None
+# Firestore client singletons for different databases
+_clients: dict[str, firestore.Client] = {}
+
+# Available databases
+DEFAULT_DATABASE = "(default)"
+ENHANCED_DATABASE = "meal-planner"
 
 
-def get_firestore_client() -> firestore.Client:
-    """Get or create Firestore client singleton.
+def get_firestore_client(database: str = DEFAULT_DATABASE) -> firestore.Client:
+    """Get or create Firestore client singleton for a specific database.
 
     Supports Firestore emulator via FIRESTORE_EMULATOR_HOST environment variable.
+
+    Args:
+        database: The database ID to connect to. Use "(default)" for the default database
+                  or "meal-planner" for the AI-enhanced recipes database.
     """
-    global _db  # noqa: PLW0603
-    if _db is None:
+    global _clients  # noqa: PLW0603
+    if database not in _clients:
         # Check for emulator
         emulator_host = os.getenv("FIRESTORE_EMULATOR_HOST")
         if emulator_host:
             # When using emulator, we need to set the project ID
             project_id = os.getenv("GOOGLE_CLOUD_PROJECT", "meal-planner-local")
-            _db = firestore.Client(project=project_id)
+            _clients[database] = firestore.Client(project=project_id, database=database)
         else:
-            _db = firestore.Client()
-    return _db
+            _clients[database] = firestore.Client(database=database)
+    return _clients[database]
 
 
 def reset_client() -> None:
-    """Reset the Firestore client singleton (useful for testing)."""
-    global _db  # noqa: PLW0603
-    _db = None
+    """Reset all Firestore client singletons (useful for testing)."""
+    global _clients  # noqa: PLW0603
+    _clients = {}
 
 
 # Collection names
