@@ -46,6 +46,11 @@ export const colors = {
   bgMid: '#F5E6D3',
   bgDark: '#E8D5C4',
   
+  // Accent colors
+  accent: '#8B7355',
+  gold: '#D4A574',
+  goldLight: '#FFD700',
+  
   // Neutrals
   white: '#FFFFFF',
   gray: {
@@ -83,5 +88,31 @@ export const borderRadius = {
   md: 12,
   lg: 16,
   xl: 20,
+  '2xl': 24,
   full: 9999,
+} as const;
+
+// Shadow presets for consistent elevation
+export const shadows = {
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+  },
 } as const;

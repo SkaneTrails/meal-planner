@@ -80,15 +80,19 @@ class ApiClient {
   }
 
   // Recipe endpoints
-  async getRecipes(search?: string): Promise<Recipe[]> {
+  async getRecipes(search?: string, enhanced: boolean = false): Promise<Recipe[]> {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
+    if (enhanced) params.set('enhanced', 'true');
     const query = params.toString();
     return this.request<Recipe[]>(`/recipes${query ? `?${query}` : ''}`);
   }
 
-  async getRecipe(id: string): Promise<Recipe> {
-    return this.request<Recipe>(`/recipes/${id}`);
+  async getRecipe(id: string, enhanced: boolean = false): Promise<Recipe> {
+    const params = new URLSearchParams();
+    if (enhanced) params.set('enhanced', 'true');
+    const query = params.toString();
+    return this.request<Recipe>(`/recipes/${id}${query ? `?${query}` : ''}`);
   }
 
   async createRecipe(recipe: RecipeCreate): Promise<Recipe> {

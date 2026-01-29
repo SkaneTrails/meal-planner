@@ -3,7 +3,7 @@
  * Layout matches Streamlit app design.
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,10 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useGroceryList, useMealPlan, useRecipes } from '@/lib/hooks';
+import { useGroceryList, useMealPlan, useRecipes, useEnhancedMode } from '@/lib/hooks';
+import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
@@ -43,16 +44,25 @@ function getWeekDates(): { start: string; end: string } {
 }
 
 export default function GroceryScreen() {
+  const router = useRouter();
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
   const [selectedMealKeys, setSelectedMealKeys] = useState<string[]>([]);
+  const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { isEnhanced } = useEnhancedMode();
+  const { isItemAtHome, settings } = useSettings();
   const { data: mealPlan } = useMealPlan();
-  const { data: recipes = [] } = useRecipes();
+  const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
+
+  // Filter function to hide items that are "at home"
+  const filterOutItemsAtHome = useCallback((itemName: string) => {
+    return isItemAtHome(itemName);
+  }, [isItemAtHome]);
 
   // Load data from AsyncStorage whenever the screen comes into focus
   useFocusEffect(
@@ -60,12 +70,13 @@ export default function GroceryScreen() {
       const loadData = async () => {
         try {
           console.log('[Grocery] Screen focused, loading data...');
-          const [customData, mealsData] = await Promise.all([
+          const [customData, mealsData, servingsData] = await Promise.all([
             AsyncStorage.getItem('grocery_custom_items'),
             AsyncStorage.getItem('grocery_selected_meals'),
+            AsyncStorage.getItem('grocery_meal_servings'),
           ]);
 
-          console.log('[Grocery] Raw data from storage:', { customData, mealsData });
+          console.log('[Grocery] Raw data from storage:', { customData, mealsData, servingsData });
 
           if (customData) {
             const items = JSON.parse(customData);
@@ -81,6 +92,14 @@ export default function GroceryScreen() {
             setSelectedMealKeys(meals);
           } else {
             setSelectedMealKeys([]);
+          }
+
+          if (servingsData) {
+            const servings = JSON.parse(servingsData);
+            console.log('[Grocery] Loaded meal servings:', servings);
+            setMealServings(servings);
+          } else {
+            setMealServings({});
           }
         } catch (error) {
           console.error('[Grocery] Error loading data:', error);
@@ -100,6 +119,7 @@ export default function GroceryScreen() {
       selectedMealKeysLength: selectedMealKeys.length,
       recipesLength: recipes.length,
       mealPlanMeals: mealPlan?.meals,
+      mealServings,
     });
 
     if (!mealPlan || !selectedMealKeys.length) {
@@ -121,6 +141,16 @@ export default function GroceryScreen() {
       
       if (!recipe) return;
 
+      // Calculate servings multiplier
+      const requestedServings = mealServings[key] || recipe.servings || 2;
+      const recipeServings = recipe.servings || 2;
+      const multiplier = requestedServings / recipeServings;
+      
+      // Format source with servings info
+      const sourceLabel = multiplier !== 1 
+        ? `${recipe.title} (${requestedServings}👤)` 
+        : recipe.title;
+
       recipe.ingredients.forEach((ingredient) => {
         const name = ingredient.toLowerCase().trim();
         if (!ingredientsMap.has(name)) {
@@ -130,14 +160,14 @@ export default function GroceryScreen() {
             unit: null,
             category: 'other',
             checked: false,
-            recipe_sources: [recipe.title],
+            recipe_sources: [sourceLabel],
             quantity_sources: [],
           });
         } else {
           // Add this recipe to the sources
           const item = ingredientsMap.get(name)!;
-          if (!item.recipe_sources.includes(recipe.title)) {
-            item.recipe_sources.push(recipe.title);
+          if (!item.recipe_sources.includes(sourceLabel)) {
+            item.recipe_sources.push(sourceLabel);
           }
         }
       });
@@ -146,7 +176,7 @@ export default function GroceryScreen() {
     const items = Array.from(ingredientsMap.values());
     console.log('[Grocery] Generated items:', items.length);
     setGeneratedItems(items);
-  }, [mealPlan, recipes, selectedMealKeys]);
+  }, [mealPlan, recipes, selectedMealKeys, mealServings]);
 
   // Save custom items to AsyncStorage whenever they change
   useEffect(() => {
@@ -236,70 +266,175 @@ export default function GroceryScreen() {
 
   const totalItems = generatedItems.length + customItems.length;
   const checkedCount = checkedItems.size;
+  
+  // Count items that are filtered out (at home)
+  const hiddenAtHomeCount = useMemo(() => {
+    return groceryListWithChecked.items.filter(item => isItemAtHome(item.name)).length;
+  }, [groceryListWithChecked.items, isItemAtHome]);
 
   return (
     <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 50, paddingBottom: 8 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Ionicons name="cart-outline" size={22} color="#4A3728" />
-          <Text style={{ fontSize: 22, fontWeight: '700', color: '#4A3728', marginLeft: 8 }}>Grocery List</Text>
+      <View style={{ paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View>
+            <Text style={{ fontSize: 13, fontWeight: '500', color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
+            <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
+          </View>
+          <View style={{ 
+            width: 48, 
+            height: 48, 
+            borderRadius: 24, 
+            backgroundColor: '#E8D5C4', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
+          }}>
+            <Ionicons name="cart" size={24} color="#4A3728" />
+          </View>
         </View>
       </View>
 
       {/* Stats and controls */}
-      <View style={{ paddingHorizontal: 16, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <View>
-            <Text style={{ fontSize: 13, color: '#6b7280' }}>This week's shopping</Text>
-            <Text style={{ fontSize: 17, fontWeight: '600', color: '#4A3728' }}>
-              {totalItems === 0
-                ? 'No items'
-                : `${checkedCount} of ${totalItems} items`}
-            </Text>
+      <View style={{ paddingHorizontal: 20, paddingBottom: 16 }}>
+        {/* Stats card */}
+        <View style={{ 
+          backgroundColor: '#fff', 
+          borderRadius: 16, 
+          padding: 16,
+          marginBottom: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          elevation: 3,
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View>
+              <Text style={{ fontSize: 13, color: '#6b7280' }}>This week's shopping</Text>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', marginTop: 2 }}>
+                {totalItems === 0
+                  ? 'No items yet'
+                  : `${checkedCount} of ${totalItems} items`}
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {/* Add Item button */}
+              <Pressable
+                onPress={() => setShowAddItem(!showAddItem)}
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  paddingHorizontal: 14, 
+                  paddingVertical: 10, 
+                  borderRadius: 12, 
+                  backgroundColor: showAddItem ? '#4A3728' : '#F5E6D3',
+                }}
+              >
+                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color={showAddItem ? '#fff' : '#4A3728'} />
+              </Pressable>
+
+              {/* Clear All button */}
+              {totalItems > 0 && (
+                <Pressable
+                  onPress={handleClearAll}
+                  style={{ 
+                    flexDirection: 'row', 
+                    alignItems: 'center', 
+                    paddingHorizontal: 14, 
+                    paddingVertical: 10, 
+                    borderRadius: 12, 
+                    backgroundColor: '#F5E6D3',
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={18} color="#4A3728" />
+                </Pressable>
+              )}
+
+              {/* Reset checked button */}
+              {checkedCount > 0 && (
+                <Pressable
+                  onPress={handleClearChecked}
+                  style={{ 
+                    flexDirection: 'row', 
+                    alignItems: 'center', 
+                    paddingHorizontal: 14, 
+                    paddingVertical: 10, 
+                    borderRadius: 12, 
+                    backgroundColor: '#F5E6D3',
+                  }}
+                >
+                  <Ionicons name="refresh" size={18} color="#4A3728" />
+                </Pressable>
+              )}
+            </View>
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {/* Add Item button */}
-            <Pressable
-              onPress={() => setShowAddItem(!showAddItem)}
-              style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: showAddItem ? '#4A3728' : '#fff' }}
+          {/* Progress bar */}
+          {totalItems > 0 && (
+            <View style={{ marginTop: 16 }}>
+              <View style={{ height: 8, backgroundColor: '#E8D5C4', borderRadius: 4, overflow: 'hidden' }}>
+                <View
+                  style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 4, width: `${(checkedCount / totalItems) * 100}%` }}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* Items at home indicator */}
+          {hiddenAtHomeCount > 0 && (
+            <Pressable 
+              onPress={() => router.push('/settings')}
+              style={{ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                marginTop: 12,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                backgroundColor: '#F0FDF4',
+                borderRadius: 10,
+                gap: 8,
+              }}
             >
-              <Ionicons name="add" size={16} color={showAddItem ? '#fff' : '#4A3728'} />
-              <Text style={{ marginLeft: 4, fontSize: 13, fontWeight: '600', color: showAddItem ? '#fff' : '#4A3728' }}>Add</Text>
+              <Ionicons name="home-outline" size={16} color="#166534" />
+              <Text style={{ fontSize: 13, color: '#166534', flex: 1 }}>
+                {hiddenAtHomeCount} item{hiddenAtHomeCount > 1 ? 's' : ''} hidden (at home)
+              </Text>
+              <Ionicons name="chevron-forward" size={16} color="#166534" />
             </Pressable>
-
-            {/* Clear All button */}
-            {totalItems > 0 && (
-              <Pressable
-                onPress={handleClearAll}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: '#fff' }}
-              >
-                <Ionicons name="trash-outline" size={16} color="#4A3728" />
-                <Text style={{ marginLeft: 4, fontSize: 13, fontWeight: '600', color: '#4A3728' }}>Clear</Text>
-              </Pressable>
-            )}
-
-            {/* Reset checked button */}
-            {checkedCount > 0 && (
-              <Pressable
-                onPress={handleClearChecked}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: '#fff' }}
-              >
-                <Ionicons name="refresh" size={16} color="#4A3728" />
-                <Text style={{ marginLeft: 4, fontSize: 13, fontWeight: '600', color: '#4A3728' }}>Reset</Text>
-              </Pressable>
-            )}
-          </View>
+          )}
         </View>
 
         {/* Add item input */}
         {showAddItem && (
-          <View style={{ marginBottom: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ 
+            backgroundColor: '#fff', 
+            borderRadius: 16, 
+            padding: 16,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 8,
+            elevation: 3,
+          }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728', marginBottom: 10 }}>Add custom item</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <TextInput
-                style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15, color: '#4A3728' }}
+                style={{ 
+                  flex: 1, 
+                  backgroundColor: '#F5E6D3', 
+                  borderRadius: 12, 
+                  paddingHorizontal: 14, 
+                  paddingVertical: 12, 
+                  fontSize: 15, 
+                  color: '#4A3728',
+                }}
                 placeholder="e.g. Milk, 2 liters"
                 placeholderTextColor="#9ca3af"
                 value={newItemText}
@@ -310,20 +445,21 @@ export default function GroceryScreen() {
               <Pressable
                 onPress={handleAddItem}
                 disabled={!newItemText.trim()}
-                style={{ backgroundColor: newItemText.trim() ? '#4A3728' : '#E8D5C4', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12 }}
+                style={{ 
+                  backgroundColor: newItemText.trim() ? '#4A3728' : '#E8D5C4', 
+                  paddingHorizontal: 20, 
+                  paddingVertical: 12, 
+                  borderRadius: 12,
+                  shadowColor: newItemText.trim() ? '#4A3728' : 'transparent',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: newItemText.trim() ? 3 : 0,
+                }}
               >
                 <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>Add</Text>
               </Pressable>
             </View>
-          </View>
-        )}
-
-        {/* Progress bar */}
-        {totalItems > 0 && (
-          <View style={{ height: 8, backgroundColor: '#e5e7eb', borderRadius: 9999, overflow: 'hidden' }}>
-            <View
-              style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 9999, width: `${(checkedCount / totalItems) * 100}%` }}
-            />
           </View>
         )}
       </View>
@@ -333,12 +469,26 @@ export default function GroceryScreen() {
         <GroceryListView
           groceryList={groceryListWithChecked}
           onItemToggle={handleItemToggle}
+          filterOutItems={filterOutItemsAtHome}
         />
       ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <Ionicons name="cart-outline" size={56} color="#4A3728" />
-          <Text style={{ color: '#6b7280', fontSize: 17, marginTop: 16, textAlign: 'center', lineHeight: 24 }}>
-            Go to Weekly Menu and select "Create List" to generate your grocery list from your meals
+          <View style={{ 
+            width: 80, 
+            height: 80, 
+            borderRadius: 40, 
+            backgroundColor: '#E8D5C4', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            marginBottom: 20,
+          }}>
+            <Ionicons name="cart-outline" size={40} color="#4A3728" />
+          </View>
+          <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+            Your list is empty
+          </Text>
+          <Text style={{ color: '#6b7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
+            Go to Weekly Menu and tap "Create List" to generate your grocery list from planned meals
           </Text>
         </View>
       )}

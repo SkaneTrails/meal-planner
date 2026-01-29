@@ -3,7 +3,7 @@
  * Mobile-first design with meals grouped by day.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,15 +13,21 @@ import {
   Image,
   Modal,
   Alert,
+  Animated,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { GradientBackground } from '@/components';
-import { useMealPlan, useRecipes } from '@/lib/hooks';
+import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal } from '@/lib/hooks';
 import type { MealType, Recipe } from '@/lib/types';
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
+
+// Approximate height of each day section (header + 2 meal cards)
+const DAY_SECTION_HEIGHT = 180;
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -74,15 +80,78 @@ export default function MealPlanScreen() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [showGroceryModal, setShowGroceryModal] = useState(false);
   const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
+  const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
+  const [showJumpButton, setShowJumpButton] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
 
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
+
+  // Find today's index in the week
+  const todayIndex = useMemo(() => {
+    const today = new Date();
+    return weekDates.findIndex(date => date.toDateString() === today.toDateString());
+  }, [weekDates]);
+
+  // Handle scroll to show/hide jump button
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (todayIndex < 0) return; // Today not in current week
+    
+    const scrollY = event.nativeEvent.contentOffset.y;
+    const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
+    const tolerance = DAY_SECTION_HEIGHT / 2; // Half a day section
+    
+    const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
+    
+    if (!isNearToday && !showJumpButton) {
+      setShowJumpButton(true);
+      Animated.spring(jumpButtonOpacity, {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start();
+    } else if (isNearToday && showJumpButton) {
+      Animated.timing(jumpButtonOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => setShowJumpButton(false));
+    }
+  };
+
+  // Jump to today function
+  const jumpToToday = () => {
+    if (weekOffset !== 0) {
+      // If not in current week, go back to current week first
+      setWeekOffset(0);
+    } else if (todayIndex >= 0 && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        y: todayIndex * DAY_SECTION_HEIGHT,
+        animated: true,
+      });
+    }
+  };
+
+  // Scroll to today when component mounts or week changes
+  useEffect(() => {
+    if (todayIndex >= 0 && scrollViewRef.current) {
+      // Small delay to ensure layout is complete
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({
+          y: todayIndex * DAY_SECTION_HEIGHT,
+          animated: false,
+        });
+      }, 100);
+    }
+  }, [todayIndex, weekOffset]);
 
   const {
     data: mealPlan,
     isLoading: mealPlanLoading,
     refetch: refetchMealPlan,
   } = useMealPlan();
-  const { data: recipes = [] } = useRecipes();
+  const { isEnhanced } = useEnhancedMode();
+  const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
+  const setMeal = useSetMeal();
 
   // Create a map of recipe IDs to recipes
   const recipeMap = useMemo(() => {
@@ -111,25 +180,66 @@ export default function MealPlanScreen() {
     return recipe ? { recipe } : { customText: value };
   };
 
-  const handleMealPress = (date: Date, mealType: MealType) => {
+  const handleMealPress = (date: Date, mealType: MealType, mode?: 'library' | 'copy' | 'quick') => {
     const dateStr = formatDateLocal(date);
+    
+    if (mode === 'quick') {
+      // Show quick text input alert
+      Alert.prompt(
+        'Quick Meal',
+        'What are you having?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Add',
+            onPress: (text: string | undefined) => {
+              if (text?.trim()) {
+                setMeal.mutate({ date: dateStr, mealType, customText: text.trim() });
+              }
+            },
+          },
+        ],
+        'plain-text'
+      );
+      return;
+    }
+    
     router.push({
       pathname: '/select-recipe',
-      params: { date: dateStr, mealType },
+      params: { date: dateStr, mealType, mode: mode || 'library' },
     });
   };
 
-  const handleToggleMeal = (date: Date, mealType: MealType) => {
+  const handleToggleMeal = (date: Date, mealType: MealType, recipeServings?: number) => {
     const dateStr = formatDateLocal(date);
     const key = `${dateStr}_${mealType}`;
     setSelectedMeals((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(key)) {
         newSet.delete(key);
+        // Also remove servings when deselected
+        setMealServings((prevServings) => {
+          const newServings = { ...prevServings };
+          delete newServings[key];
+          return newServings;
+        });
       } else {
         newSet.add(key);
+        // Set default servings (recipe servings or 2)
+        setMealServings((prevServings) => ({
+          ...prevServings,
+          [key]: recipeServings || 2,
+        }));
       }
       return newSet;
+    });
+  };
+
+  const handleChangeServings = (key: string, delta: number) => {
+    setMealServings((prev) => {
+      const current = prev[key] || 2;
+      const newValue = Math.max(1, Math.min(12, current + delta));
+      return { ...prev, [key]: newValue };
     });
   };
 
@@ -139,11 +249,13 @@ export default function MealPlanScreen() {
       return;
     }
 
-    // Save selected meals to AsyncStorage
+    // Save selected meals and servings to AsyncStorage
     try {
       const mealsArray = Array.from(selectedMeals);
       console.log('[MealPlan] Saving meals to storage:', mealsArray);
+      console.log('[MealPlan] Saving servings:', mealServings);
       await AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(mealsArray));
+      await AsyncStorage.setItem('grocery_meal_servings', JSON.stringify(mealServings));
       console.log('[MealPlan] Saved successfully, navigating...');
       
       setShowGroceryModal(false);
@@ -160,17 +272,32 @@ export default function MealPlanScreen() {
 
   return (
     <GradientBackground>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingBottom: 80 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 50, paddingBottom: 8 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728' }}>Weekly Menu</Text>
+            <View>
+              <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>
+              <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>Plan your meals ahead</Text>
+            </View>
             <Pressable
               onPress={() => setShowGroceryModal(true)}
-              style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#4A3728', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12 }}
+              style={{ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                backgroundColor: '#4A3728', 
+                paddingHorizontal: 14, 
+                paddingVertical: 10, 
+                borderRadius: 14,
+                shadowColor: '#4A3728',
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.25,
+                shadowRadius: 6,
+                elevation: 4,
+              }}
             >
               <Ionicons name="cart" size={16} color="#fff" />
-              <Text style={{ marginLeft: 6, fontSize: 13, fontWeight: '600', color: '#fff' }}>Create List</Text>
+              <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600', color: '#fff' }}>Create List</Text>
             </Pressable>
           </View>
         </View>
@@ -186,6 +313,11 @@ export default function MealPlanScreen() {
               borderRadius: 12,
               paddingHorizontal: 16,
               paddingVertical: 14,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 8,
+              elevation: 3,
             }}
           >
             <Pressable
@@ -217,8 +349,11 @@ export default function MealPlanScreen() {
 
         {/* Meal list */}
         <ScrollView
+          ref={scrollViewRef}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
           refreshControl={
             <RefreshControl
               refreshing={mealPlanLoading}
@@ -231,16 +366,23 @@ export default function MealPlanScreen() {
             const isToday = date.toDateString() === new Date().toDateString();
             
             return (
-              <View key={date.toISOString()} style={{ marginBottom: 24 }}>
+              <View key={date.toISOString()} style={{ marginBottom: 28 }}>
                 {/* Day header */}
-                <Text style={{ 
-                  fontSize: 16, 
-                  fontWeight: '600', 
-                  color: isToday ? '#4A3728' : '#6b7280',
-                  marginBottom: 12,
-                }}>
-                  {formatDayHeader(date)}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
+                  {isToday && (
+                    <View style={{ backgroundColor: '#4A3728', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
+                      <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>TODAY</Text>
+                    </View>
+                  )}
+                  <Text style={{ 
+                    fontSize: 16, 
+                    fontWeight: '600', 
+                    color: isToday ? '#4A3728' : '#6b7280',
+                    letterSpacing: -0.2,
+                  }}>
+                    {formatDayHeader(date)}
+                  </Text>
+                </View>
 
                 {/* Meals for this day */}
                 {MEAL_TYPES.map(({ type, label }) => {
@@ -249,10 +391,89 @@ export default function MealPlanScreen() {
                   const title = meal?.recipe?.title || meal?.customText;
                   const imageUrl = meal?.recipe?.image_url || PLACEHOLDER_IMAGE;
 
+                  // Empty meal slot - show action buttons
+                  if (!hasContent) {
+                    return (
+                      <View
+                        key={`${date.toISOString()}-${type}`}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          backgroundColor: '#fff',
+                          borderRadius: 16,
+                          padding: 12,
+                          marginBottom: 8,
+                          shadowColor: '#000',
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.06,
+                          shadowRadius: 6,
+                          elevation: 2,
+                        }}
+                      >
+                        {/* Meal type label */}
+                        <View style={{ marginRight: 12 }}>
+                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#9ca3af' }}>
+                            {label}
+                          </Text>
+                        </View>
+
+                        {/* Action buttons */}
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
+                          <Pressable
+                            onPress={() => handleMealPress(date, type, 'library')}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              backgroundColor: '#F3E8E0',
+                              paddingHorizontal: 12,
+                              paddingVertical: 8,
+                              borderRadius: 12,
+                              gap: 4,
+                            }}
+                          >
+                            <Ionicons name="book-outline" size={16} color="#4A3728" />
+                            <Text style={{ fontSize: 13, fontWeight: '500', color: '#4A3728' }}>Library</Text>
+                          </Pressable>
+                          <Pressable
+                            onPress={() => handleMealPress(date, type, 'copy')}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              backgroundColor: '#E8F0E8',
+                              paddingHorizontal: 12,
+                              paddingVertical: 8,
+                              borderRadius: 12,
+                              gap: 4,
+                            }}
+                          >
+                            <Ionicons name="copy-outline" size={16} color="#2D5A3D" />
+                            <Text style={{ fontSize: 13, fontWeight: '500', color: '#2D5A3D' }}>Copy</Text>
+                          </Pressable>
+                          <Pressable
+                            onPress={() => handleMealPress(date, type, 'quick')}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              backgroundColor: '#E8E8F0',
+                              paddingHorizontal: 12,
+                              paddingVertical: 8,
+                              borderRadius: 12,
+                              gap: 4,
+                            }}
+                          >
+                            <Ionicons name="create-outline" size={16} color="#3D3D5A" />
+                            <Text style={{ fontSize: 13, fontWeight: '500', color: '#3D3D5A' }}>Quick</Text>
+                          </Pressable>
+                        </View>
+                      </View>
+                    );
+                  }
+
+                  // Meal slot with content
                   return (
                     <Pressable
                       key={`${date.toISOString()}-${type}`}
-                      onPress={() => handleMealPress(date, type)}
+                      onPress={() => handleMealPress(date, type, 'library')}
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
@@ -260,17 +481,21 @@ export default function MealPlanScreen() {
                         borderRadius: 16,
                         padding: 12,
                         marginBottom: 8,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.06,
+                        shadowRadius: 6,
+                        elevation: 2,
                       }}
                     >
                       {/* Image */}
                       <Image
-                        source={{ uri: hasContent ? imageUrl : PLACEHOLDER_IMAGE }}
+                        source={{ uri: imageUrl }}
                         style={{
                           width: 56,
                           height: 56,
                           borderRadius: 12,
                           backgroundColor: '#E8D5C4',
-                          opacity: hasContent ? 1 : 0.4,
                         }}
                         resizeMode="cover"
                       />
@@ -280,30 +505,26 @@ export default function MealPlanScreen() {
                         <Text style={{ 
                           fontSize: 15, 
                           fontWeight: '600', 
-                          color: hasContent ? '#4A3728' : '#9ca3af',
+                          color: '#4A3728',
                         }}>
-                          {title || `Add ${label}`}
+                          {title}
                         </Text>
                         <Text style={{ fontSize: 13, color: '#9ca3af', marginTop: 2 }}>
                           {label}
                         </Text>
                       </View>
 
-                      {/* Checkmark or add icon */}
-                      {hasContent ? (
-                        <View style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 14,
-                          backgroundColor: '#E8D5C4',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                          <Ionicons name="checkmark" size={18} color="#4A3728" />
-                        </View>
-                      ) : (
-                        <Ionicons name="add-circle-outline" size={24} color="#9ca3af" />
-                      )}
+                      {/* Checkmark */}
+                      <View style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: '#E8D5C4',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        <Ionicons name="checkmark" size={18} color="#4A3728" />
+                      </View>
                     </Pressable>
                   );
                 })}
@@ -311,6 +532,46 @@ export default function MealPlanScreen() {
             );
           })}
         </ScrollView>
+
+        {/* Floating Jump to Today button */}
+        {(showJumpButton || weekOffset !== 0) && (
+          <Animated.View
+            style={{
+              position: 'absolute',
+              bottom: 100,
+              alignSelf: 'center',
+              opacity: weekOffset !== 0 ? 1 : jumpButtonOpacity,
+              transform: [{
+                scale: weekOffset !== 0 ? 1 : jumpButtonOpacity.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.8, 1],
+                }),
+              }],
+            }}
+          >
+            <Pressable
+              onPress={jumpToToday}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#4A3728',
+                paddingHorizontal: 20,
+                paddingVertical: 12,
+                borderRadius: 24,
+                shadowColor: '#4A3728',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 6,
+              }}
+            >
+              <Ionicons name="today" size={18} color="#fff" />
+              <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600', color: '#fff' }}>
+                Jump to Today
+              </Text>
+            </Pressable>
+          </Animated.View>
+        )}
 
         {/* Grocery list selection modal */}
         <Modal
@@ -355,45 +616,95 @@ export default function MealPlanScreen() {
                         if (!hasContent) return null;
 
                         const title = meal?.recipe?.title || meal?.customText || '';
+                        const recipeServings = meal?.recipe?.servings;
                         const dateStr = formatDateLocal(date);
                         const key = `${dateStr}_${type}`;
                         const isSelected = selectedMeals.has(key);
+                        const currentServings = mealServings[key] || recipeServings || 2;
 
                         return (
-                          <Pressable
+                          <View
                             key={type}
-                            onPress={() => handleToggleMeal(date, type)}
                             style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
                               backgroundColor: '#fff',
                               borderRadius: 12,
                               padding: 12,
                               marginBottom: 8,
                             }}
                           >
-                            {/* Checkbox */}
-                            <View
-                              style={{
-                                width: 24,
-                                height: 24,
-                                borderRadius: 6,
-                                borderWidth: 2,
-                                borderColor: isSelected ? '#4A3728' : '#e5e7eb',
-                                backgroundColor: isSelected ? '#4A3728' : '#fff',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginRight: 12,
-                              }}
+                            <Pressable
+                              onPress={() => handleToggleMeal(date, type, recipeServings ?? undefined)}
+                              style={{ flexDirection: 'row', alignItems: 'center' }}
                             >
-                              {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
-                            </View>
+                              {/* Checkbox */}
+                              <View
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 6,
+                                  borderWidth: 2,
+                                  borderColor: isSelected ? '#4A3728' : '#e5e7eb',
+                                  backgroundColor: isSelected ? '#4A3728' : '#fff',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  marginRight: 12,
+                                }}
+                              >
+                                {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
+                              </View>
 
-                            <View style={{ flex: 1 }}>
-                              <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>{title}</Text>
-                              <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{label}</Text>
-                            </View>
-                          </Pressable>
+                              <View style={{ flex: 1 }}>
+                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>{title}</Text>
+                                <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{label}</Text>
+                              </View>
+                            </Pressable>
+
+                            {/* Servings picker - only show when selected */}
+                            {isSelected && (
+                              <View style={{ 
+                                flexDirection: 'row', 
+                                alignItems: 'center', 
+                                marginTop: 10,
+                                marginLeft: 36,
+                                backgroundColor: '#F5E6D3',
+                                borderRadius: 10,
+                                padding: 6,
+                                alignSelf: 'flex-start',
+                              }}>
+                                <Pressable
+                                  onPress={() => handleChangeServings(key, -1)}
+                                  style={({ pressed }) => ({
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 14,
+                                    backgroundColor: pressed ? '#E8D5C4' : '#fff',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  })}
+                                >
+                                  <Ionicons name="remove" size={16} color="#4A3728" />
+                                </Pressable>
+                                <View style={{ paddingHorizontal: 12 }}>
+                                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>
+                                    {currentServings} 👤
+                                  </Text>
+                                </View>
+                                <Pressable
+                                  onPress={() => handleChangeServings(key, 1)}
+                                  style={({ pressed }) => ({
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 14,
+                                    backgroundColor: pressed ? '#E8D5C4' : '#fff',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                  })}
+                                >
+                                  <Ionicons name="add" size={16} color="#4A3728" />
+                                </Pressable>
+                              </View>
+                            )}
+                          </View>
                         );
                       })}
                     </View>

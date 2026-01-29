@@ -1,9 +1,10 @@
 /**
  * Tab layout for main navigation.
- * Food delivery app inspired design with white tab bar.
+ * Modern floating tab bar design.
  */
 
 import React from 'react';
+import { View, Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -11,21 +12,34 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#4A3728', // Dark brown for active
+        tabBarActiveTintColor: '#4A3728',
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF', // White tab bar
+          position: 'absolute',
+          bottom: 20,
+          left: 20,
+          right: 20,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
           borderTopWidth: 0,
-          elevation: 4,
+          borderRadius: 24,
+          height: 68,
+          paddingBottom: 0,
+          paddingTop: 0,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.03,
-          shadowRadius: 4,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 20,
+          elevation: 10,
         },
-        headerShown: false, // Hide header on all screens - we use custom headers
+        tabBarItemStyle: {
+          paddingVertical: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+        headerShown: false,
       }}
     >
       <Tabs.Screen

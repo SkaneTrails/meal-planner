@@ -60,9 +60,9 @@ export function MealCell({
         backgroundColor: '#fff',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.03,
-        shadowRadius: 2,
-        elevation: 1,
+        shadowOpacity: 0.06,
+        shadowRadius: 3,
+        elevation: 2,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
