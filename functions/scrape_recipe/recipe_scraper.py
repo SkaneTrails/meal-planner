@@ -36,13 +36,10 @@ def _is_safe_url(url: str) -> bool:
     """Validate URL to prevent SSRF attacks."""
     try:
         parsed = urlparse(url)
+        hostname = parsed.hostname
 
         # Only allow http and https schemes
-        if parsed.scheme not in ("http", "https"):
-            return False
-
-        hostname = parsed.hostname
-        if not hostname:
+        if parsed.scheme not in ("http", "https") or not hostname:
             return False
 
         # Check blocked hostnames
@@ -53,9 +50,8 @@ def _is_safe_url(url: str) -> bool:
         # Try to resolve hostname to IP and check against blocked ranges
         try:
             ip = ipaddress.ip_address(hostname)
-            for blocked_range in BLOCKED_IP_RANGES:
-                if ip in blocked_range:
-                    return False
+            if any(ip in blocked_range for blocked_range in BLOCKED_IP_RANGES):
+                return False
         except ValueError:
             # Not an IP address, check if hostname looks suspicious
             if any(blocked in hostname_lower for blocked in ("internal", "local", "metadata")):
