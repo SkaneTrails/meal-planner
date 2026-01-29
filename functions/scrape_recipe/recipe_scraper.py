@@ -2,6 +2,7 @@
 
 import ipaddress
 import re
+import socket
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -32,6 +33,33 @@ BLOCKED_HOSTNAMES = {
 }
 
 
+def _is_ip_blocked(ip_str: str) -> bool:
+    """Check if an IP address is in a blocked range."""
+    try:
+        ip = ipaddress.ip_address(ip_str)
+        return any(ip in blocked_range for blocked_range in BLOCKED_IP_RANGES)
+    except ValueError:
+        return False
+
+
+def _is_hostname_blocked(hostname: str) -> bool:
+    """Check if a hostname is blocked or suspicious."""
+    hostname_lower = hostname.lower()
+    if hostname_lower in BLOCKED_HOSTNAMES:
+        return True
+    return any(blocked in hostname_lower for blocked in ("internal", "local", "metadata"))
+
+
+def _resolve_and_check_ips(hostname: str) -> bool:
+    """Resolve hostname via DNS and check if any resolved IP is blocked. Returns True if blocked."""
+    try:
+        addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
+        return any(_is_ip_blocked(sockaddr[0]) for *_, sockaddr in addr_info)
+    except socket.gaierror:
+        # DNS resolution failed - treat as blocked
+        return True
+
+
 def _is_safe_url(url: str) -> bool:
     """Validate URL to prevent SSRF attacks."""
     try:
@@ -42,24 +70,14 @@ def _is_safe_url(url: str) -> bool:
         if parsed.scheme not in ("http", "https") or not hostname:
             return False
 
-        # Check blocked hostnames
-        hostname_lower = hostname.lower()
-        if hostname_lower in BLOCKED_HOSTNAMES:
+        # Check hostname and DNS resolution
+        if _is_hostname_blocked(hostname) or _resolve_and_check_ips(hostname):
             return False
 
-        # Try to resolve hostname to IP and check against blocked ranges
-        try:
-            ip = ipaddress.ip_address(hostname)
-            if any(ip in blocked_range for blocked_range in BLOCKED_IP_RANGES):
-                return False
-        except ValueError:
-            # Not an IP address, check if hostname looks suspicious
-            if any(blocked in hostname_lower for blocked in ("internal", "local", "metadata")):
-                return False
-
-        return True
     except Exception:
         return False
+
+    return True
 
 
 @dataclass
@@ -122,6 +140,13 @@ def scrape_recipe(url: str) -> Recipe | None:
     try:
         response = httpx.get(url, follow_redirects=True, timeout=30.0)
         response.raise_for_status()
+
+        # Validate final URL after redirects to prevent SSRF bypass
+        final_url = str(response.url)
+        if final_url != url and not _is_safe_url(final_url):
+            print(f"Redirect blocked by security policy: {url} -> {final_url}", file=sys.stderr)
+            return None
+
         html = response.text
 
         scraper = scrape_html(html, org_url=url)

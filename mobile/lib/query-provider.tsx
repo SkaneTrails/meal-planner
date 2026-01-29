@@ -49,7 +49,9 @@ export async function restoreQueryCache(): Promise<void> {
     if (cached) {
       const data = JSON.parse(cached);
       data.forEach((item: { queryKey: unknown[]; data: unknown; dataUpdatedAt?: number }) => {
-        queryClient.setQueryData(item.queryKey, item.data);
+        queryClient.setQueryData(item.queryKey, item.data, {
+          updatedAt: item.dataUpdatedAt,
+        });
       });
     }
   } catch (error) {

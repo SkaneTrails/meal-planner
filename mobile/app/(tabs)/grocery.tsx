@@ -12,6 +12,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useGroceryList } from '@/lib/hooks';
 import { GroceryListView } from '@/components';
 
+function formatDateLocal(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getWeekDates(): { start: string; end: string } {
   const today = new Date();
   const currentDay = today.getDay();
@@ -24,8 +31,8 @@ function getWeekDates(): { start: string; end: string } {
   friday.setDate(saturday.getDate() + 6);
 
   return {
-    start: saturday.toISOString().split('T')[0],
-    end: friday.toISOString().split('T')[0],
+    start: formatDateLocal(saturday),
+    end: formatDateLocal(friday),
   };
 }
 
