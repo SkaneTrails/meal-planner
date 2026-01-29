@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Meal Planner Color Palette */
+/* Meal Planner Color Palette - Soft Beige/Cream */
 :root {
-  --color-background: #F5F5DC;
-  --color-sage: #ADB380;
-  --color-sage-dark: #7A8A5D;
-  --color-peach: #EFD5A9;
+  --color-background: #F5E6D3;
+  --color-background-light: #FFF8E7;
+  --color-primary: #111827;
+  --color-card: #FFFFFF;
 }

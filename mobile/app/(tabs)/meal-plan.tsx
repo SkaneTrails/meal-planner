@@ -1,5 +1,6 @@
 /**
- * Meal Plan screen - Weekly calendar view.
+ * Meal Plan screen - Weekly menu with vertical scrolling list.
+ * Mobile-first design with meals grouped by day.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -9,10 +10,15 @@ import {
   ScrollView,
   RefreshControl,
   Pressable,
-  Alert,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { GradientBackground } from '@/components';
+import { useMealPlan, useRecipes } from '@/lib/hooks';
+import type { MealType, Recipe } from '@/lib/types';
+
+const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -20,22 +26,19 @@ function formatDateLocal(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-import { useMealPlan, useRecipes, useClearMealPlan } from '@/lib/hooks';
-import { DayColumn } from '@/components';
-import type { MealType, Recipe } from '@/lib/types';
 
 function getWeekDates(weekOffset: number = 0): Date[] {
   const today = new Date();
   const currentDay = today.getDay();
-  // Calculate days since Saturday (Sat=0 in our week, so Sat->0, Sun->1, Mon->2, etc.)
-  const daysSinceSaturday = (currentDay + 1) % 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() - daysSinceSaturday + weekOffset * 7);
+  // Start week on Monday
+  const daysSinceMonday = (currentDay + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - daysSinceMonday + weekOffset * 7);
 
   const dates: Date[] = [];
   for (let i = 0; i < 7; i++) {
-    const date = new Date(saturday);
-    date.setDate(saturday.getDate() + i);
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
     dates.push(date);
   }
   return dates;
@@ -44,9 +47,24 @@ function getWeekDates(weekOffset: number = 0): Date[] {
 function formatWeekRange(dates: Date[]): string {
   const first = dates[0];
   const last = dates[6];
-  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-  return `${first.toLocaleDateString('en-US', options)} - ${last.toLocaleDateString('en-US', options)}`;
+  return `${first.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} - ${last.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`;
 }
+
+function formatDayHeader(date: Date): string {
+  const today = new Date();
+  const isToday = date.toDateString() === today.toDateString();
+  const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  
+  if (isToday) return `Today · ${monthDay}`;
+  return `${dayName} · ${monthDay}`;
+}
+
+// Meal type config
+const MEAL_TYPES: { type: MealType; label: string }[] = [
+  { type: 'lunch', label: 'Lunch' },
+  { type: 'dinner', label: 'Dinner' },
+];
 
 export default function MealPlanScreen() {
   const router = useRouter();
@@ -60,7 +78,6 @@ export default function MealPlanScreen() {
     refetch: refetchMealPlan,
   } = useMealPlan();
   const { data: recipes = [] } = useRecipes();
-  const clearMealPlan = useClearMealPlan();
 
   // Create a map of recipe IDs to recipes
   const recipeMap = useMemo(() => {
@@ -71,55 +88,22 @@ export default function MealPlanScreen() {
     return map;
   }, [recipes]);
 
-  // Build meal data for each day
-  const getMealsForDate = (date: Date) => {
+  // Get meal data for a specific date and meal type
+  const getMealForSlot = (date: Date, mealType: MealType): { recipe?: Recipe; customText?: string } | null => {
+    if (!mealPlan || !mealPlan.meals) return null;
+    
     const dateStr = formatDateLocal(date);
-    const meals: Record<MealType, { recipe?: Recipe; customText?: string }> = {
-      breakfast: {},
-      lunch: {},
-      dinner: {},
-      snack: {},
-    };
-
-    if (!mealPlan || !mealPlan.meals) return meals;
-
-    for (const [key, value] of Object.entries(mealPlan.meals)) {
-      const [entryDate, entryMealType] = key.split('_');
-      if (entryDate !== dateStr) continue;
-      if (
-        entryMealType !== 'breakfast' &&
-        entryMealType !== 'lunch' &&
-        entryMealType !== 'dinner' &&
-        entryMealType !== 'snack'
-      ) {
-        continue;
-      }
-
-      const mealType = entryMealType as MealType;
-      const isCustom = value.startsWith('custom:');
-      const recipe = !isCustom ? recipeMap[value] : undefined;
-
-      meals[mealType] = recipe
-        ? { recipe }
-        : { customText: isCustom ? value.slice(7) : value };
+    const key = `${dateStr}_${mealType}`;
+    const value = mealPlan.meals[key];
+    
+    if (!value) return null;
+    
+    if (value.startsWith('custom:')) {
+      return { customText: value.slice(7) };
     }
-
-    return meals;
-  };
-
-  const handleClearPlan = () => {
-    Alert.alert(
-      'Clear Meal Plan',
-      'Are you sure you want to clear all meals for this week?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: () => clearMealPlan.mutate(),
-        },
-      ]
-    );
+    
+    const recipe = recipeMap[value];
+    return recipe ? { recipe } : { customText: value };
   };
 
   const handleMealPress = (date: Date, mealType: MealType) => {
@@ -131,82 +115,150 @@ export default function MealPlanScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background">
-      {/* Week navigation */}
-      <View className="bg-peach-50 px-4 py-3 flex-row items-center justify-between border-b border-sage-200">
-        <Pressable
-          onPress={() => setWeekOffset((prev) => prev - 1)}
-          className="p-2"
-        >
-          <Ionicons name="chevron-back" size={24} color="#7A8A5D" />
-        </Pressable>
+    <GradientBackground>
+      <View style={{ flex: 1 }}>
+        {/* Header */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
+          <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728' }}>Weekly Menu</Text>
+        </View>
 
-        <Pressable
-          onPress={() => setWeekOffset(0)}
-          className="items-center"
-        >
-          <Text className="text-lg font-semibold text-gray-900">
-            {formatWeekRange(weekDates)}
-          </Text>
-          {weekOffset !== 0 && (
-            <Text className="text-xs text-sage-600">Tap to return to this week</Text>
-          )}
-        </Pressable>
-
-        <Pressable
-          onPress={() => setWeekOffset((prev) => prev + 1)}
-          className="p-2"
-        >
-          <Ionicons name="chevron-forward" size={24} color="#7A8A5D" />
-        </Pressable>
-      </View>
-
-      {/* Meal grid */}
-      <ScrollView
-        className="flex-1"
-        refreshControl={
-          <RefreshControl
-            refreshing={mealPlanLoading}
-            onRefresh={() => refetchMealPlan()}
-            tintColor="#7A8A5D"
-          />
-        }
-      >
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ padding: 8 }}
-        >
-          {weekDates.map((date) => (
-            <View key={date.toISOString()} style={{ width: 140 }}>
-              <DayColumn
-                date={date}
-                meals={getMealsForDate(date)}
-                onMealPress={(mealType) => handleMealPress(date, mealType)}
-              />
+        {/* Week selector */}
+        <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#fff',
+              borderRadius: 12,
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+            }}
+          >
+            <Pressable
+              onPress={() => setWeekOffset((prev) => prev - 1)}
+              style={{ padding: 4 }}
+            >
+              <Ionicons name="chevron-back" size={20} color="#4A3728" />
+            </Pressable>
+            
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
+                {formatWeekRange(weekDates)}
+              </Text>
+              {weekOffset !== 0 && (
+                <Pressable onPress={() => setWeekOffset(0)}>
+                  <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>Back to today</Text>
+                </Pressable>
+              )}
             </View>
-          ))}
+            
+            <Pressable
+              onPress={() => setWeekOffset((prev) => prev + 1)}
+              style={{ padding: 4 }}
+            >
+              <Ionicons name="chevron-forward" size={20} color="#4A3728" />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Meal list */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={mealPlanLoading}
+              onRefresh={() => refetchMealPlan()}
+              tintColor="#4A3728"
+            />
+          }
+        >
+          {weekDates.map((date) => {
+            const isToday = date.toDateString() === new Date().toDateString();
+            
+            return (
+              <View key={date.toISOString()} style={{ marginBottom: 24 }}>
+                {/* Day header */}
+                <Text style={{ 
+                  fontSize: 16, 
+                  fontWeight: '600', 
+                  color: isToday ? '#4A3728' : '#6b7280',
+                  marginBottom: 12,
+                }}>
+                  {formatDayHeader(date)}
+                </Text>
+
+                {/* Meals for this day */}
+                {MEAL_TYPES.map(({ type, label }) => {
+                  const meal = getMealForSlot(date, type);
+                  const hasContent = meal !== null;
+                  const title = meal?.recipe?.title || meal?.customText;
+                  const imageUrl = meal?.recipe?.image_url || PLACEHOLDER_IMAGE;
+
+                  return (
+                    <Pressable
+                      key={`${date.toISOString()}-${type}`}
+                      onPress={() => handleMealPress(date, type)}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: '#fff',
+                        borderRadius: 16,
+                        padding: 12,
+                        marginBottom: 8,
+                      }}
+                    >
+                      {/* Image */}
+                      <Image
+                        source={{ uri: hasContent ? imageUrl : PLACEHOLDER_IMAGE }}
+                        style={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: 12,
+                          backgroundColor: '#E8D5C4',
+                          opacity: hasContent ? 1 : 0.4,
+                        }}
+                        resizeMode="cover"
+                      />
+
+                      {/* Content */}
+                      <View style={{ flex: 1, marginLeft: 12 }}>
+                        <Text style={{ 
+                          fontSize: 15, 
+                          fontWeight: '600', 
+                          color: hasContent ? '#4A3728' : '#9ca3af',
+                        }}>
+                          {title || `Add ${label}`}
+                        </Text>
+                        <Text style={{ fontSize: 13, color: '#9ca3af', marginTop: 2 }}>
+                          {label}
+                        </Text>
+                      </View>
+
+                      {/* Checkmark or add icon */}
+                      {hasContent ? (
+                        <View style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 14,
+                          backgroundColor: '#E8D5C4',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                          <Ionicons name="checkmark" size={18} color="#4A3728" />
+                        </View>
+                      ) : (
+                        <Ionicons name="add-circle-outline" size={24} color="#9ca3af" />
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            );
+          })}
         </ScrollView>
-      </ScrollView>
-
-      {/* Action buttons */}
-      <View className="flex-row p-4 bg-peach-50 border-t border-sage-200 gap-3">
-        <Pressable
-          onPress={handleClearPlan}
-          className="flex-1 flex-row items-center justify-center py-3 rounded-xl border border-sage-300 bg-white"
-        >
-          <Ionicons name="trash-outline" size={20} color="#7A8A5D" />
-          <Text className="ml-2 font-medium text-sage-600">Clear Week</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => router.push('/grocery')}
-          className="flex-1 flex-row items-center justify-center py-3 rounded-xl bg-sage-400"
-        >
-          <Ionicons name="cart" size={20} color="white" />
-          <Text className="ml-2 font-medium text-white">Grocery List</Text>
-        </Pressable>
       </View>
-    </View>
+    </GradientBackground>
   );
 }

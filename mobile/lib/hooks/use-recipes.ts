@@ -10,28 +10,32 @@ import type { Recipe, RecipeCreate, RecipeUpdate } from '../types';
 export const recipeKeys = {
   all: ['recipes'] as const,
   lists: () => [...recipeKeys.all, 'list'] as const,
-  list: (search?: string) => [...recipeKeys.lists(), { search }] as const,
+  list: (search?: string, enhanced?: boolean) => [...recipeKeys.lists(), { search, enhanced }] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
-  detail: (id: string) => [...recipeKeys.details(), id] as const,
+  detail: (id: string, enhanced?: boolean) => [...recipeKeys.details(), id, { enhanced }] as const,
 };
 
 /**
  * Hook to fetch all recipes.
+ * @param search - Optional search query
+ * @param enhanced - If true, fetch AI-enhanced recipes from the meal-planner database
  */
-export function useRecipes(search?: string) {
+export function useRecipes(search?: string, enhanced?: boolean) {
   return useQuery({
-    queryKey: recipeKeys.list(search),
-    queryFn: () => api.getRecipes(search),
+    queryKey: recipeKeys.list(search, enhanced),
+    queryFn: () => api.getRecipes(search, enhanced),
   });
 }
 
 /**
  * Hook to fetch a single recipe by ID.
+ * @param id - Recipe ID
+ * @param enhanced - If true, fetch from AI-enhanced recipes database
  */
-export function useRecipe(id: string) {
+export function useRecipe(id: string, enhanced?: boolean) {
   return useQuery({
-    queryKey: recipeKeys.detail(id),
-    queryFn: () => api.getRecipe(id),
+    queryKey: recipeKeys.detail(id, enhanced),
+    queryFn: () => api.getRecipe(id, enhanced),
     enabled: !!id,
   });
 }

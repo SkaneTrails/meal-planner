@@ -19,7 +19,7 @@ import type {
 
 // API base URL - configurable for different environments
 // On web, always use localhost since it runs on the same machine
-// On mobile, use the env variable (which should be your machine's IP)
+// On mobile, use the env variable (which should be your machine's IP or tunnel URL)
 const getApiBaseUrl = (): string => {
   if (Platform.OS === 'web') {
     return 'http://localhost:8000';
@@ -80,15 +80,19 @@ class ApiClient {
   }
 
   // Recipe endpoints
-  async getRecipes(search?: string): Promise<Recipe[]> {
+  async getRecipes(search?: string, enhanced?: boolean): Promise<Recipe[]> {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
+    if (enhanced) params.set('enhanced', 'true');
     const query = params.toString();
     return this.request<Recipe[]>(`/recipes${query ? `?${query}` : ''}`);
   }
 
-  async getRecipe(id: string): Promise<Recipe> {
-    return this.request<Recipe>(`/recipes/${id}`);
+  async getRecipe(id: string, enhanced?: boolean): Promise<Recipe> {
+    const params = new URLSearchParams();
+    if (enhanced) params.set('enhanced', 'true');
+    const query = params.toString();
+    return this.request<Recipe>(`/recipes/${id}${query ? `?${query}` : ''}`);
   }
 
   async createRecipe(recipe: RecipeCreate): Promise<Recipe> {
