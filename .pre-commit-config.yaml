@@ -67,7 +67,7 @@ repos:
     hooks:
       - id: prettier
         files: \.(json|markdown|md|yaml|yml|toml)$
-        exclude: ^renovate\.json$
+        exclude: ^(renovate\.json|\.github/copilot-instructions\.md|\.github/skills/.*)$
 
   - repo: https://github.com/astral-sh/uv-pre-commit
     rev: 0.9.18

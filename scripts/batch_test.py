@@ -58,7 +58,11 @@ def main() -> None:
             "ingredient_count": len(enhanced.get("ingredients", [])),
             "has_fractions": any(c in str(enhanced.get("ingredients", [])) for c in "½⅓¼¾"),
             # Match decimal measurements like "0.5 msk" or "1.25 dl" but not version strings like "v1.5"
-            "has_decimals": bool(re.search(r"\b\d+\.\d+\s*(msk|tsk|dl|ml|g|kg|l|st)\b", str(enhanced.get("ingredients", [])), re.IGNORECASE)),
+            "has_decimals": bool(
+                re.search(
+                    r"\b\d+\.\d+\s*(msk|tsk|dl|ml|g|kg|l|st)\b", str(enhanced.get("ingredients", [])), re.IGNORECASE
+                )
+            ),
         }
 
         # Check ingredient order (kryddor last)
