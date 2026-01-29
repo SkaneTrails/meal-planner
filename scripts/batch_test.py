@@ -1,6 +1,7 @@
 """Batch test recipe enhancer on 10 diverse recipes."""
 
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -56,7 +57,8 @@ def main() -> None:
             "has_timeline": "⏱️" in enhanced.get("instructions", ""),
             "ingredient_count": len(enhanced.get("ingredients", [])),
             "has_fractions": any(c in str(enhanced.get("ingredients", [])) for c in "½⅓¼¾"),
-            "has_decimals": any(f".{d}" in str(enhanced.get("ingredients", [])) for d in "0123456789"),
+            # Match decimal measurements like "0.5 msk" or "1.25 dl" but not version strings like "v1.5"
+            "has_decimals": bool(re.search(r"\b\d+\.\d+\s*(msk|tsk|dl|ml|g|kg|l|st)\b", str(enhanced.get("ingredients", [])), re.IGNORECASE)),
         }
 
         # Check ingredient order (kryddor last)
