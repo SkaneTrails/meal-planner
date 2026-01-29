@@ -232,7 +232,10 @@ def delete_recipe(recipe_id: str) -> bool:
 
 def search_recipes(query: str) -> list[Recipe]:
     """
-    Search recipes by title (case-insensitive prefix match).
+    Search recipes by title (case-sensitive prefix match).
+
+    Note: Firestore range queries are case-sensitive. For case-insensitive
+    search, consider storing a normalized title field.
 
     Args:
         query: The search query.

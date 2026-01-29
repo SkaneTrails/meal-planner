@@ -3,13 +3,31 @@
  * Sets up providers and global configuration.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { QueryProvider } from '@/lib/query-provider';
+import { QueryProvider, restoreQueryCache, persistQueryCache } from '@/lib/query-provider';
 import '../global.css';
 
 export default function RootLayout() {
+  // Restore cache on app startup
+  useEffect(() => {
+    restoreQueryCache();
+  }, []);
+
+  // Persist cache when app goes to background
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        persistQueryCache();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, []);
+
   return (
     <QueryProvider>
       <StatusBar style="auto" />
