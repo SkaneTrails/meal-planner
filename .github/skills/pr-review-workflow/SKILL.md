@@ -52,10 +52,55 @@ Do not consider a comment "handled" until ALL steps are complete. After fixing a
 
 ## 2. Fetching PR comments
 
+> **⚠️ CRITICAL: NEVER use built-in IDE tools for PR comments.**
+> Tools like `github-pull-request_activePullRequest` or similar VS Code/Copilot integrations
+> may return **stale/cached data** and miss recent review comments. This has caused missed
+> feedback in production. **ALWAYS use `gh api` or `gh api graphql` directly.**
+
 > **CRITICAL:** You MUST check BOTH top-level comments AND inline review comments.
 > The `gh pr view --json comments,reviews` command **does NOT return inline code comments**.
-> Always run `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate` to get inline comments.
-> Skipping this step means missing Copilot's code suggestions and human review feedback.
+> Skipping inline comments means missing Copilot's code suggestions and human review feedback.
+
+### 2.0 PREFERRED: GraphQL reviewThreads (comments + resolution status)
+
+**This is the most reliable method.** It returns all review threads with their resolution status in one query:
+
+```bash
+gh api graphql -f query='
+  query($owner: String!, $repo: String!, $pr: Int!) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $pr) {
+        reviewThreads(first: 100) {
+          nodes {
+            id
+            isResolved
+            comments(first: 5) {
+              nodes {
+                body
+                path
+                author { login }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+' -f owner="<OWNER>" -f repo="<REPO>" -F pr=<PR>
+```
+
+**Why this is preferred:**
+
+- Returns **both** comments AND resolution status in one call
+- Never stale - queries GitHub directly
+- Includes the `threadId` needed for resolution (the `id` field)
+- Shows which threads are already resolved vs still open
+
+**Filter for unresolved threads only:**
+
+```bash
+gh api graphql -f query='...' | jq '.data.repository.pullRequest.reviewThreads.nodes | map(select(.isResolved == false))'
+```
 
 ### 2.1 Identify PR context
 
@@ -82,9 +127,12 @@ Propose running `gh pr view` for top-level conversation comments:
 gh pr view <PR> --json comments -q '.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}'
 ```
 
-### 2.3 Fetch inline review comments
+### 2.3 Fetch inline review comments (REST API alternative)
 
-**Critical:** `gh pr view --json comments` and `gh pr view --json reviews` do NOT return inline code review comments. They only return PR-level conversation comments and review summaries. You MUST use the REST API to fetch inline comments:
+> **Note:** The GraphQL method in section 2.0 is preferred because it includes resolution status.
+> Use this REST API method only when you need the REST-style comment IDs for replies.
+
+`gh pr view --json comments` and `gh pr view --json reviews` do NOT return inline code review comments. They only return PR-level conversation comments and review summaries. The REST API returns inline comments:
 
 ```bash
 gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments
@@ -98,6 +146,8 @@ This returns an array of review comments with:
 - `user.login`: Author.
 - `id`: Comment ID (needed for replies/resolution).
 - `in_reply_to_id`: If this is a reply to another comment.
+
+**Limitation:** This does NOT show whether threads are resolved. Use GraphQL (section 2.0) to check resolution status.
 
 ### 2.4 Fetch review summaries
 
@@ -318,16 +368,18 @@ After addressing comments and fixing CI issues:
 
 ## 7. Command reference
 
-| Task                                      | Command                                                                         |
-| ----------------------------------------- | ------------------------------------------------------------------------------- |
-| Get PR number                             | `gh pr view --json number -q '.number'`                                         |
-| Get PR comments (top-level only)          | `gh pr view <PR> --json comments`                                               |
-| **Get inline review comments (REQUIRED)** | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                    |
-| Get review status                         | `gh pr view <PR> --json reviews`                                                |
-| Reply to inline comment                   | `gh api repos/<OWNER>/<REPO>/pulls/comments/<ID>/replies -X POST -f body="..."` |
-| List workflow runs                        | `gh run list --branch <branch> --limit 5`                                       |
-| View failed workflow logs                 | `gh run view <run_id> --log-failed`                                             |
-| Re-run failed workflow                    | `gh run rerun <run_id> --failed`                                                |
+| Task                                              | Command                                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Get PR number                                     | `gh pr view --json number -q '.number'`                                         |
+| Get PR comments (top-level only)                  | `gh pr view <PR> --json comments`                                               |
+| **Get review threads + resolution (PREFERRED)**   | `gh api graphql -f query='{ repository(...) { pullRequest(...) { reviewThreads(first:100) { nodes { id isResolved comments(first:5) { nodes { body path } } } } } } }'` |
+| Get inline review comments (REST, no resolution)  | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                    |
+| Get review status                                 | `gh pr view <PR> --json reviews`                                                |
+| Reply to inline comment                           | `gh api repos/<OWNER>/<REPO>/pulls/comments/<ID>/replies -X POST -f body="..."` |
+| Resolve thread                                    | `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<ID>"}) { thread { isResolved } } }'` |
+| List workflow runs                                | `gh run list --branch <branch> --limit 5`                                       |
+| View failed workflow logs                         | `gh run view <run_id> --log-failed`                                             |
+| Re-run failed workflow                            | `gh run rerun <run_id> --failed`                                                |
 
 ---
 
