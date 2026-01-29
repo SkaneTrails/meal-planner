@@ -1,5 +1,6 @@
 /**
- * Recipe card component for displaying a recipe in a list.
+ * Recipe card component for displaying a recipe in a grid or list.
+ * Layout matches Streamlit app design.
  */
 
 import React from 'react';
@@ -11,18 +12,19 @@ interface RecipeCardProps {
   recipe: Recipe;
   onPress?: () => void;
   compact?: boolean;
+  cardSize?: number;
 }
 
-const DIET_ICONS: Record<DietLabel, string> = {
-  veggie: '🥬',
-  fish: '🐟',
-  meat: '🥩',
+const DIET_LABELS: Record<DietLabel, string> = {
+  veggie: 'Veggie',
+  fish: 'Fish',
+  meat: 'Meat',
 };
 
 const MEAL_LABELS: Record<MealLabel, string> = {
   breakfast: 'Breakfast',
   starter: 'Starter',
-  meal: 'Main',
+  meal: 'Meal',
   dessert: 'Dessert',
   drink: 'Drink',
   sauce: 'Sauce',
@@ -32,7 +34,7 @@ const MEAL_LABELS: Record<MealLabel, string> = {
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
 
-export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps) {
+export function RecipeCard({ recipe, onPress, compact = false, cardSize }: RecipeCardProps) {
   const totalTime = recipe.total_time ||
     (recipe.prep_time && recipe.cook_time ? recipe.prep_time + recipe.cook_time : null) ||
     recipe.prep_time ||
@@ -42,25 +44,27 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
     return (
       <Pressable
         onPress={onPress}
-        className="flex-row items-center p-3 bg-white rounded-lg border border-gray-200 mb-2"
+        style={{ flexDirection: 'row', alignItems: 'center', padding: 12, backgroundColor: '#fff', borderRadius: 16, marginBottom: 8 }}
       >
         <Image
           source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-          className="w-12 h-12 rounded-lg"
+          style={{ width: 48, height: 48, borderRadius: 16 }}
           resizeMode="cover"
         />
-        <View className="flex-1 ml-3">
-          <Text className="font-semibold text-gray-900" numberOfLines={1}>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }} numberOfLines={1}>
             {recipe.title}
           </Text>
-          <View className="flex-row items-center mt-1">
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
             {recipe.diet_label && (
-              <Text className="mr-2">{DIET_ICONS[recipe.diet_label]}</Text>
+              <Text style={{ fontSize: 13, color: '#6b7280', marginRight: 8 }}>
+                {DIET_LABELS[recipe.diet_label]}
+              </Text>
             )}
             {totalTime && (
-              <View className="flex-row items-center">
-                <Ionicons name="time-outline" size={14} color="#6b7280" />
-                <Text className="text-sm text-gray-500 ml-1">{totalTime} min</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="time-outline" size={12} color="#9ca3af" />
+                <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 4 }}>{totalTime}m</Text>
               </View>
             )}
           </View>
@@ -70,57 +74,53 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
     );
   }
 
+  // Grid card layout - square cards with image taking most of the space
+  // Image height is ~75% of card, text takes ~25%
+  const imageHeight = cardSize ? cardSize * 0.75 : 128;
+  
   return (
     <Pressable
       onPress={onPress}
-      className="bg-white rounded-xl overflow-hidden border border-gray-200 mb-4"
+      style={{ 
+        backgroundColor: '#fff', 
+        borderRadius: 20, 
+        overflow: 'hidden', 
+        width: cardSize,
+        height: cardSize,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+      }}
     >
       <Image
         source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-        className="w-full h-48"
+        style={{ width: '100%', height: imageHeight }}
         resizeMode="cover"
       />
-      <View className="p-4">
-        <View className="flex-row items-start justify-between">
-          <Text className="flex-1 text-lg font-semibold text-gray-900" numberOfLines={2}>
-            {recipe.title}
-          </Text>
-          {recipe.diet_label && (
-            <Text className="text-xl ml-2">{DIET_ICONS[recipe.diet_label]}</Text>
-          )}
-        </View>
+      <View style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 6, justifyContent: 'center' }}>
+        <Text style={{ fontSize: 13, fontWeight: '600', color: '#4A3728', lineHeight: 16 }} numberOfLines={2}>
+          {recipe.title}
+        </Text>
 
-        <View className="flex-row flex-wrap mt-2 gap-2">
-          {recipe.meal_label && (
-            <View className="bg-primary-100 px-2 py-1 rounded-full">
-              <Text className="text-xs text-primary-700">
-                {MEAL_LABELS[recipe.meal_label]}
+        {/* Simple info row - diet label and time */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 10 }}>
+          {recipe.diet_label && (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="leaf-outline" size={12} color="#4A3728" />
+              <Text style={{ fontSize: 12, color: '#6b7280', marginLeft: 3 }}>
+                {DIET_LABELS[recipe.diet_label]}
               </Text>
             </View>
           )}
           {totalTime && (
-            <View className="flex-row items-center bg-gray-100 px-2 py-1 rounded-full">
-              <Ionicons name="time-outline" size={12} color="#4b5563" />
-              <Text className="text-xs text-gray-600 ml-1">{totalTime} min</Text>
-            </View>
-          )}
-          {recipe.servings && (
-            <View className="flex-row items-center bg-gray-100 px-2 py-1 rounded-full">
-              <Ionicons name="people-outline" size={12} color="#4b5563" />
-              <Text className="text-xs text-gray-600 ml-1">{recipe.servings}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="time-outline" size={12} color="#9ca3af" />
+              <Text style={{ fontSize: 12, color: '#6b7280', marginLeft: 3 }}>{totalTime}m</Text>
             </View>
           )}
         </View>
-
-        {recipe.tags.length > 0 && (
-          <View className="flex-row flex-wrap mt-2 gap-1">
-            {recipe.tags.slice(0, 3).map((tag) => (
-              <Text key={tag} className="text-xs text-gray-500">
-                #{tag}
-              </Text>
-            ))}
-          </View>
-        )}
       </View>
     </Pressable>
   );

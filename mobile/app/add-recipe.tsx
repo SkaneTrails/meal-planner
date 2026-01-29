@@ -63,36 +63,36 @@ export default function AddRecipeScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-gray-50"
+      style={{ flex: 1, backgroundColor: '#F5E6D3' }}
     >
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 16 }}
         keyboardShouldPersistTaps="handled"
       >
         {/* Instructions */}
-        <View className="bg-primary-50 rounded-xl p-4 mb-6">
-          <View className="flex-row items-center mb-2">
-            <Ionicons name="information-circle" size={24} color="#22c55e" />
-            <Text className="ml-2 font-semibold text-primary-800">
+        <View style={{ backgroundColor: '#4A3728', borderRadius: 16, padding: 16, marginBottom: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Ionicons name="information-circle" size={22} color="#fff" />
+            <Text style={{ marginLeft: 8, fontSize: 16, fontWeight: '600', color: '#fff' }}>
               Import from URL
             </Text>
           </View>
-          <Text className="text-primary-700 text-sm">
+          <Text style={{ color: '#fff', fontSize: 15, lineHeight: 22 }}>
             Paste a recipe URL from any major cooking website. We'll automatically
             extract the title, ingredients, instructions, and more.
           </Text>
         </View>
 
         {/* URL input */}
-        <View className="mb-6">
-          <Text className="text-sm font-medium text-gray-700 mb-2">
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginBottom: 8 }}>
             Recipe URL
           </Text>
-          <View className="flex-row items-center bg-white rounded-xl border border-gray-200 px-4">
-            <Ionicons name="link" size={20} color="#9ca3af" />
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 16 }}>
+            <Ionicons name="link" size={20} color="#4A3728" />
             <TextInput
-              className="flex-1 py-4 px-3 text-base text-gray-900"
+              style={{ flex: 1, paddingVertical: 14, paddingHorizontal: 12, fontSize: 15, color: '#4A3728' }}
               placeholder="https://example.com/recipe..."
               placeholderTextColor="#9ca3af"
               value={url}
@@ -105,7 +105,7 @@ export default function AddRecipeScreen() {
             />
             {url !== '' && (
               <Pressable onPress={() => setUrl('')} disabled={isPending}>
-                <Ionicons name="close-circle" size={20} color="#9ca3af" />
+                <Ionicons name="close-circle" size={20} color="#4A3728" />
               </Pressable>
             )}
           </View>
@@ -115,21 +115,19 @@ export default function AddRecipeScreen() {
         <Pressable
           onPress={handleImport}
           disabled={!url || isPending}
-          className={`py-4 rounded-xl flex-row items-center justify-center ${
-            url && !isPending ? 'bg-primary-500' : 'bg-gray-300'
-          }`}
+          style={{ paddingVertical: 14, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: url && !isPending ? '#4A3728' : '#9CA3AF' }}
         >
           {isPending ? (
             <>
               <Ionicons name="hourglass-outline" size={20} color="white" />
-              <Text className="ml-2 text-white font-semibold">
+              <Text style={{ marginLeft: 8, color: '#fff', fontSize: 15, fontWeight: '600' }}>
                 Importing...
               </Text>
             </>
           ) : (
             <>
               <Ionicons name="download-outline" size={20} color="white" />
-              <Text className="ml-2 text-white font-semibold">
+              <Text style={{ marginLeft: 8, color: '#fff', fontSize: 15, fontWeight: '600' }}>
                 Import Recipe
               </Text>
             </>
@@ -137,11 +135,11 @@ export default function AddRecipeScreen() {
         </Pressable>
 
         {/* Supported sites */}
-        <View className="mt-8">
-          <Text className="text-sm font-medium text-gray-500 mb-3">
+        <View style={{ marginTop: 32 }}>
+          <Text style={{ fontSize: 13, fontWeight: '600', color: '#6b7280', marginBottom: 12 }}>
             Supported Sites (400+)
           </Text>
-          <View className="flex-row flex-wrap gap-2">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {[
               'AllRecipes',
               'BBC Good Food',
@@ -155,9 +153,9 @@ export default function AddRecipeScreen() {
             ].map((site) => (
               <View
                 key={site}
-                className="bg-white px-3 py-1.5 rounded-full border border-gray-200"
+                style={{ backgroundColor: '#E8D5C4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}
               >
-                <Text className="text-xs text-gray-600">{site}</Text>
+                <Text style={{ fontSize: 13, color: '#4A3728' }}>{site}</Text>
               </View>
             ))}
           </View>

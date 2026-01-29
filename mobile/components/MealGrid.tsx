@@ -1,5 +1,6 @@
 /**
  * Meal grid cell for displaying a single meal slot.
+ * Layout matches Streamlit app design.
  */
 
 import React from 'react';
@@ -52,24 +53,26 @@ export function MealCell({
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
-      className={`
-        p-3 rounded-lg border min-h-[80px]
-        ${hasContent
-          ? 'bg-primary-50 border-primary-200'
-          : 'bg-gray-50 border-gray-200 border-dashed'
-        }
-      `}
+      style={{
+        padding: 12,
+        borderRadius: 16,
+        minHeight: 80,
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
+      }}
     >
-      <View className="flex-row items-center mb-1">
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
           size={14}
-          color={hasContent ? '#15803d' : '#9ca3af'}
+          color={hasContent ? '#4A3728' : '#9ca3af'}
         />
         <Text
-          className={`text-xs ml-1 ${
-            hasContent ? 'text-primary-700' : 'text-gray-400'
-          }`}
+          style={{ fontSize: 12, marginLeft: 4, color: hasContent ? '#4A3728' : '#9ca3af' }}
         >
           {MEAL_TYPE_LABELS[mealType]}
         </Text>
@@ -77,13 +80,13 @@ export function MealCell({
 
       {displayText ? (
         <Text
-          className="text-sm text-gray-900 font-medium"
+          style={{ fontSize: 14, color: '#4A3728', fontWeight: '500' }}
           numberOfLines={2}
         >
           {displayText}
         </Text>
       ) : (
-        <View className="flex-1 justify-center items-center">
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Ionicons name="add" size={20} color="#9ca3af" />
         </View>
       )}
@@ -113,29 +116,25 @@ export function DayColumn({
   const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
   return (
-    <View className="flex-1 mx-1">
+    <View style={{ flex: 1, marginHorizontal: 4 }}>
       {/* Day header */}
       <View
-        className={`items-center py-2 mb-2 rounded-lg ${
-          isToday ? 'bg-primary-500' : 'bg-gray-100'
-        }`}
+        style={{ alignItems: 'center', paddingVertical: 8, marginBottom: 8, borderRadius: 16, backgroundColor: isToday ? '#4A3728' : '#f3f4f6' }}
       >
         <Text
-          className={`text-xs ${isToday ? 'text-white' : 'text-gray-500'}`}
+          style={{ fontSize: 12, color: isToday ? '#fff' : '#4b5563' }}
         >
           {dayName}
         </Text>
         <Text
-          className={`text-lg font-bold ${
-            isToday ? 'text-white' : 'text-gray-900'
-          }`}
+          style={{ fontSize: 18, fontWeight: 'bold', color: isToday ? '#fff' : '#4A3728' }}
         >
           {dayNumber}
         </Text>
       </View>
 
       {/* Meal cells */}
-      <View className="gap-2">
+      <View style={{ gap: 8 }}>
         {mealTypes.map((mealType) => {
           const mealData = meals[mealType] || {};
           return (
@@ -154,8 +153,8 @@ export function DayColumn({
 
       {/* Note indicator */}
       {note && (
-        <View className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
-          <Text className="text-xs text-yellow-800" numberOfLines={2}>
+        <View style={{ marginTop: 8, padding: 8, backgroundColor: '#E8D5C4', borderRadius: 16 }}>
+          <Text style={{ fontSize: 12, color: '#4A3728' }} numberOfLines={2}>
             {note}
           </Text>
         </View>

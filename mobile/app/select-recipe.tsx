@@ -96,13 +96,13 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <View className="flex-1 bg-gray-50">
+      <View style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
         {/* Search bar */}
-        <View className="bg-white px-4 py-3 border-b border-gray-200">
-          <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-2">
-            <Ionicons name="search" size={20} color="#9ca3af" />
+        <View style={{ backgroundColor: '#fff', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#F5E6D3', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10 }}>
+            <Ionicons name="search" size={20} color="#4A3728" />
             <TextInput
-              className="flex-1 ml-2 text-base text-gray-900"
+              style={{ flex: 1, marginLeft: 8, fontSize: 15, color: '#4A3728' }}
               placeholder="Search recipes..."
               placeholderTextColor="#9ca3af"
               value={searchQuery}
@@ -110,20 +110,20 @@ export default function SelectRecipeScreen() {
             />
             {searchQuery !== '' && (
               <Pressable onPress={() => setSearchQuery('')}>
-                <Ionicons name="close-circle" size={20} color="#9ca3af" />
+                <Ionicons name="close-circle" size={20} color="#4A3728" />
               </Pressable>
             )}
           </View>
         </View>
 
         {/* Custom text input */}
-        <View className="px-4 py-3 bg-white border-b border-gray-200">
-          <Text className="text-sm font-medium text-gray-500 mb-2">
+        <View style={{ paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginBottom: 8 }}>
             Or enter custom text
           </Text>
-          <View className="flex-row items-center">
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TextInput
-              className="flex-1 bg-gray-100 rounded-xl px-4 py-3 text-base text-gray-900"
+              style={{ flex: 1, backgroundColor: '#F5E6D3', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 15, color: '#4A3728' }}
               placeholder="e.g., Leftovers, Eating out..."
               placeholderTextColor="#9ca3af"
               value={customText}
@@ -132,11 +132,9 @@ export default function SelectRecipeScreen() {
             <Pressable
               onPress={handleSetCustomText}
               disabled={!customText.trim() || setMeal.isPending}
-              className={`ml-2 px-4 py-3 rounded-xl ${
-                customText.trim() ? 'bg-primary-500' : 'bg-gray-300'
-              }`}
+              style={{ marginLeft: 8, paddingHorizontal: 16, paddingVertical: 12, borderRadius: 12, backgroundColor: customText.trim() ? '#4A3728' : '#9CA3AF' }}
             >
-              <Text className="text-white font-medium">Add</Text>
+              <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Add</Text>
             </Pressable>
           </View>
         </View>
@@ -154,9 +152,9 @@ export default function SelectRecipeScreen() {
           )}
           contentContainerStyle={{ padding: 16 }}
           ListEmptyComponent={
-            <View className="items-center py-16">
-              <Ionicons name="book-outline" size={64} color="#d1d5db" />
-              <Text className="text-gray-500 text-lg mt-4 text-center">
+            <View style={{ alignItems: 'center', paddingVertical: 64 }}>
+              <Ionicons name="book-outline" size={56} color="#4A3728" />
+              <Text style={{ color: '#6b7280', fontSize: 17, marginTop: 16, textAlign: 'center' }}>
                 {searchQuery ? 'No recipes match your search' : 'No recipes yet'}
               </Text>
               <Pressable
@@ -164,23 +162,23 @@ export default function SelectRecipeScreen() {
                   router.back();
                   router.push('/add-recipe');
                 }}
-                className="mt-4 px-6 py-3 bg-primary-500 rounded-full"
+                style={{ marginTop: 16, paddingHorizontal: 24, paddingVertical: 12, backgroundColor: '#4A3728', borderRadius: 12 }}
               >
-                <Text className="text-white font-semibold">Add a Recipe</Text>
+                <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Add a Recipe</Text>
               </Pressable>
             </View>
           }
         />
 
         {/* Remove meal button */}
-        <View className="p-4 bg-white border-t border-gray-200">
+        <View style={{ padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#E5E7EB' }}>
           <Pressable
             onPress={handleRemoveMeal}
             disabled={removeMeal.isPending}
-            className="flex-row items-center justify-center py-3 rounded-xl border border-red-300 bg-red-50"
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderRadius: 12, backgroundColor: '#F5E6D3' }}
           >
-            <Ionicons name="trash-outline" size={20} color="#ef4444" />
-            <Text className="ml-2 font-medium text-red-500">
+            <Ionicons name="trash-outline" size={18} color="#4A3728" />
+            <Text style={{ marginLeft: 8, fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
               Clear This Meal
             </Text>
           </Pressable>

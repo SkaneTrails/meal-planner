@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
-from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
+from api.storage.firestore_client import DEFAULT_DATABASE, RECIPES_COLLECTION, get_firestore_client
 
 
 def normalize_url(url: str) -> str:
@@ -83,17 +83,18 @@ def find_recipe_by_url(url: str) -> Recipe | None:
     return None
 
 
-def get_all_recipes(*, include_duplicates: bool = False) -> list[Recipe]:
+def get_all_recipes(*, include_duplicates: bool = False, database: str = DEFAULT_DATABASE) -> list[Recipe]:
     """
     Get all recipes.
 
     Args:
         include_duplicates: If False (default), deduplicate by URL.
+        database: The database to read from (default or meal-planner for AI-enhanced).
 
     Returns:
         List of recipes.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     docs = db.collection(RECIPES_COLLECTION).order_by("created_at", direction="DESCENDING").stream()
 
     recipes = []
@@ -187,17 +188,18 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate) -> Recipe | None:
     return get_recipe(recipe_id)
 
 
-def get_recipe(recipe_id: str) -> Recipe | None:
+def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | None:
     """
     Get a recipe by ID.
 
     Args:
         recipe_id: The Firestore document ID.
+        database: The database to read from (default or meal-planner for AI-enhanced).
 
     Returns:
         The recipe if found, None otherwise.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     doc = cast("DocumentSnapshot", db.collection(RECIPES_COLLECTION).document(recipe_id).get())
 
     if not doc.exists:
@@ -230,7 +232,7 @@ def delete_recipe(recipe_id: str) -> bool:
     return True
 
 
-def search_recipes(query: str) -> list[Recipe]:
+def search_recipes(query: str, database: str = DEFAULT_DATABASE) -> list[Recipe]:
     """
     Search recipes by title (case-sensitive prefix match).
 
@@ -239,11 +241,12 @@ def search_recipes(query: str) -> list[Recipe]:
 
     Args:
         query: The search query.
+        database: The database to search in.
 
     Returns:
         List of matching recipes.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     docs = (
         db.collection(RECIPES_COLLECTION)
         .where(filter=FieldFilter("title", ">=", query))

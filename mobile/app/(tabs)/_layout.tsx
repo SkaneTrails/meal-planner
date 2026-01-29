@@ -1,5 +1,6 @@
 /**
  * Tab layout for main navigation.
+ * Food delivery app inspired design with white tab bar.
  */
 
 import React from 'react';
@@ -10,19 +11,21 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#22c55e',
+        tabBarActiveTintColor: '#4A3728', // Dark brown for active
         tabBarInactiveTintColor: '#9ca3af',
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e5e7eb',
+          backgroundColor: '#FFFFFF', // White tab bar
+          borderTopWidth: 0,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
         },
-        headerStyle: {
-          backgroundColor: '#22c55e',
-        },
-        headerTintColor: '#ffffff',
-        headerTitleStyle: {
-          fontWeight: '600',
-        },
+        headerShown: false, // Hide header on all screens - we use custom headers
       }}
     >
       <Tabs.Screen

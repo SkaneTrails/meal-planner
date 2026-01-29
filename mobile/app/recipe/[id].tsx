@@ -15,7 +15,8 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useRecipe, useDeleteRecipe } from '@/lib/hooks';
+import { useRecipe, useDeleteRecipe, useEnhancedMode } from '@/lib/hooks';
+import { BouncingLoader } from '@/components';
 import type { DietLabel, MealLabel } from '@/lib/types';
 
 const DIET_LABELS: Record<DietLabel, { emoji: string; label: string }> = {
@@ -40,7 +41,8 @@ const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { data: recipe, isLoading, error } = useRecipe(id);
+  const { isEnhanced } = useEnhancedMode();
+  const { data: recipe, isLoading, error } = useRecipe(id, isEnhanced);
   const deleteRecipe = useDeleteRecipe();
 
   const handleDelete = () => {
@@ -81,23 +83,23 @@ export default function RecipeDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-50">
-        <Ionicons name="hourglass-outline" size={48} color="#d1d5db" />
-        <Text className="text-gray-500 mt-4">Loading recipe...</Text>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5E6D3' }}>
+        <BouncingLoader size={14} />
+        <Text style={{ color: '#4A3728', fontSize: 15, marginTop: 16 }}>Loading recipe...</Text>
       </View>
     );
   }
 
   if (error || !recipe) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-50 p-8">
-        <Ionicons name="alert-circle-outline" size={64} color="#ef4444" />
-        <Text className="text-gray-900 text-lg font-semibold mt-4">Recipe not found</Text>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5E6D3', padding: 32 }}>
+        <Ionicons name="alert-circle-outline" size={56} color="#a87a3a" />
+        <Text style={{ color: '#4A3728', fontSize: 17, fontWeight: '600', marginTop: 16 }}>Recipe not found</Text>
         <Pressable
           onPress={() => router.back()}
-          className="mt-4 px-6 py-3 bg-primary-500 rounded-full"
+          style={{ marginTop: 16, paddingHorizontal: 24, paddingVertical: 12, backgroundColor: '#4A3728', borderRadius: 12 }}
         >
-          <Text className="text-white font-semibold">Go Back</Text>
+          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Go Back</Text>
         </Pressable>
       </View>
     );
@@ -114,11 +116,11 @@ export default function RecipeDetailScreen() {
         options={{
           title: recipe.title,
           headerRight: () => (
-            <View className="flex-row gap-2">
-              <Pressable onPress={handleShare} className="p-2">
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Pressable onPress={handleShare} style={{ padding: 8 }}>
                 <Ionicons name="share-outline" size={24} color="white" />
               </Pressable>
-              <Pressable onPress={handleDelete} className="p-2">
+              <Pressable onPress={handleDelete} style={{ padding: 8 }}>
                 <Ionicons name="trash-outline" size={24} color="white" />
               </Pressable>
             </View>
@@ -126,34 +128,34 @@ export default function RecipeDetailScreen() {
         }}
       />
 
-      <ScrollView className="flex-1 bg-gray-50">
+      <ScrollView style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
         {/* Hero image */}
         <Image
           source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-          className="w-full h-64"
+          style={{ width: '100%', height: 256 }}
           resizeMode="cover"
         />
 
         {/* Content */}
-        <View className="p-4 -mt-6 bg-white rounded-t-3xl">
+        <View style={{ padding: 16, marginTop: -24, backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
           {/* Title and labels */}
-          <Text className="text-2xl font-bold text-gray-900">
+          <Text style={{ fontSize: 22, fontWeight: '700', color: '#4A3728' }}>
             {recipe.title}
           </Text>
 
           {/* Meta info */}
-          <View className="flex-row flex-wrap mt-3 gap-3">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 12, gap: 12 }}>
             {recipe.diet_label && (
-              <View className="flex-row items-center bg-primary-50 px-3 py-1.5 rounded-full">
-                <Text className="mr-1">{DIET_LABELS[recipe.diet_label].emoji}</Text>
-                <Text className="text-sm text-primary-700">
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#4A3728', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}>
+                <Text style={{ marginRight: 4 }}>{DIET_LABELS[recipe.diet_label].emoji}</Text>
+                <Text style={{ fontSize: 13, color: '#fff' }}>
                   {DIET_LABELS[recipe.diet_label].label}
                 </Text>
               </View>
             )}
             {recipe.meal_label && (
-              <View className="bg-gray-100 px-3 py-1.5 rounded-full">
-                <Text className="text-sm text-gray-700">
+              <View style={{ backgroundColor: '#E8D5C4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 }}>
+                <Text style={{ fontSize: 13, color: '#4A3728' }}>
                   {MEAL_LABELS[recipe.meal_label]}
                 </Text>
               </View>
@@ -161,39 +163,39 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Time and servings */}
-          <View className="flex-row mt-4 bg-gray-50 rounded-xl p-4">
+          <View style={{ flexDirection: 'row', marginTop: 16, backgroundColor: '#F5E6D3', borderRadius: 16, padding: 16 }}>
             {recipe.prep_time && (
-              <View className="flex-1 items-center">
-                <Ionicons name="timer-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Prep</Text>
-                <Text className="text-base font-semibold text-gray-900">
+              <View style={{ flex: 1, alignItems: 'center' }}>
+                <Ionicons name="timer-outline" size={22} color="#4A3728" />
+                <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>Prep</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
                   {recipe.prep_time} min
                 </Text>
               </View>
             )}
             {recipe.cook_time && (
-              <View className="flex-1 items-center border-l border-gray-200">
-                <Ionicons name="flame-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Cook</Text>
-                <Text className="text-base font-semibold text-gray-900">
+              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#e5e7eb' }}>
+                <Ionicons name="flame-outline" size={22} color="#4A3728" />
+                <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>Cook</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
                   {recipe.cook_time} min
                 </Text>
               </View>
             )}
             {totalTime && (
-              <View className="flex-1 items-center border-l border-gray-200">
-                <Ionicons name="time-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Total</Text>
-                <Text className="text-base font-semibold text-gray-900">
+              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#e5e7eb' }}>
+                <Ionicons name="time-outline" size={22} color="#4A3728" />
+                <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>Total</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
                   {totalTime} min
                 </Text>
               </View>
             )}
             {recipe.servings && (
-              <View className="flex-1 items-center border-l border-gray-200">
-                <Ionicons name="people-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Servings</Text>
-                <Text className="text-base font-semibold text-gray-900">
+              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#e5e7eb' }}>
+                <Ionicons name="people-outline" size={22} color="#4A3728" />
+                <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>Servings</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
                   {recipe.servings}
                 </Text>
               </View>
@@ -202,33 +204,33 @@ export default function RecipeDetailScreen() {
 
           {/* Tags */}
           {recipe.tags.length > 0 && (
-            <View className="flex-row flex-wrap mt-4 gap-2">
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 16, gap: 8 }}>
               {recipe.tags.map((tag) => (
                 <View
                   key={tag}
-                  className="bg-gray-100 px-3 py-1 rounded-full"
+                  style={{ backgroundColor: '#4A3728', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 }}
                 >
-                  <Text className="text-sm text-gray-600">#{tag}</Text>
+                  <Text style={{ fontSize: 13, color: '#fff' }}>#{tag}</Text>
                 </View>
               ))}
             </View>
           )}
 
           {/* Ingredients */}
-          <View className="mt-6">
-            <Text className="text-xl font-semibold text-gray-900 mb-3">
+          <View style={{ marginTop: 24 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#4A3728', marginBottom: 12 }}>
               Ingredients
             </Text>
             {recipe.ingredients.length === 0 ? (
-              <Text className="text-gray-500 italic">No ingredients listed</Text>
+              <Text style={{ color: '#6b7280', fontSize: 15, fontStyle: 'italic' }}>No ingredients listed</Text>
             ) : (
               recipe.ingredients.map((ingredient, index) => (
                 <View
                   key={index}
-                  className="flex-row items-start py-2 border-b border-gray-100"
+                  style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}
                 >
-                  <View className="w-2 h-2 rounded-full bg-primary-500 mt-2 mr-3" />
-                  <Text className="flex-1 text-base text-gray-700">
+                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#4A3728', marginTop: 8, marginRight: 12 }} />
+                  <Text style={{ flex: 1, fontSize: 15, color: '#374151', lineHeight: 22 }}>
                     {ingredient}
                   </Text>
                 </View>
@@ -237,19 +239,19 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Instructions */}
-          <View className="mt-6 mb-8">
-            <Text className="text-xl font-semibold text-gray-900 mb-3">
+          <View style={{ marginTop: 24, marginBottom: 32 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#4A3728', marginBottom: 12 }}>
               Instructions
             </Text>
             {recipe.instructions.length === 0 ? (
-              <Text className="text-gray-500 italic">No instructions listed</Text>
+              <Text style={{ color: '#6b7280', fontSize: 15, fontStyle: 'italic' }}>No instructions listed</Text>
             ) : (
               recipe.instructions.map((instruction, index) => (
-                <View key={index} className="flex-row items-start py-3">
-                  <View className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center mr-3">
-                    <Text className="text-white font-bold">{index + 1}</Text>
+                <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: 12 }}>
+                  <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#4A3728', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <Text style={{ color: '#fff', fontSize: 13, fontWeight: 'bold' }}>{index + 1}</Text>
                   </View>
-                  <Text className="flex-1 text-base text-gray-700">
+                  <Text style={{ flex: 1, fontSize: 15, color: '#374151', lineHeight: 22 }}>
                     {instruction}
                   </Text>
                 </View>
@@ -263,10 +265,10 @@ export default function RecipeDetailScreen() {
               onPress={() => Linking.openURL(recipe.url).catch(() => {
                 Alert.alert('Error', 'Could not open the recipe URL');
               })}
-              className="flex-row items-center justify-center py-3 border-t border-gray-200"
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}
             >
-              <Ionicons name="link-outline" size={20} color="#6b7280" />
-              <Text className="text-gray-500 ml-2 text-sm" numberOfLines={1}>
+              <Ionicons name="link-outline" size={18} color="#4A3728" />
+              <Text style={{ color: '#4A3728', marginLeft: 8, fontSize: 15 }} numberOfLines={1}>
                 View original recipe
               </Text>
             </Pressable>

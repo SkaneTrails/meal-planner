@@ -1,5 +1,6 @@
 /**
  * Grocery list components.
+ * Layout matches Streamlit app design.
  */
 
 import React, { useState } from 'react';
@@ -23,20 +24,8 @@ const CATEGORY_LABELS: Record<GroceryCategory, string> = {
   other: '📦 Other',
 };
 
-const CATEGORY_COLORS: Record<GroceryCategory, string> = {
-  produce: 'bg-green-50 border-green-200',
-  meat_seafood: 'bg-red-50 border-red-200',
-  dairy: 'bg-yellow-50 border-yellow-200',
-  bakery: 'bg-orange-50 border-orange-200',
-  pantry: 'bg-amber-50 border-amber-200',
-  frozen: 'bg-blue-50 border-blue-200',
-  beverages: 'bg-purple-50 border-purple-200',
-  other: 'bg-gray-50 border-gray-200',
-};
-
 function formatQuantity(item: GroceryItem): string {
   if (item.quantity_sources.length > 0) {
-    // Group by unit
     const byUnit: Record<string, number[]> = {};
     for (const qs of item.quantity_sources) {
       if (qs.quantity !== null) {
@@ -80,30 +69,22 @@ export function GroceryItemRow({ item, onToggle }: GroceryItemRowProps) {
   return (
     <Pressable
       onPress={handleToggle}
-      className={`
-        flex-row items-center p-3 bg-white rounded-lg border border-gray-200 mb-2
-        ${checked ? 'opacity-50' : ''}
-      `}
+      style={{ flexDirection: 'row', alignItems: 'center', padding: 12, backgroundColor: '#fff', borderRadius: 12, marginBottom: 8, opacity: checked ? 0.5 : 1 }}
     >
       <View
-        className={`
-          w-6 h-6 rounded-full border-2 items-center justify-center mr-3
-          ${checked ? 'bg-primary-500 border-primary-500' : 'border-gray-300'}
-        `}
+        style={{ width: 24, height: 24, borderRadius: 6, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginRight: 12, backgroundColor: checked ? '#4A3728' : 'transparent', borderColor: checked ? '#4A3728' : '#d1d5db' }}
       >
         {checked && <Ionicons name="checkmark" size={16} color="white" />}
       </View>
 
-      <View className="flex-1">
+      <View style={{ flex: 1 }}>
         <Text
-          className={`text-base ${
-            checked ? 'line-through text-gray-400' : 'text-gray-900'
-          }`}
+          style={{ fontSize: 15, textDecorationLine: checked ? 'line-through' : 'none', color: checked ? '#9ca3af' : '#4A3728' }}
         >
           {quantity ? `${quantity} ${item.name}` : item.name}
         </Text>
         {item.recipe_sources.length > 0 && (
-          <Text className="text-xs text-gray-500 mt-0.5">
+          <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2 }}>
             From: {item.recipe_sources.join(', ')}
           </Text>
         )}
@@ -139,18 +120,17 @@ export function GroceryListView({ groceryList, onItemToggle }: GroceryListViewPr
     .filter(([_, items]) => items.length > 0)
     .map(([category, items]) => ({
       title: CATEGORY_LABELS[category as GroceryCategory],
-      color: CATEGORY_COLORS[category as GroceryCategory],
       data: items,
     }));
 
   if (sections.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center p-8">
-        <Ionicons name="cart-outline" size={64} color="#d1d5db" />
-        <Text className="text-gray-500 text-lg mt-4 text-center">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+        <Ionicons name="cart-outline" size={56} color="#4A3728" />
+        <Text style={{ color: '#6b7280', fontSize: 17, marginTop: 16, textAlign: 'center' }}>
           No items in your grocery list
         </Text>
-        <Text className="text-gray-400 text-sm mt-2 text-center">
+        <Text style={{ color: '#9ca3af', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22 }}>
           Add meals to your plan to generate a shopping list
         </Text>
       </View>
@@ -168,8 +148,8 @@ export function GroceryListView({ groceryList, onItemToggle }: GroceryListViewPr
         />
       )}
       renderSectionHeader={({ section }) => (
-        <View className={`p-2 rounded-lg mb-2 mt-4 border ${section.color}`}>
-          <Text className="font-semibold text-gray-800">{section.title}</Text>
+        <View style={{ paddingVertical: 8, marginTop: 16 }}>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>{section.title}</Text>
         </View>
       )}
       contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
