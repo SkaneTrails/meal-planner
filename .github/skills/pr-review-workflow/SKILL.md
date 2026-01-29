@@ -231,9 +231,13 @@ This prevents silently skipping valid feedback or applying incorrect suggestions
 1. **Reply to the comment** - propose running:
 
 ```bash
-gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments/<COMMENT_ID>/replies \
-  -X POST -f body="Fixed in <COMMIT_SHA>. Thanks for catching this!"
+# Use -F (not -f) for the numeric in_reply_to parameter
+gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments \
+  -X POST -f body="Fixed in <COMMIT_SHA>. Thanks for catching this!" \
+  -F in_reply_to=<COMMENT_ID>
 ```
+
+> **Important:** Use `-F` for `in_reply_to` because it's a numeric parameter. Using `-f` causes a type error.
 
 5. **Resolve the conversation** (if the comment is on a review thread) - propose running:
 
@@ -273,8 +277,9 @@ Match the thread by its first comment body, then use the `id` field as `threadId
 1. **Reply with reasoning** - propose running:
 
 ```bash
-gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments/<COMMENT_ID>/replies \
-  -X POST -f body="I considered this, but <REASONING>. The current approach <JUSTIFICATION>."
+gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments \
+  -X POST -f body="I considered this, but <REASONING>. The current approach <JUSTIFICATION>." \
+  -F in_reply_to=<COMMENT_ID>
 ```
 
 3. **Resolve the conversation** after explaining the disagreement (see thread resolution in 4.1).
@@ -287,9 +292,10 @@ When multiple comments need addressing:
 1. Push all changes at once.
 1. **Reply to all comments in a loop** - collect comment IDs and iterate:
    ```bash
+   # Use -F for numeric in_reply_to parameter
    for id in ID1 ID2 ID3; do
-     gh api repos/<OWNER>/<REPO>/pulls/comments/$id/replies \
-       -X POST -f body="Fixed in <COMMIT_SHA>."
+     gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments \
+       -X POST -f body="Fixed in <COMMIT_SHA>." -F in_reply_to=$id
    done
    ```
 1. **Resolve all threads in a loop** - fetch thread IDs, then iterate:
@@ -375,7 +381,7 @@ After addressing comments and fixing CI issues:
 | **Get review threads + resolution (PREFERRED)**   | `gh api graphql -f query='{ repository(...) { pullRequest(...) { reviewThreads(first:100) { nodes { id isResolved comments(first:5) { nodes { body path } } } } } } }'` |
 | Get inline review comments (REST, no resolution)  | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                    |
 | Get review status                                 | `gh pr view <PR> --json reviews`                                                |
-| Reply to inline comment                           | `gh api repos/<OWNER>/<REPO>/pulls/comments/<ID>/replies -X POST -f body="..."` |
+| Reply to inline comment                           | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments -X POST -f body="..." -F in_reply_to=<ID>` |
 | Resolve thread                                    | `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<ID>"}) { thread { isResolved } } }'` |
 | List workflow runs                                | `gh run list --branch <branch> --limit 5`                                       |
 | View failed workflow logs                         | `gh run view <run_id> --log-failed`                                             |
