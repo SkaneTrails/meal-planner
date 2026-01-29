@@ -29,20 +29,22 @@ The `scripts/recipe_reviewer.py` script manages the recipe review workflow:
 uv run python scripts/recipe_reviewer.py <command> [args]
 ```
 
-| Command | Description |
-|---------|-------------|
-| `next` | Fetch the next unprocessed recipe from the source database |
-| `get <id>` | Fetch a specific recipe by ID |
-| `update <id> '<json>'` | Apply improvements and save to target database |
-| `skip <id>` | Mark recipe as skipped (no changes needed) |
-| `status` | Show progress (processed/skipped/remaining counts) |
+| Command                | Description                                                |
+| ---------------------- | ---------------------------------------------------------- |
+| `next`                 | Fetch the next unprocessed recipe from the source database |
+| `get <id>`             | Fetch a specific recipe by ID                              |
+| `update <id> '<json>'` | Apply improvements and save to target database             |
+| `skip <id>`            | Mark recipe as skipped (no changes needed)                 |
+| `status`               | Show progress (processed/skipped/remaining counts)         |
 
 **Database configuration:**
+
 - **Source**: `(default)` database - original recipes
 - **Target**: `meal-planner` database - improved recipes
 - **Progress file**: `data/recipe_review_progress.json`
 
 **Update JSON format** - only include fields you're changing:
+
 ```json
 {
   "ingredients": ["updated", "ingredient", "list"],
@@ -54,6 +56,7 @@ uv run python scripts/recipe_reviewer.py <command> [args]
 ```
 
 **PowerShell tip**: For complex JSON, write to a temp file first:
+
 ```powershell
 @'
 { "cuisine": "Italian", "tags": ["pasta"] }
@@ -92,6 +95,7 @@ Benefits: Faster, crispier results, frees up oven space for other components.
 ### 3. Vegetarian Protein Adaptations
 
 When `household-config.md` specifies vegetarian alternatives for meat dishes:
+
 - Check relative cooking times (alternatives often cook faster than meat)
 - Note moisture differences (some alternatives dry faster, others release more liquid)
 - Adjust for sauce/marinade absorption characteristics
@@ -106,6 +110,7 @@ When `household-config.md` specifies vegetarian alternatives for meat dishes:
 5. **Remove meat-specific language** from instructions ("kött", "köttfärs", etc.)
 
 **Common mistakes to avoid:**
+
 - ❌ Swapping "blandfärs" → "sojafärs" without updating cooking instructions
 - ❌ Keeping original oil amounts (soy needs more)
 - ❌ Keeping original cooking times (soy cooks faster)
@@ -116,6 +121,7 @@ When `household-config.md` specifies vegetarian alternatives for meat dishes:
 When a recipe could be improved with finishing touches, add them using pantry staples defined in `household-config.md`.
 
 **Enhancement patterns**:
+
 - **Roasted proteins from airfryer**: Finish with butter, citrus, and fresh herbs
 - **Roasted vegetables**: Drizzle with quality oil and flaky salt before serving
 - **Grains (rice, bulgur, couscous)**: Stir in butter or oil for richness
@@ -167,15 +173,17 @@ When improving a recipe, provide:
 **Note:** This example reflects a specific household configuration (Swedish language, Quorn alternatives, airfryer usage). Adapt to the actual configuration files provided.
 
 **Original instruction:**
+
 > Lägg kyckling och grönsaker på en plåt och rosta i 30 min.
 
 **Improved instruction:**
+
 > 1. Lägg potatis och morötter på plåten, rosta i 15 min.
 > 2. Tillsätt lök och broccoli, rosta ytterligare 10 min.
 > 3. Tillsätt vitlök de sista 5 minuterna.
-> 
+>
 > **Kyckling (airfryer):** Marinera kycklingen och tillaga i airfryer på 180°C i 12 min, sedan 200°C i 2 min för krispigt yttre. Toppa med smör, citron och timjan.
-> 
+>
 > **Quorn:** Tillaga Quorn-bitarna separat i stekpanna med lite olja, 5-6 min på medelvärme.
 
 ---

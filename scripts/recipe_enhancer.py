@@ -195,7 +195,7 @@ Alla kryddor grupperas i slutet av ingredienslistan:
   "tips": "Praktiska tips inkl. kryddsubstitut-referens och airfryer-fördelar",
   "metadata": {
     "cuisine": "Swedish/Italian/Indian/etc",
-    "category": "Huvudrätt/Förrätt/Dessert/etc", 
+    "category": "Huvudrätt/Förrätt/Dessert/etc",
     "tags": ["relevanta", "taggar"]
   },
   "changes_made": ["Konkret lista på alla ändringar inklusive utrustningsoptimeringar"]
@@ -212,19 +212,19 @@ def get_unenhanced_recipes(limit: int | None = None, include_enhanced: bool = Fa
     """Get recipes that haven't been enhanced yet."""
     db = get_firestore_client()
     query = db.collection("recipes")
-    
+
     if not include_enhanced:
         query = query.where("enhanced", "!=", True)
-    
+
     if limit:
         query = query.limit(limit)
-    
+
     recipes = []
     for doc in query.stream():
         data = doc.to_dict()
         data["id"] = doc.id
         recipes.append((doc.id, data))
-    
+
     return recipes
 
 
@@ -232,7 +232,7 @@ def list_recipes(limit: int = 20):
     """List recipes from Firestore."""
     db = get_firestore_client()
     recipes = db.collection("recipes").limit(limit).stream()
-    
+
     print(f"\n📚 Recipes (first {limit}):")
     print("-" * 60)
     for i, doc in enumerate(recipes):
@@ -246,7 +246,7 @@ def get_recipe(recipe_id: str) -> dict | None:
     """Fetch a single recipe by ID."""
     db = get_firestore_client()
     doc = db.collection("recipes").document(recipe_id).get()
-    
+
     if doc.exists:
         data = doc.to_dict()
         data["id"] = doc.id
@@ -260,32 +260,30 @@ def enhance_recipe(recipe: dict) -> dict | None:
     if not api_key:
         print("❌ GOOGLE_API_KEY not set in .env file")
         return None
-    
+
     client = genai.Client(api_key=api_key)
-    
+
     recipe_text = f"""
 Förbättra detta recept enligt reglerna:
 
-**Titel**: {recipe.get('title', 'Okänd')}
+**Titel**: {recipe.get("title", "Okänd")}
 
 **Ingredienser**:
-{chr(10).join(f"- {ing}" for ing in recipe.get('ingredients', []))}
+{chr(10).join(f"- {ing}" for ing in recipe.get("ingredients", []))}
 
 **Instruktioner**:
-{recipe.get('instructions', 'Inga instruktioner')}
+{recipe.get("instructions", "Inga instruktioner")}
 
 **Tips** (om finns):
-{recipe.get('tips', 'Inga tips')}
+{recipe.get("tips", "Inga tips")}
 """
-    
+
     try:
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=recipe_text,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                response_mime_type="application/json",
-                temperature=0.3,
+                system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3
             ),
         )
         return json.loads(response.text)
@@ -297,7 +295,7 @@ Förbättra detta recept enligt reglerna:
 def save_recipe(recipe_id: str, enhanced: dict) -> bool:
     """Save enhanced recipe back to Firestore, replacing the original."""
     db = get_firestore_client()
-    
+
     # Prepare the document data
     doc_data = {
         "title": enhanced.get("title"),
@@ -310,7 +308,7 @@ def save_recipe(recipe_id: str, enhanced: dict) -> bool:
         "enhanced": True,  # Mark as enhanced
         "enhancement_changes": enhanced.get("changes_made", []),
     }
-    
+
     try:
         db.collection("recipes").document(recipe_id).update(doc_data)
         return True
@@ -324,38 +322,38 @@ def display_diff(original: dict, enhanced: dict):
     print("\n" + "=" * 60)
     print("📋 ORIGINAL → ENHANCED")
     print("=" * 60)
-    
+
     # Title
-    print(f"\n📌 Title:")
+    print("\n📌 Title:")
     print(f"   Before: {original.get('title', 'N/A')}")
     print(f"   After:  {enhanced.get('title', 'N/A')}")
-    
+
     # Ingredients comparison
     orig_ings = set(original.get("ingredients", []))
     new_ings = set(enhanced.get("ingredients", []))
-    
+
     removed = orig_ings - new_ings
     added = new_ings - orig_ings
-    
+
     if removed or added:
-        print(f"\n🥗 Ingredients:")
+        print("\n🥗 Ingredients:")
         for ing in sorted(removed):
             print(f"   - {ing}")
         for ing in sorted(added):
             print(f"   + {ing}")
-    
+
     # Changes made
-    print(f"\n✏️  Changes Made:")
+    print("\n✏️  Changes Made:")
     for change in enhanced.get("changes_made", []):
         print(f"   • {change}")
-    
+
     # Metadata
     meta = enhanced.get("metadata", {})
-    print(f"\n🏷️  Metadata:")
+    print("\n🏷️  Metadata:")
     print(f"   Cuisine:  {meta.get('cuisine', 'N/A')}")
     print(f"   Category: {meta.get('category', 'N/A')}")
     print(f"   Tags:     {', '.join(meta.get('tags', []))}")
-    
+
     print("\n" + "=" * 60)
 
 
@@ -363,14 +361,14 @@ def process_batch(limit: int | None, include_enhanced: bool, delay: float, dry_r
     """Process multiple recipes in batch mode."""
     print("\n🔄 Batch Processing Mode")
     print("-" * 60)
-    
+
     # Get recipes to process
     recipes = get_unenhanced_recipes(limit, include_enhanced)
-    
+
     if not recipes:
         print("✅ No recipes to process!")
         return
-    
+
     total = len(recipes)
     print(f"📚 Found {total} recipes to process")
     if delay > 0:
@@ -378,52 +376,51 @@ def process_batch(limit: int | None, include_enhanced: bool, delay: float, dry_r
     if dry_run:
         print("🔍 DRY RUN - No changes will be saved")
     print("-" * 60)
-    
+
     # Stats
     success = 0
     failed = 0
     skipped = 0
-    
+
     for i, (recipe_id, recipe) in enumerate(recipes):
         progress = f"[{i + 1}/{total}]"
         title = recipe.get("title", "Unknown")[:40]
-        
+
         print(f"\n{progress} {title}")
         print(f"         ID: {recipe_id}")
-        
+
         # Enhance
         try:
             enhanced = enhance_recipe(recipe)
-            
+
             if not enhanced:
-                print(f"         ❌ Enhancement failed")
+                print("         ❌ Enhancement failed")
                 failed += 1
                 continue
-            
+
             # Show brief changes
             changes = enhanced.get("changes_made", [])
             if changes:
                 print(f"         ✏️  {len(changes)} changes")
-            
+
             if dry_run:
-                print(f"         🔍 Would save (dry-run)")
+                print("         🔍 Would save (dry-run)")
+                success += 1
+            elif save_recipe(recipe_id, enhanced):
+                print("         ✅ Saved")
                 success += 1
             else:
-                if save_recipe(recipe_id, enhanced):
-                    print(f"         ✅ Saved")
-                    success += 1
-                else:
-                    print(f"         ❌ Save failed")
-                    failed += 1
-            
+                print("         ❌ Save failed")
+                failed += 1
+
         except Exception as e:
             print(f"         ❌ Error: {e}")
             failed += 1
-        
+
         # Rate limiting
         if i < total - 1 and delay > 0:
             time.sleep(delay)
-    
+
     # Summary
     print("\n" + "=" * 60)
     print("📊 BATCH SUMMARY")
@@ -441,11 +438,11 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return
-    
+
     arg = sys.argv[1]
     dry_run = "--dry-run" in sys.argv
     include_enhanced = "--include-enhanced" in sys.argv
-    
+
     # Parse delay
     delay = 1.0
     if "--delay" in sys.argv:
@@ -455,7 +452,7 @@ def main():
                 delay = float(sys.argv[delay_idx + 1])
             except ValueError:
                 pass
-    
+
     # List command
     if arg == "--list":
         limit = 50
@@ -463,7 +460,7 @@ def main():
             limit = int(sys.argv[2])
         list_recipes(limit)
         return
-    
+
     # Batch command
     if arg == "--batch":
         limit = None
@@ -474,35 +471,35 @@ def main():
                 break
         process_batch(limit, include_enhanced, delay, dry_run)
         return
-    
+
     # Get recipe by ID
     recipe_id = arg
     print(f"\n📖 Loading recipe: {recipe_id}")
-    
+
     original = get_recipe(recipe_id)
     if not original:
         print(f"❌ Recipe not found: {recipe_id}")
         return
-    
+
     print(f"   Title: {original.get('title', 'Unknown')}")
-    
+
     # Check if already enhanced
     if original.get("enhanced"):
         print("⚠️  This recipe has already been enhanced.")
         response = input("   Continue anyway? [y/N]: ")
         if response.lower() != "y":
             return
-    
+
     # Enhance with Gemini
     print("\n🤖 Enhancing with Gemini 2.5 Flash...")
     enhanced = enhance_recipe(original)
-    
+
     if not enhanced:
         return
-    
+
     # Display diff
     display_diff(original, enhanced)
-    
+
     if dry_run:
         print("\n🔍 DRY RUN - No changes saved")
         # Save to file for inspection
@@ -511,18 +508,18 @@ def main():
             json.dump(enhanced, f, ensure_ascii=False, indent=2)
         print(f"   Preview saved to: {output_file}")
         return
-    
+
     # Confirm save
     response = input("\n💾 Save changes to Firestore? [y/N]: ")
     if response.lower() != "y":
         print("   Cancelled.")
         return
-    
+
     # Save
     if save_recipe(recipe_id, enhanced):
         print(f"✅ Recipe saved: {recipe_id}")
     else:
-        print(f"❌ Failed to save recipe")
+        print("❌ Failed to save recipe")
 
 
 if __name__ == "__main__":

@@ -34,7 +34,6 @@ except ImportError:
 
 from google.cloud import firestore
 
-
 # System prompt based on skill files
 SYSTEM_PROMPT = """Du är en expert på att förbättra recept för ett svenskt hushåll.
 
@@ -50,7 +49,7 @@ SYSTEM_PROMPT = """Du är en expert på att förbättra recept för ett svenskt 
 - **Färs (alla typer)** → 100% sojafärs för alla (ingen uppdelning)
 - **Fisk/skaldjur** → Ingen ändring!
 
-VIKTIGT: Matcha proteinformen! 
+VIKTIGT: Matcha proteinformen!
 - "Strimlad kycklingbröstfilé" → Quorn filéstrimlor (INTE Quornbitar eller sojafärs)
 - "Kycklingbröst" → Quorn filé
 - "Köttfärs" → Sojafärs
@@ -110,7 +109,7 @@ Nämn i tips: "Blanda kryddorna (ersätter HelloFresh Milda Mahal)"
   "tips": "Praktiska tips inkl. kryddsubstitut-referens",
   "metadata": {
     "cuisine": "Swedish/Italian/Indian/etc",
-    "category": "Huvudrätt/Förrätt/Dessert/etc", 
+    "category": "Huvudrätt/Förrätt/Dessert/etc",
     "tags": ["relevanta", "taggar"]
   },
   "changes_made": ["Konkret lista på alla ändringar"]
@@ -147,16 +146,16 @@ def enhance_recipe_with_gemini(recipe: dict) -> dict | None:
     recipe_text = f"""
 Förbättra detta recept enligt reglerna:
 
-**Titel**: {recipe.get('title', 'Okänd')}
+**Titel**: {recipe.get("title", "Okänd")}
 
 **Ingredienser**:
-{chr(10).join(f"- {ing}" for ing in recipe.get('ingredients', []))}
+{chr(10).join(f"- {ing}" for ing in recipe.get("ingredients", []))}
 
 **Instruktioner**:
-{recipe.get('instructions', 'Inga instruktioner')}
+{recipe.get("instructions", "Inga instruktioner")}
 
 **Tips** (om finns):
-{recipe.get('tips', 'Inga tips')}
+{recipe.get("tips", "Inga tips")}
 """
 
     try:
@@ -164,9 +163,7 @@ Förbättra detta recept enligt reglerna:
             model="gemini-2.5-flash",  # Best free model with high limits
             contents=recipe_text,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                response_mime_type="application/json",
-                temperature=0.3,
+                system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3
             ),
         )
         return json.loads(response.text)

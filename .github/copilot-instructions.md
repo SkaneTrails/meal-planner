@@ -193,7 +193,7 @@ config/prompts/
     formatting.md          # Fractions (½ not 0.5), ingredient order, spices last
     timeline.md            # When/how to use ⏱️ timeline format
     hellofresh-spices.md   # Spice blend substitution tables
-  
+
   user/
     example.yaml           # Committed - example household config
     household.yaml         # Gitignored - actual user config
@@ -204,16 +204,16 @@ config/prompts/
 ```yaml
 household:
   size: 2
-  language: sv  # Recipe output language
+  language: sv # Recipe output language
 
 dietary:
-  mode: flexitarian  # omnivore | flexitarian | vegetarian | vegan
-  lactose: lactose-free  # normal | lactose-free | dairy-free
+  mode: flexitarian # omnivore | flexitarian | vegetarian | vegan
+  lactose: lactose-free # normal | lactose-free | dairy-free
   gluten: normal
   allergies: []
-  
+
   flexitarian:
-    meat_split: 50  # % meat vs vegetarian
+    meat_split: 50 # % meat vs vegetarian
     minced_meat: vegetarian
     fish: keep
 
