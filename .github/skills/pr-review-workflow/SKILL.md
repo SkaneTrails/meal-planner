@@ -1,12 +1,10 @@
-______________________________________________________________________
-
+---
 ## name: pr-review-workflow description: Handle post-push PR workflows: review comments, feedback, and CI status using GitHub CLI and APIs. license: MIT
 
 # Skill: PR Review Workflow
 
 This skill defines how to handle pull request review workflows after pushing changes.
-
-______________________________________________________________________
+---
 
 ## Activation context
 
@@ -16,7 +14,7 @@ This skill activates when:
 - The developer asks about PR comments, review feedback, or CI status.
 - The developer mentions "check comments", "review feedback", "CI status", or "workflow status".
 
-______________________________________________________________________
+---
 
 ## 1. Post-push workflow
 
@@ -41,18 +39,68 @@ For CI status, offer to check:
 - [ ] Committed with descriptive message
 - [ ] Pushed to remote
 - [ ] Replied to comment with commit SHA
-- [ ] Thread resolved via GraphQL API (inline review comments only - top-level PR comments cannot be resolved)
+- [ ] **Thread resolved via GraphQL API immediately after replying**
+
+> **⚠️ CRITICAL: Reply + Resolve are INSEPARABLE.**
+> After replying to a comment, you MUST resolve the thread in the same operation.
+> Never batch replies without also batching resolutions. The resolve loop must run
+> immediately after the reply loop - not "later" or "at the end".
 
 Do not consider a comment "handled" until ALL steps are complete. After fixing and pushing, return to sections 4 and 6 to reply and resolve.
 
-______________________________________________________________________
+---
 
 ## 2. Fetching PR comments
 
+> **⚠️ CRITICAL: NEVER use built-in IDE tools for PR comments.**
+> Tools like `github-pull-request_activePullRequest` or similar VS Code/Copilot integrations
+> may return **stale/cached data** and miss recent review comments. This has caused missed
+> feedback in production. **ALWAYS use `gh api` or `gh api graphql` directly.**
+
 > **CRITICAL:** You MUST check BOTH top-level comments AND inline review comments.
 > The `gh pr view --json comments,reviews` command **does NOT return inline code comments**.
-> Always run `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate` to get inline comments.
-> Skipping this step means missing Copilot's code suggestions and human review feedback.
+> Skipping inline comments means missing Copilot's code suggestions and human review feedback.
+
+### 2.0 PREFERRED: GraphQL reviewThreads (comments + resolution status)
+
+**This is the most reliable method.** It returns all review threads with their resolution status in one query:
+
+```bash
+gh api graphql -f query='
+  query($owner: String!, $repo: String!, $pr: Int!) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $pr) {
+        reviewThreads(first: 100) {
+          nodes {
+            id
+            isResolved
+            comments(first: 5) {
+              nodes {
+                body
+                path
+                author { login }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+' -f owner="<OWNER>" -f repo="<REPO>" -F pr=<PR>
+```
+
+**Why this is preferred:**
+
+- Returns **both** comments AND resolution status in one call
+- Never stale - queries GitHub directly
+- Includes the `threadId` needed for resolution (the `id` field)
+- Shows which threads are already resolved vs still open
+
+**Filter for unresolved threads only:**
+
+```bash
+gh api graphql -f query='...' | jq '.data.repository.pullRequest.reviewThreads.nodes | map(select(.isResolved == false))'
+```
 
 ### 2.1 Identify PR context
 
@@ -79,9 +127,12 @@ Propose running `gh pr view` for top-level conversation comments:
 gh pr view <PR> --json comments -q '.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}'
 ```
 
-### 2.3 Fetch inline review comments
+### 2.3 Fetch inline review comments (REST API alternative)
 
-**Critical:** `gh pr view --json comments` and `gh pr view --json reviews` do NOT return inline code review comments. They only return PR-level conversation comments and review summaries. You MUST use the REST API to fetch inline comments:
+> **Note:** The GraphQL method in section 2.0 is preferred because it includes resolution status.
+> Use this REST API method only when you need the REST-style comment IDs for replies.
+
+`gh pr view --json comments` and `gh pr view --json reviews` do NOT return inline code review comments. They only return PR-level conversation comments and review summaries. The REST API returns inline comments:
 
 ```bash
 gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments
@@ -96,6 +147,8 @@ This returns an array of review comments with:
 - `id`: Comment ID (needed for replies/resolution).
 - `in_reply_to_id`: If this is a reply to another comment.
 
+**Limitation:** This does NOT show whether threads are resolved. Use GraphQL (section 2.0) to check resolution status.
+
 ### 2.4 Fetch review summaries
 
 Propose fetching overall review status:
@@ -104,7 +157,7 @@ Propose fetching overall review status:
 gh pr view <PR> --json reviews -q '.reviews[] | {author: .author.login, state: .state, body: .body}'
 ```
 
-______________________________________________________________________
+---
 
 ## 3. Assessing and summarizing comments
 
@@ -166,7 +219,7 @@ Before making any changes based on review comments:
 
 This prevents silently skipping valid feedback or applying incorrect suggestions.
 
-______________________________________________________________________
+---
 
 ## 4. Responding to comments
 
@@ -178,9 +231,13 @@ ______________________________________________________________________
 1. **Reply to the comment** - propose running:
 
 ```bash
-gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments/<COMMENT_ID>/replies \
-  -X POST -f body="Fixed in <COMMIT_SHA>. Thanks for catching this!"
+# Use -F (not -f) for the numeric in_reply_to parameter
+gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments \
+  -X POST -f body="Fixed in <COMMIT_SHA>. Thanks for catching this!" \
+  -F in_reply_to=<COMMENT_ID>
 ```
+
+> **Important:** Use `-F` for `in_reply_to` because it's a numeric parameter. Using `-f` causes a type error.
 
 5. **Resolve the conversation** (if the comment is on a review thread) - propose running:
 
@@ -220,8 +277,9 @@ Match the thread by its first comment body, then use the `id` field as `threadId
 1. **Reply with reasoning** - propose running:
 
 ```bash
-gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments/<COMMENT_ID>/replies \
-  -X POST -f body="I considered this, but <REASONING>. The current approach <JUSTIFICATION>."
+gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments \
+  -X POST -f body="I considered this, but <REASONING>. The current approach <JUSTIFICATION>." \
+  -F in_reply_to=<COMMENT_ID>
 ```
 
 3. **Resolve the conversation** after explaining the disagreement (see thread resolution in 4.1).
@@ -234,9 +292,10 @@ When multiple comments need addressing:
 1. Push all changes at once.
 1. **Reply to all comments in a loop** - collect comment IDs and iterate:
    ```bash
+   # Use -F for numeric in_reply_to parameter
    for id in ID1 ID2 ID3; do
-     gh api repos/<OWNER>/<REPO>/pulls/comments/$id/replies \
-       -X POST -f body="Fixed in <COMMIT_SHA>."
+     gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments \
+       -X POST -f body="Fixed in <COMMIT_SHA>." -F in_reply_to=$id
    done
    ```
 1. **Resolve all threads in a loop** - fetch thread IDs, then iterate:
@@ -248,7 +307,7 @@ When multiple comments need addressing:
 
 > **REMINDER:** Replying and resolving are separate operations. Never skip the resolve loop.
 
-______________________________________________________________________
+---
 
 ## 5. Checking CI/workflow status
 
@@ -295,7 +354,7 @@ Present CI status like:
 > `lint.yml` failed due to unused import in `src/api/routes.py:15`.
 > Would you like me to fix this?
 
-______________________________________________________________________
+---
 
 ## 6. Iterative workflow
 
@@ -311,22 +370,24 @@ After addressing comments and fixing CI issues:
 
 **The workflow is incomplete if you stop after pushing.** Reviewers see unresolved threads as outstanding issues. Always complete the reply→resolve loop before moving on or reporting completion to the developer.
 
-______________________________________________________________________
+---
 
 ## 7. Command reference
 
-| Task                                      | Command                                                                         |
-| ----------------------------------------- | ------------------------------------------------------------------------------- |
-| Get PR number                             | `gh pr view --json number -q '.number'`                                         |
-| Get PR comments (top-level only)          | `gh pr view <PR> --json comments`                                               |
-| **Get inline review comments (REQUIRED)** | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                    |
-| Get review status                         | `gh pr view <PR> --json reviews`                                                |
-| Reply to inline comment                   | `gh api repos/<OWNER>/<REPO>/pulls/comments/<ID>/replies -X POST -f body="..."` |
-| List workflow runs                        | `gh run list --branch <branch> --limit 5`                                       |
-| View failed workflow logs                 | `gh run view <run_id> --log-failed`                                             |
-| Re-run failed workflow                    | `gh run rerun <run_id> --failed`                                                |
+| Task                                             | Command                                                                                                                                                                 |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Get PR number                                    | `gh pr view --json number -q '.number'`                                                                                                                                 |
+| Get PR comments (top-level only)                 | `gh pr view <PR> --json comments`                                                                                                                                       |
+| **Get review threads + resolution (PREFERRED)**  | `gh api graphql -f query='{ repository(...) { pullRequest(...) { reviewThreads(first:100) { nodes { id isResolved comments(first:5) { nodes { body path } } } } } } }'` |
+| Get inline review comments (REST, no resolution) | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments --paginate`                                                                                                            |
+| Get review status                                | `gh pr view <PR> --json reviews`                                                                                                                                        |
+| Reply to inline comment                          | `gh api repos/<OWNER>/<REPO>/pulls/<PR>/comments -X POST -f body="..." -F in_reply_to=<ID>`                                                                             |
+| Resolve thread                                   | `gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<ID>"}) { thread { isResolved } } }'`                                                       |
+| List workflow runs                               | `gh run list --branch <branch> --limit 5`                                                                                                                               |
+| View failed workflow logs                        | `gh run view <run_id> --log-failed`                                                                                                                                     |
+| Re-run failed workflow                           | `gh run rerun <run_id> --failed`                                                                                                                                        |
 
-______________________________________________________________________
+---
 
 ## 8. Creating PRs with multi-line bodies
 
@@ -354,7 +415,7 @@ gh pr create --editor
 
 This opens the system editor for title and body input.
 
-______________________________________________________________________
+---
 
 ## 9. Multi-repo workflow
 
@@ -367,7 +428,7 @@ When working across multiple repositories with the same or similar files (e.g., 
 1. **Commit and push to all repos.** Use a loop to ensure consistency.
 1. **Reply to and resolve comments in ALL repos.** Each repo's PR has its own review threads that must be addressed individually.
 
-______________________________________________________________________
+---
 
 ## 10. Skåne Trails project context
 
