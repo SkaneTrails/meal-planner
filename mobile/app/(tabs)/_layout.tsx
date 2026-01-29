@@ -16,11 +16,11 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#FFFFFF', // White tab bar
           borderTopWidth: 0,
-          elevation: 8,
+          elevation: 4,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
+          shadowOpacity: 0.03,
+          shadowRadius: 4,
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,

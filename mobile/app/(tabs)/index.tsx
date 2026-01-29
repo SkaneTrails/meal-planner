@@ -101,16 +101,22 @@ export default function HomeScreen() {
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor="#4A3728" />
         }
       >
+      {/* Hero image */}
+      <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80' }}
+          style={{ width: '100%', height: 160, borderRadius: 20 }}
+          resizeMode="cover"
+        />
+      </View>
+
       {/* Welcome header */}
-      <View style={{ paddingHorizontal: 24, paddingVertical: 24 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Ionicons name="home-outline" size={26} color="#4A3728" />
-          <Text style={{ fontSize: 22, fontWeight: '700', color: '#4A3728', marginLeft: 8 }}>
-            Welcome to Plate & Plan
-          </Text>
-        </View>
-        <Text style={{ fontSize: 15, color: '#6b7280', lineHeight: 22 }}>
-          Plan your meals, organize recipes, and generate smart grocery lists.
+      <View style={{ paddingHorizontal: 24, paddingBottom: 24 }}>
+        <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 6 }}>
+          Hi, User! 👋
+        </Text>
+        <Text style={{ fontSize: 16, color: '#6b7280', lineHeight: 22 }}>
+          Plan meals, save recipes, shop smarter.
         </Text>
       </View>
 
