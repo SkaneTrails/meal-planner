@@ -41,7 +41,7 @@ export function useRecipe(id: string) {
  */
 export function useCreateRecipe() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (recipe: RecipeCreate) => api.createRecipe(recipe),
     onSuccess: () => {
@@ -56,7 +56,7 @@ export function useCreateRecipe() {
  */
 export function useScrapeRecipe() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (url: string) => api.scrapeRecipe(url),
     onSuccess: () => {
@@ -70,7 +70,7 @@ export function useScrapeRecipe() {
  */
 export function useUpdateRecipe() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: RecipeUpdate }) =>
       api.updateRecipe(id, updates),
@@ -87,7 +87,7 @@ export function useUpdateRecipe() {
  */
 export function useDeleteRecipe() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => api.deleteRecipe(id),
     onSuccess: (_, id) => {

@@ -35,9 +35,9 @@ const MEAL_LABELS: Record<MealLabel, string> = {
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
 
 export function RecipeCard({ recipe, onPress, compact = false, cardSize }: RecipeCardProps) {
-  const totalTime = recipe.total_time || 
+  const totalTime = recipe.total_time ||
     (recipe.prep_time && recipe.cook_time ? recipe.prep_time + recipe.cook_time : null) ||
-    recipe.prep_time || 
+    recipe.prep_time ||
     recipe.cook_time;
 
   if (compact) {

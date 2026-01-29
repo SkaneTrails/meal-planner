@@ -59,6 +59,9 @@ coverage.xml
 *.log
 .mypy_cache/
 
+# Copilot working context (local only)
+.copilot-todo.md
+
 # Local data storage
 data/*
 !data/.gitkeep

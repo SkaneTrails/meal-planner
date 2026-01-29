@@ -1,12 +1,10 @@
-______________________________________________________________________
-
+---
 ## name: working-context description: Track active tasks and discovered issues per-branch, defer non-critical fixes without losing them license: MIT
 
 # Skill: Working Context Management
 
 This skill defines how to maintain persistent working context across conversations using `.copilot-todo.md`.
-
-______________________________________________________________________
+---
 
 ## Activation context
 
@@ -20,7 +18,7 @@ This skill activates when:
 - Completing a task or set of tasks
 - Conversation reset/summarization occurs
 
-______________________________________________________________________
+---
 
 ## File location and format
 
@@ -34,14 +32,18 @@ ______________________________________________________________________
 ## Current Branch: <branch-name>
 
 ### Active Task
+
 <What you're currently working on>
+
 - Next step: <Specific next action>
 
 ### Discovered Issues (Fix Later)
+
 - [ ] `path/to/file.py:123` - brief description of issue
 - [ ] `another/file.ts` - another issue found during work
 
 ### Completed (Recent)
+
 - [x] 2026-01-28: Previous task completed
 
 ---
@@ -49,13 +51,15 @@ ______________________________________________________________________
 ## Branch: <other-branch-name>
 
 ### Active Task
+
 <Previous work on this branch>
 
 ### Discovered Issues
+
 - [ ] Issue found on this branch
 ```
 
-______________________________________________________________________
+---
 
 ## Reading context
 
@@ -70,7 +74,7 @@ At the start of each conversation:
    - "Last session, next step was: <step>. Is that still needed or already done?"
 1. If there are unchecked Discovered Issues, mention the count: "You have N deferred issues on this branch."
 
-______________________________________________________________________
+---
 
 ## Updating Active Task
 
@@ -84,7 +88,9 @@ Example progression:
 
 ```markdown
 ### Active Task
+
 Migrate Redis data from bastion to Memorystore
+
 - Next step: Create dump.rdb from bastion Redis
 ```
 
@@ -92,7 +98,9 @@ Migrate Redis data from bastion to Memorystore
 
 ```markdown
 ### Active Task
+
 Migrate Redis data from bastion to Memorystore
+
 - Next step: Import dump.rdb to Memorystore at 10.80.1.3
 ```
 
@@ -100,9 +108,11 @@ Migrate Redis data from bastion to Memorystore
 
 ```markdown
 ### Active Task
+
 None - ready for new work
 
 ### Completed (Recent)
+
 - [x] 2026-01-28: Migrate Redis to Memorystore
 ```
 
@@ -112,7 +122,7 @@ None - ready for new work
 1. Set Active Task to "None - ready for new work"
 1. After 3+ completed tasks accumulate, offer: "Clean up completed tasks from TODO?"
 
-______________________________________________________________________
+---
 
 ## Discovering issues during work
 
@@ -138,7 +148,7 @@ When you notice an issue while working on something else:
 
 1. **Do not interrupt** the active task unless the developer confirms
 
-______________________________________________________________________
+---
 
 ## Branch switching
 
@@ -149,7 +159,7 @@ When the developer switches branches:
 1. If the new branch has an Active Task, mention it
 1. If the new branch has Discovered Issues, mention the count
 
-______________________________________________________________________
+---
 
 ## Completing discovered issues
 
@@ -162,7 +172,7 @@ When working through Discovered Issues:
 1. Periodically clean up completed items (after 3+ completed, offer to remove them)
 1. Issues can be promoted to Active Task if the developer wants to focus on them
 
-______________________________________________________________________
+---
 
 ## Conversation reset handling
 
@@ -173,7 +183,7 @@ When a conversation is being summarized or reset:
    - All Discovered Issues (checked and unchecked)
 1. The file persists across conversations, so context is not lost
 
-______________________________________________________________________
+---
 
 ## Commands
 
@@ -187,7 +197,7 @@ The developer can use natural language:
 | Promote issue   | "let's fix the timeout issue now"                     |
 | Update task     | "next step is X", "now working on Y"                  |
 
-______________________________________________________________________
+---
 
 ## File management
 
@@ -196,7 +206,7 @@ ______________________________________________________________________
 - **Cleanup**: Offer to remove branches that no longer exist locally
 - **Never commit**: This file is local working context only
 
-______________________________________________________________________
+---
 
 ## Multi-repo work
 
@@ -215,7 +225,7 @@ When working across multiple repositories (e.g., sbpaa-geospatial-routing, sbpaa
 
 - These serve as reminders to address when switching to that repo
 
-______________________________________________________________________
+---
 
 ## Example workflow
 
