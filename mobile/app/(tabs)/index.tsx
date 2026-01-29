@@ -368,8 +368,8 @@ export default function HomeScreen() {
         <View style={{ paddingHorizontal: 20, marginTop: 28 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ backgroundColor: '#E8D5C4', borderRadius: 16, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name="bulb" size={16} color="#4A3728" />
+              <View style={{ backgroundColor: '#DBEAFE', borderRadius: 16, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="bulb" size={16} color="#1E40AF" />
               </View>
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Inspiration</Text>
             </View>
@@ -378,15 +378,15 @@ export default function HomeScreen() {
               style={({ pressed }) => ({ 
                 flexDirection: 'row', 
                 alignItems: 'center', 
-                backgroundColor: pressed ? '#D4C4B0' : '#E8D5C4', 
+                backgroundColor: pressed ? '#BFDBFE' : '#DBEAFE', 
                 paddingHorizontal: 14, 
                 paddingVertical: 8, 
                 borderRadius: 20,
                 transform: [{ scale: pressed ? 0.96 : 1 }],
               })}
             >
-              <Ionicons name="shuffle" size={14} color="#4A3728" />
-              <Text style={{ color: '#4A3728', fontWeight: '600', fontSize: 13, marginLeft: 6 }}>Shuffle</Text>
+              <Ionicons name="shuffle" size={14} color="#1E40AF" />
+              <Text style={{ color: '#1E40AF', fontWeight: '600', fontSize: 13, marginLeft: 6 }}>Shuffle</Text>
             </Pressable>
           </View>
 
