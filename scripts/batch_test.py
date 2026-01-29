@@ -72,7 +72,8 @@ def main() -> None:
         result["spices_at_end"] = any(sw in last_5 for sw in spice_words)
 
         print(f"  Enhanced title: {result['enhanced_title']}")
-        print(f"  Changes: {len(result['changes'])}")
+        changes = result["changes"]
+        print(f"  Changes: {len(changes) if isinstance(changes, list) else 0}")
         print(f"  Timeline: {'Yes' if result['has_timeline'] else 'No'}")
         print(f"  Fractions (½): {'Yes' if result['has_fractions'] else 'No'}")
         print(

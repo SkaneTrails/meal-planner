@@ -1,15 +1,16 @@
 ---
-## name: pr-review-workflow description: Handle post-push PR workflows: review comments, feedback, and CI status using GitHub CLI and APIs. license: MIT
+## name: pr-review-workflow description: Handle PR creation, review comments, feedback, and CI status using GitHub CLI and APIs. license: MIT
 
 # Skill: PR Review Workflow
 
-This skill defines how to handle pull request review workflows after pushing changes.
+This skill defines how to handle pull request workflows: creation, review comments, and CI status.
 ---
 
 ## Activation context
 
 This skill activates when:
 
+- **Creating a PR** (see section 8 for PowerShell quoting)
 - The agent has just pushed commits to a PR branch.
 - The developer asks about PR comments, review feedback, or CI status.
 - The developer mentions "check comments", "review feedback", "CI status", or "workflow status".

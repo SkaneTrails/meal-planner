@@ -63,24 +63,17 @@ uv run ruff format
 ## Project Structure
 
 ```
-├── app/
-│   ├── main.py              # Streamlit app entry point
-│   ├── models/              # Data models (Recipe, MealPlan, GroceryList)
-│   ├── services/            # Business logic
-│   │   ├── recipe_scraper.py    # Extract recipes from URLs
-│   │   └── ingredient_parser.py # Parse ingredient strings
-│   └── storage/             # Firestore persistence
-│       ├── firestore_client.py
-│       ├── recipe_storage.py
-│       └── meal_plan_storage.py
-├── scripts/                 # CLI tools
-│   ├── recipe_enhancer.py   # Gemini AI recipe enhancement
-│   ├── recipe_reviewer.py   # Manual recipe review helper
-│   └── ...
-├── tests/
-├── docs/
-└── data/                    # Local data storage (gitignored)
+├── api/                 # FastAPI REST backend
+├── app/                 # Streamlit web app (legacy)
+├── mobile/              # React Native mobile app (Expo)
+├── functions/           # Google Cloud Functions
+├── scripts/             # CLI tools (recipe enhancer, etc.)
+├── tests/               # Test files
+├── docs/                # Documentation
+└── data/                # Local data storage (gitignored)
 ```
+
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for detailed structure.
 
 ## How It Works
 

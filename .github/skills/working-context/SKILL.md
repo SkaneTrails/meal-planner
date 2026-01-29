@@ -3,14 +3,28 @@
 
 # Skill: Working Context Management
 
-This skill defines how to maintain persistent working context across conversations using `.copilot-todo.md`.
+This skill defines how to maintain persistent working context across conversations using `.copilot-tasks.md`.
+
+---
+
+## ⚠️ CRITICAL: Always Read the Tasks File
+
+**At the start of EVERY conversation, you MUST:**
+
+1. Read `.copilot-tasks.md` using `read_file`
+2. Check for active tasks on the current branch
+3. Check the General section for backlog and discovered issues
+4. Acknowledge what you found before proceeding
+
+**This is not optional.** The file contains important context that persists across conversations. Ignoring it means losing track of work in progress.
+
 ---
 
 ## Activation context
 
 This skill activates when:
 
-- Starting a new conversation (read existing context)
+- **Starting a new conversation** (ALWAYS read the file first)
 - Detecting an issue while working on something else
 - Developer says "add to TODO", "fix later", "note that", or similar
 - Developer asks "what was I working on?" or "what issues did we find?"
@@ -22,57 +36,72 @@ This skill activates when:
 
 ## File location and format
 
-**File:** `.copilot-todo.md` in the repository root (gitignored, local only)
+**File:** `.copilot-tasks.md` in the repository root (gitignored, local only)
 
 **Structure:**
 
 ```markdown
 # Copilot Working Context
 
-## Current Branch: <branch-name>
+## General
 
-### Active Task
+### Backlog
+Items not tied to a specific branch:
+- [ ] Feature idea or future work
+- [ ] Refactoring task
 
-<What you're currently working on>
-
-- Next step: <Specific next action>
-
-### Discovered Issues (Fix Later)
-
-- [ ] `path/to/file.py:123` - brief description of issue
-- [ ] `another/file.ts` - another issue found during work
+### Discovered Issues
+- [ ] `path/to/file.py:123` - issue found during other work
+- [ ] `another/file.ts` - another deferred issue
 
 ### Completed (Recent)
-
-- [x] 2026-01-28: Previous task completed
+- [x] 2026-01-28: Completed task description
 
 ---
 
-## Branch: <other-branch-name>
+## Branch: feature/some-feature
 
 ### Active Task
+What you're currently working on for this branch
 
-<Previous work on this branch>
+- Next step: Specific next action
 
-### Discovered Issues
+### Completed
+- [x] Step that was finished on this branch
 
-- [ ] Issue found on this branch
+---
+
+## Branch: fix/some-bug
+
+### Active Task
+None - ready for new work
+
+---
+
+## Reference
+Useful commands, DB names, or other persistent info
 ```
+
+**Key principles:**
+- **General section**: Backlog, discovered issues, and completed items not tied to a branch
+- **Branch sections**: Only for branch-specific active tasks and completed work
+- **No "Current Branch" header**: You already know what branch you're on from git
 
 ---
 
 ## Reading context
 
-At the start of each conversation:
+**At the start of EVERY conversation:**
 
-1. Check if `.copilot-todo.md` exists
-1. If it exists, read the file
-1. Identify the current branch and load its context
-1. **Do not** recite entire file contents
-1. If there's an Active Task, mention it: "Continuing: <task description>"
-1. If the Active Task has a "Next step", **verify it's still needed**:
-   - "Last session, next step was: <step>. Is that still needed or already done?"
-1. If there are unchecked Discovered Issues, mention the count: "You have N deferred issues on this branch."
+1. **Read the file** - Use `read_file` on `.copilot-tasks.md`
+2. **Check General section** - Note any backlog items or discovered issues
+3. **Find current branch section** - Look for `## Branch: <current-branch>`
+4. **Acknowledge context** - Briefly mention what you found:
+   - "Continuing: <active task>" if there's work in progress
+   - "You have N discovered issues" if there are deferred items
+   - "Ready for new work" if no active task
+5. If the Active Task has a "Next step", **verify it's still needed**:
+   - "Last session, next step was: <step>. Still needed?"
 
 ---
 
@@ -140,11 +169,9 @@ When you notice an issue while working on something else:
 
 1. **Always ask** - never auto-switch to fixing without confirmation
 
-1. **If deferring**, add to Discovered Issues for the current branch:
-
-   ```markdown
-   - [ ] `path/to/file.py:45` - hardcoded timeout should be in settings
-   ```
+1. **If deferring**, add to the appropriate section:
+   - Branch-specific issue → Add to that branch's section
+   - General issue → Add to `## General > ### Discovered Issues`
 
 1. **Do not interrupt** the active task unless the developer confirms
 
@@ -178,7 +205,7 @@ When working through Discovered Issues:
 
 When a conversation is being summarized or reset:
 
-1. Ensure `.copilot-todo.md` is up to date with:
+1. Ensure `.copilot-tasks.md` is up to date with:
    - Current Active Task and next step
    - All Discovered Issues (checked and unchecked)
 1. The file persists across conversations, so context is not lost
@@ -202,7 +229,7 @@ The developer can use natural language:
 ## File management
 
 - **Creation**: **Always create the file immediately** when this skill activates and the file doesn't exist. Do not ask - just create it with the current branch context. This ensures context is never lost.
-- **Gitignore**: Ensure `.copilot-todo.md` is in `.gitignore` (add if missing)
+- **Gitignore**: Ensure `.copilot-tasks.md` is in `.gitignore` (add if missing)
 - **Cleanup**: Offer to remove branches that no longer exist locally
 - **Never commit**: This file is local working context only
 
@@ -212,7 +239,7 @@ The developer can use natural language:
 
 When working across multiple repositories (e.g., sbpaa-geospatial-routing, sbpaa-ingka-geoview, sbpaa-ingka-geospatial):
 
-- Each repo has its own `.copilot-todo.md`
+- Each repo has its own `.copilot-tasks.md`
 
 - Copilot does not have cross-repo visibility of TODO files
 
@@ -229,12 +256,12 @@ When working across multiple repositories (e.g., sbpaa-geospatial-routing, sbpaa
 
 ## Example workflow
 
-1. Developer starts work on feature branch
-1. Copilot reads `.copilot-todo.md`, finds Active Task from previous session
-1. "Continuing work on: Add Memorystore support. Next step: Update connection.py to use new Redis host"
+1. Developer starts new conversation
+1. **Copilot reads `.copilot-tasks.md`** (this is mandatory!)
+1. Copilot finds Active Task on current branch: "Continuing: Add Memorystore support. Next step: Update connection.py"
 1. While updating connection.py, Copilot notices hardcoded timeout
 1. "I noticed a hardcoded timeout at line 45. Add to TODO or fix now?"
 1. Developer: "TODO"
-1. Copilot adds to Discovered Issues, continues with Active Task
-1. Task complete, Copilot updates Active Task to "None"
-1. "You have 1 discovered issue on this branch. Want to address it?"
+1. Copilot adds to General > Discovered Issues, continues with Active Task
+1. Task complete, Copilot updates the branch section
+1. "You have 1 discovered issue. Want to address it?"

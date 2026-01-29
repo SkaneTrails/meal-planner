@@ -40,12 +40,12 @@ export const colors = {
   // Primary browns
   primary: '#4A3728',
   primaryLight: '#6B5344',
-  
+
   // Background gradients
   bgLight: '#FDFBF7',
   bgMid: '#F5E6D3',
   bgDark: '#E8D5C4',
-  
+
   // Neutrals
   white: '#FFFFFF',
   gray: {
@@ -59,7 +59,7 @@ export const colors = {
     700: '#374151',
     800: '#1F2937',
   },
-  
+
   // Semantic
   success: '#059669',
   warning: '#D97706',
