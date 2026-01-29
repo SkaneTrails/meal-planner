@@ -70,8 +70,8 @@ export default function RecipeDetailScreen() {
     try {
       await Share.share({
         title: recipe.title,
-        message: `Check out this recipe: ${recipe.title}\n\n${recipe.source_url || ''}`,
-        url: recipe.source_url,
+        message: `Check out this recipe: ${recipe.title}\n\n${recipe.url || ''}`,
+        url: recipe.url,
       });
     } catch (err) {
       // User cancelled
@@ -257,7 +257,7 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Source link */}
-          {recipe.source_url && (
+          {recipe.url && (
             <Pressable
               onPress={handleShare}
               className="flex-row items-center justify-center py-3 border-t border-gray-200"

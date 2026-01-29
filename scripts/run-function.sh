@@ -12,5 +12,7 @@ if [ ! -d ".venv" ]; then
     uv pip install -r requirements.txt
 fi
 
+# Activate virtualenv and run
 echo "Starting scrape_recipe Cloud Function on http://localhost:8001"
-uv run --active functions-framework --target=scrape_recipe_handler --port=8001
+source .venv/bin/activate
+python -m functions_framework --target=scrape_recipe_handler --port=8001

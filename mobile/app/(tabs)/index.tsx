@@ -22,7 +22,8 @@ export default function HomeScreen() {
   };
 
   // Count meals planned this week
-  const plannedMealsCount = mealPlan?.meals.length || 0;
+  const plannedMealsCount =
+    mealPlan && mealPlan.meals ? Object.keys(mealPlan.meals).length : 0;
 
   // Get recent recipes (last 3)
   const recentRecipes = recipes.slice(0, 3);

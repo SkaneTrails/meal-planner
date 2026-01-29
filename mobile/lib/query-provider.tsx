@@ -33,10 +33,13 @@ const CACHE_KEY = 'meal-planner-query-cache';
 
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
-  const data = cache.map((query) => ({
-    queryKey: query.queryKey,
-    state: query.state,
-  }));
+  const data = cache
+    .filter((query) => query.state.data !== undefined)
+    .map((query) => ({
+      queryKey: query.queryKey,
+      data: query.state.data,
+      dataUpdatedAt: query.state.dataUpdatedAt,
+    }));
   await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(data));
 }
 
@@ -45,8 +48,8 @@ export async function restoreQueryCache(): Promise<void> {
     const cached = await AsyncStorage.getItem(CACHE_KEY);
     if (cached) {
       const data = JSON.parse(cached);
-      data.forEach((item: { queryKey: unknown[]; state: unknown }) => {
-        queryClient.setQueryData(item.queryKey, item.state);
+      data.forEach((item: { queryKey: unknown[]; data: unknown; dataUpdatedAt?: number }) => {
+        queryClient.setQueryData(item.queryKey, item.data);
       });
     }
   } catch (error) {
