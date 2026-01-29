@@ -88,4 +88,14 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        args: [app/]
+        args: [app/, api/, scripts/]
+
+  # TypeScript type check for mobile (requires Node.js)
+  - repo: local
+    hooks:
+      - id: tsc-mobile
+        name: TypeScript (mobile)
+        entry: bash -c 'cd mobile && npx tsc --noEmit'
+        language: system
+        files: ^mobile/.*\.(ts|tsx)$
+        pass_filenames: false
