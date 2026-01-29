@@ -19,6 +19,7 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan } from '@/lib/hooks';
 import { BouncingLoader } from '@/components';
 import type { DietLabel, MealLabel, MealType } from '@/lib/types';
@@ -527,24 +528,20 @@ export default function RecipeDetailScreen() {
         }}>
           <Ionicons name="alert-circle-outline" size={40} color="#4A3728" />
         </View>
-        <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600' }}>Recipe not found</Text>
-        <Text style={{ color: '#6b7280', fontSize: 14, marginTop: 8, textAlign: 'center' }}>This recipe may have been deleted or moved</Text>
+        <Text style={{ color: colors.primary, fontSize: 18, fontWeight: '600' }}>Recipe not found</Text>
+        <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center' }}>This recipe may have been deleted or moved</Text>
         <Pressable
           onPress={() => router.back()}
           style={{ 
-            marginTop: 20, 
+            marginTop: spacing.xl, 
             paddingHorizontal: 28, 
             paddingVertical: 14, 
-            backgroundColor: '#4A3728', 
-            borderRadius: 14,
-            shadowColor: '#4A3728',
-            shadowOffset: { width: 0, height: 3 },
-            shadowOpacity: 0.25,
-            shadowRadius: 6,
-            elevation: 4,
+            backgroundColor: colors.primary, 
+            borderRadius: borderRadius.sm,
+            ...shadows.lg,
           }}
         >
-          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Go Back</Text>
+          <Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>Go Back</Text>
         </Pressable>
       </View>
     );
@@ -561,17 +558,9 @@ export default function RecipeDetailScreen() {
         options={{
           title: recipe.title,
           headerRight: () => (
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Pressable onPress={() => setShowPlanModal(true)} style={{ padding: 8 }}>
-                <Ionicons name="calendar-outline" size={24} color="white" />
-              </Pressable>
-              <Pressable onPress={handleShare} style={{ padding: 8 }}>
-                <Ionicons name="share-outline" size={24} color="white" />
-              </Pressable>
-              <Pressable onPress={handleDelete} style={{ padding: 8 }}>
-                <Ionicons name="trash-outline" size={24} color="white" />
-              </Pressable>
-            </View>
+            <Pressable onPress={handleDelete} style={{ padding: 8 }}>
+              <Ionicons name="trash-outline" size={24} color="white" />
+            </Pressable>
           ),
         }}
       />
@@ -592,16 +581,12 @@ export default function RecipeDetailScreen() {
               bottom: 48,
               right: 16,
               backgroundColor: pressed ? 'rgba(74, 55, 40, 1)' : 'rgba(74, 55, 40, 0.85)',
-              borderRadius: 24,
+              borderRadius: borderRadius.xl,
               width: 48,
               height: 48,
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 4,
+              ...shadows.lg,
             })}
           >
             {isUpdatingImage ? (
@@ -614,16 +599,12 @@ export default function RecipeDetailScreen() {
 
         {/* Content */}
         <View style={{ 
-          padding: 20, 
+          padding: spacing.xl, 
           marginTop: -32, 
-          backgroundColor: '#fff', 
+          backgroundColor: colors.white, 
           borderTopLeftRadius: 28, 
           borderTopRightRadius: 28,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 12,
-          elevation: 8,
+          ...shadows.xl,
           minHeight: 500,
         }}>
           {/* Title and rating */}
@@ -639,104 +620,116 @@ export default function RecipeDetailScreen() {
             />
           </View>
 
-          {/* Meta info with edit button */}
+          {/* Action buttons row */}
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+            <Pressable
+              onPress={openEditModal}
+              style={({ pressed }) => ({
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
+                alignItems: 'center',
+                justifyContent: 'center',
+              })}
+            >
+              <Ionicons name="create-outline" size={20} color="#4A3728" />
+            </Pressable>
+            <Pressable
+              onPress={() => setShowPlanModal(true)}
+              style={({ pressed }) => ({
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
+                alignItems: 'center',
+                justifyContent: 'center',
+              })}
+            >
+              <Ionicons name="calendar-outline" size={20} color="#4A3728" />
+            </Pressable>
+            <Pressable
+              onPress={handleShare}
+              style={({ pressed }) => ({
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
+                alignItems: 'center',
+                justifyContent: 'center',
+              })}
+            >
+              <Ionicons name="share-outline" size={20} color="#4A3728" />
+            </Pressable>
+          </View>
+
+          {/* Meta info (labels) */}
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 14, gap: 10, alignItems: 'center' }}>
             {recipe.diet_label && (
-              <Pressable 
-                onPress={openEditModal}
-                style={{ 
-                  flexDirection: 'row', 
-                  alignItems: 'center', 
-                  backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
-                  paddingHorizontal: 14, 
-                  paddingVertical: 8, 
-                  borderRadius: 12,
-                }}
-              >
+              <View style={{ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
+                paddingHorizontal: 14, 
+                paddingVertical: 8, 
+                borderRadius: 12,
+              }}>
                 <Text style={{ marginRight: 6, fontSize: 14 }}>{DIET_LABELS[recipe.diet_label].emoji}</Text>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: DIET_LABELS[recipe.diet_label].color }}>
                   {DIET_LABELS[recipe.diet_label].label}
                 </Text>
-              </Pressable>
+              </View>
             )}
             {recipe.meal_label && (
-              <Pressable 
-                onPress={openEditModal}
-                style={{ backgroundColor: '#E8D5C4', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}
-              >
+              <View style={{ backgroundColor: '#E8D5C4', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: '#4A3728' }}>
                   {MEAL_LABELS[recipe.meal_label]}
                 </Text>
-              </Pressable>
+              </View>
             )}
-            {/* Edit button - always visible */}
-            <Pressable
-              onPress={openEditModal}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 20,
-                borderWidth: 1,
-                borderColor: '#E8D5C4',
-                borderStyle: 'dashed',
-              })}
-            >
-              <Ionicons name="create-outline" size={16} color="#4A3728" />
-              <Text style={{ fontSize: 13, fontWeight: '500', color: '#4A3728', marginLeft: 4 }}>Edit</Text>
-            </Pressable>
           </View>
 
-          {/* Time and servings */}
+          {/* Time and servings - compact */}
           <View style={{ 
             flexDirection: 'row', 
-            marginTop: 20, 
+            marginTop: 16, 
             backgroundColor: '#F5E6D3', 
-            borderRadius: 20, 
-            padding: 18,
+            borderRadius: 16, 
+            paddingVertical: 12,
+            paddingHorizontal: 8,
           }}>
             {recipe.prep_time && (
               <View style={{ flex: 1, alignItems: 'center' }}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#E8D5C4', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                  <Ionicons name="timer-outline" size={20} color="#4A3728" />
-                </View>
-                <Text style={{ fontSize: 12, color: '#6b7280' }}>Prep</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728' }}>
-                  {recipe.prep_time} min
+                <Ionicons name="timer-outline" size={18} color="#4A3728" />
+                <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>Prep</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#4A3728' }}>
+                  {recipe.prep_time}m
                 </Text>
               </View>
             )}
             {recipe.cook_time && (
               <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: recipe.prep_time ? 1 : 0, borderLeftColor: '#E8D5C4' }}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#E8D5C4', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                  <Ionicons name="flame-outline" size={20} color="#4A3728" />
-                </View>
-                <Text style={{ fontSize: 12, color: '#6b7280' }}>Cook</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728' }}>
-                  {recipe.cook_time} min
+                <Ionicons name="flame-outline" size={18} color="#4A3728" />
+                <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>Cook</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#4A3728' }}>
+                  {recipe.cook_time}m
                 </Text>
               </View>
             )}
             {totalTime && (
               <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time) ? 1 : 0, borderLeftColor: '#E8D5C4' }}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#E8D5C4', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                  <Ionicons name="time-outline" size={20} color="#4A3728" />
-                </View>
-                <Text style={{ fontSize: 12, color: '#6b7280' }}>Total</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728' }}>
-                  {totalTime} min
+                <Ionicons name="time-outline" size={18} color="#4A3728" />
+                <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>Total</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#4A3728' }}>
+                  {totalTime}m
                 </Text>
               </View>
             )}
             {recipe.servings && (
               <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time || totalTime) ? 1 : 0, borderLeftColor: '#E8D5C4' }}>
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#E8D5C4', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                  <Ionicons name="people-outline" size={20} color="#4A3728" />
-                </View>
-                <Text style={{ fontSize: 12, color: '#6b7280' }}>Serves</Text>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728' }}>
+                <Ionicons name="people-outline" size={18} color="#4A3728" />
+                <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>Serves</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#4A3728' }}>
                   {recipe.servings}
                 </Text>
               </View>
@@ -865,20 +858,16 @@ export default function RecipeDetailScreen() {
               flexDirection: 'row', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              paddingVertical: 16, 
-              marginTop: 12,
-              marginBottom: 20,
-              backgroundColor: pressed ? '#3D2D1F' : '#4A3728',
-              borderRadius: 14,
-              shadowColor: '#4A3728',
-              shadowOffset: { width: 0, height: 3 },
-              shadowOpacity: 0.25,
-              shadowRadius: 6,
-              elevation: 4,
+              paddingVertical: spacing.lg, 
+              marginTop: spacing.md,
+              marginBottom: spacing.xl,
+              backgroundColor: pressed ? colors.primaryDark : colors.primary,
+              borderRadius: borderRadius.sm,
+              ...shadows.lg,
             })}
           >
-            <Ionicons name="calendar" size={20} color="#fff" />
-            <Text style={{ color: '#fff', marginLeft: 10, fontSize: 16, fontWeight: '600' }}>
+            <Ionicons name="calendar" size={20} color={colors.white} />
+            <Text style={{ color: colors.white, marginLeft: 10, fontSize: 16, fontWeight: '600' }}>
               Add to Meal Plan
             </Text>
           </Pressable>

@@ -14,6 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useGroceryList, useMealPlan, useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
@@ -289,21 +290,17 @@ export default function GroceryScreen() {
       <View style={{ paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontSize: 13, fontWeight: '500', color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
+            <Text style={{ fontSize: 13, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
             <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
           </View>
           <View style={{ 
             width: 48, 
             height: 48, 
-            borderRadius: 24, 
-            backgroundColor: '#E8D5C4', 
+            borderRadius: borderRadius.md, 
+            backgroundColor: colors.bgDark, 
             alignItems: 'center', 
             justifyContent: 'center',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-            elevation: 3,
+            ...shadows.sm,
           }}>
             <Ionicons name="cart" size={24} color="#4A3728" />
           </View>
@@ -311,30 +308,26 @@ export default function GroceryScreen() {
       </View>
 
       {/* Stats and controls */}
-      <View style={{ paddingHorizontal: 20, paddingBottom: 16 }}>
+      <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.lg }}>
         {/* Stats card */}
         <View style={{ 
-          backgroundColor: '#fff', 
-          borderRadius: 16, 
-          padding: 16,
-          marginBottom: 12,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.08,
-          shadowRadius: 8,
-          elevation: 3,
+          backgroundColor: colors.white, 
+          borderRadius: borderRadius.md, 
+          padding: spacing.lg,
+          marginBottom: spacing.md,
+          ...shadows.md,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: 13, color: '#6b7280' }}>This week's shopping</Text>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', marginTop: 2 }}>
+              <Text style={{ fontSize: 13, color: colors.text.secondary }}>This week's shopping</Text>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.primary, marginTop: 2 }}>
                 {totalItems === 0
                   ? 'No items yet'
                   : `${checkedCount} of ${totalItems} items`}
               </Text>
             </View>
 
-            <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flexDirection: 'row', gap: spacing.sm }}>
               {/* Add Item button */}
               <Pressable
                 onPress={() => setShowAddItem(!showAddItem)}
@@ -343,11 +336,11 @@ export default function GroceryScreen() {
                   alignItems: 'center', 
                   paddingHorizontal: 14, 
                   paddingVertical: 10, 
-                  borderRadius: 12, 
-                  backgroundColor: showAddItem ? '#4A3728' : '#F5E6D3',
+                  borderRadius: borderRadius.sm, 
+                  backgroundColor: showAddItem ? colors.primary : colors.bgMid,
                 }}
               >
-                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color={showAddItem ? '#fff' : '#4A3728'} />
+                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color={showAddItem ? colors.white : colors.primary} />
               </Pressable>
 
               {/* Clear All button */}
@@ -389,9 +382,9 @@ export default function GroceryScreen() {
           {/* Progress bar */}
           {totalItems > 0 && (
             <View style={{ marginTop: 16 }}>
-              <View style={{ height: 8, backgroundColor: '#E8D5C4', borderRadius: 4, overflow: 'hidden' }}>
+              <View style={{ height: 6, backgroundColor: '#E8D5C4', borderRadius: 3, overflow: 'hidden' }}>
                 <View
-                  style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 4, width: `${(checkedCount / totalItems) * 100}%` }}
+                  style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 3, width: `${(checkedCount / totalItems) * 100}%` }}
                 />
               </View>
             </View>
@@ -424,29 +417,25 @@ export default function GroceryScreen() {
         {/* Add item input */}
         {showAddItem && (
           <View style={{ 
-            backgroundColor: '#fff', 
-            borderRadius: 16, 
-            padding: 16,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.08,
-            shadowRadius: 8,
-            elevation: 3,
+            backgroundColor: colors.white, 
+            borderRadius: borderRadius.md, 
+            padding: spacing.lg,
+            ...shadows.md,
           }}>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728', marginBottom: 10 }}>Add custom item</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.primary, marginBottom: 10 }}>Add custom item</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <TextInput
                 style={{ 
                   flex: 1, 
-                  backgroundColor: '#F5E6D3', 
-                  borderRadius: 12, 
+                  backgroundColor: colors.bgMid, 
+                  borderRadius: borderRadius.sm, 
                   paddingHorizontal: 14, 
                   paddingVertical: 12, 
                   fontSize: 15, 
-                  color: '#4A3728',
+                  color: colors.primary,
                 }}
                 placeholder="e.g. Milk, 2 liters"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.text.muted}
                 value={newItemText}
                 onChangeText={setNewItemText}
                 onSubmitEditing={handleAddItem}
@@ -456,18 +445,14 @@ export default function GroceryScreen() {
                 onPress={handleAddItem}
                 disabled={!newItemText.trim()}
                 style={{ 
-                  backgroundColor: newItemText.trim() ? '#4A3728' : '#E8D5C4', 
+                  backgroundColor: newItemText.trim() ? colors.primary : colors.bgDark, 
                   paddingHorizontal: 20, 
                   paddingVertical: 12, 
-                  borderRadius: 12,
-                  shadowColor: newItemText.trim() ? '#4A3728' : 'transparent',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 4,
-                  elevation: newItemText.trim() ? 3 : 0,
+                  borderRadius: borderRadius.sm,
+                  ...(newItemText.trim() ? shadows.md : shadows.none),
                 }}
               >
-                <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>Add</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: colors.white }}>Add</Text>
               </Pressable>
             </View>
           </View>
@@ -486,7 +471,7 @@ export default function GroceryScreen() {
           <View style={{ 
             width: 80, 
             height: 80, 
-            borderRadius: 40, 
+            borderRadius: 24, 
             backgroundColor: '#E8D5C4', 
             alignItems: 'center', 
             justifyContent: 'center',
@@ -497,7 +482,7 @@ export default function GroceryScreen() {
           <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
             Your list is empty
           </Text>
-          <Text style={{ color: '#6b7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
+          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
             Go to Weekly Menu and tap "Create List" to generate your grocery list from planned meals
           </Text>
         </View>

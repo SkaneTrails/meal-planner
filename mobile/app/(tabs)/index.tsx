@@ -7,6 +7,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useMealPlan, useGroceryList, useEnhancedMode } from '@/lib/hooks';
 import { GradientBackground } from '@/components';
 import type { Recipe } from '@/lib/types';
@@ -180,21 +181,21 @@ export default function HomeScreen() {
       </View>
 
       {/* Stats cards - 3 in a row */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 20, gap: 12, marginTop: -10 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 20, gap: 10, marginTop: -10 }}>
         {/* Recipe Library */}
-        <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 22, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 4 }}>
-          <View style={{ backgroundColor: '#F3E8E0', borderRadius: 20, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
+          <View style={{ backgroundColor: '#F3E8E0', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Ionicons name="book" size={20} color="#4A3728" />
           </View>
-          <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Saved</Text>
-          <Text style={{ fontSize: 30, fontWeight: '700', color: '#4A3728', marginBottom: 12, letterSpacing: -1 }}>
+          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Saved</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 12, letterSpacing: -0.5 }}>
             {recipes.length}
           </Text>
           <Pressable
             onPress={() => router.push('/recipes')}
             style={({ pressed }) => ({ 
               backgroundColor: pressed ? '#E8D5C4' : '#F3E8E0', 
-              borderRadius: 12, 
+              borderRadius: borderRadius.sm, 
               paddingVertical: 10,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
@@ -204,19 +205,19 @@ export default function HomeScreen() {
         </View>
 
         {/* This Week */}
-        <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 22, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 4 }}>
-          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 20, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
+          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
             <Ionicons name="calendar" size={20} color="#2D5A3D" />
           </View>
-          <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Planned</Text>
-          <Text style={{ fontSize: 30, fontWeight: '700', color: '#2D5A3D', marginBottom: 12, letterSpacing: -1 }}>
+          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Planned</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#2D5A3D', marginBottom: 12, letterSpacing: -0.5 }}>
             {plannedMealsCount}
           </Text>
           <Pressable
             onPress={() => router.push('/meal-plan')}
             style={({ pressed }) => ({ 
               backgroundColor: pressed ? '#D4E4D4' : '#E8F0E8', 
-              borderRadius: 12, 
+              borderRadius: borderRadius.sm, 
               paddingVertical: 10,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
@@ -226,32 +227,32 @@ export default function HomeScreen() {
         </View>
 
         {/* Shopping */}
-        <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 22, padding: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 4 }}>
-          <View style={{ backgroundColor: '#E8E8F0', borderRadius: 20, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-            <Ionicons name="cart" size={20} color="#3D3D5A" />
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
+          <View style={{ backgroundColor: '#E5E7EB', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Ionicons name="cart" size={20} color="#374151" />
           </View>
-          <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>To Buy</Text>
-          <Text style={{ fontSize: 30, fontWeight: '700', color: '#3D3D5A', marginBottom: 12, letterSpacing: -1 }}>
+          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>To Buy</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#374151', marginBottom: 12, letterSpacing: -0.5 }}>
             {groceryItemsCount}
           </Text>
           <Pressable
             onPress={() => router.push('/grocery')}
             style={({ pressed }) => ({ 
-              backgroundColor: pressed ? '#D4D4E4' : '#E8E8F0', 
-              borderRadius: 12, 
+              backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB', 
+              borderRadius: borderRadius.sm, 
               paddingVertical: 10,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
-            <Text style={{ color: '#3D3D5A', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>View List</Text>
+            <Text style={{ color: '#374151', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>View List</Text>
           </Pressable>
         </View>
       </View>
 
       {/* Add a Recipe */}
-      <View style={{ paddingHorizontal: 20, marginTop: 28 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
-          <View style={{ backgroundColor: '#E8D5C4', borderRadius: 16, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <View style={{ backgroundColor: '#E8D5C4', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="add-circle" size={16} color="#4A3728" />
           </View>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Add a Recipe</Text>
@@ -259,14 +260,10 @@ export default function HomeScreen() {
 
         {/* Import Recipe - single line */}
         <View style={{ 
-          backgroundColor: '#fff', 
-          borderRadius: 16, 
+          backgroundColor: colors.white, 
+          borderRadius: borderRadius.md, 
           padding: 4,
-          shadowColor: '#000', 
-          shadowOffset: { width: 0, height: 2 }, 
-          shadowOpacity: 0.06, 
-          shadowRadius: 8, 
-          elevation: 2,
+          ...shadows.md,
           flexDirection: 'row',
           alignItems: 'center',
         }}>
@@ -308,9 +305,9 @@ export default function HomeScreen() {
       </View>
 
       {/* Next Up */}
-      <View style={{ paddingHorizontal: 20, marginTop: 28 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 14 }}>
-          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 16, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="restaurant" size={16} color="#2D5A3D" />
           </View>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Next Up</Text>
@@ -320,14 +317,10 @@ export default function HomeScreen() {
         <Pressable
           onPress={() => nextMeal?.recipeId ? router.push(`/recipe/${nextMeal.recipeId}`) : router.push('/meal-plan')}
           style={({ pressed }) => ({ 
-            backgroundColor: pressed ? '#F9F5F0' : '#fff', 
-            borderRadius: 16, 
-            padding: 12,
-            shadowColor: '#000', 
-            shadowOffset: { width: 0, height: 2 }, 
-            shadowOpacity: 0.06, 
-            shadowRadius: 8, 
-            elevation: 2,
+            backgroundColor: pressed ? '#F9F5F0' : colors.white, 
+            borderRadius: borderRadius.md, 
+            padding: spacing.md,
+            ...shadows.md,
             flexDirection: 'row',
             alignItems: 'center',
           })}
@@ -352,24 +345,24 @@ export default function HomeScreen() {
             </View>
           )}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: '#6b7280', marginBottom: 2 }}>
+            <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
               {nextMeal ? `Today's ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` : 'No meal planned'}
             </Text>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9ca3af' }} numberOfLines={1}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
         </Pressable>
       </View>
 
       {/* Inspiration section */}
       {inspirationRecipes.length > 0 && inspirationRecipe && (
-        <View style={{ paddingHorizontal: 20, marginTop: 28 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ backgroundColor: '#DBEAFE', borderRadius: 16, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name="bulb" size={16} color="#1E40AF" />
+              <View style={{ backgroundColor: '#E5E7EB', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="bulb" size={16} color="#374151" />
               </View>
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Inspiration</Text>
             </View>
@@ -378,29 +371,25 @@ export default function HomeScreen() {
               style={({ pressed }) => ({ 
                 flexDirection: 'row', 
                 alignItems: 'center', 
-                backgroundColor: pressed ? '#BFDBFE' : '#DBEAFE', 
+                backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB', 
                 paddingHorizontal: 14, 
                 paddingVertical: 8, 
-                borderRadius: 20,
+                borderRadius: 16,
                 transform: [{ scale: pressed ? 0.96 : 1 }],
               })}
             >
-              <Ionicons name="shuffle" size={14} color="#1E40AF" />
-              <Text style={{ color: '#1E40AF', fontWeight: '600', fontSize: 13, marginLeft: 6 }}>Shuffle</Text>
+              <Ionicons name="shuffle" size={14} color="#374151" />
+              <Text style={{ color: '#374151', fontWeight: '600', fontSize: 13, marginLeft: 6 }}>Shuffle</Text>
             </Pressable>
           </View>
 
           <Pressable
             onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
             style={({ pressed }) => ({ 
-              backgroundColor: '#fff', 
-              borderRadius: 22, 
+              backgroundColor: colors.white, 
+              borderRadius: borderRadius.md, 
               overflow: 'hidden', 
-              shadowColor: '#000', 
-              shadowOffset: { width: 0, height: 4 }, 
-              shadowOpacity: 0.12, 
-              shadowRadius: 12, 
-              elevation: 5,
+              ...shadows.md,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >

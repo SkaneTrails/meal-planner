@@ -74,27 +74,27 @@ export function GroceryItemRow({ item, onToggle }: GroceryItemRowProps) {
         alignItems: 'center', 
         padding: 14, 
         backgroundColor: '#fff', 
-        borderRadius: 14, 
-        marginBottom: 10, 
+        borderRadius: 12, 
+        marginBottom: 8, 
         opacity: checked ? 0.6 : 1,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.06,
+        shadowOpacity: 0.04,
         shadowRadius: 4,
-        elevation: 2,
+        elevation: 1,
       }}
     >
       <View
         style={{ 
-          width: 26, 
-          height: 26, 
+          width: 24, 
+          height: 24, 
           borderRadius: 8, 
           borderWidth: 2, 
           alignItems: 'center', 
           justifyContent: 'center', 
           marginRight: 14, 
           backgroundColor: checked ? '#4A3728' : 'transparent', 
-          borderColor: checked ? '#4A3728' : '#d1d5db',
+          borderColor: checked ? '#4A3728' : '#D1D5DB',
         }}
       >
         {checked && <Ionicons name="checkmark" size={16} color="white" />}
@@ -106,13 +106,13 @@ export function GroceryItemRow({ item, onToggle }: GroceryItemRowProps) {
             fontSize: 15, 
             fontWeight: '500',
             textDecorationLine: checked ? 'line-through' : 'none', 
-            color: checked ? '#9ca3af' : '#4A3728',
+            color: checked ? '#9CA3AF' : '#4A3728',
           }}
         >
           {quantity ? `${quantity} ${item.name}` : item.name}
         </Text>
         {item.recipe_sources.length > 0 && (
-          <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 3 }}>
+          <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 3 }}>
             {item.recipe_sources.join(' · ')}
           </Text>
         )}
@@ -163,7 +163,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems }: G
         <View style={{ 
           width: 80, 
           height: 80, 
-          borderRadius: 40, 
+          borderRadius: 24, 
           backgroundColor: '#E8D5C4', 
           alignItems: 'center', 
           justifyContent: 'center',
@@ -174,7 +174,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems }: G
         <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
           No items yet
         </Text>
-        <Text style={{ color: '#6b7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
+        <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
           Add meals to your plan to generate a shopping list
         </Text>
       </View>

@@ -70,7 +70,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           alignItems: 'center', 
           padding: 14, 
           backgroundColor: '#fff', 
-          borderRadius: 18,
+          borderRadius: 16,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.06,
@@ -111,8 +111,8 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               )}
               {totalTime && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons name="time-outline" size={13} color="#9ca3af" />
-                  <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 4 }}>{totalTime}m</Text>
+                  <Ionicons name="time-outline" size={13} color="#9CA3AF" />
+                  <Text style={{ fontSize: 13, color: '#6B7280', marginLeft: 4 }}>{totalTime}m</Text>
                 </View>
               )}
             </View>
@@ -137,15 +137,15 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
       <Animated.View
         style={{ 
           backgroundColor: '#fff', 
-          borderRadius: 22, 
+          borderRadius: 16, 
           overflow: 'hidden', 
           width: cardSize,
           height: cardSize,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 3 },
-          shadowOpacity: 0.08,
-          shadowRadius: 10,
-          elevation: 4,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
+          elevation: 2,
           transform: [{ scale: scaleAnim }],
         }}
       >

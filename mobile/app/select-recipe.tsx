@@ -11,9 +11,11 @@ import {
   Pressable,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useSetMeal, useRemoveMeal, useEnhancedMode, useMealPlan } from '@/lib/hooks';
 import { RecipeCard } from '@/components';
 import type { MealType, Recipe } from '@/lib/types';
@@ -25,13 +27,21 @@ const MEAL_TYPE_LABELS: Record<MealType, string> = {
   snack: 'Snack',
 };
 
-type TabType = 'library' | 'copy';
+// Map meal types to meal_label values for filtering
+const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
+  breakfast: ['breakfast'],
+  lunch: ['meal', 'salad', 'starter'],
+  dinner: ['meal', 'salad', 'starter', 'grill'],
+  snack: ['dessert', 'drink'],
+};
+
+type TabType = 'library' | 'copy' | 'random' | 'quick';
 
 export default function SelectRecipeScreen() {
   const { date, mealType, mode } = useLocalSearchParams<{
     date: string;
     mealType: MealType;
-    mode?: 'library' | 'copy' | 'quick';
+    mode?: 'library' | 'copy' | 'quick' | 'random';
   }>();
   const router = useRouter();
   const { isEnhanced } = useEnhancedMode();
@@ -42,9 +52,12 @@ export default function SelectRecipeScreen() {
   const removeMeal = useRemoveMeal();
 
   // Initialize tab based on mode param, default to library
-  const [activeTab, setActiveTab] = useState<TabType>(mode === 'copy' ? 'copy' : 'library');
+  const [activeTab, setActiveTab] = useState<TabType>(
+    mode === 'copy' ? 'copy' : mode === 'random' ? 'random' : mode === 'quick' ? 'quick' : 'library'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState('');
+  const [randomSeed, setRandomSeed] = useState(0); // Used to trigger new random selection
 
   const filteredRecipes = useMemo(() => {
     if (searchQuery === '') return recipes;
@@ -52,6 +65,31 @@ export default function SelectRecipeScreen() {
       recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [recipes, searchQuery]);
+
+  // Get recipes matching the current meal type for random selection
+  const mealTypeRecipes = useMemo(() => {
+    const allowedLabels = MEAL_TYPE_TO_LABEL[mealType] || ['meal'];
+    return recipes.filter((recipe) => {
+      // If recipe has a meal_label, check if it matches
+      if (recipe.meal_label) {
+        return allowedLabels.includes(recipe.meal_label);
+      }
+      // If no meal_label, include it for lunch/dinner (most common)
+      return mealType === 'lunch' || mealType === 'dinner';
+    });
+  }, [recipes, mealType]);
+
+  // Random recipe selection (changes when randomSeed changes)
+  const randomRecipe = useMemo(() => {
+    if (mealTypeRecipes.length === 0) return null;
+    const index = Math.floor(Math.random() * mealTypeRecipes.length);
+    return mealTypeRecipes[index];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mealTypeRecipes, randomSeed]);
+
+  const shuffleRandom = () => {
+    setRandomSeed(prev => prev + 1);
+  };
 
   // Get current week date range
   const currentWeekDates = useMemo(() => {
@@ -180,10 +218,10 @@ export default function SelectRecipeScreen() {
       />
 
       <View style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
-        {/* Tab switcher - only show if no mode specified */}
+        {/* Tab switcher - always show all 4 tabs */}
         {!mode && (
-          <View style={{ backgroundColor: '#fff', paddingHorizontal: 16, paddingTop: 12, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+          <View style={{ backgroundColor: '#fff', paddingHorizontal: 12, paddingTop: 12, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+            <View style={{ flexDirection: 'row', gap: 4, marginBottom: 12 }}>
               <Pressable
                 onPress={() => setActiveTab('library')}
                 style={{
@@ -195,11 +233,47 @@ export default function SelectRecipeScreen() {
                 }}
               >
                 <Text style={{ 
-                  fontSize: 14, 
+                  fontSize: 12, 
                   fontWeight: '600', 
                   color: activeTab === 'library' ? '#fff' : '#4A3728' 
                 }}>
-                  📚 From Library
+                  📚 Library
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => { setActiveTab('random'); shuffleRandom(); }}
+                style={{
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 10,
+                  backgroundColor: activeTab === 'random' ? '#4A3728' : '#F5E6D3',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 12, 
+                  fontWeight: '600', 
+                  color: activeTab === 'random' ? '#fff' : '#4A3728' 
+                }}>
+                  🎲 Random
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setActiveTab('quick')}
+                style={{
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 10,
+                  backgroundColor: activeTab === 'quick' ? '#4A3728' : '#F5E6D3',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 12, 
+                  fontWeight: '600', 
+                  color: activeTab === 'quick' ? '#fff' : '#4A3728' 
+                }}>
+                  ✏️ Quick
                 </Text>
               </Pressable>
               <Pressable
@@ -213,29 +287,25 @@ export default function SelectRecipeScreen() {
                 }}
               >
                 <Text style={{ 
-                  fontSize: 14, 
+                  fontSize: 12, 
                   fontWeight: '600', 
                   color: activeTab === 'copy' ? '#fff' : '#4A3728' 
                 }}>
-                  📋 Copy Meal
+                  📋 Copy
                 </Text>
               </Pressable>
             </View>
           </View>
         )}
 
-        {/* Quick mode - just show text input */}
-        {mode === 'quick' ? (
+        {/* Quick mode/tab - just show text input */}
+        {(mode === 'quick' || activeTab === 'quick') ? (
           <View style={{ flex: 1, padding: 20 }}>
             <View style={{ 
-              backgroundColor: '#fff', 
-              borderRadius: 20, 
-              padding: 24,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.08,
-              shadowRadius: 12,
-              elevation: 4,
+              backgroundColor: colors.white, 
+              borderRadius: borderRadius.lg, 
+              padding: spacing['2xl'],
+              ...shadows.md,
             }}>
               <View style={{ alignItems: 'center', marginBottom: 20 }}>
                 <View style={{
@@ -374,24 +444,187 @@ export default function SelectRecipeScreen() {
                       router.push('/add-recipe');
                     }}
                     style={{ 
-                      marginTop: 24, 
+                      marginTop: spacing['2xl'], 
                       paddingHorizontal: 28, 
                       paddingVertical: 14, 
-                      backgroundColor: '#4A3728', 
-                      borderRadius: 14,
-                      shadowColor: '#4A3728',
-                      shadowOffset: { width: 0, height: 3 },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 6,
-                      elevation: 4,
+                      backgroundColor: colors.primary, 
+                      borderRadius: borderRadius.sm,
+                      ...shadows.lg,
                     }}
                   >
-                    <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Add a Recipe</Text>
+                    <Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>Add a Recipe</Text>
                   </Pressable>
                 </View>
               }
             />
           </>
+        ) : activeTab === 'random' ? (
+          /* Random recipe suggestion */
+          <ScrollView contentContainerStyle={{ padding: 20, flex: 1 }}>
+            {randomRecipe ? (
+              <View style={{ alignItems: 'center' }}>
+                {/* Header */}
+                <View style={{ alignItems: 'center', marginBottom: 24 }}>
+                  <View style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 32,
+                    backgroundColor: '#FEF3C7',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 12,
+                  }}>
+                    <Ionicons name="dice" size={32} color="#D97706" />
+                  </View>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: colors.primary, textAlign: 'center' }}>
+                    How about this?
+                  </Text>
+                  <Text style={{ fontSize: 14, color: colors.text.secondary, marginTop: 4 }}>
+                    {mealTypeRecipes.length} recipes match {MEAL_TYPE_LABELS[mealType].toLowerCase()}
+                  </Text>
+                </View>
+
+                {/* Recipe Card with extra details */}
+                <View style={{ width: '100%', marginBottom: 20 }}>
+                  <Pressable
+                    onPress={() => handleSelectRecipe(randomRecipe.id)}
+                    style={{
+                      backgroundColor: colors.white,
+                      borderRadius: borderRadius.md,
+                      overflow: 'hidden',
+                      ...shadows.md,
+                    }}
+                  >
+                    {randomRecipe.image_url && (
+                      <Image
+                        source={{ uri: randomRecipe.image_url }}
+                        style={{ width: '100%', height: 180 }}
+                        resizeMode="cover"
+                      />
+                    )}
+                    <View style={{ padding: 16 }}>
+                      <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, marginBottom: 8 }}>
+                        {randomRecipe.title}
+                      </Text>
+                      
+                      {/* Time and servings info */}
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+                        {randomRecipe.total_time && (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Ionicons name="time-outline" size={16} color={colors.text.secondary} />
+                            <Text style={{ fontSize: 13, color: colors.text.secondary }}>
+                              {randomRecipe.total_time} min
+                            </Text>
+                          </View>
+                        )}
+                        {randomRecipe.servings && (
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Ionicons name="people-outline" size={16} color={colors.text.secondary} />
+                            <Text style={{ fontSize: 13, color: colors.text.secondary }}>
+                              {randomRecipe.servings} servings
+                            </Text>
+                          </View>
+                        )}
+                        {randomRecipe.diet_label && (
+                          <View style={{
+                            paddingHorizontal: 8,
+                            paddingVertical: 2,
+                            borderRadius: 10,
+                            backgroundColor: randomRecipe.diet_label === 'veggie' ? '#DCFCE7' : 
+                                           randomRecipe.diet_label === 'fish' ? '#DBEAFE' : '#FEF3C7',
+                          }}>
+                            <Text style={{ 
+                              fontSize: 11, 
+                              fontWeight: '600',
+                              color: randomRecipe.diet_label === 'veggie' ? '#166534' : 
+                                     randomRecipe.diet_label === 'fish' ? '#1E40AF' : '#92400E',
+                            }}>
+                              {randomRecipe.diet_label === 'veggie' ? '🥬 Veggie' : 
+                               randomRecipe.diet_label === 'fish' ? '🐟 Fish' : '🥩 Meat'}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+
+                      {/* Ingredients preview */}
+                      {randomRecipe.ingredients && randomRecipe.ingredients.length > 0 && (
+                        <View>
+                          <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text.secondary, marginBottom: 4 }}>
+                            Ingredients ({randomRecipe.ingredients.length})
+                          </Text>
+                          <Text style={{ fontSize: 12, color: colors.text.muted, lineHeight: 18 }} numberOfLines={2}>
+                            {randomRecipe.ingredients.slice(0, 5).join(' • ')}
+                            {randomRecipe.ingredients.length > 5 ? ' ...' : ''}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </Pressable>
+                </View>
+
+                {/* Action buttons */}
+                <View style={{ flexDirection: 'row', gap: 12, width: '100%' }}>
+                  <Pressable
+                    onPress={shuffleRandom}
+                    style={({ pressed }) => ({
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingVertical: 14,
+                      borderRadius: borderRadius.sm,
+                      backgroundColor: pressed ? '#E8D5C4' : colors.bgMid,
+                    })}
+                  >
+                    <Ionicons name="shuffle" size={20} color={colors.primary} />
+                    <Text style={{ marginLeft: 8, fontSize: 15, fontWeight: '600', color: colors.primary }}>
+                      Shuffle
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => handleSelectRecipe(randomRecipe.id)}
+                    disabled={setMeal.isPending}
+                    style={({ pressed }) => ({
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingVertical: 14,
+                      borderRadius: borderRadius.sm,
+                      backgroundColor: pressed ? colors.primaryDark : colors.primary,
+                      ...shadows.md,
+                    })}
+                  >
+                    <Ionicons name="checkmark-circle" size={20} color={colors.white} />
+                    <Text style={{ marginLeft: 8, fontSize: 15, fontWeight: '600', color: colors.white }}>
+                      Add to Plan
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            ) : (
+              /* No recipes for this meal type */
+              <View style={{ alignItems: 'center', paddingVertical: 60, paddingHorizontal: 32 }}>
+                <View style={{ 
+                  width: 80, 
+                  height: 80, 
+                  borderRadius: 40, 
+                  backgroundColor: '#E8D5C4', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  marginBottom: 20,
+                }}>
+                  <Ionicons name="dice-outline" size={36} color={colors.primary} />
+                </View>
+                <Text style={{ color: colors.primary, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+                  No {MEAL_TYPE_LABELS[mealType].toLowerCase()} recipes
+                </Text>
+                <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
+                  Add some recipes with the "{MEAL_TYPE_LABELS[mealType].toLowerCase()}" meal type to use random selection
+                </Text>
+              </View>
+            )}
+          </ScrollView>
         ) : (
           /* Copy from existing meals */
           <ScrollView contentContainerStyle={{ padding: 16 }}>
@@ -427,15 +660,11 @@ export default function SelectRecipeScreen() {
                   style={({ pressed }) => ({
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: pressed ? '#E8D5C4' : '#fff',
-                    borderRadius: 14,
-                    padding: 14,
-                    marginBottom: 10,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.06,
-                    shadowRadius: 4,
-                    elevation: 2,
+                    backgroundColor: pressed ? colors.bgDark : colors.white,
+                    borderRadius: borderRadius.sm,
+                    padding: spacing.lg,
+                    marginBottom: spacing.sm,
+                    ...shadows.sm,
                   })}
                 >
                   <View style={{ flex: 1 }}>

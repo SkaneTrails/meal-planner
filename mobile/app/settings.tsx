@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
 
@@ -161,20 +162,16 @@ export default function SettingsScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               alignSelf: 'flex-start',
-              backgroundColor: pressed ? '#E8D5C4' : '#fff',
-              paddingHorizontal: 16,
+              backgroundColor: pressed ? colors.bgDark : colors.white,
+              paddingHorizontal: spacing.lg,
               paddingVertical: 10,
-              borderRadius: 20,
-              marginBottom: 24,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 8,
-              elevation: 2,
+              borderRadius: borderRadius.lg,
+              marginBottom: spacing['2xl'],
+              ...shadows.sm,
             })}
           >
-            <Ionicons name="arrow-back" size={20} color="#4A3728" />
-            <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginLeft: 8 }}>Back to Home</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.primary} />
+            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.primary, marginLeft: 8 }}>Back to Home</Text>
           </Pressable>
 
           {/* Language Section */}
@@ -188,14 +185,10 @@ export default function SettingsScreen() {
             />
             
             <View style={{
-              backgroundColor: '#fff',
-              borderRadius: 16,
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
               overflow: 'hidden',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 8,
-              elevation: 2,
+              ...shadows.sm,
             }}>
               {LANGUAGES.map((lang, index) => (
                 <Pressable
@@ -233,15 +226,11 @@ export default function SettingsScreen() {
             {/* Add new item input */}
             <View style={{
               flexDirection: 'row',
-              backgroundColor: '#fff',
-              borderRadius: 16,
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
               padding: 4,
-              marginBottom: 16,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 8,
-              elevation: 2,
+              marginBottom: spacing.lg,
+              ...shadows.sm,
             }}>
               <TextInput
                 style={{
@@ -279,15 +268,11 @@ export default function SettingsScreen() {
             {/* Current items */}
             {settings.itemsAtHome.length > 0 ? (
               <View style={{
-                backgroundColor: '#fff',
-                borderRadius: 16,
-                padding: 16,
-                marginBottom: 16,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05,
-                shadowRadius: 8,
-                elevation: 2,
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                marginBottom: spacing.lg,
+                ...shadows.sm,
               }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280', marginBottom: 12 }}>
                   Your items ({settings.itemsAtHome.length})
@@ -317,22 +302,18 @@ export default function SettingsScreen() {
               </View>
             ) : (
               <View style={{
-                backgroundColor: '#fff',
-                borderRadius: 16,
-                padding: 24,
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.md,
+                padding: spacing['2xl'],
                 alignItems: 'center',
-                marginBottom: 16,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05,
-                shadowRadius: 8,
-                elevation: 2,
+                marginBottom: spacing.lg,
+                ...shadows.sm,
               }}>
                 <View style={{
                   width: 60,
                   height: 60,
                   borderRadius: 30,
-                  backgroundColor: '#F5E6D3',
+                  backgroundColor: colors.bgMid,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 12,
@@ -351,14 +332,10 @@ export default function SettingsScreen() {
             {/* Suggested items */}
             {suggestedNotAdded.length > 0 && (
               <View style={{
-                backgroundColor: '#fff',
-                borderRadius: 16,
-                padding: 16,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05,
-                shadowRadius: 8,
-                elevation: 2,
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                ...shadows.sm,
               }}>
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280', marginBottom: 12 }}>
                   Suggestions
@@ -403,14 +380,10 @@ export default function SettingsScreen() {
             />
             
             <View style={{
-              backgroundColor: '#fff',
-              borderRadius: 16,
-              padding: 16,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.05,
-              shadowRadius: 8,
-              elevation: 2,
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
+              padding: spacing.lg,
+              ...shadows.sm,
             }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <Text style={{ fontSize: 15, color: '#6B7280' }}>Version</Text>

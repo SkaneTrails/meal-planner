@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { RecipeCard, GradientBackground } from '@/components';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
@@ -89,7 +90,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
           <View style={{ 
             width: 80, 
             height: 80, 
-            borderRadius: 40, 
+            borderRadius: 24, 
             backgroundColor: '#E8D5C4', 
             alignItems: 'center', 
             justifyContent: 'center',
@@ -102,7 +103,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
               ? 'No matches found'
               : 'Your recipe book is empty'}
           </Text>
-          <Text style={{ color: '#6b7280', fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
+          <Text style={{ color: '#6B7280', fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
             {searchQuery || dietFilter || mealFilter
               ? 'Try adjusting your search or filters'
               : 'Start building your collection by adding your favorite recipes'}
@@ -111,19 +112,15 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
             <Pressable
               onPress={onAddRecipe}
               style={{ 
-                backgroundColor: '#4A3728', 
+                backgroundColor: colors.primary, 
                 paddingHorizontal: 28, 
                 paddingVertical: 14, 
-                borderRadius: 14, 
-                marginTop: 24,
-                shadowColor: '#4A3728',
-                shadowOffset: { width: 0, height: 3 },
-                shadowOpacity: 0.25,
-                shadowRadius: 6,
-                elevation: 4,
+                borderRadius: borderRadius.sm, 
+                marginTop: spacing['2xl'],
+                ...shadows.lg,
               }}
             >
-              <Text style={{ color: '#fff', fontSize: 15, fontWeight: '600' }}>Add Your First Recipe</Text>
+              <Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>Add Your First Recipe</Text>
             </Pressable>
           )}
         </View>
@@ -174,10 +171,10 @@ export default function RecipesScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 8 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 60, paddingBottom: 8 }}>
         <View style={{ marginBottom: 20 }}>
           <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Recipe Library</Text>
-          <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>{recipes.length} recipes saved</Text>
+          <Text style={{ fontSize: 14, color: '#6B7280', marginTop: 4 }}>{recipes.length} recipes saved</Text>
         </View>
 
         {/* AI Enhanced toggle */}
@@ -192,9 +189,9 @@ export default function RecipesScreen() {
           marginBottom: 16,
           shadowColor: isEnhanced ? '#4A3728' : '#000',
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: isEnhanced ? 0.25 : 0.08,
+          shadowOpacity: isEnhanced ? 0.25 : 0.06,
           shadowRadius: 8,
-          elevation: 3,
+          elevation: 2,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <View style={{ 
@@ -208,7 +205,7 @@ export default function RecipesScreen() {
               <Text style={{ fontSize: 15, fontWeight: '600', color: isEnhanced ? '#fff' : '#4A3728' }}>
                 AI Enhanced
               </Text>
-              <Text style={{ fontSize: 12, color: isEnhanced ? '#E8D5C4' : '#6b7280', marginTop: 2 }}>
+              <Text style={{ fontSize: 12, color: isEnhanced ? '#E8D5C4' : '#6B7280', marginTop: 2 }}>
                 {isEnhanced ? 'Showing improved recipes' : 'Try AI-improved instructions'}
               </Text>
             </View>
@@ -231,7 +228,7 @@ export default function RecipesScreen() {
               alignItems: 'center', 
               justifyContent: 'center', 
               paddingVertical: 14, 
-              borderRadius: 14, 
+              borderRadius: 12, 
               backgroundColor: showAllRecipes ? '#4A3728' : '#fff',
               shadowColor: showAllRecipes ? '#4A3728' : '#000',
               shadowOffset: { width: 0, height: 2 },
@@ -253,16 +250,12 @@ export default function RecipesScreen() {
               alignItems: 'center', 
               justifyContent: 'center', 
               paddingVertical: 14, 
-              borderRadius: 14, 
-              backgroundColor: '#fff',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.06,
-              shadowRadius: 6,
-              elevation: 2,
+              borderRadius: borderRadius.sm, 
+              backgroundColor: colors.white,
+              ...shadows.md,
             }}
           >
-            <Ionicons name="add-circle" size={18} color="#4A3728" />
+            <Ionicons name="add-circle" size={18} color={colors.primary} />
             <Text style={{ marginLeft: 6, fontSize: 15, fontWeight: '600', color: '#4A3728' }}>Add Recipe</Text>
           </Pressable>
         </View>
@@ -274,18 +267,14 @@ export default function RecipesScreen() {
         <View style={{ 
           flexDirection: 'row', 
           alignItems: 'center', 
-          backgroundColor: '#fff', 
-          borderRadius: 14, 
+          backgroundColor: colors.white, 
+          borderRadius: borderRadius.sm, 
           paddingHorizontal: 14, 
           paddingVertical: 12, 
           marginBottom: 14,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 2,
+          ...shadows.md,
         }}>
-          <Ionicons name="search" size={20} color="#9ca3af" />
+          <Ionicons name="search" size={20} color="#9CA3AF" />
           <TextInput
             style={{ flex: 1, fontSize: 15, color: '#4A3728', marginLeft: 10 }}
             placeholder="Search recipes..."
@@ -295,7 +284,7 @@ export default function RecipesScreen() {
           />
           {searchQuery !== '' && (
             <Pressable onPress={() => setSearchQuery('')} style={{ padding: 4 }}>
-              <Ionicons name="close-circle" size={20} color="#9ca3af" />
+              <Ionicons name="close-circle" size={20} color="#9CA3AF" />
             </Pressable>
           )}
         </View>
@@ -304,7 +293,7 @@ export default function RecipesScreen() {
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {/* Diet filter */}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6, fontWeight: '500' }}>Diet</Text>
+            <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, fontWeight: '500' }}>Diet</Text>
             <Pressable
               onPress={() => {
                 const currentIdx = DIET_OPTIONS.findIndex(o => o.value === dietFilter);
@@ -312,30 +301,26 @@ export default function RecipesScreen() {
                 setDietFilter(DIET_OPTIONS[nextIdx].value);
               }}
               style={{ 
-                backgroundColor: '#fff', 
-                borderRadius: 12, 
+                backgroundColor: colors.white, 
+                borderRadius: borderRadius.sm, 
                 paddingHorizontal: 14, 
                 paddingVertical: 12,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.04,
-                shadowRadius: 4,
-                elevation: 1,
+                ...shadows.sm,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#4A3728' }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.primary }}>
                 {DIET_OPTIONS.find(o => o.value === dietFilter)?.label || 'All'}
               </Text>
-              <Ionicons name="chevron-down" size={16} color="#9ca3af" />
+              <Ionicons name="chevron-down" size={16} color={colors.text.muted} />
             </Pressable>
           </View>
 
           {/* Meal type filter */}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6, fontWeight: '500' }}>Meal Type</Text>
+            <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, fontWeight: '500' }}>Meal Type</Text>
             <Pressable
               onPress={() => {
                 const currentIdx = MEAL_OPTIONS.findIndex(o => o.value === mealFilter);
@@ -343,30 +328,26 @@ export default function RecipesScreen() {
                 setMealFilter(MEAL_OPTIONS[nextIdx].value);
               }}
               style={{ 
-                backgroundColor: '#fff', 
-                borderRadius: 12, 
+                backgroundColor: colors.white, 
+                borderRadius: borderRadius.sm, 
                 paddingHorizontal: 14, 
                 paddingVertical: 12,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.04,
-                shadowRadius: 4,
-                elevation: 1,
+                ...shadows.sm,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#4A3728' }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.primary }}>
                 {MEAL_OPTIONS.find(o => o.value === mealFilter)?.label || 'All'}
               </Text>
-              <Ionicons name="chevron-down" size={16} color="#9ca3af" />
+              <Ionicons name="chevron-down" size={16} color={colors.text.muted} />
             </Pressable>
           </View>
 
           {/* Sort */}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6, fontWeight: '500' }}>Sort by</Text>
+            <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, fontWeight: '500' }}>Sort by</Text>
             <Pressable
               onPress={() => {
                 const currentIdx = SORT_OPTIONS.findIndex(o => o.value === sortBy);
@@ -374,24 +355,20 @@ export default function RecipesScreen() {
                 setSortBy(SORT_OPTIONS[nextIdx].value);
               }}
               style={{ 
-                backgroundColor: '#fff', 
-                borderRadius: 12, 
+                backgroundColor: colors.white, 
+                borderRadius: borderRadius.sm, 
                 paddingHorizontal: 14, 
                 paddingVertical: 12,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.04,
-                shadowRadius: 4,
-                elevation: 1,
+                ...shadows.sm,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#4A3728' }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.primary }}>
                 {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Newest'}
               </Text>
-              <Ionicons name="chevron-down" size={16} color="#9ca3af" />
+              <Ionicons name="chevron-down" size={16} color={colors.text.muted} />
             </Pressable>
           </View>
         </View>
