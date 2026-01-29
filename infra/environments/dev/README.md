@@ -17,7 +17,24 @@ This directory contains the Terraform configuration for deploying the Meal Plann
 gcloud auth application-default login
 ```
 
-### 2. Configure Variables
+### 2. Bootstrap State Bucket (First Time Only)
+
+If you don't have a Terraform state bucket yet, run the bootstrap:
+
+```bash
+cd init
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your project ID
+terraform init
+terraform apply
+cd ..
+./import_tfstate_bucket.ps1  # Windows
+# ./import_tfstate_bucket.sh  # Linux/macOS
+```
+
+See [init/README.md](init/README.md) for detailed instructions.
+
+### 3. Configure Variables
 
 ```bash
 # Copy example config
@@ -27,17 +44,6 @@ cp terraform.tfvars.example terraform.tfvars
 # - project: Your GCP project ID
 # - region: GCP region (e.g., europe-west1)
 # - firestore_location: Firestore location (e.g., eur3)
-```
-
-### 3. Configure Backend (State Storage)
-
-Edit `backend.tf` and replace `YOUR_TFSTATE_BUCKET_NAME` with your GCS bucket name.
-
-If you don't have a state bucket, create one:
-
-```bash
-gsutil mb -l EU gs://your-unique-bucket-name
-gsutil versioning set on gs://your-unique-bucket-name
 ```
 
 ### 4. Add User Access
@@ -78,6 +84,7 @@ This infrastructure stays within GCP free tier:
 
 | File               | Description                                |
 | ------------------ | ------------------------------------------ |
+| `init/`            | Bootstrap scripts for state bucket         |
 | `main.tf`          | Root module, wires up all submodules       |
 | `variables.tf`     | Input variable definitions                 |
 | `versions.tf`      | Terraform and provider version constraints |
