@@ -1,6 +1,6 @@
 /**
  * Gradient background component matching the food delivery app design.
- * Flows from light cream at top to warm beige at bottom.
+ * Flows from warm beige at top to light cream at bottom (inverted).
  */
 
 import React from 'react';
@@ -21,7 +21,7 @@ export function GradientBackground({ children, style }: GradientBackgroundProps)
           styles.container,
           {
             // @ts-ignore - web-specific CSS property
-            background: 'linear-gradient(180deg, #FDFBF7 0%, #F5E6D3 50%, #E8D5C4 100%)',
+            background: 'linear-gradient(180deg, #E8D5C4 0%, #F5E6D3 50%, #FDFBF7 100%)',
           },
           style,
         ]}
@@ -33,7 +33,7 @@ export function GradientBackground({ children, style }: GradientBackgroundProps)
 
   return (
     <LinearGradient
-      colors={['#FDFBF7', '#F5E6D3', '#E8D5C4']}
+      colors={['#E8D5C4', '#F5E6D3', '#FDFBF7']}
       locations={[0, 0.5, 1]}
       style={[styles.container, style]}
     >
