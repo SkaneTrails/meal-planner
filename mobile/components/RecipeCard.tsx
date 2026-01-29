@@ -42,7 +42,7 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
     return (
       <Pressable
         onPress={onPress}
-        className="flex-row items-center p-3 bg-white rounded-lg border border-gray-200 mb-2"
+        className="flex-row items-center p-3 bg-peach-50 rounded-lg border border-sage-200 mb-2"
       >
         <Image
           source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
@@ -59,13 +59,13 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
             )}
             {totalTime && (
               <View className="flex-row items-center">
-                <Ionicons name="time-outline" size={14} color="#6b7280" />
-                <Text className="text-sm text-gray-500 ml-1">{totalTime} min</Text>
+                <Ionicons name="time-outline" size={14} color="#7A8A5D" />
+                <Text className="text-sm text-sage-600 ml-1">{totalTime} min</Text>
               </View>
             )}
           </View>
         </View>
-        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+        <Ionicons name="chevron-forward" size={20} color="#ADB380" />
       </Pressable>
     );
   }
@@ -73,7 +73,7 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
   return (
     <Pressable
       onPress={onPress}
-      className="bg-white rounded-xl overflow-hidden border border-gray-200 mb-4"
+      className="bg-peach-50 rounded-xl overflow-hidden border border-sage-200 mb-4"
     >
       <Image
         source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
@@ -92,22 +92,22 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
 
         <View className="flex-row flex-wrap mt-2 gap-2">
           {recipe.meal_label && (
-            <View className="bg-primary-100 px-2 py-1 rounded-full">
-              <Text className="text-xs text-primary-700">
+            <View className="bg-sage-200 px-2 py-1 rounded-full">
+              <Text className="text-xs text-sage-700">
                 {MEAL_LABELS[recipe.meal_label]}
               </Text>
             </View>
           )}
           {totalTime && (
-            <View className="flex-row items-center bg-gray-100 px-2 py-1 rounded-full">
-              <Ionicons name="time-outline" size={12} color="#4b5563" />
-              <Text className="text-xs text-gray-600 ml-1">{totalTime} min</Text>
+            <View className="flex-row items-center bg-peach-200 px-2 py-1 rounded-full">
+              <Ionicons name="time-outline" size={12} color="#a87a3a" />
+              <Text className="text-xs text-peach-700 ml-1">{totalTime} min</Text>
             </View>
           )}
           {recipe.servings && (
-            <View className="flex-row items-center bg-gray-100 px-2 py-1 rounded-full">
-              <Ionicons name="people-outline" size={12} color="#4b5563" />
-              <Text className="text-xs text-gray-600 ml-1">{recipe.servings}</Text>
+            <View className="flex-row items-center bg-peach-200 px-2 py-1 rounded-full">
+              <Ionicons name="people-outline" size={12} color="#a87a3a" />
+              <Text className="text-xs text-peach-700 ml-1">{recipe.servings}</Text>
             </View>
           )}
         </View>
@@ -115,7 +115,7 @@ export function RecipeCard({ recipe, onPress, compact = false }: RecipeCardProps
         {recipe.tags.length > 0 && (
           <View className="flex-row flex-wrap mt-2 gap-1">
             {recipe.tags.slice(0, 3).map((tag) => (
-              <Text key={tag} className="text-xs text-gray-500">
+              <Text key={tag} className="text-xs text-sage-600">
                 #{tag}
               </Text>
             ))}

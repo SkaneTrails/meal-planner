@@ -81,21 +81,21 @@ export default function RecipeDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-50">
-        <Ionicons name="hourglass-outline" size={48} color="#d1d5db" />
-        <Text className="text-gray-500 mt-4">Loading recipe...</Text>
+      <View className="flex-1 items-center justify-center bg-background">
+        <Ionicons name="hourglass-outline" size={48} color="#ADB380" />
+        <Text className="text-sage-600 mt-4">Loading recipe...</Text>
       </View>
     );
   }
 
   if (error || !recipe) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-50 p-8">
-        <Ionicons name="alert-circle-outline" size={64} color="#ef4444" />
+      <View className="flex-1 items-center justify-center bg-background p-8">
+        <Ionicons name="alert-circle-outline" size={64} color="#a87a3a" />
         <Text className="text-gray-900 text-lg font-semibold mt-4">Recipe not found</Text>
         <Pressable
           onPress={() => router.back()}
-          className="mt-4 px-6 py-3 bg-primary-500 rounded-full"
+          className="mt-4 px-6 py-3 bg-sage-400 rounded-full"
         >
           <Text className="text-white font-semibold">Go Back</Text>
         </Pressable>
@@ -126,7 +126,7 @@ export default function RecipeDetailScreen() {
         }}
       />
 
-      <ScrollView className="flex-1 bg-gray-50">
+      <ScrollView className="flex-1 bg-background">
         {/* Hero image */}
         <Image
           source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
@@ -135,7 +135,7 @@ export default function RecipeDetailScreen() {
         />
 
         {/* Content */}
-        <View className="p-4 -mt-6 bg-white rounded-t-3xl">
+        <View className="p-4 -mt-6 bg-peach-50 rounded-t-3xl">
           {/* Title and labels */}
           <Text className="text-2xl font-bold text-gray-900">
             {recipe.title}
@@ -144,16 +144,16 @@ export default function RecipeDetailScreen() {
           {/* Meta info */}
           <View className="flex-row flex-wrap mt-3 gap-3">
             {recipe.diet_label && (
-              <View className="flex-row items-center bg-primary-50 px-3 py-1.5 rounded-full">
+              <View className="flex-row items-center bg-sage-100 px-3 py-1.5 rounded-full">
                 <Text className="mr-1">{DIET_LABELS[recipe.diet_label].emoji}</Text>
-                <Text className="text-sm text-primary-700">
+                <Text className="text-sm text-sage-700">
                   {DIET_LABELS[recipe.diet_label].label}
                 </Text>
               </View>
             )}
             {recipe.meal_label && (
-              <View className="bg-gray-100 px-3 py-1.5 rounded-full">
-                <Text className="text-sm text-gray-700">
+              <View className="bg-peach-200 px-3 py-1.5 rounded-full">
+                <Text className="text-sm text-peach-700">
                   {MEAL_LABELS[recipe.meal_label]}
                 </Text>
               </View>
@@ -161,38 +161,38 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Time and servings */}
-          <View className="flex-row mt-4 bg-gray-50 rounded-xl p-4">
+          <View className="flex-row mt-4 bg-sage-50 rounded-xl p-4 border border-sage-100">
             {recipe.prep_time && (
               <View className="flex-1 items-center">
-                <Ionicons name="timer-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Prep</Text>
+                <Ionicons name="timer-outline" size={24} color="#7A8A5D" />
+                <Text className="text-sm text-sage-500 mt-1">Prep</Text>
                 <Text className="text-base font-semibold text-gray-900">
                   {recipe.prep_time} min
                 </Text>
               </View>
             )}
             {recipe.cook_time && (
-              <View className="flex-1 items-center border-l border-gray-200">
-                <Ionicons name="flame-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Cook</Text>
+              <View className="flex-1 items-center border-l border-sage-200">
+                <Ionicons name="flame-outline" size={24} color="#7A8A5D" />
+                <Text className="text-sm text-sage-500 mt-1">Cook</Text>
                 <Text className="text-base font-semibold text-gray-900">
                   {recipe.cook_time} min
                 </Text>
               </View>
             )}
             {totalTime && (
-              <View className="flex-1 items-center border-l border-gray-200">
-                <Ionicons name="time-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Total</Text>
+              <View className="flex-1 items-center border-l border-sage-200">
+                <Ionicons name="time-outline" size={24} color="#7A8A5D" />
+                <Text className="text-sm text-sage-500 mt-1">Total</Text>
                 <Text className="text-base font-semibold text-gray-900">
                   {totalTime} min
                 </Text>
               </View>
             )}
             {recipe.servings && (
-              <View className="flex-1 items-center border-l border-gray-200">
-                <Ionicons name="people-outline" size={24} color="#6b7280" />
-                <Text className="text-sm text-gray-500 mt-1">Servings</Text>
+              <View className="flex-1 items-center border-l border-sage-200">
+                <Ionicons name="people-outline" size={24} color="#7A8A5D" />
+                <Text className="text-sm text-sage-500 mt-1">Servings</Text>
                 <Text className="text-base font-semibold text-gray-900">
                   {recipe.servings}
                 </Text>
@@ -206,9 +206,9 @@ export default function RecipeDetailScreen() {
               {recipe.tags.map((tag) => (
                 <View
                   key={tag}
-                  className="bg-gray-100 px-3 py-1 rounded-full"
+                  className="bg-sage-100 px-3 py-1 rounded-full"
                 >
-                  <Text className="text-sm text-gray-600">#{tag}</Text>
+                  <Text className="text-sm text-sage-600">#{tag}</Text>
                 </View>
               ))}
             </View>
@@ -225,9 +225,9 @@ export default function RecipeDetailScreen() {
               recipe.ingredients.map((ingredient, index) => (
                 <View
                   key={index}
-                  className="flex-row items-start py-2 border-b border-gray-100"
+                  className="flex-row items-start py-2 border-b border-sage-100"
                 >
-                  <View className="w-2 h-2 rounded-full bg-primary-500 mt-2 mr-3" />
+                  <View className="w-2 h-2 rounded-full bg-sage-400 mt-2 mr-3" />
                   <Text className="flex-1 text-base text-gray-700">
                     {ingredient}
                   </Text>
@@ -246,7 +246,7 @@ export default function RecipeDetailScreen() {
             ) : (
               recipe.instructions.map((instruction, index) => (
                 <View key={index} className="flex-row items-start py-3">
-                  <View className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center mr-3">
+                  <View className="w-8 h-8 rounded-full bg-sage-400 items-center justify-center mr-3">
                     <Text className="text-white font-bold">{index + 1}</Text>
                   </View>
                   <Text className="flex-1 text-base text-gray-700">
@@ -263,10 +263,10 @@ export default function RecipeDetailScreen() {
               onPress={() => Linking.openURL(recipe.url).catch(() => {
                 Alert.alert('Error', 'Could not open the recipe URL');
               })}
-              className="flex-row items-center justify-center py-3 border-t border-gray-200"
+              className="flex-row items-center justify-center py-3 border-t border-sage-200"
             >
-              <Ionicons name="link-outline" size={20} color="#6b7280" />
-              <Text className="text-gray-500 ml-2 text-sm" numberOfLines={1}>
+              <Ionicons name="link-outline" size={20} color="#7A8A5D" />
+              <Text className="text-sage-600 ml-2 text-sm" numberOfLines={1}>
                 View original recipe
               </Text>
             </Pressable>

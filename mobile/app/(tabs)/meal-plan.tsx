@@ -131,14 +131,14 @@ export default function MealPlanScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-background">
       {/* Week navigation */}
-      <View className="bg-white px-4 py-3 flex-row items-center justify-between border-b border-gray-200">
+      <View className="bg-peach-50 px-4 py-3 flex-row items-center justify-between border-b border-sage-200">
         <Pressable
           onPress={() => setWeekOffset((prev) => prev - 1)}
           className="p-2"
         >
-          <Ionicons name="chevron-back" size={24} color="#374151" />
+          <Ionicons name="chevron-back" size={24} color="#7A8A5D" />
         </Pressable>
 
         <Pressable
@@ -149,7 +149,7 @@ export default function MealPlanScreen() {
             {formatWeekRange(weekDates)}
           </Text>
           {weekOffset !== 0 && (
-            <Text className="text-xs text-primary-500">Tap to return to this week</Text>
+            <Text className="text-xs text-sage-600">Tap to return to this week</Text>
           )}
         </Pressable>
 
@@ -157,7 +157,7 @@ export default function MealPlanScreen() {
           onPress={() => setWeekOffset((prev) => prev + 1)}
           className="p-2"
         >
-          <Ionicons name="chevron-forward" size={24} color="#374151" />
+          <Ionicons name="chevron-forward" size={24} color="#7A8A5D" />
         </Pressable>
       </View>
 
@@ -168,6 +168,7 @@ export default function MealPlanScreen() {
           <RefreshControl
             refreshing={mealPlanLoading}
             onRefresh={() => refetchMealPlan()}
+            tintColor="#7A8A5D"
           />
         }
       >
@@ -189,18 +190,18 @@ export default function MealPlanScreen() {
       </ScrollView>
 
       {/* Action buttons */}
-      <View className="flex-row p-4 bg-white border-t border-gray-200 gap-3">
+      <View className="flex-row p-4 bg-peach-50 border-t border-sage-200 gap-3">
         <Pressable
           onPress={handleClearPlan}
-          className="flex-1 flex-row items-center justify-center py-3 rounded-xl border border-gray-300"
+          className="flex-1 flex-row items-center justify-center py-3 rounded-xl border border-sage-300 bg-white"
         >
-          <Ionicons name="trash-outline" size={20} color="#6b7280" />
-          <Text className="ml-2 font-medium text-gray-600">Clear Week</Text>
+          <Ionicons name="trash-outline" size={20} color="#7A8A5D" />
+          <Text className="ml-2 font-medium text-sage-600">Clear Week</Text>
         </Pressable>
 
         <Pressable
           onPress={() => router.push('/grocery')}
-          className="flex-1 flex-row items-center justify-center py-3 rounded-xl bg-primary-500"
+          className="flex-1 flex-row items-center justify-center py-3 rounded-xl bg-sage-400"
         >
           <Ionicons name="cart" size={20} color="white" />
           <Text className="ml-2 font-medium text-white">Grocery List</Text>

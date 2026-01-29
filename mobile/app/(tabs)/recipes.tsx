@@ -49,11 +49,11 @@ export default function RecipesScreen() {
   }, [recipes, searchQuery, dietFilter]);
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-background">
       {/* Search bar */}
-      <View className="bg-white px-4 py-3 border-b border-gray-200">
-        <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-2">
-          <Ionicons name="search" size={20} color="#9ca3af" />
+      <View className="bg-peach-50 px-4 py-3 border-b border-sage-200">
+        <View className="flex-row items-center bg-white rounded-xl px-4 py-2 border border-sage-100">
+          <Ionicons name="search" size={20} color="#ADB380" />
           <TextInput
             className="flex-1 ml-2 text-base text-gray-900"
             placeholder="Search recipes..."
@@ -63,7 +63,7 @@ export default function RecipesScreen() {
           />
           {searchQuery !== '' && (
             <Pressable onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color="#9ca3af" />
+              <Ionicons name="close-circle" size={20} color="#ADB380" />
             </Pressable>
           )}
         </View>
@@ -76,8 +76,8 @@ export default function RecipesScreen() {
               onPress={() => setDietFilter(filter.value)}
               className={`flex-row items-center px-3 py-1.5 rounded-full ${
                 dietFilter === filter.value
-                  ? 'bg-primary-500'
-                  : 'bg-gray-100'
+                  ? 'bg-sage-400'
+                  : 'bg-white border border-sage-200'
               }`}
             >
               <Text className="mr-1">{filter.emoji}</Text>
@@ -105,11 +105,11 @@ export default function RecipesScreen() {
         )}
         contentContainerStyle={{ padding: 16 }}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} />
+          <RefreshControl refreshing={isLoading} onRefresh={() => refetch()} tintColor="#7A8A5D" />
         }
         ListEmptyComponent={
           <View className="items-center py-16">
-            <Ionicons name="search" size={64} color="#d1d5db" />
+            <Ionicons name="search" size={64} color="#ADB380" />
             <Text className="text-gray-500 text-lg mt-4 text-center">
               {searchQuery || dietFilter
                 ? 'No recipes match your filters'
@@ -118,7 +118,7 @@ export default function RecipesScreen() {
             {!searchQuery && !dietFilter && (
               <Pressable
                 onPress={() => router.push('/add-recipe')}
-                className="bg-primary-500 px-6 py-3 rounded-full mt-4"
+                className="bg-sage-400 px-6 py-3 rounded-full mt-4"
               >
                 <Text className="text-white font-semibold">Add Your First Recipe</Text>
               </Pressable>
@@ -130,7 +130,7 @@ export default function RecipesScreen() {
       {/* FAB to add recipe */}
       <Pressable
         onPress={() => router.push('/add-recipe')}
-        className="absolute bottom-6 right-6 bg-primary-500 w-14 h-14 rounded-full items-center justify-center shadow-lg"
+        className="absolute bottom-6 right-6 bg-sage-600 w-14 h-14 rounded-full items-center justify-center shadow-lg"
       >
         <Ionicons name="add" size={28} color="white" />
       </Pressable>

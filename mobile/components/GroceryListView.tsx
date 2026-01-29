@@ -24,14 +24,14 @@ const CATEGORY_LABELS: Record<GroceryCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<GroceryCategory, string> = {
-  produce: 'bg-green-50 border-green-200',
-  meat_seafood: 'bg-red-50 border-red-200',
-  dairy: 'bg-yellow-50 border-yellow-200',
-  bakery: 'bg-orange-50 border-orange-200',
-  pantry: 'bg-amber-50 border-amber-200',
-  frozen: 'bg-blue-50 border-blue-200',
-  beverages: 'bg-purple-50 border-purple-200',
-  other: 'bg-gray-50 border-gray-200',
+  produce: 'bg-sage-100 border-sage-300',
+  meat_seafood: 'bg-peach-200 border-peach-400',
+  dairy: 'bg-peach-100 border-peach-300',
+  bakery: 'bg-peach-200 border-peach-400',
+  pantry: 'bg-sage-50 border-sage-200',
+  frozen: 'bg-sage-100 border-sage-300',
+  beverages: 'bg-peach-100 border-peach-300',
+  other: 'bg-peach-50 border-sage-200',
 };
 
 function formatQuantity(item: GroceryItem): string {
@@ -81,18 +81,17 @@ export function GroceryItemRow({ item, onToggle }: GroceryItemRowProps) {
     <Pressable
       onPress={handleToggle}
       className={`
-        flex-row items-center p-3 bg-white rounded-lg border border-gray-200 mb-2
+        flex-row items-center p-3 bg-peach-50 rounded-lg border border-sage-200 mb-2
         ${checked ? 'opacity-50' : ''}
       `}
     >
       <View
         className={`
           w-6 h-6 rounded-full border-2 items-center justify-center mr-3
-          ${checked ? 'bg-primary-500 border-primary-500' : 'border-gray-300'}
+          ${checked ? 'bg-sage-400 border-sage-400' : 'border-sage-300'}
         `}
       >
         {checked && <Ionicons name="checkmark" size={16} color="white" />}
-      </View>
 
       <View className="flex-1">
         <Text
@@ -146,11 +145,11 @@ export function GroceryListView({ groceryList, onItemToggle }: GroceryListViewPr
   if (sections.length === 0) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Ionicons name="cart-outline" size={64} color="#d1d5db" />
+        <Ionicons name="cart-outline" size={64} color="#ADB380" />
         <Text className="text-gray-500 text-lg mt-4 text-center">
           No items in your grocery list
         </Text>
-        <Text className="text-gray-400 text-sm mt-2 text-center">
+        <Text className="text-sage-400 text-sm mt-2 text-center">
           Add meals to your plan to generate a shopping list
         </Text>
       </View>
