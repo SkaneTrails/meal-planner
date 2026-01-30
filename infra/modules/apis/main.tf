@@ -58,3 +58,26 @@ resource "google_project_service" "artifactregistry" {
 
   disable_on_destroy = false
 }
+
+# Firebase APIs for authentication
+resource "google_project_service" "firebase" {
+  project = var.project
+  service = "firebase.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "identitytoolkit" {
+  project = var.project
+  service = "identitytoolkit.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+# IAM Credentials API for Workload Identity Federation
+resource "google_project_service" "iamcredentials" {
+  project = var.project
+  service = "iamcredentials.googleapis.com"
+
+  disable_on_destroy = false
+}

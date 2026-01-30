@@ -32,3 +32,18 @@ output "artifactregistry_service" {
   description = "Artifact Registry API service resource"
   value       = google_project_service.artifactregistry
 }
+
+output "firebase_service" {
+  description = "Firebase API service resource"
+  value       = google_project_service.firebase
+}
+
+output "identitytoolkit_service" {
+  description = "Identity Toolkit (Firebase Auth) API service resource"
+  value       = google_project_service.identitytoolkit
+}
+
+output "iamcredentials_service" {
+  description = "IAM Credentials API service resource (for Workload Identity Federation)"
+  value       = google_project_service.iamcredentials
+}
