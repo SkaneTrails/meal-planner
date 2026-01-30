@@ -34,7 +34,7 @@ jobs:
           service_account: github-actions-firebase@${{ env.FIREBASE_PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Setup Node.js
-        uses: actions/setup-node@cdcab5eeda1f8cafde30020a865ad99ccb81baed # v5.0.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"
           cache: "npm"
