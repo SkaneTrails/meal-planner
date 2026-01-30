@@ -44,9 +44,20 @@ jobs:
         working-directory: mobile
         run: npm ci
 
+      - name: Cache Expo/Metro build
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: |
+            mobile/.expo
+            mobile/node_modules/.cache
+          key: expo-web-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}
+          restore-keys: |
+            expo-web-${{ runner.os }}-
+
       - name: Build web app
         working-directory: mobile
         env:
+          NODE_ENV: production
           # Production Firebase config from secrets
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
