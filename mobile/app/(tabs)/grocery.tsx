@@ -172,12 +172,12 @@ export default function GroceryScreen() {
     selectedMealKeys.forEach((key) => {
       const recipeId = mealPlan.meals[key];
       console.log(`[Grocery] Processing key: ${key}, recipeId: ${recipeId}`);
-      
+
       if (!recipeId || recipeId.startsWith('custom:')) return;
 
       const recipe = recipeMap.get(recipeId);
       console.log(`[Grocery] Found recipe:`, recipe?.title, `with ${recipe?.ingredients.length} ingredients`);
-      
+
       if (!recipe) return;
 
       // Calculate servings multiplier
@@ -271,10 +271,10 @@ export default function GroceryScreen() {
 
   const handleClearAll = async () => {
     console.log('[Grocery] Clear button clicked!');
-    
+
     // Use window.confirm for web instead of Alert.alert
     const confirmed = confirm('Clear Entire List?\n\nThis will remove all items from your grocery list, including meal selections and custom items.');
-    
+
     if (!confirmed) {
       console.log('[Grocery] User cancelled');
       return;
@@ -287,12 +287,12 @@ export default function GroceryScreen() {
         AsyncStorage.removeItem('grocery_custom_items'),
         AsyncStorage.removeItem('grocery_checked_items'),
       ]);
-      
+
       setCustomItems([]);
       setGeneratedItems([]);
       setSelectedMealKeys([]);
       setCheckedItems(new Set());
-      
+
       console.log('[Grocery] All data cleared');
     } catch (error) {
       console.error('[Grocery] Error clearing data:', error);

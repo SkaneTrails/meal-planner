@@ -125,8 +125,9 @@ def get_recipe_from_firestore(index: int = 0) -> dict | None:
     if index < len(docs):
         doc = docs[index]
         data = doc.to_dict()
-        data["id"] = doc.id
-        return data
+        if data is not None:
+            data["id"] = doc.id
+            return data
     return None
 
 
@@ -165,6 +166,9 @@ Förbättra detta recept enligt reglerna:
                 system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3
             ),
         )
+        if response.text is None:
+            print("❌ Gemini returned empty response")
+            return None
         return json.loads(response.text)
     except Exception as e:
         print(f"❌ Gemini API error: {e}")

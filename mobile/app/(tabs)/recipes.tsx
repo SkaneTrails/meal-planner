@@ -59,7 +59,7 @@ interface RecipeGridProps {
 
 function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilter }: RecipeGridProps) {
   const { width } = useWindowDimensions();
-  
+
   // Calculate number of columns based on screen width
   // Card width for readable titles with time info
   const minCardWidth = 185;
@@ -143,7 +143,7 @@ export default function RecipesScreen() {
   const [showDietPicker, setShowDietPicker] = useState(false);
   const [showMealPicker, setShowMealPicker] = useState(false);
   const [showSortPicker, setShowSortPicker] = useState(false);
-  
+
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
 
@@ -185,9 +185,9 @@ export default function RecipesScreen() {
         </View>
 
         {/* AI Enhanced toggle */}
-        <View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'center', 
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
           justifyContent: 'space-between',
           backgroundColor: isEnhanced ? '#4A3728' : '#fff', 
           borderRadius: 16, 

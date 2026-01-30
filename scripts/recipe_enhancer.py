@@ -258,12 +258,13 @@ def list_recipes(limit: int = 20) -> None:
 def get_recipe(recipe_id: str) -> dict | None:
     """Fetch a single recipe by ID."""
     db = get_firestore_client()
-    doc = db.collection("recipes").document(recipe_id).get()
+    doc = db.collection("recipes").document(recipe_id).get()  # type: ignore[union-attr]
 
     if doc.exists:
         data = doc.to_dict()
-        data["id"] = doc.id
-        return data
+        if data is not None:
+            data["id"] = doc.id
+            return data
     return None
 
 

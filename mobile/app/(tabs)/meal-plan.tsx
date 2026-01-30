@@ -84,7 +84,7 @@ function formatDayHeader(date: Date): string {
   const isToday = date.toDateString() === today.toDateString();
   const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
   const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  
+
   if (isToday) return `Today · ${monthDay}`;
   return `${dayName} · ${monthDay}`;
 }
@@ -222,17 +222,17 @@ export default function MealPlanScreen() {
   // Get meal data for a specific date and meal type
   const getMealForSlot = (date: Date, mealType: MealType): { recipe?: Recipe; customText?: string } | null => {
     if (!mealPlan || !mealPlan.meals) return null;
-    
+
     const dateStr = formatDateLocal(date);
     const key = `${dateStr}_${mealType}`;
     const value = mealPlan.meals[key];
-    
+
     if (!value) return null;
-    
+
     if (value.startsWith('custom:')) {
       return { customText: value.slice(7) };
     }
-    
+
     const recipe = recipeMap[value];
     return recipe ? { recipe } : { customText: value };
   };
@@ -302,9 +302,9 @@ export default function MealPlanScreen() {
       await AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(mealsArray));
       await AsyncStorage.setItem('grocery_meal_servings', JSON.stringify(mealServings));
       console.log('[MealPlan] Saved successfully, navigating...');
-      
+
       setShowGroceryModal(false);
-      
+
       // Small delay to ensure storage is written
       setTimeout(() => {
         router.push('/(tabs)/grocery');
@@ -363,7 +363,7 @@ export default function MealPlanScreen() {
             >
               <Ionicons name="chevron-back" size={20} color="#4A3728" />
             </Pressable>
-            
+
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
                 {formatWeekRange(weekDates)}
@@ -374,7 +374,7 @@ export default function MealPlanScreen() {
                 </Pressable>
               )}
             </View>
-            
+
             <Pressable
               onPress={() => setWeekOffset((prev) => prev + 1)}
               style={{ padding: 4 }}
@@ -401,9 +401,9 @@ export default function MealPlanScreen() {
         >
           {weekDates.map((date) => {
             const isToday = date.toDateString() === new Date().toDateString();
-            
+
             return (
-                        <View key={date.toISOString()} style={{ marginBottom: 24 }}>
+              <View key={date.toISOString()} style={{ marginBottom: 24 }}>
                 {/* Day header with note */}
                 {(() => {
                   const dateStr = formatDateLocal(date);

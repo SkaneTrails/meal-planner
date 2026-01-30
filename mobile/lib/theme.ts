@@ -48,7 +48,7 @@ export const colors = {
   primary: '#4A3728',
   primaryDark: '#3D2D1F',
   primaryLight: '#6B5344',
-  
+
   // Background gradients
   bgLight: '#FDFBF7',
   bgMid: '#F5E6D3',
@@ -97,7 +97,7 @@ export const colors = {
     700: '#374151',
     800: '#1F2937',
   },
-  
+
   // Semantic
   success: '#16A34A',
   successBg: '#DCFCE7',
