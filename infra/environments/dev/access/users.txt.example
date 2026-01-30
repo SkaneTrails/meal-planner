@@ -1,0 +1,7 @@
+# User emails for IAM access
+#
+# Add one email per line. Lines starting with # are comments.
+# This file is gitignored - do not commit personal emails.
+#
+# Example:
+# developer@example.com

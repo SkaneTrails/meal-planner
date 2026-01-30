@@ -1,0 +1,5 @@
+# GCP project ID - replace with your actual project ID
+project = "your-project-id-here"
+
+# GCS bucket location (EU is good for European users)
+location = "EU"
