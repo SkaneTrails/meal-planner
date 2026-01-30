@@ -1594,10 +1594,9 @@ elif page == "Meal Plan":
                     if st.button(label, key=f"day_btn_{i}", width="stretch", type="primary"):
                         st.session_state.selected_day_index = i
                         st.rerun()
-                else:
-                    if st.button(label, key=f"day_btn_{i}", width="stretch", type="secondary"):
-                        st.session_state.selected_day_index = i
-                        st.rerun()
+                elif st.button(label, key=f"day_btn_{i}", width="stretch", type="secondary"):
+                    st.session_state.selected_day_index = i
+                    st.rerun()
 
         # Show selected day's meals - compact inline view
         selected_date = week_dates[st.session_state.selected_day_index]

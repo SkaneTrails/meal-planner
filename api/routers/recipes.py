@@ -173,19 +173,19 @@ async def upload_recipe_image(
         ext = "jpg"
     filename = f"recipes/{recipe_id}/{uuid.uuid4()}.{ext}"
 
+    # Read and validate file size before trying to upload
+    content = await file.read()
+    if len(content) > MAX_IMAGE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Image too large. Maximum size is {MAX_IMAGE_SIZE_BYTES // (1024 * 1024)} MB.",
+        )
+
     try:
         # Upload to Google Cloud Storage
         storage_client = storage.Client()
         bucket = storage_client.bucket(GCS_BUCKET_NAME)
         blob = bucket.blob(filename)
-
-        # Read file content with size check
-        content = await file.read()
-        if len(content) > MAX_IMAGE_SIZE_BYTES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Image too large. Maximum size is {MAX_IMAGE_SIZE_BYTES // (1024 * 1024)} MB.",
-            )
         blob.upload_from_string(content, content_type=content_type)
 
         # Make publicly accessible
@@ -194,27 +194,25 @@ async def upload_recipe_image(
         # Get public URL
         image_url = blob.public_url
 
-        # Update recipe with new image URL
-        from api.models.recipe import RecipeUpdate as RecipeUpdateModel
-        updated_recipe = recipe_storage.update_recipe(
-            recipe_id,
-            RecipeUpdateModel(image_url=image_url),
-            database=database,
-        )
-
-        if updated_recipe is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to update recipe with new image URL",
-            )
-
-        return updated_recipe
-
-    except HTTPException:
-        raise
     except Exception as e:
         logger.exception("Failed to upload recipe image for recipe_id=%s", recipe_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to upload image. Please try again.",
         ) from e
+
+    # Update recipe with new image URL (outside try block - separate concern)
+    from api.models.recipe import RecipeUpdate as RecipeUpdateModel
+    updated_recipe = recipe_storage.update_recipe(
+        recipe_id,
+        RecipeUpdateModel(image_url=image_url),
+        database=database,
+    )
+
+    if updated_recipe is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update recipe with new image URL",
+        )
+
+    return updated_recipe
