@@ -80,15 +80,19 @@ class ApiClient {
   }
 
   // Recipe endpoints
-  async getRecipes(search?: string): Promise<Recipe[]> {
+  async getRecipes(search?: string, enhanced: boolean = false): Promise<Recipe[]> {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
+    if (enhanced) params.set('enhanced', 'true');
     const query = params.toString();
     return this.request<Recipe[]>(`/recipes${query ? `?${query}` : ''}`);
   }
 
-  async getRecipe(id: string): Promise<Recipe> {
-    return this.request<Recipe>(`/recipes/${id}`);
+  async getRecipe(id: string, enhanced: boolean = false): Promise<Recipe> {
+    const params = new URLSearchParams();
+    if (enhanced) params.set('enhanced', 'true');
+    const query = params.toString();
+    return this.request<Recipe>(`/recipes/${id}${query ? `?${query}` : ''}`);
   }
 
   async createRecipe(recipe: RecipeCreate): Promise<Recipe> {
@@ -106,17 +110,80 @@ class ApiClient {
     });
   }
 
-  async updateRecipe(id: string, updates: RecipeUpdate): Promise<Recipe> {
-    return this.request<Recipe>(`/recipes/${id}`, {
+  async updateRecipe(id: string, updates: RecipeUpdate, enhanced: boolean = false): Promise<Recipe> {
+    const params = new URLSearchParams();
+    if (enhanced) params.set('enhanced', 'true');
+    const query = params.toString();
+    return this.request<Recipe>(`/recipes/${id}${query ? `?${query}` : ''}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
-  async deleteRecipe(id: string): Promise<void> {
-    return this.request<void>(`/recipes/${id}`, {
+  async deleteRecipe(id: string, enhanced: boolean = false): Promise<void> {
+    const params = new URLSearchParams();
+    if (enhanced) params.set('enhanced', 'true');
+    const query = params.toString();
+    return this.request<void>(`/recipes/${id}${query ? `?${query}` : ''}`, {
       method: 'DELETE',
     });
+  }
+
+  async uploadRecipeImage(id: string, imageUri: string, enhanced: boolean = false): Promise<Recipe> {
+    const url = `${this.baseUrl}${API_PREFIX}/recipes/${id}/image${enhanced ? '?enhanced=true' : ''}`;
+    
+    // Create form data for image upload
+    const formData = new FormData();
+    
+    // Get file info from URI with safe fallbacks
+    let fileName = `recipe_${id}.jpg`;
+    let mimeType = 'image/jpeg';
+
+    try {
+      const uriWithoutQuery = imageUri.split('?')[0].split('#')[0];
+      const pathSegments = uriWithoutQuery.split('/');
+      const lastSegment = pathSegments[pathSegments.length - 1] || '';
+      const dotIndex = lastSegment.lastIndexOf('.');
+
+      if (dotIndex !== -1 && dotIndex < lastSegment.length - 1) {
+        const ext = lastSegment.substring(dotIndex + 1).toLowerCase();
+        if (/^[a-z0-9]+$/.test(ext)) {
+          fileName = `recipe_${id}.${ext}`;
+          mimeType = ext === 'jpg' ? 'image/jpeg' : `image/${ext}`;
+        }
+      }
+    } catch {
+      // Keep defaults if parsing fails
+    }
+    
+    formData.append('file', {
+      uri: imageUri,
+      name: fileName,
+      type: mimeType,
+    } as unknown as Blob);
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      let error;
+      try {
+        error = await response.json();
+      } catch {
+        error = { detail: `HTTP ${response.status}: ${response.statusText}` };
+      }
+      throw new ApiClientError(
+        typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail),
+        response.status
+      );
+    }
+    
+    return response.json();
   }
 
   // Meal Plan endpoints

@@ -5,7 +5,7 @@
 
 // Recipe types
 export type DietLabel = 'veggie' | 'fish' | 'meat';
-export type MealLabel = 'breakfast' | 'starter' | 'meal' | 'dessert' | 'drink' | 'sauce' | 'pickle' | 'grill';
+export type MealLabel = 'breakfast' | 'starter' | 'salad' | 'meal' | 'dessert' | 'drink' | 'sauce' | 'pickle' | 'grill';
 
 export interface Recipe {
   id: string;
@@ -23,6 +23,7 @@ export interface Recipe {
   tags: string[];
   diet_label: DietLabel | null;
   meal_label: MealLabel | null;
+  rating: number | null;
 }
 
 export interface RecipeCreate {
@@ -40,6 +41,7 @@ export interface RecipeCreate {
   tags?: string[];
   diet_label?: DietLabel | null;
   meal_label?: MealLabel | null;
+  rating?: number | null;
 }
 
 export interface RecipeUpdate {
@@ -57,6 +59,7 @@ export interface RecipeUpdate {
   tags?: string[];
   diet_label?: DietLabel | null;
   meal_label?: MealLabel | null;
+  rating?: number | null;
 }
 
 export interface RecipeScrapeRequest {

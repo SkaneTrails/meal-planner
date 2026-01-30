@@ -156,18 +156,19 @@ def save_recipe(recipe: RecipeCreate) -> Recipe:
     return Recipe(id=doc_ref.id, **recipe.model_dump())
 
 
-def update_recipe(recipe_id: str, updates: RecipeUpdate) -> Recipe | None:
+def update_recipe(recipe_id: str, updates: RecipeUpdate, database: str = DEFAULT_DATABASE) -> Recipe | None:
     """
     Update an existing recipe in Firestore.
 
     Args:
         recipe_id: The Firestore document ID.
         updates: The fields to update.
+        database: The database to update in (default or meal-planner for AI-enhanced).
 
     Returns:
         The updated recipe, or None if not found.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
     doc = cast("DocumentSnapshot", doc_ref.get())
@@ -185,7 +186,7 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate) -> Recipe | None:
     doc_ref.update(update_data)
 
     # Return the updated recipe
-    return get_recipe(recipe_id)
+    return get_recipe(recipe_id, database=database)
 
 
 def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | None:
@@ -212,17 +213,18 @@ def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | Non
     return _doc_to_recipe(doc.id, data)
 
 
-def delete_recipe(recipe_id: str) -> bool:
+def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> bool:
     """
     Delete a recipe by ID.
 
     Args:
         recipe_id: The Firestore document ID.
+        database: The database to delete from (default or meal-planner for AI-enhanced).
 
     Returns:
         True if deleted, False if not found.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
     if not cast("DocumentSnapshot", doc_ref.get()).exists:

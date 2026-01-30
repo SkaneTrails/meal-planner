@@ -844,6 +844,13 @@ elif page == "Recipes":
 
         st.divider()
 
+        # Check if recipe exists
+        if recipe is None:
+            st.error("Recipe not found")
+            st.session_state.selected_recipe = None
+            st.rerun()
+            st.stop()
+
         # Initialize edit mode state
         edit_mode_key = f"edit_mode_{recipe_id}"
         if edit_mode_key not in st.session_state:
@@ -1111,6 +1118,10 @@ elif page == "Recipes":
             # Show extracted recipe preview
             if "temp_recipe" in st.session_state and st.session_state.temp_recipe:
                 recipe = st.session_state.temp_recipe
+                if recipe is None:
+                    st.error("Recipe data is invalid")
+                    st.session_state.temp_recipe = None
+                    st.rerun()
                 st.divider()
                 st.subheader("Preview")
 
@@ -1444,7 +1455,7 @@ elif page == "Meal Plan":
 
         # Weighted random selection
         r = random.random() * total_weight
-        cumulative = 0
+        cumulative = 0.0
         for rid, weight in zip(recipe_ids, weights, strict=False):
             cumulative += weight
             if r <= cumulative:
@@ -1578,9 +1589,12 @@ elif page == "Meal Plan":
             with day_cols[i]:
                 is_selected = st.session_state.selected_day_index == i
                 is_today = d == today
-                btn_type = "primary" if is_selected else "secondary"
                 label = f"{d.day}"
-                if st.button(label, key=f"day_btn_{i}", width="stretch", type=btn_type):
+                if is_selected:
+                    if st.button(label, key=f"day_btn_{i}", width="stretch", type="primary"):
+                        st.session_state.selected_day_index = i
+                        st.rerun()
+                elif st.button(label, key=f"day_btn_{i}", width="stretch", type="secondary"):
                     st.session_state.selected_day_index = i
                     st.rerun()
 

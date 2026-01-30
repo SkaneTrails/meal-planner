@@ -18,6 +18,7 @@ class MealLabel(str, Enum):
 
     BREAKFAST = "breakfast"
     STARTER = "starter"
+    SALAD = "salad"
     MEAL = "meal"
     DESSERT = "dessert"
     DRINK = "drink"
@@ -43,6 +44,7 @@ class RecipeBase(BaseModel):
     tags: list[str] = Field(default_factory=list)
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
+    rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating from 1-5 stars")
 
 
 class Recipe(RecipeBase):
@@ -83,6 +85,7 @@ class RecipeUpdate(BaseModel):
     tags: list[str] | None = None
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
+    rating: int | None = Field(default=None, ge=1, le=5)
 
 
 class RecipeScrapeRequest(BaseModel):
