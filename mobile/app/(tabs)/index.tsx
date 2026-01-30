@@ -9,9 +9,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useRecipes, useMealPlan, useGroceryList, useEnhancedMode } from '@/lib/hooks';
+import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
+import { useSettings } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
-import type { Recipe } from '@/lib/types';
+import type { Recipe, GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -83,18 +84,57 @@ export default function HomeScreen() {
   const { isEnhanced } = useEnhancedMode();
   const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes(undefined, isEnhanced);
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
+  const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
+  const { isItemAtHome } = useSettings();
   const [recipeUrl, setRecipeUrl] = useState('');
   const [inspirationIndex, setInspirationIndex] = useState(0);
-
-  const { start, end } = useMemo(() => getWeekDates(), []);
-  const { data: groceryList } = useGroceryList(undefined, { start_date: start, end_date: end });
 
   const isLoading = recipesLoading || mealPlanLoading;
 
   const handleRefresh = () => {
     refetchRecipes();
     refetchMealPlan();
+    refreshFromStorage();
   };
+
+  // Generate grocery items count from selected meals (same logic as grocery screen)
+  const groceryItemsCount = useMemo(() => {
+    if (!mealPlan || selectedMealKeys.length === 0) {
+      return customItems.length;
+    }
+    
+    const recipeMap = new Map(recipes.map(r => [r.id, r]));
+    const ingredientNames = new Set<string>();
+    
+    selectedMealKeys.forEach(key => {
+      const recipeId = mealPlan.meals?.[key];
+      if (!recipeId || recipeId.startsWith('custom:')) return;
+      
+      const recipe = recipeMap.get(recipeId);
+      if (!recipe) return;
+      
+      recipe.ingredients.forEach(ingredient => {
+        const name = ingredient.toLowerCase().trim()
+          .replace(/\s*\(steg\s*\d+\)\s*$/i, '')
+          .replace(/\s*\(step\s*\d+\)\s*$/i, '')
+          .replace(/\s+till\s+\w+$/i, '');
+        ingredientNames.add(name);
+      });
+    });
+    
+    // Add custom items
+    customItems.forEach(name => ingredientNames.add(name));
+    
+    // Filter out items at home and checked items, return unchecked count
+    let uncheckedCount = 0;
+    ingredientNames.forEach(name => {
+      if (!isItemAtHome(name) && !checkedItems.has(name)) {
+        uncheckedCount++;
+      }
+    });
+    
+    return uncheckedCount;
+  }, [mealPlan, selectedMealKeys, recipes, customItems, checkedItems, isItemAtHome]);
 
   // Filter inspiration recipes (exclude meal and grill categories - starters, desserts, drinks, sauces, pickles, breakfast)
   const inspirationRecipes = useMemo(() => {
@@ -121,7 +161,6 @@ export default function HomeScreen() {
 
   // Count meals planned this week (max 21: 7 days x 3 meals)
   const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
-  const groceryItemsCount = groceryList?.items.length || 0;
   const nextMeal = getNextMeal(mealPlan, recipes);
 
   const handleImportRecipe = () => {

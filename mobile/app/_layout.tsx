@@ -10,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { QueryProvider, restoreQueryCache, persistQueryCache } from '@/lib/query-provider';
 import { EnhancedModeProvider } from '@/lib/enhanced-mode-context';
 import { SettingsProvider } from '@/lib/settings-context';
+import { GroceryProvider } from '@/lib/grocery-context';
 import '../global.css';
 
 export default function RootLayout() {
@@ -34,7 +35,8 @@ export default function RootLayout() {
     <QueryProvider>
       <EnhancedModeProvider>
         <SettingsProvider>
-          <StatusBar style="auto" />
+          <GroceryProvider>
+            <StatusBar style="auto" />
           <Stack>
             <Stack.Screen
               name="(tabs)"
@@ -72,6 +74,7 @@ export default function RootLayout() {
               }}
             />
           </Stack>
+          </GroceryProvider>
         </SettingsProvider>
       </EnhancedModeProvider>
     </QueryProvider>

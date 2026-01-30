@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useMealPlan, useRecipes, useEnhancedMode } from '@/lib/hooks';
+import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
 import type { GroceryItem } from '@/lib/types';
@@ -46,7 +46,7 @@ function getWeekDates(): { start: string; end: string } {
 
 export default function GroceryScreen() {
   const router = useRouter();
-  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const { checkedItems, setCheckedItems, clearChecked, refreshFromStorage } = useGroceryState();
   const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
@@ -81,11 +81,10 @@ export default function GroceryScreen() {
       const loadData = async () => {
         try {
           console.log('[Grocery] Screen focused, loading data...');
-          const [customData, mealsData, servingsData, checkedData] = await Promise.all([
+          const [customData, mealsData, servingsData] = await Promise.all([
             AsyncStorage.getItem('grocery_custom_items'),
             AsyncStorage.getItem('grocery_selected_meals'),
             AsyncStorage.getItem('grocery_meal_servings'),
-            AsyncStorage.getItem('grocery_checked_items'),
           ]);
 
           console.log('[Grocery] Raw data from storage:', { customData, mealsData, servingsData });
@@ -114,13 +113,8 @@ export default function GroceryScreen() {
             setMealServings({});
           }
 
-          if (checkedData) {
-            const checked = JSON.parse(checkedData);
-            console.log('[Grocery] Loaded checked items:', checked.length);
-            setCheckedItems(new Set(checked));
-          } else {
-            setCheckedItems(new Set());
-          }
+          // Refresh checked items from context (which loads from AsyncStorage)
+          await refreshFromStorage();
         } catch (error) {
           console.error('[Grocery] Error loading data:', error);
         } finally {
@@ -129,7 +123,7 @@ export default function GroceryScreen() {
       };
 
       loadData();
-    }, [])
+    }, [refreshFromStorage])
   );
 
   // Memoize serialized values to prevent infinite loops
@@ -230,16 +224,6 @@ export default function GroceryScreen() {
     }
   }, [customItems, isLoading]);
 
-  // Save checked items to AsyncStorage whenever they change
-  useEffect(() => {
-    if (!isLoading) {
-      const checkedArray = Array.from(checkedItems);
-      AsyncStorage.setItem('grocery_checked_items', JSON.stringify(checkedArray))
-        .then(() => console.log('[Grocery] Saved checked items:', checkedArray.length))
-        .catch((error) => console.error('[Grocery] Error saving checked items:', error));
-    }
-  }, [checkedItems, isLoading]);
-
   // Combine generated and custom items
   const groceryListWithChecked = useMemo(() => {
     const allItems = [...generatedItems, ...customItems];
@@ -254,19 +238,17 @@ export default function GroceryScreen() {
   }, [generatedItems, customItems, checkedItems]);
 
   const handleItemToggle = (itemName: string, checked: boolean) => {
-    setCheckedItems((prev) => {
-      const newSet = new Set(prev);
-      if (checked) {
-        newSet.add(itemName);
-      } else {
-        newSet.delete(itemName);
-      }
-      return newSet;
-    });
+    const newSet = new Set(checkedItems);
+    if (checked) {
+      newSet.add(itemName);
+    } else {
+      newSet.delete(itemName);
+    }
+    setCheckedItems(newSet);
   };
 
   const handleClearChecked = () => {
-    setCheckedItems(new Set());
+    clearChecked();
   };
 
   const handleClearAll = async () => {
@@ -291,7 +273,7 @@ export default function GroceryScreen() {
       setCustomItems([]);
       setGeneratedItems([]);
       setSelectedMealKeys([]);
-      setCheckedItems(new Set());
+      clearChecked();
 
       console.log('[Grocery] All data cleared');
     } catch (error) {
