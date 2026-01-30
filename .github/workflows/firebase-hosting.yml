@@ -69,6 +69,12 @@ jobs:
           EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
         run: npx expo export --platform web
 
+      - name: Cache Firebase CLI
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.npm
+          key: firebase-cli-${{ runner.os }}
+
       - name: Deploy to Firebase Hosting
         working-directory: mobile
         run: |
