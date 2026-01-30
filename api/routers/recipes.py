@@ -1,5 +1,6 @@
 """Recipe API endpoints."""
 
+import logging
 import os
 import uuid
 from typing import Annotated
@@ -12,6 +13,8 @@ from api.models.recipe import Recipe, RecipeCreate, RecipeScrapeRequest, RecipeU
 from api.storage import recipe_storage
 from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 # URL for the scrape Cloud Function (local or production)
@@ -19,6 +22,9 @@ SCRAPE_FUNCTION_URL = os.getenv("SCRAPE_FUNCTION_URL", "http://localhost:8001")
 
 # Google Cloud Storage bucket for recipe images
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "meal-planner-recipe-images")
+
+# Maximum file size for image uploads (10 MB)
+MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
 # HTTP status code for unprocessable entity
 _HTTP_422 = 422
@@ -112,18 +118,29 @@ async def scrape_recipe(request: RecipeScrapeRequest) -> Recipe:
 
 
 @router.put("/{recipe_id}")
-async def update_recipe(recipe_id: str, updates: RecipeUpdate) -> Recipe:
+async def update_recipe(
+    recipe_id: str,
+    updates: RecipeUpdate,
+    *,
+    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
+) -> Recipe:
     """Update an existing recipe."""
-    recipe = recipe_storage.update_recipe(recipe_id, updates)
+    database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
+    recipe = recipe_storage.update_recipe(recipe_id, updates, database=database)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
     return recipe
 
 
 @router.delete("/{recipe_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_recipe(recipe_id: str) -> None:
+async def delete_recipe(
+    recipe_id: str,
+    *,
+    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
+) -> None:
     """Delete a recipe."""
-    if not recipe_storage.delete_recipe(recipe_id):
+    database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
+    if not recipe_storage.delete_recipe(recipe_id, database=database):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
 
@@ -136,12 +153,12 @@ async def upload_recipe_image(
 ) -> Recipe:
     """Upload an image for a recipe and update the recipe's image_url."""
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
-    
+
     # Verify recipe exists
     recipe = recipe_storage.get_recipe(recipe_id, database=database)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
-    
+
     # Validate file type
     content_type = file.content_type or ""
     if not content_type.startswith("image/"):
@@ -149,29 +166,34 @@ async def upload_recipe_image(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="File must be an image (JPEG, PNG, etc.)",
         )
-    
+
     # Generate unique filename
     ext = content_type.split("/")[-1] if "/" in content_type else "jpg"
     if ext == "jpeg":
         ext = "jpg"
     filename = f"recipes/{recipe_id}/{uuid.uuid4()}.{ext}"
-    
+
     try:
         # Upload to Google Cloud Storage
         storage_client = storage.Client()
         bucket = storage_client.bucket(GCS_BUCKET_NAME)
         blob = bucket.blob(filename)
-        
-        # Read file content
+
+        # Read file content with size check
         content = await file.read()
+        if len(content) > MAX_IMAGE_SIZE_BYTES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Image too large. Maximum size is {MAX_IMAGE_SIZE_BYTES // (1024 * 1024)} MB.",
+            )
         blob.upload_from_string(content, content_type=content_type)
-        
+
         # Make publicly accessible
         blob.make_public()
-        
+
         # Get public URL
         image_url = blob.public_url
-        
+
         # Update recipe with new image URL
         from api.models.recipe import RecipeUpdate as RecipeUpdateModel
         updated_recipe = recipe_storage.update_recipe(
@@ -179,17 +201,20 @@ async def upload_recipe_image(
             RecipeUpdateModel(image_url=image_url),
             database=database,
         )
-        
+
         if updated_recipe is None:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to update recipe with new image URL",
             )
-        
+
         return updated_recipe
-        
+
+    except HTTPException:
+        raise
     except Exception as e:
+        logger.exception("Failed to upload recipe image for recipe_id=%s", recipe_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to upload image: {e!s}",
+            detail="Failed to upload image. Please try again.",
         ) from e

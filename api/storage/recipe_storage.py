@@ -213,17 +213,18 @@ def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | Non
     return _doc_to_recipe(doc.id, data)
 
 
-def delete_recipe(recipe_id: str) -> bool:
+def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> bool:
     """
     Delete a recipe by ID.
 
     Args:
         recipe_id: The Firestore document ID.
+        database: The database to delete from (default or meal-planner for AI-enhanced).
 
     Returns:
         True if deleted, False if not found.
     """
-    db = get_firestore_client()
+    db = get_firestore_client(database)
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
     if not cast("DocumentSnapshot", doc_ref.get()).exists:

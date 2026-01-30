@@ -7,6 +7,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useMealPlan, useGroceryList, useEnhancedMode } from '@/lib/hooks';
 import { GradientBackground } from '@/components';
@@ -143,15 +144,16 @@ export default function HomeScreen() {
           <Ionicons name="settings-outline" size={24} color="#FFFFFF" />
         </Pressable>
         {/* Stronger gradient overlay fading to beige */}
-        <View style={{ 
-          position: 'absolute', 
-          bottom: 0, 
-          left: 0, 
-          right: 0, 
-          height: 150,
-          backgroundColor: 'transparent',
-          backgroundImage: 'linear-gradient(to bottom, rgba(232, 213, 196, 0), rgba(232, 213, 196, 0.5), #E8D5C4)'
-        }} />
+        <LinearGradient
+          colors={['rgba(232, 213, 196, 0)', 'rgba(232, 213, 196, 0.5)', '#E8D5C4']}
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            left: 0, 
+            right: 0, 
+            height: 150,
+          }}
+        />
         
         {/* Welcome text on image */}
         <View style={{ position: 'absolute', bottom: 36, left: 24, right: 24 }}>

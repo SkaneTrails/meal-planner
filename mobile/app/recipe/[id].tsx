@@ -168,6 +168,9 @@ export default function RecipeDetailScreen() {
   const [editServings, setEditServings] = useState('');
   const [editTags, setEditTags] = useState('');
   const [newTag, setNewTag] = useState('');
+  // URL input modal state (for cross-platform support)
+  const [showUrlModal, setShowUrlModal] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState('');
   
   // Initialize edit form when opening modal
   const openEditModal = () => {
@@ -202,6 +205,7 @@ export default function RecipeDetailScreen() {
           servings: editServings ? parseInt(editServings, 10) : null,
           tags: tagsArray,
         },
+        enhanced: isEnhanced,
       });
       setShowEditModal(false);
       Alert.alert('Saved', 'Recipe details updated');
@@ -292,23 +296,9 @@ export default function RecipeDetailScreen() {
         {
           text: 'Enter URL',
           onPress: () => {
-            Alert.prompt(
-              'Image URL',
-              'Enter the URL of the image',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Save',
-                  onPress: async (url?: string) => {
-                    if (url && url.trim()) {
-                      await saveImageUrl(url.trim());
-                    }
-                  },
-                },
-              ],
-              'plain-text',
-              recipe?.image_url || ''
-            );
+            // Use cross-platform modal instead of iOS-only Alert.prompt
+            setImageUrlInput(recipe?.image_url || '');
+            setShowUrlModal(true);
           },
         },
         { text: 'Cancel', style: 'cancel' },
@@ -327,6 +317,7 @@ export default function RecipeDetailScreen() {
       await updateRecipe.mutateAsync({
         id: id!,
         updates: {}, // Empty update just to trigger cache refresh
+        enhanced: isEnhanced,
       });
       Alert.alert('Success', 'Recipe photo uploaded!');
     } catch (err) {
@@ -336,6 +327,7 @@ export default function RecipeDetailScreen() {
         await updateRecipe.mutateAsync({
           id: id!,
           updates: { image_url: localUri },
+          enhanced: isEnhanced,
         });
         Alert.alert('Saved Locally', 'Photo saved locally (upload to cloud failed)');
       } catch {
@@ -352,6 +344,7 @@ export default function RecipeDetailScreen() {
       await updateRecipe.mutateAsync({
         id: id!,
         updates: { image_url: url },
+        enhanced: isEnhanced,
       });
       Alert.alert('Success', 'Recipe photo updated!');
     } catch {
@@ -394,6 +387,7 @@ export default function RecipeDetailScreen() {
       await updateRecipe.mutateAsync({
         id,
         updates: { rating: 5 },
+        enhanced: isEnhanced,
       });
     } catch (err) {
       Alert.alert('Error', 'Failed to update rating');
@@ -414,7 +408,7 @@ export default function RecipeDetailScreen() {
             style: 'destructive',
             onPress: async () => {
               try {
-                await deleteRecipe.mutateAsync(id);
+                await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
                 router.back();
               } catch (err) {
                 Alert.alert('Error', 'Failed to delete recipe');
@@ -436,6 +430,7 @@ export default function RecipeDetailScreen() {
                 await updateRecipe.mutateAsync({
                   id,
                   updates: { rating: 1 },
+                  enhanced: isEnhanced,
                 });
               } catch (err) {
                 Alert.alert('Error', 'Failed to update rating');
@@ -447,7 +442,7 @@ export default function RecipeDetailScreen() {
             style: 'destructive',
             onPress: async () => {
               try {
-                await deleteRecipe.mutateAsync(id);
+                await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
                 router.back();
               } catch (err) {
                 Alert.alert('Error', 'Failed to delete recipe');
@@ -470,7 +465,7 @@ export default function RecipeDetailScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteRecipe.mutateAsync(id);
+              await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
               router.back();
             } catch (err) {
               Alert.alert('Error', 'Failed to delete recipe');
@@ -1282,6 +1277,72 @@ export default function RecipeDetailScreen() {
 
               <View style={{ height: 40 }} />
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* URL Input Modal (cross-platform replacement for Alert.prompt) */}
+      <Modal
+        visible={showUrlModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowUrlModal(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 20, width: '100%', maxWidth: 400 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#4A3728', marginBottom: 8 }}>
+              Image URL
+            </Text>
+            <Text style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>
+              Enter the URL of the image
+            </Text>
+            <TextInput
+              value={imageUrlInput}
+              onChangeText={setImageUrlInput}
+              placeholder="https://example.com/image.jpg"
+              placeholderTextColor="#9ca3af"
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="url"
+              style={{
+                borderWidth: 1,
+                borderColor: '#E8D5C4',
+                borderRadius: 10,
+                padding: 12,
+                fontSize: 15,
+                color: '#4A3728',
+                marginBottom: 16,
+              }}
+            />
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
+              <Pressable
+                onPress={() => setShowUrlModal(false)}
+                style={({ pressed }) => ({
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  borderRadius: 8,
+                  backgroundColor: pressed ? '#f3f4f6' : 'transparent',
+                })}
+              >
+                <Text style={{ fontSize: 15, color: '#6b7280', fontWeight: '500' }}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={async () => {
+                  if (imageUrlInput.trim()) {
+                    await saveImageUrl(imageUrlInput.trim());
+                  }
+                  setShowUrlModal(false);
+                }}
+                style={({ pressed }) => ({
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  borderRadius: 8,
+                  backgroundColor: pressed ? '#3d2e21' : '#4A3728',
+                })}
+              >
+                <Text style={{ fontSize: 15, color: '#fff', fontWeight: '500' }}>Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
