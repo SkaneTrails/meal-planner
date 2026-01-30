@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useGroceryList, useMealPlan, useRecipes, useEnhancedMode } from '@/lib/hooks';
+import { useMealPlan, useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
 import type { GroceryItem } from '@/lib/types';
@@ -55,8 +55,8 @@ export default function GroceryScreen() {
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { isEnhanced } = useEnhancedMode();
-  const { isItemAtHome, settings } = useSettings();
+  useEnhancedMode(); // Keep for potential future use with enhanced recipes
+  const { isItemAtHome } = useSettings();
   const { data: mealPlan } = useMealPlan();
   // Fetch both enhanced and non-enhanced recipes to ensure we find all recipes regardless of which mode was used when planning
   const { data: enhancedRecipes = [] } = useRecipes(undefined, true);

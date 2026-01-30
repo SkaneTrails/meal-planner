@@ -30,22 +30,6 @@ function getWeekDates(): { start: string; end: string } {
   return { start: formatDateLocal(saturday), end: formatDateLocal(friday) };
 }
 
-function getTodaysDinner(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean } | null {
-  if (!mealPlan?.meals) return null;
-  const today = formatDateLocal(new Date());
-  const dinnerKey = `${today}_dinner`;
-  const dinnerValue = mealPlan.meals[dinnerKey];
-  if (!dinnerValue) return null;
-  if (dinnerValue.startsWith('custom:')) {
-    return { title: dinnerValue.slice(7), isCustom: true };
-  }
-  const recipe = recipes.find(r => r.id === dinnerValue);
-  if (recipe) {
-    return { title: recipe.title, imageUrl: recipe.image_url || undefined, isCustom: false };
-  }
-  return null;
-}
-
 function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string } | null {
   if (!mealPlan?.meals) return null;
   const now = new Date();
