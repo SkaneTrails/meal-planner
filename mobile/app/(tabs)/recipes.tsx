@@ -13,6 +13,8 @@ import {
   Pressable,
   useWindowDimensions,
   Switch,
+  Modal,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -136,6 +138,11 @@ export default function RecipesScreen() {
   const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [showAllRecipes, setShowAllRecipes] = useState(true);
+  
+  // Modal states for filter pickers
+  const [showDietPicker, setShowDietPicker] = useState(false);
+  const [showMealPicker, setShowMealPicker] = useState(false);
+  const [showSortPicker, setShowSortPicker] = useState(false);
   
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
@@ -295,13 +302,9 @@ export default function RecipesScreen() {
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, fontWeight: '500' }}>Diet</Text>
             <Pressable
-              onPress={() => {
-                const currentIdx = DIET_OPTIONS.findIndex(o => o.value === dietFilter);
-                const nextIdx = (currentIdx + 1) % DIET_OPTIONS.length;
-                setDietFilter(DIET_OPTIONS[nextIdx].value);
-              }}
+              onPress={() => setShowDietPicker(true)}
               style={{ 
-                backgroundColor: colors.white, 
+                backgroundColor: dietFilter ? '#E8F5E8' : colors.white, 
                 borderRadius: borderRadius.sm, 
                 paddingHorizontal: 14, 
                 paddingVertical: 12,
@@ -311,7 +314,7 @@ export default function RecipesScreen() {
                 ...shadows.sm,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.primary }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: dietFilter ? '#2D5A3D' : colors.primary }}>
                 {DIET_OPTIONS.find(o => o.value === dietFilter)?.label || 'All'}
               </Text>
               <Ionicons name="chevron-down" size={16} color={colors.text.muted} />
@@ -322,13 +325,9 @@ export default function RecipesScreen() {
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, fontWeight: '500' }}>Meal Type</Text>
             <Pressable
-              onPress={() => {
-                const currentIdx = MEAL_OPTIONS.findIndex(o => o.value === mealFilter);
-                const nextIdx = (currentIdx + 1) % MEAL_OPTIONS.length;
-                setMealFilter(MEAL_OPTIONS[nextIdx].value);
-              }}
+              onPress={() => setShowMealPicker(true)}
               style={{ 
-                backgroundColor: colors.white, 
+                backgroundColor: mealFilter ? '#E8F5E8' : colors.white, 
                 borderRadius: borderRadius.sm, 
                 paddingHorizontal: 14, 
                 paddingVertical: 12,
@@ -338,7 +337,7 @@ export default function RecipesScreen() {
                 ...shadows.sm,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.primary }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: mealFilter ? '#2D5A3D' : colors.primary }}>
                 {MEAL_OPTIONS.find(o => o.value === mealFilter)?.label || 'All'}
               </Text>
               <Ionicons name="chevron-down" size={16} color={colors.text.muted} />
@@ -349,11 +348,7 @@ export default function RecipesScreen() {
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, fontWeight: '500' }}>Sort by</Text>
             <Pressable
-              onPress={() => {
-                const currentIdx = SORT_OPTIONS.findIndex(o => o.value === sortBy);
-                const nextIdx = (currentIdx + 1) % SORT_OPTIONS.length;
-                setSortBy(SORT_OPTIONS[nextIdx].value);
-              }}
+              onPress={() => setShowSortPicker(true)}
               style={{ 
                 backgroundColor: colors.white, 
                 borderRadius: borderRadius.sm, 
@@ -385,6 +380,171 @@ export default function RecipesScreen() {
         dietFilter={dietFilter}
         mealFilter={mealFilter}
       />
+
+      {/* Diet Filter Picker Modal */}
+      <Modal
+        visible={showDietPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDietPicker(false)}
+      >
+        <Pressable 
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          onPress={() => setShowDietPicker(false)}
+        >
+          <View style={{ 
+            backgroundColor: colors.white, 
+            borderTopLeftRadius: 20, 
+            borderTopRightRadius: 20,
+            paddingBottom: 40,
+          }}>
+            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+              <View style={{ width: 40, height: 4, backgroundColor: '#E5E7EB', borderRadius: 2 }} />
+            </View>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, paddingHorizontal: 20, marginBottom: 12 }}>
+              Filter by Diet
+            </Text>
+            {DIET_OPTIONS.map((option) => (
+              <Pressable
+                key={option.label}
+                onPress={() => {
+                  setDietFilter(option.value);
+                  setShowDietPicker(false);
+                }}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingVertical: 16,
+                  paddingHorizontal: 20,
+                  backgroundColor: dietFilter === option.value ? '#F3E8E0' : 'transparent',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 16, 
+                  color: colors.primary,
+                  fontWeight: dietFilter === option.value ? '600' : '400',
+                }}>
+                  {option.label}
+                </Text>
+                {dietFilter === option.value && (
+                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                )}
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Meal Type Filter Picker Modal */}
+      <Modal
+        visible={showMealPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowMealPicker(false)}
+      >
+        <Pressable 
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          onPress={() => setShowMealPicker(false)}
+        >
+          <View style={{ 
+            backgroundColor: colors.white, 
+            borderTopLeftRadius: 20, 
+            borderTopRightRadius: 20,
+            paddingBottom: 40,
+          }}>
+            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+              <View style={{ width: 40, height: 4, backgroundColor: '#E5E7EB', borderRadius: 2 }} />
+            </View>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, paddingHorizontal: 20, marginBottom: 12 }}>
+              Filter by Meal Type
+            </Text>
+            {MEAL_OPTIONS.map((option) => (
+              <Pressable
+                key={option.label}
+                onPress={() => {
+                  setMealFilter(option.value);
+                  setShowMealPicker(false);
+                }}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingVertical: 16,
+                  paddingHorizontal: 20,
+                  backgroundColor: mealFilter === option.value ? '#F3E8E0' : 'transparent',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 16, 
+                  color: colors.primary,
+                  fontWeight: mealFilter === option.value ? '600' : '400',
+                }}>
+                  {option.label}
+                </Text>
+                {mealFilter === option.value && (
+                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                )}
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Sort Picker Modal */}
+      <Modal
+        visible={showSortPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSortPicker(false)}
+      >
+        <Pressable 
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          onPress={() => setShowSortPicker(false)}
+        >
+          <View style={{ 
+            backgroundColor: colors.white, 
+            borderTopLeftRadius: 20, 
+            borderTopRightRadius: 20,
+            paddingBottom: 40,
+          }}>
+            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+              <View style={{ width: 40, height: 4, backgroundColor: '#E5E7EB', borderRadius: 2 }} />
+            </View>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, paddingHorizontal: 20, marginBottom: 12 }}>
+              Sort by
+            </Text>
+            {SORT_OPTIONS.map((option) => (
+              <Pressable
+                key={option.value}
+                onPress={() => {
+                  setSortBy(option.value);
+                  setShowSortPicker(false);
+                }}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingVertical: 16,
+                  paddingHorizontal: 20,
+                  backgroundColor: sortBy === option.value ? '#F3E8E0' : 'transparent',
+                }}
+              >
+                <Text style={{ 
+                  fontSize: 16, 
+                  color: colors.primary,
+                  fontWeight: sortBy === option.value ? '600' : '400',
+                }}>
+                  {option.label}
+                </Text>
+                {sortBy === option.value && (
+                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                )}
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
       </View>
     </GradientBackground>
   );

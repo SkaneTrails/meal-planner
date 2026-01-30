@@ -3,7 +3,7 @@
  * Layout matches Streamlit app design.
  */
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -123,18 +123,28 @@ export default function GroceryScreen() {
     }, [])
   );
 
+  // Memoize serialized values to prevent infinite loops
+  const mealPlanMealsJson = useMemo(() => JSON.stringify(mealPlan?.meals || {}), [mealPlan?.meals]);
+  const mealServingsJson = useMemo(() => JSON.stringify(mealServings), [mealServings]);
+  const selectedMealKeysStr = useMemo(() => selectedMealKeys.join(','), [selectedMealKeys]);
+  
+  // Track if we need to clear items
+  const prevGeneratedItemsLengthRef = useRef(0);
+  prevGeneratedItemsLengthRef.current = generatedItems.length;
+
   // Generate grocery items from selected meals
   useEffect(() => {
     console.log('[Grocery] Generate effect:', {
       hasMealPlan: !!mealPlan,
       selectedMealKeysLength: selectedMealKeys.length,
       recipesLength: recipes.length,
-      mealPlanMeals: mealPlan?.meals,
-      mealServings,
     });
 
     if (!mealPlan || !selectedMealKeys.length) {
-      setGeneratedItems([]);
+      // Only update if there are items to clear
+      if (prevGeneratedItemsLengthRef.current > 0) {
+        setGeneratedItems([]);
+      }
       return;
     }
 
@@ -187,7 +197,8 @@ export default function GroceryScreen() {
     const items = Array.from(ingredientsMap.values());
     console.log('[Grocery] Generated items:', items.length);
     setGeneratedItems(items);
-  }, [mealPlan, recipes, selectedMealKeys, mealServings]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mealPlanMealsJson, recipes.length, selectedMealKeysStr, mealServingsJson]);
 
   // Save custom items to AsyncStorage whenever they change
   useEffect(() => {

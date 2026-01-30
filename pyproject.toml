@@ -23,6 +23,7 @@ dependencies = [
   "pillow>=10",
   "pydantic>=2.10",
   "python-dotenv>=1",
+  "python-multipart>=0.0.22",
   "recipe-scrapers>=15",
   "streamlit>=1.28",
   "streamlit-sortables>=0.3.1",
