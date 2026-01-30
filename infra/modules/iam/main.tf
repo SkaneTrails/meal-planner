@@ -28,6 +28,28 @@ locals {
   ]
 }
 
+# -----------------------------------------------------------------------------
+# GitHub Actions Service Accounts
+# -----------------------------------------------------------------------------
+
+# Service account for GitHub Actions to deploy to Firebase Hosting
+resource "google_service_account" "github_actions_firebase" {
+  project      = var.project
+  account_id   = "github-actions-firebase"
+  display_name = "GitHub Actions Firebase Deploy"
+  description  = "Service account for GitHub Actions to deploy web app to Firebase Hosting"
+
+  depends_on = [var.iam_api_service]
+}
+
+# Grant Firebase Hosting Admin role to the service account
+resource "google_project_iam_member" "github_actions_firebase_hosting" {
+  project = var.project
+  role    = "roles/firebasehosting.admin"
+  member  = "serviceAccount:${google_service_account.github_actions_firebase.email}"
+
+  depends_on = [google_service_account.github_actions_firebase]
+}
 # Grant prerequisite roles needed to create custom roles
 resource "google_project_iam_binding" "prerequisite_roles" {
   for_each = length(var.users) > 0 ? toset(local.prerequisite_roles) : toset([])
