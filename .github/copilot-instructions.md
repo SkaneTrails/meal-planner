@@ -133,6 +133,19 @@ scripts/                 # CLI tools
 ├── run-api.sh           # Start FastAPI server
 ├── run-dev.sh           # Start all dev services
 └── run-function.sh      # Run Cloud Function locally
+
+infra/                   # Terraform infrastructure
+├── environments/
+│   └── dev/             # Development environment
+│       ├── main.tf      # Root module
+│       ├── variables.tf
+│       ├── versions.tf
+│       ├── backend.tf   # GCS state backend
+│       └── access/      # User emails (gitignored)
+└── modules/
+    ├── apis/            # Enable GCP APIs
+    ├── iam/             # Custom roles and permissions
+    └── firestore/       # Database and indexes
 ```
 
 ### Key Dependencies
@@ -271,6 +284,15 @@ uv run pytest tests/test_recipe.py -v
 - Use Python dataclasses for all models
 - Default mutable fields with `field(default_factory=list)`
 - Add computed properties for derived values (e.g., `total_time_calculated`)
+
+### Terraform Conventions
+
+- **All infrastructure must be declared in Terraform** - no manual resource creation via console or CLI
+- **Resource names** (buckets, databases, service accounts, etc.) must be defined in `terraform.tfvars` or `variables.tf`, never hardcoded in resource blocks
+- **`gcloud` and `gsutil` commands** are only for troubleshooting, never for creating or modifying infrastructure
+- Environment-specific values go in `infra/environments/{dev,prod}/terraform.tfvars`
+- Shared module variables go in `infra/modules/*/variables.tf` with sensible defaults
+- **Free tier compliance** - All resources must stay within GCP free tier limits
 
 ## When Making Changes
 

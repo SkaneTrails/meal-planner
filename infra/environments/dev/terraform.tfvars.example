@@ -1,0 +1,18 @@
+# Meal Planner - Terraform Configuration Example
+#
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored and should NOT be committed.
+
+# GCP project ID (required)
+project = "your-gcp-project-id"
+
+# GCP region for regional resources
+region = "europe-west1"
+
+# Firestore location (multi-region recommended for durability)
+# Options: eur3 (Europe), nam5 (US), etc.
+firestore_location = "eur3"
+
+# Firestore database name for enhanced recipes
+# The (default) database is assumed to exist; this creates the secondary database
+firestore_database_name = "meal-planner"
