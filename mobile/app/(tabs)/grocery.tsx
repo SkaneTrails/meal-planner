@@ -81,10 +81,11 @@ export default function GroceryScreen() {
       const loadData = async () => {
         try {
           console.log('[Grocery] Screen focused, loading data...');
-          const [customData, mealsData, servingsData] = await Promise.all([
+          const [customData, mealsData, servingsData, checkedData] = await Promise.all([
             AsyncStorage.getItem('grocery_custom_items'),
             AsyncStorage.getItem('grocery_selected_meals'),
             AsyncStorage.getItem('grocery_meal_servings'),
+            AsyncStorage.getItem('grocery_checked_items'),
           ]);
 
           console.log('[Grocery] Raw data from storage:', { customData, mealsData, servingsData });
@@ -111,6 +112,14 @@ export default function GroceryScreen() {
             setMealServings(servings);
           } else {
             setMealServings({});
+          }
+
+          if (checkedData) {
+            const checked = JSON.parse(checkedData);
+            console.log('[Grocery] Loaded checked items:', checked.length);
+            setCheckedItems(new Set(checked));
+          } else {
+            setCheckedItems(new Set());
           }
         } catch (error) {
           console.error('[Grocery] Error loading data:', error);
@@ -151,6 +160,15 @@ export default function GroceryScreen() {
     const recipeMap = new Map(recipes.map((r) => [r.id, r]));
     const ingredientsMap = new Map<string, GroceryItem>();
 
+    // Helper to strip step references like "(steg 2)", "(step 3)", "till stekning", "till smör", etc.
+    const stripStepReference = (text: string): string => {
+      return text
+        .replace(/\s*\(steg\s*\d+\)\s*$/i, '')  // (steg 2)
+        .replace(/\s*\(step\s*\d+\)\s*$/i, '')  // (step 2)
+        .replace(/\s+till\s+\w+$/i, '')          // till stekning, till smör, etc.
+        .trim();
+    };
+
     selectedMealKeys.forEach((key) => {
       const recipeId = mealPlan.meals[key];
       console.log(`[Grocery] Processing key: ${key}, recipeId: ${recipeId}`);
@@ -173,10 +191,13 @@ export default function GroceryScreen() {
         : recipe.title;
 
       recipe.ingredients.forEach((ingredient) => {
-        const name = ingredient.toLowerCase().trim();
+        // Strip step references for grouping key
+        const cleanedIngredient = stripStepReference(ingredient);
+        const name = cleanedIngredient.toLowerCase().trim();
+        
         if (!ingredientsMap.has(name)) {
           ingredientsMap.set(name, {
-            name: ingredient,
+            name: cleanedIngredient, // Use cleaned name without step reference
             quantity: null,
             unit: null,
             category: 'other',
@@ -208,6 +229,16 @@ export default function GroceryScreen() {
         .catch((error) => console.error('[Grocery] Error saving custom items:', error));
     }
   }, [customItems, isLoading]);
+
+  // Save checked items to AsyncStorage whenever they change
+  useEffect(() => {
+    if (!isLoading) {
+      const checkedArray = Array.from(checkedItems);
+      AsyncStorage.setItem('grocery_checked_items', JSON.stringify(checkedArray))
+        .then(() => console.log('[Grocery] Saved checked items:', checkedArray.length))
+        .catch((error) => console.error('[Grocery] Error saving checked items:', error));
+    }
+  }, [checkedItems, isLoading]);
 
   // Combine generated and custom items
   const groceryListWithChecked = useMemo(() => {
@@ -254,6 +285,7 @@ export default function GroceryScreen() {
       await Promise.all([
         AsyncStorage.removeItem('grocery_selected_meals'),
         AsyncStorage.removeItem('grocery_custom_items'),
+        AsyncStorage.removeItem('grocery_checked_items'),
       ]);
       
       setCustomItems([]);
@@ -294,6 +326,15 @@ export default function GroceryScreen() {
     return groceryListWithChecked.items.filter(item => isItemAtHome(item.name)).length;
   }, [groceryListWithChecked.items, isItemAtHome]);
 
+  // Items to buy = total - at home items
+  const itemsToBuy = totalItems - hiddenAtHomeCount;
+  // Checked items that are not at home (for progress display)
+  const checkedItemsToBuy = useMemo(() => {
+    return groceryListWithChecked.items.filter(item => 
+      !isItemAtHome(item.name) && checkedItems.has(item.name)
+    ).length;
+  }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
+
   return (
     <GradientBackground>
       <View style={{ flex: 1 }}>
@@ -332,9 +373,9 @@ export default function GroceryScreen() {
             <View>
               <Text style={{ fontSize: 13, color: colors.text.secondary }}>This week's shopping</Text>
               <Text style={{ fontSize: 20, fontWeight: '700', color: colors.primary, marginTop: 2 }}>
-                {totalItems === 0
+                {itemsToBuy === 0
                   ? 'No items yet'
-                  : `${checkedCount} of ${totalItems} items`}
+                  : `${checkedItemsToBuy} of ${itemsToBuy} items`}
               </Text>
             </View>
 
@@ -391,11 +432,11 @@ export default function GroceryScreen() {
           </View>
 
           {/* Progress bar */}
-          {totalItems > 0 && (
+          {itemsToBuy > 0 && (
             <View style={{ marginTop: 16 }}>
               <View style={{ height: 6, backgroundColor: '#E8D5C4', borderRadius: 3, overflow: 'hidden' }}>
                 <View
-                  style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 3, width: `${(checkedCount / totalItems) * 100}%` }}
+                  style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 3, width: `${(checkedItemsToBuy / itemsToBuy) * 100}%` }}
                 />
               </View>
             </View>

@@ -17,6 +17,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   TextInput,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,6 +29,20 @@ import type { MealType, Recipe } from '@/lib/types';
 
 // Quick note suggestions
 const NOTE_SUGGESTIONS = ['🏢 Office', '🏠 Home', '🏃 Gym', '🍽️ Dinner out', '✈️ Travel', '🎉 Party'];
+
+// Cross-platform confirm dialog
+const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+  if (Platform.OS === 'web') {
+    if (window.confirm(`${title}\n\n${message}`)) {
+      onConfirm();
+    }
+  } else {
+    Alert.alert(title, message, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Remove', style: 'destructive', onPress: onConfirm },
+    ]);
+  }
+};
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
 
@@ -160,6 +175,7 @@ export default function MealPlanScreen() {
   const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
   const setMeal = useSetMeal();
   const updateNote = useUpdateNote();
+  const removeMeal = useRemoveMeal();
 
   // Get note for a specific date
   const getNoteForDate = (date: Date): string | null => {
@@ -183,12 +199,15 @@ export default function MealPlanScreen() {
     }
   };
 
-  const handleQuickNote = (date: Date, note: string) => {
-    const dateStr = formatDateLocal(date);
-    const currentNote = getNoteForDate(date) || '';
-    // Toggle: if already has this note, remove it; otherwise set it
-    const newNote = currentNote === note ? '' : note;
-    updateNote.mutate({ date: dateStr, note: newNote });
+  const handleAddTag = (tag: string) => {
+    const currentTags = noteText.split(' ').filter(t => t.trim());
+    if (currentTags.includes(tag)) {
+      // Remove tag if already present
+      setNoteText(currentTags.filter(t => t !== tag).join(' '));
+    } else {
+      // Add tag
+      setNoteText([...currentTags, tag].join(' '));
+    }
   };
 
   // Create a map of recipe IDs to recipes
@@ -425,7 +444,17 @@ export default function MealPlanScreen() {
                                 <Text style={{ fontSize: 12, color: '#0369A1' }}>{note}</Text>
                               </View>
                             ) : (
-                              <Text style={{ fontSize: 12, color: '#D1D5DB' }}>+ note</Text>
+                              <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                backgroundColor: '#F3F4F6',
+                                paddingHorizontal: 10,
+                                paddingVertical: 4,
+                                borderRadius: 12,
+                              }}>
+                                <Ionicons name="add" size={12} color="#6B7280" />
+                                <Text style={{ fontSize: 12, color: '#6B7280', marginLeft: 2 }}>note</Text>
+                              </View>
                             )}
                           </Pressable>
                         )}
@@ -470,14 +499,14 @@ export default function MealPlanScreen() {
                               {NOTE_SUGGESTIONS.map((suggestion) => (
                                 <Pressable
                                   key={suggestion}
-                                  onPress={() => setNoteText(suggestion)}
+                                  onPress={() => handleAddTag(suggestion)}
                                   style={{
-                                    backgroundColor: noteText === suggestion ? '#e8dfd4' : '#fff',
+                                    backgroundColor: noteText.includes(suggestion) ? '#e8dfd4' : '#fff',
                                     paddingHorizontal: 12,
                                     paddingVertical: 6,
                                     borderRadius: 16,
                                     borderWidth: 1,
-                                    borderColor: '#e5e7eb',
+                                    borderColor: noteText.includes(suggestion) ? '#4A3728' : '#e5e7eb',
                                   }}
                                 >
                                   <Text style={{ fontSize: 13, color: '#4A3728' }}>{suggestion}</Text>
@@ -603,9 +632,8 @@ export default function MealPlanScreen() {
 
                   // Meal slot with content
                   return (
-                    <Pressable
+                    <View
                       key={`${date.toISOString()}-${type}`}
-                      onPress={() => handleMealPress(date, type, 'library')}
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
@@ -616,50 +644,48 @@ export default function MealPlanScreen() {
                         ...shadows.md,
                       }}
                     >
-                      {/* Image */}
-                      <Image
-                        source={{ uri: imageUrl }}
-                        style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: 12,
-                          backgroundColor: '#E8D5C4',
-                        }}
-                        resizeMode="cover"
-                      />
-
-                      {/* Content */}
-                      <View style={{ flex: 1, marginLeft: 12 }}>
-                        <Text style={{ 
-                          fontSize: 15, 
-                          fontWeight: '600', 
-                          color: '#4A3728',
-                        }}>
-                          {title}
-                        </Text>
-                        <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
-                          {label}
-                        </Text>
-                      </View>
-
-                      {/* Remove button */}
+                      {/* Tappable area for recipe details */}
                       <Pressable
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          Alert.alert(
+                        onPress={() => handleMealPress(date, type, 'library')}
+                        style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+                      >
+                        {/* Image */}
+                        <Image
+                          source={{ uri: imageUrl }}
+                          style={{
+                            width: 56,
+                            height: 56,
+                            borderRadius: 12,
+                            backgroundColor: '#E8D5C4',
+                          }}
+                          resizeMode="cover"
+                        />
+
+                        {/* Content */}
+                        <View style={{ flex: 1, marginLeft: 12 }}>
+                          <Text style={{ 
+                            fontSize: 15, 
+                            fontWeight: '600', 
+                            color: '#4A3728',
+                          }}>
+                            {title}
+                          </Text>
+                          <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
+                            {label}
+                          </Text>
+                        </View>
+                      </Pressable>
+
+                      {/* Remove button - separate from the recipe press area */}
+                      <Pressable
+                        onPress={() => {
+                          const dateStr = formatDateLocal(date);
+                          showConfirm(
                             'Remove meal',
                             `Remove ${title} from ${label.toLowerCase()}?`,
-                            [
-                              { text: 'Cancel', style: 'cancel' },
-                              { 
-                                text: 'Remove', 
-                                style: 'destructive',
-                                onPress: () => {
-                                  const dateStr = formatDateLocal(date);
-                                  setMeal.mutate({ date: dateStr, mealType: type });
-                                }
-                              },
-                            ]
+                            () => {
+                              removeMeal.mutate({ date: dateStr, mealType: type });
+                            }
                           );
                         }}
                         style={{
@@ -669,11 +695,12 @@ export default function MealPlanScreen() {
                           backgroundColor: '#FEE2E2',
                           alignItems: 'center',
                           justifyContent: 'center',
+                          marginLeft: 8,
                         }}
                       >
                         <Ionicons name="close" size={18} color="#DC2626" />
                       </Pressable>
-                    </Pressable>
+                    </View>
                   );
                 })}
               </View>
