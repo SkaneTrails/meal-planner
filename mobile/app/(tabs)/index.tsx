@@ -7,7 +7,9 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useRecipes, useMealPlan, useGroceryList } from '@/lib/hooks';
+import { LinearGradient } from 'expo-linear-gradient';
+import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
+import { useRecipes, useMealPlan, useGroceryList, useEnhancedMode } from '@/lib/hooks';
 import { GradientBackground } from '@/components';
 import type { Recipe } from '@/lib/types';
 
@@ -29,20 +31,36 @@ function getWeekDates(): { start: string; end: string } {
   return { start: formatDateLocal(saturday), end: formatDateLocal(friday) };
 }
 
-function getTodaysDinner(mealPlan: { meals?: Record<string, string> } | undefined, recipes: { id: string; title: string }[]): string | null {
+function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string } | null {
   if (!mealPlan?.meals) return null;
-  const today = formatDateLocal(new Date());
-  const dinnerKey = `${today}_dinner`;
-  const dinnerValue = mealPlan.meals[dinnerKey];
-  if (!dinnerValue) return null;
-  if (dinnerValue.startsWith('custom:')) return dinnerValue.slice(7);
-  const recipe = recipes.find(r => r.id === dinnerValue);
-  return recipe?.title || null;
+  const now = new Date();
+  const today = formatDateLocal(now);
+  const currentHour = now.getHours();
+  
+  // Determine which meal is "next"
+  // Before 12: show lunch, after 12: show dinner
+  const mealTypes = currentHour < 12 ? ['lunch', 'dinner'] : ['dinner'];
+  
+  for (const mealType of mealTypes) {
+    const key = `${today}_${mealType}`;
+    const value = mealPlan.meals[key];
+    if (value) {
+      if (value.startsWith('custom:')) {
+        return { title: value.slice(7), isCustom: true, mealType };
+      }
+      const recipe = recipes.find(r => r.id === value);
+      if (recipe) {
+        return { title: recipe.title, imageUrl: recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id };
+      }
+    }
+  }
+  return null;
 }
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes();
+  const { isEnhanced } = useEnhancedMode();
+  const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes(undefined, isEnhanced);
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const [recipeUrl, setRecipeUrl] = useState('');
   const [inspirationIndex, setInspirationIndex] = useState(0);
@@ -83,7 +101,7 @@ export default function HomeScreen() {
   // Count meals planned this week (max 21: 7 days x 3 meals)
   const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
   const groceryItemsCount = groceryList?.items.length || 0;
-  const todaysDinner = getTodaysDinner(mealPlan, recipes);
+  const nextMeal = getNextMeal(mealPlan, recipes);
 
   const handleImportRecipe = () => {
     if (recipeUrl.trim()) {
@@ -96,177 +114,302 @@ export default function HomeScreen() {
     <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 24, paddingTop: 50 }}
+        contentContainerStyle={{ paddingBottom: 100, paddingTop: 0 }}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor="#4A3728" />
         }
       >
-      {/* Welcome header */}
-      <View style={{ paddingHorizontal: 24, paddingVertical: 24 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-          <Ionicons name="home-outline" size={26} color="#4A3728" />
-          <Text style={{ fontSize: 22, fontWeight: '700', color: '#4A3728', marginLeft: 8 }}>
-            Welcome to Plate & Plan
+      {/* Hero image with gradient fade and welcome text overlay */}
+      <View style={{ position: 'relative', marginBottom: 0 }}>
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80' }}
+          style={{ width: '100%', height: 300 }}
+          resizeMode="cover"
+        />
+        {/* Settings button */}
+        <Pressable
+          onPress={() => router.push('/settings')}
+          style={({ pressed }) => ({
+            position: 'absolute',
+            top: 50,
+            right: 20,
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: pressed ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.3)',
+            alignItems: 'center',
+            justifyContent: 'center',
+          })}
+        >
+          <Ionicons name="settings-outline" size={24} color="#FFFFFF" />
+        </Pressable>
+        {/* Stronger gradient overlay fading to beige */}
+        <LinearGradient
+          colors={['rgba(232, 213, 196, 0)', 'rgba(232, 213, 196, 0.5)', '#E8D5C4']}
+          style={{ 
+            position: 'absolute', 
+            bottom: 0, 
+            left: 0, 
+            right: 0, 
+            height: 150,
+          }}
+        />
+        
+        {/* Welcome text on image */}
+        <View style={{ position: 'absolute', bottom: 36, left: 24, right: 24 }}>
+          <Text style={{ fontSize: 34, fontWeight: '700', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5, textShadowColor: 'rgba(0, 0, 0, 0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
+            Hi there! 👋
+          </Text>
+          <Text style={{ fontSize: 17, color: '#FFFFFF', lineHeight: 24, fontWeight: '500', textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }}>
+            Plan meals, save recipes, shop smarter.
           </Text>
         </View>
-        <Text style={{ fontSize: 15, color: '#6b7280', lineHeight: 22 }}>
-          Plan your meals, organize recipes, and generate smart grocery lists.
-        </Text>
       </View>
 
       {/* Stats cards - 3 in a row */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 12 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 20, gap: 10, marginTop: -10 }}>
         {/* Recipe Library */}
-        <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-            <Ionicons name="book-outline" size={16} color="#4A3728" />
-            <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 4 }}>Recipe Library</Text>
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
+          <View style={{ backgroundColor: '#F3E8E0', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Ionicons name="book" size={20} color="#4A3728" />
           </View>
-          <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>Saved</Text>
-          <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 12 }}>
+          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Saved</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 12, letterSpacing: -0.5 }}>
             {recipes.length}
           </Text>
           <Pressable
             onPress={() => router.push('/recipes')}
-            style={{ backgroundColor: '#E8D5C4', borderRadius: 16, paddingVertical: 10 }}
+            style={({ pressed }) => ({ 
+              backgroundColor: pressed ? '#E8D5C4' : '#F3E8E0', 
+              borderRadius: borderRadius.sm, 
+              paddingVertical: 10,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
           >
             <Text style={{ color: '#4A3728', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>Browse</Text>
           </Pressable>
         </View>
 
         {/* This Week */}
-        <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-            <Ionicons name="calendar-outline" size={16} color="#4A3728" />
-            <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 4 }}>This Week</Text>
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
+          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Ionicons name="calendar" size={20} color="#2D5A3D" />
           </View>
-          <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>Planned</Text>
-          <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 12 }}>
-            {plannedMealsCount}/21
+          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Planned</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#2D5A3D', marginBottom: 12, letterSpacing: -0.5 }}>
+            {plannedMealsCount}
           </Text>
           <Pressable
             onPress={() => router.push('/meal-plan')}
-            style={{ backgroundColor: '#E8D5C4', borderRadius: 16, paddingVertical: 10 }}
+            style={({ pressed }) => ({ 
+              backgroundColor: pressed ? '#D4E4D4' : '#E8F0E8', 
+              borderRadius: borderRadius.sm, 
+              paddingVertical: 10,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
           >
-            <Text style={{ color: '#4A3728', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>Plan</Text>
+            <Text style={{ color: '#2D5A3D', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>Plan</Text>
           </Pressable>
         </View>
 
         {/* Shopping */}
-        <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-            <Ionicons name="cart-outline" size={16} color="#4A3728" />
-            <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 4 }}>Shopping</Text>
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
+          <View style={{ backgroundColor: '#E5E7EB', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Ionicons name="cart" size={20} color="#374151" />
           </View>
-          <Text style={{ fontSize: 11, color: '#9ca3af', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>To Buy</Text>
-          <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 12 }}>
+          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>To Buy</Text>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#374151', marginBottom: 12, letterSpacing: -0.5 }}>
             {groceryItemsCount}
           </Text>
           <Pressable
             onPress={() => router.push('/grocery')}
-            style={{ backgroundColor: '#E8D5C4', borderRadius: 16, paddingVertical: 10 }}
+            style={({ pressed }) => ({ 
+              backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB', 
+              borderRadius: borderRadius.sm, 
+              paddingVertical: 10,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
           >
-            <Text style={{ color: '#4A3728', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>View List</Text>
+            <Text style={{ color: '#374151', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>View List</Text>
           </Pressable>
         </View>
       </View>
 
-      {/* Quick Actions */}
-      <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
+      {/* Add a Recipe */}
+      <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Ionicons name="flash" size={18} color="#4A3728" />
-          <Text style={{ fontSize: 17, fontWeight: '600', color: '#4A3728', marginLeft: 6 }}>Quick Actions</Text>
+          <View style={{ backgroundColor: '#E8D5C4', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="add-circle" size={16} color="#4A3728" />
+          </View>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Add a Recipe</Text>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          {/* Import Recipe from URL */}
-          <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 16 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              <Ionicons name="link-outline" size={16} color="#4A3728" />
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginLeft: 6 }}>Import Recipe</Text>
-            </View>
-            <Text style={{ fontSize: 13, color: '#6b7280', marginBottom: 10 }}>Paste a recipe URL</Text>
-            <TextInput
-              style={{ backgroundColor: '#F5E6D3', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15, color: '#4A3728', marginBottom: 10 }}
-              placeholder="https://www.ica.se/recept/..."
-              placeholderTextColor="#9ca3af"
-              value={recipeUrl}
-              onChangeText={setRecipeUrl}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="url"
+        {/* Import Recipe - single line */}
+        <View style={{ 
+          backgroundColor: colors.white, 
+          borderRadius: borderRadius.md, 
+          padding: 4,
+          ...shadows.md,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+          <View style={{ backgroundColor: '#F3E8E0', borderRadius: 12, width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginRight: 4 }}>
+            <Ionicons name="link" size={20} color="#4A3728" />
+          </View>
+          <TextInput
+            style={{ 
+              flex: 1, 
+              paddingHorizontal: 12, 
+              paddingVertical: 12, 
+              fontSize: 15, 
+              color: '#4A3728',
+            }}
+            placeholder="Paste recipe URL to import..."
+            placeholderTextColor="#9ca3af"
+            value={recipeUrl}
+            onChangeText={setRecipeUrl}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="url"
+            onSubmitEditing={handleImportRecipe}
+            returnKeyType="go"
+          />
+          <Pressable
+            onPress={handleImportRecipe}
+            disabled={!recipeUrl.trim()}
+            style={({ pressed }) => ({ 
+              backgroundColor: recipeUrl.trim() ? (pressed ? '#3D2D1F' : '#4A3728') : '#E5E7EB', 
+              borderRadius: 12, 
+              paddingVertical: 10,
+              paddingHorizontal: 16,
+              marginRight: 4,
+            })}
+          >
+            <Text style={{ color: recipeUrl.trim() ? '#fff' : '#9ca3af', fontSize: 14, fontWeight: '600' }}>Import</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Next Up */}
+      <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="restaurant" size={16} color="#2D5A3D" />
+          </View>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Next Up</Text>
+        </View>
+
+        {/* Next meal - clickable card */}
+        <Pressable
+          onPress={() => nextMeal?.recipeId ? router.push(`/recipe/${nextMeal.recipeId}`) : router.push('/meal-plan')}
+          style={({ pressed }) => ({ 
+            backgroundColor: pressed ? '#F9F5F0' : colors.white, 
+            borderRadius: borderRadius.md, 
+            padding: spacing.md,
+            ...shadows.md,
+            flexDirection: 'row',
+            alignItems: 'center',
+          })}
+        >
+          {nextMeal?.imageUrl ? (
+            <Image
+              source={{ uri: nextMeal.imageUrl }}
+              style={{ width: 56, height: 56, borderRadius: 12, marginRight: 12 }}
+              resizeMode="cover"
             />
-            <Pressable
-              onPress={handleImportRecipe}
-              style={{ backgroundColor: '#4A3728', borderRadius: 12, paddingVertical: 10 }}
-            >
-              <Text style={{ color: '#fff', textAlign: 'center', fontSize: 15, fontWeight: '600' }}>Import</Text>
-            </Pressable>
-          </View>
-
-          {/* What's for dinner */}
-          <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 20, padding: 16 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-              <Ionicons name="restaurant-outline" size={16} color="#4A3728" />
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginLeft: 6 }}>Tonight's Dinner</Text>
+          ) : (
+            <View style={{ 
+              backgroundColor: '#E8F0E8', 
+              borderRadius: 12, 
+              width: 56, 
+              height: 56, 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              marginRight: 12 
+            }}>
+              <Ionicons name="restaurant" size={24} color="#2D5A3D" />
             </View>
-            <View style={{ backgroundColor: '#F5E6D3', borderRadius: 12, padding: 14, marginBottom: 10, minHeight: 60, justifyContent: 'center' }}>
-              <Text style={{ color: '#4A3728', fontSize: 15 }}>
-                {todaysDinner || 'No dinner planned'}
-              </Text>
-            </View>
-            {!todaysDinner && (
-              <Pressable
-                onPress={() => router.push('/meal-plan')}
-                style={{ backgroundColor: '#E8D5C4', borderRadius: 12, paddingVertical: 10 }}
-              >
-                <Text style={{ color: '#4A3728', textAlign: 'center', fontSize: 15, fontWeight: '600' }}>Plan Now</Text>
-              </Pressable>
-            )}
+          )}
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
+              {nextMeal ? `Today's ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` : 'No meal planned'}
+            </Text>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
+              {nextMeal?.title || 'Plan your next meal'}
+            </Text>
           </View>
-        </View>
+          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+        </Pressable>
       </View>
 
       {/* Inspiration section */}
       {inspirationRecipes.length > 0 && inspirationRecipe && (
-        <View style={{ paddingHorizontal: 16, marginTop: 24 }}>
+        <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Ionicons name="bulb" size={18} color="#eab308" />
-              <Text style={{ fontSize: 17, fontWeight: '600', color: '#4A3728', marginLeft: 6 }}>Inspiration</Text>
+              <View style={{ backgroundColor: '#E5E7EB', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="bulb" size={16} color="#374151" />
+              </View>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Inspiration</Text>
             </View>
             <Pressable
               onPress={shuffleInspiration}
-              style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8D5C4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 }}
+              style={({ pressed }) => ({ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB', 
+                paddingHorizontal: 14, 
+                paddingVertical: 8, 
+                borderRadius: 16,
+                transform: [{ scale: pressed ? 0.96 : 1 }],
+              })}
             >
-              <Ionicons name="shuffle" size={16} color="#4A3728" />
-              <Text style={{ color: '#4A3728', fontWeight: '600', fontSize: 13, marginLeft: 4 }}>Shuffle</Text>
+              <Ionicons name="shuffle" size={14} color="#374151" />
+              <Text style={{ color: '#374151', fontWeight: '600', fontSize: 13, marginLeft: 6 }}>Shuffle</Text>
             </Pressable>
           </View>
 
           <Pressable
             onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
-            style={{ backgroundColor: '#fff', borderRadius: 20, overflow: 'hidden' }}
+            style={({ pressed }) => ({ 
+              backgroundColor: colors.white, 
+              borderRadius: borderRadius.md, 
+              overflow: 'hidden', 
+              ...shadows.md,
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+            })}
           >
             <Image
               source={{ uri: inspirationRecipe.image_url || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400' }}
-              style={{ width: '100%', height: 140 }}
+              style={{ width: '100%', height: 160 }}
               resizeMode="cover"
             />
-            <View style={{ padding: 14 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#4A3728' }} numberOfLines={1}>
+            <View style={{ padding: 16 }}>
+              <Text style={{ fontSize: 17, fontWeight: '600', color: '#4A3728', letterSpacing: -0.2 }} numberOfLines={1}>
                 {inspirationRecipe.title}
               </Text>
-              <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
-                {inspirationRecipe.meal_label ? inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1) : ''}
-                {inspirationRecipe.diet_label && ` • ${inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}`}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
+                {inspirationRecipe.meal_label && (
+                  <View style={{ backgroundColor: '#F5E6D3', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 8 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#4A3728' }}>
+                      {inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1)}
+                    </Text>
+                  </View>
+                )}
+                {inspirationRecipe.diet_label && (
+                  <View style={{ backgroundColor: inspirationRecipe.diet_label === 'veggie' ? '#DCFCE7' : inspirationRecipe.diet_label === 'fish' ? '#DBEAFE' : '#FEE2E2', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: inspirationRecipe.diet_label === 'veggie' ? '#166534' : inspirationRecipe.diet_label === 'fish' ? '#1E40AF' : '#991B1B' }}>
+                      {inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </Pressable>
         </View>
       )}
 
-      <View style={{ height: 32 }} />
+      <View style={{ height: 40 }} />
       </ScrollView>
     </GradientBackground>
   );
