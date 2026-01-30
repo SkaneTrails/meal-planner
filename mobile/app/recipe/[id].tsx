@@ -22,6 +22,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan } from '@/lib/hooks';
 import { BouncingLoader } from '@/components';
+import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType } from '@/lib/types';
 
 // All diet label options
@@ -159,6 +160,22 @@ export default function RecipeDetailScreen() {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
   const { data: mealPlan } = useMealPlan();
+  
+  // Instruction step completion tracking (local state - resets on page reload)
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  
+  const toggleStep = (index: number) => {
+    hapticSelection();
+    setCompletedSteps(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
   
   // Edit form state
   const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(null);
@@ -356,6 +373,7 @@ export default function RecipeDetailScreen() {
 
   const handlePlanMeal = async (date: Date, mealType: MealType) => {
     if (!id) return;
+    hapticSuccess();
     try {
       await setMeal.mutateAsync({
         date: formatDateLocal(date),
@@ -370,6 +388,7 @@ export default function RecipeDetailScreen() {
   };
 
   const handleClearMeal = async (date: Date, mealType: MealType) => {
+    hapticLight();
     try {
       await setMeal.mutateAsync({
         date: formatDateLocal(date),
@@ -383,6 +402,7 @@ export default function RecipeDetailScreen() {
 
   const handleThumbUp = async () => {
     if (!id) return;
+    hapticSuccess();
     try {
       await updateRecipe.mutateAsync({
         id,
@@ -396,6 +416,7 @@ export default function RecipeDetailScreen() {
 
   const handleThumbDown = () => {
     if (!id || !recipe) return;
+    hapticWarning();
     // If already thumbs down, ask to delete
     if (recipe.rating === 1) {
       Alert.alert(
@@ -789,37 +810,62 @@ export default function RecipeDetailScreen() {
               <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3 }}>
                 Instructions
               </Text>
+              {completedSteps.size > 0 && recipe.instructions.length > 0 && (
+                <Text style={{ marginLeft: 'auto', fontSize: 13, color: '#16A34A', fontWeight: '500' }}>
+                  {completedSteps.size}/{recipe.instructions.length} done
+                </Text>
+              )}
             </View>
             {recipe.instructions.length === 0 ? (
               <Text style={{ color: '#6b7280', fontSize: 15, fontStyle: 'italic' }}>No instructions listed</Text>
             ) : (
-              recipe.instructions.map((instruction, index) => (
-                <View key={index} style={{ 
-                  flexDirection: 'row', 
-                  alignItems: 'flex-start', 
-                  paddingVertical: 14,
-                  backgroundColor: index % 2 === 0 ? '#F9F5F0' : 'transparent',
-                  borderRadius: 12,
-                  paddingHorizontal: 12,
-                  marginBottom: 4,
-                }}>
-                  <View style={{ 
-                    width: 32, 
-                    height: 32, 
-                    borderRadius: 16, 
-                    backgroundColor: '#4A3728', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    marginRight: 14,
-                    marginTop: 2,
-                  }}>
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>{index + 1}</Text>
-                  </View>
-                  <Text style={{ flex: 1, fontSize: 15, color: '#4A3728', lineHeight: 24 }}>
-                    {instruction}
-                  </Text>
-                </View>
-              ))
+              recipe.instructions.map((instruction, index) => {
+                const isCompleted = completedSteps.has(index);
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => toggleStep(index)}
+                    style={({ pressed }) => ({ 
+                      flexDirection: 'row', 
+                      alignItems: 'flex-start', 
+                      paddingVertical: 14,
+                      backgroundColor: isCompleted 
+                        ? '#DCFCE7' 
+                        : (index % 2 === 0 ? '#F9F5F0' : (pressed ? '#F5E6D3' : 'transparent')),
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      marginBottom: 4,
+                      opacity: isCompleted ? 0.7 : 1,
+                    })}
+                  >
+                    <View style={{ 
+                      width: 32, 
+                      height: 32, 
+                      borderRadius: 16, 
+                      backgroundColor: isCompleted ? '#16A34A' : '#4A3728', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      marginRight: 14,
+                      marginTop: 2,
+                    }}>
+                      {isCompleted ? (
+                        <Ionicons name="checkmark" size={18} color="#fff" />
+                      ) : (
+                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>{index + 1}</Text>
+                      )}
+                    </View>
+                    <Text style={{ 
+                      flex: 1, 
+                      fontSize: 15, 
+                      color: isCompleted ? '#166534' : '#4A3728', 
+                      lineHeight: 24,
+                      textDecorationLine: isCompleted ? 'line-through' : 'none',
+                    }}>
+                      {instruction}
+                    </Text>
+                  </Pressable>
+                );
+              })
             )}
           </View>
 

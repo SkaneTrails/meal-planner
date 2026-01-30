@@ -31,7 +31,7 @@ function getWeekDates(): { start: string; end: string } {
   return { start: formatDateLocal(saturday), end: formatDateLocal(friday) };
 }
 
-function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string } | null {
+function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string; isTomorrow?: boolean } | null {
   if (!mealPlan?.meals) return null;
   const now = new Date();
   const today = formatDateLocal(now);
@@ -41,6 +41,7 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
   // Before 12: show lunch, after 12: show dinner
   const mealTypes = currentHour < 12 ? ['lunch', 'dinner'] : ['dinner'];
   
+  // Check today's meals first
   for (const mealType of mealTypes) {
     const key = `${today}_${mealType}`;
     const value = mealPlan.meals[key];
@@ -54,6 +55,26 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
       }
     }
   }
+  
+  // If today is empty, check tomorrow's meals
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = formatDateLocal(tomorrow);
+  
+  for (const mealType of ['lunch', 'dinner']) {
+    const key = `${tomorrowStr}_${mealType}`;
+    const value = mealPlan.meals[key];
+    if (value) {
+      if (value.startsWith('custom:')) {
+        return { title: value.slice(7), isCustom: true, mealType, isTomorrow: true };
+      }
+      const recipe = recipes.find(r => r.id === value);
+      if (recipe) {
+        return { title: recipe.title, imageUrl: recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id, isTomorrow: true };
+      }
+    }
+  }
+  
   return null;
 }
 
@@ -332,7 +353,9 @@ export default function HomeScreen() {
           )}
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
-              {nextMeal ? `Today's ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` : 'No meal planned'}
+              {nextMeal 
+                ? `${nextMeal.isTomorrow ? "Tomorrow's" : "Today's"} ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` 
+                : 'No meal planned'}
             </Text>
             <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
