@@ -135,6 +135,9 @@ module "cloud_run" {
   firestore_database = var.firestore_database_name
   allowed_origins    = var.cloud_run_allowed_origins
 
+  # Allow public access - Firebase Auth is validated in application code
+  allow_public_access = true
+
   run_api_service = module.apis.run_service
 }
 
