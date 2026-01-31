@@ -54,3 +54,9 @@ variable "api_url" {
   type        = string
   default     = ""
 }
+
+variable "github_actions_sa_email" {
+  description = "GitHub Actions service account email for per-secret IAM bindings"
+  type        = string
+  default     = ""
+}
