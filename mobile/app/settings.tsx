@@ -40,17 +40,17 @@ const SUGGESTED_ITEMS = [
 ];
 
 // Section header component
-function SectionHeader({ 
-  icon, 
+function SectionHeader({
+  icon,
   iconColor = '#4A3728',
   iconBg = '#E8D5C4',
-  title, 
-  subtitle 
-}: { 
+  title,
+  subtitle
+}: {
   icon: keyof typeof Ionicons.glyphMap;
   iconColor?: string;
   iconBg?: string;
-  title: string; 
+  title: string;
   subtitle: string;
 }) {
   return (
@@ -86,7 +86,7 @@ export default function SettingsScreen() {
   const handleAddItem = async () => {
     const item = newItem.trim();
     if (!item) return;
-    
+
     try {
       await addItemAtHome(item);
       setNewItem('');
@@ -135,8 +135,8 @@ export default function SettingsScreen() {
           headerTintColor: '#fff',
           headerBackTitle: 'Home',
           headerLeft: () => (
-            <Pressable 
-              onPress={() => router.back()} 
+            <Pressable
+              onPress={() => router.back()}
               style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -4 }}
             >
               <Ionicons name="chevron-back" size={24} color="white" />
@@ -145,13 +145,13 @@ export default function SettingsScreen() {
           ),
         }}
       />
-      
-      <KeyboardAvoidingView 
+
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <ScrollView 
-          style={{ flex: 1 }} 
+        <ScrollView
+          style={{ flex: 1 }}
           contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
           keyboardShouldPersistTaps="handled"
         >
@@ -183,7 +183,7 @@ export default function SettingsScreen() {
               title="Language"
               subtitle="Choose your preferred language"
             />
-            
+
             <View style={{
               backgroundColor: colors.white,
               borderRadius: borderRadius.md,
@@ -257,10 +257,10 @@ export default function SettingsScreen() {
                   opacity: pressed ? 0.8 : 1,
                 })}
               >
-                <Ionicons 
-                  name="add" 
-                  size={24} 
-                  color={newItem.trim() ? '#fff' : '#9CA3AF'} 
+                <Ionicons
+                  name="add"
+                  size={24}
+                  color={newItem.trim() ? '#fff' : '#9CA3AF'}
                 />
               </Pressable>
             </View>
@@ -378,7 +378,7 @@ export default function SettingsScreen() {
               title="About"
               subtitle="App information"
             />
-            
+
             <View style={{
               backgroundColor: colors.white,
               borderRadius: borderRadius.md,

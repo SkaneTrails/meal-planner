@@ -89,7 +89,7 @@ export function useDeleteRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, enhanced = false }: { id: string; enhanced?: boolean }) => 
+    mutationFn: ({ id, enhanced = false }: { id: string; enhanced?: boolean }) =>
       api.deleteRecipe(id, enhanced),
     onSuccess: (_, variables) => {
       // Remove from cache - use correct enhanced key

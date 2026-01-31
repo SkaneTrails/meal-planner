@@ -15,14 +15,6 @@ output "cloud_run_url" {
   value       = module.cloud_run.service_url
 }
 
-# Firebase configuration for mobile app
-# Run: terraform output -json firebase_config | jq -r 'to_entries | .[] | "\(.key)=\(.value)"'
-output "firebase_config" {
-  description = "Firebase configuration for mobile app .env files"
-  value       = module.firebase.firebase_config
-  sensitive   = true
-}
-
 output "google_sign_in_enabled" {
   description = "Whether Google Sign-In is configured (OAuth credentials provided)"
   value       = module.firebase.google_sign_in_enabled
