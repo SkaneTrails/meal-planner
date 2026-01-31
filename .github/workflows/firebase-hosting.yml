@@ -83,7 +83,7 @@ jobs:
           EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ env.FIREBASE_PROJECT_ID }}.firebaseapp.com
           EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ env.FIREBASE_PROJECT_ID }}
           EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ env.FIREBASE_PROJECT_ID }}.appspot.com
-        run: npx expo export --platform web
+        run: npm run build:web
 
       # Cache Firebase CLI globally to avoid reinstalling every run
       - name: Cache Firebase CLI

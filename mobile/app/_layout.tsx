@@ -12,7 +12,6 @@ import { AppState, AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
 import * as SplashScreen from 'expo-splash-screen';
 import { QueryProvider, restoreQueryCache, persistQueryCache } from '@/lib/query-provider';
 import { EnhancedModeProvider } from '@/lib/enhanced-mode-context';
@@ -24,9 +23,11 @@ import '../global.css';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // Load Ionicons font for web compatibility
+  // Load Ionicons font from public/fonts for web compatibility
+  // The font is copied there by the build:web script
   const [fontsLoaded] = useFonts({
-    ...Ionicons.font,
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    Ionicons: require('../public/fonts/Ionicons.ttf'),
   });
 
   // Restore cache on app startup
