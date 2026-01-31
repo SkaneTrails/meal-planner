@@ -70,10 +70,12 @@ npx expo start
 
 The FastAPI backend requires the following environment variables:
 
-| Variable                         | Required | Description                  |
-| -------------------------------- | -------- | ---------------------------- |
-| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Yes      | Path to service account JSON |
+| Variable                         | Required | Description                                     |
+| -------------------------------- | -------- | ----------------------------------------------- |
+| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                    |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Yes      | Path to service account JSON                    |
+| `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev) |
+| `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check      |
 
 ### Mobile Environment Variables
 
