@@ -2,7 +2,7 @@
  * Authentication hook for Firebase Auth with Google Sign-In.
  * Provides user state and sign-in/sign-out methods.
  *
- * Uses Firebase's native signInWithPopup for web (handles popup communication correctly)
+ * Uses Firebase's signInWithRedirect for web (most reliable for hosted apps)
  * and expo-auth-session for native platforms (iOS/Android).
  */
 
@@ -12,7 +12,8 @@ import {
   User,
   onAuthStateChanged,
   signInWithCredential,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
 } from 'firebase/auth';
@@ -109,9 +110,29 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
     return unsubscribe;
   }, []);
 
+  // Handle redirect result on web (after returning from Google sign-in)
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          // User successfully signed in via redirect
+          setError(null);
+        }
+      })
+      .catch((err) => {
+        console.error('getRedirectResult error:', err);
+        // Don't show error for cancelled sign-ins
+        if (err.code !== 'auth/popup-closed-by-user') {
+          setError(err.message);
+        }
+      });
+  }, []);
+
   // Handle Google sign-in response (native only)
   useEffect(() => {
-    // Skip for web - we use signInWithPopup directly
+    // Skip for web - we use signInWithRedirect
     if (Platform.OS === 'web') return;
 
     if (response?.type === 'success') {
@@ -142,18 +163,15 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        // Web: Use Firebase's native popup auth (handles popup communication correctly)
-        await signInWithPopup(auth, googleProvider);
+        // Web: Use Firebase's redirect auth (redirects to Google, then back)
+        await signInWithRedirect(auth, googleProvider);
       } else {
         // Native: Use expo-auth-session
         await promptAsync();
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Sign-in failed';
-      // Don't show error for user-cancelled popups
-      if (!errorMessage.includes('popup-closed-by-user')) {
-        setError(errorMessage);
-      }
+      setError(errorMessage);
     }
   }, [promptAsync, googleProvider]);
 
