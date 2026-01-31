@@ -20,7 +20,8 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan } from '@/lib/hooks';
+import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists } from '@/lib/hooks';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { BouncingLoader } from '@/components';
 import type { DietLabel, MealLabel, MealType } from '@/lib/types';
 
@@ -146,7 +147,19 @@ function ThumbRating({ rating, onThumbUp, onThumbDown, size = 28 }: ThumbRatingP
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { isEnhanced } = useEnhancedMode();
+  const { isEnhanced: globalEnhanced } = useEnhancedMode();
+  const { user, loading: authLoading } = useAuth();
+  const isAuthReady = !authLoading && !!user;
+
+  // Local override for enhanced mode (null = use global, true/false = override)
+  const [localEnhancedOverride, setLocalEnhancedOverride] = useState<boolean | null>(null);
+
+  // Effective enhanced mode: local override takes precedence over global
+  const isEnhanced = localEnhancedOverride !== null ? localEnhancedOverride : globalEnhanced;
+
+  // Check if enhanced version exists (only fetch when auth is ready)
+  const { data: hasEnhancedVersion } = useEnhancedRecipeExists(id, isAuthReady);
+
   const { data: recipe, isLoading, error } = useRecipe(id, isEnhanced);
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
@@ -616,7 +629,7 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Action buttons row */}
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, alignItems: 'center' }}>
             <Pressable
               onPress={openEditModal}
               style={({ pressed }) => ({
@@ -656,6 +669,38 @@ export default function RecipeDetailScreen() {
             >
               <Ionicons name="share-outline" size={20} color="#4A3728" />
             </Pressable>
+
+            {/* Enhanced/Original toggle - only show if enhanced version exists */}
+            {hasEnhancedVersion && (
+              <Pressable
+                onPress={() => setLocalEnhancedOverride(prev => prev === null ? !globalEnhanced : !prev)}
+                style={({ pressed }) => ({
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginLeft: 'auto',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderRadius: 20,
+                  backgroundColor: isEnhanced
+                    ? (pressed ? '#C4B5FD' : '#DDD6FE')
+                    : (pressed ? '#E8D5C4' : '#F5E6D3'),
+                })}
+              >
+                <Ionicons
+                  name={isEnhanced ? 'sparkles' : 'document-text-outline'}
+                  size={16}
+                  color={isEnhanced ? '#7C3AED' : '#4A3728'}
+                />
+                <Text style={{
+                  marginLeft: 6,
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: isEnhanced ? '#7C3AED' : '#4A3728',
+                }}>
+                  {isEnhanced ? 'AI Enhanced' : 'Original'}
+                </Text>
+              </Pressable>
+            )}
           </View>
 
           {/* Meta info (labels) */}
@@ -822,6 +867,49 @@ export default function RecipeDetailScreen() {
               ))
             )}
           </View>
+
+          {/* Tips (only for enhanced recipes) */}
+          {isEnhanced && recipe.tips && (
+            <View style={{ marginTop: 8, marginBottom: 24 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#DDD6FE', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <Ionicons name="bulb" size={18} color="#7C3AED" />
+                </View>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3 }}>
+                  Tips
+                </Text>
+              </View>
+              <View style={{ backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16, borderLeftWidth: 4, borderLeftColor: '#7C3AED' }}>
+                <Text style={{ fontSize: 15, color: '#4A3728', lineHeight: 24 }}>
+                  {recipe.tips}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {/* Changes made (only for enhanced recipes, collapsible) */}
+          {isEnhanced && recipe.changes_made && recipe.changes_made.length > 0 && (
+            <View style={{ marginBottom: 24 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#DDD6FE', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                  <Ionicons name="sparkles" size={18} color="#7C3AED" />
+                </View>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3 }}>
+                  AI Improvements
+                </Text>
+              </View>
+              <View style={{ backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16 }}>
+                {recipe.changes_made.map((change, index) => (
+                  <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: index < recipe.changes_made!.length - 1 ? 8 : 0 }}>
+                    <Ionicons name="checkmark-circle" size={18} color="#7C3AED" style={{ marginRight: 10, marginTop: 2 }} />
+                    <Text style={{ flex: 1, fontSize: 14, color: '#4A3728', lineHeight: 20 }}>
+                      {change}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
 
           {/* Source link */}
           {recipe.url && (

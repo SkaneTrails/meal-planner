@@ -48,6 +48,12 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         tags=data.get("tags", []),
         diet_label=diet_label,
         meal_label=meal_label,
+        rating=data.get("rating"),
+        # AI enhancement fields
+        improved=data.get("improved", False),
+        original_id=data.get("original_id"),
+        tips=data.get("tips"),
+        changes_made=data.get("changes_made"),
     )
 
 
