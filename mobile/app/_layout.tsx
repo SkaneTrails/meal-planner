@@ -7,7 +7,23 @@
 // OAuth popup callbacks on web. It closes the popup window when returning from
 // the auth provider.
 import * as WebBrowser from 'expo-web-browser';
-WebBrowser.maybeCompleteAuthSession();
+import { Platform } from 'react-native';
+
+// On web, check if this is an OAuth callback popup BEFORE React renders.
+// If maybeCompleteAuthSession succeeds, the popup will close and we don't need to render.
+if (Platform.OS === 'web' && typeof window !== 'undefined') {
+  const result = WebBrowser.maybeCompleteAuthSession();
+  console.log('maybeCompleteAuthSession result:', result);
+  console.log('Current URL:', window.location.href);
+  console.log('Has opener:', !!window.opener);
+
+  // If this is a successful OAuth callback, the popup should close.
+  // If it doesn't close immediately, we might need to prevent the redirect.
+  if (result.type === 'success' && window.opener) {
+    // Popup handled - prevent further rendering
+    console.log('OAuth callback handled, popup should close');
+  }
+}
 
 import React, { useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
