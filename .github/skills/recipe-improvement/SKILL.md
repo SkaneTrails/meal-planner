@@ -86,11 +86,26 @@ This skill requires two configuration files in the same directory:
 - **Garlic**: Add in the final 5-10 minutes to prevent bitterness
 - **Dense vegetables** (potatoes, carrots, root veg): Start first, they need the most time
 
-### 2. Airfryer Alternatives
+### 2. Airfryer for Proteins (When It Adds Value)
 
-When a recipe uses the oven for proteins, consider suggesting airfryer instructions. Check `equipment.md` for specific temperatures and cooking times for your available equipment.
+**The goal is better food, not simplicity.** Use airfryer when it improves results:
 
-Benefits: Faster, crispier results, frees up oven space for other components.
+| ✅ Good candidates | Why |
+|-------------------|-----|
+| Sheet pan chicken + vegetables | Chicken dries out waiting for vegetables - separate cooking gives control |
+| Whole chicken breast, thighs | Precise doneness, juicier result than oven |
+| Halloumi, paneer | Crispy exterior without pan-frying |
+| When oven is occupied | Parallel cooking reduces total time |
+
+| ❌ Not a good fit | Why |
+|------------------|-----|
+| Proteins that simmer in sauce | Pre-cooking adds complexity without benefit |
+| Large roasts (whole chicken) | Won't fit, needs even heat circulation |
+| When original method works well | Don't change what isn't broken |
+
+**Key insight:** "One-pan simplicity" is not sacred. If splitting cooking between oven and airfryer produces better results (juicier protein, properly cooked vegetables), that's the right call.
+
+Check `equipment.md` for specific temperatures and cooking times.
 
 ### 3. Vegetarian Protein Adaptations
 
@@ -170,21 +185,37 @@ When improving a recipe, provide:
 
 ## Example Improvement
 
-**Note:** This example reflects a specific household configuration (Swedish language, Quorn alternatives, airfryer usage). Adapt to the actual configuration files provided.
+This example demonstrates the **staggered timing principle** for roasted vegetables. Protein handling depends entirely on the household configuration - don't assume airfryer or specific alternatives.
 
 **Original instruction:**
 
 > Lägg kyckling och grönsaker på en plåt och rosta i 30 min.
 
-**Improved instruction:**
+**Improved instruction (vegetables only - demonstrates timing principle):**
 
 > 1. Lägg potatis och morötter på plåten, rosta i 15 min.
 > 2. Tillsätt lök och broccoli, rosta ytterligare 10 min.
 > 3. Tillsätt vitlök de sista 5 minuterna.
->
-> **Kyckling (airfryer):** Marinera kycklingen och tillaga i airfryer på 180°C i 12 min, sedan 200°C i 2 min för krispigt yttre. Toppa med smör, citron och timjan.
->
-> **Quorn:** Tillaga Quorn-bitarna separat i stekpanna med lite olja, 5-6 min på medelvärme.
+
+**For protein handling:** Always check `household-config.md` for:
+- Whether to offer alternatives (meat + vegetarian)
+- Which specific alternatives to use (varies by protein type)
+- Whether airfryer is available and appropriate (check `equipment.md`)
+
+**Don't assume:** Every chicken recipe needs airfryer instructions. Only suggest when it genuinely improves the dish (e.g., crispier skin, faster cooking, freeing oven space).
+
+---
+
+## Anti-Patterns (Avoid These)
+
+| ❌ Don't | ✅ Do Instead |
+|----------|---------------|
+| Use airfryer for proteins that simmer in sauce | Cook directly in the sauce for flavor integration |
+| Hardcode "Quorn" as chicken alternative | Read household-config.md for current preference |
+| Copy timing from examples verbatim | Calculate based on actual ingredients and equipment |
+| Preserve "one-pan simplicity" when it hurts quality | Split cooking if it produces better results (e.g., juicier chicken) |
+| Skip airfryer when it would genuinely help | Sheet pan meals often benefit from separate cooking |
+| Use "protein/proteiner" in recipe text | Use specific names: kyckling, Quorn, lax, etc. |
 
 ---
 
@@ -193,3 +224,4 @@ When improving a recipe, provide:
 - Keep recipes in Swedish (matching the source)
 - Use Swedish cooking terminology
 - Measurements in metric (g, ml, dl, msk, tsk)
+- **Avoid generic terms** like "protein" in recipe instructions - use the actual ingredient names (kyckling, Quorn, fisk, etc.)

@@ -93,9 +93,16 @@ resource "google_identity_platform_config" "auth" {
   provider = google-beta
   project  = var.project
 
+  multi_tenant {
+    allow_tenants = false
+  }
   # Enable email enumeration protection
   sign_in {
     allow_duplicate_emails = false
+      phone_number {
+        enabled            = false
+        test_phone_numbers = {}
+      }
 
     anonymous {
       enabled = false
