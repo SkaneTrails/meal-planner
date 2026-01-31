@@ -24,6 +24,11 @@ export interface Recipe {
   diet_label: DietLabel | null;
   meal_label: MealLabel | null;
   rating: number | null;
+  // AI enhancement fields
+  improved?: boolean;
+  original_id?: string;
+  tips?: string;
+  changes_made?: string[];
 }
 
 export interface RecipeCreate {
