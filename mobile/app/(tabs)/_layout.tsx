@@ -1,13 +1,32 @@
 /**
  * Tab layout for main navigation.
  * Modern floating tab bar design.
+ * Requires authentication - redirects to sign-in if not authenticated.
  */
 
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { View, ActivityIndicator } from 'react-native';
+import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '@/lib/hooks/use-auth';
 
 export default function TabLayout() {
+  const { user, loading } = useAuth();
+
+  // Show loading spinner while checking auth state
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+        <ActivityIndicator size="large" color="#10b981" />
+      </View>
+    );
+  }
+
+  // Redirect to sign-in if not authenticated
+  if (!user) {
+    return <Redirect href="/sign-in" />;
+  }
+
   return (
     <Tabs
       screenOptions={{

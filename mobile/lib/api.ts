@@ -173,12 +173,22 @@ class ApiClient {
       type: mimeType,
     } as unknown as Blob);
 
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+    };
+
+    // Add auth token if available
+    if (getAuthToken) {
+      const token = await getAuthToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       body: formData,
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers,
     });
 
     if (!response.ok) {
