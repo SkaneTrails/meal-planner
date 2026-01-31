@@ -61,7 +61,7 @@ function getWeekDates(weekOffset: number = 0): Date[] {
   const daysSinceSaturday = (currentDay + 1) % 7;
   const saturday = new Date(today);
   saturday.setDate(today.getDate() - daysSinceSaturday + weekOffset * 7);
-  
+
   const dates: Date[] = [];
   for (let i = 0; i < 7; i++) {
     const date = new Date(saturday);
@@ -108,7 +108,7 @@ function ThumbRating({ rating, onThumbUp, onThumbDown, size = 28 }: ThumbRatingP
   // rating: null = no rating, 1 = thumbs down, 5 = thumbs up
   const isThumbUp = rating === 5;
   const isThumbDown = rating === 1;
-  
+
   return (
     <View style={{ flexDirection: 'row', gap: 12 }}>
       <Pressable
@@ -151,7 +151,7 @@ export default function RecipeDetailScreen() {
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
   const setMeal = useSetMeal();
-  
+
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -159,7 +159,7 @@ export default function RecipeDetailScreen() {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
   const { data: mealPlan } = useMealPlan();
-  
+
   // Edit form state
   const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(null);
   const [editMealLabel, setEditMealLabel] = useState<MealLabel | null>(null);
@@ -171,7 +171,7 @@ export default function RecipeDetailScreen() {
   // URL input modal state (for cross-platform support)
   const [showUrlModal, setShowUrlModal] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState('');
-  
+
   // Initialize edit form when opening modal
   const openEditModal = () => {
     if (recipe) {
@@ -184,7 +184,7 @@ export default function RecipeDetailScreen() {
     }
     setShowEditModal(true);
   };
-  
+
   const handleSaveEdit = async () => {
     if (!id) return;
     setIsSavingEdit(true);
@@ -194,7 +194,7 @@ export default function RecipeDetailScreen() {
         .split(',')
         .map(t => t.trim().toLowerCase().replace(/^#/, ''))
         .filter(t => t.length > 0);
-      
+
       await updateRecipe.mutateAsync({
         id,
         updates: {
@@ -215,7 +215,7 @@ export default function RecipeDetailScreen() {
       setIsSavingEdit(false);
     }
   };
-  
+
   const handleAddTag = () => {
     const tag = newTag.trim().toLowerCase().replace(/^#/, '');
     if (tag && !editTags.toLowerCase().includes(tag)) {
@@ -223,7 +223,7 @@ export default function RecipeDetailScreen() {
     }
     setNewTag('');
   };
-  
+
   const handleRemoveTag = (tagToRemove: string) => {
     const tagsArray = editTags
       .split(',')
@@ -231,7 +231,7 @@ export default function RecipeDetailScreen() {
       .filter(t => t.toLowerCase() !== tagToRemove.toLowerCase());
     setEditTags(tagsArray.join(', '));
   };
-  
+
   // Helper to check if a meal slot is taken
   const getMealForSlot = (date: Date, mealType: MealType): string | null => {
     if (!mealPlan?.meals) return null;
@@ -239,7 +239,7 @@ export default function RecipeDetailScreen() {
     const key = `${dateStr}_${mealType}`;
     return mealPlan.meals[key] || null;
   };
-  
+
   // Check if date is in the past
   const isPastDate = (date: Date): boolean => {
     const today = new Date();
@@ -423,8 +423,8 @@ export default function RecipeDetailScreen() {
         'Not a favorite?',
         'Do you want to delete this recipe?',
         [
-          { 
-            text: 'No, just mark as not favorite', 
+          {
+            text: 'No, just mark as not favorite',
             onPress: async () => {
               try {
                 await updateRecipe.mutateAsync({
@@ -493,12 +493,12 @@ export default function RecipeDetailScreen() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5E6D3' }}>
-        <View style={{ 
-          width: 80, 
-          height: 80, 
-          borderRadius: 40, 
-          backgroundColor: '#E8D5C4', 
-          alignItems: 'center', 
+        <View style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40,
+          backgroundColor: '#E8D5C4',
+          alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 16,
         }}>
@@ -512,12 +512,12 @@ export default function RecipeDetailScreen() {
   if (error || !recipe) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5E6D3', padding: 32 }}>
-        <View style={{ 
-          width: 80, 
-          height: 80, 
-          borderRadius: 40, 
-          backgroundColor: '#E8D5C4', 
-          alignItems: 'center', 
+        <View style={{
+          width: 80,
+          height: 80,
+          borderRadius: 40,
+          backgroundColor: '#E8D5C4',
+          alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 20,
         }}>
@@ -527,11 +527,11 @@ export default function RecipeDetailScreen() {
         <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center' }}>This recipe may have been deleted or moved</Text>
         <Pressable
           onPress={() => router.back()}
-          style={{ 
-            marginTop: spacing.xl, 
-            paddingHorizontal: 28, 
-            paddingVertical: 14, 
-            backgroundColor: colors.primary, 
+          style={{
+            marginTop: spacing.xl,
+            paddingHorizontal: 28,
+            paddingVertical: 14,
+            backgroundColor: colors.primary,
             borderRadius: borderRadius.sm,
             ...shadows.lg,
           }}
@@ -569,7 +569,7 @@ export default function RecipeDetailScreen() {
             resizeMode="cover"
           />
           {/* Camera button floating on right side */}
-          <Pressable 
+          <Pressable
             onPress={handlePickImage}
             style={({ pressed }) => ({
               position: 'absolute',
@@ -593,11 +593,11 @@ export default function RecipeDetailScreen() {
         </View>
 
         {/* Content */}
-        <View style={{ 
-          padding: spacing.xl, 
-          marginTop: -32, 
-          backgroundColor: colors.white, 
-          borderTopLeftRadius: 28, 
+        <View style={{
+          padding: spacing.xl,
+          marginTop: -32,
+          backgroundColor: colors.white,
+          borderTopLeftRadius: 28,
           borderTopRightRadius: 28,
           ...shadows.xl,
           minHeight: 500,
@@ -661,12 +661,12 @@ export default function RecipeDetailScreen() {
           {/* Meta info (labels) */}
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 14, gap: 10, alignItems: 'center' }}>
             {recipe.diet_label && (
-              <View style={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
                 backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
-                paddingHorizontal: 14, 
-                paddingVertical: 8, 
+                paddingHorizontal: 14,
+                paddingVertical: 8,
                 borderRadius: 12,
               }}>
                 <Text style={{ marginRight: 6, fontSize: 14 }}>{DIET_LABELS[recipe.diet_label].emoji}</Text>
@@ -685,11 +685,11 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Time and servings - compact */}
-          <View style={{ 
-            flexDirection: 'row', 
-            marginTop: 16, 
-            backgroundColor: '#F5E6D3', 
-            borderRadius: 16, 
+          <View style={{
+            flexDirection: 'row',
+            marginTop: 16,
+            backgroundColor: '#F5E6D3',
+            borderRadius: 16,
             paddingVertical: 12,
             paddingHorizontal: 8,
           }}>
@@ -762,11 +762,11 @@ export default function RecipeDetailScreen() {
                 {recipe.ingredients.map((ingredient, index) => (
                   <View
                     key={index}
-                    style={{ 
-                      flexDirection: 'row', 
-                      alignItems: 'flex-start', 
-                      paddingVertical: 10, 
-                      borderBottomWidth: index < recipe.ingredients.length - 1 ? 1 : 0, 
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      paddingVertical: 10,
+                      borderBottomWidth: index < recipe.ingredients.length - 1 ? 1 : 0,
                       borderBottomColor: '#E8D5C4',
                     }}
                   >
@@ -794,22 +794,22 @@ export default function RecipeDetailScreen() {
               <Text style={{ color: '#6b7280', fontSize: 15, fontStyle: 'italic' }}>No instructions listed</Text>
             ) : (
               recipe.instructions.map((instruction, index) => (
-                <View key={index} style={{ 
-                  flexDirection: 'row', 
-                  alignItems: 'flex-start', 
+                <View key={index} style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
                   paddingVertical: 14,
                   backgroundColor: index % 2 === 0 ? '#F9F5F0' : 'transparent',
                   borderRadius: 12,
                   paddingHorizontal: 12,
                   marginBottom: 4,
                 }}>
-                  <View style={{ 
-                    width: 32, 
-                    height: 32, 
-                    borderRadius: 16, 
-                    backgroundColor: '#4A3728', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
+                  <View style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: '#4A3728',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     marginRight: 14,
                     marginTop: 2,
                   }}>
@@ -829,11 +829,11 @@ export default function RecipeDetailScreen() {
               onPress={() => Linking.openURL(recipe.url).catch(() => {
                 Alert.alert('Error', 'Could not open the recipe URL');
               })}
-              style={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                paddingVertical: 16, 
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 16,
                 marginTop: 8,
                 backgroundColor: '#F5E6D3',
                 borderRadius: 14,
@@ -849,11 +849,11 @@ export default function RecipeDetailScreen() {
           {/* Add to Meal Plan button */}
           <Pressable
             onPress={() => setShowPlanModal(true)}
-            style={({ pressed }) => ({ 
-              flexDirection: 'row', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              paddingVertical: spacing.lg, 
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: spacing.lg,
               marginTop: spacing.md,
               marginBottom: spacing.xl,
               backgroundColor: pressed ? colors.primaryDark : colors.primary,
@@ -877,9 +877,9 @@ export default function RecipeDetailScreen() {
         onRequestClose={() => setShowPlanModal(false)}
       >
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-          <View style={{ 
-            backgroundColor: '#fff', 
-            borderTopLeftRadius: 24, 
+          <View style={{
+            backgroundColor: '#fff',
+            borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             paddingTop: 20,
             paddingBottom: 40,
@@ -892,7 +892,7 @@ export default function RecipeDetailScreen() {
                 <Ionicons name="close" size={24} color="#6b7280" />
               </Pressable>
             </View>
-            
+
             {/* Week navigation */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginBottom: 16, gap: 20 }}>
               <Pressable
@@ -913,7 +913,7 @@ export default function RecipeDetailScreen() {
                 <Ionicons name="chevron-forward" size={24} color="#4A3728" />
               </Pressable>
             </View>
-            
+
             <Text style={{ fontSize: 15, color: '#6b7280', paddingHorizontal: 20, marginBottom: 16 }}>
               Select a day and meal for "{recipe.title}"
             </Text>
@@ -941,7 +941,7 @@ export default function RecipeDetailScreen() {
                       {MEAL_TYPES.map(({ type, label }) => {
                         const existingMeal = getMealForSlot(date, type);
                         const isTaken = !!existingMeal;
-                        
+
                         return (
                           <View key={type} style={{ flex: 1, flexDirection: 'row', gap: 4 }}>
                             <Pressable
@@ -949,10 +949,10 @@ export default function RecipeDetailScreen() {
                               disabled={isPast}
                               style={({ pressed }) => ({
                                 flex: 1,
-                                backgroundColor: isTaken 
-                                  ? '#E8D5C4' 
-                                  : pressed 
-                                    ? '#E8D5C4' 
+                                backgroundColor: isTaken
+                                  ? '#E8D5C4'
+                                  : pressed
+                                    ? '#E8D5C4'
                                     : '#F5E6D3',
                                 paddingVertical: 12,
                                 borderRadius: isTaken ? 10 : 12,
@@ -1010,9 +1010,9 @@ export default function RecipeDetailScreen() {
         onRequestClose={() => setShowEditModal(false)}
       >
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-          <View style={{ 
-            backgroundColor: '#fff', 
-            borderTopLeftRadius: 24, 
+          <View style={{
+            backgroundColor: '#fff',
+            borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             paddingTop: 20,
             paddingBottom: 40,
@@ -1022,19 +1022,19 @@ export default function RecipeDetailScreen() {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 20 }}>
               <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728' }}>Edit Recipe</Text>
               <View style={{ flexDirection: 'row', gap: 8 }}>
-                <Pressable 
-                  onPress={() => setShowEditModal(false)} 
+                <Pressable
+                  onPress={() => setShowEditModal(false)}
                   style={{ paddingHorizontal: 16, paddingVertical: 8 }}
                 >
                   <Text style={{ fontSize: 15, color: '#6b7280' }}>Cancel</Text>
                 </Pressable>
-                <Pressable 
+                <Pressable
                   onPress={handleSaveEdit}
                   disabled={isSavingEdit}
-                  style={({ pressed }) => ({ 
-                    backgroundColor: pressed ? '#3D2D1F' : '#4A3728', 
-                    paddingHorizontal: 16, 
-                    paddingVertical: 8, 
+                  style={({ pressed }) => ({
+                    backgroundColor: pressed ? '#3D2D1F' : '#4A3728',
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
                     borderRadius: 8,
                     opacity: isSavingEdit ? 0.6 : 1,
                   })}
@@ -1189,7 +1189,7 @@ export default function RecipeDetailScreen() {
                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   Tags
                 </Text>
-                
+
                 {/* Add new tag input */}
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                   <TextInput
@@ -1236,13 +1236,13 @@ export default function RecipeDetailScreen() {
                       return (
                         <View
                           key={trimmedTag}
-                          style={{ 
+                          style={{
                             flexDirection: 'row',
                             alignItems: 'center',
-                            backgroundColor: '#4A3728', 
-                            paddingLeft: 12, 
+                            backgroundColor: '#4A3728',
+                            paddingLeft: 12,
                             paddingRight: 6,
-                            paddingVertical: 6, 
+                            paddingVertical: 6,
                             borderRadius: 16,
                           }}
                         >
@@ -1267,7 +1267,7 @@ export default function RecipeDetailScreen() {
                     })}
                   </View>
                 )}
-                
+
                 {!editTags && (
                   <Text style={{ fontSize: 14, color: '#9ca3af', fontStyle: 'italic' }}>
                     No tags yet. Add some to organize your recipes!

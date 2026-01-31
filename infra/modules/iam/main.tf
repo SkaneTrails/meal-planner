@@ -50,6 +50,10 @@ resource "google_project_iam_member" "github_actions_firebase_hosting" {
 
   depends_on = [google_service_account.github_actions_firebase]
 }
+
+# NOTE: Secret Manager access is granted per-secret in the firebase module
+# to follow least-privilege principle (not project-wide secretAccessor)
+
 # Grant prerequisite roles needed to create custom roles
 resource "google_project_iam_binding" "prerequisite_roles" {
   for_each = length(var.users) > 0 ? toset(local.prerequisite_roles) : toset([])

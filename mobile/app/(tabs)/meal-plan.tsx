@@ -118,13 +118,13 @@ export default function MealPlanScreen() {
   // Handle scroll to show/hide jump button
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (todayIndex < 0) return; // Today not in current week
-    
+
     const scrollY = event.nativeEvent.contentOffset.y;
     const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
     const tolerance = DAY_SECTION_HEIGHT / 2; // Half a day section
-    
+
     const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
-    
+
     if (!isNearToday && !showJumpButton) {
       setShowJumpButton(true);
       Animated.spring(jumpButtonOpacity, {
@@ -239,7 +239,7 @@ export default function MealPlanScreen() {
 
   const handleMealPress = (date: Date, mealType: MealType, mode?: 'library' | 'copy' | 'quick' | 'random') => {
     const dateStr = formatDateLocal(date);
-    
+
     if (mode === 'quick') {
       // Navigate to select-recipe with quick mode
       router.push({
@@ -248,7 +248,7 @@ export default function MealPlanScreen() {
       });
       return;
     }
-    
+
     router.push({
       pathname: '/select-recipe',
       params: { date: dateStr, mealType, mode: mode || 'library' },
@@ -327,12 +327,12 @@ export default function MealPlanScreen() {
             </View>
             <Pressable
               onPress={() => setShowGroceryModal(true)}
-              style={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                backgroundColor: colors.primary, 
-                paddingHorizontal: 14, 
-                paddingVertical: 10, 
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: colors.primary,
+                paddingHorizontal: 14,
+                paddingVertical: 10,
                 borderRadius: borderRadius.sm,
                 ...shadows.lg,
               }}
@@ -419,9 +419,9 @@ export default function MealPlanScreen() {
                               <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>TODAY</Text>
                             </View>
                           )}
-                          <Text style={{ 
-                            fontSize: 16, 
-                            fontWeight: '600', 
+                          <Text style={{
+                            fontSize: 16,
+                            fontWeight: '600',
                             color: isToday ? '#4A3728' : '#6B7280',
                             letterSpacing: -0.2,
                           }}>
@@ -433,7 +433,7 @@ export default function MealPlanScreen() {
                         {!isEditing && (
                           <Pressable onPress={() => handleStartEditNote(date)}>
                             {note ? (
-                              <View style={{ 
+                              <View style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 backgroundColor: '#E0F2FE',
@@ -463,8 +463,8 @@ export default function MealPlanScreen() {
                       {/* Note editor (below header when editing) */}
                       {isEditing && (
                         <View style={{ marginBottom: 12 }}>
-                          <View style={{ 
-                            flexDirection: 'row', 
+                          <View style={{
+                            flexDirection: 'row',
                             alignItems: 'center',
                             backgroundColor: '#f9f5f0',
                             borderRadius: 12,
@@ -490,8 +490,8 @@ export default function MealPlanScreen() {
                               <Text style={{ fontSize: 14, color: '#9ca3af' }}>Cancel</Text>
                             </Pressable>
                           </View>
-                          <ScrollView 
-                            horizontal 
+                          <ScrollView
+                            horizontal
                             showsHorizontalScrollIndicator={false}
                             style={{ marginTop: 8 }}
                           >
@@ -663,9 +663,9 @@ export default function MealPlanScreen() {
 
                         {/* Content */}
                         <View style={{ flex: 1, marginLeft: 12 }}>
-                          <Text style={{ 
-                            fontSize: 15, 
-                            fontWeight: '600', 
+                          <Text style={{
+                            fontSize: 15,
+                            fontWeight: '600',
                             color: '#4A3728',
                           }}>
                             {title}
@@ -832,9 +832,9 @@ export default function MealPlanScreen() {
 
                             {/* Servings picker - only show when selected */}
                             {isSelected && (
-                              <View style={{ 
-                                flexDirection: 'row', 
-                                alignItems: 'center', 
+                              <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
                                 marginTop: 10,
                                 marginLeft: 36,
                                 backgroundColor: '#F5E6D3',

@@ -100,32 +100,32 @@ export default function SelectRecipeScreen() {
     monday.setDate(today.getDate() - daysSinceMonday);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-    
+
     const formatDate = (d: Date) => {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
-    
+
     return { start: formatDate(monday), end: formatDate(sunday) };
   }, []);
 
   // Get existing meals from meal plan that can be copied (current week only)
   const existingMeals = useMemo(() => {
     if (!mealPlan?.meals) return [];
-    
+
     const recipeMap = new Map(recipes.map(r => [r.id, r]));
     const meals: { key: string; date: string; mealType: string; recipe?: Recipe; customText?: string }[] = [];
-    
+
     Object.entries(mealPlan.meals).forEach(([key, value]) => {
       const [dateStr, type] = key.split('_');
       // Don't show the current slot we're trying to fill
       if (key === `${date}_${mealType}`) return;
-      
+
       // Only show meals from current week
       if (dateStr < currentWeekDates.start || dateStr > currentWeekDates.end) return;
-      
+
       if (value.startsWith('custom:')) {
         meals.push({ key, date: dateStr, mealType: type, customText: value.slice(7) });
       } else {
@@ -135,7 +135,7 @@ export default function SelectRecipeScreen() {
         }
       }
     });
-    
+
     // Sort by date ascending (start of week first)
     return meals.sort((a, b) => a.date.localeCompare(b.date));
   }, [mealPlan, recipes, date, mealType, currentWeekDates]);
@@ -232,10 +232,10 @@ export default function SelectRecipeScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 12, 
-                  fontWeight: '600', 
-                  color: activeTab === 'library' ? '#fff' : '#4A3728' 
+                <Text style={{
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: activeTab === 'library' ? '#fff' : '#4A3728'
                 }}>
                   📚 Library
                 </Text>
@@ -250,10 +250,10 @@ export default function SelectRecipeScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 12, 
-                  fontWeight: '600', 
-                  color: activeTab === 'random' ? '#fff' : '#4A3728' 
+                <Text style={{
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: activeTab === 'random' ? '#fff' : '#4A3728'
                 }}>
                   🎲 Random
                 </Text>
@@ -268,10 +268,10 @@ export default function SelectRecipeScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 12, 
-                  fontWeight: '600', 
-                  color: activeTab === 'quick' ? '#fff' : '#4A3728' 
+                <Text style={{
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: activeTab === 'quick' ? '#fff' : '#4A3728'
                 }}>
                   ✏️ Quick
                 </Text>
@@ -286,10 +286,10 @@ export default function SelectRecipeScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 12, 
-                  fontWeight: '600', 
-                  color: activeTab === 'copy' ? '#fff' : '#4A3728' 
+                <Text style={{
+                  fontSize: 12,
+                  fontWeight: '600',
+                  color: activeTab === 'copy' ? '#fff' : '#4A3728'
                 }}>
                   📋 Copy
                 </Text>
@@ -301,9 +301,9 @@ export default function SelectRecipeScreen() {
         {/* Quick mode/tab - just show text input */}
         {(mode === 'quick' || activeTab === 'quick') ? (
           <View style={{ flex: 1, padding: 20 }}>
-            <View style={{ 
-              backgroundColor: colors.white, 
-              borderRadius: borderRadius.lg, 
+            <View style={{
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.lg,
               padding: spacing['2xl'],
               ...shadows.md,
             }}>
@@ -326,7 +326,7 @@ export default function SelectRecipeScreen() {
                   What are you having?
                 </Text>
               </View>
-              
+
               <TextInput
                 style={{
                   backgroundColor: '#F5E6D3',
@@ -345,7 +345,7 @@ export default function SelectRecipeScreen() {
                 returnKeyType="done"
                 onSubmitEditing={handleSetCustomText}
               />
-              
+
               <Pressable
                 onPress={handleSetCustomText}
                 disabled={!customText.trim() || setMeal.isPending}
@@ -421,12 +421,12 @@ export default function SelectRecipeScreen() {
               contentContainerStyle={{ padding: 16 }}
               ListEmptyComponent={
                 <View style={{ alignItems: 'center', paddingVertical: 80, paddingHorizontal: 32 }}>
-                  <View style={{ 
-                    width: 80, 
-                    height: 80, 
-                    borderRadius: 40, 
-                    backgroundColor: '#E8D5C4', 
-                    alignItems: 'center', 
+                  <View style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: '#E8D5C4',
+                    alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 20,
                   }}>
@@ -443,11 +443,11 @@ export default function SelectRecipeScreen() {
                       router.back();
                       router.push('/add-recipe');
                     }}
-                    style={{ 
-                      marginTop: spacing['2xl'], 
-                      paddingHorizontal: 28, 
-                      paddingVertical: 14, 
-                      backgroundColor: colors.primary, 
+                    style={{
+                      marginTop: spacing['2xl'],
+                      paddingHorizontal: 28,
+                      paddingVertical: 14,
+                      backgroundColor: colors.primary,
                       borderRadius: borderRadius.sm,
                       ...shadows.lg,
                     }}
@@ -506,7 +506,7 @@ export default function SelectRecipeScreen() {
                       <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, marginBottom: 8 }}>
                         {randomRecipe.title}
                       </Text>
-                      
+
                       {/* Time and servings info */}
                       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
                         {randomRecipe.total_time && (
@@ -530,16 +530,16 @@ export default function SelectRecipeScreen() {
                             paddingHorizontal: 8,
                             paddingVertical: 2,
                             borderRadius: 10,
-                            backgroundColor: randomRecipe.diet_label === 'veggie' ? '#DCFCE7' : 
+                            backgroundColor: randomRecipe.diet_label === 'veggie' ? '#DCFCE7' :
                                            randomRecipe.diet_label === 'fish' ? '#DBEAFE' : '#FEF3C7',
                           }}>
-                            <Text style={{ 
-                              fontSize: 11, 
+                            <Text style={{
+                              fontSize: 11,
                               fontWeight: '600',
-                              color: randomRecipe.diet_label === 'veggie' ? '#166534' : 
+                              color: randomRecipe.diet_label === 'veggie' ? '#166534' :
                                      randomRecipe.diet_label === 'fish' ? '#1E40AF' : '#92400E',
                             }}>
-                              {randomRecipe.diet_label === 'veggie' ? '🥬 Veggie' : 
+                              {randomRecipe.diet_label === 'veggie' ? '🥬 Veggie' :
                                randomRecipe.diet_label === 'fish' ? '🐟 Fish' : '🥩 Meat'}
                             </Text>
                           </View>
@@ -605,12 +605,12 @@ export default function SelectRecipeScreen() {
             ) : (
               /* No recipes for this meal type */
               <View style={{ alignItems: 'center', paddingVertical: 60, paddingHorizontal: 32 }}>
-                <View style={{ 
-                  width: 80, 
-                  height: 80, 
-                  borderRadius: 40, 
-                  backgroundColor: '#E8D5C4', 
-                  alignItems: 'center', 
+                <View style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#E8D5C4',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 20,
                 }}>
@@ -631,15 +631,15 @@ export default function SelectRecipeScreen() {
             <Text style={{ fontSize: 14, color: '#6b7280', marginBottom: 16 }}>
               Copy a meal from your existing plan:
             </Text>
-            
+
             {existingMeals.length === 0 ? (
               <View style={{ alignItems: 'center', paddingVertical: 60, paddingHorizontal: 32 }}>
-                <View style={{ 
-                  width: 80, 
-                  height: 80, 
-                  borderRadius: 40, 
-                  backgroundColor: '#E8D5C4', 
-                  alignItems: 'center', 
+                <View style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#E8D5C4',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 20,
                 }}>
@@ -675,13 +675,13 @@ export default function SelectRecipeScreen() {
                       {formatMealDate(meal.date)} · {meal.mealType.charAt(0).toUpperCase() + meal.mealType.slice(1)}
                     </Text>
                   </View>
-                  <View style={{ 
-                    width: 36, 
-                    height: 36, 
-                    borderRadius: 18, 
-                    backgroundColor: '#F5E6D3', 
-                    alignItems: 'center', 
-                    justifyContent: 'center' 
+                  <View style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 18,
+                    backgroundColor: '#F5E6D3',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
                     <Ionicons name="copy-outline" size={18} color="#4A3728" />
                   </View>

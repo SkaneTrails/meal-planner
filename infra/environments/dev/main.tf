@@ -110,6 +110,12 @@ module "firebase" {
   # Set to true after running: ./scripts/create-oauth-client.ps1
   oauth_secrets_exist = var.oauth_secrets_exist
 
+  # API URL for GitHub Actions secrets (stored in Secret Manager)
+  api_url = module.cloud_run.service_url
+
+  # GitHub Actions SA for per-secret IAM bindings (least privilege)
+  github_actions_sa_email = module.iam.github_actions_firebase_email
+
   firebase_api_service        = module.apis.firebase_service
   identitytoolkit_api_service = module.apis.identitytoolkit_service
   secretmanager_api_service   = module.apis.secretmanager_service

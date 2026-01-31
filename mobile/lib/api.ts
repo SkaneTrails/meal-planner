@@ -127,10 +127,10 @@ class ApiClient {
 
   async uploadRecipeImage(id: string, imageUri: string, enhanced: boolean = false): Promise<Recipe> {
     const url = `${this.baseUrl}${API_PREFIX}/recipes/${id}/image${enhanced ? '?enhanced=true' : ''}`;
-    
+
     // Create form data for image upload
     const formData = new FormData();
-    
+
     // Get file info from URI with safe fallbacks
     let fileName = `recipe_${id}.jpg`;
     let mimeType = 'image/jpeg';
@@ -151,13 +151,13 @@ class ApiClient {
     } catch {
       // Keep defaults if parsing fails
     }
-    
+
     formData.append('file', {
       uri: imageUri,
       name: fileName,
       type: mimeType,
     } as unknown as Blob);
-    
+
     const response = await fetch(url, {
       method: 'POST',
       body: formData,
@@ -165,7 +165,7 @@ class ApiClient {
         'Accept': 'application/json',
       },
     });
-    
+
     if (!response.ok) {
       let error;
       try {
@@ -178,7 +178,7 @@ class ApiClient {
         response.status
       );
     }
-    
+
     return response.json();
   }
 
