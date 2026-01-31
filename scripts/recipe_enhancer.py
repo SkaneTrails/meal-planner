@@ -170,12 +170,27 @@ Använd tidslinje när:
 - Använd ½, ⅓, ¼ - ALDRIG "0.5", "0.33", "0.25"
 - Skriv "½ msk" inte "0.5 msk"
 
-### Ingrediensduplicering
-**Konsolidera ALDRIG ingredienser.** Om originalreceptet listar samma ingrediens flera gånger, behåll dem separata - det finns förmodligen en anledning (olika tillagningsfaser, olika syften, eller intentionell betoning).
+### Ingrediensduplicering - KRITISKT
+**SLUTA ALDRIG SAMMAN INGREDIENSER TILL EN RAD.**
+
+Om salt, olja, smör eller någon annan ingrediens används flera gånger i receptet, LISTA VARJE ANVÄNDNING SEPARAT:
+
+✅ RÄTT:
+- ½ tsk Salt (till pastavattnet)
+- ½ tsk Salt (till kycklingen)
+- Salt (avslutning, efter smak)
+- 1 msk Rapsolja (till stekning)
+- 1 msk Olivolja (till servering)
+
+❌ FEL:
+- 1 tsk Salt
+- 2 msk Olja
+
+VARFÖR: Varje tillsats har ett specifikt syfte. Kokmaltning gör receptet reproducerbart.
 
 ### Ingrediensordning
 Organisera ingredienser i denna ordning:
-1. **Proteiner** (kyckling, Quorn, fisk, etc.)
+1. **Kyckling, Quorn, fisk, skaldjur** (huvudingredienser)
 2. **Grönsaker & rotfrukter**
 3. **Kolhydrater** (pasta, ris, potatis, bröd)
 4. **Mejeri** (yoghurt, grädde, ost)
@@ -189,8 +204,19 @@ Alla kryddor grupperas i slutet av ingredienslistan:
 - Salt, peppar
 - Buljong
 
-## FÖRBJUDET
-- Skriv ALDRIG "protein" eller "proteiner" - använd specifika namn (kyckling, Quorn, lax)
+## FÖRBJUDET (KRITISKT - BRYT ALDRIG DESSA REGLER)
+
+### Ordet "protein/proteiner" är FÖRBJUDET
+Skriv ALDRIG "protein" eller "proteiner" - inte i instruktioner, stegnamn, tips eller ändringslogg.
+- ❌ FEL: "Förbered marinad och proteiner"
+- ❌ FEL: "Tillaga protein i airfryer"
+- ❌ FEL: "protein, grönsaker, kolhydrater"
+- ✅ RÄTT: "Förbered marinad för kyckling och Quorn"
+- ✅ RÄTT: "Tillaga kyckling i airfryer"
+- ✅ RÄTT: "kyckling, Quorn, grönsaker, kolhydrater"
+
+### Andra förbjudna saker
+- **SLÅ ALDRIG IHOP INGREDIENSER** - om salt/olja/smör används flera gånger, lista VARJE användning separat med syfte
 - Skriv ALDRIG hygienvarningar ("Tvätta händer efter rå kyckling", "VIKTIGT: Hantera rå kött", etc.) - vi vet hur man hanterar mat
 - Hitta INTE på hygienregler för Quorn (det är redan kokt/värmebehandlat)
 - Föreslå INTE utrustning vi inte har (slow cooker, sous vide, instant pot)
