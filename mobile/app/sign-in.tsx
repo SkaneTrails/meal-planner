@@ -3,10 +3,10 @@
  * Clean, minimal design with centered content.
  */
 
-import { View, Text, Pressable, ActivityIndicator, Image } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Redirect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../lib/hooks/use-auth';
+import { GoogleLogo } from '../components/GoogleLogo';
 
 export default function SignInScreen() {
   const { user, loading, error, signIn } = useAuth();
@@ -28,9 +28,9 @@ export default function SignInScreen() {
     <View className="flex-1 bg-stone-50">
       {/* Main content - centered */}
       <View className="flex-1 items-center justify-center px-8">
-        {/* App Icon */}
+        {/* App Icon - using emoji instead of Ionicons to avoid font loading issues */}
         <View className="w-24 h-24 bg-amber-100 rounded-3xl items-center justify-center mb-6 shadow-sm">
-          <Ionicons name="restaurant" size={48} color="#4A3728" />
+          <Text style={{ fontSize: 48 }}>🍽️</Text>
         </View>
 
         {/* App Title */}
@@ -54,11 +54,8 @@ export default function SignInScreen() {
           className="bg-white border border-stone-200 rounded-2xl px-6 py-4 flex-row items-center justify-center w-full shadow-sm active:bg-stone-50"
           style={{ elevation: 2 }}
         >
-          {/* Google "G" logo colors approximation */}
-          <View className="w-6 h-6 mr-3 items-center justify-center">
-            <Text className="text-lg font-bold" style={{ color: '#4285F4' }}>G</Text>
-          </View>
-          <Text className="text-stone-700 font-semibold text-base">
+          <GoogleLogo size={20} />
+          <Text className="text-stone-700 font-semibold text-base ml-3">
             Continue with Google
           </Text>
         </Pressable>
