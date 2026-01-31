@@ -19,10 +19,11 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# CORS configuration for local development
-# In production, restrict origins to your actual domains
+# CORS configuration
+# Allows both local development and production domains
 ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS", "http://localhost:8081,http://localhost:19006,http://localhost:3000"
+    "ALLOWED_ORIGINS",
+    "http://localhost:8081,http://localhost:19006,http://localhost:3000,https://hikes-482104.web.app,https://hikes-482104.firebaseapp.com",
 ).split(",")
 
 app.add_middleware(
