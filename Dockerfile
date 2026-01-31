@@ -5,7 +5,8 @@
 FROM python:3.13-slim AS builder
 
 # Install uv for fast dependency resolution
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+# Pinned to digest for supply-chain security
+COPY --from=ghcr.io/astral-sh/uv@sha256:59240a65d6b57e6c507429b45f01b8f2c7c0bbeee0fb697c41a39c6a8e3a4cfb /uv /usr/local/bin/uv
 
 WORKDIR /app
 
@@ -15,6 +16,7 @@ RUN uv venv && \
     fastapi \
     uvicorn[standard] \
     google-cloud-firestore \
+    google-cloud-storage \
     firebase-admin \
     pydantic \
     python-dotenv \

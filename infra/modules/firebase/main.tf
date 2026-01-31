@@ -238,3 +238,43 @@ resource "google_secret_manager_secret_version" "github_expo_public_firebase_mes
   secret      = google_secret_manager_secret.github_expo_public_firebase_messaging_sender_id.id
   secret_data = data.google_firebase_web_app_config.mobile.messaging_sender_id
 }
+
+# =============================================================================
+# Per-secret IAM bindings for GitHub Actions (least privilege)
+# =============================================================================
+
+resource "google_secret_manager_secret_iam_member" "github_actions_api_url" {
+  count = var.github_actions_sa_email != "" ? 1 : 0
+
+  project   = var.project
+  secret_id = google_secret_manager_secret.github_expo_public_api_url.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.github_actions_sa_email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "github_actions_firebase_api_key" {
+  count = var.github_actions_sa_email != "" ? 1 : 0
+
+  project   = var.project
+  secret_id = google_secret_manager_secret.github_expo_public_firebase_api_key.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.github_actions_sa_email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "github_actions_firebase_app_id" {
+  count = var.github_actions_sa_email != "" ? 1 : 0
+
+  project   = var.project
+  secret_id = google_secret_manager_secret.github_expo_public_firebase_app_id.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.github_actions_sa_email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "github_actions_firebase_messaging_sender_id" {
+  count = var.github_actions_sa_email != "" ? 1 : 0
+
+  project   = var.project
+  secret_id = google_secret_manager_secret.github_expo_public_firebase_messaging_sender_id.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.github_actions_sa_email}"
+}

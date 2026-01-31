@@ -1,5 +1,6 @@
 """Firebase Authentication middleware for FastAPI."""
 
+import logging
 import os
 from functools import lru_cache
 from typing import Annotated
@@ -11,6 +12,8 @@ from firebase_admin import auth, credentials
 
 from api.auth.models import AuthenticatedUser
 from api.storage.firestore_client import get_firestore_client
+
+logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
@@ -57,24 +60,24 @@ async def get_current_user(
             name=decoded_token.get("name"),
             picture=decoded_token.get("picture"),
         )
-    except auth.InvalidIdTokenError as e:
+    except auth.InvalidIdTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid authentication token: {e}",
+            detail="Invalid authentication token",
             headers={"WWW-Authenticate": "Bearer"},
-        ) from e
-    except auth.ExpiredIdTokenError as e:
+        ) from None
+    except auth.ExpiredIdTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication token has expired",
             headers={"WWW-Authenticate": "Bearer"},
-        ) from e
-    except Exception as e:
+        ) from None
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed: {e}",
+            detail="Authentication failed",
             headers={"WWW-Authenticate": "Bearer"},
-        ) from e
+        ) from None
 
 
 async def require_auth(user: Annotated[AuthenticatedUser | None, Depends(get_current_user)]) -> AuthenticatedUser:
@@ -114,8 +117,11 @@ async def _is_user_allowed(email: str) -> bool:
     try:
         db = get_firestore_client(database="meal-planner")
     except Exception:
-        # If Firestore is not available, deny access in production
-        return os.getenv("SKIP_ALLOWLIST", "").lower() == "true"
+        # If Firestore is unavailable, fail closed with a clear error
+        logger.exception("Firestore unavailable for allowlist check")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authorization service temporarily unavailable"
+        ) from None
 
     # Check if email exists in allowlist
     # Using email as document ID for O(1) lookup
