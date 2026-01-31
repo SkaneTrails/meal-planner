@@ -207,3 +207,68 @@ async def upload_recipe_image(
         )
 
     return updated_recipe
+
+
+@router.post("/{recipe_id}/enhance", status_code=status.HTTP_200_OK)
+async def enhance_recipe(recipe_id: str) -> Recipe:
+    """
+    Enhance a recipe using AI (Gemini).
+
+    This endpoint improves recipes by:
+    - Concretizing vague ingredients (e.g., "1 packet" → "400 g")
+    - Optimizing for available kitchen equipment
+    - Adapting for dietary preferences (vegetarian alternatives)
+    - Replacing HelloFresh spice blends with individual spices
+
+    **Currently disabled** - Set ENABLE_RECIPE_ENHANCEMENT=true to enable.
+    """
+    from api.services.recipe_enhancer import (
+        EnhancementDisabledError,
+        EnhancementError,
+        enhance_recipe as do_enhance,
+        is_enhancement_enabled,
+    )
+
+    # Check if enhancement is enabled
+    if not is_enhancement_enabled():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Recipe enhancement is currently disabled. Set ENABLE_RECIPE_ENHANCEMENT=true to enable.",
+        )
+
+    # Get the original recipe
+    recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
+    if recipe is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # Enhance the recipe
+    try:
+        enhanced_data = do_enhance(recipe.model_dump())
+
+        # Save to enhanced database
+        from api.models.recipe import RecipeCreate
+
+        enhanced_recipe = RecipeCreate(
+            title=enhanced_data.get("title", recipe.title),
+            url=enhanced_data.get("url", recipe.url),
+            ingredients=enhanced_data.get("ingredients", recipe.ingredients),
+            instructions=enhanced_data.get("instructions", recipe.instructions),
+            image_url=enhanced_data.get("image_url", recipe.image_url),
+            servings=enhanced_data.get("servings", recipe.servings),
+            prep_time=enhanced_data.get("prep_time", recipe.prep_time),
+            cook_time=enhanced_data.get("cook_time", recipe.cook_time),
+            total_time=enhanced_data.get("total_time", recipe.total_time),
+            cuisine=enhanced_data.get("cuisine"),
+            category=enhanced_data.get("category"),
+            tags=enhanced_data.get("tags", []),
+            tips=enhanced_data.get("tips"),
+        )
+
+        # Save with same ID to enhanced database
+        return recipe_storage.save_recipe(enhanced_recipe, recipe_id=recipe_id, database=ENHANCED_DATABASE)
+
+    except EnhancementDisabledError as e:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)) from e
+    except EnhancementError as e:
+        logger.exception("Failed to enhance recipe_id=%s", recipe_id)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e

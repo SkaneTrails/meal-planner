@@ -89,15 +89,27 @@ api/                     # FastAPI REST backend
 │   ├── meal_plan.py
 │   └── grocery_list.py
 ├── routers/             # API route handlers
-│   ├── recipes.py
+│   ├── recipes.py       # Includes /enhance endpoint (disabled)
 │   ├── meal_plans.py
 │   └── grocery.py
 ├── services/            # Business logic
-│   └── ingredient_parser.py
+│   ├── ingredient_parser.py
+│   ├── prompt_loader.py      # Loads modular prompts from config/
+│   └── recipe_enhancer.py    # Gemini AI enhancement service
 └── storage/             # Firestore persistence
     ├── firestore_client.py
     ├── recipe_storage.py
     └── meal_plan_storage.py
+
+config/                  # Configuration files
+└── prompts/             # Gemini AI prompt system
+    ├── core/            # Universal rules (apply to all)
+    │   ├── base.md      # Role and JSON output schema
+    │   ├── formatting.md # Fractions, measurements, ordering
+    │   └── rules.md     # Forbidden terms, HelloFresh spices
+    └── user/            # User-specific preferences
+        ├── dietary.md   # Dietary restrictions, substitutions
+        └── equipment.md # Kitchen equipment specs
 
 app/                     # Streamlit web app (legacy)
 ├── main.py              # Streamlit app entry point
@@ -128,6 +140,7 @@ functions/               # Google Cloud Functions
 scripts/                 # CLI tools
 ├── recipe_enhancer.py   # Gemini AI recipe enhancement
 ├── recipe_reviewer.py   # Manual recipe review helper
+├── validate_gemini.py   # Validate enhanced recipes
 ├── batch_test.py        # Batch testing for enhancer
 ├── test_gemini.py       # Gemini API test script
 ├── run-api.sh           # Start FastAPI server
@@ -403,9 +416,7 @@ uv run pytest tests/test_recipe.py -v
 
 ## Recipe Enhancement Architecture
 
-The app includes AI-powered recipe enhancement using Gemini. The prompt system is designed for multi-tenant use.
-
-> **Note:** The prompt structure below describes the planned architecture. Currently, the system prompt is embedded in `scripts/recipe_enhancer.py`. Separating prompts into external files is planned for future work.
+The app includes AI-powered recipe enhancement using Gemini. The prompt system is split into modular files for maintainability.
 
 ### Design Principles
 
@@ -417,54 +428,81 @@ The app includes AI-powered recipe enhancement using Gemini. The prompt system i
 
 ```
 config/prompts/
-  core/                    # Committed, English, applies to ALL users
+  core/                    # Committed, applies to ALL users
     base.md                # Role, output JSON schema
-    formatting.md          # Fractions (½ not 0.5), ingredient order, spices last
-    timeline.md            # When/how to use ⏱️ timeline format
-    hellofresh-spices.md   # Spice blend substitution tables
+    formatting.md          # Fractions (½ not 0.5), ingredient order, Swedish measurements
+    rules.md               # Forbidden terms, HelloFresh spice replacements
 
-  user/
-    example.yaml           # Committed - example household config
-    household.yaml         # Gitignored - actual user config
+  user/                    # User-specific preferences
+    dietary.md             # Dietary restrictions, protein substitutions, lactose-free rules
+    equipment.md           # Kitchen equipment (airfryer specs, oven settings)
 ```
 
-### User Configuration Schema
+### Loading Prompts
 
-```yaml
-household:
-  size: 2
-  language: sv # Recipe output language
+The `api/services/prompt_loader.py` module assembles prompts from these files:
 
-dietary:
-  mode: flexitarian # omnivore | flexitarian | vegetarian | vegan
-  lactose: lactose-free # normal | lactose-free | dairy-free
-  gluten: normal
-  allergies: []
+```python
+from api.services.prompt_loader import load_system_prompt
 
-  flexitarian:
-    meat_split: 50 # % meat vs vegetarian
-    minced_meat: vegetarian
-    fish: keep
+# Load complete prompt (core + user)
+prompt = load_system_prompt()
 
-equipment:
-  # Baseline assumed: stove, oven
-  oven:
-    has_convection: true
-    temp_adjustment: -20
-  additional:
-    - airfryer:
-        model: "Xiaomi Smart Air Fryer 4.5L"
-        capacity_liters: 4.5
-
-proteins:
-  chicken_alternative: "Quorn"
-  beef_alternative: "Oumph The Chunk"
-  minced_alternative: "Sojafärs"
+# Validate all files exist
+status = validate_prompts()  # Returns dict of file -> exists
 ```
 
-### Key Rules
+### API Enhancement Endpoint
 
-- **Core prompts**: Always in English, no household-specific content
-- **User config**: Can use any language for output, contains all personal preferences
-- **Equipment**: Never suggest equipment not in user's config
-- **Dietary modes**: Prompt logic adapts based on mode (e.g., flexitarian = split proteins)
+The API includes a recipe enhancement endpoint (disabled by default):
+
+```
+POST /recipes/{recipe_id}/enhance
+```
+
+**Enable enhancement:**
+```bash
+export ENABLE_RECIPE_ENHANCEMENT=true
+export GOOGLE_API_KEY=your-gemini-api-key
+```
+
+**Workflow:**
+1. Fetch recipe from `(default)` database
+2. Run through Gemini with assembled prompt
+3. Save enhanced version to `meal-planner` database (same ID)
+4. Return enhanced recipe
+
+### CLI Enhancement
+
+The `scripts/recipe_enhancer.py` CLI tool uses the same prompt system:
+
+```bash
+# Enhance single recipe
+uv run python scripts/recipe_enhancer.py <recipe_id>
+
+# Preview without saving
+uv run python scripts/recipe_enhancer.py <recipe_id> --dry-run
+
+# Batch process unenhanced recipes
+uv run python scripts/recipe_enhancer.py --batch 10
+```
+
+### Validation
+
+Validate enhanced recipes against Gemini output:
+
+```bash
+# Validate 5 recipes
+uv run python scripts/validate_gemini.py
+
+# Skip first 10, validate next 5
+uv run python scripts/validate_gemini.py --skip 10 --limit 5
+```
+
+### Key Rules Enforced
+
+- **Forbidden terms**: "protein/proteiner" - use specific names (kyckling, Quorn)
+- **No consolidation**: Keep separate ingredient entries (salt for pasta, salt for chicken)
+- **Concrete quantities**: Convert "1 paket" → "400 g", "en nypa" → "2 krm"
+- **Swedish fractions**: Use ½, ⅓, ¼ - never 0.5, 0.33, 0.25
+- **HelloFresh spices**: Replace blends with individual spices

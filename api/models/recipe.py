@@ -45,6 +45,7 @@ class RecipeBase(BaseModel):
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating from 1-5 stars")
+    tips: str | None = Field(default=None, description="Cooking tips")
 
 
 class Recipe(RecipeBase):
@@ -56,7 +57,6 @@ class Recipe(RecipeBase):
     # AI enhancement fields (only present in enhanced recipes)
     improved: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
     original_id: str | None = Field(default=None, description="Original recipe ID if this is enhanced")
-    tips: str | None = Field(default=None, description="Cooking tips from AI enhancement")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
 
     @property

@@ -124,18 +124,24 @@ def get_all_recipes(*, include_duplicates: bool = False, database: str = DEFAULT
     return unique_recipes
 
 
-def save_recipe(recipe: RecipeCreate) -> Recipe:
+def save_recipe(recipe: RecipeCreate, *, recipe_id: str | None = None, database: str = DEFAULT_DATABASE) -> Recipe:
     """
     Save a new recipe to Firestore.
 
     Args:
         recipe: The recipe to save.
+        recipe_id: Optional ID to use (for saving enhanced versions with same ID).
+        database: The database to save to (default or meal-planner for AI-enhanced).
 
     Returns:
         The saved recipe with its document ID.
     """
-    db = get_firestore_client()
-    doc_ref = db.collection(RECIPES_COLLECTION).document()
+    db = get_firestore_client(database)
+    doc_ref = (
+        db.collection(RECIPES_COLLECTION).document(recipe_id)
+        if recipe_id
+        else db.collection(RECIPES_COLLECTION).document()
+    )
 
     now = datetime.now(tz=UTC)
     doc_ref.set(
@@ -152,6 +158,7 @@ def save_recipe(recipe: RecipeCreate) -> Recipe:
             "cuisine": recipe.cuisine,
             "category": recipe.category,
             "tags": recipe.tags,
+            "tips": recipe.tips,
             "diet_label": recipe.diet_label.value if recipe.diet_label else None,
             "meal_label": recipe.meal_label.value if recipe.meal_label else None,
             "created_at": now,
