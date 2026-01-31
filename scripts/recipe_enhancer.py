@@ -170,10 +170,8 @@ Använd tidslinje när:
 - Använd ½, ⅓, ¼ - ALDRIG "0.5", "0.33", "0.25"
 - Skriv "½ msk" inte "0.5 msk"
 
-### Duplicering
-- Duplicera INTE samma ingrediens flera gånger
-- Om samma krydda/olja används för olika komponenter → summera till EN rad
-- Exempel: "3 msk rapsolja" (inte "1 msk rapsolja" + "2 msk rapsolja")
+### Ingrediensduplicering
+**Konsolidera ALDRIG ingredienser.** Om originalreceptet listar samma ingrediens flera gånger, behåll dem separata - det finns förmodligen en anledning (olika tillagningsfaser, olika syften, eller intentionell betoning).
 
 ### Ingrediensordning
 Organisera ingredienser i denna ordning:
