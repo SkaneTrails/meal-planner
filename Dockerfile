@@ -20,6 +20,7 @@ RUN uv venv && \
     firebase-admin \
     pydantic \
     python-dotenv \
+    python-multipart \
     httpx
 
 # Stage 2: Runtime image
