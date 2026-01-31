@@ -68,6 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 function AuthProviderImpl({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [redirectChecked, setRedirectChecked] = useState(Platform.OS !== 'web');
   const [error, setError] = useState<string | null>(null);
 
   // For web: use Firebase's native GoogleAuthProvider
@@ -104,13 +105,17 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      setLoading(false);
+      // Only set loading to false if redirect has been checked (or not on web)
+      if (redirectChecked) {
+        setLoading(false);
+      }
     });
 
     return unsubscribe;
-  }, []);
+  }, [redirectChecked]);
 
   // Handle redirect result on web (after returning from Google sign-in)
+  // This must complete before we allow the app to render
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
@@ -127,6 +132,11 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
         if (err.code !== 'auth/popup-closed-by-user') {
           setError(err.message);
         }
+      })
+      .finally(() => {
+        // Mark redirect as checked, which allows loading to complete
+        setRedirectChecked(true);
+        setLoading(false);
       });
   }, []);
 
