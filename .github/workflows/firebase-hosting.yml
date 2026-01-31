@@ -34,7 +34,7 @@ jobs:
           service_account: github-actions-firebase@${{ env.FIREBASE_PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2.2.1
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
 
       - name: Fetch secrets from Secret Manager
         id: secrets
@@ -46,9 +46,9 @@ jobs:
           echo "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id)" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: mobile/package-lock.json
 
@@ -58,7 +58,7 @@ jobs:
 
       # Cache Metro bundler based on source files (not just deps)
       - name: Cache Expo/Metro build
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           path: |
             mobile/.expo
@@ -88,7 +88,7 @@ jobs:
       # Cache Firebase CLI globally to avoid reinstalling every run
       - name: Cache Firebase CLI
         id: firebase-cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           path: ~/.npm-global
           key: firebase-cli-${{ runner.os }}-v13
