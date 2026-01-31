@@ -5,28 +5,16 @@
  */
 
 import React from 'react';
-import { View, ActivityIndicator, Platform } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/hooks/use-auth';
-
-// Check if this appears to be an OAuth callback (has auth params in URL)
-function isOAuthCallback(): boolean {
-  if (Platform.OS !== 'web' || typeof window === 'undefined') {
-    return false;
-  }
-  const hash = window.location.hash;
-  const search = window.location.search;
-  return hash.includes('id_token=') || hash.includes('access_token=') ||
-         search.includes('code=') || search.includes('state=');
-}
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
 
   // Show loading spinner while checking auth state
-  // Also show loading if this might be an OAuth callback being processed
-  if (loading || isOAuthCallback()) {
+  if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
         <ActivityIndicator size="large" color="#10b981" />
