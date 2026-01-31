@@ -2,8 +2,7 @@
  * Authentication hook for Firebase Auth with Google Sign-In.
  * Provides user state and sign-in/sign-out methods.
  *
- * Uses Firebase's signInWithRedirect for web (most reliable for hosted apps)
- * and expo-auth-session for native platforms (iOS/Android).
+ * Uses Firebase's signInWithPopup for web and expo-auth-session for native.
  */
 
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
@@ -12,8 +11,7 @@ import {
   User,
   onAuthStateChanged,
   signInWithCredential,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
 } from 'firebase/auth';
@@ -68,7 +66,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 function AuthProviderImpl({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [redirectChecked, setRedirectChecked] = useState(Platform.OS !== 'web');
   const [error, setError] = useState<string | null>(null);
 
   // For web: use Firebase's native GoogleAuthProvider
@@ -105,44 +102,15 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      // Only set loading to false if redirect has been checked (or not on web)
-      if (redirectChecked) {
-        setLoading(false);
-      }
+      setLoading(false);
     });
 
     return unsubscribe;
-  }, [redirectChecked]);
-
-  // Handle redirect result on web (after returning from Google sign-in)
-  // This must complete before we allow the app to render
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // User successfully signed in via redirect
-          setError(null);
-        }
-      })
-      .catch((err) => {
-        console.error('getRedirectResult error:', err);
-        // Don't show error for cancelled sign-ins
-        if (err.code !== 'auth/popup-closed-by-user') {
-          setError(err.message);
-        }
-      })
-      .finally(() => {
-        // Mark redirect as checked, which allows loading to complete
-        setRedirectChecked(true);
-        setLoading(false);
-      });
   }, []);
 
   // Handle Google sign-in response (native only)
   useEffect(() => {
-    // Skip for web - we use signInWithRedirect
+    // Skip for web - we use signInWithPopup
     if (Platform.OS === 'web') return;
 
     if (response?.type === 'success') {
@@ -173,15 +141,21 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        // Web: Use Firebase's redirect auth (redirects to Google, then back)
-        await signInWithRedirect(auth, googleProvider);
+        // Web: Use Firebase's popup auth
+        console.log('Starting signInWithPopup...');
+        const result = await signInWithPopup(auth, googleProvider);
+        console.log('signInWithPopup success:', result.user.email);
       } else {
         // Native: Use expo-auth-session
         await promptAsync();
       }
     } catch (err) {
+      console.error('signIn error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Sign-in failed';
-      setError(errorMessage);
+      // Don't show error for user-cancelled popups
+      if (!errorMessage.includes('popup-closed-by-user')) {
+        setError(errorMessage);
+      }
     }
   }, [promptAsync, googleProvider]);
 
