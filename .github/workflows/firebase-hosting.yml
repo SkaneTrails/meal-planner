@@ -43,6 +43,7 @@ jobs:
           echo "EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY)" >> $GITHUB_OUTPUT
           echo "EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID)" >> $GITHUB_OUTPUT
           echo "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID)" >> $GITHUB_OUTPUT
+          echo "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id)" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -55,14 +56,17 @@ jobs:
         working-directory: mobile
         run: npm ci
 
+      # Cache Metro bundler based on source files (not just deps)
       - name: Cache Expo/Metro build
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             mobile/.expo
-            mobile/node_modules/.cache
-          key: expo-web-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}
+            mobile/node_modules/.cache/metro
+            mobile/node_modules/.cache/babel-loader
+          key: expo-web-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}-${{ hashFiles('mobile/app/**', 'mobile/components/**', 'mobile/lib/**') }}
           restore-keys: |
+            expo-web-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}-
             expo-web-${{ runner.os }}-
 
       - name: Build web app
@@ -74,20 +78,31 @@ jobs:
           EXPO_PUBLIC_FIREBASE_API_KEY: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_API_KEY }}
           EXPO_PUBLIC_FIREBASE_APP_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_APP_ID }}
           EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
           # Static values derived from project ID
           EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ env.FIREBASE_PROJECT_ID }}.firebaseapp.com
           EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ env.FIREBASE_PROJECT_ID }}
           EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ env.FIREBASE_PROJECT_ID }}.appspot.com
         run: npx expo export --platform web
 
+      # Cache Firebase CLI globally to avoid reinstalling every run
       - name: Cache Firebase CLI
+        id: firebase-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          path: ~/.npm
-          key: firebase-cli-${{ runner.os }}
+          path: ~/.npm-global
+          key: firebase-cli-${{ runner.os }}-v13
+
+      - name: Install Firebase CLI
+        if: steps.firebase-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.npm-global
+          npm config set prefix '~/.npm-global'
+          npm install -g firebase-tools
+
+      - name: Add Firebase CLI to PATH
+        run: echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
 
       - name: Deploy to Firebase Hosting
         working-directory: mobile
-        run: |
-          npm install -g firebase-tools
-          firebase deploy --only hosting --project ${{ env.FIREBASE_PROJECT_ID }}
+        run: firebase deploy --only hosting --project ${{ env.FIREBASE_PROJECT_ID }}
