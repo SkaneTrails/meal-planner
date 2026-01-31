@@ -12,12 +12,11 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth';
 import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
 import { auth } from '../firebase';
 import { setAuthTokenGetter } from '../api';
 
-// Complete auth session for web
-WebBrowser.maybeCompleteAuthSession();
+// NOTE: WebBrowser.maybeCompleteAuthSession() is called in app/_layout.tsx
+// before any other imports to properly handle OAuth popup callbacks on web.
 
 interface AuthContextType {
   user: User | null;
@@ -70,11 +69,20 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
 
   // Configure Google Auth
   // Get these from Firebase Console > Project Settings > General > Your apps
-  const [, response, promptAsync] = Google.useAuthRequest({
+  // responseType: 'id_token' is required for Firebase Auth on web
+  const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    responseType: 'id_token',
   });
+
+  // Debug: Log the redirect URI being used
+  useEffect(() => {
+    if (request?.redirectUri) {
+      console.log('OAuth Redirect URI:', request.redirectUri);
+    }
+  }, [request]);
 
   // Register token getter for API client
   useEffect(() => {
@@ -101,14 +109,27 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   // Handle Google sign-in response
   useEffect(() => {
     if (response?.type === 'success') {
-      const { id_token } = response.params;
-      const credential = GoogleAuthProvider.credential(id_token);
+      // Debug: log response params to see what we received
+      console.log('OAuth response params:', response.params);
+
+      const { id_token, access_token } = response.params;
+
+      // Google OAuth returns id_token for implicit flow, but expo-auth-session
+      // may return access_token depending on configuration
+      if (!id_token) {
+        console.error('No id_token in response. Received:', Object.keys(response.params));
+        setError('Authentication failed: No ID token received. Check OAuth configuration.');
+        return;
+      }
+
+      const credential = GoogleAuthProvider.credential(id_token, access_token);
 
       signInWithCredential(auth, credential)
         .then(() => {
           setError(null);
         })
         .catch((err) => {
+          console.error('signInWithCredential error:', err);
           setError(err.message);
         });
     } else if (response?.type === 'error') {

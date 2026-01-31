@@ -3,6 +3,12 @@
  * Sets up providers and global configuration.
  */
 
+// IMPORTANT: This must be called before any other imports to properly handle
+// OAuth popup callbacks on web. It closes the popup window when returning from
+// the auth provider.
+import * as WebBrowser from 'expo-web-browser';
+WebBrowser.maybeCompleteAuthSession();
+
 import React, { useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
