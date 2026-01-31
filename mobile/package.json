@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:web": "mkdir -p public/fonts && cp node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf public/fonts/ && npx expo export --platform web"
   },
   "dependencies": {
     "@expo/ngrok": "^4.1.0",
