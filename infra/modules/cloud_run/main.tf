@@ -119,7 +119,10 @@ resource "google_cloud_run_v2_service" "api" {
 }
 
 # Allow unauthenticated access (Firebase Auth is handled in application code)
+# Only enabled when allow_public_access = true (after auth middleware is wired)
 resource "google_cloud_run_v2_service_iam_member" "public" {
+  count = var.allow_public_access ? 1 : 0
+
   project  = var.project
   location = var.region
   name     = google_cloud_run_v2_service.api.name
