@@ -13,6 +13,9 @@ Usage:
     # Update a recipe field:
     uv run python scripts/recipe_reviewer.py update <recipe_id> <json_updates>
 
+    # Upload from a local JSON file:
+    uv run python scripts/recipe_reviewer.py upload <recipe_id> <file_path>
+
     # Show progress:
     uv run python scripts/recipe_reviewer.py status
 
@@ -162,6 +165,33 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     mark_processed(recipe_id)
 
 
+def upload_from_file(recipe_id: str, file_path: str) -> None:
+    """Upload an enhanced recipe from a local JSON file to the target database."""
+    path = Path(file_path)
+    if not path.exists():
+        print(f"❌ File not found: {file_path}")
+        return
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON in {file_path}: {e}")
+        return
+
+    target_db = get_target_db()
+
+    # Ensure tracking fields
+    data["original_id"] = recipe_id
+    data["improved"] = True
+
+    # Save to target database
+    target_db.collection(RECIPES_COLLECTION).document(recipe_id).set(data)
+    print(f"✅ Uploaded {path.name} to meal-planner database: {recipe_id}")
+
+    # Mark as processed
+    mark_processed(recipe_id)
+
+
 def show_status() -> None:
     """Show review progress."""
     source_db = get_source_db()
@@ -214,6 +244,11 @@ def main() -> None:
             update_recipe(recipe_id, updates)
         except json.JSONDecodeError:
             print(f"❌ Invalid JSON: {updates_json}")
+    elif command == "upload" and len(sys.argv) >= 4:
+        # Upload from a JSON file
+        recipe_id = sys.argv[2]
+        file_path = sys.argv[3]
+        upload_from_file(recipe_id, file_path)
     else:
         print(__doc__)
 

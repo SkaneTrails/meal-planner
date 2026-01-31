@@ -129,6 +129,20 @@ For 1½ tsk total:
 - **Other meats (beef, pork, etc.)** → Oumph (förstahandsval - t.ex. The Chunk, Pulled, Kebab)
 - Provide parallel instructions for both meat and vegetarian portions
 
+**Quorn preparation notes** (filéer, bitar):
+
+- Pre-cooked → only needs heating + browning (shorter time than raw chicken)
+- Very lean → pan-fry with butter/oil for richness, airfryer dries it out
+- Best method: Quick high-heat pan sear with butter, integrate with sauce
+- If airfryer needed: brush with oil first, max 6-8 min at 180°C
+
+**Oumph preparation notes** (The Chunk, Pulled, Kebab):
+
+- Pre-cooked and marinated → just needs browning
+- Already has more fat than Quorn → less oil needed
+- Caramelizes well → high heat, don't stir too often
+- Different products: The Chunk (larger pieces, grill/pan), Pulled (shreds, stir-fry), Kebab (strips, high heat)
+
 ### Minced Meat
 
 - **Always use soy-based mince for everyone** (taste difference minimal, simpler to cook one batch)
