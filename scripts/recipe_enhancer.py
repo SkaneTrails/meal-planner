@@ -340,19 +340,27 @@ Förbättra detta recept enligt reglerna:
 
 def save_recipe(recipe_id: str, enhanced: dict) -> bool:
     """Save enhanced recipe back to Firestore, replacing the original."""
-    db = get_firestore_client()
+    from datetime import UTC, datetime
 
-    # Prepare the document data
+    db = get_firestore_client()
+    now = datetime.now(tz=UTC)
+
+    # Get metadata from the enhanced recipe (may be nested or top-level)
+    metadata = enhanced.get("metadata", {})
+
+    # Prepare the document data - all fields at top level, no nesting
     doc_data = {
         "title": enhanced.get("title"),
         "ingredients": enhanced.get("ingredients", []),
-        "instructions": enhanced.get("instructions", ""),
+        "instructions": enhanced.get("instructions", []),  # Must be list, not string
         "tips": enhanced.get("tips", ""),
-        "cuisine": enhanced.get("metadata", {}).get("cuisine", ""),
-        "category": enhanced.get("metadata", {}).get("category", ""),
-        "tags": enhanced.get("metadata", {}).get("tags", []),
-        "enhanced": True,  # Mark as enhanced
-        "enhancement_changes": enhanced.get("changes_made", []),
+        "cuisine": metadata.get("cuisine") or enhanced.get("cuisine", ""),
+        "category": metadata.get("category") or enhanced.get("category", ""),
+        "tags": metadata.get("tags") or enhanced.get("tags", []),
+        "changes_made": enhanced.get("changes_made", []),
+        # Required timestamps
+        "created_at": now,
+        "updated_at": now,
     }
 
     try:
