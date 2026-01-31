@@ -6,16 +6,17 @@ import uuid
 from typing import Annotated
 
 import httpx
-from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from google.cloud import storage
 
+from api.auth.firebase import require_auth
 from api.models.recipe import Recipe, RecipeCreate, RecipeScrapeRequest, RecipeUpdate
 from api.storage import recipe_storage
 from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/recipes", tags=["recipes"])
+router = APIRouter(prefix="/recipes", tags=["recipes"], dependencies=[Depends(require_auth)])
 
 # URL for the scrape Cloud Function (local or production)
 SCRAPE_FUNCTION_URL = os.getenv("SCRAPE_FUNCTION_URL", "http://localhost:8001")

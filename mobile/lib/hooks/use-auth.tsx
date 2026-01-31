@@ -1,0 +1,140 @@
+/**
+ * Authentication hook for Firebase Auth with Google Sign-In.
+ * Provides user state and sign-in/sign-out methods.
+ */
+
+import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
+import {
+  User,
+  onAuthStateChanged,
+  signInWithCredential,
+  signOut as firebaseSignOut,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { auth } from '../firebase';
+import { setAuthTokenGetter } from '../api';
+
+// Complete auth session for web
+WebBrowser.maybeCompleteAuthSession();
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  getIdToken: () => Promise<string | null>;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Configure Google Auth
+  // Get these from Firebase Console > Project Settings > General > Your apps
+  const [, response, promptAsync] = Google.useAuthRequest({
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  });
+
+  // Register token getter for API client
+  useEffect(() => {
+    setAuthTokenGetter(async () => {
+      if (!user) return null;
+      try {
+        return await user.getIdToken();
+      } catch {
+        return null;
+      }
+    });
+  }, [user]);
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Handle Google sign-in response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      const credential = GoogleAuthProvider.credential(id_token);
+
+      signInWithCredential(auth, credential)
+        .then(() => {
+          setError(null);
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+    } else if (response?.type === 'error') {
+      setError(response.error?.message || 'Sign-in failed');
+    }
+  }, [response]);
+
+  const signIn = useCallback(async () => {
+    setError(null);
+    try {
+      await promptAsync();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign-in failed');
+    }
+  }, [promptAsync]);
+
+  const signOut = useCallback(async () => {
+    try {
+      await firebaseSignOut(auth);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign-out failed');
+    }
+  }, []);
+
+  const getIdToken = useCallback(async (): Promise<string | null> => {
+    if (!user) return null;
+    try {
+      return await user.getIdToken();
+    } catch (err) {
+      console.error('Failed to get ID token:', err);
+      return null;
+    }
+  }, [user]);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        signIn,
+        signOut,
+        getIdToken,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

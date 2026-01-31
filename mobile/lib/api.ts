@@ -26,8 +26,15 @@ const getApiBaseUrl = (): string => {
 const API_BASE_URL = getApiBaseUrl();
 const API_PREFIX = '/api/v1';
 
-// Default user ID until auth is implemented
+// Default user ID until multi-user is implemented
 const DEFAULT_USER_ID = 'default';
+
+// Token getter function - set by AuthProvider
+let getAuthToken: (() => Promise<string | null>) | null = null;
+
+export function setAuthTokenGetter(getter: () => Promise<string | null>) {
+  getAuthToken = getter;
+}
 
 class ApiClient {
   private baseUrl: string;
@@ -45,6 +52,14 @@ class ApiClient {
     const defaultHeaders: HeadersInit = {
       'Content-Type': 'application/json',
     };
+
+    // Add auth token if available
+    if (getAuthToken) {
+      const token = await getAuthToken();
+      if (token) {
+        (defaultHeaders as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+      }
+    }
 
     const response = await fetch(url, {
       ...options,
@@ -158,12 +173,22 @@ class ApiClient {
       type: mimeType,
     } as unknown as Blob);
 
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+    };
+
+    // Add auth token if available
+    if (getAuthToken) {
+      const token = await getAuthToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       body: formData,
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers,
     });
 
     if (!response.ok) {
