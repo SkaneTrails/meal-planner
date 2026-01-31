@@ -1,9 +1,11 @@
 /**
  * Sign-in screen with Google authentication.
+ * Clean, minimal design with centered content.
  */
 
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, Image } from 'react-native';
 import { Redirect } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../lib/hooks/use-auth';
 
 export default function SignInScreen() {
@@ -16,48 +18,58 @@ export default function SignInScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#10b981" />
-        <Text className="mt-4 text-gray-600">Loading...</Text>
+      <View className="flex-1 items-center justify-center bg-stone-50">
+        <ActivityIndicator size="large" color="#4A3728" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 items-center justify-center bg-white px-6">
-      {/* App Title */}
-      <Text className="text-4xl font-bold text-emerald-600 mb-2">
-        Meal Planner
-      </Text>
-      <Text className="text-gray-500 mb-12 text-center">
-        Plan your meals, organize recipes, and create grocery lists
-      </Text>
-
-      {/* Error Message */}
-      {error && (
-        <View className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-6 w-full">
-          <Text className="text-red-700 text-center">{error}</Text>
+    <View className="flex-1 bg-stone-50">
+      {/* Main content - centered */}
+      <View className="flex-1 items-center justify-center px-8">
+        {/* App Icon */}
+        <View className="w-24 h-24 bg-amber-100 rounded-3xl items-center justify-center mb-6 shadow-sm">
+          <Ionicons name="restaurant" size={48} color="#4A3728" />
         </View>
-      )}
 
-      {/* Sign In Button */}
-      <Pressable
-        onPress={signIn}
-        className="bg-white border border-gray-300 rounded-lg px-6 py-4 flex-row items-center justify-center w-full shadow-sm active:bg-gray-50"
-      >
-        {/* Google Icon */}
-        <View className="w-6 h-6 mr-3">
-          <Text className="text-xl">🔐</Text>
-        </View>
-        <Text className="text-gray-700 font-semibold text-lg">
-          Sign in with Google
+        {/* App Title */}
+        <Text className="text-3xl font-bold text-stone-800 mb-2">
+          Meal Planner
         </Text>
-      </Pressable>
+        <Text className="text-stone-500 text-center text-base leading-relaxed mb-12">
+          Plan meals, save recipes,{'\n'}and create grocery lists
+        </Text>
+
+        {/* Error Message */}
+        {error && (
+          <View className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-6 w-full">
+            <Text className="text-red-600 text-center text-sm">{error}</Text>
+          </View>
+        )}
+
+        {/* Sign In Button */}
+        <Pressable
+          onPress={signIn}
+          className="bg-white border border-stone-200 rounded-2xl px-6 py-4 flex-row items-center justify-center w-full shadow-sm active:bg-stone-50"
+          style={{ elevation: 2 }}
+        >
+          {/* Google "G" logo colors approximation */}
+          <View className="w-6 h-6 mr-3 items-center justify-center">
+            <Text className="text-lg font-bold" style={{ color: '#4285F4' }}>G</Text>
+          </View>
+          <Text className="text-stone-700 font-semibold text-base">
+            Continue with Google
+          </Text>
+        </Pressable>
+      </View>
 
       {/* Footer */}
-      <Text className="text-gray-400 text-sm mt-12 text-center">
-        Only authorized users can access this app
-      </Text>
+      <View className="pb-12 px-8">
+        <Text className="text-stone-400 text-xs text-center">
+          Sign in to sync your recipes across devices
+        </Text>
+      </View>
     </View>
   );
 }
