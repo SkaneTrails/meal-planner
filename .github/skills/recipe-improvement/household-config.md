@@ -203,10 +203,30 @@ Assume these are always available for flavor enhancements:
 
 **Umami boosters**:
 
-- Soja (kinesisk & japansk)
+- Soja (kinesisk & japansk - see clarification below)
 - Dijonsenap, grovkornig senap
 - Honung, sirap
 - Parmesan
+
+---
+
+## Soy Sauce Clarification
+
+**"Sojasås" is too vague** - always specify which type based on cuisine:
+
+| Cuisine | Use | Notes |
+|---------|-----|-------|
+| **Chinese** | Kinesisk soja (ljus/mörk) | Saltier, more intense. "Ljus soja" (生抽) for cooking, "mörk soja" (老抽) for color |
+| **Japanese** | Japansk soja (Kikkoman-stil) | Lighter, slightly sweet, all-purpose |
+| **Korean** | Koreansk soja (guk-ganjang för soppor, jin-ganjang för övrigt) | Similar to Japanese but varies by dish type |
+| **Thai/Vietnamese** | Japansk soja eller fiskås | Often combined with fish sauce |
+| **Swedish/Fusion** | Japansk soja | Default for non-Asian or fusion dishes |
+
+**In ingredient lists, write:**
+- ✅ "2 msk japansk soja" or "2 msk kinesisk ljus soja"
+- ❌ "2 msk sojasås" or "2 msk soja"
+
+**Rule of thumb:** If the recipe has Chinese flavors (sesame oil, rice vinegar, oyster sauce, five-spice), use Chinese soy. If Japanese/Korean (mirin, sake, dashi), use Japanese soy.
 
 ---
 
@@ -242,3 +262,15 @@ All spices grouped at the end of the ingredient list:
 - Fresh herbs
 - Salt, pepper
 - Stock/bouillon
+
+### Vague Ingredients - Always Clarify
+
+Some ingredients require specification:
+
+| Vague | Clarify to |
+|-------|------------|
+| sojasås / soja | japansk soja / kinesisk ljus soja / kinesisk mörk soja |
+| vinäger | risvinäger / vitt vinvinäger / balsamvinäger / äppelcidervinäger |
+| olja | olivolja / rapsolja / sesamolja / neutral olja |
+| lök | gul lök / rödlök / schalottenlök / salladslök |
+| chili | röd chili / grön chili / chiliflingor / chilipulver |
