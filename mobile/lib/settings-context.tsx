@@ -73,7 +73,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const addItemAtHome = useCallback(async (item: string) => {
     const normalizedItem = item.toLowerCase().trim();
     if (!normalizedItem) return;
-    
+
     const newSettings = {
       ...settings,
       itemsAtHome: [...new Set([...settings.itemsAtHome, normalizedItem])].sort(),
@@ -93,7 +93,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const isItemAtHome = useCallback((item: string) => {
     const normalizedItem = item.toLowerCase().trim();
     // Check if the item or any word in it matches items at home
-    return settings.itemsAtHome.some(homeItem => 
+    return settings.itemsAtHome.some(homeItem =>
       normalizedItem.includes(homeItem) || homeItem.includes(normalizedItem)
     );
   }, [settings.itemsAtHome]);

@@ -36,11 +36,11 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
   const now = new Date();
   const today = formatDateLocal(now);
   const currentHour = now.getHours();
-  
+
   // Determine which meal is "next"
   // Before 12: show lunch, after 12: show dinner
   const mealTypes = currentHour < 12 ? ['lunch', 'dinner'] : ['dinner'];
-  
+
   for (const mealType of mealTypes) {
     const key = `${today}_${mealType}`;
     const value = mealPlan.meals[key];
@@ -146,15 +146,15 @@ export default function HomeScreen() {
         {/* Stronger gradient overlay fading to beige */}
         <LinearGradient
           colors={['rgba(232, 213, 196, 0)', 'rgba(232, 213, 196, 0.5)', '#E8D5C4']}
-          style={{ 
-            position: 'absolute', 
-            bottom: 0, 
-            left: 0, 
-            right: 0, 
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
             height: 150,
           }}
         />
-        
+
         {/* Welcome text on image */}
         <View style={{ position: 'absolute', bottom: 36, left: 24, right: 24 }}>
           <Text style={{ fontSize: 34, fontWeight: '700', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5, textShadowColor: 'rgba(0, 0, 0, 0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
@@ -179,9 +179,9 @@ export default function HomeScreen() {
           </Text>
           <Pressable
             onPress={() => router.push('/recipes')}
-            style={({ pressed }) => ({ 
-              backgroundColor: pressed ? '#E8D5C4' : '#F3E8E0', 
-              borderRadius: borderRadius.sm, 
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? '#E8D5C4' : '#F3E8E0',
+              borderRadius: borderRadius.sm,
               paddingVertical: 10,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
@@ -201,9 +201,9 @@ export default function HomeScreen() {
           </Text>
           <Pressable
             onPress={() => router.push('/meal-plan')}
-            style={({ pressed }) => ({ 
-              backgroundColor: pressed ? '#D4E4D4' : '#E8F0E8', 
-              borderRadius: borderRadius.sm, 
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? '#D4E4D4' : '#E8F0E8',
+              borderRadius: borderRadius.sm,
               paddingVertical: 10,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
@@ -223,9 +223,9 @@ export default function HomeScreen() {
           </Text>
           <Pressable
             onPress={() => router.push('/grocery')}
-            style={({ pressed }) => ({ 
-              backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB', 
-              borderRadius: borderRadius.sm, 
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB',
+              borderRadius: borderRadius.sm,
               paddingVertical: 10,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
@@ -245,9 +245,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Import Recipe - single line */}
-        <View style={{ 
-          backgroundColor: colors.white, 
-          borderRadius: borderRadius.md, 
+        <View style={{
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.md,
           padding: 4,
           ...shadows.md,
           flexDirection: 'row',
@@ -257,11 +257,11 @@ export default function HomeScreen() {
             <Ionicons name="link" size={20} color="#4A3728" />
           </View>
           <TextInput
-            style={{ 
-              flex: 1, 
-              paddingHorizontal: 12, 
-              paddingVertical: 12, 
-              fontSize: 15, 
+            style={{
+              flex: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+              fontSize: 15,
               color: '#4A3728',
             }}
             placeholder="Paste recipe URL to import..."
@@ -277,9 +277,9 @@ export default function HomeScreen() {
           <Pressable
             onPress={handleImportRecipe}
             disabled={!recipeUrl.trim()}
-            style={({ pressed }) => ({ 
-              backgroundColor: recipeUrl.trim() ? (pressed ? '#3D2D1F' : '#4A3728') : '#E5E7EB', 
-              borderRadius: 12, 
+            style={({ pressed }) => ({
+              backgroundColor: recipeUrl.trim() ? (pressed ? '#3D2D1F' : '#4A3728') : '#E5E7EB',
+              borderRadius: 12,
               paddingVertical: 10,
               paddingHorizontal: 16,
               marginRight: 4,
@@ -302,9 +302,9 @@ export default function HomeScreen() {
         {/* Next meal - clickable card */}
         <Pressable
           onPress={() => nextMeal?.recipeId ? router.push(`/recipe/${nextMeal.recipeId}`) : router.push('/meal-plan')}
-          style={({ pressed }) => ({ 
-            backgroundColor: pressed ? '#F9F5F0' : colors.white, 
-            borderRadius: borderRadius.md, 
+          style={({ pressed }) => ({
+            backgroundColor: pressed ? '#F9F5F0' : colors.white,
+            borderRadius: borderRadius.md,
             padding: spacing.md,
             ...shadows.md,
             flexDirection: 'row',
@@ -318,14 +318,14 @@ export default function HomeScreen() {
               resizeMode="cover"
             />
           ) : (
-            <View style={{ 
-              backgroundColor: '#E8F0E8', 
-              borderRadius: 12, 
-              width: 56, 
-              height: 56, 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              marginRight: 12 
+            <View style={{
+              backgroundColor: '#E8F0E8',
+              borderRadius: 12,
+              width: 56,
+              height: 56,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 12
             }}>
               <Ionicons name="restaurant" size={24} color="#2D5A3D" />
             </View>
@@ -354,12 +354,12 @@ export default function HomeScreen() {
             </View>
             <Pressable
               onPress={shuffleInspiration}
-              style={({ pressed }) => ({ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB', 
-                paddingHorizontal: 14, 
-                paddingVertical: 8, 
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB',
+                paddingHorizontal: 14,
+                paddingVertical: 8,
                 borderRadius: 16,
                 transform: [{ scale: pressed ? 0.96 : 1 }],
               })}
@@ -371,10 +371,10 @@ export default function HomeScreen() {
 
           <Pressable
             onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
-            style={({ pressed }) => ({ 
-              backgroundColor: colors.white, 
-              borderRadius: borderRadius.md, 
-              overflow: 'hidden', 
+            style={({ pressed }) => ({
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
+              overflow: 'hidden',
               ...shadows.md,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}

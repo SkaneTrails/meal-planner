@@ -134,9 +134,7 @@ async def update_recipe(
 
 @router.delete("/{recipe_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_recipe(
-    recipe_id: str,
-    *,
-    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
+    recipe_id: str, *, enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False
 ) -> None:
     """Delete a recipe."""
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
@@ -162,10 +160,7 @@ async def upload_recipe_image(
     # Validate file type
     content_type = file.content_type or ""
     if not content_type.startswith("image/"):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File must be an image (JPEG, PNG, etc.)",
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File must be an image (JPEG, PNG, etc.)")
 
     # Generate unique filename
     ext = content_type.split("/")[-1] if "/" in content_type else "jpg"
@@ -197,22 +192,17 @@ async def upload_recipe_image(
     except Exception as e:
         logger.exception("Failed to upload recipe image for recipe_id=%s", recipe_id)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to upload image. Please try again.",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload image. Please try again."
         ) from e
 
     # Update recipe with new image URL (outside try block - separate concern)
     from api.models.recipe import RecipeUpdate as RecipeUpdateModel
-    updated_recipe = recipe_storage.update_recipe(
-        recipe_id,
-        RecipeUpdateModel(image_url=image_url),
-        database=database,
-    )
+
+    updated_recipe = recipe_storage.update_recipe(recipe_id, RecipeUpdateModel(image_url=image_url), database=database)
 
     if updated_recipe is None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update recipe with new image URL",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update recipe with new image URL"
         )
 
     return updated_recipe

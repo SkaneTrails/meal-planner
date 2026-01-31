@@ -1,0 +1,12 @@
+# Allowed App Users
+#
+# List of email addresses that can access the Meal Planner app.
+# These users must first authenticate via Firebase (Google Sign-In),
+# then the API checks if their email is in this allowlist.
+#
+# Format: one email per line
+# Lines starting with # are comments
+#
+# Example:
+# user@gmail.com
+# another.user@example.com

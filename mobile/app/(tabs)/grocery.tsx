@@ -61,7 +61,7 @@ export default function GroceryScreen() {
   // Fetch both enhanced and non-enhanced recipes to ensure we find all recipes regardless of which mode was used when planning
   const { data: enhancedRecipes = [] } = useRecipes(undefined, true);
   const { data: regularRecipes = [] } = useRecipes(undefined, false);
-  
+
   // Combine both recipe lists, prefer enhanced if available
   const recipes = useMemo(() => {
     const recipeMap = new Map(regularRecipes.map(r => [r.id, r]));
@@ -136,7 +136,7 @@ export default function GroceryScreen() {
   const mealPlanMealsJson = useMemo(() => JSON.stringify(mealPlan?.meals || {}), [mealPlan?.meals]);
   const mealServingsJson = useMemo(() => JSON.stringify(mealServings), [mealServings]);
   const selectedMealKeysStr = useMemo(() => selectedMealKeys.join(','), [selectedMealKeys]);
-  
+
   // Track if we need to clear items
   const prevGeneratedItemsLengthRef = useRef(0);
   prevGeneratedItemsLengthRef.current = generatedItems.length;
@@ -184,17 +184,17 @@ export default function GroceryScreen() {
       const requestedServings = mealServings[key] || recipe.servings || 2;
       const recipeServings = recipe.servings || 2;
       const multiplier = requestedServings / recipeServings;
-      
+
       // Format source with servings info
-      const sourceLabel = multiplier !== 1 
-        ? `${recipe.title} (${requestedServings}👤)` 
+      const sourceLabel = multiplier !== 1
+        ? `${recipe.title} (${requestedServings}👤)`
         : recipe.title;
 
       recipe.ingredients.forEach((ingredient) => {
         // Strip step references for grouping key
         const cleanedIngredient = stripStepReference(ingredient);
         const name = cleanedIngredient.toLowerCase().trim();
-        
+
         if (!ingredientsMap.has(name)) {
           ingredientsMap.set(name, {
             name: cleanedIngredient, // Use cleaned name without step reference
@@ -320,7 +320,7 @@ export default function GroceryScreen() {
 
   const totalItems = generatedItems.length + customItems.length;
   const checkedCount = checkedItems.size;
-  
+
   // Count items that are filtered out (at home)
   const hiddenAtHomeCount = useMemo(() => {
     return groceryListWithChecked.items.filter(item => isItemAtHome(item.name)).length;
@@ -330,7 +330,7 @@ export default function GroceryScreen() {
   const itemsToBuy = totalItems - hiddenAtHomeCount;
   // Checked items that are not at home (for progress display)
   const checkedItemsToBuy = useMemo(() => {
-    return groceryListWithChecked.items.filter(item => 
+    return groceryListWithChecked.items.filter(item =>
       !isItemAtHome(item.name) && checkedItems.has(item.name)
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
@@ -345,12 +345,12 @@ export default function GroceryScreen() {
             <Text style={{ fontSize: 13, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
             <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
           </View>
-          <View style={{ 
-            width: 48, 
-            height: 48, 
-            borderRadius: borderRadius.md, 
-            backgroundColor: colors.bgDark, 
-            alignItems: 'center', 
+          <View style={{
+            width: 48,
+            height: 48,
+            borderRadius: borderRadius.md,
+            backgroundColor: colors.bgDark,
+            alignItems: 'center',
             justifyContent: 'center',
             ...shadows.sm,
           }}>
@@ -362,9 +362,9 @@ export default function GroceryScreen() {
       {/* Stats and controls */}
       <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.lg }}>
         {/* Stats card */}
-        <View style={{ 
-          backgroundColor: colors.white, 
-          borderRadius: borderRadius.md, 
+        <View style={{
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.md,
           padding: spacing.lg,
           marginBottom: spacing.md,
           ...shadows.md,
@@ -383,12 +383,12 @@ export default function GroceryScreen() {
               {/* Add Item button */}
               <Pressable
                 onPress={() => setShowAddItem(!showAddItem)}
-                style={{ 
-                  flexDirection: 'row', 
-                  alignItems: 'center', 
-                  paddingHorizontal: 14, 
-                  paddingVertical: 10, 
-                  borderRadius: borderRadius.sm, 
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: 14,
+                  paddingVertical: 10,
+                  borderRadius: borderRadius.sm,
                   backgroundColor: showAddItem ? colors.primary : colors.bgMid,
                 }}
               >
@@ -399,12 +399,12 @@ export default function GroceryScreen() {
               {totalItems > 0 && (
                 <Pressable
                   onPress={handleClearAll}
-                  style={{ 
-                    flexDirection: 'row', 
-                    alignItems: 'center', 
-                    paddingHorizontal: 14, 
-                    paddingVertical: 10, 
-                    borderRadius: 12, 
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 14,
+                    paddingVertical: 10,
+                    borderRadius: 12,
                     backgroundColor: '#F5E6D3',
                   }}
                 >
@@ -416,12 +416,12 @@ export default function GroceryScreen() {
               {checkedCount > 0 && (
                 <Pressable
                   onPress={handleClearChecked}
-                  style={{ 
-                    flexDirection: 'row', 
-                    alignItems: 'center', 
-                    paddingHorizontal: 14, 
-                    paddingVertical: 10, 
-                    borderRadius: 12, 
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 14,
+                    paddingVertical: 10,
+                    borderRadius: 12,
                     backgroundColor: '#F5E6D3',
                   }}
                 >
@@ -444,11 +444,11 @@ export default function GroceryScreen() {
 
           {/* Items at home indicator */}
           {hiddenAtHomeCount > 0 && (
-            <Pressable 
+            <Pressable
               onPress={() => router.push('/settings')}
-              style={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
                 marginTop: 12,
                 paddingVertical: 8,
                 paddingHorizontal: 12,
@@ -468,22 +468,22 @@ export default function GroceryScreen() {
 
         {/* Add item input */}
         {showAddItem && (
-          <View style={{ 
-            backgroundColor: colors.white, 
-            borderRadius: borderRadius.md, 
+          <View style={{
+            backgroundColor: colors.white,
+            borderRadius: borderRadius.md,
             padding: spacing.lg,
             ...shadows.md,
           }}>
             <Text style={{ fontSize: 14, fontWeight: '600', color: colors.primary, marginBottom: 10 }}>Add custom item</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <TextInput
-                style={{ 
-                  flex: 1, 
-                  backgroundColor: colors.bgMid, 
-                  borderRadius: borderRadius.sm, 
-                  paddingHorizontal: 14, 
-                  paddingVertical: 12, 
-                  fontSize: 15, 
+                style={{
+                  flex: 1,
+                  backgroundColor: colors.bgMid,
+                  borderRadius: borderRadius.sm,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                  fontSize: 15,
                   color: colors.primary,
                 }}
                 placeholder="e.g. Milk, 2 liters"
@@ -496,10 +496,10 @@ export default function GroceryScreen() {
               <Pressable
                 onPress={handleAddItem}
                 disabled={!newItemText.trim()}
-                style={{ 
-                  backgroundColor: newItemText.trim() ? colors.primary : colors.bgDark, 
-                  paddingHorizontal: 20, 
-                  paddingVertical: 12, 
+                style={{
+                  backgroundColor: newItemText.trim() ? colors.primary : colors.bgDark,
+                  paddingHorizontal: 20,
+                  paddingVertical: 12,
                   borderRadius: borderRadius.sm,
                   ...(newItemText.trim() ? shadows.md : shadows.none),
                 }}
@@ -520,12 +520,12 @@ export default function GroceryScreen() {
         />
       ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <View style={{ 
-            width: 80, 
-            height: 80, 
-            borderRadius: 24, 
-            backgroundColor: '#E8D5C4', 
-            alignItems: 'center', 
+          <View style={{
+            width: 80,
+            height: 80,
+            borderRadius: 24,
+            backgroundColor: '#E8D5C4',
+            alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 20,
           }}>
