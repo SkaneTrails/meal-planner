@@ -145,7 +145,7 @@ When a recipe could be improved with finishing touches, add them using pantry st
 
 ### 5. Practical Adjustments
 
-- Consolidate duplicate ingredients (e.g., "1 msk olivolja" + "1 msk olivolja" → "2 msk olivolja")
+- **Never consolidate ingredients** - if the original recipe lists an ingredient multiple times, trust that there's a reason (different phases, different purposes, or intentional emphasis)
 - Clarify vague quantities ("salt och peppar" → "1/2 tsk salt, 2 krm svartpeppar")
 - Suggest mise en place order for efficient cooking
 
