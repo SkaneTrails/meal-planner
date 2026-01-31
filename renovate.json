@@ -48,6 +48,12 @@
       "groupSlug": "pre-commit",
       "matchManagers": ["pre-commit"],
       "addLabels": ["🔧 type: ci"]
+    },
+    {
+      "description": "NativeWind 4 only supports Tailwind CSS v3",
+      "matchPackageNames": ["tailwindcss"],
+      "matchPaths": ["mobile/**"],
+      "allowedVersions": "<4.0.0"
     }
   ]
 }
