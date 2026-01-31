@@ -72,3 +72,9 @@ variable "run_api_service" {
   description = "Cloud Run API service resource (for dependency)"
   type        = any
 }
+
+variable "allow_public_access" {
+  description = "Allow unauthenticated access (allUsers). Only enable after auth middleware is wired."
+  type        = bool
+  default     = false
+}
