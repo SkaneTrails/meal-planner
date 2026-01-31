@@ -3,27 +3,9 @@
  * Sets up providers and global configuration.
  */
 
-// IMPORTANT: This must be called before any other imports to properly handle
-// OAuth popup callbacks on web. It closes the popup window when returning from
-// the auth provider.
-import * as WebBrowser from 'expo-web-browser';
-import { Platform } from 'react-native';
-
-// On web, check if this is an OAuth callback popup BEFORE React renders.
-// If maybeCompleteAuthSession succeeds, the popup will close and we don't need to render.
-if (Platform.OS === 'web' && typeof window !== 'undefined') {
-  // skipRedirectCheck: true is needed because the URL may have hash fragments
-  // that don't exactly match the registered redirect URI
-  const result = WebBrowser.maybeCompleteAuthSession({ skipRedirectCheck: true });
-  console.log('maybeCompleteAuthSession result:', result);
-  console.log('Current URL:', window.location.href);
-  console.log('Has opener:', !!window.opener);
-
-  // If this is a successful OAuth callback, the popup should close.
-  if (result.type === 'success') {
-    console.log('OAuth callback handled, popup should close');
-  }
-}
+// NOTE: For web, we use Firebase's native signInWithPopup which handles popup
+// communication correctly. The expo-web-browser maybeCompleteAuthSession is only
+// needed for native platforms using expo-auth-session.
 
 import React, { useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
