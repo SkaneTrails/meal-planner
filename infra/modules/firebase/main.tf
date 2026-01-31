@@ -278,3 +278,12 @@ resource "google_secret_manager_secret_iam_member" "github_actions_firebase_mess
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${var.github_actions_sa_email}"
 }
+
+resource "google_secret_manager_secret_iam_member" "github_actions_oauth_client_id" {
+  count = var.github_actions_sa_email != "" ? 1 : 0
+
+  project   = var.project
+  secret_id = google_secret_manager_secret.oauth_client_id.secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${var.github_actions_sa_email}"
+}
