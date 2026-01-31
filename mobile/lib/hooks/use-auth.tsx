@@ -34,7 +34,36 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Check if auth is configured
+const isAuthConfigured = Boolean(
+  process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
+  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
+  process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
+);
+
 export function AuthProvider({ children }: AuthProviderProps) {
+  // If auth is not configured, provide a mock authenticated user for development
+  if (!isAuthConfigured) {
+    return (
+      <AuthContext.Provider
+        value={{
+          user: { email: 'dev@localhost' } as User,
+          loading: false,
+          error: null,
+          signIn: async () => console.warn('Auth not configured - using dev mode'),
+          signOut: async () => console.warn('Auth not configured - using dev mode'),
+          getIdToken: async () => null,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
+  return <AuthProviderImpl>{children}</AuthProviderImpl>;
+}
+
+function AuthProviderImpl({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
