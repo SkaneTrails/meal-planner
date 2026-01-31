@@ -87,6 +87,10 @@ async def require_auth(user: Annotated[AuthenticatedUser | None, Depends(get_cur
     Use as a dependency to enforce authentication.
     Also checks if user is in the allowlist.
     """
+    # Skip auth in development mode
+    if os.getenv("SKIP_AUTH", "").lower() == "true":
+        return AuthenticatedUser(uid="dev-user", email="dev@localhost", name="Dev User", picture=None)
+
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

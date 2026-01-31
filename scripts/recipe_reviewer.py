@@ -135,6 +135,8 @@ def mark_skipped(recipe_id: str) -> None:
 
 def update_recipe(recipe_id: str, updates: dict) -> None:
     """Update/create a recipe in the target database with improvements."""
+    from datetime import UTC, datetime
+
     source_db = get_source_db()
     target_db = get_target_db()
 
@@ -149,9 +151,15 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     if original_data is None:
         print(f"❌ Recipe data is empty: {recipe_id}")
         return
+
+    now = datetime.now(tz=UTC)
     improved_data = {**original_data, **updates}
     improved_data["original_id"] = recipe_id  # Track source recipe ID
     improved_data["improved"] = True
+    # Ensure timestamps exist (required for Firestore order_by queries)
+    if "created_at" not in improved_data:
+        improved_data["created_at"] = now
+    improved_data["updated_at"] = now
 
     # Save to target database with same ID
     target_db.collection(RECIPES_COLLECTION).document(recipe_id).set(improved_data)
