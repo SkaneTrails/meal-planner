@@ -1,22 +1,24 @@
 /**
  * Authentication hook for Firebase Auth with Google Sign-In.
  * Provides user state and sign-in/sign-out methods.
+ *
+ * Uses Firebase's native signInWithPopup for web (handles popup communication correctly)
+ * and expo-auth-session for native platforms (iOS/Android).
  */
 
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
+import { Platform } from 'react-native';
 import {
   User,
   onAuthStateChanged,
   signInWithCredential,
+  signInWithPopup,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
 } from 'firebase/auth';
 import * as Google from 'expo-auth-session/providers/google';
 import { auth } from '../firebase';
 import { setAuthTokenGetter } from '../api';
-
-// NOTE: WebBrowser.maybeCompleteAuthSession() is called in app/_layout.tsx
-// before any other imports to properly handle OAuth popup callbacks on web.
 
 interface AuthContextType {
   user: User | null;
@@ -67,22 +69,23 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Configure Google Auth
-  // Get these from Firebase Console > Project Settings > General > Your apps
-  // responseType: 'id_token' is required for Firebase Auth on web
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    responseType: 'id_token',
-  });
+  // For web: use Firebase's native GoogleAuthProvider
+  const googleProvider = Platform.OS === 'web' ? new GoogleAuthProvider() : null;
 
-  // Debug: Log the redirect URI being used
-  useEffect(() => {
-    if (request?.redirectUri) {
-      console.log('OAuth Redirect URI:', request.redirectUri);
-    }
-  }, [request]);
+  // For native: Configure expo-auth-session Google Auth
+  // responseType: 'id_token' is required for Firebase Auth
+  const [request, response, promptAsync] = Google.useAuthRequest(
+    Platform.OS !== 'web'
+      ? {
+          iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+          androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+          responseType: 'id_token',
+        }
+      : {
+          // Minimal config for web (won't be used, but hook requires it)
+          webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+        }
+  );
 
   // Register token getter for API client
   useEffect(() => {
@@ -106,16 +109,14 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
     return unsubscribe;
   }, []);
 
-  // Handle Google sign-in response
+  // Handle Google sign-in response (native only)
   useEffect(() => {
-    if (response?.type === 'success') {
-      // Debug: log response params to see what we received
-      console.log('OAuth response params:', response.params);
+    // Skip for web - we use signInWithPopup directly
+    if (Platform.OS === 'web') return;
 
+    if (response?.type === 'success') {
       const { id_token, access_token } = response.params;
 
-      // Google OAuth returns id_token for implicit flow, but expo-auth-session
-      // may return access_token depending on configuration
       if (!id_token) {
         console.error('No id_token in response. Received:', Object.keys(response.params));
         setError('Authentication failed: No ID token received. Check OAuth configuration.');
@@ -140,11 +141,21 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   const signIn = useCallback(async () => {
     setError(null);
     try {
-      await promptAsync();
+      if (Platform.OS === 'web' && googleProvider) {
+        // Web: Use Firebase's native popup auth (handles popup communication correctly)
+        await signInWithPopup(auth, googleProvider);
+      } else {
+        // Native: Use expo-auth-session
+        await promptAsync();
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign-in failed');
+      const errorMessage = err instanceof Error ? err.message : 'Sign-in failed';
+      // Don't show error for user-cancelled popups
+      if (!errorMessage.includes('popup-closed-by-user')) {
+        setError(errorMessage);
+      }
     }
-  }, [promptAsync]);
+  }, [promptAsync, googleProvider]);
 
   const signOut = useCallback(async () => {
     try {
