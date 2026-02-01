@@ -9,9 +9,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useRecipes, useMealPlan, useGroceryList, useEnhancedMode } from '@/lib/hooks';
+import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
+import { useSettings } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
-import type { Recipe } from '@/lib/types';
+import type { Recipe, GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -31,7 +32,7 @@ function getWeekDates(): { start: string; end: string } {
   return { start: formatDateLocal(saturday), end: formatDateLocal(friday) };
 }
 
-function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string } | null {
+function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string; isTomorrow?: boolean } | null {
   if (!mealPlan?.meals) return null;
   const now = new Date();
   const today = formatDateLocal(now);
@@ -41,6 +42,7 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
   // Before 12: show lunch, after 12: show dinner
   const mealTypes = currentHour < 12 ? ['lunch', 'dinner'] : ['dinner'];
 
+  // Check today's meals first
   for (const mealType of mealTypes) {
     const key = `${today}_${mealType}`;
     const value = mealPlan.meals[key];
@@ -54,6 +56,26 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
       }
     }
   }
+  
+  // If today is empty, check tomorrow's meals
+  // Use 24h in ms to avoid DST edge cases with setDate()
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  const tomorrowStr = formatDateLocal(tomorrow);
+  
+  for (const mealType of ['lunch', 'dinner']) {
+    const key = `${tomorrowStr}_${mealType}`;
+    const value = mealPlan.meals[key];
+    if (value) {
+      if (value.startsWith('custom:')) {
+        return { title: value.slice(7), isCustom: true, mealType, isTomorrow: true };
+      }
+      const recipe = recipes.find(r => r.id === value);
+      if (recipe) {
+        return { title: recipe.title, imageUrl: recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id, isTomorrow: true };
+      }
+    }
+  }
+  
   return null;
 }
 
@@ -62,18 +84,61 @@ export default function HomeScreen() {
   const { isEnhanced } = useEnhancedMode();
   const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes(undefined, isEnhanced);
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
+  const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
+  const { isItemAtHome } = useSettings();
   const [recipeUrl, setRecipeUrl] = useState('');
   const [inspirationIndex, setInspirationIndex] = useState(0);
-
-  const { start, end } = useMemo(() => getWeekDates(), []);
-  const { data: groceryList } = useGroceryList(undefined, { start_date: start, end_date: end });
 
   const isLoading = recipesLoading || mealPlanLoading;
 
   const handleRefresh = () => {
     refetchRecipes();
     refetchMealPlan();
+    refreshFromStorage();
   };
+
+  // Generate grocery items count from selected meals (same logic as grocery screen)
+  const groceryItemsCount = useMemo(() => {
+    if (!mealPlan || selectedMealKeys.length === 0) {
+      // Filter custom items: exclude checked items and items marked as "at home"
+      // customItems in context is string[] (just names)
+      return customItems.filter(name => 
+        !checkedItems.has(name) && !isItemAtHome(name)
+      ).length;
+    }
+    
+    const recipeMap = new Map(recipes.map(r => [r.id, r]));
+    const ingredientNames = new Set<string>();
+    
+    selectedMealKeys.forEach(key => {
+      const recipeId = mealPlan.meals?.[key];
+      if (!recipeId || recipeId.startsWith('custom:')) return;
+      
+      const recipe = recipeMap.get(recipeId);
+      if (!recipe) return;
+      
+      recipe.ingredients.forEach(ingredient => {
+        const name = ingredient.toLowerCase().trim()
+          .replace(/\s*\(steg\s*\d+\)\s*$/i, '')
+          .replace(/\s*\(step\s*\d+\)\s*$/i, '')
+          .replace(/\s+till\s+\w+$/i, '');
+        ingredientNames.add(name);
+      });
+    });
+    
+    // Add custom items
+    customItems.forEach(name => ingredientNames.add(name));
+    
+    // Filter out items at home and checked items, return unchecked count
+    let uncheckedCount = 0;
+    ingredientNames.forEach(name => {
+      if (!isItemAtHome(name) && !checkedItems.has(name)) {
+        uncheckedCount++;
+      }
+    });
+    
+    return uncheckedCount;
+  }, [mealPlan, selectedMealKeys, recipes, customItems, checkedItems, isItemAtHome]);
 
   // Filter inspiration recipes (exclude meal and grill categories - starters, desserts, drinks, sauces, pickles, breakfast)
   const inspirationRecipes = useMemo(() => {
@@ -100,7 +165,6 @@ export default function HomeScreen() {
 
   // Count meals planned this week (max 21: 7 days x 3 meals)
   const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
-  const groceryItemsCount = groceryList?.items.length || 0;
   const nextMeal = getNextMeal(mealPlan, recipes);
 
   const handleImportRecipe = () => {
@@ -332,7 +396,9 @@ export default function HomeScreen() {
           )}
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
-              {nextMeal ? `Today's ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` : 'No meal planned'}
+              {nextMeal 
+                ? `${nextMeal.isTomorrow ? "Tomorrow's" : "Today's"} ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` 
+                : 'No meal planned'}
             </Text>
             <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
