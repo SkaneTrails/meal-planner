@@ -40,12 +40,21 @@ coverage.xml
 .terraform.lock.hcl
 terraform.tfplan
 terraform.tfplan.json
+tfplan
+tfstate
+tfstate-prev
 crash.log
 crash.*.log
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Deploy scripts with hardcoded project values
+scripts/deploy-api.ps1
+scripts/deploy-api.sh
+mobile/scripts/deploy-web.ps1
+mobile/scripts/deploy-web.sh
 
 # Terraform user access files (contain personal emails)
 infra/**/access/users.txt
@@ -107,3 +116,7 @@ functions/*/.venv/
 # Local environment variables
 mobile/.env
 mobile/.env.local
+./.copilot-tasks.md
+infra/environments/*/import_tfstate_bucket.ps1
+infra/environments/*/import_tfstate_bucket.sh
+infra/environments/*/access/allowed_users.txt

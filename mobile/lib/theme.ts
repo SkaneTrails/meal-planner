@@ -54,12 +54,12 @@ export const colors = {
   bgMid: '#F5E6D3',
   bgDark: '#E8D5C4',
   bgWarm: '#F3E8E0',
-  
+
   // Accent colors
   accent: '#8B7355',
   gold: '#D4A574',
   goldLight: '#FFD700',
-  
+
   // Category colors (for consistent section icons)
   category: {
     recipes: { bg: '#E8D5C4', text: '#4A3728' },
@@ -67,14 +67,14 @@ export const colors = {
     grocery: { bg: '#E5E7EB', text: '#374151' },
     add: { bg: '#E8D5C4', text: '#4A3728' },
   },
-  
+
   // Diet label colors
   diet: {
     veggie: { bg: '#DCFCE7', text: '#166534' },
     fish: { bg: '#DBEAFE', text: '#1E40AF' },
     meat: { bg: '#FEE2E2', text: '#991B1B' },
   },
-  
+
   // Neutrals - standardized gray scale
   white: '#FFFFFF',
   text: {
@@ -84,7 +84,7 @@ export const colors = {
     inverse: '#FFFFFF',      // Text on dark backgrounds
   },
   border: '#E5E7EB',         // Standard border color
-  
+
   // Legacy gray scale (for compatibility)
   gray: {
     50: '#F9FAFB',

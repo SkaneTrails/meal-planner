@@ -110,6 +110,12 @@ module "firebase" {
   # Set to true after running: ./scripts/create-oauth-client.ps1
   oauth_secrets_exist = var.oauth_secrets_exist
 
+  # API URL for GitHub Actions secrets (stored in Secret Manager)
+  api_url = module.cloud_run.service_url
+
+  # GitHub Actions SA for per-secret IAM bindings (least privilege)
+  github_actions_sa_email = module.iam.github_actions_firebase_email
+
   firebase_api_service        = module.apis.firebase_service
   identitytoolkit_api_service = module.apis.identitytoolkit_service
   secretmanager_api_service   = module.apis.secretmanager_service
@@ -128,6 +134,9 @@ module "cloud_run" {
   image_url          = "${module.artifact_registry.repository_url}/api:latest"
   firestore_database = var.firestore_database_name
   allowed_origins    = var.cloud_run_allowed_origins
+
+  # Allow public access - Firebase Auth is validated in application code
+  allow_public_access = true
 
   run_api_service = module.apis.run_service
 }

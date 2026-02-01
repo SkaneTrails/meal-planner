@@ -1,12 +1,13 @@
 """Meal plan API endpoints."""
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
+from api.auth.firebase import require_auth
 from api.models.meal_plan import MealPlan, MealPlanUpdate
 from api.storage import meal_plan_storage
 
-router = APIRouter(prefix="/meal-plans", tags=["meal-plans"])
+router = APIRouter(prefix="/meal-plans", tags=["meal-plans"], dependencies=[Depends(require_auth)])
 
 # Expected number of parts when splitting meal key
 _MEAL_KEY_PARTS = 2

@@ -3,21 +3,45 @@
  * Sets up providers and global configuration.
  */
 
+// NOTE: For web, we use Firebase's native signInWithPopup which handles popup
+// communication correctly. The expo-web-browser maybeCompleteAuthSession is only
+// needed for native platforms using expo-auth-session.
+
 import React, { useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { QueryProvider, restoreQueryCache, persistQueryCache } from '@/lib/query-provider';
 import { EnhancedModeProvider } from '@/lib/enhanced-mode-context';
 import { SettingsProvider } from '@/lib/settings-context';
 import { GroceryProvider } from '@/lib/grocery-context';
+import { AuthProvider } from '@/lib/hooks/use-auth';
 import '../global.css';
 
+// Prevent splash screen from auto-hiding until fonts are loaded
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
+  // Load Ionicons font from public/fonts for web compatibility
+  // The font is copied there by the build:web script
+  const [fontsLoaded] = useFonts({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    Ionicons: require('../public/fonts/Ionicons.ttf'),
+  });
+
   // Restore cache on app startup
   useEffect(() => {
     restoreQueryCache();
   }, []);
+
+  // Hide splash screen once fonts are loaded
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   // Persist cache when app goes to background
   useEffect(() => {
@@ -31,52 +55,63 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
+  // Don't render until fonts are loaded
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <QueryProvider>
-      <EnhancedModeProvider>
-        <SettingsProvider>
-          <GroceryProvider>
-            <StatusBar style="auto" />
-          <Stack>
-            <Stack.Screen
-              name="(tabs)"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="recipe/[id]"
-              options={{
-                title: 'Recipe',
-                headerBackTitle: 'Back',
-              }}
-            />
-            <Stack.Screen
-              name="add-recipe"
-              options={{
-                title: 'Add Recipe',
-                presentation: 'modal',
-                headerBackTitle: 'Cancel',
-              }}
-            />
-            <Stack.Screen
-              name="select-recipe"
-              options={{
-                title: 'Select Recipe',
-                presentation: 'modal',
-                headerBackTitle: 'Cancel',
-              }}
-            />
-            <Stack.Screen
-              name="settings"
-              options={{
-                title: 'Settings',
-                presentation: 'card',
-                headerShown: false,
-              }}
-            />
-          </Stack>
-          </GroceryProvider>
-        </SettingsProvider>
-      </EnhancedModeProvider>
-    </QueryProvider>
+    <AuthProvider>
+      <QueryProvider>
+        <EnhancedModeProvider>
+          <SettingsProvider>
+            <GroceryProvider>
+              <StatusBar style="auto" />
+              <Stack>
+                <Stack.Screen
+                  name="sign-in"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="recipe/[id]"
+                  options={{
+                    title: 'Recipe',
+                    headerBackTitle: 'Back',
+                  }}
+                />
+                <Stack.Screen
+                  name="add-recipe"
+                  options={{
+                    title: 'Add Recipe',
+                    presentation: 'modal',
+                    headerBackTitle: 'Cancel',
+                  }}
+                />
+                <Stack.Screen
+                  name="select-recipe"
+                  options={{
+                    title: 'Select Recipe',
+                    presentation: 'modal',
+                    headerBackTitle: 'Cancel',
+                  }}
+                />
+                <Stack.Screen
+                  name="settings"
+                  options={{
+                    title: 'Settings',
+                    presentation: 'card',
+                    headerShown: false,
+                  }}
+                />
+              </Stack>
+            </GroceryProvider>
+          </SettingsProvider>
+        </EnhancedModeProvider>
+      </QueryProvider>
+    </AuthProvider>
   );
 }

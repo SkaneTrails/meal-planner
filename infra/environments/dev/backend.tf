@@ -10,7 +10,7 @@ terraform {
   backend "gcs" {
     # Replace with your actual bucket name
     # If sharing a bucket with other projects, use a unique prefix
-    bucket = "YOUR_TFSTATE_BUCKET_NAME"
+    bucket = "e5092a6f6c6925d1-bucket-tfstate"
     prefix = "meal-planner/terraform/state"
   }
 }

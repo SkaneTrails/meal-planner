@@ -64,6 +64,60 @@ npx expo start
 ./scripts/run-function.sh
 ```
 
+## Environment Setup
+
+### API Environment Variables
+
+The FastAPI backend requires the following environment variables:
+
+| Variable                         | Required | Description                                     |
+| -------------------------------- | -------- | ----------------------------------------------- |
+| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                    |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Yes      | Path to service account JSON                    |
+| `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev) |
+| `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check      |
+
+### Mobile Environment Variables
+
+Copy `mobile/.env.example` to `mobile/.env.development`:
+
+```bash
+cd mobile
+cp .env.example .env.development
+```
+
+| Variable                         | Required | Description                                |
+| -------------------------------- | -------- | ------------------------------------------ |
+| `EXPO_PUBLIC_API_URL`            | Yes      | API URL (default: `http://localhost:8000`) |
+| `EXPO_PUBLIC_FIREBASE_*`         | No\*     | Firebase config for authentication         |
+| `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` | No\*     | OAuth client IDs for Google Sign-In        |
+
+**\*Authentication in dev mode:** If Firebase/OAuth credentials are not configured, the app runs in "dev mode" with a mock authenticated user (`dev@localhost`). This allows local development without setting up Firebase.
+
+### Setting Up Firebase Authentication (Optional)
+
+To enable real authentication:
+
+1. **Create Firebase Project**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project or use existing GCP project
+   - Enable Authentication > Sign-in method > Google
+
+2. **Get Firebase Config**
+   - Project Settings > General > Your apps > Add Web app
+   - Copy the config values to your `.env.development`
+
+3. **Get OAuth Client IDs**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs & Services > Credentials
+   - Create OAuth 2.0 Client IDs for:
+     - Web application (for Expo web)
+     - iOS (for iOS builds)
+     - Android (for Android builds)
+
+4. **Configure Authorized Domains**
+   - In Firebase Console > Authentication > Settings > Authorized domains
+   - Add `localhost` for local development
+
 ## Development Workflow
 
 ### Running Tests

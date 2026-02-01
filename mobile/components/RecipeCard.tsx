@@ -65,11 +65,11 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
         onPressOut={handlePressOut}
         style={{ marginBottom: 10 }}
       >
-        <Animated.View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'center', 
-          padding: 14, 
-          backgroundColor: '#fff', 
+        <Animated.View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: 14,
+          backgroundColor: '#fff',
           borderRadius: 16,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
@@ -89,7 +89,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5, gap: 10 }}>
               {recipe.diet_label && (
-                <View style={{ 
+                <View style={{
                   backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
                   paddingHorizontal: 8,
                   paddingVertical: 3,
@@ -102,10 +102,10 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               )}
               {recipe.rating && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons 
-                    name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'} 
-                    size={13} 
-                    color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'} 
+                  <Ionicons
+                    name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
+                    size={13}
+                    color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'}
                   />
                 </View>
               )}
@@ -127,7 +127,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
 
   // Grid card layout - square cards with image taking most of the space
   const imageHeight = cardSize ? cardSize * 0.72 : 128;
-  
+
   return (
     <Pressable
       onPress={onPress}
@@ -135,10 +135,10 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
       onPressOut={handlePressOut}
     >
       <Animated.View
-        style={{ 
-          backgroundColor: '#fff', 
-          borderRadius: 16, 
-          overflow: 'hidden', 
+        style={{
+          backgroundColor: '#fff',
+          borderRadius: 16,
+          overflow: 'hidden',
           width: cardSize,
           height: cardSize,
           shadowColor: '#000',
@@ -157,7 +157,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           />
           {/* Diet badge overlay */}
           {recipe.diet_label && (
-            <View style={{ 
+            <View style={{
               position: 'absolute',
               top: 10,
               left: 10,
@@ -179,8 +179,8 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               {recipe.title}
             </Text>
             {totalTime && (
-              <View style={{ 
-                flexDirection: 'row', 
+              <View style={{
+                flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: '#F5E6D3',
                 paddingHorizontal: 6,
@@ -197,18 +197,18 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           {/* Rating badge */}
           {recipe.rating && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-              <View style={{ 
-                flexDirection: 'row', 
+              <View style={{
+                flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: recipe.rating >= 3 ? '#DCFCE7' : '#FEE2E2',
                 paddingHorizontal: 6,
                 paddingVertical: 3,
                 borderRadius: 6,
               }}>
-                <Ionicons 
-                  name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'} 
-                  size={11} 
-                  color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'} 
+                <Ionicons
+                  name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
+                  size={11}
+                  color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'}
                 />
               </View>
             </View>

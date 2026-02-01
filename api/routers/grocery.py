@@ -3,13 +3,14 @@
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 
+from api.auth.firebase import require_auth
 from api.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
 from api.services.ingredient_parser import parse_ingredient
 from api.storage import meal_plan_storage, recipe_storage
 
-router = APIRouter(prefix="/grocery", tags=["grocery"])
+router = APIRouter(prefix="/grocery", tags=["grocery"], dependencies=[Depends(require_auth)])
 
 # Expected number of parts when splitting meal key
 _MEAL_KEY_PARTS = 2

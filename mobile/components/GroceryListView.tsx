@@ -7,9 +7,9 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DraggableFlatList, { 
-  ScaleDecorator, 
-  RenderItemParams 
+import DraggableFlatList, {
+  ScaleDecorator,
+  RenderItemParams
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { hapticSelection } from '@/lib/haptics';
@@ -79,13 +79,13 @@ export function GroceryItemRow({ item, onToggle, drag, isActive, showReorder }: 
 
   return (
     <View
-      style={{ 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        padding: 14, 
-        backgroundColor: isActive ? '#F5E6D3' : '#fff', 
-        borderRadius: 12, 
-        marginBottom: 8, 
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 14,
+        backgroundColor: isActive ? '#F5E6D3' : '#fff',
+        borderRadius: 12,
+        marginBottom: 8,
         opacity: checked ? 0.6 : 1,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: isActive ? 4 : 1 },
@@ -116,15 +116,15 @@ export function GroceryItemRow({ item, onToggle, drag, isActive, showReorder }: 
         style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
       >
         <View
-          style={{ 
-            width: 24, 
-            height: 24, 
-            borderRadius: 8, 
-            borderWidth: 2, 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            marginRight: 14, 
-            backgroundColor: checked ? '#4A3728' : 'transparent', 
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 8,
+            borderWidth: 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 14,
+            backgroundColor: checked ? '#4A3728' : 'transparent',
             borderColor: checked ? '#4A3728' : '#D1D5DB',
           }}
         >
@@ -133,10 +133,10 @@ export function GroceryItemRow({ item, onToggle, drag, isActive, showReorder }: 
 
         <View style={{ flex: 1 }}>
           <Text
-            style={{ 
-              fontSize: 15, 
+            style={{
+              fontSize: 15,
               fontWeight: '500',
-              textDecorationLine: checked ? 'line-through' : 'none', 
+              textDecorationLine: checked ? 'line-through' : 'none',
               color: checked ? '#9CA3AF' : '#4A3728',
             }}
           >
@@ -184,7 +184,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   };
 
   // Filter items if filter function provided
-  const filteredItems = filterOutItems 
+  const filteredItems = filterOutItems
     ? groceryList.items.filter(item => !filterOutItems(item.name))
     : groceryList.items;
 
@@ -199,8 +199,8 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   }, [checkedItems]);
 
   // Use ordered items if in reorder mode, otherwise use filtered items (sorted by checked)
-  const displayItems = reorderMode && orderedItems.length > 0 
-    ? orderedItems 
+  const displayItems = reorderMode && orderedItems.length > 0
+    ? orderedItems
     : sortByChecked(filteredItems);
 
   // Handle item toggle - move checked items to bottom
@@ -286,12 +286,12 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   if (displayItems.length === 0) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-        <View style={{ 
-          width: 80, 
-          height: 80, 
-          borderRadius: 24, 
-          backgroundColor: '#E8D5C4', 
-          alignItems: 'center', 
+        <View style={{
+          width: 80,
+          height: 80,
+          borderRadius: 24,
+          backgroundColor: '#E8D5C4',
+          alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 20,
         }}>
@@ -324,15 +324,15 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
             gap: 6,
           }}
         >
-          <Ionicons 
-            name={reorderMode ? 'checkmark' : 'swap-vertical'} 
-            size={16} 
-            color={reorderMode ? '#fff' : '#4A3728'} 
+          <Ionicons
+            name={reorderMode ? 'checkmark' : 'swap-vertical'}
+            size={16}
+            color={reorderMode ? '#fff' : '#4A3728'}
           />
-          <Text style={{ 
-            fontSize: 13, 
-            fontWeight: '600', 
-            color: reorderMode ? '#fff' : '#4A3728' 
+          <Text style={{
+            fontSize: 13,
+            fontWeight: '600',
+            color: reorderMode ? '#fff' : '#4A3728'
           }}>
             {reorderMode ? 'Done sorting' : 'Sort items'}
           </Text>
@@ -342,14 +342,14 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
       {reorderMode ? (
         // Draggable list for reorder mode
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
-          <Text style={{ 
-            fontSize: 13, 
-            color: '#6B7280', 
+          <Text style={{
+            fontSize: 13,
+            color: '#6B7280',
             marginBottom: 12,
             fontStyle: 'italic',
           }}>
-            {Platform.OS === 'web' 
-              ? 'Click and drag ☰ to reorder items' 
+            {Platform.OS === 'web'
+              ? 'Click and drag ☰ to reorder items'
               : 'Hold and drag ☰ to reorder items'}
           </Text>
           <DraggableFlatList
@@ -363,8 +363,8 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
         </View>
       ) : (
         // Sectioned list for normal mode
-        <ScrollView 
-          style={{ flex: 1 }} 
+        <ScrollView
+          style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
         >
           {sections.map((section) => {

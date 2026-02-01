@@ -3,7 +3,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../api';
+import { api, ApiClientError } from '../api';
 import type { Recipe, RecipeCreate, RecipeUpdate } from '../types';
 
 // Query keys
@@ -33,6 +33,33 @@ export function useRecipe(id: string, enhanced: boolean = false) {
     queryKey: recipeKeys.detail(id, enhanced),
     queryFn: () => api.getRecipe(id, enhanced),
     enabled: !!id,
+  });
+}
+
+/**
+ * Hook to check if an enhanced version of a recipe exists.
+ * Returns true if recipe exists in enhanced DB, false otherwise.
+ * @param id - Recipe ID
+ * @param isAuthReady - Whether auth is ready (prevents premature fetching)
+ */
+export function useEnhancedRecipeExists(id: string, isAuthReady: boolean = true) {
+  return useQuery({
+    queryKey: [...recipeKeys.detail(id, true), 'exists'] as const,
+    queryFn: async () => {
+      try {
+        await api.getRecipe(id, true);
+        return true;
+      } catch (error) {
+        // 404 = no enhanced version, other errors = rethrow
+        if (error instanceof ApiClientError && error.status === 404) {
+          return false;
+        }
+        throw error;
+      }
+    },
+    enabled: !!id && isAuthReady,
+    retry: false,
+    staleTime: 30000,
   });
 }
 
@@ -89,7 +116,7 @@ export function useDeleteRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, enhanced = false }: { id: string; enhanced?: boolean }) => 
+    mutationFn: ({ id, enhanced = false }: { id: string; enhanced?: boolean }) =>
       api.deleteRecipe(id, enhanced),
     onSuccess: (_, variables) => {
       // Remove from cache - use correct enhanced key

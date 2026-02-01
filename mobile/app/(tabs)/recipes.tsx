@@ -89,12 +89,12 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
       }
       ListEmptyComponent={
         <View style={{ alignItems: 'center', paddingVertical: 80, paddingHorizontal: 32 }}>
-          <View style={{ 
-            width: 80, 
-            height: 80, 
-            borderRadius: 24, 
-            backgroundColor: '#E8D5C4', 
-            alignItems: 'center', 
+          <View style={{
+            width: 80,
+            height: 80,
+            borderRadius: 24,
+            backgroundColor: '#E8D5C4',
+            alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 20,
           }}>
@@ -113,11 +113,11 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
           {!searchQuery && !dietFilter && !mealFilter && (
             <Pressable
               onPress={onAddRecipe}
-              style={{ 
-                backgroundColor: colors.primary, 
-                paddingHorizontal: 28, 
-                paddingVertical: 14, 
-                borderRadius: borderRadius.sm, 
+              style={{
+                backgroundColor: colors.primary,
+                paddingHorizontal: 28,
+                paddingVertical: 14,
+                borderRadius: borderRadius.sm,
                 marginTop: spacing['2xl'],
                 ...shadows.lg,
               }}
@@ -138,7 +138,7 @@ export default function RecipesScreen() {
   const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [showAllRecipes, setShowAllRecipes] = useState(true);
-  
+
   // Modal states for filter pickers
   const [showDietPicker, setShowDietPicker] = useState(false);
   const [showMealPicker, setShowMealPicker] = useState(false);
@@ -189,9 +189,9 @@ export default function RecipesScreen() {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: isEnhanced ? '#4A3728' : '#fff', 
-          borderRadius: 16, 
-          paddingHorizontal: 18, 
+          backgroundColor: isEnhanced ? '#4A3728' : '#fff',
+          borderRadius: 16,
+          paddingHorizontal: 18,
           paddingVertical: 14,
           marginBottom: 16,
           shadowColor: isEnhanced ? '#4A3728' : '#000',
@@ -201,10 +201,10 @@ export default function RecipesScreen() {
           elevation: 2,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <View style={{ 
-              backgroundColor: isEnhanced ? 'rgba(255, 215, 0, 0.2)' : '#F5E6D3', 
-              borderRadius: 10, 
-              padding: 8 
+            <View style={{
+              backgroundColor: isEnhanced ? 'rgba(255, 215, 0, 0.2)' : '#F5E6D3',
+              borderRadius: 10,
+              padding: 8
             }}>
               <Ionicons name="sparkles" size={20} color={isEnhanced ? '#FFD700' : '#4A3728'} />
             </View>
@@ -229,13 +229,13 @@ export default function RecipesScreen() {
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 16 }}>
           <Pressable
             onPress={() => setShowAllRecipes(true)}
-            style={{ 
-              flex: 1, 
-              flexDirection: 'row', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              paddingVertical: 14, 
-              borderRadius: 12, 
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: 14,
+              borderRadius: 12,
               backgroundColor: showAllRecipes ? '#4A3728' : '#fff',
               shadowColor: showAllRecipes ? '#4A3728' : '#000',
               shadowOffset: { width: 0, height: 2 },
@@ -251,13 +251,13 @@ export default function RecipesScreen() {
           </Pressable>
           <Pressable
             onPress={() => router.push('/add-recipe')}
-            style={{ 
-              flex: 1, 
-              flexDirection: 'row', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              paddingVertical: 14, 
-              borderRadius: borderRadius.sm, 
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: 14,
+              borderRadius: borderRadius.sm,
               backgroundColor: colors.white,
               ...shadows.md,
             }}
@@ -271,13 +271,13 @@ export default function RecipesScreen() {
       {/* Search and filters */}
       <View style={{ paddingHorizontal: 20, paddingBottom: 14 }}>
         {/* Search bar */}
-        <View style={{ 
-          flexDirection: 'row', 
-          alignItems: 'center', 
-          backgroundColor: colors.white, 
-          borderRadius: borderRadius.sm, 
-          paddingHorizontal: 14, 
-          paddingVertical: 12, 
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.sm,
+          paddingHorizontal: 14,
+          paddingVertical: 12,
           marginBottom: 14,
           ...shadows.md,
         }}>
@@ -303,10 +303,10 @@ export default function RecipesScreen() {
             <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 6, fontWeight: '500' }}>Diet</Text>
             <Pressable
               onPress={() => setShowDietPicker(true)}
-              style={{ 
-                backgroundColor: dietFilter ? '#E8F5E8' : colors.white, 
-                borderRadius: borderRadius.sm, 
-                paddingHorizontal: 14, 
+              style={{
+                backgroundColor: dietFilter ? '#E8F5E8' : colors.white,
+                borderRadius: borderRadius.sm,
+                paddingHorizontal: 14,
                 paddingVertical: 12,
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -326,10 +326,10 @@ export default function RecipesScreen() {
             <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, fontWeight: '500' }}>Meal Type</Text>
             <Pressable
               onPress={() => setShowMealPicker(true)}
-              style={{ 
-                backgroundColor: mealFilter ? '#E8F5E8' : colors.white, 
-                borderRadius: borderRadius.sm, 
-                paddingHorizontal: 14, 
+              style={{
+                backgroundColor: mealFilter ? '#E8F5E8' : colors.white,
+                borderRadius: borderRadius.sm,
+                paddingHorizontal: 14,
                 paddingVertical: 12,
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -349,10 +349,10 @@ export default function RecipesScreen() {
             <Text style={{ fontSize: 12, color: colors.text.secondary, marginBottom: 6, fontWeight: '500' }}>Sort by</Text>
             <Pressable
               onPress={() => setShowSortPicker(true)}
-              style={{ 
-                backgroundColor: colors.white, 
-                borderRadius: borderRadius.sm, 
-                paddingHorizontal: 14, 
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.sm,
+                paddingHorizontal: 14,
                 paddingVertical: 12,
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -388,13 +388,13 @@ export default function RecipesScreen() {
         animationType="fade"
         onRequestClose={() => setShowDietPicker(false)}
       >
-        <Pressable 
+        <Pressable
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
           onPress={() => setShowDietPicker(false)}
         >
-          <View style={{ 
-            backgroundColor: colors.white, 
-            borderTopLeftRadius: 20, 
+          <View style={{
+            backgroundColor: colors.white,
+            borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingBottom: 40,
           }}>
@@ -420,8 +420,8 @@ export default function RecipesScreen() {
                   backgroundColor: dietFilter === option.value ? '#F3E8E0' : 'transparent',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 16, 
+                <Text style={{
+                  fontSize: 16,
                   color: colors.primary,
                   fontWeight: dietFilter === option.value ? '600' : '400',
                 }}>
@@ -443,13 +443,13 @@ export default function RecipesScreen() {
         animationType="fade"
         onRequestClose={() => setShowMealPicker(false)}
       >
-        <Pressable 
+        <Pressable
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
           onPress={() => setShowMealPicker(false)}
         >
-          <View style={{ 
-            backgroundColor: colors.white, 
-            borderTopLeftRadius: 20, 
+          <View style={{
+            backgroundColor: colors.white,
+            borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingBottom: 40,
           }}>
@@ -475,8 +475,8 @@ export default function RecipesScreen() {
                   backgroundColor: mealFilter === option.value ? '#F3E8E0' : 'transparent',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 16, 
+                <Text style={{
+                  fontSize: 16,
                   color: colors.primary,
                   fontWeight: mealFilter === option.value ? '600' : '400',
                 }}>
@@ -498,13 +498,13 @@ export default function RecipesScreen() {
         animationType="fade"
         onRequestClose={() => setShowSortPicker(false)}
       >
-        <Pressable 
+        <Pressable
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
           onPress={() => setShowSortPicker(false)}
         >
-          <View style={{ 
-            backgroundColor: colors.white, 
-            borderTopLeftRadius: 20, 
+          <View style={{
+            backgroundColor: colors.white,
+            borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingBottom: 40,
           }}>
@@ -530,8 +530,8 @@ export default function RecipesScreen() {
                   backgroundColor: sortBy === option.value ? '#F3E8E0' : 'transparent',
                 }}
               >
-                <Text style={{ 
-                  fontSize: 16, 
+                <Text style={{
+                  fontSize: 16,
                   color: colors.primary,
                   fontWeight: sortBy === option.value ? '600' : '400',
                 }}>
