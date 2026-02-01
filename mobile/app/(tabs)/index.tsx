@@ -100,7 +100,11 @@ export default function HomeScreen() {
   // Generate grocery items count from selected meals (same logic as grocery screen)
   const groceryItemsCount = useMemo(() => {
     if (!mealPlan || selectedMealKeys.length === 0) {
-      return customItems.length;
+      // Filter custom items: exclude checked items and items marked as "at home"
+      // customItems in context is string[] (just names)
+      return customItems.filter(name => 
+        !checkedItems.has(name) && !isItemAtHome(name)
+      ).length;
     }
     
     const recipeMap = new Map(recipes.map(r => [r.id, r]));

@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
  */
 export function hapticLight() {
   if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   }
 }
 
@@ -20,7 +20,7 @@ export function hapticLight() {
  */
 export function hapticMedium() {
   if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
   }
 }
 
@@ -29,7 +29,7 @@ export function hapticMedium() {
  */
 export function hapticHeavy() {
   if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
   }
 }
 
@@ -38,7 +38,7 @@ export function hapticHeavy() {
  */
 export function hapticSuccess() {
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
   }
 }
 
@@ -47,7 +47,7 @@ export function hapticSuccess() {
  */
 export function hapticWarning() {
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
   }
 }
 
@@ -56,7 +56,7 @@ export function hapticWarning() {
  */
 export function hapticError() {
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
   }
 }
 
@@ -65,6 +65,6 @@ export function hapticError() {
  */
 export function hapticSelection() {
   if (Platform.OS !== 'web') {
-    Haptics.selectionAsync();
+    Haptics.selectionAsync().catch(() => {});
   }
 }
