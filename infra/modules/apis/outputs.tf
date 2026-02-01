@@ -47,3 +47,8 @@ output "iamcredentials_service" {
   description = "IAM Credentials API service resource (for Workload Identity Federation)"
   value       = google_project_service.iamcredentials
 }
+
+output "storage_service" {
+  description = "Cloud Storage API service resource"
+  value       = google_project_service.storage
+}

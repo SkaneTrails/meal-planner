@@ -78,3 +78,9 @@ variable "allow_public_access" {
   type        = bool
   default     = false
 }
+
+variable "gcs_bucket_name" {
+  description = "Google Cloud Storage bucket name for recipe images"
+  type        = string
+  default     = ""
+}

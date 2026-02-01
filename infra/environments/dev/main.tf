@@ -134,11 +134,25 @@ module "cloud_run" {
   image_url          = "${module.artifact_registry.repository_url}/api:latest"
   firestore_database = var.firestore_database_name
   allowed_origins    = var.cloud_run_allowed_origins
+  gcs_bucket_name    = module.storage.bucket_name
 
   # Allow public access - Firebase Auth is validated in application code
   allow_public_access = true
 
   run_api_service = module.apis.run_service
+}
+
+# Cloud Storage - Recipe images
+module "storage" {
+  source = "../../modules/storage"
+
+  project     = var.project
+  bucket_name = var.recipe_images_bucket_name
+
+  # Allow CORS from any origin (mobile and web apps)
+  cors_origins = ["*"]
+
+  storage_api_service = module.apis.storage_service
 }
 
 # Workload Identity Federation - Keyless auth from GitHub Actions
