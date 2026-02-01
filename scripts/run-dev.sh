@@ -61,4 +61,6 @@ trap cleanup EXIT INT TERM
 echo ""
 echo "✓ All services started. Press Ctrl+C to stop."
 echo ""
-wait
+# wait -n exits when ANY child exits (requires bash 4.3+)
+# Falls back to regular wait if -n not supported
+wait -n 2>/dev/null || wait

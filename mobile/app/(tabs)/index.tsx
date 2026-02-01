@@ -58,8 +58,8 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
   }
   
   // If today is empty, check tomorrow's meals
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  // Use 24h in ms to avoid DST edge cases with setDate()
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
   const tomorrowStr = formatDateLocal(tomorrow);
   
   for (const mealType of ['lunch', 'dinner']) {
