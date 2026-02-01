@@ -7,8 +7,3 @@ output "gemini_api_key_secret_name" {
   description = "Full resource name of the Gemini API key secret"
   value       = google_secret_manager_secret.gemini_api_key.name
 }
-
-output "gemini_api_key_ready" {
-  description = "Whether the Gemini API key is ready to use"
-  value       = var.gemini_api_key_exists
-}

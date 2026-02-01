@@ -9,12 +9,6 @@ variable "gemini_secret_id" {
   default     = "gemini-api-key"
 }
 
-variable "gemini_api_key_exists" {
-  description = "Whether the Gemini API key secret version exists (set to true after adding the key)"
-  type        = bool
-  default     = false
-}
-
 variable "secretmanager_api_service" {
   description = "Secret Manager API service (for dependency ordering)"
   type        = any

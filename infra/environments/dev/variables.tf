@@ -39,16 +39,10 @@ variable "oauth_secrets_exist" {
   default     = false
 }
 
-# Gemini API key for recipe enhancement
-# Set to true after running: echo -n "YOUR_API_KEY" | gcloud secrets versions add gemini-api-key --data-file=-
-variable "gemini_api_key_exists" {
-  description = "Whether the Gemini API key exists in Secret Manager"
-  type        = bool
-  default     = false
-}
-
+# Recipe enhancement with Gemini AI
+# Add API key: echo -n "YOUR_API_KEY" | gcloud secrets versions add gemini-api-key --data-file=-
 variable "enable_recipe_enhancement" {
-  description = "Enable recipe enhancement feature (requires gemini_api_key_exists=true)"
+  description = "Enable recipe enhancement feature (requires Gemini API key in Secret Manager)"
   type        = bool
   default     = false
 }

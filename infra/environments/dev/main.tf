@@ -86,8 +86,7 @@ module "firestore" {
 module "secrets" {
   source = "../../modules/secrets"
 
-  project               = var.project
-  gemini_api_key_exists = var.gemini_api_key_exists
+  project = var.project
 
   secretmanager_api_service = module.apis.secretmanager_service
 }
@@ -150,8 +149,8 @@ module "cloud_run" {
 
   # Recipe enhancement with Gemini
   enable_recipe_enhancement = var.enable_recipe_enhancement
-  gemini_secret_id          = var.gemini_api_key_exists ? module.secrets.gemini_api_key_secret_id : ""
-  gemini_secret_name        = var.gemini_api_key_exists ? module.secrets.gemini_api_key_secret_name : ""
+  gemini_secret_id          = module.secrets.gemini_api_key_secret_id
+  gemini_secret_name        = module.secrets.gemini_api_key_secret_name
 
   run_api_service = module.apis.run_service
 }
