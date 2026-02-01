@@ -1,3 +1,6 @@
+# Local working files
+.copilot-tasks.md
+
 # Python
 .DS_Store
 .ruff_cache

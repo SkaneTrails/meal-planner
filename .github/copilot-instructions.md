@@ -236,6 +236,7 @@ Skills in `.github/skills/` provide domain-specific instructions:
 
 | Skill                 | Purpose                                                         |
 | --------------------- | --------------------------------------------------------------- |
+| `local-development/`  | GCP secrets, .env setup, starting servers, troubleshooting      |
 | `recipe-improvement/` | Cooking techniques, equipment optimization, dietary preferences |
 | `pr-review-workflow/` | PR creation, review comments, CI status, GitHub API patterns    |
 | `working-context/`    | Track tasks and discovered issues across conversations          |
