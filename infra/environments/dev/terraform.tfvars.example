@@ -16,3 +16,12 @@ firestore_location = "eur3"
 # Firestore database name for enhanced recipes
 # The (default) database is assumed to exist; this creates the secondary database
 firestore_database_name = "meal-planner"
+
+# Gemini API configuration for recipe enhancement
+# After running terraform apply, add your Gemini API key:
+#   echo -n "your-api-key" | gcloud secrets versions add gemini-api-key --data-file=-
+# Then set gemini_api_key_exists = true and run terraform apply again
+gemini_api_key_exists = false
+
+# Enable the recipe enhancement feature (requires gemini_api_key_exists = true)
+enable_recipe_enhancement = false

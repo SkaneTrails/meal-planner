@@ -78,3 +78,22 @@ variable "allow_public_access" {
   type        = bool
   default     = false
 }
+
+# Gemini API configuration
+variable "gemini_secret_id" {
+  description = "Secret Manager secret ID for Gemini API key"
+  type        = string
+  default     = ""
+}
+
+variable "gemini_secret_name" {
+  description = "Full resource name of the Gemini API key secret (e.g., projects/PROJECT/secrets/SECRET)"
+  type        = string
+  default     = ""
+}
+
+variable "enable_recipe_enhancement" {
+  description = "Enable recipe enhancement feature (requires gemini_secret_name)"
+  type        = bool
+  default     = false
+}

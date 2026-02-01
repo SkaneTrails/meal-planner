@@ -82,6 +82,16 @@ module "firestore" {
   iam_bindings_complete = module.iam.iam_bindings_complete
 }
 
+# Secrets - External API keys (Gemini, etc.)
+module "secrets" {
+  source = "../../modules/secrets"
+
+  project               = var.project
+  gemini_api_key_exists = var.gemini_api_key_exists
+
+  secretmanager_api_service = module.apis.secretmanager_service
+}
+
 # Artifact Registry - Store container images for Cloud Run
 module "artifact_registry" {
   source = "../../modules/artifact_registry"
@@ -137,6 +147,11 @@ module "cloud_run" {
 
   # Allow public access - Firebase Auth is validated in application code
   allow_public_access = true
+
+  # Recipe enhancement with Gemini
+  enable_recipe_enhancement = var.enable_recipe_enhancement
+  gemini_secret_id          = var.gemini_api_key_exists ? module.secrets.gemini_api_key_secret_id : ""
+  gemini_secret_name        = var.gemini_api_key_exists ? module.secrets.gemini_api_key_secret_name : ""
 
   run_api_service = module.apis.run_service
 }
