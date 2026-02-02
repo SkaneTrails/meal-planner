@@ -12,6 +12,7 @@ import DraggableFlatList, {
   RenderItemParams
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { hapticSelection } from '@/lib/haptics';
 import type { GroceryItem, GroceryCategory, GroceryList } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -70,6 +71,7 @@ export function GroceryItemRow({ item, onToggle, drag, isActive, showReorder }: 
   const quantity = formatQuantity(item);
 
   const handleToggle = () => {
+    hapticSelection();
     const newValue = !checked;
     setChecked(newValue);
     onToggle?.(newValue);
@@ -165,6 +167,21 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
     () => new Set(groceryList.items.filter(i => i.checked).map(i => i.name))
   );
+  // Track collapsed categories
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+
+  const toggleCategory = (category: string) => {
+    hapticSelection();
+    setCollapsedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
+      return next;
+    });
+  };
 
   // Filter items if filter function provided
   const filteredItems = filterOutItems
@@ -350,28 +367,51 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
         >
-          {sections.map((section) => (
-            <View key={section.title}>
-              <View style={{
-                paddingVertical: 10,
-                paddingHorizontal: 4,
-                marginTop: 20,
-                marginBottom: 4,
-              }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728', letterSpacing: -0.2 }}>
-                  {section.title}
-                </Text>
+          {sections.map((section) => {
+            const isCollapsed = collapsedCategories.has(section.title);
+            const checkedCount = section.data.filter(item => checkedItems.has(item.name)).length;
+            
+            return (
+              <View key={section.title}>
+                <Pressable 
+                  onPress={() => toggleCategory(section.title)}
+                  style={({ pressed }) => ({ 
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingVertical: 10, 
+                    paddingHorizontal: 4,
+                    marginTop: 20,
+                    marginBottom: 4,
+                    backgroundColor: pressed ? '#F5E6D3' : 'transparent',
+                    borderRadius: 8,
+                  })}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728', letterSpacing: -0.2 }}>
+                      {section.title}
+                    </Text>
+                    <Text style={{ fontSize: 13, color: '#9CA3AF' }}>
+                      ({checkedCount}/{section.data.length})
+                    </Text>
+                  </View>
+                  <Ionicons 
+                    name={isCollapsed ? 'chevron-down' : 'chevron-up'} 
+                    size={20} 
+                    color="#9CA3AF" 
+                  />
+                </Pressable>
+                {!isCollapsed && section.data.map((item) => (
+                  <GroceryItemRow
+                    key={item.name}
+                    item={{...item, checked: checkedItems.has(item.name)}}
+                    onToggle={(checked) => handleItemToggle(item.name, checked)}
+                    showReorder={false}
+                  />
+                ))}
               </View>
-              {section.data.map((item) => (
-                <GroceryItemRow
-                  key={item.name}
-                  item={{...item, checked: checkedItems.has(item.name)}}
-                  onToggle={(checked) => handleItemToggle(item.name, checked)}
-                  showReorder={false}
-                />
-              ))}
-            </View>
-          ))}
+            );
+          })}
         </ScrollView>
       )}
     </GestureHandlerRootView>

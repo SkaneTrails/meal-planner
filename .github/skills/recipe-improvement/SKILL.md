@@ -29,19 +29,38 @@ The `scripts/recipe_reviewer.py` script manages the recipe review workflow:
 uv run python scripts/recipe_reviewer.py <command> [args]
 ```
 
-| Command                | Description                                                |
-| ---------------------- | ---------------------------------------------------------- |
-| `next`                 | Fetch the next unprocessed recipe from the source database |
-| `get <id>`             | Fetch a specific recipe by ID                              |
-| `update <id> '<json>'` | Apply improvements and save to target database             |
-| `skip <id>`            | Mark recipe as skipped (no changes needed)                 |
-| `status`               | Show progress (processed/skipped/remaining counts)         |
+| Command                | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| `next`                 | Fetch the next unprocessed recipe from the source database   |
+| `get <id>`             | Fetch a specific recipe by ID (from source database)         |
+| `enhanced <id>`        | Fetch the enhanced version (from target database)            |
+| `delete <id>`          | Delete a bad enhanced recipe and unmark from processed       |
+| `update <id> '<json>'` | Apply improvements and save to target database               |
+| `skip <id>`            | Mark recipe as skipped (no changes needed)                   |
+| `upload <id> <file>`   | Upload enhanced recipe from a JSON file                      |
+| `status`               | Show progress (processed/skipped/remaining counts)           |
 
 **Database configuration:**
 
 - **Source**: `(default)` database - original recipes
 - **Target**: `meal-planner` database - improved recipes
 - **Progress file**: `data/recipe_review_progress.json`
+
+**Typical workflow for fixing a bad enhanced recipe:**
+
+```bash
+# 1. Check the enhanced version to see what's wrong
+uv run python scripts/recipe_reviewer.py enhanced <id>
+
+# 2. Delete the bad version (also unmarks from processed)
+uv run python scripts/recipe_reviewer.py delete <id>
+
+# 3. Check the original to see what we're working with
+uv run python scripts/recipe_reviewer.py get <id>
+
+# 4. Create and apply the new enhanced version
+uv run python scripts/recipe_reviewer.py update <id> '<json>'
+```
 
 **Update JSON format** - only include fields you're changing:
 
@@ -149,13 +168,63 @@ When a recipe could be improved with finishing touches, add them using pantry st
 - Clarify vague quantities ("salt och peppar" → "1/2 tsk salt, 2 krm svartpeppar")
 - Suggest mise en place order for efficient cooking
 
+### 6. Volumetric Measurements with Weight
+
+For non-spice ingredients in volumetric measures, include weight in parentheses.
+
+**Include weight for:**
+- Dry goods: "2 dl Ris (160 g)", "1 dl Mjöl (60 g)"
+- Grains: "3 dl Havregryn (90 g)", "2 dl Linser (180 g)"
+- Sugar: "1½ dl Socker (150 g)"
+
+**Exclude (no weight needed):**
+- Spices (krm, tsk, msk amounts)
+- Liquids (water, milk, stock) - 1 liter ≈ 1 kg
+
+This helps with portion scaling and precision cooking.
+
+### 7. Practical Measurements - Round to Measurable Units
+
+Never use fractional milliliters. Round to the nearest practical measure:
+
+| Unpractical | → Practical |
+|-------------|-------------|
+| 12,5 ml     | 1 msk (15 ml) or 2 tsk (10 ml) |
+| 37,5 ml     | 2½ msk (37.5 ml) or 3 msk (45 ml) |
+| 7,5 ml      | 1½ tsk (7.5 ml) ✓ or 2 tsk (10 ml) |
+
+**Always prefer:** krm < tsk < msk over ml for small amounts.
+
+### 8. HelloFresh Portion Markers - Always Use 4-Portion Amounts
+
+HelloFresh recipes often contain portion markers:
+- `[X | Y]` format: First value is 2P, second is 4P
+- `[X, 2P]` format: Value is for 2 portions
+
+**Always extract and use the 4-PORTION (4P) value:**
+
+| Original | → Convert to |
+|----------|--------------|
+| `vatten [3 dl \| 6 dl]` | 6 dl vatten |
+| `salt [½ tsk \| 1 tsk]` | 1 tsk salt |
+| `[1/2 paket, 2P]` | 1 paket (hela) |
+| `lime [1/2 st, 2P]` | 1 st lime |
+| `[1 msk \| 2 msk]` | 2 msk |
+
+**Remove all portion markers from the final output.**
+
 ---
 
 ## Verification Checklist (CRITICAL)
 
 Before finalizing any recipe improvement, verify:
 
-1. **Ingredient accounting**: Every ingredient in the list must appear in the instructions. Check that no ingredient is:
+1. **No fractions smaller than ½ tsk**: Use krm for amounts less than ½ tsk
+   - ❌ `¼ tsk` → ✅ `1 krm`
+   - ❌ `1/4 tsk` → ✅ `1 krm`
+   - ✅ `½ tsk` is acceptable
+
+2. **Ingredient accounting**: Every ingredient in the list must appear in the instructions. Check that no ingredient is:
    - Moved to a different cooking method without justification
    - Omitted from instructions entirely
    - Changed from raw to cooked (or vice versa) unintentionally
@@ -165,9 +234,17 @@ Before finalizing any recipe improvement, verify:
    - Which components are combined vs kept separate
    - The intended texture/presentation
 
-3. **Timing sanity check**: Ensure total cooking time still makes sense after staggering
+3. **Dairy product identity**: Never substitute one dairy type for another:
+   - Syrad grädde/Crème fraîche ≠ Grädde (different fat, acidity, behavior)
+   - Gräddfil ≠ Crème fraîche (different consistency)
+   - Kvarg/Kesella ≠ Crème fraîche (different texture)
+   - Only add "(laktosfri)" suffix, never change the product itself
 
-4. **Cross-reference**: For each ingredient, trace it from the ingredient list → instructions → final dish
+4. **Timing sanity check**: Ensure total cooking time still makes sense after staggering
+
+5. **Cross-reference**: For each ingredient, trace it from the ingredient list → instructions → final dish
+
+6. **Tips field**: Cooking tips, variations, and substitution notes go in the `tips` field, NOT in instructions
 
 ---
 

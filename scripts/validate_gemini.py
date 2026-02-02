@@ -10,14 +10,19 @@ This script:
 Usage:
     uv run python scripts/validate_gemini.py           # Validate up to 5 recipes
     uv run python scripts/validate_gemini.py --limit 10  # Validate 10 recipes
+    uv run python scripts/validate_gemini.py --skip 5    # Skip first 5, validate next 5
     uv run python scripts/validate_gemini.py --all     # Validate all enhanced recipes
 """
 
 import argparse
+import io
 import json
 import sys
 import time
 from pathlib import Path
+
+# Fix Windows console encoding for emoji
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 from typing import Any
 
 from google.cloud import firestore
@@ -37,13 +42,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 from recipe_enhancer import enhance_recipe, get_recipe
 
 
-def get_enhanced_recipes(limit: int | None = None) -> list[tuple[str, dict]]:
+def get_enhanced_recipes(limit: int | None = None, skip: int = 0) -> list[tuple[str, dict]]:
     """Get recipes from the enhanced database."""
     db = firestore.Client(database="meal-planner")
     query = db.collection("recipes")
 
+    # Get more than needed if skipping
     if limit:
-        query = query.limit(limit)
+        query = query.limit(limit + skip)
 
     recipes = []
     for doc in query.stream():
@@ -51,15 +57,24 @@ def get_enhanced_recipes(limit: int | None = None) -> list[tuple[str, dict]]:
         data["id"] = doc.id
         recipes.append((doc.id, data))
 
+    # Apply skip
+    if skip:
+        recipes = recipes[skip:]
+
+    # Apply limit after skip
+    if limit:
+        recipes = recipes[:limit]
+
     return recipes
 
 
 def check_issues(original: dict, gemini_output: dict) -> list[str]:
     """Check for issues in Gemini output."""
-    _ = original  # Used for context but not currently checked
     issues: list[str] = []
 
-    gemini_ingredients = gemini_output.get("ingredients", [])
+    gemini_ingredients_raw = gemini_output.get("ingredients", [])
+    # Ensure all ingredients are strings (Gemini might return dicts)
+    gemini_ingredients = [str(i) if not isinstance(i, str) else i for i in gemini_ingredients_raw]
     gemini_instructions = gemini_output.get("instructions", "")
 
     # Convert instructions to string if it's a list
@@ -79,6 +94,19 @@ def check_issues(original: dict, gemini_output: dict) -> list[str]:
         ("0.25", "Decimal fraction instead of ¼"),
     ]
 
+    # Check for vague packaging terms that should be converted to actual measurements
+    vague_packaging = ["paket", "förpackning", "burk"]
+    issues.extend(
+        f"❌ VAGUE: '{term}' should be converted to actual measurement (g, dl, ml) - '{ing}'"
+        for ing in gemini_ingredients
+        for term in vague_packaging
+        if term in ing.lower()
+    )
+
+    # Check for vague quantity terms
+    if any("en nypa" in ing.lower() for ing in gemini_ingredients):
+        issues.append("❌ VAGUE: 'en nypa' should be converted to 'krm' measurement")
+
     for term, message in forbidden_terms:
         if term in gemini_instr_lower:
             issues.append(f"❌ FORBIDDEN: {message}")
@@ -87,8 +115,13 @@ def check_issues(original: dict, gemini_output: dict) -> list[str]:
         )
 
     # 2. Check protein substitution for chicken recipes
+    # Exclude "kycklingbuljong" - that's broth, not protein
     orig_ingredients = " ".join(original.get("ingredients", [])).lower()
-    if "kyckling" in orig_ingredients and "fisk" not in orig_ingredients and "lax" not in orig_ingredients:
+    # Check if any ingredient contains kyckling but not buljong
+    chicken_ingredients = [
+        i for i in original.get("ingredients", []) if "kyckling" in i.lower() and "buljong" not in i.lower()
+    ]
+    if chicken_ingredients and "fisk" not in orig_ingredients and "lax" not in orig_ingredients:
         has_quorn = any("quorn" in ing.lower() for ing in gemini_ingredients)
         if not has_quorn:
             issues.append("❌ MISSING: Quorn alternative for chicken recipe")
@@ -105,11 +138,22 @@ def check_issues(original: dict, gemini_output: dict) -> list[str]:
             )
 
     # 4. Check HelloFresh spice replacement
+    # Only flag if HelloFresh spice appears as a MAIN ingredient (not in description text like "ersätter Hello Sunrise")
+    hellofresh_patterns = ["hellofresh", "milda mahal", "hello sunrise", "ga-laksa"]
     orig_ing_text = " ".join(original.get("ingredients", [])).lower()
-    if "hellofresh" in orig_ing_text or "milda mahal" in orig_ing_text or "hello sunrise" in orig_ing_text:
-        gemini_ing_text = " ".join(gemini_ingredients).lower()
-        if "hellofresh" in gemini_ing_text or "milda mahal" in gemini_ing_text or "hello sunrise" in gemini_ing_text:
-            issues.append("❌ MISSING: HelloFresh spice blend not replaced with individual spices")
+    has_hellofresh_original = any(p in orig_ing_text for p in hellofresh_patterns)
+
+    if has_hellofresh_original:
+        # Check each ingredient - only fail if it STARTS with a HelloFresh name (not in parentheses)
+        for ing in gemini_ingredients:
+            ing_lower = ing.lower()
+            # Check if ingredient starts with quantity + HelloFresh name (e.g., "4 g Hello Sunrise")
+            for pattern in hellofresh_patterns:
+                if pattern in ing_lower and "ersätter" not in ing_lower and "(" not in ing_lower.split(pattern)[0]:
+                    issues.append(
+                        f"❌ MISSING: HelloFresh spice '{pattern}' not replaced with individual spices: '{ing}'"
+                    )
+                    break
 
     # 5. Check soy sauce specificity
     for ing in gemini_ingredients:
@@ -137,13 +181,13 @@ def check_issues(original: dict, gemini_output: dict) -> list[str]:
     return issues
 
 
-def validate_recipes(limit: int | None = 5, delay: float = 4.0) -> dict:
+def validate_recipes(limit: int | None = 5, skip: int = 0, delay: float = 4.0) -> dict:
     """Validate Gemini output against enhanced recipes."""
     print("\n" + "=" * 70)
-    print("🔍 GEMINI VALIDATION - Comparing output against enhanced recipes")
+    print("GEMINI VALIDATION - Comparing output against enhanced recipes")
     print("=" * 70)
 
-    enhanced_recipes = get_enhanced_recipes(limit)
+    enhanced_recipes = get_enhanced_recipes(limit, skip=skip)
 
     if not enhanced_recipes:
         print("❌ No enhanced recipes found!")
@@ -248,13 +292,14 @@ def validate_recipes(limit: int | None = 5, delay: float = 4.0) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Validate Gemini output against enhanced recipes")
     parser.add_argument("--limit", type=int, default=5, help="Number of recipes to validate (default: 5)")
+    parser.add_argument("--skip", type=int, default=0, help="Number of recipes to skip (default: 0)")
     parser.add_argument("--all", action="store_true", help="Validate all enhanced recipes")
     parser.add_argument("--delay", type=float, default=4.0, help="Delay between API calls (default: 4.0)")
 
     args = parser.parse_args()
 
     limit = None if args.all else args.limit
-    validate_recipes(limit=limit, delay=args.delay)
+    validate_recipes(limit=limit, skip=args.skip, delay=args.delay)
 
 
 if __name__ == "__main__":

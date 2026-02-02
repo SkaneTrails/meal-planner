@@ -35,3 +35,8 @@ output "github_actions_service_account" {
   description = "Service account email for GitHub Actions Firebase deployment"
   value       = module.iam.github_actions_firebase_email
 }
+
+output "scrape_function_url" {
+  description = "The URL of the recipe scraping Cloud Function"
+  value       = module.cloud_function.function_url
+}
