@@ -1,5 +1,6 @@
 """Recipe API endpoints."""
 
+import io
 import logging
 import os
 import uuid
@@ -8,6 +9,7 @@ from typing import Annotated
 import httpx
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from google.cloud import storage
+from PIL import Image
 
 from api.auth.firebase import require_auth
 from api.models.recipe import Recipe, RecipeCreate, RecipeParseRequest, RecipeScrapeRequest, RecipeUpdate
@@ -27,8 +29,50 @@ GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "meal-planner-recipe-images")
 # Maximum file size for image uploads (10 MB)
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
+# Thumbnail settings - optimized for recipe cards
+THUMBNAIL_MAX_WIDTH = 800
+THUMBNAIL_MAX_HEIGHT = 600
+THUMBNAIL_QUALITY = 85  # JPEG quality (1-100)
+
 # HTTP status code for unprocessable content (renamed in HTTP spec)
 _HTTP_422 = 422  # Used to avoid deprecated HTTP_422_UNPROCESSABLE_ENTITY constant
+
+
+def _create_thumbnail(image_data: bytes) -> tuple[bytes, str]:
+    """
+    Create a thumbnail from image data.
+
+    Returns tuple of (thumbnail_bytes, content_type).
+    Always outputs JPEG for smaller file size.
+    """
+    img = Image.open(io.BytesIO(image_data))
+
+    # Convert to RGB if necessary (handles PNG with transparency, etc.)
+    if img.mode in ("RGBA", "P", "LA"):
+        # Create white background for transparent images
+        background = Image.new("RGB", img.size, (255, 255, 255))
+        if img.mode == "P":
+            img = img.convert("RGBA")
+        background.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
+        img = background
+    elif img.mode != "RGB":
+        img = img.convert("RGB")
+
+    # Calculate new size maintaining aspect ratio
+    width, height = img.size
+    ratio = min(THUMBNAIL_MAX_WIDTH / width, THUMBNAIL_MAX_HEIGHT / height)
+
+    if ratio < 1:  # Only resize if image is larger than max dimensions
+        new_width = int(width * ratio)
+        new_height = int(height * ratio)
+        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+    # Save as JPEG
+    output = io.BytesIO()
+    img.save(output, format="JPEG", quality=THUMBNAIL_QUALITY, optimize=True)
+    output.seek(0)
+
+    return output.getvalue(), "image/jpeg"
 
 
 @router.get("")
@@ -295,7 +339,11 @@ async def upload_recipe_image(  # pragma: no cover
     *,
     enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> Recipe:
-    """Upload an image for a recipe and update the recipe's image_url."""
+    """Upload an image for a recipe and update the recipe's image_url.
+
+    The image is automatically resized to a thumbnail (max 800x600) and
+    converted to JPEG for optimal storage and loading performance.
+    """
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
 
     # Verify recipe exists
@@ -308,13 +356,7 @@ async def upload_recipe_image(  # pragma: no cover
     if not content_type.startswith("image/"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File must be an image (JPEG, PNG, etc.)")
 
-    # Generate unique filename
-    ext = content_type.split("/")[-1] if "/" in content_type else "jpg"
-    if ext == "jpeg":
-        ext = "jpg"
-    filename = f"recipes/{recipe_id}/{uuid.uuid4()}.{ext}"
-
-    # Read and validate file size before trying to upload
+    # Read and validate file size before processing
     content = await file.read()
     if len(content) > MAX_IMAGE_SIZE_BYTES:
         raise HTTPException(
@@ -322,18 +364,31 @@ async def upload_recipe_image(  # pragma: no cover
             detail=f"Image too large. Maximum size is {MAX_IMAGE_SIZE_BYTES // (1024 * 1024)} MB.",
         )
 
+    # Create thumbnail (always JPEG)
+    try:
+        thumbnail_data, thumbnail_content_type = _create_thumbnail(content)
+        logger.info(
+            "Created thumbnail for recipe %s: %d bytes -> %d bytes", recipe_id, len(content), len(thumbnail_data)
+        )
+    except Exception as e:
+        logger.exception("Failed to create thumbnail for recipe_id=%s", recipe_id)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to process image. Please ensure it's a valid image file.",
+        ) from e
+
+    # Generate unique filename (always .jpg since we convert to JPEG)
+    filename = f"recipes/{recipe_id}/{uuid.uuid4()}.jpg"
+
+    # Upload to GCS
     try:  # pragma: no cover
-        # Upload to Google Cloud Storage
         storage_client = storage.Client()
         bucket = storage_client.bucket(GCS_BUCKET_NAME)
         blob = bucket.blob(filename)
-        blob.upload_from_string(content, content_type=content_type)
-
-        # Make publicly accessible
+        blob.upload_from_string(thumbnail_data, content_type=thumbnail_content_type)
         blob.make_public()
-
-        # Get public URL
         image_url = blob.public_url
+        logger.info("Uploaded recipe image to GCS: %s", image_url)
 
     except Exception as e:  # pragma: no cover
         logger.exception("Failed to upload recipe image for recipe_id=%s", recipe_id)
@@ -341,7 +396,7 @@ async def upload_recipe_image(  # pragma: no cover
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload image. Please try again."
         ) from e
 
-    # Update recipe with new image URL (outside try block - separate concern)
+    # Update recipe with new image URL
     from api.models.recipe import RecipeUpdate as RecipeUpdateModel
 
     updated_recipe = recipe_storage.update_recipe(recipe_id, RecipeUpdateModel(image_url=image_url), database=database)

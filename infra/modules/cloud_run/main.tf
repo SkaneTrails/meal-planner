@@ -27,6 +27,14 @@ resource "google_project_iam_member" "firebase_auth" {
   member  = "serviceAccount:${google_service_account.api.email}"
 }
 
+# Grant Cloud Storage access for recipe image uploads
+resource "google_storage_bucket_iam_member" "api_storage_admin" {
+  count  = var.gcs_bucket_name != "" ? 1 : 0
+  bucket = var.gcs_bucket_name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.api.email}"
+}
+
 # Grant Secret Manager access for Gemini API key
 resource "google_secret_manager_secret_iam_member" "gemini_api_key" {
   count = var.gemini_secret_id != "" ? 1 : 0
@@ -84,6 +92,14 @@ resource "google_cloud_run_v2_service" "api" {
         content {
           name  = "ALLOWED_ORIGINS"
           value = var.allowed_origins
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.gcs_bucket_name != "" ? [1] : []
+        content {
+          name  = "GCS_BUCKET_NAME"
+          value = var.gcs_bucket_name
         }
       }
 

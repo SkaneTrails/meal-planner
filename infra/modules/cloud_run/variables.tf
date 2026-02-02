@@ -79,6 +79,12 @@ variable "allow_public_access" {
   default     = false
 }
 
+variable "gcs_bucket_name" {
+  description = "Google Cloud Storage bucket name for recipe images"
+  type        = string
+  default     = ""
+}
+
 # Gemini API configuration
 variable "gemini_secret_id" {
   description = "Secret Manager secret ID for Gemini API key"
