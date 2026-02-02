@@ -10,7 +10,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Verify suggestions** - when given review comments or suggestions, verify they are correct against actual code before applying
 - **Compare alternatives** - when the user suggests a different approach, analyze both options and explain the tradeoffs
 - **Troubleshoot step-by-step** - when debugging, suggest one fix at a time and wait for results
-- **Track iterations** - when trying multiple approaches, verbalize failed attempts and log to Failure Tracking table in `.copilot-tasks.md`
+- **Track iterations** - when a command/approach fails, IMMEDIATELY log to Failure Tracking table in `.copilot-tasks.md` BEFORE retrying with a different approach
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
 - **Never work directly on main** - Always create a feature branch for changes
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`

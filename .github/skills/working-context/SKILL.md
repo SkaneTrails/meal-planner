@@ -304,13 +304,25 @@ Track recurring mistakes across conversations to trigger documentation.
 
 ### When to log
 
-After any failed attempt where:
-- A command, API call, or approach didn't work
-- The failure was due to a pattern (escaping, format, syntax) not a typo
+Log immediately when:
+
+- A command, API call, or approach failed due to a pattern (not a typo)
+- **The user corrects you** for a behavioral pattern (asking permission when you shouldn't, missing a step, wrong format)
+
+User corrections are the highest-signal failures. If the user had to point it out, you missed it - log before addressing the correction.
+
+### Logging sequence (critical)
+
+1. **Recognize the failure** - command failed, or user corrected you
+2. **Log to Failure Tracking table** - update `.copilot-tasks.md` NOW
+3. **Then** address the issue - fix, retry, or respond
+
+Do NOT: fix first, then log. Once you announce "Fixed" or "Applied," the task feels closed and logging gets forgotten.
 
 ### Before logging
 
 Check if pattern is already documented:
+
 1. Search relevant `*.instructions.md` for the pattern
 2. Search relevant skill for the pattern
 3. If found, do not add to Failure Tracking (already promoted)

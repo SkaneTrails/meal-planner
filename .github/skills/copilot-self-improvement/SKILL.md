@@ -431,7 +431,7 @@ This skill must ensure its own activation by verifying `copilot-instructions.md`
 
 2. **Iteration tracking** in Collaboration Rules:
    ```
-   - **Track iterations** - when trying multiple approaches, verbalize failed attempts...
+   - **Track iterations** - when a command/approach fails, IMMEDIATELY log to Failure Tracking table BEFORE retrying...
    ```
 
 3. **Failure tracking bootstrap** in Working Context section:

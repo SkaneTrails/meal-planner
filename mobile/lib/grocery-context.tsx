@@ -42,7 +42,7 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
       if (customData) {
         const items = JSON.parse(customData);
         // Handle both old format (strings) and new format (GroceryItem objects)
-        const names = items.map((i: string | { name: string }) => 
+        const names = items.map((i: string | { name: string }) =>
           typeof i === 'string' ? i : i.name
         );
         setCustomItems(names);
