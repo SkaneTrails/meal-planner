@@ -25,7 +25,7 @@ jobs:
         run: uv sync
 
       - name: Run tests with coverage
-        run: uv run pytest -n auto --tb=short --durations=10 --cov -v
+        run: uv run pytest -n auto --tb=short --durations=10 --cov=api --cov-report=term-missing -v
 
   lint:
     runs-on: ubuntu-latest

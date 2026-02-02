@@ -121,8 +121,9 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = [ "app" ]
+source = [ "api" ]
 branch = true
+parallel = true
 omit = [
   "tests/*",
   "*/__pycache__/*",
