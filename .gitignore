@@ -1,3 +1,6 @@
+# Local working files
+.copilot-tasks.md
+
 # Python
 .DS_Store
 .ruff_cache
@@ -49,6 +52,9 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Terraform build artifacts (Cloud Function zips)
+infra/modules/**/*.zip
 
 # Deploy scripts with hardcoded project values
 scripts/deploy-api.ps1

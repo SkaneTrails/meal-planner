@@ -76,6 +76,7 @@ For 1½ tsk total:
 
 | Blend                              | Recipe                                                                                                                                                                 |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Hello Sunrise** (HelloFresh)     | Medelhavskrydda för ris/pasta. Ersätt med: 1 tsk paprika + ½ tsk oregano + ½ tsk basilika + ½ tsk vitlökspulver. (Uppskattad blandning baserat på recept-kontext.) |
 | **Tuscan Heat**                    | 4 basilika (torkad), 2 rosmarin (torkad), 2 oregano (torkad), 2 vitlökspulver, 1 cayenne, 1 fänkål (malen)                                                             |
 | **Italian**                        | 1 vitlökspulver, 1 oregano, 1 basilika, 1 svartpeppar, 1 persilja                                                                                                      |
 | **Herbes de Provence**             | 1 kyndel, 1 timjan, 1 rosmarin, 1 basilika, 1 dragon, 1 lavendelblommor                                                                                                |
@@ -95,9 +96,10 @@ For 1½ tsk total:
 
 | Blend                        | Recipe                                                                                                                                                                                                                                       |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Ay Cajun-ba** (HelloFresh) | 25 paprika, 13 vitlök, 10 chilipeppar, spiskummin, svartpeppar, lök, cayenne, timjan, oregano, salt (1%). Ersätt med: 2 tsk paprika + 1 tsk vitlökspulver + ½ tsk chilipulver + ½ tsk spiskummin + ¼ tsk cayenne + ¼ tsk oregano             |
+| **Ay Cajun-ba** (HelloFresh) | 25 paprika, 13 vitlök, 10 chilipeppar, spiskummin, svartpeppar, lök, cayenne, timjan, oregano, salt (1%). Ersätt med: 2 tsk paprika + 1 tsk vitlökspulver + ½ tsk chilipulver + ½ tsk spiskummin + 1 krm cayenne + 1 krm oregano             |
+| **Mamas Favorit** (HelloFresh) | Potatiskrydda. Ersätt med: 1 tsk paprika + ½ tsk oregano + ½ tsk basilika + ½ tsk salvia + ½ tsk vitlökspulver. (Originalet innehåller äggpulver för vidhäftning - onödigt hemma när man blandar i olja.) |
 | **Smoky BBQ**                | 8 rökt paprika, 6 socker, 2 vitlökspulver, 1 senap (torr), 1 spiskummin, 1 ingefära (malen), ½ svartpeppar                                                                                                                                   |
-| **All American**             | 1 msk spiskummin, 1 msk cayenne, 1 msk lökpulver, 1 msk rökt paprika, 2 tsk vitlökspulver, 1 tsk koriander (malen), 1 tsk salt, 1 tsk persilja, ½ tsk svartpeppar, ½ tsk senap (torr), ½ tsk chiliflingor, ¼ tsk kryddpeppar, ⅛ tsk nejlikor |
+| **All American**             | 1 msk spiskummin, 1 msk cayenne, 1 msk lökpulver, 1 msk rökt paprika, 2 tsk vitlökspulver, 1 tsk koriander (malen), 1 tsk salt, 1 tsk persilja, ½ tsk svartpeppar, ½ tsk senap (torr), ½ tsk chiliflingor, 1 krm kryddpeppar, 1 krm nejlikor |
 | **Blackening**               | 3 tsk rökt paprika, 1½ tsk vitlökspulver, ½ tsk vitpeppar, ½ tsk svartpeppar, ¼ tsk timjan, ¼ tsk oregano, ⅛ tsk cayenne                                                                                                                     |
 | **Smoky Cinnamon Paprika**   | 1 nejlikor (malen), 8 lökpulver, 8 kanel (malen), 6 rökt paprika, 16 senapspulver, 24 söt paprika, 24 socker                                                                                                                                 |
 
@@ -160,6 +162,12 @@ For 1½ tsk total:
 - Prefer lactose-free dairy (mjölk, grädde, crème fraîche, mjuka ostar) over plant-based
 - Plant-based only when specifically preferred or needed
 - Most Swedish lactose-free dairy products behave identically in cooking
+
+**Substitutions for products without lactose-free variant:**
+
+| Original | Substitution | Notes |
+|----------|--------------|-------|
+| Syrad grädde (2½ dl) | 1½ dl crème fraîche (laktosfri) + 1 dl grädde (laktosfri) | Mix together before using. Ratio ~60/40. |
 
 **Exceptions - do NOT change to lactose-free:**
 

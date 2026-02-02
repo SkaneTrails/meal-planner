@@ -8,6 +8,7 @@ import type {
   RecipeCreate,
   RecipeUpdate,
   RecipeScrapeRequest,
+  RecipeParseRequest,
   MealPlan,
   MealPlanUpdate,
   MealUpdateRequest,
@@ -113,12 +114,54 @@ class ApiClient {
     });
   }
 
-  async scrapeRecipe(url: string): Promise<Recipe> {
-    const request: RecipeScrapeRequest = { url };
-    return this.request<Recipe>('/recipes/scrape', {
-      method: 'POST',
-      body: JSON.stringify(request),
-    });
+  async scrapeRecipe(url: string, enhance: boolean = false): Promise<Recipe> {
+    // Client-side scraping: fetch HTML on the client to avoid cloud IP blocking
+    // Some recipe sites (e.g., ICA.se) block requests from cloud providers
+    console.log('[scrapeRecipe] Starting client-side fetch for:', url);
+    try {
+      const htmlResponse = await fetch(url, {
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
+        },
+      });
+
+      console.log('[scrapeRecipe] Client fetch response status:', htmlResponse.status);
+
+      if (!htmlResponse.ok) {
+        throw new ApiClientError(`Failed to fetch recipe page: ${htmlResponse.status}`, htmlResponse.status);
+      }
+
+      const html = await htmlResponse.text();
+      console.log('[scrapeRecipe] Got HTML, length:', html.length);
+
+      // Send HTML to API for parsing
+      const request: RecipeParseRequest = { url, html };
+      const params = new URLSearchParams();
+      if (enhance) params.set('enhance', 'true');
+      const query = params.toString();
+
+      console.log('[scrapeRecipe] Sending to /recipes/parse');
+      return this.request<Recipe>(`/recipes/parse${query ? `?${query}` : ''}`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+    } catch (error) {
+      console.log('[scrapeRecipe] Client-side fetch failed:', error);
+      if (error instanceof ApiClientError) {
+        throw error;
+      }
+      // If client-side fetch fails (CORS, network error), fall back to server-side
+      console.log('[scrapeRecipe] Falling back to /recipes/scrape');
+      const request: RecipeScrapeRequest = { url };
+      const params = new URLSearchParams();
+      if (enhance) params.set('enhance', 'true');
+      const query = params.toString();
+      return this.request<Recipe>(`/recipes/scrape${query ? `?${query}` : ''}`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+    }
   }
 
   async updateRecipe(id: string, updates: RecipeUpdate, enhanced: boolean = false): Promise<Recipe> {

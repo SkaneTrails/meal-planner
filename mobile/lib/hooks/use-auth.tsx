@@ -16,7 +16,7 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth';
 import * as Google from 'expo-auth-session/providers/google';
-import { auth } from '../firebase';
+import { auth, isFirebaseConfigured } from '../firebase';
 import { setAuthTokenGetter } from '../api';
 
 interface AuthContextType {
@@ -34,8 +34,8 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Check if auth is configured
-const isAuthConfigured = Boolean(
+// Check if auth is configured (Firebase + OAuth client IDs)
+const isAuthConfigured = isFirebaseConfigured && Boolean(
   process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
   process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
   process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
@@ -100,6 +100,10 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
 
   // Listen for auth state changes
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -124,7 +128,7 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
 
       const credential = GoogleAuthProvider.credential(id_token, access_token);
 
-      signInWithCredential(auth, credential)
+      signInWithCredential(auth!, credential)
         .then(() => {
           setError(null);
         })
@@ -143,7 +147,7 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
       if (Platform.OS === 'web' && googleProvider) {
         // Web: Use Firebase's popup auth
         console.log('Starting signInWithPopup...');
-        const result = await signInWithPopup(auth, googleProvider);
+        const result = await signInWithPopup(auth!, googleProvider);
         console.log('signInWithPopup success:', result.user.email);
       } else {
         // Native: Use expo-auth-session
@@ -161,7 +165,7 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
 
   const signOut = useCallback(async () => {
     try {
-      await firebaseSignOut(auth);
+      await firebaseSignOut(auth!);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign-out failed');
