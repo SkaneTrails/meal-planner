@@ -39,8 +39,13 @@ uv sync --extra dev  # Install all dependencies including dev tools
 ### Running the App
 
 ```bash
-# Run the Streamlit app
-uv run streamlit run app/main.py
+# Run the API backend
+uv run uvicorn api.main:app --reload --port 8000
+
+# Run the mobile app (in a separate terminal)
+cd mobile
+npm install
+npx expo start
 ```
 
 ### Development
@@ -53,7 +58,7 @@ uv run pre-commit install
 uv run pytest
 
 # Run tests with coverage
-uv run pytest --cov=app --cov-report=html
+uv run pytest --cov=api --cov-report=html
 
 # Run linting
 uv run ruff check --fix
@@ -64,7 +69,6 @@ uv run ruff format
 
 ```
 ├── api/                 # FastAPI REST backend
-├── app/                 # Streamlit web app (legacy)
 ├── mobile/              # React Native mobile app (Expo)
 ├── functions/           # Google Cloud Functions
 ├── scripts/             # CLI tools (recipe enhancer, etc.)

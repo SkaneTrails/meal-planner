@@ -62,7 +62,7 @@ Before running `git push`, verify ALL applicable items:
 
 ## Project Overview
 
-**Meal Planner** is a recipe collector and weekly meal planner app built with Streamlit. It allows users to:
+**Meal Planner** is a recipe collector and weekly meal planner app. It allows users to:
 
 1. **Import recipes** from URLs - automatically extracts ingredients, instructions, and images
 2. **Plan weekly meals** - organize recipes into a weekly calendar
@@ -74,9 +74,8 @@ The project is a multi-platform meal planning system with three main interfaces:
 
 | Platform | Directory | Stack | Purpose |
 |----------|-----------|-------|--------|
-| Web (legacy) | `app/` | Streamlit | Original web UI |
-| Mobile | `mobile/` | React Native + Expo | iOS/Android app |
-| API | `api/` | FastAPI | REST backend for mobile |
+| Mobile | `mobile/` | React Native + Expo | iOS/Android + Web app |
+| API | `api/` | FastAPI | REST backend |
 | Functions | `functions/` | Google Cloud Functions | Serverless recipe scraping |
 
 ### Application Structure
@@ -110,13 +109,6 @@ config/                  # Configuration files
     └── user/            # User-specific preferences
         ├── dietary.md   # Dietary restrictions, substitutions
         └── equipment.md # Kitchen equipment specs
-
-app/                     # Streamlit web app (legacy)
-├── main.py              # Streamlit app entry point
-├── icons.py             # Icon constants
-├── models/              # Data models (dataclasses)
-├── services/            # Business logic
-└── storage/             # Firestore persistence
 
 mobile/                  # React Native mobile app
 ├── app/                 # Expo Router screens
@@ -163,12 +155,11 @@ infra/                   # Terraform infrastructure
 
 ### Key Dependencies
 
-**Python Backend (api/, app/, scripts/):**
+**Python Backend (api/, scripts/):**
 
 - **fastapi** - REST API framework
 - **uvicorn** - ASGI server
 - **pydantic** - Data validation
-- **streamlit** - Web UI framework (legacy)
 - **google-cloud-firestore** - Firestore database client
 - **google-genai** - Gemini AI for recipe enhancement
 - **recipe-scrapers** - Extract recipes from 400+ websites
@@ -263,14 +254,11 @@ Skills in `.github/skills/` provide domain-specific instructions:
 
 ## Development Workflows
 
-### Running the App
+### Running the API
 
 ```bash
 # Install Python dependencies
 uv sync
-
-# Run Streamlit web app (legacy)
-uv run streamlit run app/main.py
 
 # Run FastAPI backend
 ./scripts/run-api.sh
@@ -335,7 +323,7 @@ The mobile app is deployed as a static web export to Firebase Hosting.
 - **Pre-commit hooks**: `.pre-commit-config.yaml`
   - Install: `uv run pre-commit install`
 - **Testing**: pytest with coverage
-  - Run: `uv run pytest --cov=app`
+  - Run: `uv run pytest --cov=api`
 - **Conventional commits**: `feat:`, `fix:`, `chore:`, `ci:`, `docs:`, `refactor:`, `test:`
 
 ## Code Style
@@ -379,14 +367,14 @@ See `pyproject.toml` for tool configurations.
 ### Running Tests
 
 ```bash
-# Full test suite with coverage for both app and api
-uv run pytest --cov=app --cov=api --cov-report=term-missing
+# Full test suite with coverage
+uv run pytest --cov=api --cov-report=term-missing
 
 # Run specific test file
 uv run pytest tests/test_recipe.py -v
 
 # Run tests in parallel (faster)
-uv run pytest -n=auto --cov=app --cov=api
+uv run pytest -n=auto --cov=api
 ```
 
 ## Key Patterns & Conventions
@@ -396,13 +384,6 @@ uv run pytest -n=auto --cov=app --cov=api
 - Uses `recipe-scrapers` library which supports 400+ recipe websites
 - Always handle scraping errors gracefully - return `None` if scraping fails
 - Extract: title, ingredients, instructions, image_url, servings, prep_time, cook_time
-
-### Streamlit Patterns
-
-- Use `st.session_state` for persisting data across reruns
-- Use `st.spinner()` for long-running operations like HTTP requests
-- Use `st.form()` for grouping inputs that should submit together
-- Handle errors with `st.error()` and successes with `st.success()`
 
 ### Data Models
 
