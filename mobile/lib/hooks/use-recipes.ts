@@ -85,7 +85,8 @@ export function useScrapeRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (url: string) => api.scrapeRecipe(url),
+    mutationFn: ({ url, enhance = false }: { url: string; enhance?: boolean }) =>
+      api.scrapeRecipe(url, enhance),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },

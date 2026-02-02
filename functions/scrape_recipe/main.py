@@ -2,11 +2,15 @@
 
 This Cloud Function scrapes recipes from URLs using the recipe-scrapers library.
 It runs in isolation from the main API for better fault tolerance and auto-scaling.
+
+Supports two modes:
+1. Server-side scraping: POST {"url": "..."} - Function fetches HTML
+2. Client-side parsing: POST {"url": "...", "html": "..."} - Client provides HTML
 """
 
 import functions_framework
 from flask import Request, jsonify
-from recipe_scraper import scrape_recipe
+from recipe_scraper import parse_recipe_html, scrape_recipe
 
 
 @functions_framework.http
@@ -46,9 +50,11 @@ def scrape_recipe_handler(request: Request) -> tuple:
         return (jsonify({"error": "Missing 'url' in request body"}), 400, headers)
 
     url = request_json["url"]
+    html = request_json.get("html")
 
-    # Scrape the recipe
-    recipe = scrape_recipe(url)
+    # If HTML is provided, parse it directly (client-side scraping)
+    # Otherwise, fetch the HTML from the URL (server-side scraping)
+    recipe = parse_recipe_html(html, url) if html else scrape_recipe(url)
 
     if recipe is None:
         return (jsonify({"error": f"Failed to scrape recipe from {url}"}), 422, headers)

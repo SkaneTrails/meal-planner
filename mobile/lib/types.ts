@@ -71,6 +71,11 @@ export interface RecipeScrapeRequest {
   url: string;
 }
 
+export interface RecipeParseRequest {
+  url: string;
+  html: string;
+}
+
 // Meal Plan types
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 

@@ -941,7 +941,7 @@ export default function RecipeDetailScreen() {
                   <Ionicons name="sparkles" size={18} color="#7C3AED" />
                 </View>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3 }}>
-                  AI Improvements
+                  AI-förbättringar
                 </Text>
               </View>
               <View style={{ backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16 }}>
