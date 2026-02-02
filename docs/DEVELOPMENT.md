@@ -27,12 +27,6 @@ uv run pre-commit install
 
 ## Running the Application
 
-### Streamlit Web App (Legacy)
-
-```bash
-uv run streamlit run app/main.py
-```
-
 ### FastAPI Backend
 
 ```bash
@@ -70,12 +64,25 @@ npx expo start
 
 The FastAPI backend requires the following environment variables:
 
-| Variable                         | Required | Description                                     |
-| -------------------------------- | -------- | ----------------------------------------------- |
-| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                    |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Yes      | Path to service account JSON                    |
-| `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev) |
-| `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check      |
+| Variable                         | Required | Description                                               |
+| -------------------------------- | -------- | --------------------------------------------------------- |
+| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                              |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Yes      | Path to service account JSON                              |
+| `SCRAPE_FUNCTION_URL`            | No       | URL of scrape function (default: `http://localhost:8001`) |
+| `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev)           |
+| `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check                |
+
+**Scrape Function:** The API calls a separate Cloud Function to scrape recipes. For local development, run `./scripts/run-function.sh` in a separate terminal, or point to the deployed function:
+
+```powershell
+# PowerShell (Windows)
+$env:SCRAPE_FUNCTION_URL = "https://your-region-your-project.cloudfunctions.net/scrape_recipe"
+```
+
+```bash
+# Bash (Linux/macOS)
+export SCRAPE_FUNCTION_URL="https://your-region-your-project.cloudfunctions.net/scrape_recipe"
+```
 
 ### Mobile Environment Variables
 
@@ -150,6 +157,53 @@ uv run ruff format --check
 ```bash
 uv run ty check app/
 ```
+
+## API Endpoints
+
+### Recipe Scraping
+
+The API provides two methods for adding recipes from URLs:
+
+#### Client-Side Scraping (Recommended)
+
+```
+POST /api/v1/recipes/parse
+```
+
+The mobile app fetches HTML directly and sends it to the API for parsing. This avoids
+cloud IP blocking issues (e.g., ICA.se blocks Google Cloud IPs).
+
+**Request:**
+
+```json
+{
+  "url": "https://www.ica.se/recept/example",
+  "html": "<html>...full page content...</html>"
+}
+```
+
+#### Server-Side Scraping (Fallback)
+
+```
+POST /api/v1/recipes/scrape
+```
+
+The API fetches the HTML via Cloud Function. Only works for sites that don't block
+cloud provider IP ranges.
+
+**Request:**
+
+```json
+{
+  "url": "https://www.allrecipes.com/recipe/12345"
+}
+```
+
+#### Query Parameters
+
+Both endpoints accept:
+
+- `enhance=true` - Enhance recipe with AI after saving (requires Gemini API key)
 
 ## Project Structure
 

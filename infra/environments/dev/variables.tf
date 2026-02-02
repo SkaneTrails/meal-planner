@@ -39,6 +39,14 @@ variable "oauth_secrets_exist" {
   default     = false
 }
 
+# Recipe enhancement with Gemini AI
+# Add API key: echo -n "YOUR_API_KEY" | gcloud secrets versions add gemini-api-key --data-file=-
+variable "enable_recipe_enhancement" {
+  description = "Enable recipe enhancement feature (requires Gemini API key in Secret Manager)"
+  type        = bool
+  default     = false
+}
+
 # GitHub repository info for Workload Identity Federation
 variable "github_repository_owner" {
   description = "GitHub repository owner (organization or user)"

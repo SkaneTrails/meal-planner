@@ -4,8 +4,14 @@ Usage:
     # Get the next unprocessed recipe:
     uv run python scripts/recipe_reviewer.py next
 
-    # Get a specific recipe by ID:
+    # Get a specific recipe by ID (from source database):
     uv run python scripts/recipe_reviewer.py get <recipe_id>
+
+    # Get the enhanced version of a recipe (from target database):
+    uv run python scripts/recipe_reviewer.py enhanced <recipe_id>
+
+    # Delete a bad enhanced recipe and unmark from processed:
+    uv run python scripts/recipe_reviewer.py delete <recipe_id>
 
     # Mark a recipe as processed (without changes):
     uv run python scripts/recipe_reviewer.py skip <recipe_id>
@@ -85,6 +91,43 @@ def get_recipe(recipe_id: str) -> None:
             display_recipe(doc.id, data)
     else:
         print(f"❌ Recipe not found: {recipe_id}")
+
+
+def get_enhanced_recipe(recipe_id: str) -> None:
+    """Get the enhanced version of a recipe from the target database."""
+    db = get_target_db()
+    doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+    if doc.exists:
+        data = doc.to_dict()
+        if data is not None:
+            print("\n🎯 ENHANCED VERSION (from meal-planner database)")
+            display_recipe(doc.id, data)
+            if data.get("tips"):
+                print(f"Tips: {data.get('tips')}")
+    else:
+        print(f"❌ No enhanced version found: {recipe_id}")
+
+
+def delete_enhanced_recipe(recipe_id: str) -> None:
+    """Delete a bad enhanced recipe and remove from processed list."""
+    db = get_target_db()
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+    doc = doc_ref.get()
+
+    if not doc.exists:
+        print(f"❌ No enhanced version found: {recipe_id}")
+        return
+
+    # Delete from target database
+    doc_ref.delete()
+    print(f"🗑️ Deleted enhanced recipe from meal-planner database: {recipe_id}")
+
+    # Remove from processed list
+    progress = load_progress()
+    if recipe_id in progress.get("processed", []):
+        progress["processed"].remove(recipe_id)
+        save_progress(progress)
+        print("   Removed from processed list")
 
 
 def display_recipe(recipe_id: str, data: dict) -> None:
@@ -236,6 +279,10 @@ def main() -> None:
         get_next_recipe()
     elif command == "get" and len(sys.argv) >= 3:
         get_recipe(sys.argv[2])
+    elif command == "enhanced" and len(sys.argv) >= 3:
+        get_enhanced_recipe(sys.argv[2])
+    elif command == "delete" and len(sys.argv) >= 3:
+        delete_enhanced_recipe(sys.argv[2])
     elif command == "skip" and len(sys.argv) >= 3:
         mark_skipped(sys.argv[2])
     elif command == "done" and len(sys.argv) >= 3:

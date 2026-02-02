@@ -1,0 +1,168 @@
+"""Tests for api/routers/meal_plans.py."""
+
+from unittest.mock import patch
+
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from api.routers.meal_plans import router
+
+# Create a test app without auth for unit testing
+app = FastAPI()
+app.include_router(router)
+
+
+@pytest.fixture
+def client() -> TestClient:
+    """Create test client with mocked auth."""
+    from api.auth.firebase import require_auth
+
+    async def mock_auth() -> dict[str, str]:
+        return {"uid": "test_user"}
+
+    app.dependency_overrides[require_auth] = mock_auth
+
+    with TestClient(app) as c:
+        yield c
+
+    app.dependency_overrides.clear()
+
+
+class TestGetMealPlan:
+    """Tests for GET /meal-plans/{user_id} endpoint."""
+
+    def test_get_empty_meal_plan(self, client: TestClient) -> None:
+        """Should return empty meal plan for new user."""
+        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {})):
+            response = client.get("/meal-plans/test_user")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["user_id"] == "test_user"
+        assert data["meals"] == {}
+        assert data["notes"] == {}
+
+    def test_get_meal_plan_with_meals(self, client: TestClient) -> None:
+        """Should return meal plan with existing meals."""
+        meals = {"2025-01-15_lunch": "recipe123", "2025-01-15_dinner": "custom:Pizza"}
+        notes = {"2025-01-15": "office day"}
+        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=(meals, notes)):
+            response = client.get("/meal-plans/test_user")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["meals"]["2025-01-15_lunch"] == "recipe123"
+        assert data["meals"]["2025-01-15_dinner"] == "custom:Pizza"
+        assert data["notes"]["2025-01-15"] == "office day"
+
+
+class TestUpdateMealPlan:
+    """Tests for PUT /meal-plans/{user_id} endpoint."""
+
+    def test_update_add_meal(self, client: TestClient) -> None:
+        """Should add a new meal to the plan."""
+        with (
+            patch("api.routers.meal_plans.meal_plan_storage.update_meal") as mock_update,
+            patch(
+                "api.routers.meal_plans.meal_plan_storage.load_meal_plan",
+                return_value=({"2025-01-15_lunch": "recipe123"}, {}),
+            ),
+        ):
+            response = client.put(
+                "/meal-plans/test_user", json={"meals": {"2025-01-15_lunch": "recipe123"}, "notes": {}}
+            )
+
+        assert response.status_code == 200
+        mock_update.assert_called_once_with("test_user", "2025-01-15", "lunch", "recipe123")
+
+    def test_update_delete_meal(self, client: TestClient) -> None:
+        """Should delete meal when value is None."""
+        with (
+            patch("api.routers.meal_plans.meal_plan_storage.delete_meal") as mock_delete,
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {})),
+        ):
+            response = client.put("/meal-plans/test_user", json={"meals": {"2025-01-15_lunch": None}, "notes": {}})
+
+        assert response.status_code == 200
+        mock_delete.assert_called_once_with("test_user", "2025-01-15", "lunch")
+
+    def test_update_invalid_key_format(self, client: TestClient) -> None:
+        """Should return 400 for invalid meal key format."""
+        response = client.put("/meal-plans/test_user", json={"meals": {"invalidkeyformat": "recipe123"}, "notes": {}})
+
+        assert response.status_code == 400
+        assert "Invalid meal key format" in response.json()["detail"]
+
+    def test_update_note(self, client: TestClient) -> None:
+        """Should update day note."""
+        with (
+            patch("api.routers.meal_plans.meal_plan_storage.update_day_note") as mock_note,
+            patch(
+                "api.routers.meal_plans.meal_plan_storage.load_meal_plan",
+                return_value=({}, {"2025-01-15": "work from home"}),
+            ),
+        ):
+            response = client.put(
+                "/meal-plans/test_user", json={"meals": {}, "notes": {"2025-01-15": "work from home"}}
+            )
+
+        assert response.status_code == 200
+        mock_note.assert_called_once_with("test_user", "2025-01-15", "work from home")
+
+
+class TestUpdateSingleMeal:
+    """Tests for POST /meal-plans/{user_id}/meals endpoint."""
+
+    def test_update_single_meal(self, client: TestClient) -> None:
+        """Should update a single meal."""
+        with (
+            patch("api.routers.meal_plans.meal_plan_storage.update_meal") as mock_update,
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {})),
+        ):
+            response = client.post(
+                "/meal-plans/test_user/meals", json={"date": "2025-01-15", "meal_type": "dinner", "value": "recipe456"}
+            )
+
+        assert response.status_code == 200
+        mock_update.assert_called_once_with("test_user", "2025-01-15", "dinner", "recipe456")
+
+    def test_delete_single_meal(self, client: TestClient) -> None:
+        """Should delete meal when value is None."""
+        with (
+            patch("api.routers.meal_plans.meal_plan_storage.delete_meal") as mock_delete,
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {})),
+        ):
+            response = client.post(
+                "/meal-plans/test_user/meals", json={"date": "2025-01-15", "meal_type": "dinner", "value": None}
+            )
+
+        assert response.status_code == 200
+        mock_delete.assert_called_once_with("test_user", "2025-01-15", "dinner")
+
+
+class TestUpdateSingleNote:
+    """Tests for POST /meal-plans/{user_id}/notes endpoint."""
+
+    def test_update_single_note(self, client: TestClient) -> None:
+        """Should update a single note."""
+        with (
+            patch("api.routers.meal_plans.meal_plan_storage.update_day_note") as mock_note,
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {})),
+        ):
+            response = client.post("/meal-plans/test_user/notes", json={"date": "2025-01-15", "note": "busy day"})
+
+        assert response.status_code == 200
+        mock_note.assert_called_once_with("test_user", "2025-01-15", "busy day")
+
+
+class TestClearMealPlan:
+    """Tests for DELETE /meal-plans/{user_id} endpoint."""
+
+    def test_clear_meal_plan(self, client: TestClient) -> None:
+        """Should clear all meals and notes."""
+        with patch("api.routers.meal_plans.meal_plan_storage.save_meal_plan") as mock_save:
+            response = client.delete("/meal-plans/test_user")
+
+        assert response.status_code == 204
+        mock_save.assert_called_once_with("test_user", {}, {})

@@ -18,6 +18,23 @@ This skill defines how to maintain persistent working context across conversatio
 
 **This is not optional.** The file contains important context that persists across conversations. Ignoring it means losing track of work in progress.
 
+### Staleness and bloat checks
+
+On read, also check for:
+
+1. **Failure Tracking entries** - if count = 3+, promote now; if Last seen > 14 days, offer to prune
+2. **Discovered Issues > 5** - "You have N deferred issues. Prioritize or prune?"
+3. **Completed (Recent) > 5** - "Clean up completed tasks?"
+4. **General Backlog > 10** - "Backlog is growing. Review?"
+
+If issues found: "Found items needing attention: [list]. Address now?"
+
+User-triggered cleanup:
+
+- "clean up branches" - remove branch sections for deleted branches
+- "clean up completed" - remove old completed items
+- "prune failures" - remove Failure Tracking entries older than 7 days
+
 ---
 
 ## Activation context
@@ -54,9 +71,21 @@ Items not tied to a specific branch:
 - [ ] `path/to/file.py:123` - issue found during other work
 - [ ] `another/file.ts` - another deferred issue
 
+```
+
 ### Completed (Recent)
+
 - [x] 2026-01-28: Completed task description
 
+```markdown
+## Failure Tracking
+
+| Pattern | Count | Last seen | Context | Fix when promoted |
+|---------|-------|-----------|---------|-------------------|
+| shell-escaping | 2 | 2026-02-02 | PowerShell quotes | Use array splatting |
+```
+
+______________________________________________________________________
 ---
 
 ## Branch: feature/some-feature
@@ -265,3 +294,102 @@ When working across multiple repositories (e.g., sbpaa-geospatial-routing, sbpaa
 1. Copilot adds to General > Discovered Issues, continues with Active Task
 1. Task complete, Copilot updates the branch section
 1. "You have 1 discovered issue. Want to address it?"
+
+
+______________________________________________________________________
+
+## Failure tracking
+
+Track recurring mistakes across conversations to trigger documentation.
+
+### When to log
+
+Log immediately when:
+
+- A command, API call, or approach failed due to a pattern (not a typo)
+- **The user corrects you** for a behavioral pattern (asking permission when you shouldn't, missing a step, wrong format)
+
+User corrections are the highest-signal failures. If the user had to point it out, you missed it - log before addressing the correction.
+
+### Logging sequence (critical)
+
+1. **Recognize the failure** - command failed, or user corrected you
+2. **Log to Failure Tracking table** - update `.copilot-tasks.md` NOW
+3. **Then** address the issue - fix, retry, or respond
+
+Do NOT: fix first, then log. Once you announce "Fixed" or "Applied," the task feels closed and logging gets forgotten.
+
+### Before logging
+
+Check if pattern is already documented:
+
+1. Search relevant `*.instructions.md` for the pattern
+2. Search relevant skill for the pattern
+3. If found, do not add to Failure Tracking (already promoted)
+
+### Table schema (strict)
+
+```markdown
+| Pattern | Count | Last seen | Context | Fix when promoted |
+|---------|-------|-----------|---------|-------------------|
+```
+
+**Rules:**
+- Never change the header row; only add/update data rows
+- One row per pattern (no duplicates)
+- Pattern: short identifier (e.g., `shell-escaping`, `json-quotes`)
+- Count: integer, increment on each occurrence
+- Last seen: YYYY-MM-DD format
+- Context: brief description of the situation
+- Fix when promoted: capture the working solution while fresh
+
+### Logging format
+
+Add or update a row in the Failure Tracking table:
+
+```markdown
+| shell-escaping | 1 | 2026-02-02 | PowerShell quotes in JSON | TBD |
+```
+
+If the pattern already exists, increment the count and update "Last seen".
+
+### Threshold behavior
+
+When count reaches **3**:
+
+1. Document the fix in the appropriate file:
+   - Shell/language patterns → `*.instructions.md`
+   - Workflow patterns → relevant skill
+   - External API behavior → `copilot-references.md`
+2. Remove the row from Failure Tracking (it's now properly documented)
+3. Announce: "Promoted [pattern] to [destination] after 3 occurrences."
+
+### Pruning stale entries
+
+When user says "prune failures" or "reset failure tracking":
+
+- **Prune:** Remove rows with Last seen older than 7 days
+- **Reset:** Clear all rows from the table
+
+There is no automatic expiry; pruning is user-triggered.
+
+### Reading at conversation start
+
+When reading `.copilot-tasks.md`:
+1. Check Failure Tracking table
+2. If any patterns exist, keep them in mind for the session
+3. If working in a context matching a tracked pattern, be extra careful
+
+______________________________________________________________________
+
+## Example workflow
+
+1. Developer starts work on feature branch
+2. Copilot reads `.copilot-tasks.md`, finds Active Task from previous session
+3. "Continuing work on: Add Memorystore support. Next step: Update connection.py to use new Redis host"
+4. While updating connection.py, Copilot notices hardcoded timeout
+5. "I noticed a hardcoded timeout at line 45. Add to TODO or fix now?"
+6. Developer: "TODO"
+7. Copilot adds to Discovered Issues, continues with Active Task
+8. Task complete, Copilot updates Active Task to "None"
+9. "You have 1 discovered issue on this branch. Want to address it?"

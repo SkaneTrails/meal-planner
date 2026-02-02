@@ -370,16 +370,16 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
           {sections.map((section) => {
             const isCollapsed = collapsedCategories.has(section.title);
             const checkedCount = section.data.filter(item => checkedItems.has(item.name)).length;
-            
+
             return (
               <View key={section.title}>
-                <Pressable 
+                <Pressable
                   onPress={() => toggleCategory(section.title)}
-                  style={({ pressed }) => ({ 
+                  style={({ pressed }) => ({
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    paddingVertical: 10, 
+                    paddingVertical: 10,
                     paddingHorizontal: 4,
                     marginTop: 20,
                     marginBottom: 4,
@@ -395,10 +395,10 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
                       ({checkedCount}/{section.data.length})
                     </Text>
                   </View>
-                  <Ionicons 
-                    name={isCollapsed ? 'chevron-down' : 'chevron-up'} 
-                    size={20} 
-                    color="#9CA3AF" 
+                  <Ionicons
+                    name={isCollapsed ? 'chevron-down' : 'chevron-up'}
+                    size={20}
+                    color="#9CA3AF"
                   />
                 </Pressable>
                 {!isCollapsed && section.data.map((item) => (

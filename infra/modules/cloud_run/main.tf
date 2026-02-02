@@ -35,6 +35,16 @@ resource "google_storage_bucket_iam_member" "api_storage_admin" {
   member = "serviceAccount:${google_service_account.api.email}"
 }
 
+# Grant Secret Manager access for Gemini API key
+resource "google_secret_manager_secret_iam_member" "gemini_api_key" {
+  count = var.gemini_secret_id != "" ? 1 : 0
+
+  project   = var.project
+  secret_id = var.gemini_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.api.email}"
+}
+
 # Cloud Run service
 resource "google_cloud_run_v2_service" "api" {
   project  = var.project
@@ -90,6 +100,38 @@ resource "google_cloud_run_v2_service" "api" {
         content {
           name  = "GCS_BUCKET_NAME"
           value = var.gcs_bucket_name
+        }
+      }
+
+      # Recipe enhancement feature flag
+      dynamic "env" {
+        for_each = var.enable_recipe_enhancement ? [1] : []
+        content {
+          name  = "ENABLE_RECIPE_ENHANCEMENT"
+          value = "true"
+        }
+      }
+
+      # Scrape function URL
+      dynamic "env" {
+        for_each = var.scrape_function_url != "" ? [1] : []
+        content {
+          name  = "SCRAPE_FUNCTION_URL"
+          value = var.scrape_function_url
+        }
+      }
+
+      # Gemini API key from Secret Manager
+      dynamic "env" {
+        for_each = var.gemini_secret_name != "" ? [1] : []
+        content {
+          name = "GOOGLE_API_KEY"
+          value_source {
+            secret_key_ref {
+              secret  = var.gemini_secret_name
+              version = "latest"
+            }
+          }
         }
       }
 

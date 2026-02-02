@@ -870,12 +870,12 @@ export default function RecipeDetailScreen() {
                   <Pressable
                     key={index}
                     onPress={() => toggleStep(index)}
-                    style={({ pressed }) => ({ 
-                      flexDirection: 'row', 
-                      alignItems: 'flex-start', 
+                    style={({ pressed }) => ({
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
                       paddingVertical: 14,
-                      backgroundColor: isCompleted 
-                        ? '#DCFCE7' 
+                      backgroundColor: isCompleted
+                        ? '#DCFCE7'
                         : (index % 2 === 0 ? '#F9F5F0' : (pressed ? '#F5E6D3' : 'transparent')),
                       borderRadius: 12,
                       paddingHorizontal: 12,
@@ -883,13 +883,13 @@ export default function RecipeDetailScreen() {
                       opacity: isCompleted ? 0.7 : 1,
                     })}
                   >
-                    <View style={{ 
-                      width: 32, 
-                      height: 32, 
-                      borderRadius: 16, 
-                      backgroundColor: isCompleted ? '#16A34A' : '#4A3728', 
-                      alignItems: 'center', 
-                      justifyContent: 'center', 
+                    <View style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: isCompleted ? '#16A34A' : '#4A3728',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       marginRight: 14,
                       marginTop: 2,
                     }}>
@@ -899,10 +899,10 @@ export default function RecipeDetailScreen() {
                         <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>{index + 1}</Text>
                       )}
                     </View>
-                    <Text style={{ 
-                      flex: 1, 
-                      fontSize: 15, 
-                      color: isCompleted ? '#166534' : '#4A3728', 
+                    <Text style={{
+                      flex: 1,
+                      fontSize: 15,
+                      color: isCompleted ? '#166534' : '#4A3728',
                       lineHeight: 24,
                       textDecorationLine: isCompleted ? 'line-through' : 'none',
                     }}>
@@ -941,7 +941,7 @@ export default function RecipeDetailScreen() {
                   <Ionicons name="sparkles" size={18} color="#7C3AED" />
                 </View>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3 }}>
-                  AI Improvements
+                  AI-förbättringar
                 </Text>
               </View>
               <View style={{ backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16 }}>

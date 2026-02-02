@@ -88,7 +88,7 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        args: [app/, api/, scripts/]
+        args: [api/, scripts/]
 
   # TypeScript type check for mobile (requires npm install in mobile/)
   - repo: local

@@ -122,33 +122,21 @@ def _safe_int(value: str | int | None) -> int | None:
     return int(match.group()) if match else None
 
 
-def scrape_recipe(url: str) -> Recipe | None:
+def parse_recipe_html(html: str, url: str) -> Recipe | None:
     """
-    Scrape a recipe from a URL.
+    Parse a recipe from HTML content.
+
+    This is used for client-side scraping where the client fetches the HTML
+    and sends it to the API for parsing, avoiding cloud IP blocking issues.
 
     Args:
-        url: The URL of the recipe to scrape.
+        html: The HTML content of the recipe page.
+        url: The original URL (used for metadata extraction).
 
     Returns:
         A Recipe object if successful, None otherwise.
     """
-    # SSRF protection: validate URL before fetching
-    if not _is_safe_url(url):
-        print(f"URL blocked by security policy: {url}", file=sys.stderr)
-        return None
-
     try:
-        response = httpx.get(url, follow_redirects=True, timeout=30.0)
-        response.raise_for_status()
-
-        # Validate final URL after redirects to prevent SSRF bypass
-        final_url = str(response.url)
-        if final_url != url and not _is_safe_url(final_url):
-            print(f"Redirect blocked by security policy: {url} -> {final_url}", file=sys.stderr)
-            return None
-
-        html = response.text
-
         scraper = scrape_html(html, org_url=url)
 
         instructions: list[str] = _safe_get(scraper.instructions_list, [])
@@ -167,6 +155,46 @@ def scrape_recipe(url: str) -> Recipe | None:
             cook_time=_safe_get_optional(scraper.cook_time),
             total_time=_safe_get_optional(scraper.total_time),
         )
+    except Exception as e:
+        print(f"Recipe parsing error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
+        return None
+
+
+def scrape_recipe(url: str) -> Recipe | None:
+    """
+    Scrape a recipe from a URL.
+
+    Args:
+        url: The URL of the recipe to scrape.
+
+    Returns:
+        A Recipe object if successful, None otherwise.
+    """
+    # SSRF protection: validate URL before fetching
+    if not _is_safe_url(url):
+        print(f"URL blocked by security policy: {url}", file=sys.stderr)
+        return None
+
+    try:
+        # Use a browser-like User-Agent to avoid being blocked by recipe sites
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
+        response = httpx.get(url, follow_redirects=True, timeout=30.0, headers=headers)
+        response.raise_for_status()
+
+        # Validate final URL after redirects to prevent SSRF bypass
+        final_url = str(response.url)
+        if final_url != url and not _is_safe_url(final_url):
+            print(f"Redirect blocked by security policy: {url} -> {final_url}", file=sys.stderr)
+            return None
+
+        html = response.text
+
+        # Use the shared parsing function
+        return parse_recipe_html(html, url)
     except Exception as e:
         print(f"Recipe scraping error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
         return None
