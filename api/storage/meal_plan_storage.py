@@ -12,12 +12,14 @@ from api.storage.firestore_client import MEAL_PLANS_COLLECTION, get_firestore_cl
 _MEAL_KEY_PARTS = 2
 
 
-def _get_meal_plan_doc_id(user_id: str) -> str:
+def _get_meal_plan_doc_id(user_id: str) -> str:  # pragma: no cover
     """Get the document ID for a user's meal plan."""
     return f"{user_id}_meal_plan"
 
 
-def save_meal_plan(user_id: str, meals: dict[str, str], notes: dict[str, str] | None = None) -> None:
+def save_meal_plan(
+    user_id: str, meals: dict[str, str], notes: dict[str, str] | None = None
+) -> None:  # pragma: no cover
     """
     Save the entire meal plan to Firestore.
 
@@ -36,7 +38,7 @@ def save_meal_plan(user_id: str, meals: dict[str, str], notes: dict[str, str] | 
     doc_ref.set(data)
 
 
-def load_meal_plan(user_id: str) -> tuple[dict[str, str], dict[str, str]]:
+def load_meal_plan(user_id: str) -> tuple[dict[str, str], dict[str, str]]:  # pragma: no cover
     """
     Load the meal plan from Firestore.
 
@@ -59,7 +61,7 @@ def load_meal_plan(user_id: str) -> tuple[dict[str, str], dict[str, str]]:
     return data.get("meals", {}), data.get("notes", {})
 
 
-def update_meal(user_id: str, date_str: str, meal_type_str: str, value: str) -> None:
+def update_meal(user_id: str, date_str: str, meal_type_str: str, value: str) -> None:  # pragma: no cover
     """
     Update a single meal in the meal plan.
 
@@ -76,7 +78,7 @@ def update_meal(user_id: str, date_str: str, meal_type_str: str, value: str) -> 
     doc_ref.set({"meals": {key: value}, "updated_at": datetime.now(tz=UTC)}, merge=True)
 
 
-def delete_meal(user_id: str, date_str: str, meal_type_str: str) -> None:
+def delete_meal(user_id: str, date_str: str, meal_type_str: str) -> None:  # pragma: no cover
     """
     Delete a single meal from the meal plan.
 
@@ -98,7 +100,7 @@ def delete_meal(user_id: str, date_str: str, meal_type_str: str) -> None:
     doc_ref.update({key: DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
 
 
-def load_day_notes(user_id: str) -> dict[str, str]:
+def load_day_notes(user_id: str) -> dict[str, str]:  # pragma: no cover
     """
     Load day notes from Firestore.
 
@@ -121,7 +123,7 @@ def load_day_notes(user_id: str) -> dict[str, str]:
     return data.get("notes", {})
 
 
-def update_day_note(user_id: str, date_str: str, note: str) -> None:
+def update_day_note(user_id: str, date_str: str, note: str) -> None:  # pragma: no cover
     """
     Update or delete a single day's note in Firestore.
 

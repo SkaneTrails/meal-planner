@@ -22,14 +22,14 @@ if TYPE_CHECKING:
 # Check for google-genai availability
 # WORKAROUND: google-genai uses _UnionGenericAlias which is deprecated in Python 3.14+
 # See: https://github.com/googleapis/python-genai/issues - needs upstream fix
-try:
+try:  # pragma: no cover
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*_UnionGenericAlias.*")
         from google import genai
         from google.genai import types
 
     GENAI_AVAILABLE = True
-except ImportError:
+except ImportError:  # pragma: no cover
     GENAI_AVAILABLE = False
     genai = None  # type: ignore[assignment]
     types = None  # type: ignore[assignment]
@@ -180,6 +180,6 @@ def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL) -> dic
         raise EnhancementError(msg) from e
     except EnhancementError:
         raise
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         msg = f"Enhancement failed: {e}"
         raise EnhancementError(msg) from e

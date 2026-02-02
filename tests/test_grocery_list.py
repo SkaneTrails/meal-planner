@@ -1,6 +1,6 @@
 """Tests for grocery list model."""
 
-from app.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
+from api.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
 
 
 class TestGroceryItem:

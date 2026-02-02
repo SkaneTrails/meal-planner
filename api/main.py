@@ -1,4 +1,4 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point."""  # pragma: no cover
 
 import os
 

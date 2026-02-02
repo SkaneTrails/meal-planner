@@ -27,12 +27,6 @@ uv run pre-commit install
 
 ## Running the Application
 
-### Streamlit Web App (Legacy)
-
-```bash
-uv run streamlit run app/main.py
-```
-
 ### FastAPI Backend
 
 ```bash

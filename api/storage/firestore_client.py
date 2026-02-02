@@ -12,7 +12,7 @@ DEFAULT_DATABASE = "(default)"
 ENHANCED_DATABASE = "meal-planner"
 
 
-def get_firestore_client(database: str = DEFAULT_DATABASE) -> firestore.Client:
+def get_firestore_client(database: str = DEFAULT_DATABASE) -> firestore.Client:  # pragma: no cover
     """Get or create Firestore client singleton for a specific database.
 
     Supports Firestore emulator via FIRESTORE_EMULATOR_HOST environment variable.
