@@ -302,3 +302,67 @@ This example demonstrates the **staggered timing principle** for roasted vegetab
 - Use Swedish cooking terminology
 - Measurements in metric (g, ml, dl, msk, tsk)
 - **Avoid generic terms** like "protein" in recipe instructions - use the actual ingredient names (kyckling, Quorn, fisk, etc.)
+
+---
+
+## Recipe Enhancement Architecture
+
+The app includes AI-powered recipe enhancement using Gemini. The prompt system is split into modular files for maintainability.
+
+### Design Principles
+
+- **Public repo ready**: Anyone can clone, apply terraform, and run their own instance
+- **Core vs User config**: Separate universal improvements from household-specific preferences
+- **Additive equipment model**: Baseline is stove + oven; users list additional equipment they HAVE
+
+### Prompt Structure
+
+```
+config/prompts/
+  core/                    # Committed, applies to ALL users
+    base.md                # Role, output JSON schema
+    formatting.md          # Fractions (½ not 0.5), ingredient order, Swedish measurements
+    rules.md               # Forbidden terms, HelloFresh spice replacements
+
+  user/                    # User-specific preferences
+    dietary.md             # Dietary restrictions, protein substitutions, lactose-free rules
+    equipment.md           # Kitchen equipment (airfryer specs, oven settings)
+```
+
+### Loading Prompts
+
+The `api/services/prompt_loader.py` module assembles prompts from these files:
+
+```python
+from api.services.prompt_loader import load_system_prompt
+
+prompt = load_system_prompt()  # Load complete prompt (core + user)
+status = validate_prompts()    # Returns dict of file -> exists
+```
+
+### CLI Enhancement Tools
+
+```bash
+# Enhance single recipe
+uv run python scripts/recipe_enhancer.py <recipe_id>
+
+# Preview without saving
+uv run python scripts/recipe_enhancer.py <recipe_id> --dry-run
+
+# Batch process unenhanced recipes
+uv run python scripts/recipe_enhancer.py --batch 10
+
+# Validate enhanced recipes
+uv run python scripts/validate_gemini.py --skip 10 --limit 5
+
+# Re-upload corrupted enhanced recipe from JSON backup
+uv run python scripts/upload_enhanced_recipe.py <recipe_id>
+```
+
+### Key Rules Enforced
+
+- **Forbidden terms**: "protein/proteiner" - use specific names (kyckling, Quorn)
+- **No consolidation**: Keep separate ingredient entries (salt for pasta, salt for chicken)
+- **Concrete quantities**: Convert "1 paket" → "400 g", "en nypa" → "2 krm"
+- **Swedish fractions**: Use ½, ⅓, ¼ - never 0.5, 0.33, 0.25
+- **HelloFresh spices**: Replace blends with individual spices
