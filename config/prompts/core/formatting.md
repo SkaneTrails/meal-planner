@@ -5,11 +5,52 @@
 - Använd ½, ⅓, ¼, ¾ - ALDRIG "0.5", "0.33", "0.25"
 - Skriv "½ msk" inte "0.5 msk"
 
-## Svenska mått
+## Svenska mått - KRITISKT
+
+**ALDRIG använd ¼ tsk eller 1/4 tsk - använd krm istället!**
+
+| ❌ FEL         | ✅ RÄTT        |
+| -------------- | -------------- |
+| ¼ tsk salt     | 1 krm salt     |
+| 1/4 tsk peppar | 1 krm peppar   |
+| ¼ tsk gurkmeja | 1 krm gurkmeja |
+
+**½ tsk är OK** - bara bråktal mindre än ½ ska ersättas med krm.
 
 - **krm** (~1 ml) för små mängder - ALDRIG "1/4 tsk" eller "¼ tsk"
 - **tsk** (5 ml) för mellanstora mängder
 - **msk** (15 ml) för större mängder
+
+## Praktiska mått - Avrunda till mätbara enheter
+
+Använd ALDRIG bråkdels-milliliter. Avrunda till närmaste praktiska mått:
+
+| Opraktiskt | → Praktiskt                       |
+| ---------- | --------------------------------- |
+| 12,5 ml    | 1 msk (15 ml) eller 2 tsk (10 ml) |
+| 37,5 ml    | 2½ msk eller 3 msk                |
+| 7,5 ml     | 1½ tsk ✓ eller 2 tsk              |
+
+**Föredra alltid:** krm < tsk < msk framför ml för små mängder.
+
+## Volym med vikt
+
+För icke-kryddor i volymmått, inkludera vikt inom parentes.
+
+**Undantag:**
+
+- Kryddor (krm, tsk, msk) - ingen vikt behövs
+- Vätskor (vatten, mjölk, buljong) - 1 liter ≈ 1 kg
+
+**Exempel:**
+
+- "2 dl Ris (160 g)"
+- "3 dl Havregryn (90 g)"
+- "1 dl Mjöl (60 g)"
+- "2 dl Linser (180 g)"
+- "1½ dl Socker (150 g)"
+
+Detta hjälper vid portionsjustering och precisionsmatlagning.
 
 ## Vaga ingredienser - konkretisera alltid
 
@@ -18,6 +59,25 @@
 - "1 st Mynta & koriander" → "1 kruka Mynta" + "1 kruka Koriander" (separata ingredienser)
 - "Lök" → "Gul lök" eller "Rödlök" beroende på recept
 - "En nypa peppar" → "2 krm Svartpeppar" (använd krm, aldrig "nypa")
+
+## HelloFresh portionsmarkörer - Använd ALLTID 4-portions mängder
+
+HelloFresh-recept innehåller ofta portionsmarkörer:
+
+- `[X | Y]` format: Första värdet är 2P, andra är 4P
+- `[X, 2P]` format: Värdet gäller för 2 portioner
+
+**Extrahera ALLTID och använd 4-PORTIONS (4P) värdet:**
+
+| Original                | → Konvertera till |
+| ----------------------- | ----------------- |
+| `vatten [3 dl \| 6 dl]` | 6 dl vatten       |
+| `salt [½ tsk \| 1 tsk]` | 1 tsk salt        |
+| `[1/2 paket, 2P]`       | 1 paket (hela)    |
+| `lime [1/2 st, 2P]`     | 1 st lime         |
+| `[1 msk \| 2 msk]`      | 2 msk             |
+
+**Ta bort alla portionsmarkörer från slutresultatet.**
 
 ## Paket och förpackningar - ALDRIG vaga enheter
 

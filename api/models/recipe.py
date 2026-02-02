@@ -88,6 +88,7 @@ class RecipeUpdate(BaseModel):
     cuisine: str | None = None
     category: str | None = None
     tags: list[str] | None = None
+    tips: str | None = None
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5)
@@ -97,3 +98,14 @@ class RecipeScrapeRequest(BaseModel):
     """Request body for recipe scraping."""
 
     url: HttpUrl = Field(..., description="URL of the recipe to scrape")
+
+
+class RecipeParseRequest(BaseModel):
+    """Request body for client-side recipe parsing.
+
+    Used when the client fetches the HTML directly (to avoid cloud IP blocking)
+    and sends it to the API for parsing.
+    """
+
+    url: HttpUrl = Field(..., description="URL of the recipe (for metadata)")
+    html: str = Field(..., min_length=100, description="HTML content of the recipe page")

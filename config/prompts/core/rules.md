@@ -28,6 +28,30 @@ Skriv ALDRIG "protein" eller "proteiner" - inte i instruktioner, stegnamn, tips 
 - Skriv "japansk soja (t.ex. Kikkoman)" eller "ljus soja" - INTE bara "sojasås"
 - Kinesisk mörk soja är annorlunda och inte utbytbart
 
+## Mejeriprodukter - Bevara produkttyp
+
+Byt ALDRIG ut en mejeriprodukt mot en annan typ - lägg bara till "(laktosfri)" där det behövs.
+
+| Original            | ✅ Rätt                                     | ❌ Fel                              |
+| ------------------- | ------------------------------------------- | ----------------------------------- |
+| Syrad grädde (30%)  | 60% crème fraîche + 40% grädde (laktosfria) | Crème fraîche enbart, grädde enbart |
+| Crème fraîche (34%) | Crème fraîche (laktosfri)                   | Syrad grädde, grädde                |
+| Gräddfil (12%)      | Gräddfil (laktosfri)                        | Crème fraîche                       |
+| Grädde / Vispgrädde | Grädde (laktosfri)                          | Crème fraîche                       |
+| Mjölk               | Mjölk (laktosfri)                           | Havredryck                          |
+| Kesella / Kvarg     | Kvarg (laktosfri)                           | Crème fraîche                       |
+| Turkisk yoghurt     | Turkisk yoghurt (laktosfri)                 | Crème fraîche                       |
+
+**Syrad grädde vs Crème fraîche:**
+
+- Syrad grädde (30%): Hällbar, perfekt för såser och grytor utan redning
+- Crème fraîche (34%): Tjockare, fastare, används som klick eller i kalla rätter
+
+De är INTE utbytbara i original-form. **Syrad grädde finns ej laktosfri** - ersätt med:
+
+- 2½ dl syrad grädde → 1½ dl crème fraîche (laktosfri) + 1 dl grädde (laktosfri)
+- Blanda ihop innan användning för rätt konsistens.
+
 ## HelloFresh-kryddor
 
 Ersätt ALLTID HelloFresh-blandningar med individuella kryddor som separata ingredienser.

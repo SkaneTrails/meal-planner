@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import warnings
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
@@ -19,9 +20,13 @@ if TYPE_CHECKING:
     from google import genai as genai_module
 
 # Check for google-genai availability
+# WORKAROUND: google-genai uses _UnionGenericAlias which is deprecated in Python 3.14+
+# See: https://github.com/googleapis/python-genai/issues - needs upstream fix
 try:
-    from google import genai
-    from google.genai import types
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*_UnionGenericAlias.*")
+        from google import genai
+        from google.genai import types
 
     GENAI_AVAILABLE = True
 except ImportError:

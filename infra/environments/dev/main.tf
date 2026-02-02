@@ -152,7 +152,26 @@ module "cloud_run" {
   gemini_secret_id          = module.secrets.gemini_api_key_secret_id
   gemini_secret_name        = module.secrets.gemini_api_key_secret_name
 
+  # Scrape function URL
+  scrape_function_url = module.cloud_function.function_url
+
   run_api_service = module.apis.run_service
+}
+
+# Cloud Function - Recipe scraping
+module "cloud_function" {
+  source = "../../modules/cloud_function"
+
+  project      = var.project
+  region       = var.region
+  source_dir   = "${path.root}/../../../functions/scrape_recipe"
+
+  # Allow public access - the function handles its own validation
+  allow_public_access = true
+
+  cloudfunctions_api_service = module.apis.cloudfunctions_service
+  cloudbuild_api_service     = module.apis.cloudbuild_service
+  run_api_service            = module.apis.run_service
 }
 
 # Workload Identity Federation - Keyless auth from GitHub Actions

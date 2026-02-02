@@ -97,3 +97,9 @@ variable "enable_recipe_enhancement" {
   type        = bool
   default     = false
 }
+
+variable "scrape_function_url" {
+  description = "URL of the recipe scraping Cloud Function"
+  type        = string
+  default     = ""
+}

@@ -96,6 +96,15 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
 
+      # Scrape function URL
+      dynamic "env" {
+        for_each = var.scrape_function_url != "" ? [1] : []
+        content {
+          name  = "SCRAPE_FUNCTION_URL"
+          value = var.scrape_function_url
+        }
+      }
+
       # Gemini API key from Secret Manager
       dynamic "env" {
         for_each = var.gemini_secret_name != "" ? [1] : []
