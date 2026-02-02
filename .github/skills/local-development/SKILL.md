@@ -121,3 +121,30 @@ pkill -f "uvicorn"
 pkill -f "expo"
 pkill -f "node.*metro"
 ```
+
+---
+
+## Mobile Web Deployment (Firebase Hosting)
+
+The mobile app is deployed as a static web export to Firebase Hosting.
+
+**Build command:** `npm run build:web` (runs font copy + `npx expo export --platform web`)
+
+### Known Pitfalls
+
+| Issue | Solution |
+|-------|----------|
+| **Fonts not bundled** | Expo static export doesn't include `@expo/vector-icons` fonts. Copy TTF to `public/fonts/` and load via `useFonts({ Ionicons: require('../public/fonts/Ionicons.ttf') })` |
+| **NativeWind + Tailwind v4** | NativeWind 4 only supports Tailwind CSS v3. Renovate rule prevents v4 upgrades in `mobile/` |
+| **OAuth redirect_uri_mismatch** | Add `https://<project>.firebaseapp.com/__/auth/handler` to BOTH OAuth clients in Google Cloud Console |
+| **signInWithRedirect fails** | Cross-domain credential storage issue between localhost and firebaseapp.com. Use `signInWithPopup` instead |
+| **CORS 403 Forbidden** | Cloud Run needs `allow_public_access = true` in Terraform for public API access |
+| **COOP popup warning** | "Cross-Origin-Opener-Policy would block window.close" is harmless - sign-in still works |
+
+### Authentication Flow (Web)
+
+1. User clicks "Sign in with Google" → `signInWithPopup(auth, googleProvider)`
+2. Firebase handles OAuth flow via popup
+3. On success, `onAuthStateChanged` fires with user
+4. API requests include `Authorization: Bearer <id_token>`
+5. FastAPI validates token via `firebase_admin.auth.verify_id_token()`

@@ -56,12 +56,12 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
       }
     }
   }
-  
+
   // If today is empty, check tomorrow's meals
   // Use 24h in ms to avoid DST edge cases with setDate()
   const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
   const tomorrowStr = formatDateLocal(tomorrow);
-  
+
   for (const mealType of ['lunch', 'dinner']) {
     const key = `${tomorrowStr}_${mealType}`;
     const value = mealPlan.meals[key];
@@ -75,7 +75,7 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
       }
     }
   }
-  
+
   return null;
 }
 
@@ -102,21 +102,21 @@ export default function HomeScreen() {
     if (!mealPlan || selectedMealKeys.length === 0) {
       // Filter custom items: exclude checked items and items marked as "at home"
       // customItems in context is string[] (just names)
-      return customItems.filter(name => 
+      return customItems.filter(name =>
         !checkedItems.has(name) && !isItemAtHome(name)
       ).length;
     }
-    
+
     const recipeMap = new Map(recipes.map(r => [r.id, r]));
     const ingredientNames = new Set<string>();
-    
+
     selectedMealKeys.forEach(key => {
       const recipeId = mealPlan.meals?.[key];
       if (!recipeId || recipeId.startsWith('custom:')) return;
-      
+
       const recipe = recipeMap.get(recipeId);
       if (!recipe) return;
-      
+
       recipe.ingredients.forEach(ingredient => {
         const name = ingredient.toLowerCase().trim()
           .replace(/\s*\(steg\s*\d+\)\s*$/i, '')
@@ -125,10 +125,10 @@ export default function HomeScreen() {
         ingredientNames.add(name);
       });
     });
-    
+
     // Add custom items
     customItems.forEach(name => ingredientNames.add(name));
-    
+
     // Filter out items at home and checked items, return unchecked count
     let uncheckedCount = 0;
     ingredientNames.forEach(name => {
@@ -136,7 +136,7 @@ export default function HomeScreen() {
         uncheckedCount++;
       }
     });
-    
+
     return uncheckedCount;
   }, [mealPlan, selectedMealKeys, recipes, customItems, checkedItems, isItemAtHome]);
 
@@ -396,8 +396,8 @@ export default function HomeScreen() {
           )}
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
-              {nextMeal 
-                ? `${nextMeal.isTomorrow ? "Tomorrow's" : "Today's"} ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}` 
+              {nextMeal
+                ? `${nextMeal.isTomorrow ? "Tomorrow's" : "Today's"} ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}`
                 : 'No meal planned'}
             </Text>
             <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
