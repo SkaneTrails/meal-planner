@@ -81,3 +81,11 @@ resource "google_project_service" "iamcredentials" {
 
   disable_on_destroy = false
 }
+
+# Cloud Storage API for recipe images
+resource "google_project_service" "storage" {
+  project = var.project
+  service = "storage.googleapis.com"
+
+  disable_on_destroy = false
+}

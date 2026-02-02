@@ -103,14 +103,20 @@ infra/                   # Terraform infrastructure
 │       ├── versions.tf
 │       ├── backend.tf   # GCS state backend
 │       └── access/      # User emails (gitignored)
-└── modules/             # Terraform modules (apis, iam, firestore)
+└── modules/
+    ├── apis/            # Enable GCP APIs
+    ├── iam/             # Custom roles and permissions
+    ├── firestore/       # Database and indexes
+    ├── storage/         # GCS bucket for recipe images
+    ├── cloud_function/  # Cloud Function for recipe scraping
+    └── secrets/         # Secret Manager for API keys
 ```
 
 ### Key Dependencies
 
 | Component | Key Packages |
 |-----------|--------------|
-| API (`api/`) | fastapi, uvicorn, pydantic, google-cloud-firestore, google-genai, recipe-scrapers |
+| API (`api/`) | fastapi, uvicorn, pydantic, google-cloud-firestore, google-cloud-storage, google-genai, recipe-scrapers, pillow |
 | Mobile (`mobile/`) | expo, expo-router, @tanstack/react-query, nativewind |
 | Functions (`functions/`) | functions-framework, recipe-scrapers |
 
@@ -120,6 +126,7 @@ infra/                   # Terraform infrastructure
 2. Mobile sends HTML + URL to API `/recipes/parse` → proxies to Cloud Function
 3. Recipe saved to Firestore → user plans meals → grocery list generated
 4. (Optional) `recipe_enhancer.py` enhances recipes with Gemini AI
+5. (Optional) User uploads custom recipe image → stored in GCS bucket
 
 ### Firestore Schema
 
