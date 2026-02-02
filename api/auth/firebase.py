@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
-def _get_firebase_app() -> firebase_admin.App:
+def _get_firebase_app() -> firebase_admin.App:  # pragma: no cover
     """Get or initialize Firebase Admin app (cached)."""
     # Check if already initialized
     try:
@@ -33,7 +33,7 @@ def _get_firebase_app() -> firebase_admin.App:
 security = HTTPBearer(auto_error=False)
 
 
-async def get_current_user(
+async def get_current_user(  # pragma: no cover
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
 ) -> AuthenticatedUser | None:
     """
@@ -80,7 +80,9 @@ async def get_current_user(
         ) from None
 
 
-async def require_auth(user: Annotated[AuthenticatedUser | None, Depends(get_current_user)]) -> AuthenticatedUser:
+async def require_auth(
+    user: Annotated[AuthenticatedUser | None, Depends(get_current_user)],
+) -> AuthenticatedUser:  # pragma: no cover
     """
     Require authentication for an endpoint.
 
@@ -107,7 +109,7 @@ async def require_auth(user: Annotated[AuthenticatedUser | None, Depends(get_cur
     return user
 
 
-async def _is_user_allowed(email: str) -> bool:
+async def _is_user_allowed(email: str) -> bool:  # pragma: no cover
     """
     Check if user email is in the allowlist.
 

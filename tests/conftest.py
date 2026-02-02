@@ -2,13 +2,14 @@
 
 import pytest
 
-from app.models.recipe import Recipe
+from api.models.recipe import Recipe
 
 
 @pytest.fixture
 def sample_recipe() -> Recipe:
     """Provide a sample recipe for tests."""
     return Recipe(
+        id="test_carbonara_123",
         title="Spaghetti Carbonara",
         url="https://example.com/carbonara",
         ingredients=[

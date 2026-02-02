@@ -1,6 +1,6 @@
 """Tests for ingredient parsing and portion scaling."""
 
-from app.services.ingredient_parser import (
+from api.services.ingredient_parser import (
     ParsedIngredient,
     format_quantity,
     parse_fraction,
