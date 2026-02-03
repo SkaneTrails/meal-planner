@@ -24,7 +24,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
-import { RecipeCard, GradientBackground } from '@/components';
+import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
@@ -77,6 +77,15 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
   const availableWidth = width - padding;
   const numColumns = Math.max(2, Math.floor(availableWidth / minCardWidth));
   const cardWidth = (availableWidth - (numColumns - 1) * 8) / numColumns;
+
+  // Show skeleton when loading and no recipes yet
+  if (isLoading && recipes.length === 0) {
+    return (
+      <View style={{ padding: 8 }}>
+        <RecipeListSkeleton count={numColumns * 3} cardSize={cardWidth - 8} />
+      </View>
+    );
+  }
 
   return (
     <FlatList

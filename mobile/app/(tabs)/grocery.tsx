@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
-import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
+import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -317,6 +317,36 @@ export default function GroceryScreen() {
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
 
+  // Show skeleton on initial load
+  if (isLoading) {
+    return (
+      <GradientBackground>
+        <View style={{ flex: 1 }}>
+          <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text.secondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
+                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
+              </View>
+              <View style={{
+                width: 44,
+                height: 44,
+                borderRadius: borderRadius.md,
+                backgroundColor: colors.bgDark,
+                alignItems: 'center',
+                justifyContent: 'center',
+                ...shadows.sm,
+              }}>
+                <Ionicons name="cart" size={22} color={colors.primary} />
+              </View>
+            </View>
+          </View>
+          <GroceryListSkeleton />
+        </View>
+      </GradientBackground>
+    );
+  }
+
   return (
     <GradientBackground>
       <View style={{ flex: 1 }}>
@@ -324,8 +354,8 @@ export default function GroceryScreen() {
       <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
+            <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text.secondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
+            <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
           </View>
           <View style={{
             width: 44,
@@ -336,7 +366,7 @@ export default function GroceryScreen() {
             justifyContent: 'center',
             ...shadows.sm,
           }}>
-            <Ionicons name="cart" size={22} color="#4A3728" />
+            <Ionicons name="cart" size={22} color={colors.primary} />
           </View>
         </View>
       </View>

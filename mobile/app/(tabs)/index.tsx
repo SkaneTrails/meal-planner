@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
-import { GradientBackground } from '@/components';
+import { GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { Recipe, GroceryItem } from '@/lib/types';
 
@@ -175,6 +175,15 @@ export default function HomeScreen() {
       setRecipeUrl('');
     }
   };
+
+  // Show skeleton on initial load
+  if (isLoading && recipes.length === 0) {
+    return (
+      <GradientBackground>
+        <HomeScreenSkeleton />
+      </GradientBackground>
+    );
+  }
 
   return (
     <GradientBackground>

@@ -6,6 +6,7 @@
 import React from 'react';
 import { View, Text, Image, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { colors, borderRadius, shadows, fontSize, fontWeight } from '@/lib/theme';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
 interface RecipeCardProps {
@@ -16,9 +17,9 @@ interface RecipeCardProps {
 }
 
 const DIET_LABELS: Record<DietLabel, { label: string; color: string; bgColor: string }> = {
-  veggie: { label: 'Veggie', color: '#166534', bgColor: '#DCFCE7' },  // pastel green
-  fish: { label: 'Fish', color: '#1E40AF', bgColor: '#DBEAFE' },      // pastel blue
-  meat: { label: 'Meat', color: '#991B1B', bgColor: '#FEE2E2' },      // pastel red/pink
+  veggie: { label: 'Veggie', color: colors.diet.veggie.text, bgColor: colors.diet.veggie.bg },
+  fish: { label: 'Fish', color: colors.diet.fish.text, bgColor: colors.diet.fish.bg },
+  meat: { label: 'Meat', color: colors.diet.meat.text, bgColor: colors.diet.meat.bg },
 };
 
 const MEAL_LABELS: Record<MealLabel, string> = {
@@ -69,13 +70,9 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           flexDirection: 'row',
           alignItems: 'center',
           padding: 14,
-          backgroundColor: '#fff',
-          borderRadius: 16,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 2,
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.md,
+          ...shadows.md,
           transform: [{ scale: scaleAnim }],
         }}>
           <Image
@@ -84,7 +81,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             resizeMode="cover"
           />
           <View style={{ flex: 1, marginLeft: 14 }}>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', letterSpacing: -0.2 }} numberOfLines={1}>
+            <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.primary, letterSpacing: -0.2 }} numberOfLines={1}>
               {recipe.title}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5, gap: 10 }}>
@@ -95,7 +92,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
                   paddingVertical: 3,
                   borderRadius: 6,
                 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '600', color: DIET_LABELS[recipe.diet_label].color }}>
+                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: DIET_LABELS[recipe.diet_label].color }}>
                     {DIET_LABELS[recipe.diet_label].label}
                   </Text>
                 </View>
@@ -105,20 +102,20 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
                   <Ionicons
                     name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
                     size={13}
-                    color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'}
+                    color={recipe.rating >= 3 ? colors.success : colors.error}
                   />
                 </View>
               )}
               {totalTime && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons name="time-outline" size={13} color="#9CA3AF" />
-                  <Text style={{ fontSize: 13, color: '#6B7280', marginLeft: 4 }}>{totalTime}m</Text>
+                  <Ionicons name="time-outline" size={13} color={colors.text.muted} />
+                  <Text style={{ fontSize: fontSize.base, color: colors.text.secondary, marginLeft: 4 }}>{totalTime}m</Text>
                 </View>
               )}
             </View>
           </View>
-          <View style={{ backgroundColor: '#F5E6D3', borderRadius: 10, padding: 8 }}>
-            <Ionicons name="chevron-forward" size={18} color="#4A3728" />
+          <View style={{ backgroundColor: colors.bgMid, borderRadius: 10, padding: 8 }}>
+            <Ionicons name="chevron-forward" size={18} color={colors.primary} />
           </View>
         </Animated.View>
       </Pressable>
@@ -136,16 +133,12 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
     >
       <Animated.View
         style={{
-          backgroundColor: '#fff',
-          borderRadius: 16,
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.md,
           overflow: 'hidden',
           width: cardSize,
           height: cardSize,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 2,
+          ...shadows.md,
           transform: [{ scale: scaleAnim }],
         }}
       >
@@ -166,7 +159,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               paddingVertical: 5,
               borderRadius: 8,
             }}>
-              <Text style={{ fontSize: 11, fontWeight: '600', color: DIET_LABELS[recipe.diet_label].color }}>
+              <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: DIET_LABELS[recipe.diet_label].color }}>
                 {DIET_LABELS[recipe.diet_label].label}
               </Text>
             </View>
@@ -175,21 +168,21 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
         <View style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 6, justifyContent: 'center' }}>
           {/* Title row with time aligned right */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
-            <Text style={{ flex: 1, fontSize: 13, fontWeight: '600', color: '#4A3728', lineHeight: 17, letterSpacing: -0.3 }} numberOfLines={2}>
+            <Text style={{ flex: 1, fontSize: fontSize.base, fontWeight: fontWeight.semibold, color: colors.primary, lineHeight: 17, letterSpacing: -0.3 }} numberOfLines={2}>
               {recipe.title}
             </Text>
             {totalTime && (
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#F5E6D3',
+                backgroundColor: colors.bgMid,
                 paddingHorizontal: 6,
                 paddingVertical: 3,
                 borderRadius: 6,
                 marginTop: 1,
               }}>
-                <Ionicons name="time-outline" size={11} color="#4A3728" />
-                <Text style={{ fontSize: 11, fontWeight: '500', color: '#4A3728', marginLeft: 3 }}>{totalTime}m</Text>
+                <Ionicons name="time-outline" size={11} color={colors.primary} />
+                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.primary, marginLeft: 3 }}>{totalTime}m</Text>
               </View>
             )}
           </View>
@@ -200,7 +193,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: recipe.rating >= 3 ? '#DCFCE7' : '#FEE2E2',
+                backgroundColor: recipe.rating >= 3 ? colors.successBg : colors.errorBg,
                 paddingHorizontal: 6,
                 paddingVertical: 3,
                 borderRadius: 6,
@@ -208,7 +201,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
                 <Ionicons
                   name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
                   size={11}
-                  color={recipe.rating >= 3 ? '#16A34A' : '#DC2626'}
+                  color={recipe.rating >= 3 ? colors.success : colors.error}
                 />
               </View>
             </View>
