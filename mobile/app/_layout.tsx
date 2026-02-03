@@ -80,6 +80,9 @@ export default function RootLayout() {
                   name="recipe/[id]"
                   options={{
                     title: 'Recipe',
+                    headerShown: true,
+                    headerStyle: { backgroundColor: '#4A3728' },
+                    headerTintColor: '#FFFFFF',
                     headerBackTitle: 'Back',
                     animation: 'slide_from_right',
                   }}
@@ -89,6 +92,9 @@ export default function RootLayout() {
                   options={{
                     title: 'Add Recipe',
                     presentation: 'modal',
+                    headerShown: true,
+                    headerStyle: { backgroundColor: '#4A3728' },
+                    headerTintColor: '#FFFFFF',
                     headerBackTitle: 'Cancel',
                     animation: 'slide_from_bottom',
                   }}
@@ -98,6 +104,9 @@ export default function RootLayout() {
                   options={{
                     title: 'Select Recipe',
                     presentation: 'modal',
+                    headerShown: true,
+                    headerStyle: { backgroundColor: '#4A3728' },
+                    headerTintColor: '#FFFFFF',
                     headerBackTitle: 'Cancel',
                     animation: 'slide_from_bottom',
                   }}

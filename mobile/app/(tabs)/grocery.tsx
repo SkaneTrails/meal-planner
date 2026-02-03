@@ -254,32 +254,36 @@ export default function GroceryScreen() {
   const handleClearAll = async () => {
     console.log('[Grocery] Clear button clicked!');
 
-    // Use window.confirm for web instead of Alert.alert
-    const confirmed = confirm('Clear Entire List?\n\nThis will remove all items from your grocery list, including meal selections and custom items.');
+    // Cross-platform confirmation
+    const doClear = async () => {
+      try {
+        console.log('[Grocery] Clearing all data...');
+        await Promise.all([
+          AsyncStorage.removeItem('grocery_selected_meals'),
+          AsyncStorage.removeItem('grocery_custom_items'),
+          AsyncStorage.removeItem('grocery_checked_items'),
+        ]);
 
-    if (!confirmed) {
-      console.log('[Grocery] User cancelled');
-      return;
-    }
+        setCustomItems([]);
+        setGeneratedItems([]);
+        setSelectedMealKeys([]);
+        clearChecked();
 
-    try {
-      console.log('[Grocery] Clearing all data...');
-      await Promise.all([
-        AsyncStorage.removeItem('grocery_selected_meals'),
-        AsyncStorage.removeItem('grocery_custom_items'),
-        AsyncStorage.removeItem('grocery_checked_items'),
-      ]);
+        console.log('[Grocery] All data cleared');
+      } catch (error) {
+        console.error('[Grocery] Error clearing data:', error);
+        Alert.alert('Error', 'Failed to clear list');
+      }
+    };
 
-      setCustomItems([]);
-      setGeneratedItems([]);
-      setSelectedMealKeys([]);
-      clearChecked();
-
-      console.log('[Grocery] All data cleared');
-    } catch (error) {
-      console.error('[Grocery] Error clearing data:', error);
-      alert('Error: Failed to clear list');
-    }
+    Alert.alert(
+      'Clear Entire List?',
+      'This will remove all items from your grocery list, including meal selections and custom items.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear', style: 'destructive', onPress: doClear },
+      ]
+    );
   };
 
   const handleAddItem = () => {

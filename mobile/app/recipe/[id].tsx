@@ -782,6 +782,18 @@ export default function RecipeDetailScreen() {
       <Stack.Screen
         options={{
           title: recipe.title,
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.primary },
+          headerTintColor: colors.white,
+          headerBackTitle: 'Back',
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.back()}
+              style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -4 }}
+            >
+              <Ionicons name="chevron-back" size={24} color="white" />
+            </Pressable>
+          ),
           headerRight: () => (
             <Pressable onPress={handleDelete} style={{ padding: 8 }}>
               <Ionicons name="trash-outline" size={24} color="white" />
