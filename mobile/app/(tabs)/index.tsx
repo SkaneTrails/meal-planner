@@ -12,6 +12,7 @@ import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
+import { hapticLight } from '@/lib/haptics';
 import type { Recipe, GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -87,7 +88,8 @@ export default function HomeScreen() {
   const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
   const { isItemAtHome } = useSettings();
   const [recipeUrl, setRecipeUrl] = useState('');
-  const [inspirationIndex, setInspirationIndex] = useState(0);
+  // Use Math.random() to randomize the initial seed on each app launch
+  const [inspirationIndex, setInspirationIndex] = useState(() => Math.floor(Math.random() * 10000));
 
   const isLoading = recipesLoading || mealPlanLoading;
 
@@ -222,7 +224,7 @@ export default function HomeScreen() {
         {/* Welcome text on image */}
         <View style={{ position: 'absolute', bottom: 36, left: 24, right: 24 }}>
           <Text style={{ fontSize: 34, fontWeight: '700', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5, textShadowColor: 'rgba(0, 0, 0, 0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
-            Hi there! 👋
+            Hi there!
           </Text>
           <Text style={{ fontSize: 17, color: '#FFFFFF', lineHeight: 24, fontWeight: '500', textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }}>
             Plan meals, save recipes, shop smarter.
@@ -419,7 +421,10 @@ export default function HomeScreen() {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Inspiration</Text>
             </View>
             <Pressable
-              onPress={shuffleInspiration}
+              onPress={() => {
+                hapticLight();
+                shuffleInspiration();
+              }}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
