@@ -337,12 +337,9 @@ export default function GroceryScreen() {
     return (
       <GradientBackground>
         <View style={{ flex: 1 }}>
-          <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
+          <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View>
-                <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text.secondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
-              </View>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
               <View style={{
                 width: 44,
                 height: 44,
@@ -366,7 +363,7 @@ export default function GroceryScreen() {
     <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
             <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text.secondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>

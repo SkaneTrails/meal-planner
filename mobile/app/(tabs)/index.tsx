@@ -213,7 +213,7 @@ export default function HomeScreen() {
           onPress={() => router.push('/settings')}
           style={({ pressed }) => ({
             position: 'absolute',
-            top: 44,
+            top: 20,
             right: 16,
             width: 40,
             height: 40,

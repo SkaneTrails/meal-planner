@@ -210,7 +210,7 @@ export default function RecipesScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 4 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 4 }}>
         <View style={{ marginBottom: 12 }}>
           <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Recipe Library</Text>
           <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>{recipes.length} recipes saved</Text>
