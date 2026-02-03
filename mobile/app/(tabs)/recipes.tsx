@@ -155,6 +155,8 @@ export default function RecipesScreen() {
   const [showDietPicker, setShowDietPicker] = useState(false);
   const [showMealPicker, setShowMealPicker] = useState(false);
   const [showSortPicker, setShowSortPicker] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchInputRef = useRef<TextInput>(null);
 
   // Toggle filters with animation
   const toggleFilters = () => {
@@ -294,48 +296,71 @@ export default function RecipesScreen() {
 
       {/* Search and filters */}
       <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
-        {/* Search bar with filter toggle */}
+        {/* Search bar with filter toggle and cancel button */}
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: colors.white,
-          borderRadius: borderRadius.sm,
-          paddingHorizontal: 14,
-          paddingVertical: 10,
           marginBottom: 8,
-          ...shadows.md,
         }}>
-          <Ionicons name="search" size={18} color="#9CA3AF" />
-          <TextInput
-            style={{ flex: 1, fontSize: 14, color: '#4A3728', marginLeft: 10 }}
-            placeholder="Search recipes..."
-            placeholderTextColor="#9ca3af"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery !== '' && (
-            <Pressable onPress={() => setSearchQuery('')} style={{ padding: 4 }}>
-              <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: colors.white,
+            borderRadius: borderRadius.sm,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            ...shadows.md,
+          }}>
+            <Ionicons name="search" size={18} color="#9CA3AF" />
+            <TextInput
+              ref={searchInputRef}
+              style={{ flex: 1, fontSize: 14, color: '#4A3728', marginLeft: 10 }}
+              placeholder="Search recipes..."
+              placeholderTextColor="#9ca3af"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+            />
+            {searchQuery !== '' && (
+              <Pressable onPress={() => setSearchQuery('')} style={{ padding: 4 }}>
+                <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+              </Pressable>
+            )}
+            {!isSearchFocused && (
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  toggleFilters();
+                }}
+                style={{
+                  marginLeft: 8,
+                  padding: 6,
+                  backgroundColor: hasActiveFilters ? '#E8F5E8' : '#F3F4F6',
+                  borderRadius: 8,
+                }}
+              >
+                <Ionicons
+                  name={filtersExpanded ? "options" : "options-outline"}
+                  size={18}
+                  color={hasActiveFilters ? '#2D5A3D' : '#6B7280'}
+                />
+              </Pressable>
+            )}
+          </View>
+          {isSearchFocused && (
+            <Pressable
+              onPress={() => {
+                hapticLight();
+                searchInputRef.current?.blur();
+                setSearchQuery('');
+              }}
+              style={{ marginLeft: 12 }}
+            >
+              <Text style={{ fontSize: 15, color: '#4A3728', fontWeight: '500' }}>Cancel</Text>
             </Pressable>
           )}
-          <Pressable
-            onPress={() => {
-              hapticLight();
-              toggleFilters();
-            }}
-            style={{
-              marginLeft: 8,
-              padding: 6,
-              backgroundColor: hasActiveFilters ? '#E8F5E8' : '#F3F4F6',
-              borderRadius: 8,
-            }}
-          >
-            <Ionicons
-              name={filtersExpanded ? "options" : "options-outline"}
-              size={18}
-              color={hasActiveFilters ? '#2D5A3D' : '#6B7280'}
-            />
-          </Pressable>
         </View>
 
         {/* Collapsible filter dropdowns row */}
