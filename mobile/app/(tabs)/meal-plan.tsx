@@ -347,7 +347,7 @@ export default function MealPlanScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 8 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
               <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>

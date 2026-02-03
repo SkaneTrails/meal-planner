@@ -24,7 +24,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
-import { RecipeCard, GradientBackground } from '@/components';
+import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
@@ -77,6 +77,15 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
   const availableWidth = width - padding;
   const numColumns = Math.max(2, Math.floor(availableWidth / minCardWidth));
   const cardWidth = (availableWidth - (numColumns - 1) * 8) / numColumns;
+
+  // Show skeleton when loading and no recipes yet
+  if (isLoading && recipes.length === 0) {
+    return (
+      <View style={{ padding: 8 }}>
+        <RecipeListSkeleton count={numColumns * 3} cardSize={cardWidth - 8} />
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -201,7 +210,7 @@ export default function RecipesScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 4 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 4 }}>
         <View style={{ marginBottom: 12 }}>
           <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Recipe Library</Text>
           <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>{recipes.length} recipes saved</Text>

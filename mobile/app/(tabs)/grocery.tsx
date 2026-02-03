@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
-import { GroceryListView, GradientBackground, BouncingLoader } from '@/components';
+import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -54,6 +54,7 @@ export default function GroceryScreen() {
   const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEnhancedMode(); // Keep for potential future use with enhanced recipes
   const { isItemAtHome } = useSettings();
@@ -112,19 +113,29 @@ export default function GroceryScreen() {
           } else {
             setMealServings({});
           }
-
-          // Refresh checked items from context (which loads from AsyncStorage)
-          await refreshFromStorage();
         } catch (error) {
           console.error('[Grocery] Error loading data:', error);
         } finally {
           setIsLoading(false);
+          setHasLoadedOnce(true);
         }
       };
 
       loadData();
-    }, [refreshFromStorage])
+    }, []) // Empty deps - only run once on mount/focus
   );
+
+  // Fallback: ensure loading state is cleared even if useFocusEffect doesn't fire
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading && !hasLoadedOnce) {
+        console.log('[Grocery] Fallback: clearing loading state');
+        setIsLoading(false);
+        setHasLoadedOnce(true);
+      }
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [isLoading, hasLoadedOnce]);
 
   // Memoize serialized values to prevent infinite loops
   const mealPlanMealsJson = useMemo(() => JSON.stringify(mealPlan?.meals || {}), [mealPlan?.meals]);
@@ -254,32 +265,36 @@ export default function GroceryScreen() {
   const handleClearAll = async () => {
     console.log('[Grocery] Clear button clicked!');
 
-    // Use window.confirm for web instead of Alert.alert
-    const confirmed = confirm('Clear Entire List?\n\nThis will remove all items from your grocery list, including meal selections and custom items.');
+    // Cross-platform confirmation
+    const doClear = async () => {
+      try {
+        console.log('[Grocery] Clearing all data...');
+        await Promise.all([
+          AsyncStorage.removeItem('grocery_selected_meals'),
+          AsyncStorage.removeItem('grocery_custom_items'),
+          AsyncStorage.removeItem('grocery_checked_items'),
+        ]);
 
-    if (!confirmed) {
-      console.log('[Grocery] User cancelled');
-      return;
-    }
+        setCustomItems([]);
+        setGeneratedItems([]);
+        setSelectedMealKeys([]);
+        clearChecked();
 
-    try {
-      console.log('[Grocery] Clearing all data...');
-      await Promise.all([
-        AsyncStorage.removeItem('grocery_selected_meals'),
-        AsyncStorage.removeItem('grocery_custom_items'),
-        AsyncStorage.removeItem('grocery_checked_items'),
-      ]);
+        console.log('[Grocery] All data cleared');
+      } catch (error) {
+        console.error('[Grocery] Error clearing data:', error);
+        Alert.alert('Error', 'Failed to clear list');
+      }
+    };
 
-      setCustomItems([]);
-      setGeneratedItems([]);
-      setSelectedMealKeys([]);
-      clearChecked();
-
-      console.log('[Grocery] All data cleared');
-    } catch (error) {
-      console.error('[Grocery] Error clearing data:', error);
-      alert('Error: Failed to clear list');
-    }
+    Alert.alert(
+      'Clear Entire List?',
+      'This will remove all items from your grocery list, including meal selections and custom items.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear', style: 'destructive', onPress: doClear },
+      ]
+    );
   };
 
   const handleAddItem = () => {
@@ -317,15 +332,42 @@ export default function GroceryScreen() {
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
 
+  // Show skeleton on initial load only (not on subsequent focus events)
+  if (isLoading && !hasLoadedOnce) {
+    return (
+      <GradientBackground>
+        <View style={{ flex: 1 }}>
+          <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
+              <View style={{
+                width: 44,
+                height: 44,
+                borderRadius: borderRadius.md,
+                backgroundColor: colors.bgDark,
+                alignItems: 'center',
+                justifyContent: 'center',
+                ...shadows.sm,
+              }}>
+                <Ionicons name="cart" size={22} color={colors.primary} />
+              </View>
+            </View>
+          </View>
+          <GroceryListSkeleton />
+        </View>
+      </GradientBackground>
+    );
+  }
+
   return (
     <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
+            <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text.secondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
+            <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
           </View>
           <View style={{
             width: 44,
@@ -336,7 +378,7 @@ export default function GroceryScreen() {
             justifyContent: 'center',
             ...shadows.sm,
           }}>
-            <Ionicons name="cart" size={22} color="#4A3728" />
+            <Ionicons name="cart" size={22} color={colors.primary} />
           </View>
         </View>
       </View>
