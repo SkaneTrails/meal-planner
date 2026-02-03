@@ -366,6 +366,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
         >
           {sections.map((section) => {
             const isCollapsed = collapsedCategories.has(section.title);
