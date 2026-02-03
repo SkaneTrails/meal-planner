@@ -11,7 +11,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin import auth, credentials
 
 from api.auth.models import AuthenticatedUser
-from api.storage.firestore_client import get_firestore_client
+from api.storage.household_storage import get_user_membership, is_superuser
 
 logger = logging.getLogger(__name__)
 
@@ -87,11 +87,18 @@ async def require_auth(
     Require authentication for an endpoint.
 
     Use as a dependency to enforce authentication.
-    Also checks if user is in the allowlist.
+    Resolves user's household membership and role.
     """
     # Skip auth in development mode
     if os.getenv("SKIP_AUTH", "").lower() == "true":
-        return AuthenticatedUser(uid="dev-user", email="dev@localhost", name="Dev User", picture=None)
+        return AuthenticatedUser(
+            uid="dev-user",
+            email="dev@localhost",
+            name="Dev User",
+            picture=None,
+            household_id="dev-household",
+            role="superuser",
+        )
 
     if user is None:
         raise HTTPException(
@@ -100,36 +107,69 @@ async def require_auth(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # Check if user is in allowlist
-    if not await _is_user_allowed(user.email):
+    # Resolve user access and household membership
+    resolved_user = await _resolve_user_access(user)
+    if resolved_user is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="User not authorized to access this application"
         )
 
-    return user
+    return resolved_user
 
 
-async def _is_user_allowed(email: str) -> bool:  # pragma: no cover
+async def _resolve_user_access(user: AuthenticatedUser) -> AuthenticatedUser | None:  # pragma: no cover
     """
-    Check if user email is in the allowlist.
+    Resolve user's access level and household membership.
 
-    Allowlist is stored in Firestore collection 'allowed_users'.
-    Each document has an 'email' field.
+    Returns updated AuthenticatedUser with household_id and role set,
+    or None if user has no access.
+
+    Access hierarchy:
+    1. Superusers (in superusers collection) - global access, no household required
+    2. Household members (in household_members collection) - household-scoped access
     """
-    # Skip allowlist check in development mode
+    # Skip access check in development mode
     if os.getenv("SKIP_ALLOWLIST", "").lower() == "true":
-        return True
+        return AuthenticatedUser(
+            uid=user.uid,
+            email=user.email,
+            name=user.name,
+            picture=user.picture,
+            household_id="dev-household",
+            role="superuser",
+        )
 
     try:
-        db = get_firestore_client(database="meal-planner")
+        # Check if user is a superuser (global access)
+        if is_superuser(user.email):
+            # Superuser may also be in a household
+            membership = get_user_membership(user.email)
+            return AuthenticatedUser(
+                uid=user.uid,
+                email=user.email,
+                name=user.name,
+                picture=user.picture,
+                household_id=membership.household_id if membership else None,
+                role="superuser",
+            )
+
+        # Check household membership
+        membership = get_user_membership(user.email)
+        if membership:
+            return AuthenticatedUser(
+                uid=user.uid,
+                email=user.email,
+                name=user.name,
+                picture=user.picture,
+                household_id=membership.household_id,
+                role=membership.role,
+            )
+
+        # User has no access
+        return None
+
     except Exception:
-        # If Firestore is unavailable, fail closed with a clear error
-        logger.exception("Firestore unavailable for allowlist check")
+        logger.exception("Error resolving user access")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authorization service temporarily unavailable"
         ) from None
-
-    # Check if email exists in allowlist
-    # Using email as document ID for O(1) lookup
-    doc = db.collection("allowed_users").document(email).get()  # type: ignore[union-attr]
-    return doc.exists  # type: ignore[union-attr]
