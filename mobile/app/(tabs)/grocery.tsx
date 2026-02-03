@@ -54,6 +54,7 @@ export default function GroceryScreen() {
   const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEnhancedMode(); // Keep for potential future use with enhanced recipes
   const { isItemAtHome } = useSettings();
@@ -112,19 +113,29 @@ export default function GroceryScreen() {
           } else {
             setMealServings({});
           }
-
-          // Refresh checked items from context (which loads from AsyncStorage)
-          await refreshFromStorage();
         } catch (error) {
           console.error('[Grocery] Error loading data:', error);
         } finally {
           setIsLoading(false);
+          setHasLoadedOnce(true);
         }
       };
 
       loadData();
-    }, [refreshFromStorage])
+    }, []) // Empty deps - only run once on mount/focus
   );
+
+  // Fallback: ensure loading state is cleared even if useFocusEffect doesn't fire
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isLoading && !hasLoadedOnce) {
+        console.log('[Grocery] Fallback: clearing loading state');
+        setIsLoading(false);
+        setHasLoadedOnce(true);
+      }
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [isLoading, hasLoadedOnce]);
 
   // Memoize serialized values to prevent infinite loops
   const mealPlanMealsJson = useMemo(() => JSON.stringify(mealPlan?.meals || {}), [mealPlan?.meals]);
@@ -321,8 +332,8 @@ export default function GroceryScreen() {
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
 
-  // Show skeleton on initial load
-  if (isLoading) {
+  // Show skeleton on initial load only (not on subsequent focus events)
+  if (isLoading && !hasLoadedOnce) {
     return (
       <GradientBackground>
         <View style={{ flex: 1 }}>
