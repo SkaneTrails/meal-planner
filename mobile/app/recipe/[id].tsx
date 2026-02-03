@@ -2,7 +2,7 @@
  * Recipe detail screen.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import {
   Modal,
   ActivityIndicator,
   TextInput,
+  Animated,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -339,6 +342,10 @@ export default function RecipeDetailScreen() {
   const { isEnhanced: globalEnhanced } = useEnhancedMode();
   const { user, loading: authLoading } = useAuth();
   const isAuthReady = !authLoading && !!user;
+
+  // Parallax scroll animation
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const HEADER_HEIGHT = 280;
 
   // Local override for enhanced mode (null = use global, true/false = override)
   const [localEnhancedOverride, setLocalEnhancedOverride] = useState<boolean | null>(null);
@@ -785,12 +792,43 @@ export default function RecipeDetailScreen() {
         }}
       />
 
-      <ScrollView style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
-        {/* Hero image with camera button next to it */}
-        <View style={{ position: 'relative' }}>
+      <Animated.ScrollView
+        style={{ flex: 1, backgroundColor: '#F5E6D3' }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+      >
+        {/* Hero image with parallax effect */}
+        <Animated.View
+          style={{
+            position: 'relative',
+            height: HEADER_HEIGHT,
+            overflow: 'hidden',
+            transform: [
+              {
+                // Parallax: image moves slower than scroll
+                translateY: scrollY.interpolate({
+                  inputRange: [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+                  outputRange: [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.5],
+                  extrapolate: 'clamp',
+                }),
+              },
+              {
+                // Scale up when pulling down (overscroll)
+                scale: scrollY.interpolate({
+                  inputRange: [-HEADER_HEIGHT, 0, 1],
+                  outputRange: [2, 1, 1],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          }}
+        >
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-            style={{ width: '100%', height: 280 }}
+            style={{ width: '100%', height: HEADER_HEIGHT }}
             resizeMode="cover"
           />
           {/* Camera button floating on right side */}
@@ -815,7 +853,7 @@ export default function RecipeDetailScreen() {
               <Ionicons name="camera" size={22} color="#fff" />
             )}
           </Pressable>
-        </View>
+        </Animated.View>
 
         {/* Content */}
         <View style={{
@@ -1219,7 +1257,7 @@ export default function RecipeDetailScreen() {
             </Text>
           </Pressable>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Plan Modal */}
       <Modal
