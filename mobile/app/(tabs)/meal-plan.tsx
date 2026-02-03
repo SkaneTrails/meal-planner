@@ -18,6 +18,7 @@ import {
   NativeScrollEvent,
   TextInput,
   Platform,
+  PanResponder,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -166,6 +167,26 @@ export default function MealPlanScreen() {
       }, 100);
     }
   }, [todayIndex, weekOffset]);
+
+  // Swipe gesture for week navigation
+  const swipeThreshold = 50;
+  const panResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gestureState) => {
+      // Only respond to horizontal swipes (not vertical scrolling)
+      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2 && Math.abs(gestureState.dx) > 10;
+    },
+    onPanResponderRelease: (_, gestureState) => {
+      if (gestureState.dx > swipeThreshold) {
+        // Swipe right -> go to previous week
+        hapticLight();
+        setWeekOffset((prev) => prev - 1);
+      } else if (gestureState.dx < -swipeThreshold) {
+        // Swipe left -> go to next week
+        hapticLight();
+        setWeekOffset((prev) => prev + 1);
+      }
+    },
+  }), []);
 
   const {
     data: mealPlan,
@@ -397,22 +418,23 @@ export default function MealPlanScreen() {
           </View>
         </View>
 
-        {/* Meal list */}
-        <ScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={mealPlanLoading}
-              onRefresh={() => refetchMealPlan()}
-              tintColor="#4A3728"
-            />
-          }
-        >
+        {/* Meal list with swipe gesture for week navigation */}
+        <View style={{ flex: 1 }} {...panResponder.panHandlers}>
+          <ScrollView
+            ref={scrollViewRef}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={mealPlanLoading}
+                onRefresh={() => refetchMealPlan()}
+                tintColor="#4A3728"
+              />
+            }
+          >
           {weekDates.map((date) => {
             const isToday = date.toDateString() === new Date().toDateString();
 
@@ -549,18 +571,29 @@ export default function MealPlanScreen() {
                         style={{
                           flexDirection: 'row',
                           alignItems: 'center',
-                          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                          backgroundColor: 'rgba(248, 245, 242, 0.8)',
                           borderRadius: 16,
                           padding: 12,
                           marginBottom: 8,
-                          borderWidth: 1.5,
-                          borderColor: '#E5E7EB',
+                          borderWidth: 2,
+                          borderColor: '#D4C9BE',
                           borderStyle: 'dashed',
                         }}
                       >
-                        {/* Meal type label */}
-                        <View style={{ marginRight: 12 }}>
-                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#9CA3AF' }}>
+                        {/* Plus icon + Meal type label */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 12 }}>
+                          <View style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: 14,
+                            backgroundColor: '#E8D5C4',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 8,
+                          }}>
+                            <Ionicons name="add" size={18} color="#4A3728" />
+                          </View>
+                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#8B7355' }}>
                             {label}
                           </Text>
                         </View>
@@ -737,7 +770,8 @@ export default function MealPlanScreen() {
               </View>
             );
           })}
-        </ScrollView>
+          </ScrollView>
+        </View>
 
         {/* Floating Jump to Today button */}
         {(showJumpButton || weekOffset !== 0) && (
