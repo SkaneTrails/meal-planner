@@ -60,6 +60,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
+          tabBarAccessibilityLabel: 'Home',
           tabBarIcon: ({ color }) => (
             <Ionicons name="home" size={22} color={color} />
           ),
@@ -69,6 +70,7 @@ export default function TabLayout() {
         name="recipes"
         options={{
           title: 'Recipes',
+          tabBarAccessibilityLabel: 'Recipes',
           tabBarIcon: ({ color }) => (
             <Ionicons name="book" size={22} color={color} />
           ),
@@ -78,6 +80,7 @@ export default function TabLayout() {
         name="meal-plan"
         options={{
           title: 'Meal Plan',
+          tabBarAccessibilityLabel: 'Meal Plan',
           tabBarIcon: ({ color }) => (
             <Ionicons name="calendar" size={22} color={color} />
           ),
@@ -87,6 +90,7 @@ export default function TabLayout() {
         name="grocery"
         options={{
           title: 'Grocery',
+          tabBarAccessibilityLabel: 'Grocery List',
           tabBarIcon: ({ color }) => (
             <Ionicons name="cart" size={22} color={color} />
           ),

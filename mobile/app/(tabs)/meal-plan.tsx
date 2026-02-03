@@ -689,7 +689,7 @@ export default function MealPlanScreen() {
                         </View>
                       </Pressable>
 
-                      {/* Remove button - separate from the recipe press area */}
+                      {/* View button - opens recipe detail */}
                       {meal?.recipe && (
                         <Pressable
                           onPress={() => router.push(`/recipe/${meal.recipe!.id}`)}
@@ -706,6 +706,7 @@ export default function MealPlanScreen() {
                           <Ionicons name="eye" size={16} color="#3B82F6" />
                         </Pressable>
                       )}
+                      {/* Remove button */}
                       <Pressable
                         onPress={() => {
                           const dateStr = formatDateLocal(date);
@@ -717,7 +718,7 @@ export default function MealPlanScreen() {
                             }
                           );
                         }}
-                        style={{
+                        style={{{
                           width: 28,
                           height: 28,
                           borderRadius: 14,
