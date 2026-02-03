@@ -1,8 +1,9 @@
 """Recipe Pydantic models."""
 
+import re
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
 
 
 class DietLabel(str, Enum):
@@ -25,6 +26,62 @@ class MealLabel(str, Enum):
     SAUCE = "sauce"
     PICKLE = "pickle"
     GRILL = "grill"
+
+
+class InstructionType(str, Enum):
+    """Types of instruction entries for enhanced rendering."""
+
+    STEP = "step"  # Regular cooking step
+    TIMELINE = "timeline"  # ⏱️ X min: Timing coordination entry
+    TIP = "tip"  # 💡 Inline tip or note
+    HEADING = "heading"  # ## Section heading
+
+
+class StructuredInstruction(BaseModel):
+    """A parsed instruction with type information for UI rendering."""
+
+    type: InstructionType
+    content: str = Field(..., description="The instruction text (without type prefix)")
+    time: int | None = Field(default=None, description="For timeline entries, the time in minutes")
+    step_number: int | None = Field(default=None, description="Step number (only for 'step' type, 1-indexed)")
+
+
+def parse_instruction(text: str, step_counter: int) -> StructuredInstruction:
+    """Parse a raw instruction string into a structured instruction.
+
+    Detects patterns:
+    - ⏱️ X min: ... -> timeline entry
+    - ÖVERSIKT: ... -> overview/timeline entry (Swedish)
+    - 💡 ... or TIP: ... -> inline tip
+    - ## ... or ### ... -> section heading
+    - Everything else -> regular step
+    """
+    text = text.strip()
+
+    # Timeline pattern: ⏱️ 0 min: or ⏱️ 25 min:
+    timeline_match = re.match(r"^⏱️\s*(\d+)\s*min[:\s]+(.+)$", text, re.IGNORECASE | re.DOTALL)
+    if timeline_match:
+        return StructuredInstruction(
+            type=InstructionType.TIMELINE, content=timeline_match.group(2).strip(), time=int(timeline_match.group(1))
+        )
+
+    # Overview pattern: ÖVERSIKT: ... (Swedish) - treated as timeline without specific time
+    overview_match = re.match(r"^ÖVERSIKT:\s*(.+)$", text, re.IGNORECASE | re.DOTALL)
+    if overview_match:
+        return StructuredInstruction(type=InstructionType.TIMELINE, content=overview_match.group(1).strip(), time=None)
+
+    # Tip pattern: 💡 ... or TIP: ... or Tips: ...
+    tip_match = re.match(r"^(?:💡|tips?:)\s*(.+)$", text, re.IGNORECASE | re.DOTALL)
+    if tip_match:
+        return StructuredInstruction(type=InstructionType.TIP, content=tip_match.group(1).strip())
+
+    # Heading pattern: ## ... or ### ...
+    heading_match = re.match(r"^#{2,3}\s+(.+)$", text)
+    if heading_match:
+        return StructuredInstruction(type=InstructionType.HEADING, content=heading_match.group(1).strip())
+
+    # Default: regular step
+    return StructuredInstruction(type=InstructionType.STEP, content=text, step_number=step_counter)
 
 
 class RecipeBase(BaseModel):
@@ -58,6 +115,27 @@ class Recipe(RecipeBase):
     improved: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
     original_id: str | None = Field(default=None, description="Original recipe ID if this is enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
+
+    @computed_field
+    @property
+    def structured_instructions(self) -> list[StructuredInstruction]:
+        """Parse instructions into structured format for enhanced UI rendering.
+
+        Automatically detects:
+        - ⏱️ X min: ... -> timeline entries
+        - 💡 or TIP: ... -> inline tips
+        - ## ... -> section headings
+        - Regular text -> cooking steps (with step numbers)
+        """
+        result = []
+        step_counter = 1
+        for instruction in self.instructions:
+            parsed = parse_instruction(instruction, step_counter)
+            result.append(parsed)
+            # Only increment step counter for actual steps
+            if parsed.type == InstructionType.STEP:
+                step_counter += 1
+        return result
 
     @property
     def total_time_calculated(self) -> int | None:

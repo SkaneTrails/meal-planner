@@ -7,12 +7,23 @@
 export type DietLabel = 'veggie' | 'fish' | 'meat';
 export type MealLabel = 'breakfast' | 'starter' | 'salad' | 'meal' | 'dessert' | 'drink' | 'sauce' | 'pickle' | 'grill';
 
+// Instruction types for enhanced UI rendering
+export type InstructionType = 'step' | 'timeline' | 'tip' | 'heading';
+
+export interface StructuredInstruction {
+  type: InstructionType;
+  content: string;
+  time?: number | null;  // For timeline entries, the time in minutes
+  step_number?: number | null;  // For step entries, 1-indexed
+}
+
 export interface Recipe {
   id: string;
   title: string;
   url: string;
   ingredients: string[];
   instructions: string[];
+  structured_instructions?: StructuredInstruction[];  // Parsed instructions with types
   image_url: string | null;
   servings: number | null;
   prep_time: number | null;

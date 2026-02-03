@@ -180,26 +180,46 @@ def mark_skipped(recipe_id: str) -> None:
 
 
 def update_recipe(recipe_id: str, updates: dict) -> None:
-    """Update/create a recipe in the target database with improvements."""
+    """Update/create a recipe in the target database with improvements.
+
+    If an enhanced version already exists in the target database, updates are
+    merged with that version (not the original). This preserves existing
+    enhancements like 4P ingredients while allowing incremental changes.
+    """
     from datetime import UTC, datetime
 
     source_db = get_source_db()
     target_db = get_target_db()
 
-    # Get original recipe from source
-    source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-    if not source_doc.exists:
-        print(f"❌ Recipe not found in source: {recipe_id}")
-        return
+    # Check if enhanced version already exists - if so, use it as base
+    target_doc = target_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+    if target_doc.exists:
+        target_data = target_doc.to_dict()
+        if target_data and target_data.get("improved"):
+            print("📝 Updating EXISTING enhanced recipe (from meal-planner database)")
+            base_data = target_data
+        else:
+            # Exists but not marked as improved - treat as fresh enhancement
+            source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+            if not source_doc.exists:
+                print(f"❌ Recipe not found in source: {recipe_id}")
+                return
+            base_data = source_doc.to_dict()
+    else:
+        # No enhanced version - fetch from source for initial enhancement
+        print("🆕 Creating NEW enhanced recipe (from source database)")
+        source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+        if not source_doc.exists:
+            print(f"❌ Recipe not found in source: {recipe_id}")
+            return
+        base_data = source_doc.to_dict()
 
-    # Merge original data with updates
-    original_data = source_doc.to_dict()
-    if original_data is None:
+    if base_data is None:
         print(f"❌ Recipe data is empty: {recipe_id}")
         return
 
     now = datetime.now(tz=UTC)
-    improved_data = {**original_data, **updates}
+    improved_data = {**base_data, **updates}
     improved_data["original_id"] = recipe_id  # Track source recipe ID
     improved_data["improved"] = True
     # Ensure timestamps exist (required for Firestore order_by queries)
@@ -218,6 +238,8 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
 
 def upload_from_file(recipe_id: str, file_path: str) -> None:
     """Upload an enhanced recipe from a local JSON file to the target database."""
+    from datetime import UTC, datetime
+
     path = Path(file_path)
     if not path.exists():
         print(f"❌ File not found: {file_path}")
@@ -234,6 +256,12 @@ def upload_from_file(recipe_id: str, file_path: str) -> None:
     # Ensure tracking fields
     data["original_id"] = recipe_id
     data["improved"] = True
+
+    # Ensure timestamps (required for Firestore order_by queries)
+    now = datetime.now(tz=UTC)
+    if "created_at" not in data or data["created_at"] is None:
+        data["created_at"] = now
+    data["updated_at"] = now
 
     # Save to target database
     target_db.collection(RECIPES_COLLECTION).document(recipe_id).set(data)

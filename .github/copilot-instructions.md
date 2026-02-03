@@ -1,5 +1,16 @@
 # Meal Planner - AI Coding Agent Instructions
 
+## ⚠️ FIRST: Read Working Context
+
+**At conversation start, ALWAYS:**
+1. Read `.copilot-tasks.md` using `read_file`
+2. Check for active tasks on current branch
+3. Acknowledge what you found before proceeding
+
+This file persists across conversations. Ignoring it loses track of work.
+
+---
+
 ## Important: Collaboration Guidelines
 
 You are collaborating with a human who may make changes between your edits:
@@ -14,7 +25,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
 - **Never work directly on main** - Always create a feature branch for changes
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
-- **On conversation start** - skim `.copilot-tasks.md` Failure Tracking table for patterns relevant to current topic; when count reaches 3, promote to permanent docs
+- **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
 
 ## Keeping Documentation Current
 
