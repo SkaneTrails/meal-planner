@@ -109,74 +109,7 @@ export const lightColors = {
   infoBg: '#E0F2FE',
 } as const;
 
-// Dark theme color palette
-export const darkColors = {
-  // Primary - inverted warm tones
-  primary: '#E8D5C4',
-  primaryDark: '#F5E6D3',
-  primaryLight: '#C9B8A8',
-
-  // Background gradients - dark warm tones
-  bgLight: '#1A1512',
-  bgMid: '#2A231E',
-  bgDark: '#3D332A',
-  bgWarm: '#2E2620',
-
-  // Accent colors
-  accent: '#C9B8A8',
-  gold: '#D4A574',
-  goldLight: '#FFD700',
-
-  // Category colors (for consistent section icons)
-  category: {
-    recipes: { bg: '#3D332A', text: '#E8D5C4' },
-    planned: { bg: '#1E3D2D', text: '#A8D4B8' },
-    grocery: { bg: '#374151', text: '#D1D5DB' },
-    add: { bg: '#3D332A', text: '#E8D5C4' },
-  },
-
-  // Diet label colors (slightly muted for dark mode)
-  diet: {
-    veggie: { bg: '#1E3D2D', text: '#86EFAC' },
-    fish: { bg: '#1E3A5F', text: '#93C5FD' },
-    meat: { bg: '#4B1D1D', text: '#FCA5A5' },
-  },
-
-  // Neutrals - inverted gray scale
-  white: '#1F1A17',
-  text: {
-    primary: '#F5E6D3',      // Main text
-    secondary: '#A8A8A8',    // Body text, descriptions
-    muted: '#6B7280',        // Placeholder, disabled
-    inverse: '#1F1A17',      // Text on light backgrounds
-  },
-  border: '#4B4B4B',         // Standard border color
-
-  // Legacy gray scale (inverted for compatibility)
-  gray: {
-    50: '#1F2937',
-    100: '#374151',
-    200: '#4B5563',
-    300: '#6B7280',
-    400: '#9CA3AF',
-    500: '#D1D5DB',
-    600: '#E5E7EB',
-    700: '#F3F4F6',
-    800: '#F9FAFB',
-  },
-
-  // Semantic (slightly adjusted for dark backgrounds)
-  success: '#22C55E',
-  successBg: '#1E3D2D',
-  warning: '#F59E0B',
-  warningBg: '#3D2E1D',
-  error: '#EF4444',
-  errorBg: '#4B1D1D',
-  info: '#0EA5E9',
-  infoBg: '#1E3A5F',
-} as const;
-
-// Default export uses light theme for backward compatibility
+// Export colors (light theme only)
 export const colors = lightColors;
 
 // Spacing scale - consistent rhythm
