@@ -1,13 +1,18 @@
 /**
  * Recipe card component for displaying a recipe in a grid or list.
  * Modern card design with smooth press animations.
+ * Uses expo-image for progressive loading and caching.
  */
 
 import React from 'react';
-import { View, Text, Image, Pressable, Animated } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, borderRadius, shadows, fontSize, fontWeight } from '@/lib/theme';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
+
+// Blurhash placeholder for loading state (warm beige color)
+const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -78,7 +83,9 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: 52, height: 52, borderRadius: 14 }}
-            resizeMode="cover"
+            contentFit="cover"
+            placeholder={PLACEHOLDER_BLURHASH}
+            transition={200}
           />
           <View style={{ flex: 1, marginLeft: 14 }}>
             <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.primary, letterSpacing: -0.2 }} numberOfLines={1}>
@@ -146,7 +153,9 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: '100%', height: imageHeight }}
-            resizeMode="cover"
+            contentFit="cover"
+            placeholder={PLACEHOLDER_BLURHASH}
+            transition={300}
           />
           {/* Diet badge overlay */}
           {recipe.diet_label && (

@@ -7,7 +7,6 @@ import {
   View,
   Text,
   ScrollView,
-  Image,
   Pressable,
   Alert,
   Share,
@@ -17,6 +16,7 @@ import {
   TextInput,
   Animated,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -26,6 +26,9 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { BouncingLoader } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction } from '@/lib/types';
+
+// Blurhash placeholder for loading state
+const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
 // All diet label options
 const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] = [
@@ -839,7 +842,9 @@ export default function RecipeDetailScreen() {
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: '100%', height: HEADER_HEIGHT }}
-            resizeMode="cover"
+            contentFit="cover"
+            placeholder={PLACEHOLDER_BLURHASH}
+            transition={400}
           />
           {/* Camera button floating on right side */}
           <Pressable

@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Image } from 'react-native';
+import { View, Text, ScrollView, Pressable, RefreshControl, TextInput } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,6 +15,9 @@ import { useSettings } from '@/lib/settings-context';
 import { GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { Recipe, GroceryItem } from '@/lib/types';
+
+// Blurhash placeholder for loading state
+const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
 function formatDateLocal(date: Date): string {
   const year = date.getFullYear();
@@ -200,7 +204,9 @@ export default function HomeScreen() {
         <Image
           source={{ uri: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80' }}
           style={{ width: '100%', height: 200 }}
-          resizeMode="cover"
+          contentFit="cover"
+          placeholder={PLACEHOLDER_BLURHASH}
+          transition={300}
         />
         {/* Settings button */}
         <Pressable
@@ -391,7 +397,9 @@ export default function HomeScreen() {
             <Image
               source={{ uri: nextMeal.imageUrl }}
               style={{ width: 48, height: 48, borderRadius: 10, marginRight: 10 }}
-              resizeMode="cover"
+              contentFit="cover"
+              placeholder={PLACEHOLDER_BLURHASH}
+              transition={200}
             />
           ) : (
             <View style={{
@@ -463,7 +471,9 @@ export default function HomeScreen() {
             <Image
               source={{ uri: inspirationRecipe.image_url || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400' }}
               style={{ width: '100%', height: 120 }}
-              resizeMode="cover"
+              contentFit="cover"
+              placeholder={PLACEHOLDER_BLURHASH}
+              transition={200}
             />
             <View style={{ padding: 12 }}>
               <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', letterSpacing: -0.2 }} numberOfLines={1}>
