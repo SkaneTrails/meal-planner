@@ -319,11 +319,11 @@ export default function MealPlanScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 50, paddingBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>
-              <Text style={{ fontSize: 14, color: '#6B7280', marginTop: 4 }}>Plan your meals ahead</Text>
+              <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>
+              <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>Plan your meals ahead</Text>
             </View>
             <Pressable
               onPress={() => setShowGroceryModal(true)}
@@ -677,6 +677,22 @@ export default function MealPlanScreen() {
                       </Pressable>
 
                       {/* Remove button - separate from the recipe press area */}
+                      {meal?.recipe && (
+                        <Pressable
+                          onPress={() => router.push(`/recipe/${meal.recipe!.id}`)}
+                          style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: 14,
+                            backgroundColor: '#E8F5E8',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginLeft: 8,
+                          }}
+                        >
+                          <Ionicons name="eye" size={16} color="#2D5A3D" />
+                        </Pressable>
+                      )}
                       <Pressable
                         onPress={() => {
                           const dateStr = formatDateLocal(date);

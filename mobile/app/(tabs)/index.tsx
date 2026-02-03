@@ -87,7 +87,8 @@ export default function HomeScreen() {
   const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
   const { isItemAtHome } = useSettings();
   const [recipeUrl, setRecipeUrl] = useState('');
-  const [inspirationIndex, setInspirationIndex] = useState(0);
+  // Use Date.now() to randomize the initial seed on each app launch
+  const [inspirationIndex, setInspirationIndex] = useState(() => Math.floor(Date.now() % 10000));
 
   const isLoading = recipesLoading || mealPlanLoading;
 

@@ -32,6 +32,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: '#4A3728',
         tabBarInactiveTintColor: '#9CA3AF',
+        tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
           bottom: 20,
@@ -40,7 +41,7 @@ export default function TabLayout() {
           backgroundColor: 'rgba(255, 255, 255, 0.98)',
           borderTopWidth: 0,
           borderRadius: 20,
-          height: 68,
+          height: 56,
           paddingBottom: 0,
           paddingTop: 0,
           shadowColor: '#000',
@@ -50,12 +51,7 @@ export default function TabLayout() {
           elevation: 8,
         },
         tabBarItemStyle: {
-          paddingVertical: 10,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          marginTop: 2,
+          paddingVertical: 8,
         },
         headerShown: false,
       }}
@@ -64,8 +60,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="home" size={22} color={color} />
           ),
         }}
       />
@@ -73,8 +69,8 @@ export default function TabLayout() {
         name="recipes"
         options={{
           title: 'Recipes',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="book" size={22} color={color} />
           ),
         }}
       />
@@ -82,8 +78,8 @@ export default function TabLayout() {
         name="meal-plan"
         options={{
           title: 'Meal Plan',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="calendar" size={22} color={color} />
           ),
         }}
       />
@@ -91,8 +87,8 @@ export default function TabLayout() {
         name="grocery"
         options={{
           title: 'Grocery',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="cart" size={22} color={color} />
           ),
         }}
       />
