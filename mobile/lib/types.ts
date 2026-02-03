@@ -17,6 +17,8 @@ export interface StructuredInstruction {
   step_number?: number | null;  // For step entries, 1-indexed
 }
 
+export type RecipeVisibility = 'household' | 'shared';
+
 export interface Recipe {
   id: string;
   title: string;
@@ -35,9 +37,13 @@ export interface Recipe {
   diet_label: DietLabel | null;
   meal_label: MealLabel | null;
   rating: number | null;
+  visibility?: RecipeVisibility;  // 'household' = private, 'shared' = public
   // AI enhancement fields
-  improved?: boolean;
-  original_id?: string;
+  enhanced?: boolean;              // True if AI-enhanced
+  enhanced_from?: string;          // ID of recipe this was enhanced from
+  enhanced_at?: string;            // ISO timestamp of enhancement
+  improved?: boolean;              // Legacy alias for enhanced
+  original_id?: string;            // Legacy alias for enhanced_from
   tips?: string;
   changes_made?: string[];
 }
@@ -76,6 +82,7 @@ export interface RecipeUpdate {
   diet_label?: DietLabel | null;
   meal_label?: MealLabel | null;
   rating?: number | null;
+  visibility?: RecipeVisibility;
 }
 
 export interface RecipeScrapeRequest {
@@ -158,4 +165,68 @@ export interface ApiError {
 
 export interface HealthCheck {
   status: string;
+}
+
+// Admin types
+export type UserRole = 'superuser' | 'admin' | 'member';
+
+export interface Household {
+  id: string;
+  name: string;
+  created_by: string;
+}
+
+export interface HouseholdMember {
+  email: string;
+  household_id: string;
+  role: UserRole;
+  display_name: string | null;
+}
+
+export interface HouseholdCreate {
+  name: string;
+}
+
+export interface MemberAdd {
+  email: string;
+  role: 'admin' | 'member';
+  display_name?: string | null;
+}
+
+export interface CurrentUser {
+  uid: string;
+  email: string;
+  role: UserRole;
+  household_id: string | null;
+  household_name?: string;
+}
+
+// Household Settings types
+export type MeatPreference = 'all' | 'split' | 'none';
+export type MincedMeatPreference = 'meat' | 'soy' | 'split';
+export type DairyPreference = 'regular' | 'lactose_free' | 'dairy_free';
+
+export interface DietarySettings {
+  seafood_ok: boolean;
+  meat: MeatPreference;
+  minced_meat: MincedMeatPreference;
+  dairy: DairyPreference;
+  chicken_alternative?: string | null;
+  meat_alternative?: string | null;
+}
+
+export interface EquipmentSettings {
+  airfryer: boolean;
+  airfryer_model?: string | null;
+  airfryer_capacity_liters?: number | null;
+  convection_oven: boolean;
+  grill_function: boolean;
+}
+
+export interface HouseholdSettings {
+  household_size: number;
+  default_servings: number;
+  language: string;
+  dietary: DietarySettings;
+  equipment: EquipmentSettings;
 }

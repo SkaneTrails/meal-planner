@@ -235,8 +235,8 @@ async def scrape_recipe(
                     enhanced_create,
                     recipe_id=saved_recipe.id,
                     database=ENHANCED_DATABASE,
-                    improved=True,
-                    original_id=saved_recipe.id,
+                    enhanced=True,
+                    enhanced_from=saved_recipe.id,
                     changes_made=enhanced_data.get("changes_made", []),
                     household_id=household_id,
                     created_by=user.email,
@@ -341,8 +341,8 @@ async def parse_recipe(  # pragma: no cover
                     enhanced_create,
                     recipe_id=saved_recipe.id,
                     database=ENHANCED_DATABASE,
-                    improved=True,
-                    original_id=saved_recipe.id,
+                    enhanced=True,
+                    enhanced_from=saved_recipe.id,
                     changes_made=enhanced_data.get("changes_made", []),
                     household_id=household_id,
                     created_by=user.email,
@@ -477,6 +477,44 @@ async def upload_recipe_image(  # pragma: no cover
     return updated_recipe  # pragma: no cover
 
 
+@router.post("/{recipe_id}/copy", status_code=status.HTTP_201_CREATED)
+async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
+    """
+    Create a copy of a shared/legacy recipe for your household.
+
+    This allows users to:
+    - Make a private copy of a shared recipe to modify
+    - Copy recipes before enhancing them (auto-done by enhance endpoint)
+
+    The copy will be owned by the user's household with visibility="household".
+    """
+    household_id = _require_household(user)
+
+    # Get the source recipe
+    recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
+    if recipe is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # Check if already owned by this household
+    if recipe.household_id == household_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Recipe already belongs to your household")
+
+    # Must be shared or legacy to copy
+    is_shared_or_legacy = recipe.household_id is None or recipe.visibility == "shared"
+    if not is_shared_or_legacy:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # Create the copy
+    copied = recipe_storage.copy_recipe(
+        recipe_id, to_household_id=household_id, copied_by=user.email, database=ENHANCED_DATABASE
+    )
+
+    if copied is None:  # pragma: no cover
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to copy recipe")
+
+    return copied
+
+
 @router.post("/{recipe_id}/enhance", status_code=status.HTTP_200_OK)
 async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
     """
@@ -488,10 +526,13 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
     - Adapting for dietary preferences (vegetarian alternatives)
     - Replacing HelloFresh spice blends with individual spices
 
-    Users can only enhance recipes they own (same household).
+    If the recipe is shared/legacy (not owned by user's household), a copy is created
+    first and the copy is enhanced. The original shared recipe remains unchanged.
 
     **Currently disabled** - Set ENABLE_RECIPE_ENHANCEMENT=true to enable.
     """
+    from datetime import UTC, datetime
+
     household_id = _require_household(user)
     from api.services.recipe_enhancer import (
         EnhancementDisabledError,
@@ -507,43 +548,63 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             detail="Recipe enhancement is currently disabled. Set ENABLE_RECIPE_ENHANCEMENT=true to enable.",
         )
 
-    # Get the original recipe and verify ownership
-    recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
+    # Get the original recipe
+    recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    # Check ownership (must own the recipe to enhance it)
-    if recipe.household_id is not None and recipe.household_id != household_id:
+    # Check if this is a shared/legacy recipe that needs to be copied first
+    is_owned = recipe.household_id == household_id
+    is_shared_or_legacy = recipe.household_id is None or recipe.visibility == "shared"
+
+    if not is_owned and not is_shared_or_legacy:
+        # Recipe exists but belongs to another household and is not shared
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # If shared/legacy and not owned, copy first
+    target_recipe = recipe
+    if not is_owned and is_shared_or_legacy:
+        copied = recipe_storage.copy_recipe(
+            recipe_id, to_household_id=household_id, copied_by=user.email, database=ENHANCED_DATABASE
+        )
+        if copied is None:  # pragma: no cover
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to copy recipe before enhancement"
+            )
+        target_recipe = copied
 
     # Enhance the recipe
     try:  # pragma: no cover
-        enhanced_data = do_enhance(recipe.model_dump())
+        enhanced_data = do_enhance(target_recipe.model_dump())
 
         # Save to enhanced database
         from api.models.recipe import RecipeCreate
 
         enhanced_recipe = RecipeCreate(
-            title=enhanced_data.get("title", recipe.title),
-            url=enhanced_data.get("url", recipe.url),
-            ingredients=enhanced_data.get("ingredients", recipe.ingredients),
-            instructions=enhanced_data.get("instructions", recipe.instructions),
-            image_url=enhanced_data.get("image_url", recipe.image_url),
-            servings=enhanced_data.get("servings", recipe.servings),
-            prep_time=enhanced_data.get("prep_time", recipe.prep_time),
-            cook_time=enhanced_data.get("cook_time", recipe.cook_time),
-            total_time=enhanced_data.get("total_time", recipe.total_time),
+            title=enhanced_data.get("title", target_recipe.title),
+            url=enhanced_data.get("url", target_recipe.url),
+            ingredients=enhanced_data.get("ingredients", target_recipe.ingredients),
+            instructions=enhanced_data.get("instructions", target_recipe.instructions),
+            image_url=enhanced_data.get("image_url", target_recipe.image_url),
+            servings=enhanced_data.get("servings", target_recipe.servings),
+            prep_time=enhanced_data.get("prep_time", target_recipe.prep_time),
+            cook_time=enhanced_data.get("cook_time", target_recipe.cook_time),
+            total_time=enhanced_data.get("total_time", target_recipe.total_time),
             cuisine=enhanced_data.get("cuisine"),
             category=enhanced_data.get("category"),
             tags=enhanced_data.get("tags", []),
             tips=enhanced_data.get("tips"),
         )
 
-        # Save with same ID to enhanced database, preserving household ownership
+        # Save with target recipe ID, with enhancement metadata
         return recipe_storage.save_recipe(
             enhanced_recipe,
-            recipe_id=recipe_id,
+            recipe_id=target_recipe.id,
             database=ENHANCED_DATABASE,
+            enhanced=True,
+            enhanced_from=recipe_id if target_recipe.id != recipe_id else None,
+            enhanced_at=datetime.now(tz=UTC),
+            changes_made=enhanced_data.get("changes_made"),
             household_id=household_id,
             created_by=user.email,
         )

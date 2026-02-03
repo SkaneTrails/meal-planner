@@ -1,6 +1,7 @@
 """Recipe Pydantic models."""
 
 import re
+from datetime import datetime
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
@@ -115,10 +116,13 @@ class Recipe(RecipeBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: str = Field(..., description="Firestore document ID")
-    # AI enhancement fields (only present in enhanced recipes)
-    improved: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
-    original_id: str | None = Field(default=None, description="Original recipe ID if this is enhanced")
+    # AI enhancement fields
+    enhanced: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
+    enhanced_from: str | None = Field(default=None, description="Original recipe ID if this is an enhanced copy")
+    enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
+    # Legacy field alias (for backwards compatibility during migration)
+    improved: bool = Field(default=False, description="Deprecated: use 'enhanced' instead")
 
     @computed_field
     @property
@@ -174,6 +178,7 @@ class RecipeUpdate(BaseModel):
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5)
+    visibility: str | None = Field(default=None, description="'household' or 'shared'")
 
 
 class RecipeScrapeRequest(BaseModel):

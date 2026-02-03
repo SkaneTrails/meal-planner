@@ -32,6 +32,11 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         with contextlib.suppress(ValueError):
             meal_label = MealLabel(data["meal_label"])
 
+    # Handle enhancement fields (support both old and new field names)
+    enhanced = data.get("enhanced", data.get("improved", False))
+    enhanced_from = data.get("enhanced_from", data.get("original_id"))
+    enhanced_at = data.get("enhanced_at")
+
     return Recipe(
         id=doc_id,
         title=data.get("title", ""),
@@ -49,9 +54,12 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         diet_label=diet_label,
         meal_label=meal_label,
         rating=data.get("rating"),
-        # AI enhancement fields
-        improved=data.get("improved", False),
-        original_id=data.get("original_id"),
+        # AI enhancement fields (new names)
+        enhanced=enhanced,
+        enhanced_from=enhanced_from,
+        enhanced_at=enhanced_at,
+        # Legacy field for backwards compatibility
+        improved=enhanced,
         tips=data.get("tips"),
         changes_made=data.get("changes_made"),
         # Household fields
@@ -153,8 +161,9 @@ def save_recipe(  # noqa: PLR0913
     *,
     recipe_id: str | None = None,
     database: str = DEFAULT_DATABASE,
-    improved: bool = False,
-    original_id: str | None = None,
+    enhanced: bool = False,
+    enhanced_from: str | None = None,
+    enhanced_at: datetime | None = None,
     changes_made: list[str] | None = None,
     household_id: str | None = None,
     created_by: str | None = None,
@@ -166,8 +175,9 @@ def save_recipe(  # noqa: PLR0913
         recipe: The recipe to save.
         recipe_id: Optional ID to use (for saving enhanced versions with same ID).
         database: The database to save to (default or meal-planner for AI-enhanced).
-        improved: Whether this recipe has been AI-enhanced.
-        original_id: Original recipe ID if this is an enhanced version.
+        enhanced: Whether this recipe has been AI-enhanced.
+        enhanced_from: Original recipe ID if this is an enhanced copy.
+        enhanced_at: When the recipe was enhanced.
         changes_made: List of changes made by AI enhancement.
         household_id: The household that owns this recipe.
         created_by: Email of the user who created the recipe.
@@ -208,10 +218,14 @@ def save_recipe(  # noqa: PLR0913
     }
 
     # Add enhancement fields if present
-    if improved:
-        data["improved"] = improved
-    if original_id:
-        data["original_id"] = original_id
+    if enhanced:
+        data["enhanced"] = enhanced
+        data["improved"] = enhanced  # Legacy field for backwards compatibility
+    if enhanced_from:
+        data["enhanced_from"] = enhanced_from
+        data["original_id"] = enhanced_from  # Legacy field for backwards compatibility
+    if enhanced_at:
+        data["enhanced_at"] = enhanced_at
     if changes_made:
         data["changes_made"] = changes_made
 
@@ -219,8 +233,10 @@ def save_recipe(  # noqa: PLR0913
 
     return Recipe(
         id=doc_ref.id,
-        improved=improved,
-        original_id=original_id,
+        enhanced=enhanced,
+        enhanced_from=enhanced_from,
+        enhanced_at=enhanced_at,
+        improved=enhanced,
         changes_made=changes_made,
         household_id=household_id,
         visibility=str(data["visibility"]),
@@ -371,3 +387,53 @@ def search_recipes(query: str, database: str = DEFAULT_DATABASE, *, household_id
         recipes.append(recipe)
 
     return recipes
+
+
+def copy_recipe(
+    recipe_id: str, *, to_household_id: str, copied_by: str, database: str = DEFAULT_DATABASE
+) -> Recipe | None:
+    """
+    Create a copy of a recipe for a different household.
+
+    This is used when:
+    - A user wants to copy a shared recipe to their household
+    - Before enhancing a shared recipe (creates household-owned copy first)
+
+    Args:
+        recipe_id: The recipe to copy.
+        to_household_id: The household that will own the copy.
+        copied_by: Email of the user creating the copy.
+        database: The database to read from and write to.
+
+    Returns:
+        The new copied recipe, or None if source recipe not found.
+    """
+    # Get the source recipe
+    source = get_recipe(recipe_id, database=database)
+    if source is None:
+        return None
+
+    # Create a RecipeCreate from the source
+    from api.models.recipe import RecipeCreate
+
+    recipe_data = RecipeCreate(
+        title=source.title,
+        url=source.url,
+        ingredients=source.ingredients,
+        instructions=source.instructions,
+        image_url=source.image_url,
+        servings=source.servings,
+        prep_time=source.prep_time,
+        cook_time=source.cook_time,
+        total_time=source.total_time,
+        cuisine=source.cuisine,
+        category=source.category,
+        tags=source.tags,
+        tips=source.tips,
+        diet_label=source.diet_label,
+        meal_label=source.meal_label,
+        visibility="household",  # Copies are private by default
+    )
+
+    # Save as a new recipe owned by the target household
+    return save_recipe(recipe_data, database=database, household_id=to_household_id, created_by=copied_by)

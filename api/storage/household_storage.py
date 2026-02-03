@@ -46,6 +46,18 @@ def is_superuser(email: str) -> bool:
     return doc.exists
 
 
+def add_superuser(email: str) -> None:
+    """Grant superuser access to a user."""
+    db = _get_db()
+    db.collection(SUPERUSERS_COLLECTION).document(email).set({"email": email, "created_at": datetime.now(UTC)})
+
+
+def remove_superuser(email: str) -> None:
+    """Revoke superuser access from a user."""
+    db = _get_db()
+    db.collection(SUPERUSERS_COLLECTION).document(email).delete()
+
+
 def get_user_membership(email: str) -> HouseholdMember | None:
     """
     Get user's household membership.
@@ -180,6 +192,25 @@ def list_all_households() -> list[Household]:
     return households
 
 
+def household_name_exists(name: str, exclude_id: str | None = None) -> bool:
+    """
+    Check if a household name is already in use.
+
+    Args:
+        name: The name to check (case-insensitive).
+        exclude_id: Optionally exclude a household ID (for rename checks).
+
+    Returns True if the name is already taken by another household.
+    """
+    normalized = name.strip().lower()
+    for household in list_all_households():
+        if household.name.strip().lower() == normalized:
+            if exclude_id and household.id == exclude_id:
+                continue  # Same household, allow keeping its own name
+            return True
+    return False
+
+
 def update_household(household_id: str, name: str) -> bool:
     """
     Update household name.
@@ -210,4 +241,49 @@ def delete_household(household_id: str) -> bool:
         return False
 
     doc_ref.delete()
+    return True
+
+
+def get_household_settings(household_id: str) -> dict | None:
+    """
+    Get settings for a household.
+
+    Returns the settings dict, or None if household doesn't exist.
+    Settings are stored in a 'settings' subcollection with a single 'config' document.
+    """
+    db = _get_db()
+
+    # First check household exists
+    household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    if not household_doc.exists:
+        return None
+
+    # Get settings from subcollection
+    settings_doc = (
+        db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config").get()
+    )
+
+    if not settings_doc.exists:
+        return {}  # Household exists but no settings yet
+
+    return settings_doc.to_dict() or {}
+
+
+def update_household_settings(household_id: str, settings: dict) -> bool:
+    """
+    Update settings for a household (merge update).
+
+    Returns False if household doesn't exist.
+    """
+    db = _get_db()
+
+    # First check household exists
+    household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    if not household_doc.exists:
+        return False
+
+    # Update settings in subcollection (merge to preserve existing fields)
+    settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
+
+    settings_ref.set(settings, merge=True)
     return True

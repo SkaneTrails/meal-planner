@@ -9,9 +9,11 @@ import { View, ActivityIndicator } from 'react-native';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useCurrentUser } from '@/lib/hooks/use-admin';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
+  const { data: currentUser } = useCurrentUser();
 
   // Show loading spinner while checking auth state
   if (loading) {
@@ -26,6 +28,9 @@ export default function TabLayout() {
   if (!user) {
     return <Redirect href="/sign-in" />;
   }
+
+  // Check if user is superuser (show admin tab)
+  const isSuperuser = currentUser?.role === 'superuser';
 
   return (
     <Tabs
@@ -94,6 +99,18 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons name="cart" size={22} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: 'Admin',
+          tabBarAccessibilityLabel: 'Admin',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings" size={22} color={color} />
+          ),
+          // Only show admin tab for superusers
+          href: isSuperuser ? '/admin' : null,
         }}
       />
     </Tabs>

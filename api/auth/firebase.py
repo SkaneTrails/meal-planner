@@ -96,7 +96,7 @@ async def require_auth(
             email="dev@localhost",
             name="Dev User",
             picture=None,
-            household_id="dev-household",
+            household_id=os.getenv("DEV_HOUSEHOLD_ID"),  # Optional: set in .env for dev
             role="superuser",
         )
 
@@ -135,7 +135,7 @@ async def _resolve_user_access(user: AuthenticatedUser) -> AuthenticatedUser | N
             email=user.email,
             name=user.name,
             picture=user.picture,
-            household_id="dev-household",
+            household_id=os.getenv("DEV_HOUSEHOLD_ID"),  # Optional: set in .env for dev
             role="superuser",
         )
 

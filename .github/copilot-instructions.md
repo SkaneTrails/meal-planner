@@ -164,7 +164,12 @@ All fields must be at the **top level** (no nested objects). The `created_at` fi
     "created_at": datetime,          # Required for order_by queries
     "updated_at": datetime,          # Last modification time
 
-    # Optional fields
+    # Ownership & visibility fields
+    "household_id": str | None,      # Owning household (None = legacy/unassigned)
+    "visibility": str,               # "household" (private) | "shared" (public)
+    "created_by": str | None,        # User ID who created the recipe
+
+    # Optional metadata
     "image_url": str | None,
     "servings": int | None,
     "prep_time": int | None,         # Minutes
@@ -176,6 +181,17 @@ All fields must be at the **top level** (no nested objects). The `created_at` fi
     "diet_label": str | None,        # "veggie" | "fish" | "meat"
     "meal_label": str | None,        # "breakfast" | "meal" | "dessert" | etc.
     "rating": int | None,            # 1-5 stars
+
+    # AI enhancement fields
+    "enhanced": bool,                # True if AI-enhanced
+    "enhanced_from": str | None,     # Recipe ID this was enhanced from
+    "enhanced_at": datetime | None,  # When enhancement was performed
+    "changes_made": list[str],       # Summary of AI changes
+    "tips": str | None,              # Cooking tips from AI
+
+    # Legacy fields (for backward compatibility)
+    "improved": bool,                # Alias for enhanced (deprecated)
+    "original_id": str | None,       # Alias for enhanced_from (deprecated)
 }
 ```
 

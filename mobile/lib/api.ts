@@ -15,6 +15,12 @@ import type {
   NoteUpdateRequest,
   GroceryList,
   ApiError,
+  Household,
+  HouseholdCreate,
+  HouseholdMember,
+  MemberAdd,
+  CurrentUser,
+  HouseholdSettings,
 } from './types';
 
 // API base URL - configurable for different environments
@@ -293,6 +299,54 @@ class ApiClient {
     if (options?.days) params.set('days', options.days.toString());
     const query = params.toString();
     return this.request<GroceryList>(`/grocery${query ? `?${query}` : ''}`);
+  }
+
+  // Admin endpoints
+  async getCurrentUser(): Promise<CurrentUser> {
+    return this.request<CurrentUser>('/admin/me');
+  }
+
+  async getHouseholds(): Promise<Household[]> {
+    return this.request<Household[]>('/admin/households');
+  }
+
+  async createHousehold(data: HouseholdCreate): Promise<Household> {
+    return this.request<Household>('/admin/households', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getHousehold(id: string): Promise<Household> {
+    return this.request<Household>(`/admin/households/${id}`);
+  }
+
+  async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
+    return this.request<HouseholdMember[]>(`/admin/households/${householdId}/members`);
+  }
+
+  async addHouseholdMember(householdId: string, data: MemberAdd): Promise<HouseholdMember> {
+    return this.request<HouseholdMember>(`/admin/households/${householdId}/members`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async removeHouseholdMember(householdId: string, email: string): Promise<void> {
+    return this.request<void>(`/admin/households/${householdId}/members/${encodeURIComponent(email)}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getHouseholdSettings(householdId: string): Promise<HouseholdSettings> {
+    return this.request<HouseholdSettings>(`/admin/households/${householdId}/settings`);
+  }
+
+  async updateHouseholdSettings(householdId: string, settings: Partial<HouseholdSettings>): Promise<HouseholdSettings> {
+    return this.request<HouseholdSettings>(`/admin/households/${householdId}/settings`, {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
   }
 }
 

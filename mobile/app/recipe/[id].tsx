@@ -24,7 +24,7 @@ import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMea
 import { useAuth } from '@/lib/hooks/use-auth';
 import { BouncingLoader } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
-import type { DietLabel, MealLabel, MealType, StructuredInstruction } from '@/lib/types';
+import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
 
 // All diet label options
 const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] = [
@@ -32,6 +32,12 @@ const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] 
   { value: 'veggie', label: 'Vegetarian', emoji: '🥬' },
   { value: 'fish', label: 'Seafood', emoji: '🐟' },
   { value: 'meat', label: 'Meat', emoji: '🥩' },
+];
+
+// Visibility options
+const VISIBILITY_OPTIONS: { value: RecipeVisibility; label: string; emoji: string; description: string }[] = [
+  { value: 'household', label: 'Private', emoji: '🔒', description: 'Only your household' },
+  { value: 'shared', label: 'Shared', emoji: '🌍', description: 'Visible to everyone' },
 ];
 
 // All meal label options
@@ -388,6 +394,7 @@ export default function RecipeDetailScreen() {
   const [editCookTime, setEditCookTime] = useState('');
   const [editServings, setEditServings] = useState('');
   const [editTags, setEditTags] = useState('');
+  const [editVisibility, setEditVisibility] = useState<RecipeVisibility>('household');
   const [newTag, setNewTag] = useState('');
   // URL input modal state (for cross-platform support)
   const [showUrlModal, setShowUrlModal] = useState(false);
@@ -402,6 +409,7 @@ export default function RecipeDetailScreen() {
       setEditCookTime(recipe.cook_time?.toString() || '');
       setEditServings(recipe.servings?.toString() || '');
       setEditTags(recipe.tags.join(', '));
+      setEditVisibility(recipe.visibility || 'household');
     }
     setShowEditModal(true);
   };
@@ -425,6 +433,7 @@ export default function RecipeDetailScreen() {
           cook_time: editCookTime ? parseInt(editCookTime, 10) : null,
           servings: editServings ? parseInt(editServings, 10) : null,
           tags: tagsArray,
+          visibility: editVisibility,
         },
         enhanced: isEnhanced,
       });
@@ -1457,6 +1466,42 @@ export default function RecipeDetailScreen() {
                       >
                         <Text style={{ fontSize: 14, fontWeight: '500', color: isSelected ? '#fff' : '#4A3728' }}>
                           {label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+
+              {/* Visibility */}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Visibility
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                  {VISIBILITY_OPTIONS.map(({ value, label, emoji, description }) => {
+                    const isSelected = editVisibility === value;
+                    return (
+                      <Pressable
+                        key={value}
+                        onPress={() => setEditVisibility(value)}
+                        style={({ pressed }) => ({
+                          flex: 1,
+                          alignItems: 'center',
+                          backgroundColor: isSelected ? '#4A3728' : pressed ? '#F5E6D3' : '#F9F5F0',
+                          paddingHorizontal: 14,
+                          paddingVertical: 14,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: isSelected ? '#4A3728' : '#E8D5C4',
+                        })}
+                      >
+                        <Text style={{ fontSize: 20, marginBottom: 4 }}>{emoji}</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '600', color: isSelected ? '#fff' : '#4A3728' }}>
+                          {label}
+                        </Text>
+                        <Text style={{ fontSize: 11, color: isSelected ? '#E8D5C4' : '#9ca3af', marginTop: 2 }}>
+                          {description}
                         </Text>
                       </Pressable>
                     );
