@@ -2,6 +2,19 @@
 
 Instructions for setting up and running the Meal Planner app locally.
 
+## ⚠️ IMPORTANT: Running the App for Debugging
+
+**When starting the mobile app for debugging/testing, ALWAYS start BOTH:**
+
+1. **API server** (for data): `./scripts/run-api.sh`
+2. **Mobile app** (Expo): `cd mobile && npx expo start`
+
+Or use the combined script: `./scripts/run-dev.sh`
+
+The mobile app requires the API to be running for all data operations (recipes, meal plans, grocery lists).
+
+---
+
 ## Finding the GCP Project ID
 
 The project ID is stored in `infra/environments/dev/terraform.tfvars` (gitignored). Check this file first:
