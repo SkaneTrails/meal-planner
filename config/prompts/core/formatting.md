@@ -162,9 +162,49 @@ Använd TIDSLINJE-format för att koordinera:
 ⏱️ X min: Servera!
 ```
 
+**VIKTIGT:** Varje tidslinjesteg ska vara ett **separat element** i instructions-arrayen:
+
+```json
+"instructions": [
+  "⏱️ 0 min: Sätt ugnen på 175°C. Förbered grönsakerna...",
+  "Blanda grönsakerna med olja. Ställ in i ugnen.",
+  "⏱️ 5 min: Marinera kycklingen...",
+  "⏱️ 10 min: Lägg kycklingen i airfryern...",
+  "⏱️ 35 min: Servera!"
+]
+```
+
+❌ FEL: Alla steg i en enda sträng med newlines
+✅ RÄTT: Varje steg som separat array-element
+
 Använd tidslinje när:
 
 - Ugn + airfryer används samtidigt
 - Kyckling och Quorn tillagas separat
 - Flera komponenter som måste koordineras
 - Total tillagningstid > 20 min
+
+### Inline-tips med 💡
+
+Actionable tips (alternativ, extra smak, teknikförslag) ska vara **separata element** i instructions-arrayen, placerade direkt efter steget de hör till:
+
+```json
+"instructions": [
+  "Skala pumpan och skär i bitar. Ringla över olja.",
+  "💡 ALTERNATIV: Använd hokkaidopumpa - skalet är ätbart.",
+  "⏱️ 5 min: Ställ in i ugnen..."
+]
+```
+
+**Format:**
+
+- `💡 ALTERNATIV: ...` för ingrediensbyten
+- `💡 EXTRA: ...` för smakförhöjning
+- `💡 TIPS: ...` för teknik
+
+**VIKTIGT:**
+
+- ❌ FEL: `"Skala pumpan... 💡 ALTERNATIV: Använd hokkaido..."` (inbäddat i steg)
+- ✅ RÄTT: Tip på egen rad, efter steget det hör till
+
+**Varför separat?** Appen renderar tips med distinkt styling (grön bakgrund), vilket bara fungerar när elementet börjar med 💡.

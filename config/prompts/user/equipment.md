@@ -50,3 +50,29 @@ Föreslå ALDRIG dessa:
 - **Lägg till Quorn/Oumph senare** i ugnsrätter - de torkar ut om de är med hela tiden
 - **Separata omgångar** i airfryer pga kapacitet
 - **Vila kyckling** medan vegetariskt tillagas (håller värmen i 5 min under folie)
+
+### Grönsaker - staggering vid ugnsrostning
+
+Olika grönsaker behöver olika tid. Lägg INTE in allt samtidigt!
+
+| Grönsak             | Ugntid vid 175°C varmluft |
+| ------------------- | ------------------------- |
+| Potatis (klyftor)   | 25-30 min                 |
+| Morötter (stavar)   | 20-25 min                 |
+| Lök (klyftor)       | 15-20 min                 |
+| Broccoli (buketter) | 12-15 min                 |
+| Zucchini (skivor)   | 10-15 min                 |
+
+**Strategi för "allt på en plåt":**
+
+1. Potatis + morötter in först (⏱️ 0 min)
+2. Broccoli + lök in efter 15 min (⏱️ 15 min)
+3. Allt klart samtidigt (⏱️ 30 min)
+
+### Smörtopping för airfryer-kyckling
+
+När kyckling vilar under folie efter airfryer:
+
+- Lägg en klick smör och färska örter (timjan, rosmarin) på kycklingen
+- Smöret smälter och ger extra saftighet
+- Nämn detta som 💡-tips i instruktionerna
