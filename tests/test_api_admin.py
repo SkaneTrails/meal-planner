@@ -115,6 +115,7 @@ class TestCreateHousehold:
     def test_superuser_can_create(self, superuser_client: TestClient, sample_household: Household) -> None:
         """Superuser should be able to create a household."""
         with (
+            patch("api.routers.admin.household_storage.household_name_exists", return_value=False),
             patch("api.routers.admin.household_storage.create_household", return_value="new_id"),
             patch("api.routers.admin.household_storage.get_household", return_value=sample_household),
         ):
