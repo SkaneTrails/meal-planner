@@ -321,22 +321,22 @@ export default function GroceryScreen() {
     <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontSize: 13, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
-            <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
+            <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
+            <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Grocery List</Text>
           </View>
           <View style={{
-            width: 48,
-            height: 48,
+            width: 44,
+            height: 44,
             borderRadius: borderRadius.md,
             backgroundColor: colors.bgDark,
             alignItems: 'center',
             justifyContent: 'center',
             ...shadows.sm,
           }}>
-            <Ionicons name="cart" size={24} color="#4A3728" />
+            <Ionicons name="cart" size={22} color="#4A3728" />
           </View>
         </View>
       </View>

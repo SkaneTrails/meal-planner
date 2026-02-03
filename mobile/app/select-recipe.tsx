@@ -28,10 +28,11 @@ const MEAL_TYPE_LABELS: Record<MealType, string> = {
 };
 
 // Map meal types to meal_label values for filtering
+// For random shuffle in meal plan, only use 'meal' and 'grill' for lunch/dinner
 const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   breakfast: ['breakfast'],
-  lunch: ['meal', 'salad', 'starter'],
-  dinner: ['meal', 'salad', 'starter', 'grill'],
+  lunch: ['meal', 'grill'],
+  dinner: ['meal', 'grill'],
   snack: ['dessert', 'drink'],
 };
 

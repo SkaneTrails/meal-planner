@@ -67,20 +67,21 @@ export default function RootLayout() {
           <SettingsProvider>
             <GroceryProvider>
               <StatusBar style="auto" />
-              <Stack>
+              <Stack screenOptions={{ animation: 'slide_from_right' }}>
                 <Stack.Screen
                   name="sign-in"
-                  options={{ headerShown: false }}
+                  options={{ headerShown: false, animation: 'fade' }}
                 />
                 <Stack.Screen
                   name="(tabs)"
-                  options={{ headerShown: false }}
+                  options={{ headerShown: false, animation: 'fade' }}
                 />
                 <Stack.Screen
                   name="recipe/[id]"
                   options={{
                     title: 'Recipe',
                     headerBackTitle: 'Back',
+                    animation: 'slide_from_right',
                   }}
                 />
                 <Stack.Screen
@@ -89,6 +90,7 @@ export default function RootLayout() {
                     title: 'Add Recipe',
                     presentation: 'modal',
                     headerBackTitle: 'Cancel',
+                    animation: 'slide_from_bottom',
                   }}
                 />
                 <Stack.Screen
@@ -97,6 +99,7 @@ export default function RootLayout() {
                     title: 'Select Recipe',
                     presentation: 'modal',
                     headerBackTitle: 'Cancel',
+                    animation: 'slide_from_bottom',
                   }}
                 />
                 <Stack.Screen
@@ -105,6 +108,7 @@ export default function RootLayout() {
                     title: 'Settings',
                     presentation: 'card',
                     headerShown: false,
+                    animation: 'slide_from_right',
                   }}
                 />
               </Stack>
