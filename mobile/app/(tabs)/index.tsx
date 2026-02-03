@@ -223,7 +223,7 @@ export default function HomeScreen() {
         {/* Welcome text on image */}
         <View style={{ position: 'absolute', bottom: 36, left: 24, right: 24 }}>
           <Text style={{ fontSize: 34, fontWeight: '700', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5, textShadowColor: 'rgba(0, 0, 0, 0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
-            Hi there! 👋
+            Hi there!
           </Text>
           <Text style={{ fontSize: 17, color: '#FFFFFF', lineHeight: 24, fontWeight: '500', textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }}>
             Plan meals, save recipes, shop smarter.

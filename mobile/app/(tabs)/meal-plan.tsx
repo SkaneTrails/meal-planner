@@ -319,7 +319,7 @@ export default function MealPlanScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 50, paddingBottom: 8 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 8 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
               <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>
@@ -684,13 +684,13 @@ export default function MealPlanScreen() {
                             width: 28,
                             height: 28,
                             borderRadius: 14,
-                            backgroundColor: '#E8F5E8',
+                            backgroundColor: '#DBEAFE',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginLeft: 8,
                           }}
                         >
-                          <Ionicons name="eye" size={16} color="#2D5A3D" />
+                          <Ionicons name="eye" size={16} color="#3B82F6" />
                         </Pressable>
                       )}
                       <Pressable

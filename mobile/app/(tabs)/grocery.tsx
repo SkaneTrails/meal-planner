@@ -321,7 +321,7 @@ export default function GroceryScreen() {
     <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 50, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
             <Text style={{ fontSize: 11, fontWeight: '500', color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
