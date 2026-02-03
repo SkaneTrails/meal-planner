@@ -249,11 +249,11 @@ export default function HomeScreen() {
             style={({ pressed }) => ({
               backgroundColor: pressed ? '#E8D5C4' : '#F3E8E0',
               borderRadius: borderRadius.sm,
-              paddingVertical: 10,
+              paddingVertical: 8,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
-            <Text style={{ color: '#4A3728', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>Browse</Text>
+            <Text style={{ color: '#4A3728', textAlign: 'center', fontSize: 12, fontWeight: '600' }}>Browse</Text>
           </Pressable>
         </View>
 
