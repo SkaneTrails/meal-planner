@@ -404,6 +404,7 @@ export default function MealPlanScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={mealPlanLoading}
@@ -718,7 +719,7 @@ export default function MealPlanScreen() {
                             }
                           );
                         }}
-                        style={{{
+                        style={{
                           width: 28,
                           height: 28,
                           borderRadius: 14,
@@ -797,7 +798,7 @@ export default function MealPlanScreen() {
               </View>
 
               {/* Meal list */}
-              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
                 {weekDates.map((date) => {
                   const hasAnyMeal = MEAL_TYPES.some((mt) => {
                     const meal = getMealForSlot(date, mt.type);

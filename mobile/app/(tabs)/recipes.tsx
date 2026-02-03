@@ -84,6 +84,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
       data={recipes}
       keyExtractor={(item) => item.id}
       numColumns={numColumns}
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <View style={{ width: cardWidth, padding: 4 }}>
           <RecipeCard

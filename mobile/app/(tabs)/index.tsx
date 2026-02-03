@@ -180,16 +180,17 @@ export default function HomeScreen() {
     <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 100, paddingTop: 0 }}
+        contentContainerStyle={{ paddingBottom: 80, paddingTop: 0 }}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor="#4A3728" />
         }
+        showsVerticalScrollIndicator={false}
       >
       {/* Hero image with gradient fade and welcome text overlay */}
       <View style={{ position: 'relative', marginBottom: 0 }}>
         <Image
           source={{ uri: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80' }}
-          style={{ width: '100%', height: 300 }}
+          style={{ width: '100%', height: 200 }}
           resizeMode="cover"
         />
         {/* Settings button */}
@@ -197,17 +198,17 @@ export default function HomeScreen() {
           onPress={() => router.push('/settings')}
           style={({ pressed }) => ({
             position: 'absolute',
-            top: 50,
-            right: 20,
-            width: 44,
-            height: 44,
-            borderRadius: 22,
+            top: 44,
+            right: 16,
+            width: 40,
+            height: 40,
+            borderRadius: 20,
             backgroundColor: pressed ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.3)',
             alignItems: 'center',
             justifyContent: 'center',
           })}
         >
-          <Ionicons name="settings-outline" size={24} color="#FFFFFF" />
+          <Ionicons name="settings-outline" size={22} color="#FFFFFF" />
         </Pressable>
         {/* Stronger gradient overlay fading to beige */}
         <LinearGradient
@@ -217,30 +218,30 @@ export default function HomeScreen() {
             bottom: 0,
             left: 0,
             right: 0,
-            height: 150,
+            height: 100,
           }}
         />
 
         {/* Welcome text on image */}
-        <View style={{ position: 'absolute', bottom: 36, left: 24, right: 24 }}>
-          <Text style={{ fontSize: 34, fontWeight: '700', color: '#FFFFFF', marginBottom: 8, letterSpacing: -0.5, textShadowColor: 'rgba(0, 0, 0, 0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
+        <View style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#FFFFFF', marginBottom: 4, letterSpacing: -0.5, textShadowColor: 'rgba(0, 0, 0, 0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
             Hi there!
           </Text>
-          <Text style={{ fontSize: 17, color: '#FFFFFF', lineHeight: 24, fontWeight: '500', textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }}>
+          <Text style={{ fontSize: 15, color: '#FFFFFF', lineHeight: 20, fontWeight: '500', textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 }}>
             Plan meals, save recipes, shop smarter.
           </Text>
         </View>
       </View>
 
       {/* Stats cards - 3 in a row */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 20, gap: 10, marginTop: -10 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginTop: -8 }}>
         {/* Recipe Library */}
-        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
-          <View style={{ backgroundColor: '#F3E8E0', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-            <Ionicons name="book" size={20} color="#4A3728" />
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.md, ...shadows.md }}>
+          <View style={{ backgroundColor: '#F3E8E0', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+            <Ionicons name="book" size={16} color="#4A3728" />
           </View>
-          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Saved</Text>
-          <Text style={{ fontSize: 28, fontWeight: '700', color: '#4A3728', marginBottom: 12, letterSpacing: -0.5 }}>
+          <Text style={{ fontSize: 10, color: '#6B7280', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Saved</Text>
+          <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', marginBottom: 8, letterSpacing: -0.5 }}>
             {recipes.length}
           </Text>
           <Pressable
@@ -257,12 +258,12 @@ export default function HomeScreen() {
         </View>
 
         {/* This Week */}
-        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
-          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-            <Ionicons name="calendar" size={20} color="#2D5A3D" />
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.md, ...shadows.md }}>
+          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+            <Ionicons name="calendar" size={16} color="#2D5A3D" />
           </View>
-          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Planned</Text>
-          <Text style={{ fontSize: 28, fontWeight: '700', color: '#2D5A3D', marginBottom: 12, letterSpacing: -0.5 }}>
+          <Text style={{ fontSize: 10, color: '#6B7280', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>Planned</Text>
+          <Text style={{ fontSize: 24, fontWeight: '700', color: '#2D5A3D', marginBottom: 8, letterSpacing: -0.5 }}>
             {plannedMealsCount}
           </Text>
           <Pressable
@@ -270,21 +271,21 @@ export default function HomeScreen() {
             style={({ pressed }) => ({
               backgroundColor: pressed ? '#D4E4D4' : '#E8F0E8',
               borderRadius: borderRadius.sm,
-              paddingVertical: 10,
+              paddingVertical: 8,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
-            <Text style={{ color: '#2D5A3D', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>Plan</Text>
+            <Text style={{ color: '#2D5A3D', textAlign: 'center', fontSize: 12, fontWeight: '600' }}>Plan</Text>
           </Pressable>
         </View>
 
         {/* Shopping */}
-        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.md }}>
-          <View style={{ backgroundColor: '#E5E7EB', borderRadius: 12, width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-            <Ionicons name="cart" size={20} color="#374151" />
+        <View style={{ flex: 1, backgroundColor: colors.white, borderRadius: borderRadius.md, padding: spacing.md, ...shadows.md }}>
+          <View style={{ backgroundColor: '#E5E7EB', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+            <Ionicons name="cart" size={16} color="#374151" />
           </View>
-          <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>To Buy</Text>
-          <Text style={{ fontSize: 28, fontWeight: '700', color: '#374151', marginBottom: 12, letterSpacing: -0.5 }}>
+          <Text style={{ fontSize: 10, color: '#6B7280', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600' }}>To Buy</Text>
+          <Text style={{ fontSize: 24, fontWeight: '700', color: '#374151', marginBottom: 8, letterSpacing: -0.5 }}>
             {groceryItemsCount}
           </Text>
           <Pressable
@@ -292,22 +293,22 @@ export default function HomeScreen() {
             style={({ pressed }) => ({
               backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB',
               borderRadius: borderRadius.sm,
-              paddingVertical: 10,
+              paddingVertical: 8,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
-            <Text style={{ color: '#374151', textAlign: 'center', fontSize: 13, fontWeight: '600' }}>View List</Text>
+            <Text style={{ color: '#374151', textAlign: 'center', fontSize: 12, fontWeight: '600' }}>View List</Text>
           </Pressable>
         </View>
       </View>
 
       {/* Add a Recipe */}
-      <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <View style={{ backgroundColor: '#E8D5C4', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name="add-circle" size={16} color="#4A3728" />
+      <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          <View style={{ backgroundColor: '#E8D5C4', borderRadius: 8, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="add-circle" size={14} color="#4A3728" />
           </View>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Add a Recipe</Text>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728', marginLeft: 8, letterSpacing: -0.3 }}>Add a Recipe</Text>
         </View>
 
         {/* Import Recipe - single line */}
@@ -357,12 +358,12 @@ export default function HomeScreen() {
       </View>
 
       {/* Next Up */}
-      <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name="restaurant" size={16} color="#2D5A3D" />
+      <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          <View style={{ backgroundColor: '#E8F0E8', borderRadius: 8, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="restaurant" size={14} color="#2D5A3D" />
           </View>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Next Up</Text>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728', marginLeft: 8, letterSpacing: -0.3 }}>Next Up</Text>
         </View>
 
         {/* Next meal - clickable card */}
@@ -371,7 +372,7 @@ export default function HomeScreen() {
           style={({ pressed }) => ({
             backgroundColor: pressed ? '#F9F5F0' : colors.white,
             borderRadius: borderRadius.md,
-            padding: spacing.md,
+            padding: spacing.sm,
             ...shadows.md,
             flexDirection: 'row',
             alignItems: 'center',
@@ -380,45 +381,45 @@ export default function HomeScreen() {
           {nextMeal?.imageUrl ? (
             <Image
               source={{ uri: nextMeal.imageUrl }}
-              style={{ width: 56, height: 56, borderRadius: 12, marginRight: 12 }}
+              style={{ width: 48, height: 48, borderRadius: 10, marginRight: 10 }}
               resizeMode="cover"
             />
           ) : (
             <View style={{
               backgroundColor: '#E8F0E8',
-              borderRadius: 12,
-              width: 56,
-              height: 56,
+              borderRadius: 10,
+              width: 48,
+              height: 48,
               alignItems: 'center',
               justifyContent: 'center',
-              marginRight: 12
+              marginRight: 10
             }}>
-              <Ionicons name="restaurant" size={24} color="#2D5A3D" />
+              <Ionicons name="restaurant" size={20} color="#2D5A3D" />
             </View>
           )}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
+            <Text style={{ fontSize: 11, color: '#6B7280', marginBottom: 2 }}>
               {nextMeal
                 ? `${nextMeal.isTomorrow ? "Tomorrow's" : "Today's"} ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}`
                 : 'No meal planned'}
             </Text>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: nextMeal ? '#4A3728' : '#9CA3AF' }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+          <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
         </Pressable>
       </View>
 
       {/* Inspiration section */}
       {inspirationRecipes.length > 0 && inspirationRecipe && (
-        <View style={{ paddingHorizontal: 20, marginTop: 24 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ backgroundColor: '#E5E7EB', borderRadius: 10, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name="bulb" size={16} color="#374151" />
+              <View style={{ backgroundColor: '#E5E7EB', borderRadius: 8, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="bulb" size={14} color="#374151" />
               </View>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Inspiration</Text>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728', marginLeft: 8, letterSpacing: -0.3 }}>Inspiration</Text>
             </View>
             <Pressable
               onPress={() => {
@@ -429,14 +430,14 @@ export default function HomeScreen() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: pressed ? '#D1D5DB' : '#E5E7EB',
-                paddingHorizontal: 14,
-                paddingVertical: 8,
-                borderRadius: 16,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 14,
                 transform: [{ scale: pressed ? 0.96 : 1 }],
               })}
             >
-              <Ionicons name="shuffle" size={14} color="#374151" />
-              <Text style={{ color: '#374151', fontWeight: '600', fontSize: 13, marginLeft: 6 }}>Shuffle</Text>
+              <Ionicons name="shuffle" size={12} color="#374151" />
+              <Text style={{ color: '#374151', fontWeight: '600', fontSize: 12, marginLeft: 4 }}>Shuffle</Text>
             </Pressable>
           </View>
 
@@ -452,24 +453,24 @@ export default function HomeScreen() {
           >
             <Image
               source={{ uri: inspirationRecipe.image_url || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400' }}
-              style={{ width: '100%', height: 160 }}
+              style={{ width: '100%', height: 120 }}
               resizeMode="cover"
             />
-            <View style={{ padding: 16 }}>
-              <Text style={{ fontSize: 17, fontWeight: '600', color: '#4A3728', letterSpacing: -0.2 }} numberOfLines={1}>
+            <View style={{ padding: 12 }}>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', letterSpacing: -0.2 }} numberOfLines={1}>
                 {inspirationRecipe.title}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
                 {inspirationRecipe.meal_label && (
-                  <View style={{ backgroundColor: '#F5E6D3', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 8 }}>
-                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#4A3728' }}>
+                  <View style={{ backgroundColor: '#F5E6D3', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, marginRight: 6 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '600', color: '#4A3728' }}>
                       {inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1)}
                     </Text>
                   </View>
                 )}
                 {inspirationRecipe.diet_label && (
-                  <View style={{ backgroundColor: inspirationRecipe.diet_label === 'veggie' ? '#DCFCE7' : inspirationRecipe.diet_label === 'fish' ? '#DBEAFE' : '#FEE2E2', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}>
-                    <Text style={{ fontSize: 12, fontWeight: '600', color: inspirationRecipe.diet_label === 'veggie' ? '#166534' : inspirationRecipe.diet_label === 'fish' ? '#1E40AF' : '#991B1B' }}>
+                  <View style={{ backgroundColor: inspirationRecipe.diet_label === 'veggie' ? '#DCFCE7' : inspirationRecipe.diet_label === 'fish' ? '#DBEAFE' : '#FEE2E2', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '600', color: inspirationRecipe.diet_label === 'veggie' ? '#166534' : inspirationRecipe.diet_label === 'fish' ? '#1E40AF' : '#991B1B' }}>
                       {inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}
                     </Text>
                   </View>
@@ -480,7 +481,6 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <View style={{ height: 40 }} />
       </ScrollView>
     </GradientBackground>
   );
