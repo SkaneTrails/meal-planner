@@ -328,26 +328,28 @@ export default function RecipesScreen() {
                 <Ionicons name="close-circle" size={18} color="#9CA3AF" />
               </Pressable>
             )}
-            {!isSearchFocused && (
-              <Pressable
-                onPress={() => {
+            <Pressable
+              onPress={() => {
+                if (!isSearchFocused) {
                   hapticLight();
                   toggleFilters();
-                }}
-                style={{
-                  marginLeft: 8,
-                  padding: 6,
-                  backgroundColor: hasActiveFilters ? '#E8F5E8' : '#F3F4F6',
-                  borderRadius: 8,
-                }}
-              >
-                <Ionicons
-                  name={filtersExpanded ? "options" : "options-outline"}
-                  size={18}
-                  color={hasActiveFilters ? '#2D5A3D' : '#6B7280'}
-                />
-              </Pressable>
-            )}
+                }
+              }}
+              disabled={isSearchFocused}
+              style={{
+                marginLeft: 8,
+                padding: 6,
+                backgroundColor: hasActiveFilters ? '#E8F5E8' : '#F3F4F6',
+                borderRadius: 8,
+                opacity: isSearchFocused ? 0.4 : 1,
+              }}
+            >
+              <Ionicons
+                name={filtersExpanded ? "options" : "options-outline"}
+                size={18}
+                color={hasActiveFilters ? '#2D5A3D' : '#6B7280'}
+              />
+            </Pressable>
           </View>
           {isSearchFocused && (
             <Pressable

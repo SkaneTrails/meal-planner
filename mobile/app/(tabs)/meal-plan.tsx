@@ -169,11 +169,17 @@ export default function MealPlanScreen() {
   }, [todayIndex, weekOffset]);
 
   // Swipe gesture for week navigation
-  const swipeThreshold = 50;
+  // Note: PanResponder only captures gestures when conditions are met,
+  // allowing ScrollView's vertical scrolling to work normally.
+  const swipeThreshold = 50; // Minimum horizontal distance to trigger week change
   const panResponder = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_, gestureState) => {
       // Only respond to horizontal swipes (not vertical scrolling)
-      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2 && Math.abs(gestureState.dx) > 10;
+      // Requires: horizontal movement > 2x vertical (to distinguish from scroll)
+      // AND horizontal movement > 10px (to filter out small accidental movements)
+      const isHorizontalSwipe = Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
+      const hasMinimumMovement = Math.abs(gestureState.dx) > 10;
+      return isHorizontalSwipe && hasMinimumMovement;
     },
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dx > swipeThreshold) {
