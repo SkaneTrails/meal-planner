@@ -12,6 +12,11 @@ env:
   # Firebase project ID
   FIREBASE_PROJECT_ID: hikes-482104
 
+# Required for Workload Identity Federation
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -20,6 +25,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/666169448126/locations/global/workloadIdentityPools/github-actions/providers/github-provider
+          service_account: github-actions-firebase@hikes-482104.iam.gserviceaccount.com
 
       - name: Setup Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
@@ -50,7 +62,6 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@e2eda2e106cfa35cdbcf4ac9ddaf6c4756df2c8c # v0.10.0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: ${{ env.FIREBASE_PROJECT_ID }}
           channelId: live
           entryPoint: mobile
