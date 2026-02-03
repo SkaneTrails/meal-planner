@@ -76,11 +76,12 @@ For 1½ tsk total:
 
 | Blend                              | Recipe                                                                                                                                                                 |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitlöksflört** (HelloFresh)      | 43% vitlökspulver, 29% örter (persilja, basilika, oregano, rosmarin, timjan), salt, citronskal. Ersätt med: 1 tsk vitlökspulver + ½ tsk italienska örter + 1 krm citronskal |
+| **Medelhavsdröm / Medelhavets Pärla** (HelloFresh) | Tomat, rosmarin, lök, chili, oregano, timjan, basilika, vitlök, svamp. Ersätt med: 1 tsk torkad tomat (krossad) + ½ tsk oregano + ½ tsk rosmarin + ½ tsk vitlökspulver |
 | **Hello Sunrise** (HelloFresh)     | Medelhavskrydda för ris/pasta. Ersätt med: 1 tsk paprika + ½ tsk oregano + ½ tsk basilika + ½ tsk vitlökspulver. (Uppskattad blandning baserat på recept-kontext.) |
 | **Tuscan Heat**                    | 4 basilika (torkad), 2 rosmarin (torkad), 2 oregano (torkad), 2 vitlökspulver, 1 cayenne, 1 fänkål (malen)                                                             |
 | **Italian**                        | 1 vitlökspulver, 1 oregano, 1 basilika, 1 svartpeppar, 1 persilja                                                                                                      |
 | **Herbes de Provence**             | 1 kyndel, 1 timjan, 1 rosmarin, 1 basilika, 1 dragon, 1 lavendelblommor                                                                                                |
-| **Medelhavets Pärla** (HelloFresh) | Tomat, rosmarin, lök, chili, oregano, timjan, basilika, vitlök, svamp. Ersätt med: 1 tsk torkad tomat (krossad) + ½ tsk oregano + ½ tsk rosmarin + ½ tsk vitlökspulver |
 
 ### Asian
 
@@ -107,6 +108,7 @@ For 1½ tsk total:
 
 | Blend     | Recipe                                                                                                                                                |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Jorden Runt** (HelloFresh) | Paprika, peppar, senap, chili, koriander, kummin, kryddpeppar, salt, äggpulver, paprikaextrakt, örter (majoran, persilja, rosmarin, timjan). Ersätt med: 1 tsk paprika + ½ tsk kummin + ½ tsk koriander + ¼ tsk chili + 1 krm kryddpeppar |
 | **Fall**  | 3 timjan (torkad), 3 salvia (malen), 2 vitlökspulver, 1 lökpulver                                                                                     |
 | **Ranch** | 2 persilja (torkad), 1½ dill (torkad), 2 vitlökspulver, 2 lökpulver, 2 torkad lök (flingor), 1 svartpeppar, 1 gräslök                                 |
 | **Steak** | 1 chiliflingor, 1 krossade korianderfrön, 2 krossade dillfrön, 3 krossade senapsfrön, 4 torkad vitlök (hackad), 4 svartpeppar (krossad), 3 grovt salt |

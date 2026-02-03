@@ -62,6 +62,34 @@ uv run python scripts/recipe_reviewer.py get <id>
 uv run python scripts/recipe_reviewer.py update <id> '<json>'
 ```
 
+---
+
+## CRITICAL: Modify Enhanced Recipes Correctly
+
+**When modifying an already-enhanced recipe (e.g., adding timeline, fixing an issue):**
+
+1. **ALWAYS fetch the enhanced version first**: `?enhanced=true` or `enhanced <id>` command
+2. **Verify you have the enhanced data** before editing (check `improved: true`, existing `changes_made`)
+3. **Apply changes to the enhanced version**, not the original
+4. **Never overwrite enhanced with original** - this loses all previous improvements
+
+**Common mistakes that destroy enhanced recipes:**
+
+| ❌ Wrong | ✅ Correct |
+|----------|-----------|
+| Fetch original, add timeline, upload | Fetch enhanced, add timeline, upload |
+| Scale original to 4P and call it "enhanced" | Apply real cooking improvements (techniques, timing, tips) |
+| Assume you know what's there | Always read current state before modifying |
+
+**An "enhanced" recipe must have actual improvements:**
+- Better cooking techniques
+- Timing optimization
+- Equipment-specific instructions
+- Texture/doneness cues
+- NOT just scaled quantities
+
+---
+
 **Update JSON format** - only include fields you're changing:
 
 ```json
@@ -244,7 +272,38 @@ Before finalizing any recipe improvement, verify:
 
 5. **Cross-reference**: For each ingredient, trace it from the ingredient list → instructions → final dish
 
-6. **Tips field**: Cooking tips, variations, and substitution notes go in the `tips` field, NOT in instructions
+6. **Tips field content**: Tips are for optional enhancements, NOT operational flow:
+   - ✅ **Belongs in tips field**: Reference info (e.g., spice blend composition), make-ahead suggestions, storage notes
+   - ❌ **Does NOT belong in tips field**: Substitutions, flavor variations, technique alternatives - these should be **inline**
+
+8. **Inline tips with 💡 prefix**: Actionable tips are **separate entries** in the instructions array, placed right after the step they relate to:
+   - Format: `💡 ALTERNATIV: Use X instead of Y...` or `💡 EXTRA: Add Z for more flavor`
+   - **IMPORTANT**: Tips are their own array entry, NOT appended to the step text
+   - Examples:
+     ```json
+     [
+       "Skala pumpan och skär i bitar. Ringla över olja.",
+       "💡 ALTERNATIV: Använd hokkaidopumpa - skalet är ätbart.",
+       "⏱️ 5 min: Ställ in i ugnen..."
+     ]
+     ```
+   - ❌ Wrong: `"Skala pumpan... 💡 ALTERNATIV: Använd hokkaido..."` (embedded in step)
+   - ✅ Correct: Tip on its own line, after the step it relates to
+   - **Why separate?** The mobile app renders tips with distinct styling (🟢 green background), which only works when the entry starts with 💡
+
+7. **Timeline format for complex recipes**: For recipes with parallel cooking (oven + airfryer, multiple components), use `⏱️ X min:` prefix format:
+   - Each timeline step is a **separate entry** in the instructions array
+   - Format: `⏱️ 0 min: Sätt ugnen på 200°C. Skär potatisen...`
+   - Not every step needs a time marker - only when timing coordination matters
+   - Example structure:
+     ```
+     ["⏱️ 0 min: Sätt ugnen på 175°C. Förbered grönsakerna...",
+      "Blanda grönsakerna med olja och kryddor. Ställ in i ugnen.",
+      "⏱️ 5 min: Marinera kycklingen...",
+      "⏱️ 10 min: Lägg kycklingen i airfryern på 180°C...",
+      "⏱️ 25 min: Stek Quornfiléerna i smör...",
+      "⏱️ 35 min: Servera!"]
+     ```
 
 ---
 
@@ -293,6 +352,8 @@ This example demonstrates the **staggered timing principle** for roasted vegetab
 | Preserve "one-pan simplicity" when it hurts quality | Split cooking if it produces better results (e.g., juicier chicken) |
 | Skip airfryer when it would genuinely help | Sheet pan meals often benefit from separate cooking |
 | Use "protein/proteiner" in recipe text | Use specific names: kyckling, Quorn, lax, etc. |
+| Put substitution tips in the tips field | Inline with 💡 in the relevant instruction step |
+| Put "add crème fraîche for richness" at the end | Put 💡 EXTRA KRÄMIGHET inline where you add parmesan |
 
 ---
 

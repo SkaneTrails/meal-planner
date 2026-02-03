@@ -9,46 +9,22 @@ on:
   workflow_dispatch:
 
 env:
+  # Firebase project ID
   FIREBASE_PROJECT_ID: hikes-482104
-  # GCP project number (from: gcloud projects describe hikes-482104 --format='value(projectNumber)')
-  GCP_PROJECT_NUMBER: "666169448126"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: production
 
-    # Required permissions for Workload Identity Federation
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Authenticate with Google Cloud (Workload Identity Federation)
-        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
-        with:
-          workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/github-provider
-          service_account: github-actions-firebase@${{ env.FIREBASE_PROJECT_ID }}.iam.gserviceaccount.com
-
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-
-      - name: Fetch secrets from Secret Manager
-        id: secrets
-        run: |
-          echo "EXPO_PUBLIC_API_URL=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_API_URL)" >> $GITHUB_OUTPUT
-          echo "EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY)" >> $GITHUB_OUTPUT
-          echo "EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID)" >> $GITHUB_OUTPUT
-          echo "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID)" >> $GITHUB_OUTPUT
-          echo "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id)" >> $GITHUB_OUTPUT
-
       - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+        uses: actions/setup-node@cdcab5eeda1f8cafde30020a865ad99ccb81baed # v5.0.0
         with:
-          node-version: "24"
+          node-version: "20"
           cache: "npm"
           cache-dependency-path: mobile/package-lock.json
 
@@ -56,53 +32,25 @@ jobs:
         working-directory: mobile
         run: npm ci
 
-      # Cache Metro bundler based on source files (not just deps)
-      - name: Cache Expo/Metro build
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          path: |
-            mobile/.expo
-            mobile/node_modules/.cache/metro
-            mobile/node_modules/.cache/babel-loader
-          key: expo-web-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}-${{ hashFiles('mobile/app/**', 'mobile/components/**', 'mobile/lib/**') }}
-          restore-keys: |
-            expo-web-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}-
-            expo-web-${{ runner.os }}-
-
       - name: Build web app
         working-directory: mobile
         env:
-          NODE_ENV: production
-          # Secrets from Secret Manager (fetched above)
-          EXPO_PUBLIC_API_URL: ${{ steps.secrets.outputs.EXPO_PUBLIC_API_URL }}
-          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_APP_ID }}
-          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
-          # Static values derived from project ID
-          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ env.FIREBASE_PROJECT_ID }}.firebaseapp.com
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ env.FIREBASE_PROJECT_ID }}
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ env.FIREBASE_PROJECT_ID }}.appspot.com
-        run: npm run build:web
-
-      # Cache Firebase CLI globally to avoid reinstalling every run
-      - name: Cache Firebase CLI
-        id: firebase-cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          path: ~/.npm-global
-          key: firebase-cli-${{ runner.os }}-v13
-
-      - name: Install Firebase CLI
-        if: steps.firebase-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p ~/.npm-global
-          npm config set prefix '~/.npm-global'
-          npm install -g firebase-tools
-
-      - name: Add Firebase CLI to PATH
-        run: echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
+          # Production Firebase config from secrets
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+        run: npx expo export --platform web
 
       - name: Deploy to Firebase Hosting
-        working-directory: mobile
-        run: firebase deploy --only hosting --project ${{ env.FIREBASE_PROJECT_ID }}
+        uses: FirebaseExtended/action-hosting-deploy@0cbcac4740c2bfb00d632f0b863b57713124eb5a # v0.9.0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ env.FIREBASE_PROJECT_ID }}
+          channelId: live
+          entryPoint: mobile

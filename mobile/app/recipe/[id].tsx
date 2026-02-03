@@ -24,7 +24,7 @@ import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMea
 import { useAuth } from '@/lib/hooks/use-auth';
 import { BouncingLoader } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
-import type { DietLabel, MealLabel, MealType } from '@/lib/types';
+import type { DietLabel, MealLabel, MealType, StructuredInstruction } from '@/lib/types';
 
 // All diet label options
 const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] = [
@@ -145,6 +145,194 @@ function ThumbRating({ rating, onThumbUp, onThumbDown, size = 28 }: ThumbRatingP
   );
 }
 
+// Instruction item component for rendering different instruction types
+interface InstructionItemProps {
+  instruction: StructuredInstruction;
+  index: number;
+  isCompleted: boolean;
+  onToggle: () => void;
+}
+
+function InstructionItem({ instruction, index, isCompleted, onToggle }: InstructionItemProps) {
+  const { type, content, time, step_number } = instruction;
+
+  // Timeline entry - special styling with clock icon
+  if (type === 'timeline') {
+    return (
+      <Pressable
+        onPress={onToggle}
+        style={({ pressed }) => ({
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          paddingVertical: 14,
+          backgroundColor: isCompleted ? '#DCFCE7' : (pressed ? '#EDE9FE' : '#F3E8FF'),  // Purple tint for timeline
+          borderRadius: 12,
+          paddingHorizontal: 12,
+          marginBottom: 4,
+          borderLeftWidth: 3,
+          borderLeftColor: isCompleted ? '#16A34A' : '#7C3AED',  // Purple accent
+          opacity: isCompleted ? 0.7 : 1,
+        })}
+      >
+        <View style={{
+          width: 32,
+          height: 32,
+          borderRadius: 16,
+          backgroundColor: isCompleted ? '#16A34A' : '#7C3AED',  // Purple for timeline
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 14,
+          marginTop: 2,
+        }}>
+          {isCompleted ? (
+            <Ionicons name="checkmark" size={18} color="#fff" />
+          ) : (
+            <Ionicons name="time-outline" size={18} color="#fff" />
+          )}
+        </View>
+        <View style={{ flex: 1 }}>
+          {time !== null && time !== undefined ? (
+            <Text style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: isCompleted ? '#166534' : '#7C3AED',
+              marginBottom: 4,
+              textDecorationLine: isCompleted ? 'line-through' : 'none',
+            }}>
+              ⏱️ {time} min
+            </Text>
+          ) : (
+            <Text style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: isCompleted ? '#166534' : '#7C3AED',
+              marginBottom: 4,
+              textDecorationLine: isCompleted ? 'line-through' : 'none',
+            }}>
+              📝 Översikt
+            </Text>
+          )}
+          <Text style={{
+            fontSize: 15,
+            color: isCompleted ? '#166534' : '#4A3728',
+            lineHeight: 24,
+            textDecorationLine: isCompleted ? 'line-through' : 'none',
+          }}>
+            {content}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  }
+
+  // Inline tip - light bulb styling
+  if (type === 'tip') {
+    return (
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        backgroundColor: '#FEF3C7',  // Amber/yellow tint
+        borderRadius: 12,
+        marginBottom: 4,
+        borderLeftWidth: 3,
+        borderLeftColor: '#F59E0B',  // Amber accent
+      }}>
+        <View style={{
+          width: 28,
+          height: 28,
+          borderRadius: 14,
+          backgroundColor: '#F59E0B',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 12,
+          marginTop: 2,
+        }}>
+          <Text style={{ fontSize: 14 }}>💡</Text>
+        </View>
+        <Text style={{
+          flex: 1,
+          fontSize: 14,
+          color: '#92400E',
+          lineHeight: 22,
+          fontStyle: 'italic',
+        }}>
+          {content}
+        </Text>
+      </View>
+    );
+  }
+
+  // Section heading
+  if (type === 'heading') {
+    return (
+      <View style={{
+        paddingVertical: 12,
+        paddingHorizontal: 4,
+        marginTop: index > 0 ? 16 : 0,
+        marginBottom: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E8D5C4',
+      }}>
+        <Text style={{
+          fontSize: 17,
+          fontWeight: '700',
+          color: '#4A3728',
+          letterSpacing: -0.2,
+        }}>
+          {content}
+        </Text>
+      </View>
+    );
+  }
+
+  // Regular step (default)
+  return (
+    <Pressable
+      onPress={onToggle}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingVertical: 14,
+        backgroundColor: isCompleted
+          ? '#DCFCE7'
+          : ((step_number ?? 1) % 2 === 0 ? '#F9F5F0' : (pressed ? '#F5E6D3' : 'transparent')),
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        marginBottom: 4,
+        opacity: isCompleted ? 0.7 : 1,
+      })}
+    >
+      <View style={{
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: isCompleted ? '#16A34A' : '#4A3728',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 14,
+        marginTop: 2,
+      }}>
+        {isCompleted ? (
+          <Ionicons name="checkmark" size={18} color="#fff" />
+        ) : (
+          <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>{step_number}</Text>
+        )}
+      </View>
+      <Text style={{
+        flex: 1,
+        fontSize: 15,
+        color: isCompleted ? '#166534' : '#4A3728',
+        lineHeight: 24,
+        textDecorationLine: isCompleted ? 'line-through' : 'none',
+      }}>
+        {content}
+      </Text>
+    </Pressable>
+  );
+}
+
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -176,6 +364,9 @@ export default function RecipeDetailScreen() {
 
   // Instruction step completion tracking (local state - resets on page reload)
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  // AI changes section collapsed state (default collapsed/hidden)
+  const [showAiChanges, setShowAiChanges] = useState(false);
 
   const toggleStep = (index: number) => {
     hapticSelection();
@@ -863,7 +1054,19 @@ export default function RecipeDetailScreen() {
             </View>
             {recipe.instructions.length === 0 ? (
               <Text style={{ color: '#6b7280', fontSize: 15, fontStyle: 'italic' }}>No instructions listed</Text>
+            ) : recipe.structured_instructions ? (
+              // Use structured instructions if available (parsed by API)
+              recipe.structured_instructions.map((instruction, index) => (
+                <InstructionItem
+                  key={index}
+                  instruction={instruction}
+                  index={index}
+                  isCompleted={completedSteps.has(index)}
+                  onToggle={() => toggleStep(index)}
+                />
+              ))
             ) : (
+              // Fallback: render plain string instructions
               recipe.instructions.map((instruction, index) => {
                 const isCompleted = completedSteps.has(index);
                 return (
@@ -933,27 +1136,42 @@ export default function RecipeDetailScreen() {
             </View>
           )}
 
-          {/* Changes made (only for enhanced recipes, collapsible) */}
+          {/* Changes made (only for enhanced recipes, collapsible - default hidden) */}
           {isEnhanced && recipe.changes_made && recipe.changes_made.length > 0 && (
             <View style={{ marginBottom: 24 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <Pressable
+                onPress={() => setShowAiChanges(!showAiChanges)}
+                style={({ pressed }) => ({
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: showAiChanges ? 12 : 0,
+                  opacity: pressed ? 0.7 : 1,
+                })}
+              >
                 <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#DDD6FE', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
                   <Ionicons name="sparkles" size={18} color="#7C3AED" />
                 </View>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3 }}>
+                <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3, flex: 1 }}>
                   AI-förbättringar
                 </Text>
-              </View>
-              <View style={{ backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16 }}>
-                {recipe.changes_made.map((change, index) => (
-                  <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: index < recipe.changes_made!.length - 1 ? 8 : 0 }}>
-                    <Ionicons name="checkmark-circle" size={18} color="#7C3AED" style={{ marginRight: 10, marginTop: 2 }} />
-                    <Text style={{ flex: 1, fontSize: 14, color: '#4A3728', lineHeight: 20 }}>
-                      {change}
-                    </Text>
-                  </View>
-                ))}
-              </View>
+                <Ionicons
+                  name={showAiChanges ? 'chevron-up' : 'chevron-down'}
+                  size={20}
+                  color="#7C3AED"
+                />
+              </Pressable>
+              {showAiChanges && (
+                <View style={{ backgroundColor: '#F5F3FF', borderRadius: 16, padding: 16 }}>
+                  {recipe.changes_made.map((change, index) => (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: index < recipe.changes_made!.length - 1 ? 8 : 0 }}>
+                      <Ionicons name="checkmark-circle" size={18} color="#7C3AED" style={{ marginRight: 10, marginTop: 2 }} />
+                      <Text style={{ flex: 1, fontSize: 14, color: '#4A3728', lineHeight: 20 }}>
+                        {change}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           )}
 
