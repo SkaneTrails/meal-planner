@@ -103,6 +103,10 @@ class RecipeBase(BaseModel):
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating from 1-5 stars")
     tips: str | None = Field(default=None, description="Cooking tips")
+    # Household fields (for multi-tenancy)
+    household_id: str | None = Field(default=None, description="Household that owns this recipe (None = legacy/shared)")
+    visibility: str = Field(default="household", description="'household' = private, 'shared' = visible to all")
+    created_by: str | None = Field(default=None, description="Email of user who created the recipe")
 
 
 class Recipe(RecipeBase):

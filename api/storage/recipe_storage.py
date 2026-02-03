@@ -54,6 +54,10 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         original_id=data.get("original_id"),
         tips=data.get("tips"),
         changes_made=data.get("changes_made"),
+        # Household fields
+        household_id=data.get("household_id"),
+        visibility=data.get("visibility", "household"),
+        created_by=data.get("created_by"),
     )
 
 
@@ -89,13 +93,17 @@ def find_recipe_by_url(url: str) -> Recipe | None:
     return None
 
 
-def get_all_recipes(*, include_duplicates: bool = False, database: str = DEFAULT_DATABASE) -> list[Recipe]:
+def get_all_recipes(
+    *, include_duplicates: bool = False, database: str = DEFAULT_DATABASE, household_id: str | None = None
+) -> list[Recipe]:
     """
-    Get all recipes.
+    Get all recipes visible to a household.
 
     Args:
         include_duplicates: If False (default), deduplicate by URL.
         database: The database to read from (default or meal-planner for AI-enhanced).
+        household_id: If provided, filter to recipes owned by this household OR shared/legacy recipes.
+                      If None, return all recipes (for superusers or backward compatibility).
 
     Returns:
         List of recipes.
@@ -106,7 +114,23 @@ def get_all_recipes(*, include_duplicates: bool = False, database: str = DEFAULT
     recipes = []
     for doc in docs:
         data = doc.to_dict()
-        recipes.append(_doc_to_recipe(doc.id, data))
+        recipe = _doc_to_recipe(doc.id, data)
+
+        # Apply household filtering if specified
+        if household_id is not None:
+            # Include recipe if:
+            # 1. It belongs to this household, OR
+            # 2. It has visibility="shared", OR
+            # 3. It's a legacy recipe (no household_id) - treat as shared
+            recipe_household = recipe.household_id
+            is_owned = recipe_household == household_id
+            is_shared = recipe.visibility == "shared"
+            is_legacy = recipe_household is None
+
+            if not (is_owned or is_shared or is_legacy):
+                continue
+
+        recipes.append(recipe)
 
     if include_duplicates:
         return recipes
@@ -132,6 +156,8 @@ def save_recipe(  # noqa: PLR0913
     improved: bool = False,
     original_id: str | None = None,
     changes_made: list[str] | None = None,
+    household_id: str | None = None,
+    created_by: str | None = None,
 ) -> Recipe:
     """
     Save a new recipe to Firestore.
@@ -143,6 +169,8 @@ def save_recipe(  # noqa: PLR0913
         improved: Whether this recipe has been AI-enhanced.
         original_id: Original recipe ID if this is an enhanced version.
         changes_made: List of changes made by AI enhancement.
+        household_id: The household that owns this recipe.
+        created_by: Email of the user who created the recipe.
 
     Returns:
         The saved recipe with its document ID.
@@ -173,6 +201,10 @@ def save_recipe(  # noqa: PLR0913
         "meal_label": recipe.meal_label.value if recipe.meal_label else None,
         "created_at": now,
         "updated_at": now,
+        # Household fields
+        "household_id": household_id,
+        "visibility": recipe.visibility if hasattr(recipe, "visibility") else "household",
+        "created_by": created_by,
     }
 
     # Add enhancement fields if present
@@ -186,11 +218,20 @@ def save_recipe(  # noqa: PLR0913
     doc_ref.set(data)
 
     return Recipe(
-        id=doc_ref.id, improved=improved, original_id=original_id, changes_made=changes_made, **recipe.model_dump()
+        id=doc_ref.id,
+        improved=improved,
+        original_id=original_id,
+        changes_made=changes_made,
+        household_id=household_id,
+        visibility=str(data["visibility"]),
+        created_by=created_by,
+        **recipe.model_dump(exclude={"household_id", "visibility", "created_by"}),
     )
 
 
-def update_recipe(recipe_id: str, updates: RecipeUpdate, database: str = DEFAULT_DATABASE) -> Recipe | None:
+def update_recipe(
+    recipe_id: str, updates: RecipeUpdate, database: str = DEFAULT_DATABASE, *, household_id: str | None = None
+) -> Recipe | None:
     """
     Update an existing recipe in Firestore.
 
@@ -198,9 +239,10 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, database: str = DEFAULT
         recipe_id: The Firestore document ID.
         updates: The fields to update.
         database: The database to update in (default or meal-planner for AI-enhanced).
+        household_id: If provided, verify the recipe belongs to this household before updating.
 
     Returns:
-        The updated recipe, or None if not found.
+        The updated recipe, or None if not found or not authorized.
     """
     db = get_firestore_client(database)
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
@@ -208,6 +250,15 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, database: str = DEFAULT
     doc = cast("DocumentSnapshot", doc_ref.get())
     if not doc.exists:
         return None
+
+    data = doc.to_dict()
+
+    # Verify household ownership if specified
+    if household_id is not None:
+        recipe_household = data.get("household_id") if data else None
+        # Allow update if: owned by this household, OR it's a legacy recipe (no household)
+        if recipe_household is not None and recipe_household != household_id:
+            return None
 
     # Only update fields that are set
     update_data = {"updated_at": datetime.now(tz=UTC)}
@@ -247,28 +298,39 @@ def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | Non
     return _doc_to_recipe(doc.id, data)
 
 
-def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> bool:
+def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE, *, household_id: str | None = None) -> bool:
     """
     Delete a recipe by ID.
 
     Args:
         recipe_id: The Firestore document ID.
         database: The database to delete from (default or meal-planner for AI-enhanced).
+        household_id: If provided, verify the recipe belongs to this household before deleting.
 
     Returns:
-        True if deleted, False if not found.
+        True if deleted, False if not found or not authorized.
     """
     db = get_firestore_client(database)
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
-    if not cast("DocumentSnapshot", doc_ref.get()).exists:
+    doc = cast("DocumentSnapshot", doc_ref.get())
+    if not doc.exists:
         return False
+
+    data = doc.to_dict()
+
+    # Verify household ownership if specified
+    if household_id is not None and data:
+        recipe_household = data.get("household_id")
+        # Allow delete if: owned by this household, OR it's a legacy recipe (no household)
+        if recipe_household is not None and recipe_household != household_id:
+            return False
 
     doc_ref.delete()
     return True
 
 
-def search_recipes(query: str, database: str = DEFAULT_DATABASE) -> list[Recipe]:
+def search_recipes(query: str, database: str = DEFAULT_DATABASE, *, household_id: str | None = None) -> list[Recipe]:
     """
     Search recipes by title (case-sensitive prefix match).
 
@@ -278,6 +340,7 @@ def search_recipes(query: str, database: str = DEFAULT_DATABASE) -> list[Recipe]
     Args:
         query: The search query.
         database: The database to search in.
+        household_id: If provided, filter to recipes owned by this household OR shared/legacy.
 
     Returns:
         List of matching recipes.
@@ -293,6 +356,18 @@ def search_recipes(query: str, database: str = DEFAULT_DATABASE) -> list[Recipe]
     recipes = []
     for doc in docs:
         data = doc.to_dict()
-        recipes.append(_doc_to_recipe(doc.id, data))
+        recipe = _doc_to_recipe(doc.id, data)
+
+        # Apply household filtering if specified
+        if household_id is not None:
+            recipe_household = recipe.household_id
+            is_owned = recipe_household == household_id
+            is_shared = recipe.visibility == "shared"
+            is_legacy = recipe_household is None
+
+            if not (is_owned or is_shared or is_legacy):
+                continue
+
+        recipes.append(recipe)
 
     return recipes

@@ -12,6 +12,7 @@ from google.cloud import storage
 from PIL import Image
 
 from api.auth.firebase import require_auth
+from api.auth.models import AuthenticatedUser
 from api.models.recipe import Recipe, RecipeCreate, RecipeParseRequest, RecipeScrapeRequest, RecipeUpdate
 from api.storage import recipe_storage
 from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE
@@ -75,40 +76,78 @@ def _create_thumbnail(image_data: bytes) -> tuple[bytes, str]:
     return output.getvalue(), "image/jpeg"
 
 
+def _require_household(user: AuthenticatedUser) -> str:
+    """Require user to have a household, return household_id."""
+    if not user.household_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="You must be a member of a household to create/edit recipes"
+        )
+    return user.household_id
+
+
 @router.get("")
 async def list_recipes(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
     search: Annotated[str | None, Query(description="Search recipes by title")] = None,
     *,
     include_duplicates: Annotated[bool, Query(description="Include duplicate URLs")] = False,
     enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> list[Recipe]:
-    """Get all recipes, optionally filtered by search query."""
+    """Get all recipes visible to the user's household.
+
+    Returns recipes owned by the household, shared recipes, and legacy recipes (no household).
+    """
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
+    # Filter by household if user has one, otherwise show all (for superusers without household)
+    household_id = user.household_id
     if search:
-        return recipe_storage.search_recipes(search, database=database)
-    return recipe_storage.get_all_recipes(include_duplicates=include_duplicates, database=database)
+        return recipe_storage.search_recipes(search, database=database, household_id=household_id)
+    return recipe_storage.get_all_recipes(
+        include_duplicates=include_duplicates, database=database, household_id=household_id
+    )
 
 
 @router.get("/{recipe_id}")
 async def get_recipe(
-    recipe_id: str, *, enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    recipe_id: str,
+    *,
+    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> Recipe:
-    """Get a single recipe by ID."""
+    """Get a single recipe by ID.
+
+    Users can view recipes they own, shared recipes, or legacy recipes.
+    """
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
     recipe = recipe_storage.get_recipe(recipe_id, database=database)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # Check visibility: owned, shared, or legacy
+    household_id = user.household_id
+    if household_id is not None:
+        is_owned = recipe.household_id == household_id
+        is_shared = recipe.visibility == "shared"
+        is_legacy = recipe.household_id is None
+        if not (is_owned or is_shared or is_legacy):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
     return recipe
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-async def create_recipe(recipe: RecipeCreate) -> Recipe:
-    """Create a new recipe manually."""
-    return recipe_storage.save_recipe(recipe)
+async def create_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe: RecipeCreate) -> Recipe:
+    """Create a new recipe manually.
+
+    Recipe will be owned by the user's household.
+    """
+    household_id = _require_household(user)
+    return recipe_storage.save_recipe(recipe, household_id=household_id, created_by=user.email)
 
 
 @router.post("/scrape", status_code=status.HTTP_201_CREATED)
 async def scrape_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
     request: RecipeScrapeRequest,
     *,
     enhance: Annotated[bool, Query(description="Enhance recipe with AI after scraping")] = False,
@@ -117,7 +156,9 @@ async def scrape_recipe(
 
     This endpoint proxies to the scrape Cloud Function for isolation.
     If enhance=true, the recipe will be enhanced with AI after scraping.
+    Recipe will be owned by the user's household.
     """
+    household_id = _require_household(user)
     url = str(request.url)
 
     # Check if recipe already exists
@@ -162,7 +203,7 @@ async def scrape_recipe(
         total_time=scraped_data.get("total_time"),
     )
 
-    saved_recipe = recipe_storage.save_recipe(recipe_create)
+    saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
 
     # If enhancement requested, enhance the recipe
     if enhance:  # pragma: no cover
@@ -197,6 +238,8 @@ async def scrape_recipe(
                     improved=True,
                     original_id=saved_recipe.id,
                     changes_made=enhanced_data.get("changes_made", []),
+                    household_id=household_id,
+                    created_by=user.email,
                 )
 
             except EnhancementError as e:
@@ -208,6 +251,7 @@ async def scrape_recipe(
 
 @router.post("/parse", status_code=status.HTTP_201_CREATED)
 async def parse_recipe(  # pragma: no cover
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
     request: RecipeParseRequest,
     *,
     enhance: Annotated[bool, Query(description="Enhance recipe with AI after parsing")] = False,
@@ -216,7 +260,9 @@ async def parse_recipe(  # pragma: no cover
 
     This endpoint is used for client-side scraping where the mobile app fetches
     the HTML directly (avoiding cloud IP blocking issues) and sends it to the API.
+    Recipe will be owned by the user's household.
     """
+    household_id = _require_household(user)
     url = str(request.url)
     html = request.html
     logger.info("[parse_recipe] Received request for URL: %s, HTML length: %d", url, len(html))
@@ -263,7 +309,7 @@ async def parse_recipe(  # pragma: no cover
         total_time=scraped_data.get("total_time"),
     )
 
-    saved_recipe = recipe_storage.save_recipe(recipe_create)
+    saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
 
     # If enhancement requested, enhance the recipe
     if enhance:  # pragma: no cover
@@ -298,6 +344,8 @@ async def parse_recipe(  # pragma: no cover
                     improved=True,
                     original_id=saved_recipe.id,
                     changes_made=enhanced_data.get("changes_made", []),
+                    household_id=household_id,
+                    created_by=user.email,
                 )
 
             except EnhancementError as e:
@@ -309,14 +357,19 @@ async def parse_recipe(  # pragma: no cover
 
 @router.put("/{recipe_id}")
 async def update_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
     recipe_id: str,
     updates: RecipeUpdate,
     *,
     enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> Recipe:
-    """Update an existing recipe."""
+    """Update an existing recipe.
+
+    Users can only update recipes they own (same household).
+    """
+    household_id = _require_household(user)
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
-    recipe = recipe_storage.update_recipe(recipe_id, updates, database=database)
+    recipe = recipe_storage.update_recipe(recipe_id, updates, database=database, household_id=household_id)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
     return recipe
@@ -324,16 +377,24 @@ async def update_recipe(
 
 @router.delete("/{recipe_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_recipe(
-    recipe_id: str, *, enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    recipe_id: str,
+    *,
+    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> None:
-    """Delete a recipe."""
+    """Delete a recipe.
+
+    Users can only delete recipes they own (same household).
+    """
+    household_id = _require_household(user)
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
-    if not recipe_storage.delete_recipe(recipe_id, database=database):
+    if not recipe_storage.delete_recipe(recipe_id, database=database, household_id=household_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
 
 @router.post("/{recipe_id}/image", status_code=status.HTTP_200_OK)
 async def upload_recipe_image(  # pragma: no cover
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
     recipe_id: str,
     file: Annotated[UploadFile, File(description="Image file to upload")],
     *,
@@ -341,14 +402,21 @@ async def upload_recipe_image(  # pragma: no cover
 ) -> Recipe:
     """Upload an image for a recipe and update the recipe's image_url.
 
+    Users can only upload images for recipes they own (same household).
+
     The image is automatically resized to a thumbnail (max 800x600) and
     converted to JPEG for optimal storage and loading performance.
     """
+    household_id = _require_household(user)
     database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
 
-    # Verify recipe exists
+    # Verify recipe exists and user owns it
     recipe = recipe_storage.get_recipe(recipe_id, database=database)
     if recipe is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # Check ownership (must own the recipe to upload image)
+    if recipe.household_id is not None and recipe.household_id != household_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     # Validate file type
@@ -410,7 +478,7 @@ async def upload_recipe_image(  # pragma: no cover
 
 
 @router.post("/{recipe_id}/enhance", status_code=status.HTTP_200_OK)
-async def enhance_recipe(recipe_id: str) -> Recipe:
+async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
     """
     Enhance a recipe using AI (Gemini).
 
@@ -420,8 +488,11 @@ async def enhance_recipe(recipe_id: str) -> Recipe:
     - Adapting for dietary preferences (vegetarian alternatives)
     - Replacing HelloFresh spice blends with individual spices
 
+    Users can only enhance recipes they own (same household).
+
     **Currently disabled** - Set ENABLE_RECIPE_ENHANCEMENT=true to enable.
     """
+    household_id = _require_household(user)
     from api.services.recipe_enhancer import (
         EnhancementDisabledError,
         EnhancementError,
@@ -436,9 +507,13 @@ async def enhance_recipe(recipe_id: str) -> Recipe:
             detail="Recipe enhancement is currently disabled. Set ENABLE_RECIPE_ENHANCEMENT=true to enable.",
         )
 
-    # Get the original recipe
+    # Get the original recipe and verify ownership
     recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
     if recipe is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    # Check ownership (must own the recipe to enhance it)
+    if recipe.household_id is not None and recipe.household_id != household_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     # Enhance the recipe
@@ -464,8 +539,14 @@ async def enhance_recipe(recipe_id: str) -> Recipe:
             tips=enhanced_data.get("tips"),
         )
 
-        # Save with same ID to enhanced database
-        return recipe_storage.save_recipe(enhanced_recipe, recipe_id=recipe_id, database=ENHANCED_DATABASE)
+        # Save with same ID to enhanced database, preserving household ownership
+        return recipe_storage.save_recipe(
+            enhanced_recipe,
+            recipe_id=recipe_id,
+            database=ENHANCED_DATABASE,
+            household_id=household_id,
+            created_by=user.email,
+        )
 
     except EnhancementDisabledError as e:  # pragma: no cover
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)) from e

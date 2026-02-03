@@ -9,6 +9,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from api.auth.models import AuthenticatedUser
 from api.models.recipe import Recipe, RecipeCreate
 from api.routers.recipes import router
 
@@ -19,12 +20,13 @@ app.include_router(router)
 
 @pytest.fixture
 def client() -> TestClient:
-    """Create test client with mocked auth."""
-    # Override the require_auth dependency to allow unauthenticated requests
+    """Create test client with mocked auth (user with household)."""
     from api.auth.firebase import require_auth
 
-    async def mock_auth() -> dict[str, str]:
-        return {"uid": "test_user"}
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            uid="test_user", email="test@example.com", household_id="test_household", role="member"
+        )
 
     app.dependency_overrides[require_auth] = mock_auth
 
@@ -92,7 +94,9 @@ class TestListRecipes:
             response = client.get("/recipes?enhanced=true")
 
         assert response.status_code == 200
-        mock_get.assert_called_once_with(include_duplicates=False, database="meal-planner")
+        mock_get.assert_called_once_with(
+            include_duplicates=False, database="meal-planner", household_id="test_household"
+        )
 
 
 class TestGetRecipe:
