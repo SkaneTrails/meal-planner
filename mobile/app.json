@@ -27,7 +27,12 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Meal Planner",
+      "shortName": "Meals",
+      "description": "Plan your weekly meals and generate grocery lists",
+      "themeColor": "#4A3728",
+      "backgroundColor": "#F5E6D3"
     },
     "plugins": ["expo-router"],
     "experiments": {
