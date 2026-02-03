@@ -25,6 +25,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { RecipeCard, GradientBackground } from '@/components';
+import { hapticLight, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 // Enable LayoutAnimation on Android
@@ -269,7 +270,10 @@ export default function RecipesScreen() {
             </Text>
           </Pressable>
           <Pressable
-            onPress={() => router.push('/add-recipe')}
+            onPress={() => {
+              hapticLight();
+              router.push('/add-recipe');
+            }}
             style={{
               flex: 1,
               flexDirection: 'row',
@@ -314,7 +318,10 @@ export default function RecipesScreen() {
             </Pressable>
           )}
           <Pressable
-            onPress={toggleFilters}
+            onPress={() => {
+              hapticLight();
+              toggleFilters();
+            }}
             style={{
               marginLeft: 8,
               padding: 6,
@@ -441,6 +448,7 @@ export default function RecipesScreen() {
               <Pressable
                 key={option.label}
                 onPress={() => {
+                  hapticSelection();
                   setDietFilter(option.value);
                   setShowDietPicker(false);
                 }}
@@ -496,6 +504,7 @@ export default function RecipesScreen() {
               <Pressable
                 key={option.label}
                 onPress={() => {
+                  hapticSelection();
                   setMealFilter(option.value);
                   setShowMealPicker(false);
                 }}
@@ -551,6 +560,7 @@ export default function RecipesScreen() {
               <Pressable
                 key={option.value}
                 onPress={() => {
+                  hapticSelection();
                   setSortBy(option.value);
                   setShowSortPicker(false);
                 }}

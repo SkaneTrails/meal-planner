@@ -12,6 +12,7 @@ import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
+import { hapticLight } from '@/lib/haptics';
 import type { Recipe, GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -420,7 +421,10 @@ export default function HomeScreen() {
               <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728', marginLeft: 10, letterSpacing: -0.3 }}>Inspiration</Text>
             </View>
             <Pressable
-              onPress={shuffleInspiration}
+              onPress={() => {
+                hapticLight();
+                shuffleInspiration();
+              }}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
