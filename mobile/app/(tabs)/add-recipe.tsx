@@ -143,30 +143,28 @@ export default function AddRecipeScreen() {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#F5F3FF',
+          backgroundColor: 'rgba(255, 255, 255, 0.55)',
           borderRadius: 12,
           padding: 16,
           marginBottom: 24,
-          borderWidth: 1,
-          borderColor: enhanceWithAI ? '#7C3AED' : '#E8D5C4',
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <View style={{
               width: 36,
               height: 36,
               borderRadius: 18,
-              backgroundColor: enhanceWithAI ? '#DDD6FE' : '#E8D5C4',
+              backgroundColor: enhanceWithAI ? '#E8D5C4' : 'rgba(255, 255, 255, 0.6)',
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: 12
             }}>
-              <Ionicons name="sparkles" size={18} color={enhanceWithAI ? '#7C3AED' : '#9CA3AF'} />
+              <Ionicons name="sparkles" size={18} color={enhanceWithAI ? '#5D4E40' : '#8B7355'} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#5D4E40' }}>
                 Förbättra med AI
               </Text>
-              <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2 }}>
+              <Text style={{ fontSize: 13, color: '#8B7355', marginTop: 2 }}>
                 Optimera mått, tider och instruktioner
               </Text>
             </View>
@@ -174,8 +172,8 @@ export default function AddRecipeScreen() {
           <Switch
             value={enhanceWithAI}
             onValueChange={setEnhanceWithAI}
-            trackColor={{ false: '#D1D5DB', true: '#C4B5FD' }}
-            thumbColor={enhanceWithAI ? '#7C3AED' : '#9CA3AF'}
+            trackColor={{ false: '#D1D5DB', true: '#C9B8A8' }}
+            thumbColor={enhanceWithAI ? '#5D4E40' : '#9CA3AF'}
             disabled={isPending}
           />
         </View>
@@ -184,7 +182,7 @@ export default function AddRecipeScreen() {
         <Pressable
           onPress={handleImport}
           disabled={!url || isPending}
-          style={{ paddingVertical: 14, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: url && !isPending ? '#4A3728' : '#9CA3AF' }}
+          style={{ paddingVertical: 14, borderRadius: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: url && !isPending ? '#5D4E40' : 'rgba(139, 115, 85, 0.4)' }}
         >
           {isPending ? (
             <>
@@ -205,7 +203,7 @@ export default function AddRecipeScreen() {
 
         {/* Supported sites */}
         <View style={{ marginTop: 32 }}>
-          <Text style={{ fontSize: 13, fontWeight: '600', color: '#6b7280', marginBottom: 12 }}>
+          <Text style={{ fontSize: 13, fontWeight: '600', color: '#8B7355', marginBottom: 12 }}>
             Stödda sajter (400+)
           </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -259,18 +257,18 @@ export default function AddRecipeScreen() {
                 width: 44,
                 height: 44,
                 borderRadius: 22,
-                backgroundColor: '#DDD6FE',
+                backgroundColor: '#E8D5C4',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: 12
               }}>
-                <Ionicons name="sparkles" size={22} color="#7C3AED" />
+                <Ionicons name="sparkles" size={22} color="#5D4E40" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728' }}>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40' }}>
                   Recept förbättrat!
                 </Text>
-                <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }} numberOfLines={1}>
+                <Text style={{ fontSize: 14, color: '#8B7355', marginTop: 2 }} numberOfLines={1}>
                   {importedRecipe?.title}
                 </Text>
               </View>
@@ -278,7 +276,7 @@ export default function AddRecipeScreen() {
 
             {/* Changes list */}
             <ScrollView style={{ maxHeight: 300, marginBottom: 20 }}>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginBottom: 12 }}>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#5D4E40', marginBottom: 12 }}>
                 AI-förbättringar:
               </Text>
               {importedRecipe?.changes_made?.map((change, index) => (
@@ -288,13 +286,13 @@ export default function AddRecipeScreen() {
                     flexDirection: 'row',
                     alignItems: 'flex-start',
                     marginBottom: 10,
-                    backgroundColor: '#F5F3FF',
+                    backgroundColor: 'rgba(232, 213, 196, 0.5)',
                     padding: 12,
                     borderRadius: 10,
                   }}
                 >
-                  <Ionicons name="checkmark-circle" size={18} color="#7C3AED" style={{ marginRight: 10, marginTop: 1 }} />
-                  <Text style={{ flex: 1, fontSize: 14, color: '#4A3728', lineHeight: 20 }}>
+                  <Ionicons name="checkmark-circle" size={18} color="#5D4E40" style={{ marginRight: 10, marginTop: 1 }} />
+                  <Text style={{ flex: 1, fontSize: 14, color: '#5D4E40', lineHeight: 20 }}>
                     {change}
                   </Text>
                 </View>
@@ -313,7 +311,7 @@ export default function AddRecipeScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: '#5D4E40' }}>
                   Lägg till fler
                 </Text>
               </Pressable>
@@ -323,7 +321,7 @@ export default function AddRecipeScreen() {
                   flex: 1,
                   paddingVertical: 14,
                   borderRadius: 12,
-                  backgroundColor: '#4A3728',
+                  backgroundColor: '#5D4E40',
                   alignItems: 'center',
                 }}
               >

@@ -335,28 +335,16 @@ export default function GroceryScreen() {
   // Show skeleton on initial load only (not on subsequent focus events)
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground variant="soft">
+      <GradientBackground>
         <View style={{ flex: 1 }}>
           <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <Text style={{
                 fontSize: fontSize['4xl'],
-                fontFamily: fontFamily.display,
                 fontWeight: '600',
                 color: colors.text.primary,
                 letterSpacing: letterSpacing.tight,
               }}>Grocery List</Text>
-              <View style={{
-                width: 48,
-                height: 48,
-                borderRadius: borderRadius.lg,
-                backgroundColor: colors.category.grocery.bg,
-                alignItems: 'center',
-                justifyContent: 'center',
-                ...shadows.sm,
-              }}>
-                <Ionicons name="cart-outline" size={22} color={colors.category.grocery.text} />
-              </View>
             </View>
           </View>
           <GroceryListSkeleton />
@@ -366,37 +354,18 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground variant="soft">
+    <GradientBackground>
       <View style={{ flex: 1 }}>
       {/* Header with title */}
       <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
             <Text style={{
-              fontSize: fontSize.sm,
-              fontWeight: fontWeight.medium,
-              color: colors.text.secondary,
-              letterSpacing: letterSpacing.wide,
-              textTransform: 'uppercase',
-            }}>Shopping</Text>
-            <Text style={{
               fontSize: fontSize['4xl'],
-              fontFamily: fontFamily.display,
               fontWeight: '600',
               color: colors.text.primary,
               letterSpacing: letterSpacing.tight,
             }}>Grocery List</Text>
-          </View>
-          <View style={{
-            width: 48,
-            height: 48,
-            borderRadius: borderRadius.lg,
-            backgroundColor: colors.category.grocery.bg,
-            alignItems: 'center',
-            justifyContent: 'center',
-            ...shadows.sm,
-          }}>
-            <Ionicons name="cart-outline" size={22} color={colors.category.grocery.text} />
           </View>
         </View>
       </View>
@@ -405,11 +374,10 @@ export default function GroceryScreen() {
       <View style={{ paddingHorizontal: spacing['2xl'], paddingBottom: spacing.lg }}>
         {/* Stats card */}
         <View style={{
-          backgroundColor: colors.white,
+          backgroundColor: colors.glass.card,
           borderRadius: borderRadius.lg,
           padding: spacing.xl,
           marginBottom: spacing.md,
-          ...shadows.md,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
@@ -436,10 +404,10 @@ export default function GroceryScreen() {
                   paddingHorizontal: 14,
                   paddingVertical: 10,
                   borderRadius: borderRadius.sm,
-                  backgroundColor: showAddItem ? colors.primary : colors.bgMid,
+                  backgroundColor: showAddItem ? '#7A6858' : 'rgba(255, 255, 255, 0.7)',
                 }}
               >
-                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color={showAddItem ? colors.white : colors.primary} />
+                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color={showAddItem ? colors.white : '#5D4E40'} />
               </Pressable>
 
               {/* Clear All button */}
@@ -452,10 +420,10 @@ export default function GroceryScreen() {
                     paddingHorizontal: 14,
                     paddingVertical: 10,
                     borderRadius: 12,
-                    backgroundColor: '#F5E6D3',
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
                   }}
                 >
-                  <Ionicons name="trash-outline" size={18} color="#4A3728" />
+                  <Ionicons name="trash-outline" size={18} color="#5D4E40" />
                 </Pressable>
               )}
 
@@ -469,10 +437,10 @@ export default function GroceryScreen() {
                     paddingHorizontal: 14,
                     paddingVertical: 10,
                     borderRadius: 12,
-                    backgroundColor: '#F5E6D3',
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
                   }}
                 >
-                  <Ionicons name="refresh" size={18} color="#4A3728" />
+                  <Ionicons name="refresh" size={18} color="#5D4E40" />
                 </Pressable>
               )}
             </View>
@@ -481,9 +449,9 @@ export default function GroceryScreen() {
           {/* Progress bar */}
           {itemsToBuy > 0 && (
             <View style={{ marginTop: 16 }}>
-              <View style={{ height: 6, backgroundColor: '#E8D5C4', borderRadius: 3, overflow: 'hidden' }}>
+              <View style={{ height: 6, backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: 3, overflow: 'hidden' }}>
                 <View
-                  style={{ height: '100%', backgroundColor: '#4A3728', borderRadius: 3, width: `${(checkedItemsToBuy / itemsToBuy) * 100}%` }}
+                  style={{ height: '100%', backgroundColor: '#7A6858', borderRadius: 3, width: `${(checkedItemsToBuy / itemsToBuy) * 100}%` }}
                 />
               </View>
             </View>
@@ -499,16 +467,16 @@ export default function GroceryScreen() {
                 marginTop: 12,
                 paddingVertical: 8,
                 paddingHorizontal: 12,
-                backgroundColor: '#F0FDF4',
+                backgroundColor: 'rgba(180, 230, 180, 0.7)',
                 borderRadius: 10,
                 gap: 8,
               }}
             >
-              <Ionicons name="home-outline" size={16} color="#166534" />
-              <Text style={{ fontSize: 13, color: '#166534', flex: 1 }}>
+              <Ionicons name="home-outline" size={16} color="#3D7A3D" />
+              <Text style={{ fontSize: 13, color: '#2D5A2D', flex: 1, fontWeight: '500' }}>
                 {hiddenAtHomeCount} item{hiddenAtHomeCount > 1 ? 's' : ''} hidden (at home)
               </Text>
-              <Ionicons name="chevron-forward" size={16} color="#166534" />
+              <Ionicons name="chevron-forward" size={16} color="#3D7A3D" />
             </Pressable>
           )}
         </View>
@@ -516,25 +484,24 @@ export default function GroceryScreen() {
         {/* Add item input */}
         {showAddItem && (
           <View style={{
-            backgroundColor: colors.white,
+            backgroundColor: 'rgba(255, 255, 255, 0.65)',
             borderRadius: borderRadius.md,
             padding: spacing.lg,
-            ...shadows.md,
           }}>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.primary, marginBottom: 10 }}>Add custom item</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#5D4E40', marginBottom: 10 }}>Add custom item</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <TextInput
                 style={{
                   flex: 1,
-                  backgroundColor: colors.bgMid,
+                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
                   borderRadius: borderRadius.sm,
                   paddingHorizontal: 14,
                   paddingVertical: 12,
                   fontSize: 15,
-                  color: colors.primary,
+                  color: '#5D4E40',
                 }}
                 placeholder="e.g. Milk, 2 liters"
-                placeholderTextColor={colors.text.muted}
+                placeholderTextColor="#A09080"
                 value={newItemText}
                 onChangeText={setNewItemText}
                 onSubmitEditing={handleAddItem}
@@ -544,11 +511,10 @@ export default function GroceryScreen() {
                 onPress={handleAddItem}
                 disabled={!newItemText.trim()}
                 style={{
-                  backgroundColor: newItemText.trim() ? colors.primary : colors.bgDark,
+                  backgroundColor: newItemText.trim() ? '#7A6858' : 'rgba(200, 190, 180, 0.5)',
                   paddingHorizontal: 20,
                   paddingVertical: 12,
                   borderRadius: borderRadius.sm,
-                  ...(newItemText.trim() ? shadows.md : shadows.none),
                 }}
               >
                 <Text style={{ fontSize: 15, fontWeight: '600', color: colors.white }}>Add</Text>
@@ -567,21 +533,10 @@ export default function GroceryScreen() {
         />
       ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <View style={{
-            width: 80,
-            height: 80,
-            borderRadius: 24,
-            backgroundColor: '#E8D5C4',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 20,
-          }}>
-            <Ionicons name="cart-outline" size={40} color="#4A3728" />
-          </View>
-          <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+          <Text style={{ color: '#5D4E40', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
             Your list is empty
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
+          <Text style={{ color: 'rgba(93, 78, 64, 0.7)', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
             Go to Weekly Menu and tap "Create List" to generate your grocery list from planned meals
           </Text>
         </View>

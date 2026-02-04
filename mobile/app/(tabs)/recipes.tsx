@@ -105,7 +105,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
       )}
       contentContainerStyle={{ padding: 8 }}
       refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor="#4A3728" />
+        <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
       }
       ListEmptyComponent={
         <View style={{ alignItems: 'center', paddingVertical: 80, paddingHorizontal: 32 }}>
@@ -113,19 +113,19 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
             width: 80,
             height: 80,
             borderRadius: 24,
-            backgroundColor: '#E8D5C4',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 20,
           }}>
-            <Ionicons name={searchQuery || dietFilter || mealFilter ? "search" : "book-outline"} size={36} color="#4A3728" />
+            <Ionicons name={searchQuery || dietFilter || mealFilter ? "search" : "book-outline"} size={36} color={colors.white} />
           </View>
-          <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+          <Text style={{ color: colors.text.primary, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
             {searchQuery || dietFilter || mealFilter
               ? 'No matches found'
               : 'Your recipe book is empty'}
           </Text>
-          <Text style={{ color: '#6B7280', fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
+          <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
             {searchQuery || dietFilter || mealFilter
               ? 'Try adjusting your search or filters'
               : 'Start building your collection by adding your favorite recipes'}
@@ -207,14 +207,13 @@ export default function RecipesScreen() {
   }, [recipes, searchQuery, dietFilter, mealFilter, sortBy]);
 
   return (
-    <GradientBackground variant="soft">
+    <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 100 }}>
       {/* Header */}
       <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 8 }}>
         <View style={{ marginBottom: 16 }}>
           <Text style={{
             fontSize: fontSize['4xl'],
-            fontFamily: fontFamily.display,
             fontWeight: '600',
             color: colors.text.primary,
             letterSpacing: letterSpacing.tight,
@@ -231,32 +230,31 @@ export default function RecipesScreen() {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: isEnhanced ? colors.primary : colors.white,
+          backgroundColor: isEnhanced ? '#7A6858' : colors.glass.card,
           borderRadius: borderRadius.lg,
           paddingHorizontal: 18,
           paddingVertical: 14,
           marginBottom: 16,
-          ...(isEnhanced ? shadows.glow : shadows.md),
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <View style={{
-              backgroundColor: isEnhanced ? 'rgba(232, 168, 124, 0.3)' : colors.bgWarm,
+              backgroundColor: isEnhanced ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.3)',
               borderRadius: borderRadius.sm,
               padding: 8
             }}>
-              <Ionicons name="sparkles" size={20} color={isEnhanced ? colors.accent : colors.text.primary} />
+              <Ionicons name="sparkles" size={20} color={isEnhanced ? '#FFD700' : '#8B7355'} />
             </View>
             <View style={{ marginLeft: 14, flex: 1 }}>
               <Text style={{
                 fontSize: fontSize.xl,
                 fontWeight: fontWeight.semibold,
-                color: isEnhanced ? colors.white : colors.text.primary,
+                color: isEnhanced ? colors.white : '#5D4E40',
               }}>
                 AI Enhanced
               </Text>
               <Text style={{
                 fontSize: fontSize.sm,
-                color: isEnhanced ? colors.gray[300] : colors.text.secondary,
+                color: isEnhanced ? 'rgba(255, 255, 255, 0.8)' : '#8B7355',
                 marginTop: 2,
               }}>
                 {isEnhanced ? 'Showing improved recipes' : 'Try AI-improved instructions'}
@@ -266,7 +264,7 @@ export default function RecipesScreen() {
           <Switch
             value={isEnhanced}
             onValueChange={setIsEnhanced}
-            trackColor={{ false: colors.gray[200], true: colors.accent }}
+            trackColor={{ false: 'rgba(255, 255, 255, 0.3)', true: '#A08060' }}
             thumbColor={colors.white}
           />
         </View>
@@ -282,16 +280,15 @@ export default function RecipesScreen() {
               justifyContent: 'center',
               paddingVertical: 14,
               borderRadius: borderRadius.lg,
-              backgroundColor: showAllRecipes ? colors.primary : colors.white,
-              ...shadows.md,
+              backgroundColor: showAllRecipes ? '#7A6858' : colors.glass.card,
             }}
           >
-            <Ionicons name={showAllRecipes ? "book" : "book-outline"} size={18} color={showAllRecipes ? colors.white : colors.text.primary} />
+            <Ionicons name={showAllRecipes ? "book" : "book-outline"} size={18} color={showAllRecipes ? colors.white : '#5D4E40'} />
             <Text style={{
               marginLeft: 8,
               fontSize: fontSize.lg,
               fontWeight: fontWeight.semibold,
-              color: showAllRecipes ? colors.white : colors.text.primary,
+              color: showAllRecipes ? colors.white : '#5D4E40',
             }}>
               All Recipes
             </Text>
@@ -308,16 +305,15 @@ export default function RecipesScreen() {
               justifyContent: 'center',
               paddingVertical: 14,
               borderRadius: borderRadius.lg,
-              backgroundColor: colors.white,
-              ...shadows.md,
+              backgroundColor: colors.glass.card,
             }}
           >
-            <Ionicons name="add-circle-outline" size={18} color={colors.accent} />
+            <Ionicons name="add-circle-outline" size={18} color="#8B7355" />
             <Text style={{
               marginLeft: 6,
               fontSize: fontSize.lg,
               fontWeight: fontWeight.semibold,
-              color: colors.text.primary,
+              color: '#5D4E40',
             }}>Add Recipe</Text>
           </Pressable>
         </View>
@@ -335,23 +331,22 @@ export default function RecipesScreen() {
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: colors.white,
+            backgroundColor: colors.glass.card,
             borderRadius: borderRadius.lg,
             paddingHorizontal: 14,
             paddingVertical: 12,
-            ...shadows.sm,
           }}>
-            <Ionicons name="search" size={18} color={colors.text.muted} />
+            <Ionicons name="search" size={18} color="#8B7355" />
             <TextInput
               ref={searchInputRef}
               style={{
                 flex: 1,
                 fontSize: fontSize.lg,
-                color: colors.text.primary,
+                color: '#5D4E40',
                 marginLeft: 10,
               }}
               placeholder="Search recipes..."
-              placeholderTextColor={colors.text.muted}
+              placeholderTextColor="#8B7355"
               value={searchQuery}
               onChangeText={setSearchQuery}
               onFocus={() => setIsSearchFocused(true)}
@@ -394,7 +389,7 @@ export default function RecipesScreen() {
               }}
               style={{ marginLeft: 12 }}
             >
-              <Text style={{ fontSize: 15, color: '#4A3728', fontWeight: '500' }}>Cancel</Text>
+              <Text style={{ fontSize: 15, color: colors.text.primary, fontWeight: '500' }}>Cancel</Text>
             </Pressable>
           )}
         </View>
@@ -407,20 +402,19 @@ export default function RecipesScreen() {
               <Pressable
                 onPress={() => setShowDietPicker(true)}
                 style={{
-                  backgroundColor: dietFilter ? '#E8F5E8' : colors.white,
+                  backgroundColor: dietFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
                   borderRadius: borderRadius.sm,
                   paddingHorizontal: 12,
                   paddingVertical: 10,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  ...shadows.sm,
                 }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '500', color: dietFilter ? '#2D5A3D' : colors.primary }}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: dietFilter ? '#2D5A3D' : '#5D4E40' }}>
                   {DIET_OPTIONS.find(o => o.value === dietFilter)?.label || 'Diet'}
                 </Text>
-                <Ionicons name="chevron-down" size={14} color={colors.text.muted} />
+                <Ionicons name="chevron-down" size={14} color="#8B7355" />
               </Pressable>
             </View>
 
@@ -429,20 +423,19 @@ export default function RecipesScreen() {
               <Pressable
                 onPress={() => setShowMealPicker(true)}
                 style={{
-                  backgroundColor: mealFilter ? '#E8F5E8' : colors.white,
+                  backgroundColor: mealFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
                   borderRadius: borderRadius.sm,
                   paddingHorizontal: 12,
                   paddingVertical: 10,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  ...shadows.sm,
                 }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '500', color: mealFilter ? '#2D5A3D' : colors.primary }}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: mealFilter ? '#2D5A3D' : '#5D4E40' }}>
                   {MEAL_OPTIONS.find(o => o.value === mealFilter)?.label || 'Meal'}
                 </Text>
-                <Ionicons name="chevron-down" size={14} color={colors.text.muted} />
+                <Ionicons name="chevron-down" size={14} color="#8B7355" />
               </Pressable>
             </View>
 
@@ -451,20 +444,19 @@ export default function RecipesScreen() {
               <Pressable
                 onPress={() => setShowSortPicker(true)}
                 style={{
-                  backgroundColor: colors.white,
+                  backgroundColor: colors.glass.card,
                   borderRadius: borderRadius.sm,
                   paddingHorizontal: 12,
                   paddingVertical: 10,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  ...shadows.sm,
                 }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '500', color: colors.primary }}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: '#5D4E40' }}>
                   {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Sort'}
                 </Text>
-                <Ionicons name="chevron-down" size={14} color={colors.text.muted} />
+                <Ionicons name="chevron-down" size={14} color="#8B7355" />
               </Pressable>
             </View>
           </View>
@@ -491,19 +483,19 @@ export default function RecipesScreen() {
         onRequestClose={() => setShowDietPicker(false)}
       >
         <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
           onPress={() => setShowDietPicker(false)}
         >
           <View style={{
-            backgroundColor: colors.white,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            backgroundColor: '#F5EDE5',
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
             paddingBottom: 40,
           }}>
             <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#E5E7EB', borderRadius: 2 }} />
+              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
             </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, paddingHorizontal: 20, marginBottom: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
               Filter by Diet
             </Text>
             {DIET_OPTIONS.map((option) => (
@@ -520,18 +512,20 @@ export default function RecipesScreen() {
                   justifyContent: 'space-between',
                   paddingVertical: 16,
                   paddingHorizontal: 20,
-                  backgroundColor: dietFilter === option.value ? '#F3E8E0' : 'transparent',
+                  backgroundColor: dietFilter === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
+                  borderRadius: 12,
+                  marginHorizontal: 8,
                 }}
               >
                 <Text style={{
                   fontSize: 16,
-                  color: colors.primary,
+                  color: '#5D4E40',
                   fontWeight: dietFilter === option.value ? '600' : '400',
                 }}>
                   {option.label}
                 </Text>
                 {dietFilter === option.value && (
-                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                  <Ionicons name="checkmark" size={20} color="#7A6858" />
                 )}
               </Pressable>
             ))}
@@ -547,19 +541,19 @@ export default function RecipesScreen() {
         onRequestClose={() => setShowMealPicker(false)}
       >
         <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
           onPress={() => setShowMealPicker(false)}
         >
           <View style={{
-            backgroundColor: colors.white,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            backgroundColor: '#F5EDE5',
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
             paddingBottom: 40,
           }}>
             <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#E5E7EB', borderRadius: 2 }} />
+              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
             </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, paddingHorizontal: 20, marginBottom: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
               Filter by Meal Type
             </Text>
             {MEAL_OPTIONS.map((option) => (
@@ -576,18 +570,20 @@ export default function RecipesScreen() {
                   justifyContent: 'space-between',
                   paddingVertical: 16,
                   paddingHorizontal: 20,
-                  backgroundColor: mealFilter === option.value ? '#F3E8E0' : 'transparent',
+                  backgroundColor: mealFilter === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
+                  borderRadius: 12,
+                  marginHorizontal: 8,
                 }}
               >
                 <Text style={{
                   fontSize: 16,
-                  color: colors.primary,
+                  color: '#5D4E40',
                   fontWeight: mealFilter === option.value ? '600' : '400',
                 }}>
                   {option.label}
                 </Text>
                 {mealFilter === option.value && (
-                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                  <Ionicons name="checkmark" size={20} color="#7A6858" />
                 )}
               </Pressable>
             ))}
@@ -603,19 +599,19 @@ export default function RecipesScreen() {
         onRequestClose={() => setShowSortPicker(false)}
       >
         <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
           onPress={() => setShowSortPicker(false)}
         >
           <View style={{
-            backgroundColor: colors.white,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            backgroundColor: '#F5EDE5',
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
             paddingBottom: 40,
           }}>
             <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#E5E7EB', borderRadius: 2 }} />
+              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
             </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.primary, paddingHorizontal: 20, marginBottom: 12 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
               Sort by
             </Text>
             {SORT_OPTIONS.map((option) => (
@@ -632,18 +628,20 @@ export default function RecipesScreen() {
                   justifyContent: 'space-between',
                   paddingVertical: 16,
                   paddingHorizontal: 20,
-                  backgroundColor: sortBy === option.value ? '#F3E8E0' : 'transparent',
+                  backgroundColor: sortBy === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
+                  borderRadius: 12,
+                  marginHorizontal: 8,
                 }}
               >
                 <Text style={{
                   fontSize: 16,
-                  color: colors.primary,
+                  color: '#5D4E40',
                   fontWeight: sortBy === option.value ? '600' : '400',
                 }}>
                   {option.label}
                 </Text>
                 {sortBy === option.value && (
-                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                  <Ionicons name="checkmark" size={20} color="#7A6858" />
                 )}
               </Pressable>
             ))}

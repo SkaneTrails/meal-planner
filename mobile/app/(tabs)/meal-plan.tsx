@@ -344,7 +344,7 @@ export default function MealPlanScreen() {
   };
 
   return (
-    <GradientBackground variant="soft">
+    <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
@@ -352,7 +352,6 @@ export default function MealPlanScreen() {
             <View>
               <Text style={{
                 fontSize: fontSize['4xl'],
-                fontFamily: fontFamily.display,
                 fontWeight: '600',
                 color: colors.text.primary,
                 letterSpacing: letterSpacing.tight,
@@ -371,11 +370,10 @@ export default function MealPlanScreen() {
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: pressed ? colors.accentDark : colors.accent,
+                backgroundColor: pressed ? '#6A5848' : '#7A6858',
                 paddingHorizontal: 16,
                 paddingVertical: 12,
                 borderRadius: borderRadius.lg,
-                ...shadows.glowSoft,
               })}
             >
               <Ionicons name="cart-outline" size={16} color={colors.white} />
@@ -396,11 +394,10 @@ export default function MealPlanScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               paddingHorizontal: spacing.xl,
               paddingVertical: 16,
-              ...shadows.md,
             }}
           >
             <Pressable
@@ -489,14 +486,14 @@ export default function MealPlanScreen() {
                       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isEditing ? 8 : 12 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                           {isToday && (
-                            <View style={{ backgroundColor: '#4A3728', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
-                              <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>TODAY</Text>
+                            <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
+                              <Text style={{ fontSize: 12, fontWeight: '700', color: colors.white }}>TODAY</Text>
                             </View>
                           )}
                           <Text style={{
                             fontSize: 16,
                             fontWeight: '600',
-                            color: isToday ? '#4A3728' : '#6B7280',
+                            color: isToday ? colors.text.primary : colors.text.secondary,
                             letterSpacing: -0.2,
                           }}>
                             {formatDayHeader(date)}
@@ -510,24 +507,24 @@ export default function MealPlanScreen() {
                               <View style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#E0F2FE',
+                                backgroundColor: 'rgba(255, 255, 255, 0.3)',
                                 paddingHorizontal: 10,
                                 paddingVertical: 4,
                                 borderRadius: 12,
                               }}>
-                                <Text style={{ fontSize: 12, color: '#0369A1' }}>{note}</Text>
+                                <Text style={{ fontSize: 12, color: colors.white }}>{note}</Text>
                               </View>
                             ) : (
                               <View style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#F3F4F6',
+                                backgroundColor: 'rgba(255, 255, 255, 0.15)',
                                 paddingHorizontal: 10,
                                 paddingVertical: 4,
                                 borderRadius: 12,
                               }}>
-                                <Ionicons name="add" size={12} color="#6B7280" />
-                                <Text style={{ fontSize: 12, color: '#6B7280', marginLeft: 2 }}>note</Text>
+                                <Ionicons name="add" size={12} color={colors.text.secondary} />
+                                <Text style={{ fontSize: 12, color: colors.text.secondary, marginLeft: 2 }}>note</Text>
                               </View>
                             )}
                           </Pressable>
@@ -601,7 +598,7 @@ export default function MealPlanScreen() {
                   const title = meal?.recipe?.title || meal?.customText;
                   const imageUrl = meal?.recipe?.image_url || PLACEHOLDER_IMAGE;
 
-                  // Empty meal slot - show action buttons with dashed border
+                  // Empty meal slot - show action buttons with glass effect
                   if (!hasContent) {
                     return (
                       <View
@@ -609,13 +606,10 @@ export default function MealPlanScreen() {
                         style={{
                           flexDirection: 'row',
                           alignItems: 'center',
-                          backgroundColor: 'rgba(248, 245, 242, 0.8)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.35)',
                           borderRadius: 16,
                           padding: 12,
                           marginBottom: 8,
-                          borderWidth: 2,
-                          borderColor: '#D4C9BE',
-                          borderStyle: 'dashed',
                         }}
                       >
                         {/* Plus icon + Meal type label */}
@@ -624,14 +618,14 @@ export default function MealPlanScreen() {
                             width: 28,
                             height: 28,
                             borderRadius: 14,
-                            backgroundColor: '#E8D5C4',
+                            backgroundColor: 'rgba(255, 255, 255, 0.25)',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginRight: 8,
                           }}>
-                            <Ionicons name="add" size={18} color="#4A3728" />
+                            <Ionicons name="add" size={18} color={colors.white} />
                           </View>
-                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#8B7355' }}>
+                          <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text.secondary }}>
                             {label}
                           </Text>
                         </View>
@@ -644,7 +638,7 @@ export default function MealPlanScreen() {
                               style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#F3E8E0',
+                                backgroundColor: 'rgba(255, 255, 255, 0.85)',
                                 paddingHorizontal: 10,
                                 paddingVertical: 6,
                                 borderRadius: 10,
@@ -653,15 +647,15 @@ export default function MealPlanScreen() {
                                 justifyContent: 'center',
                               }}
                             >
-                              <Ionicons name="book-outline" size={14} color="#4A3728" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#4A3728' }}>Library</Text>
+                              <Ionicons name="book-outline" size={14} color="#5D4E40" />
+                              <Text style={{ fontSize: 12, fontWeight: '600', color: '#5D4E40' }}>Library</Text>
                             </Pressable>
                             <Pressable
                               onPress={() => handleMealPress(date, type, 'random')}
                               style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#FEF3C7',
+                                backgroundColor: 'rgba(220, 215, 210, 0.9)',
                                 paddingHorizontal: 10,
                                 paddingVertical: 6,
                                 borderRadius: 10,
@@ -670,8 +664,8 @@ export default function MealPlanScreen() {
                                 justifyContent: 'center',
                               }}
                             >
-                              <Ionicons name="dice-outline" size={14} color="#D97706" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#D97706' }}>Random</Text>
+                              <Ionicons name="dice-outline" size={14} color="#5D4E40" />
+                              <Text style={{ fontSize: 12, fontWeight: '600', color: '#5D4E40' }}>Random</Text>
                             </Pressable>
                           </View>
                           <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -680,7 +674,7 @@ export default function MealPlanScreen() {
                               style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#E8F0E8',
+                                backgroundColor: 'rgba(160, 150, 140, 0.85)',
                                 paddingHorizontal: 10,
                                 paddingVertical: 6,
                                 borderRadius: 10,
@@ -689,15 +683,15 @@ export default function MealPlanScreen() {
                                 justifyContent: 'center',
                               }}
                             >
-                              <Ionicons name="copy-outline" size={14} color="#2D5A3D" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#2D5A3D' }}>Copy</Text>
+                              <Ionicons name="copy-outline" size={14} color="#FFFFFF" />
+                              <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>Copy</Text>
                             </Pressable>
                             <Pressable
                               onPress={() => handleMealPress(date, type, 'quick')}
                               style={{
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                backgroundColor: '#E8E8F0',
+                                backgroundColor: 'rgba(93, 78, 64, 0.85)',
                                 paddingHorizontal: 10,
                                 paddingVertical: 6,
                                 borderRadius: 10,
@@ -706,8 +700,8 @@ export default function MealPlanScreen() {
                                 justifyContent: 'center',
                               }}
                             >
-                              <Ionicons name="create-outline" size={14} color="#3D3D5A" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#3D3D5A' }}>Quick</Text>
+                              <Ionicons name="create-outline" size={14} color="#FFFFFF" />
+                              <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>Quick</Text>
                             </Pressable>
                           </View>
                         </View>
@@ -722,11 +716,10 @@ export default function MealPlanScreen() {
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: colors.white,
+                        backgroundColor: colors.glass.card,
                         borderRadius: borderRadius.md,
                         padding: spacing.md,
                         marginBottom: spacing.sm,
-                        ...shadows.md,
                       }}
                     >
                       {/* Tappable area for recipe details */}
@@ -741,7 +734,7 @@ export default function MealPlanScreen() {
                             width: 56,
                             height: 56,
                             borderRadius: 12,
-                            backgroundColor: '#E8D5C4',
+                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
                           }}
                           resizeMode="cover"
                         />
@@ -751,11 +744,11 @@ export default function MealPlanScreen() {
                           <Text style={{
                             fontSize: 15,
                             fontWeight: '600',
-                            color: '#4A3728',
+                            color: colors.text.primary,
                           }}>
                             {title}
                           </Text>
-                          <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
+                          <Text style={{ fontSize: 13, color: colors.text.secondary, marginTop: 2 }}>
                             {label}
                           </Text>
                         </View>
@@ -832,11 +825,10 @@ export default function MealPlanScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.primary,
+                backgroundColor: '#7A6858',
                 paddingHorizontal: spacing.xl,
                 paddingVertical: spacing.md,
                 borderRadius: borderRadius.xl,
-                ...shadows.xl,
               }}
             >
               <Ionicons name="today" size={18} color={colors.white} />

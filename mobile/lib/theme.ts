@@ -5,14 +5,14 @@
 
 import { Platform } from 'react-native';
 
-// Font families - elegant typography for luxury feel
+// Font families - clean modern typography
 export const fontFamily = {
-  // Display/Headings - elegant serif feel
+  // Display/Headings - clean sans-serif
   display: Platform.select({
-    ios: 'Georgia',
-    android: 'serif',
-    web: 'Georgia, "Times New Roman", serif',
-    default: 'Georgia',
+    ios: 'System',
+    android: 'Roboto',
+    web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    default: 'System',
   }),
   // Body text - clean, modern sans-serif
   body: Platform.select({
@@ -25,7 +25,7 @@ export const fontFamily = {
   accent: Platform.select({
     ios: 'System',
     android: 'Roboto',
-    web: '"SF Pro Text", -apple-system, BlinkMacSystemFont, sans-serif',
+    web: '-apple-system, BlinkMacSystemFont, sans-serif',
     default: 'System',
   }),
 };
@@ -74,11 +74,11 @@ export const lightColors = {
   primaryDark: '#1A1A1A',
   primaryLight: '#404040',
 
-  // Background gradients - soft, warm cream tones
-  bgLight: '#FEFDFB',      // Almost white with warmth
-  bgMid: '#FAF7F2',        // Soft cream
-  bgDark: '#F5F0E8',       // Warm cream
-  bgWarm: '#FFF8F0',       // Peach tint
+  // Background gradients - warm peach/brown tones
+  bgLight: '#FDF6F0',      // Soft peach white
+  bgMid: '#F5E1D0',        // Warm peach
+  bgDark: '#E8CDB5',       // Soft brown/tan
+  bgWarm: '#FFEEE0',       // Light peach
 
   // Accent colors - Coral/Peach for luxury feel
   accent: '#E8A87C',       // Soft coral
@@ -108,14 +108,15 @@ export const lightColors = {
   white: '#FFFFFF',
   offWhite: '#FAFAFA',
   text: {
-    primary: '#2D2D2D',      // Rich dark for main text
-    secondary: '#666666',    // Elegant gray for body
-    muted: '#999999',        // Soft gray for hints
-    light: '#BBBBBB',        // Very soft gray
-    inverse: '#FFFFFF',      // Text on dark backgrounds
+    primary: '#FFFFFF',          // White for main text (on dark bg)
+    secondary: 'rgba(255, 255, 255, 0.8)',  // Light for body text
+    muted: 'rgba(255, 255, 255, 0.6)',      // Soft white for hints
+    light: 'rgba(255, 255, 255, 0.4)',      // Very soft white
+    inverse: '#2D2D2D',          // Dark text for light backgrounds (modals)
+    dark: '#2D2D2D',             // Dark text alias
   },
-  border: '#EEEEEE',         // Subtle border
-  borderLight: '#F5F5F5',    // Very subtle border
+  border: 'rgba(255, 255, 255, 0.2)',   // Subtle light border
+  borderLight: 'rgba(255, 255, 255, 0.1)', // Very subtle border
 
   // Refined gray scale
   gray: {
@@ -141,11 +142,13 @@ export const lightColors = {
   info: '#42A5F5',
   infoBg: '#E3F2FD',
 
-  // Glass/Blur effects
+  // Glass/Blur effects - for transparent cards on warm background
   glass: {
-    light: 'rgba(255, 255, 255, 0.8)',
-    medium: 'rgba(255, 255, 255, 0.6)',
+    light: 'rgba(255, 255, 255, 0.7)',
+    medium: 'rgba(255, 255, 255, 0.55)',
     dark: 'rgba(255, 255, 255, 0.4)',
+    card: 'rgba(255, 255, 255, 0.6)',
+    border: 'transparent',
   },
 } as const;
 
