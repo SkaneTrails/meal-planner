@@ -416,7 +416,13 @@ async def upload_recipe_image(  # pragma: no cover
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     # Check ownership (must own the recipe to upload image)
-    if recipe.household_id is not None and recipe.household_id != household_id:
+    # Legacy/shared recipes cannot have images uploaded - must copy first
+    if recipe.household_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot upload image for shared/legacy recipe. Please copy the recipe to your household first.",
+        )
+    if recipe.household_id != household_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     # Validate file type
@@ -491,8 +497,10 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     household_id = _require_household(user)
 
     # Get the source recipe - try enhanced DB first, then default
+    source_database = ENHANCED_DATABASE
     recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
     if recipe is None:
+        source_database = DEFAULT_DATABASE
         recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
@@ -506,9 +514,9 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     if not is_shared_or_legacy:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    # Create the copy
+    # Create the copy from the source database, save to enhanced database
     copied = recipe_storage.copy_recipe(
-        recipe_id, to_household_id=household_id, copied_by=user.email, database=ENHANCED_DATABASE
+        recipe_id, to_household_id=household_id, copied_by=user.email, source_database=source_database
     )
 
     if copied is None:  # pragma: no cover
@@ -551,8 +559,10 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
         )
 
     # Get the original recipe - try enhanced DB first, then default
+    source_database = ENHANCED_DATABASE
     recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
     if recipe is None:
+        source_database = DEFAULT_DATABASE
         recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
@@ -565,11 +575,11 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
         # Recipe exists but belongs to another household and is not shared
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    # If shared/legacy and not owned, copy first
+    # If shared/legacy and not owned, copy first (from source DB to enhanced DB)
     target_recipe = recipe
     if not is_owned and is_shared_or_legacy:
         copied = recipe_storage.copy_recipe(
-            recipe_id, to_household_id=household_id, copied_by=user.email, database=ENHANCED_DATABASE
+            recipe_id, to_household_id=household_id, copied_by=user.email, source_database=source_database
         )
         if copied is None:  # pragma: no cover
             raise HTTPException(

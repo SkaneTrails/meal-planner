@@ -1,20 +1,16 @@
 /**
  * React Query hooks for grocery lists.
+ * Note: household_id is resolved server-side from authentication.
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../api';
 
-// Default user ID until auth is implemented
-const DEFAULT_USER_ID = 'default';
-
 // Query keys
 export const groceryKeys = {
   all: ['grocery'] as const,
-  list: (
-    userId: string,
-    options?: { start_date?: string; end_date?: string; days?: number }
-  ) => [...groceryKeys.all, userId, options] as const,
+  list: (options?: { start_date?: string; end_date?: string; days?: number }) =>
+    [...groceryKeys.all, options] as const,
 };
 
 interface GroceryListOptions {
@@ -24,14 +20,11 @@ interface GroceryListOptions {
 }
 
 /**
- * Hook to fetch the grocery list for a user's meal plan.
+ * Hook to fetch the grocery list for the current household's meal plan.
  */
-export function useGroceryList(
-  userId: string = DEFAULT_USER_ID,
-  options?: GroceryListOptions
-) {
+export function useGroceryList(options?: GroceryListOptions) {
   return useQuery({
-    queryKey: groceryKeys.list(userId, options),
-    queryFn: () => api.getGroceryList(userId, options),
+    queryKey: groceryKeys.list(options),
+    queryFn: () => api.getGroceryList(options),
   });
 }

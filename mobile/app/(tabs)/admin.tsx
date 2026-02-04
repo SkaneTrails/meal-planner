@@ -47,11 +47,11 @@ export default function AdminScreen() {
     return (
       <GradientBackground>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl }}>
-          <Ionicons name="lock-closed" size={64} color={colors.textMuted} />
+          <Ionicons name="lock-closed" size={64} color={colors.text.muted} />
           <Text style={{
             fontSize: fontSize['2xl'],
             fontWeight: fontWeight.semibold,
-            color: colors.textMuted,
+            color: colors.text.muted,
             marginTop: spacing.lg,
             textAlign: 'center',
           }}>
@@ -59,7 +59,7 @@ export default function AdminScreen() {
           </Text>
           <Text style={{
             fontSize: fontSize.lg,
-            color: colors.textMuted,
+            color: colors.text.muted,
             marginTop: spacing.sm,
             textAlign: 'center',
           }}>
@@ -102,7 +102,7 @@ export default function AdminScreen() {
           </Text>
           <Text style={{
             fontSize: fontSize.lg,
-            color: colors.textMuted,
+            color: colors.text.muted,
             marginTop: spacing.xs,
           }}>
             Manage households and members
@@ -114,12 +114,12 @@ export default function AdminScreen() {
           marginHorizontal: spacing.lg,
           marginBottom: spacing.md,
           padding: spacing.md,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.white,
           borderRadius: borderRadius.lg,
           ...shadows.sm,
         }}>
-          <Text style={{ fontSize: fontSize.sm, color: colors.textMuted }}>Logged in as</Text>
-          <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text }}>
+          <Text style={{ fontSize: fontSize.sm, color: colors.text.muted }}>Logged in as</Text>
+          <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.primary }}>
             {currentUser.email}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: spacing.xs }}>
@@ -148,7 +148,7 @@ export default function AdminScreen() {
             <Text style={{
               fontSize: fontSize['2xl'],
               fontWeight: fontWeight.semibold,
-              color: colors.text,
+              color: colors.text.primary,
             }}>
               Households
             </Text>
@@ -189,8 +189,8 @@ export default function AdminScreen() {
             }
             ListEmptyComponent={
               <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                <Ionicons name="home-outline" size={48} color={colors.textMuted} />
-                <Text style={{ color: colors.textMuted, marginTop: spacing.md }}>
+                <Ionicons name="home-outline" size={48} color={colors.text.muted} />
+                <Text style={{ color: colors.text.muted, marginTop: spacing.md }}>
                   No households yet
                 </Text>
               </View>
@@ -211,29 +211,29 @@ export default function AdminScreen() {
             padding: spacing.lg,
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text }}>
+              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.primary }}>
                 Create Household
               </Text>
               <Pressable onPress={() => setShowCreateModal(false)}>
-                <Ionicons name="close" size={28} color={colors.textMuted} />
+                <Ionicons name="close" size={28} color={colors.text.muted} />
               </Pressable>
             </View>
 
             <View style={{ marginTop: spacing.xl }}>
-              <Text style={{ fontSize: fontSize.md, color: colors.text, marginBottom: spacing.sm }}>
+              <Text style={{ fontSize: fontSize.md, color: colors.text.primary, marginBottom: spacing.sm }}>
                 Household Name
               </Text>
               <TextInput
                 value={newHouseholdName}
                 onChangeText={setNewHouseholdName}
                 placeholder="e.g., Smith Family"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={colors.text.muted}
                 style={{
-                  backgroundColor: colors.surface,
+                  backgroundColor: colors.white,
                   borderRadius: borderRadius.lg,
                   padding: spacing.md,
                   fontSize: fontSize.lg,
-                  color: colors.text,
+                  color: colors.text.primary,
                   ...shadows.sm,
                 }}
                 autoFocus
@@ -244,7 +244,7 @@ export default function AdminScreen() {
               onPress={handleCreateHousehold}
               disabled={!newHouseholdName.trim() || createHousehold.isPending}
               style={({ pressed }) => ({
-                backgroundColor: !newHouseholdName.trim() ? colors.textMuted : (pressed ? colors.primaryDark : colors.primary),
+                backgroundColor: !newHouseholdName.trim() ? colors.text.muted : (pressed ? colors.primaryDark : colors.primary),
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 marginTop: spacing.xl,
@@ -284,7 +284,7 @@ function HouseholdCard({ household, onPress }: HouseholdCardProps) {
     <Pressable
       onPress={onPress}
       style={({ pressed }) => ({
-        backgroundColor: pressed ? colors.bgMid : colors.surface,
+        backgroundColor: pressed ? colors.bgMid : colors.white,
         borderRadius: borderRadius.lg,
         padding: spacing.md,
         marginBottom: spacing.sm,
@@ -296,19 +296,19 @@ function HouseholdCard({ household, onPress }: HouseholdCardProps) {
           <Text style={{
             fontSize: fontSize.lg,
             fontWeight: fontWeight.semibold,
-            color: colors.text,
+            color: colors.text.primary,
           }}>
             {household.name}
           </Text>
           <Text style={{
             fontSize: fontSize.sm,
-            color: colors.textMuted,
+            color: colors.text.muted,
             marginTop: 2,
           }}>
             ID: {household.id}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+        <Ionicons name="chevron-forward" size={20} color={colors.text.muted} />
       </View>
     </Pressable>
   );
@@ -393,10 +393,10 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
           borderBottomColor: colors.border,
         }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text }}>
+            <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.primary }}>
               {household.name}
             </Text>
-            <Text style={{ fontSize: fontSize.sm, color: colors.textMuted }}>
+            <Text style={{ fontSize: fontSize.sm, color: colors.text.muted }}>
               Created by: {household.created_by}
             </Text>
           </View>
@@ -412,7 +412,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               <Ionicons name="settings-outline" size={24} color={colors.primary} />
             </Pressable>
             <Pressable onPress={onClose}>
-              <Ionicons name="close" size={28} color={colors.textMuted} />
+              <Ionicons name="close" size={28} color={colors.text.muted} />
             </Pressable>
           </View>
         </View>
@@ -425,7 +425,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             alignItems: 'center',
             marginBottom: spacing.md,
           }}>
-            <Text style={{ fontSize: fontSize.xl, fontWeight: fontWeight.semibold, color: colors.text }}>
+            <Text style={{ fontSize: fontSize.xl, fontWeight: fontWeight.semibold, color: colors.text.primary }}>
               Members
             </Text>
             <Pressable
@@ -460,7 +460,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               )}
               ListEmptyComponent={
                 <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                  <Text style={{ color: colors.textMuted }}>No members yet</Text>
+                  <Text style={{ color: colors.text.muted }}>No members yet</Text>
                 </View>
               }
             />
@@ -474,18 +474,18 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: colors.surface,
+            backgroundColor: colors.white,
             padding: spacing.lg,
             borderTopWidth: 1,
             borderTopColor: colors.border,
             ...shadows.lg,
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
-              <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.text }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.text.primary }}>
                 Add Member
               </Text>
               <Pressable onPress={() => setShowAddMember(false)}>
-                <Ionicons name="close" size={24} color={colors.textMuted} />
+                <Ionicons name="close" size={24} color={colors.text.muted} />
               </Pressable>
             </View>
 
@@ -493,7 +493,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               value={newMemberEmail}
               onChangeText={setNewMemberEmail}
               placeholder="Email address"
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.text.muted}
               keyboardType="email-address"
               autoCapitalize="none"
               style={{
@@ -501,7 +501,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
                 borderRadius: borderRadius.md,
                 padding: spacing.md,
                 fontSize: fontSize.md,
-                color: colors.text,
+                color: colors.text.primary,
                 marginBottom: spacing.sm,
               }}
             />
@@ -521,7 +521,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
                   }}
                 >
                   <Text style={{
-                    color: newMemberRole === role ? 'white' : colors.text,
+                    color: newMemberRole === role ? 'white' : colors.text.primary,
                     fontWeight: fontWeight.medium,
                     textTransform: 'capitalize',
                   }}>
@@ -535,7 +535,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               onPress={handleAddMember}
               disabled={!newMemberEmail.trim() || addMember.isPending}
               style={({ pressed }) => ({
-                backgroundColor: !newMemberEmail.trim() ? colors.textMuted : (pressed ? colors.primaryDark : colors.primary),
+                backgroundColor: !newMemberEmail.trim() ? colors.text.muted : (pressed ? colors.primaryDark : colors.primary),
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 alignItems: 'center',
@@ -562,11 +562,11 @@ interface MemberCardProps {
 }
 
 function MemberCard({ member, onRemove }: MemberCardProps) {
-  const roleColor = member.role === 'admin' ? colors.warning : colors.textMuted;
+  const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
     <View style={{
-      backgroundColor: colors.surface,
+      backgroundColor: colors.white,
       borderRadius: borderRadius.lg,
       padding: spacing.md,
       marginBottom: spacing.sm,
@@ -579,12 +579,12 @@ function MemberCard({ member, onRemove }: MemberCardProps) {
         <Text style={{
           fontSize: fontSize.md,
           fontWeight: fontWeight.medium,
-          color: colors.text,
+          color: colors.text.primary,
         }}>
           {member.display_name || member.email}
         </Text>
         {member.display_name && (
-          <Text style={{ fontSize: fontSize.sm, color: colors.textMuted }}>
+          <Text style={{ fontSize: fontSize.sm, color: colors.text.muted }}>
             {member.email}
           </Text>
         )}

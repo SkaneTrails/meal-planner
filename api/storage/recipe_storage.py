@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
-from api.storage.firestore_client import DEFAULT_DATABASE, RECIPES_COLLECTION, get_firestore_client
+from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE, RECIPES_COLLECTION, get_firestore_client
 
 
 def normalize_url(url: str) -> str:
@@ -398,7 +398,12 @@ def search_recipes(query: str, database: str = DEFAULT_DATABASE, *, household_id
 
 
 def copy_recipe(
-    recipe_id: str, *, to_household_id: str, copied_by: str, database: str = DEFAULT_DATABASE
+    recipe_id: str,
+    *,
+    to_household_id: str,
+    copied_by: str,
+    source_database: str = DEFAULT_DATABASE,
+    target_database: str = ENHANCED_DATABASE,
 ) -> Recipe | None:
     """
     Create a copy of a recipe for a different household.
@@ -411,13 +416,14 @@ def copy_recipe(
         recipe_id: The recipe to copy.
         to_household_id: The household that will own the copy.
         copied_by: Email of the user creating the copy.
-        database: The database to read from and write to.
+        source_database: The database to read from.
+        target_database: The database to write to (defaults to enhanced).
 
     Returns:
         The new copied recipe, or None if source recipe not found.
     """
     # Get the source recipe
-    source = get_recipe(recipe_id, database=database)
+    source = get_recipe(recipe_id, database=source_database)
     if source is None:
         return None
 
@@ -444,4 +450,4 @@ def copy_recipe(
     )
 
     # Save as a new recipe owned by the target household
-    return save_recipe(recipe_data, database=database, household_id=to_household_id, created_by=copied_by)
+    return save_recipe(recipe_data, database=target_database, household_id=to_household_id, created_by=copied_by)
