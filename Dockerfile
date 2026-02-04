@@ -2,7 +2,7 @@
 # Multi-stage build for smaller image size
 
 # Stage 1: Build dependencies
-FROM python:3.14-slim@sha256:9b81fe9acff79e61affb44aaf3b6ff234392e8ca477cb86c9f7fd11732ce9b6a AS builder
+FROM python:3.14-slim@sha256:1a3c6dbfd2173971abba880c3cc2ec4643690901f6ad6742d0827bae6cefc925 AS builder
 
 # Install uv for fast dependency resolution
 # Pinned to digest for supply-chain security
@@ -24,7 +24,7 @@ RUN uv venv && \
     httpx
 
 # Stage 2: Runtime image
-FROM python:3.14-slim@sha256:9b81fe9acff79e61affb44aaf3b6ff234392e8ca477cb86c9f7fd11732ce9b6a AS runtime
+FROM python:3.14-slim@sha256:1a3c6dbfd2173971abba880c3cc2ec4643690901f6ad6742d0827bae6cefc925 AS runtime
 
 WORKDIR /app
 
