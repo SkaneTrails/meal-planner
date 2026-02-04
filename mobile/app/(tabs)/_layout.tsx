@@ -1,18 +1,54 @@
 /**
  * Tab layout for main navigation.
- * Modern floating tab bar design.
+ * Luxurious floating glass tab bar design.
  * Requires authentication - redirects to sign-in if not authenticated.
  */
 
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { Redirect, Tabs } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
-import { useCurrentUser } from '@/lib/hooks/use-admin';
+import React from 'react';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { colors, shadows } from '@/lib/theme';
+
+// Custom tab bar background with blur effect
+function TabBarBackground() {
+  if (Platform.OS === 'ios') {
+    return (
+      <BlurView
+        intensity={80}
+        tint="light"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          borderRadius: 28,
+          overflow: 'hidden',
+        }}
+      />
+    );
+  }
+  // Fallback for Android/web - solid white with transparency
+  return (
+    <View
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: 28,
+      }}
+    />
+  );
+}
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
-  const { data: currentUser } = useCurrentUser({ enabled: !loading && !!user });
 
   // Show loading spinner while checking auth state
   if (loading) {
@@ -22,10 +58,10 @@ export default function TabLayout() {
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: 'white',
+          backgroundColor: colors.bgLight,
         }}
       >
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -35,34 +71,28 @@ export default function TabLayout() {
     return <Redirect href="/sign-in" />;
   }
 
-  // Check if user is superuser (show admin tab)
-  const isSuperuser = currentUser?.role === 'superuser';
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#4A3728',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.gray[400],
         tabBarShowLabel: false,
+        tabBarBackground: TabBarBackground,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 20,
-          left: 20,
-          right: 20,
-          backgroundColor: 'rgba(255, 255, 255, 0.98)',
+          bottom: 24,
+          left: 24,
+          right: 24,
+          backgroundColor: 'transparent',
           borderTopWidth: 0,
-          borderRadius: 20,
-          height: 56,
+          borderRadius: 28,
+          height: 64,
           paddingBottom: 0,
           paddingTop: 0,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-          elevation: 8,
+          ...shadows.lg,
         },
         tabBarItemStyle: {
-          paddingVertical: 8,
+          paddingVertical: 12,
         },
         headerShown: false,
       }}
@@ -72,8 +102,20 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarAccessibilityLabel: 'Home',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                padding: 8,
+                borderRadius: 16,
+                backgroundColor: focused ? colors.bgWarm : 'transparent',
+              }}
+            >
+              <Ionicons
+                name={focused ? 'home' : 'home-outline'}
+                size={22}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -82,8 +124,20 @@ export default function TabLayout() {
         options={{
           title: 'Recipes',
           tabBarAccessibilityLabel: 'Recipes',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="book" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                padding: 8,
+                borderRadius: 16,
+                backgroundColor: focused ? colors.bgWarm : 'transparent',
+              }}
+            >
+              <Ionicons
+                name={focused ? 'book' : 'book-outline'}
+                size={22}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -92,8 +146,20 @@ export default function TabLayout() {
         options={{
           title: 'Meal Plan',
           tabBarAccessibilityLabel: 'Meal Plan',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="calendar" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                padding: 8,
+                borderRadius: 16,
+                backgroundColor: focused ? colors.bgWarm : 'transparent',
+              }}
+            >
+              <Ionicons
+                name={focused ? 'calendar' : 'calendar-outline'}
+                size={22}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -102,21 +168,21 @@ export default function TabLayout() {
         options={{
           title: 'Grocery',
           tabBarAccessibilityLabel: 'Grocery List',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="cart" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                padding: 8,
+                borderRadius: 16,
+                backgroundColor: focused ? colors.bgWarm : 'transparent',
+              }}
+            >
+              <Ionicons
+                name={focused ? 'cart' : 'cart-outline'}
+                size={22}
+                color={color}
+              />
+            </View>
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="admin"
-        options={{
-          title: 'Admin',
-          tabBarAccessibilityLabel: 'Admin',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" size={22} color={color} />
-          ),
-          // Only show admin tab for superusers
-          href: isSuperuser ? '/admin' : null,
         }}
       />
     </Tabs>

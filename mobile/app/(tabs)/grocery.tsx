@@ -15,6 +15,7 @@ import React, {
 } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 import {
+  BouncingLoader,
   GradientBackground,
   GroceryListSkeleton,
   GroceryListView,
@@ -26,7 +27,16 @@ import {
   useRecipes,
 } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
-import { borderRadius, colors, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  letterSpacing,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -36,7 +46,7 @@ function formatDateLocal(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function _getWeekDates(): { start: string; end: string } {
+function getWeekDates(): { start: string; end: string } {
   const today = new Date();
   const currentDay = today.getDay();
   // Calculate days since Saturday
@@ -155,15 +165,15 @@ export default function GroceryScreen() {
   }, [isLoading, hasLoadedOnce]);
 
   // Memoize serialized values to prevent infinite loops
-  const _mealPlanMealsJson = useMemo(
+  const mealPlanMealsJson = useMemo(
     () => JSON.stringify(mealPlan?.meals || {}),
     [mealPlan?.meals],
   );
-  const _mealServingsJson = useMemo(
+  const mealServingsJson = useMemo(
     () => JSON.stringify(mealServings),
     [mealServings],
   );
-  const _selectedMealKeysStr = useMemo(
+  const selectedMealKeysStr = useMemo(
     () => selectedMealKeys.join(','),
     [selectedMealKeys],
   );
@@ -256,13 +266,10 @@ export default function GroceryScreen() {
     setGeneratedItems(items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    mealPlanMealsJson,
     recipes.length,
-    mealPlan.meals,
-    mealServings,
-    recipes,
-    selectedMealKeys.length,
-    selectedMealKeys,
-    mealPlan,
+    selectedMealKeysStr,
+    mealServingsJson,
   ]);
 
   // Save custom items to AsyncStorage whenever they change
@@ -380,10 +387,10 @@ export default function GroceryScreen() {
   // Show skeleton on initial load only (not on subsequent focus events)
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground>
+      <GradientBackground variant="soft">
         <View style={{ flex: 1 }}>
           <View
-            style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}
+            style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}
           >
             <View
               style={{
@@ -394,26 +401,31 @@ export default function GroceryScreen() {
             >
               <Text
                 style={{
-                  fontSize: 24,
-                  fontWeight: '700',
-                  color: colors.primary,
-                  letterSpacing: -0.5,
+                  fontSize: fontSize['4xl'],
+                  fontFamily: fontFamily.display,
+                  fontWeight: '600',
+                  color: colors.text.primary,
+                  letterSpacing: letterSpacing.tight,
                 }}
               >
                 Grocery List
               </Text>
               <View
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: borderRadius.md,
-                  backgroundColor: colors.bgDark,
+                  width: 48,
+                  height: 48,
+                  borderRadius: borderRadius.lg,
+                  backgroundColor: colors.category.grocery.bg,
                   alignItems: 'center',
                   justifyContent: 'center',
                   ...shadows.sm,
                 }}
               >
-                <Ionicons name="cart" size={22} color={colors.primary} />
+                <Ionicons
+                  name="cart-outline"
+                  size={22}
+                  color={colors.category.grocery.text}
+                />
               </View>
             </View>
           </View>
@@ -424,11 +436,11 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground>
+    <GradientBackground variant="soft">
       <View style={{ flex: 1 }}>
         {/* Header with title */}
         <View
-          style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}
+          style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}
         >
           <View
             style={{
@@ -440,10 +452,10 @@ export default function GroceryScreen() {
             <View>
               <Text
                 style={{
-                  fontSize: 11,
-                  fontWeight: '500',
+                  fontSize: fontSize.sm,
+                  fontWeight: fontWeight.medium,
                   color: colors.text.secondary,
-                  letterSpacing: 0.5,
+                  letterSpacing: letterSpacing.wide,
                   textTransform: 'uppercase',
                 }}
               >
@@ -451,10 +463,11 @@ export default function GroceryScreen() {
               </Text>
               <Text
                 style={{
-                  fontSize: 24,
-                  fontWeight: '700',
-                  color: colors.primary,
-                  letterSpacing: -0.5,
+                  fontSize: fontSize['4xl'],
+                  fontFamily: fontFamily.display,
+                  fontWeight: '600',
+                  color: colors.text.primary,
+                  letterSpacing: letterSpacing.tight,
                 }}
               >
                 Grocery List
@@ -462,30 +475,37 @@ export default function GroceryScreen() {
             </View>
             <View
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: borderRadius.md,
-                backgroundColor: colors.bgDark,
+                width: 48,
+                height: 48,
+                borderRadius: borderRadius.lg,
+                backgroundColor: colors.category.grocery.bg,
                 alignItems: 'center',
                 justifyContent: 'center',
                 ...shadows.sm,
               }}
             >
-              <Ionicons name="cart" size={22} color={colors.primary} />
+              <Ionicons
+                name="cart-outline"
+                size={22}
+                color={colors.category.grocery.text}
+              />
             </View>
           </View>
         </View>
 
         {/* Stats and controls */}
         <View
-          style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.lg }}
+          style={{
+            paddingHorizontal: spacing['2xl'],
+            paddingBottom: spacing.lg,
+          }}
         >
           {/* Stats card */}
           <View
             style={{
               backgroundColor: colors.white,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
+              borderRadius: borderRadius.lg,
+              padding: spacing.xl,
               marginBottom: spacing.md,
               ...shadows.md,
             }}
@@ -498,15 +518,20 @@ export default function GroceryScreen() {
               }}
             >
               <View>
-                <Text style={{ fontSize: 13, color: colors.text.secondary }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    color: colors.text.secondary,
+                  }}
+                >
                   This week's shopping
                 </Text>
                 <Text
                   style={{
-                    fontSize: 20,
-                    fontWeight: '700',
-                    color: colors.primary,
-                    marginTop: 2,
+                    fontSize: fontSize['3xl'],
+                    fontWeight: fontWeight.bold,
+                    color: colors.text.primary,
+                    marginTop: 4,
                   }}
                 >
                   {itemsToBuy === 0

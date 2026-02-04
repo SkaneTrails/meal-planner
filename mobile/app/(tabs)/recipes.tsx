@@ -5,14 +5,16 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
+  Animated,
   FlatList,
   LayoutAnimation,
   Modal,
   Platform,
   Pressable,
   RefreshControl,
+  ScrollView,
   Switch,
   Text,
   TextInput,
@@ -27,7 +29,16 @@ import {
 } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useEnhancedMode, useRecipes } from '@/lib/hooks';
-import { borderRadius, colors, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  letterSpacing,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 // Enable LayoutAnimation on Android
@@ -265,25 +276,32 @@ export default function RecipesScreen() {
   }, [recipes, searchQuery, dietFilter, mealFilter, sortBy]);
 
   return (
-    <GradientBackground>
-      <View style={{ flex: 1, paddingBottom: 80 }}>
+    <GradientBackground variant="soft">
+      <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
         <View
-          style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 4 }}
+          style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 8 }}
         >
-          <View style={{ marginBottom: 12 }}>
+          <View style={{ marginBottom: 16 }}>
             <Text
               style={{
-                fontSize: 24,
-                fontWeight: '700',
-                color: '#4A3728',
-                letterSpacing: -0.5,
+                fontSize: fontSize['4xl'],
+                fontFamily: fontFamily.display,
+                fontWeight: '600',
+                color: colors.text.primary,
+                letterSpacing: letterSpacing.tight,
               }}
             >
               Recipe Library
             </Text>
-            <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
-              {recipes.length} recipes saved
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                color: colors.text.secondary,
+                marginTop: 4,
+              }}
+            >
+              {recipes.length} recipes in your collection
             </Text>
           </View>
 
@@ -293,16 +311,12 @@ export default function RecipesScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: isEnhanced ? '#4A3728' : '#fff',
-              borderRadius: 16,
+              backgroundColor: isEnhanced ? colors.primary : colors.white,
+              borderRadius: borderRadius.lg,
               paddingHorizontal: 18,
               paddingVertical: 14,
               marginBottom: 16,
-              shadowColor: isEnhanced ? '#4A3728' : '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isEnhanced ? 0.25 : 0.06,
-              shadowRadius: 8,
-              elevation: 2,
+              ...(isEnhanced ? shadows.glow : shadows.md),
             }}
           >
             <View
@@ -311,32 +325,34 @@ export default function RecipesScreen() {
               <View
                 style={{
                   backgroundColor: isEnhanced
-                    ? 'rgba(255, 215, 0, 0.2)'
-                    : '#F5E6D3',
-                  borderRadius: 10,
+                    ? 'rgba(232, 168, 124, 0.3)'
+                    : colors.bgWarm,
+                  borderRadius: borderRadius.sm,
                   padding: 8,
                 }}
               >
                 <Ionicons
                   name="sparkles"
                   size={20}
-                  color={isEnhanced ? '#FFD700' : '#4A3728'}
+                  color={isEnhanced ? colors.accent : colors.text.primary}
                 />
               </View>
               <View style={{ marginLeft: 14, flex: 1 }}>
                 <Text
                   style={{
-                    fontSize: 15,
-                    fontWeight: '600',
-                    color: isEnhanced ? '#fff' : '#4A3728',
+                    fontSize: fontSize.xl,
+                    fontWeight: fontWeight.semibold,
+                    color: isEnhanced ? colors.white : colors.text.primary,
                   }}
                 >
                   AI Enhanced
                 </Text>
                 <Text
                   style={{
-                    fontSize: 12,
-                    color: isEnhanced ? '#E8D5C4' : '#6B7280',
+                    fontSize: fontSize.sm,
+                    color: isEnhanced
+                      ? colors.gray[300]
+                      : colors.text.secondary,
                     marginTop: 2,
                   }}
                 >
@@ -349,13 +365,13 @@ export default function RecipesScreen() {
             <Switch
               value={isEnhanced}
               onValueChange={setIsEnhanced}
-              trackColor={{ false: '#E8D5C4', true: '#8B7355' }}
-              thumbColor={isEnhanced ? '#FFD700' : '#fff'}
+              trackColor={{ false: colors.gray[200], true: colors.accent }}
+              thumbColor={colors.white}
             />
           </View>
 
           {/* All Recipes / Add Recipe toggle buttons */}
-          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
             <Pressable
               onPress={() => setShowAllRecipes(true)}
               style={{
@@ -364,26 +380,22 @@ export default function RecipesScreen() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingVertical: 14,
-                borderRadius: 12,
-                backgroundColor: showAllRecipes ? '#4A3728' : '#fff',
-                shadowColor: showAllRecipes ? '#4A3728' : '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: showAllRecipes ? 0.2 : 0.06,
-                shadowRadius: 6,
-                elevation: 2,
+                borderRadius: borderRadius.lg,
+                backgroundColor: showAllRecipes ? colors.primary : colors.white,
+                ...shadows.md,
               }}
             >
               <Ionicons
-                name="book"
+                name={showAllRecipes ? 'book' : 'book-outline'}
                 size={18}
-                color={showAllRecipes ? '#fff' : '#4A3728'}
+                color={showAllRecipes ? colors.white : colors.text.primary}
               />
               <Text
                 style={{
                   marginLeft: 8,
-                  fontSize: 15,
-                  fontWeight: '600',
-                  color: showAllRecipes ? '#fff' : '#4A3728',
+                  fontSize: fontSize.lg,
+                  fontWeight: fontWeight.semibold,
+                  color: showAllRecipes ? colors.white : colors.text.primary,
                 }}
               >
                 All Recipes
@@ -400,18 +412,22 @@ export default function RecipesScreen() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingVertical: 14,
-                borderRadius: borderRadius.sm,
+                borderRadius: borderRadius.lg,
                 backgroundColor: colors.white,
                 ...shadows.md,
               }}
             >
-              <Ionicons name="add-circle" size={18} color={colors.primary} />
+              <Ionicons
+                name="add-circle-outline"
+                size={18}
+                color={colors.accent}
+              />
               <Text
                 style={{
                   marginLeft: 6,
-                  fontSize: 15,
-                  fontWeight: '600',
-                  color: '#4A3728',
+                  fontSize: fontSize.lg,
+                  fontWeight: fontWeight.semibold,
+                  color: colors.text.primary,
                 }}
               >
                 Add Recipe
@@ -421,7 +437,7 @@ export default function RecipesScreen() {
         </View>
 
         {/* Search and filters */}
-        <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
+        <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
           {/* Search bar with filter toggle and cancel button */}
           <View
             style={{
@@ -436,23 +452,23 @@ export default function RecipesScreen() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: colors.white,
-                borderRadius: borderRadius.sm,
+                borderRadius: borderRadius.lg,
                 paddingHorizontal: 14,
-                paddingVertical: 10,
-                ...shadows.md,
+                paddingVertical: 12,
+                ...shadows.sm,
               }}
             >
-              <Ionicons name="search" size={18} color="#9CA3AF" />
+              <Ionicons name="search" size={18} color={colors.text.muted} />
               <TextInput
                 ref={searchInputRef}
                 style={{
                   flex: 1,
-                  fontSize: 14,
-                  color: '#4A3728',
+                  fontSize: fontSize.lg,
+                  color: colors.text.primary,
                   marginLeft: 10,
                 }}
                 placeholder="Search recipes..."
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.text.muted}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 onFocus={() => setIsSearchFocused(true)}
@@ -463,7 +479,11 @@ export default function RecipesScreen() {
                   onPress={() => setSearchQuery('')}
                   style={{ padding: 4 }}
                 >
-                  <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+                  <Ionicons
+                    name="close-circle"
+                    size={18}
+                    color={colors.text.muted}
+                  />
                 </Pressable>
               )}
               <Pressable

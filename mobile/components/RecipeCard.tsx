@@ -1,6 +1,6 @@
 /**
  * Recipe card component for displaying a recipe in a grid or list.
- * Modern card design with smooth press animations.
+ * Luxurious card design with refined shadows and smooth animations.
  * Uses expo-image for progressive loading and caching.
  */
 
@@ -13,12 +13,13 @@ import {
   colors,
   fontSize,
   fontWeight,
+  letterSpacing,
   shadows,
 } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
-// Blurhash placeholder for loading state (warm beige color)
-const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
+// Blurhash placeholder for loading state (soft cream color)
+const PLACEHOLDER_BLURHASH = 'L5PZfS~q.8-;_3t7xuIU00og?bD%';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -48,7 +49,7 @@ const DIET_LABELS: Record<
   },
 };
 
-const _MEAL_LABELS: Record<MealLabel, string> = {
+const MEAL_LABELS: Record<MealLabel, string> = {
   breakfast: 'Breakfast',
   starter: 'Starter',
   salad: 'Salad',
@@ -81,17 +82,19 @@ export function RecipeCard({
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
-      toValue: 0.97,
+      toValue: 0.98,
       useNativeDriver: true,
+      damping: 15,
+      stiffness: 200,
     }).start();
   };
 
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
       toValue: 1,
-      friction: 3,
-      tension: 40,
       useNativeDriver: true,
+      damping: 15,
+      stiffness: 200,
     }).start();
   };
 
@@ -101,22 +104,22 @@ export function RecipeCard({
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={{ marginBottom: 10 }}
+        style={{ marginBottom: 12 }}
       >
         <Animated.View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            padding: 14,
+            padding: 12,
             backgroundColor: colors.white,
-            borderRadius: borderRadius.md,
+            borderRadius: borderRadius.lg,
             ...shadows.md,
             transform: [{ scale: scaleAnim }],
           }}
         >
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-            style={{ width: 52, height: 52, borderRadius: 14 }}
+            style={{ width: 56, height: 56, borderRadius: borderRadius.sm }}
             contentFit="cover"
             placeholder={PLACEHOLDER_BLURHASH}
             transition={200}
@@ -126,8 +129,8 @@ export function RecipeCard({
               style={{
                 fontSize: fontSize.lg,
                 fontWeight: fontWeight.semibold,
-                color: colors.primary,
-                letterSpacing: -0.2,
+                color: colors.text.primary,
+                letterSpacing: letterSpacing.normal,
               }}
               numberOfLines={1}
             >
@@ -137,8 +140,8 @@ export function RecipeCard({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginTop: 5,
-                gap: 10,
+                marginTop: 6,
+                gap: 8,
               }}
             >
               {recipe.diet_label && (
@@ -146,14 +149,14 @@ export function RecipeCard({
                   style={{
                     backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
                     paddingHorizontal: 8,
-                    paddingVertical: 3,
-                    borderRadius: 6,
+                    paddingVertical: 4,
+                    borderRadius: borderRadius.full,
                   }}
                 >
                   <Text
                     style={{
                       fontSize: fontSize.xs,
-                      fontWeight: fontWeight.semibold,
+                      fontWeight: fontWeight.medium,
                       color: DIET_LABELS[recipe.diet_label].color,
                     }}
                   >
@@ -179,7 +182,7 @@ export function RecipeCard({
                   />
                   <Text
                     style={{
-                      fontSize: fontSize.base,
+                      fontSize: fontSize.sm,
                       color: colors.text.secondary,
                       marginLeft: 4,
                     }}
@@ -192,20 +195,24 @@ export function RecipeCard({
           </View>
           <View
             style={{
-              backgroundColor: colors.bgMid,
-              borderRadius: 10,
-              padding: 8,
+              backgroundColor: colors.gray[100],
+              borderRadius: borderRadius.sm,
+              padding: 10,
             }}
           >
-            <Ionicons name="chevron-forward" size={18} color={colors.primary} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={colors.text.secondary}
+            />
           </View>
         </Animated.View>
       </Pressable>
     );
   }
 
-  // Grid card layout - square cards with image taking most of the space
-  const imageHeight = cardSize ? cardSize * 0.72 : 128;
+  // Grid card layout - elegant cards with generous image space
+  const imageHeight = cardSize ? cardSize * 0.7 : 128;
 
   return (
     <Pressable
@@ -216,7 +223,7 @@ export function RecipeCard({
       <Animated.View
         style={{
           backgroundColor: colors.white,
-          borderRadius: borderRadius.md,
+          borderRadius: borderRadius.lg,
           overflow: 'hidden',
           width: cardSize,
           height: cardSize,
@@ -232,7 +239,7 @@ export function RecipeCard({
             placeholder={PLACEHOLDER_BLURHASH}
             transition={300}
           />
-          {/* Diet badge overlay */}
+          {/* Diet badge overlay - refined pill style */}
           {recipe.diet_label && (
             <View
               style={{
@@ -242,13 +249,13 @@ export function RecipeCard({
                 backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
                 paddingHorizontal: 10,
                 paddingVertical: 5,
-                borderRadius: 8,
+                borderRadius: borderRadius.full,
               }}
             >
               <Text
                 style={{
                   fontSize: fontSize.xs,
-                  fontWeight: fontWeight.semibold,
+                  fontWeight: fontWeight.medium,
                   color: DIET_LABELS[recipe.diet_label].color,
                 }}
               >
@@ -260,8 +267,8 @@ export function RecipeCard({
         <View
           style={{
             flex: 1,
-            paddingHorizontal: 10,
-            paddingVertical: 6,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
             justifyContent: 'center',
           }}
         >
@@ -272,11 +279,11 @@ export function RecipeCard({
             <Text
               style={{
                 flex: 1,
-                fontSize: fontSize.base,
+                fontSize: fontSize.md,
                 fontWeight: fontWeight.semibold,
-                color: colors.primary,
-                lineHeight: 17,
-                letterSpacing: -0.3,
+                color: colors.text.primary,
+                lineHeight: 18,
+                letterSpacing: letterSpacing.normal,
               }}
               numberOfLines={2}
             >
@@ -287,23 +294,23 @@ export function RecipeCard({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: colors.bgMid,
+                  backgroundColor: colors.gray[100],
                   paddingHorizontal: 6,
-                  paddingVertical: 3,
-                  borderRadius: 6,
+                  paddingVertical: 4,
+                  borderRadius: borderRadius.full,
                   marginTop: 1,
                 }}
               >
                 <Ionicons
                   name="time-outline"
                   size={11}
-                  color={colors.primary}
+                  color={colors.text.secondary}
                 />
                 <Text
                   style={{
                     fontSize: fontSize.xs,
                     fontWeight: fontWeight.medium,
-                    color: colors.primary,
+                    color: colors.text.secondary,
                     marginLeft: 3,
                   }}
                 >
@@ -319,7 +326,7 @@ export function RecipeCard({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginTop: 4,
+                marginTop: 6,
               }}
             >
               <View
@@ -328,9 +335,9 @@ export function RecipeCard({
                   alignItems: 'center',
                   backgroundColor:
                     recipe.rating >= 3 ? colors.successBg : colors.errorBg,
-                  paddingHorizontal: 6,
-                  paddingVertical: 3,
-                  borderRadius: 6,
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: borderRadius.full,
                 }}
               >
                 <Ionicons
