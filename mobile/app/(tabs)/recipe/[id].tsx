@@ -1684,7 +1684,9 @@ export default function RecipeDetailScreen() {
                           flexDirection: 'row',
                           alignItems: 'flex-start',
                           marginBottom:
-                            index < recipe.changes_made?.length - 1 ? 8 : 0,
+                            index < (recipe.changes_made?.length ?? 0) - 1
+                              ? 8
+                              : 0,
                         }}
                       >
                         <Ionicons

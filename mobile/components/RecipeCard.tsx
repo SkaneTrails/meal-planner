@@ -48,7 +48,7 @@ const DIET_LABELS: Record<
   },
 };
 
-const MEAL_LABELS: Record<MealLabel, string> = {
+const _MEAL_LABELS: Record<MealLabel, string> = {
   breakfast: 'Breakfast',
   starter: 'Starter',
   salad: 'Salad',

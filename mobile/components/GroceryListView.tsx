@@ -5,7 +5,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
   type RenderItemParams,

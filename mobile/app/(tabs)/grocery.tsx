@@ -15,7 +15,6 @@ import React, {
 } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 import {
-  BouncingLoader,
   GradientBackground,
   GroceryListSkeleton,
   GroceryListView,
@@ -44,7 +43,7 @@ function formatDateLocal(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function getWeekDates(): { start: string; end: string } {
+function _getWeekDates(): { start: string; end: string } {
   const today = new Date();
   const currentDay = today.getDay();
   // Calculate days since Saturday
@@ -63,8 +62,7 @@ function getWeekDates(): { start: string; end: string } {
 
 export default function GroceryScreen() {
   const router = useRouter();
-  const { checkedItems, setCheckedItems, clearChecked, refreshFromStorage } =
-    useGroceryState();
+  const { checkedItems, setCheckedItems, clearChecked } = useGroceryState();
   const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
@@ -163,15 +161,15 @@ export default function GroceryScreen() {
   }, [isLoading, hasLoadedOnce]);
 
   // Memoize serialized values to prevent infinite loops
-  const mealPlanMealsJson = useMemo(
+  const _mealPlanMealsJson = useMemo(
     () => JSON.stringify(mealPlan?.meals || {}),
     [mealPlan?.meals],
   );
-  const mealServingsJson = useMemo(
+  const _mealServingsJson = useMemo(
     () => JSON.stringify(mealServings),
     [mealServings],
   );
-  const selectedMealKeysStr = useMemo(
+  const _selectedMealKeysStr = useMemo(
     () => selectedMealKeys.join(','),
     [selectedMealKeys],
   );
@@ -264,10 +262,13 @@ export default function GroceryScreen() {
     setGeneratedItems(items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    mealPlanMealsJson,
     recipes.length,
-    selectedMealKeysStr,
-    mealServingsJson,
+    mealPlan?.meals,
+    mealServings,
+    recipes,
+    selectedMealKeys.length,
+    selectedMealKeys,
+    mealPlan,
   ]);
 
   // Save custom items to AsyncStorage whenever they change

@@ -262,7 +262,7 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      let error;
+      let error: { detail?: string | unknown } = {};
       try {
         error = await response.json();
       } catch {

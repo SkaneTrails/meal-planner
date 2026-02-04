@@ -7,7 +7,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Redirect, Tabs } from 'expo-router';
-import React from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { colors, shadows } from '@/lib/theme';

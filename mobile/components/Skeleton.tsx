@@ -3,7 +3,7 @@
  * Provides animated shimmer effect for loading states.
  */
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Animated,
   type DimensionValue,

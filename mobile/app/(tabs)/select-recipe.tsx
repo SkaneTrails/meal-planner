@@ -4,7 +4,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -78,7 +78,7 @@ export default function SelectRecipeScreen() {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState('');
-  const [randomSeed, setRandomSeed] = useState(0); // Used to trigger new random selection
+  const [_randomSeed, setRandomSeed] = useState(0); // Used to trigger new random selection
 
   const filteredRecipes = useMemo(() => {
     if (searchQuery === '') return recipes;
@@ -106,7 +106,7 @@ export default function SelectRecipeScreen() {
     const index = Math.floor(Math.random() * mealTypeRecipes.length);
     return mealTypeRecipes[index];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mealTypeRecipes, randomSeed]);
+  }, [mealTypeRecipes]);
 
   const shuffleRandom = () => {
     setRandomSeed((prev) => prev + 1);
@@ -190,7 +190,7 @@ export default function SelectRecipeScreen() {
         recipeId,
       });
       router.back();
-    } catch (err) {
+    } catch (_err) {
       Alert.alert('Error', 'Failed to set meal');
     }
   };
@@ -205,7 +205,7 @@ export default function SelectRecipeScreen() {
         customText: customText.trim(),
       });
       router.back();
-    } catch (err) {
+    } catch (_err) {
       Alert.alert('Error', 'Failed to set meal');
     }
   };
@@ -229,7 +229,7 @@ export default function SelectRecipeScreen() {
         });
       }
       router.back();
-    } catch (err) {
+    } catch (_err) {
       Alert.alert('Error', 'Failed to copy meal');
     }
   };
@@ -238,7 +238,7 @@ export default function SelectRecipeScreen() {
     try {
       await removeMeal.mutateAsync({ date, mealType });
       router.back();
-    } catch (err) {
+    } catch (_err) {
       Alert.alert('Error', 'Failed to remove meal');
     }
   };

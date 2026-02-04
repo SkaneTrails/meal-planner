@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Pressable,
   RefreshControl,
@@ -32,7 +32,7 @@ import {
   letterSpacing,
   shadows,
 } from '@/lib/theme';
-import type { GroceryItem, Recipe } from '@/lib/types';
+import type { Recipe } from '@/lib/types';
 
 // Blurhash placeholder for loading state
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
@@ -44,7 +44,7 @@ function formatDateLocal(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function getWeekDates(): { start: string; end: string } {
+function _getWeekDates(): { start: string; end: string } {
   const today = new Date();
   const currentDay = today.getDay();
   const daysSinceSaturday = (currentDay + 1) % 7;

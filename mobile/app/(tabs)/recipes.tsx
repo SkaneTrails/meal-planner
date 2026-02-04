@@ -5,16 +5,14 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
-  Animated,
   FlatList,
   LayoutAnimation,
   Modal,
   Platform,
   Pressable,
   RefreshControl,
-  ScrollView,
   Switch,
   Text,
   TextInput,

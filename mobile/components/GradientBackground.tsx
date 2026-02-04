@@ -51,7 +51,6 @@ export function GradientBackground({
         style={[
           styles.container,
           {
-            // @ts-expect-error - web-specific CSS property
             background: cssGradient,
           },
           style,

@@ -6,7 +6,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -24,7 +24,7 @@ import {
   View,
 } from 'react-native';
 import { GradientBackground } from '@/components';
-import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
+import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import {
   useEnhancedMode,
   useMealPlan,
@@ -193,7 +193,7 @@ export default function MealPlanScreen() {
         });
       }, 100);
     }
-  }, [todayIndex, weekOffset]);
+  }, [todayIndex]);
 
   // Swipe gesture for week navigation
   // Note: PanResponder only captures gestures when conditions are met,
@@ -233,7 +233,7 @@ export default function MealPlanScreen() {
   } = useMealPlan();
   const { isEnhanced } = useEnhancedMode();
   const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
-  const setMeal = useSetMeal();
+  const _setMeal = useSetMeal();
   const updateNote = useUpdateNote();
   const removeMeal = useRemoveMeal();
 
@@ -1029,7 +1029,7 @@ export default function MealPlanScreen() {
                         {meal?.recipe && (
                           <Pressable
                             onPress={() =>
-                              router.push(`/recipe/${meal.recipe!.id}`)
+                              router.push(`/recipe/${meal.recipe?.id}`)
                             }
                             style={{
                               width: 28,
