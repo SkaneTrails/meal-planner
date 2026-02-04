@@ -17,8 +17,8 @@ function TabBarBackground() {
   if (Platform.OS === 'ios') {
     return (
       <BlurView
-        intensity={80}
-        tint="light"
+        intensity={60}
+        tint="dark"
         style={{
           position: 'absolute',
           top: 0,
@@ -31,7 +31,7 @@ function TabBarBackground() {
       />
     );
   }
-  // Fallback for Android/web - solid white with transparency
+  // Fallback for Android/web - glass effect
   return (
     <View
       style={{
@@ -40,8 +40,10 @@ function TabBarBackground() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
         borderRadius: 28,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.3)',
       }}
     />
   );
@@ -74,8 +76,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.gray[400],
+        tabBarActiveTintColor: colors.white,
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)',
         tabBarShowLabel: false,
         tabBarBackground: TabBarBackground,
         tabBarStyle: {
@@ -107,13 +109,15 @@ export default function TabLayout() {
               style={{
                 padding: 8,
                 borderRadius: 16,
-                backgroundColor: focused ? colors.bgWarm : 'transparent',
+                backgroundColor: focused
+                  ? 'rgba(255, 255, 255, 0.25)'
+                  : 'transparent',
               }}
             >
               <Ionicons
                 name={focused ? 'home' : 'home-outline'}
                 size={22}
-                color={color}
+                color={focused ? '#5D4E40' : color}
               />
             </View>
           ),
@@ -129,13 +133,15 @@ export default function TabLayout() {
               style={{
                 padding: 8,
                 borderRadius: 16,
-                backgroundColor: focused ? colors.bgWarm : 'transparent',
+                backgroundColor: focused
+                  ? 'rgba(255, 255, 255, 0.25)'
+                  : 'transparent',
               }}
             >
               <Ionicons
                 name={focused ? 'book' : 'book-outline'}
                 size={22}
-                color={color}
+                color={focused ? '#5D4E40' : color}
               />
             </View>
           ),
@@ -151,13 +157,15 @@ export default function TabLayout() {
               style={{
                 padding: 8,
                 borderRadius: 16,
-                backgroundColor: focused ? colors.bgWarm : 'transparent',
+                backgroundColor: focused
+                  ? 'rgba(255, 255, 255, 0.25)'
+                  : 'transparent',
               }}
             >
               <Ionicons
                 name={focused ? 'calendar' : 'calendar-outline'}
                 size={22}
-                color={color}
+                color={focused ? '#5D4E40' : color}
               />
             </View>
           ),
@@ -173,16 +181,47 @@ export default function TabLayout() {
               style={{
                 padding: 8,
                 borderRadius: 16,
-                backgroundColor: focused ? colors.bgWarm : 'transparent',
+                backgroundColor: focused
+                  ? 'rgba(255, 255, 255, 0.25)'
+                  : 'transparent',
               }}
             >
               <Ionicons
                 name={focused ? 'cart' : 'cart-outline'}
                 size={22}
-                color={color}
+                color={focused ? '#5D4E40' : color}
               />
             </View>
           ),
+        }}
+      />
+      {/* Hidden screens that still show tab bar */}
+      <Tabs.Screen
+        name="recipe/[id]"
+        options={{
+          href: null, // Hide from tab bar
+          title: 'Recipe',
+        }}
+      />
+      <Tabs.Screen
+        name="add-recipe"
+        options={{
+          href: null, // Hide from tab bar
+          title: 'Add Recipe',
+        }}
+      />
+      <Tabs.Screen
+        name="select-recipe"
+        options={{
+          href: null, // Hide from tab bar
+          title: 'Select Recipe',
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: null, // Hide from tab bar
+          title: 'Settings',
         }}
       />
     </Tabs>

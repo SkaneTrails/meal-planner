@@ -13,22 +13,22 @@ interface GradientBackgroundProps {
   variant?: 'default' | 'warm' | 'soft';
 }
 
-// Gradient color presets
+// Gradient color presets - warm brown/peach tones (lighter for better contrast)
 const gradients = {
-  // Default: soft cream flowing down
+  // Default: soft warm gradient
   default: {
-    colors: ['#FEFDFB', '#FAF7F2', '#F5F0E8'] as const,
-    locations: [0, 0.5, 1] as const,
+    colors: ['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078'] as const,
+    locations: [0, 0.25, 0.5, 0.75, 1] as const,
   },
-  // Warm: subtle peach accent
+  // Warm: richer brown to orange
   warm: {
-    colors: ['#FFF8F0', '#FAF7F2', '#FEFDFB'] as const,
-    locations: [0, 0.4, 1] as const,
+    colors: ['#C8B8A8', '#D0B098', '#D8A888', '#E0A078'] as const,
+    locations: [0, 0.33, 0.66, 1] as const,
   },
-  // Soft: very subtle, almost white
+  // Soft: muted warm tones
   soft: {
-    colors: ['#FEFDFB', '#FEFDFB', '#FAF7F2'] as const,
-    locations: [0, 0.7, 1] as const,
+    colors: ['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078'] as const,
+    locations: [0, 0.25, 0.5, 0.75, 1] as const,
   },
 };
 
@@ -41,7 +41,11 @@ export function GradientBackground({
 
   // For web, use CSS gradient for better performance
   if (Platform.OS === 'web') {
-    const cssGradient = `linear-gradient(180deg, ${gradient.colors[0]} ${gradient.locations[0] * 100}%, ${gradient.colors[1]} ${gradient.locations[1] * 100}%, ${gradient.colors[2]} ${gradient.locations[2] * 100}%)`;
+    // Build CSS gradient string dynamically for any number of color stops
+    const colorStops = gradient.colors
+      .map((color, i) => `${color} ${gradient.locations[i] * 100}%`)
+      .join(', ');
+    const cssGradient = `linear-gradient(180deg, ${colorStops})`;
     return (
       <View
         style={[

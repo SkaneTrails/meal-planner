@@ -5,7 +5,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
   type RenderItemParams,
@@ -31,7 +31,7 @@ const CATEGORY_LABELS: Record<GroceryCategory, string> = {
   pantry: '🥫 Pantry',
   frozen: '🧊 Frozen',
   beverages: '🥤 Beverages',
-  other: '📦 Other',
+  other: 'Other',
 };
 
 function formatQuantity(item: GroceryItem): string {
@@ -89,15 +89,12 @@ export function GroceryItemRow({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 14,
-        backgroundColor: isActive ? '#F5E6D3' : '#fff',
+        backgroundColor: isActive
+          ? 'rgba(255, 255, 255, 0.65)'
+          : 'rgba(255, 255, 255, 0.55)',
         borderRadius: 12,
         marginBottom: 8,
-        opacity: checked ? 0.6 : 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: isActive ? 4 : 1 },
-        shadowOpacity: isActive ? 0.15 : 0.04,
-        shadowRadius: isActive ? 8 : 4,
-        elevation: isActive ? 8 : 1,
+        opacity: checked ? 0.7 : 1,
       }}
     >
       {/* Drag handle - on web use onPressIn, on mobile use onLongPress */}
@@ -115,7 +112,11 @@ export function GroceryItemRow({
             }) as any
           }
         >
-          <Ionicons name="reorder-three" size={24} color="#9CA3AF" />
+          <Ionicons
+            name="reorder-three"
+            size={24}
+            color="rgba(93, 78, 64, 0.6)"
+          />
         </Pressable>
       )}
 
@@ -132,11 +133,15 @@ export function GroceryItemRow({
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: 14,
-            backgroundColor: checked ? '#4A3728' : 'transparent',
-            borderColor: checked ? '#4A3728' : '#D1D5DB',
+            backgroundColor: checked
+              ? 'rgba(255, 255, 255, 0.9)'
+              : 'transparent',
+            borderColor: checked
+              ? 'rgba(255, 255, 255, 0.9)'
+              : 'rgba(255, 255, 255, 0.5)',
           }}
         >
-          {checked && <Ionicons name="checkmark" size={16} color="white" />}
+          {checked && <Ionicons name="checkmark" size={16} color="#5D4E40" />}
         </View>
 
         <View style={{ flex: 1 }}>
@@ -145,13 +150,19 @@ export function GroceryItemRow({
               fontSize: 15,
               fontWeight: '500',
               textDecorationLine: checked ? 'line-through' : 'none',
-              color: checked ? '#9CA3AF' : '#4A3728',
+              color: checked ? 'rgba(93, 78, 64, 0.6)' : '#5D4E40',
             }}
           >
             {quantity ? `${quantity} ${item.name}` : item.name}
           </Text>
           {item.recipe_sources.length > 0 && (
-            <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 3 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                color: 'rgba(93, 78, 64, 0.7)',
+                marginTop: 3,
+              }}
+            >
               {item.recipe_sources.join(' · ')}
             </Text>
           )}
@@ -321,17 +332,17 @@ export function GroceryListView({
             width: 80,
             height: 80,
             borderRadius: 24,
-            backgroundColor: '#E8D5C4',
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 20,
           }}
         >
-          <Ionicons name="cart-outline" size={40} color="#4A3728" />
+          <Ionicons name="cart-outline" size={40} color="#5D4E40" />
         </View>
         <Text
           style={{
-            color: '#4A3728',
+            color: '#5D4E40',
             fontSize: 18,
             fontWeight: '600',
             textAlign: 'center',
@@ -341,7 +352,7 @@ export function GroceryListView({
         </Text>
         <Text
           style={{
-            color: '#6B7280',
+            color: 'rgba(93, 78, 64, 0.7)',
             fontSize: 15,
             marginTop: 8,
             textAlign: 'center',
@@ -365,7 +376,9 @@ export function GroceryListView({
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf: 'flex-start',
-            backgroundColor: reorderMode ? '#4A3728' : '#F5E6D3',
+            backgroundColor: reorderMode
+              ? 'rgba(255, 255, 255, 0.95)'
+              : 'rgba(255, 255, 255, 0.6)',
             paddingHorizontal: 14,
             paddingVertical: 8,
             borderRadius: 10,
@@ -375,13 +388,13 @@ export function GroceryListView({
           <Ionicons
             name={reorderMode ? 'checkmark' : 'swap-vertical'}
             size={16}
-            color={reorderMode ? '#fff' : '#4A3728'}
+            color={reorderMode ? '#5D4E40' : '#5D4E40'}
           />
           <Text
             style={{
               fontSize: 13,
               fontWeight: '600',
-              color: reorderMode ? '#fff' : '#4A3728',
+              color: reorderMode ? '#5D4E40' : '#5D4E40',
             }}
           >
             {reorderMode ? 'Done sorting' : 'Sort items'}
@@ -395,7 +408,7 @@ export function GroceryListView({
           <Text
             style={{
               fontSize: 13,
-              color: '#6B7280',
+              color: 'rgba(93, 78, 64, 0.7)',
               marginBottom: 12,
               fontStyle: 'italic',
             }}
@@ -438,7 +451,9 @@ export function GroceryListView({
                     paddingHorizontal: 4,
                     marginTop: 20,
                     marginBottom: 4,
-                    backgroundColor: pressed ? '#F5E6D3' : 'transparent',
+                    backgroundColor: pressed
+                      ? 'rgba(255, 255, 255, 0.15)'
+                      : 'transparent',
                     borderRadius: 8,
                   })}
                 >
@@ -453,20 +468,22 @@ export function GroceryListView({
                       style={{
                         fontSize: 16,
                         fontWeight: '700',
-                        color: '#4A3728',
+                        color: '#5D4E40',
                         letterSpacing: -0.2,
                       }}
                     >
                       {section.title}
                     </Text>
-                    <Text style={{ fontSize: 13, color: '#9CA3AF' }}>
+                    <Text
+                      style={{ fontSize: 13, color: 'rgba(93, 78, 64, 0.7)' }}
+                    >
                       ({checkedCount}/{section.data.length})
                     </Text>
                   </View>
                   <Ionicons
                     name={isCollapsed ? 'chevron-down' : 'chevron-up'}
                     size={20}
-                    color="#9CA3AF"
+                    color="rgba(93, 78, 64, 0.6)"
                   />
                 </Pressable>
                 {!isCollapsed &&

@@ -268,7 +268,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <GradientBackground variant="soft">
+    <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 100, paddingTop: 0 }}
@@ -296,10 +296,9 @@ export default function HomeScreen() {
               <Text
                 style={{
                   fontSize: fontSize['6xl'],
-                  fontFamily: fontFamily.display,
-                  fontWeight: '300',
+                  fontWeight: '600',
                   color: colors.text.primary,
-                  letterSpacing: letterSpacing.tighter,
+                  letterSpacing: letterSpacing.tight,
                   marginBottom: 4,
                 }}
               >
@@ -321,7 +320,7 @@ export default function HomeScreen() {
                 width: 44,
                 height: 44,
                 borderRadius: 22,
-                backgroundColor: colors.white,
+                backgroundColor: colors.glass.card,
                 alignItems: 'center',
                 justifyContent: 'center',
                 ...shadows.sm,
@@ -337,7 +336,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Stats cards - elegant 3-column layout */}
+        {/* Stats cards - glass effect 3-column layout */}
         <View
           style={{
             flexDirection: 'row',
@@ -351,16 +350,16 @@ export default function HomeScreen() {
             onPress={() => router.push('/recipes')}
             style={({ pressed }) => ({
               flex: 1,
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               padding: 16,
-              ...shadows.md,
+              ...shadows.sm,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
             <View
               style={{
-                backgroundColor: colors.category.recipes.bg,
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
                 borderRadius: borderRadius.sm,
                 width: 36,
                 height: 36,
@@ -372,7 +371,7 @@ export default function HomeScreen() {
               <Ionicons
                 name="book-outline"
                 size={18}
-                color={colors.category.recipes.text}
+                color={colors.text.primary}
               />
             </View>
             <Text
@@ -403,10 +402,9 @@ export default function HomeScreen() {
             onPress={() => router.push('/meal-plan')}
             style={({ pressed }) => ({
               flex: 1,
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               padding: 16,
-              ...shadows.md,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
@@ -455,10 +453,9 @@ export default function HomeScreen() {
             onPress={() => router.push('/grocery')}
             style={({ pressed }) => ({
               flex: 1,
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               padding: 16,
-              ...shadows.md,
               transform: [{ scale: pressed ? 0.98 : 1 }],
             })}
           >
@@ -508,7 +505,6 @@ export default function HomeScreen() {
           <Text
             style={{
               fontSize: fontSize['2xl'],
-              fontFamily: fontFamily.display,
               fontWeight: '600',
               color: colors.text.primary,
               marginBottom: 12,
@@ -519,10 +515,9 @@ export default function HomeScreen() {
           </Text>
           <View
             style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               padding: 6,
-              ...shadows.md,
               flexDirection: 'row',
               alignItems: 'center',
             }}
@@ -591,7 +586,6 @@ export default function HomeScreen() {
           <Text
             style={{
               fontSize: fontSize['2xl'],
-              fontFamily: fontFamily.display,
               fontWeight: '600',
               color: colors.text.primary,
               marginBottom: 12,
@@ -608,10 +602,9 @@ export default function HomeScreen() {
                 : router.push('/meal-plan')
             }
             style={({ pressed }) => ({
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               padding: 16,
-              ...shadows.md,
               flexDirection: 'row',
               alignItems: 'center',
               transform: [{ scale: pressed ? 0.99 : 1 }],
@@ -690,7 +683,6 @@ export default function HomeScreen() {
               <Text
                 style={{
                   fontSize: fontSize['2xl'],
-                  fontFamily: fontFamily.display,
                   fontWeight: '600',
                   color: colors.text.primary,
                   letterSpacing: letterSpacing.normal,
@@ -735,10 +727,9 @@ export default function HomeScreen() {
             <Pressable
               onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
               style={({ pressed }) => ({
-                backgroundColor: colors.white,
+                backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.lg,
                 overflow: 'hidden',
-                ...shadows.lg,
                 transform: [{ scale: pressed ? 0.99 : 1 }],
               })}
             >

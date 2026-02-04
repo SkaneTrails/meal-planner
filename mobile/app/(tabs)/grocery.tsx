@@ -387,7 +387,7 @@ export default function GroceryScreen() {
   // Show skeleton on initial load only (not on subsequent focus events)
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground variant="soft">
+      <GradientBackground>
         <View style={{ flex: 1 }}>
           <View
             style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}
@@ -402,7 +402,6 @@ export default function GroceryScreen() {
               <Text
                 style={{
                   fontSize: fontSize['4xl'],
-                  fontFamily: fontFamily.display,
                   fontWeight: '600',
                   color: colors.text.primary,
                   letterSpacing: letterSpacing.tight,
@@ -410,23 +409,6 @@ export default function GroceryScreen() {
               >
                 Grocery List
               </Text>
-              <View
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: borderRadius.lg,
-                  backgroundColor: colors.category.grocery.bg,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  ...shadows.sm,
-                }}
-              >
-                <Ionicons
-                  name="cart-outline"
-                  size={22}
-                  color={colors.category.grocery.text}
-                />
-              </View>
             </View>
           </View>
           <GroceryListSkeleton />
@@ -436,7 +418,7 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground variant="soft">
+    <GradientBackground>
       <View style={{ flex: 1 }}>
         {/* Header with title */}
         <View
@@ -452,19 +434,7 @@ export default function GroceryScreen() {
             <View>
               <Text
                 style={{
-                  fontSize: fontSize.sm,
-                  fontWeight: fontWeight.medium,
-                  color: colors.text.secondary,
-                  letterSpacing: letterSpacing.wide,
-                  textTransform: 'uppercase',
-                }}
-              >
-                Shopping
-              </Text>
-              <Text
-                style={{
                   fontSize: fontSize['4xl'],
-                  fontFamily: fontFamily.display,
                   fontWeight: '600',
                   color: colors.text.primary,
                   letterSpacing: letterSpacing.tight,
@@ -472,23 +442,6 @@ export default function GroceryScreen() {
               >
                 Grocery List
               </Text>
-            </View>
-            <View
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: borderRadius.lg,
-                backgroundColor: colors.category.grocery.bg,
-                alignItems: 'center',
-                justifyContent: 'center',
-                ...shadows.sm,
-              }}
-            >
-              <Ionicons
-                name="cart-outline"
-                size={22}
-                color={colors.category.grocery.text}
-              />
             </View>
           </View>
         </View>
@@ -503,11 +456,10 @@ export default function GroceryScreen() {
           {/* Stats card */}
           <View
             style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.lg,
               padding: spacing.xl,
               marginBottom: spacing.md,
-              ...shadows.md,
             }}
           >
             <View
@@ -551,14 +503,14 @@ export default function GroceryScreen() {
                     paddingVertical: 10,
                     borderRadius: borderRadius.sm,
                     backgroundColor: showAddItem
-                      ? colors.primary
-                      : colors.bgMid,
+                      ? '#7A6858'
+                      : 'rgba(255, 255, 255, 0.7)',
                   }}
                 >
                   <Ionicons
                     name={showAddItem ? 'close' : 'add'}
                     size={18}
-                    color={showAddItem ? colors.white : colors.primary}
+                    color={showAddItem ? colors.white : '#5D4E40'}
                   />
                 </Pressable>
 
@@ -572,10 +524,10 @@ export default function GroceryScreen() {
                       paddingHorizontal: 14,
                       paddingVertical: 10,
                       borderRadius: 12,
-                      backgroundColor: '#F5E6D3',
+                      backgroundColor: 'rgba(255, 255, 255, 0.7)',
                     }}
                   >
-                    <Ionicons name="trash-outline" size={18} color="#4A3728" />
+                    <Ionicons name="trash-outline" size={18} color="#5D4E40" />
                   </Pressable>
                 )}
 
@@ -589,10 +541,10 @@ export default function GroceryScreen() {
                       paddingHorizontal: 14,
                       paddingVertical: 10,
                       borderRadius: 12,
-                      backgroundColor: '#F5E6D3',
+                      backgroundColor: 'rgba(255, 255, 255, 0.7)',
                     }}
                   >
-                    <Ionicons name="refresh" size={18} color="#4A3728" />
+                    <Ionicons name="refresh" size={18} color="#5D4E40" />
                   </Pressable>
                 )}
               </View>
@@ -604,7 +556,7 @@ export default function GroceryScreen() {
                 <View
                   style={{
                     height: 6,
-                    backgroundColor: '#E8D5C4',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
                     borderRadius: 3,
                     overflow: 'hidden',
                   }}
@@ -612,7 +564,7 @@ export default function GroceryScreen() {
                   <View
                     style={{
                       height: '100%',
-                      backgroundColor: '#4A3728',
+                      backgroundColor: '#7A6858',
                       borderRadius: 3,
                       width: `${(checkedItemsToBuy / itemsToBuy) * 100}%`,
                     }}
@@ -631,17 +583,24 @@ export default function GroceryScreen() {
                   marginTop: 12,
                   paddingVertical: 8,
                   paddingHorizontal: 12,
-                  backgroundColor: '#F0FDF4',
+                  backgroundColor: 'rgba(180, 230, 180, 0.7)',
                   borderRadius: 10,
                   gap: 8,
                 }}
               >
-                <Ionicons name="home-outline" size={16} color="#166534" />
-                <Text style={{ fontSize: 13, color: '#166534', flex: 1 }}>
+                <Ionicons name="home-outline" size={16} color="#3D7A3D" />
+                <Text
+                  style={{
+                    fontSize: 13,
+                    color: '#2D5A2D',
+                    flex: 1,
+                    fontWeight: '500',
+                  }}
+                >
                   {hiddenAtHomeCount} item{hiddenAtHomeCount > 1 ? 's' : ''}{' '}
                   hidden (at home)
                 </Text>
-                <Ionicons name="chevron-forward" size={16} color="#166534" />
+                <Ionicons name="chevron-forward" size={16} color="#3D7A3D" />
               </Pressable>
             )}
           </View>
@@ -650,17 +609,16 @@ export default function GroceryScreen() {
           {showAddItem && (
             <View
               style={{
-                backgroundColor: colors.white,
+                backgroundColor: 'rgba(255, 255, 255, 0.65)',
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
-                ...shadows.md,
               }}
             >
               <Text
                 style={{
                   fontSize: 14,
                   fontWeight: '600',
-                  color: colors.primary,
+                  color: '#5D4E40',
                   marginBottom: 10,
                 }}
               >
@@ -672,15 +630,15 @@ export default function GroceryScreen() {
                 <TextInput
                   style={{
                     flex: 1,
-                    backgroundColor: colors.bgMid,
+                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
                     borderRadius: borderRadius.sm,
                     paddingHorizontal: 14,
                     paddingVertical: 12,
                     fontSize: 15,
-                    color: colors.primary,
+                    color: '#5D4E40',
                   }}
                   placeholder="e.g. Milk, 2 liters"
-                  placeholderTextColor={colors.text.muted}
+                  placeholderTextColor="#A09080"
                   value={newItemText}
                   onChangeText={setNewItemText}
                   onSubmitEditing={handleAddItem}
@@ -691,12 +649,11 @@ export default function GroceryScreen() {
                   disabled={!newItemText.trim()}
                   style={{
                     backgroundColor: newItemText.trim()
-                      ? colors.primary
-                      : colors.bgDark,
+                      ? '#7A6858'
+                      : 'rgba(200, 190, 180, 0.5)',
                     paddingHorizontal: 20,
                     paddingVertical: 12,
                     borderRadius: borderRadius.sm,
-                    ...(newItemText.trim() ? shadows.md : shadows.none),
                   }}
                 >
                   <Text
@@ -730,22 +687,9 @@ export default function GroceryScreen() {
               padding: 32,
             }}
           >
-            <View
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 24,
-                backgroundColor: '#E8D5C4',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 20,
-              }}
-            >
-              <Ionicons name="cart-outline" size={40} color="#4A3728" />
-            </View>
             <Text
               style={{
-                color: '#4A3728',
+                color: '#5D4E40',
                 fontSize: 18,
                 fontWeight: '600',
                 textAlign: 'center',
@@ -755,7 +699,7 @@ export default function GroceryScreen() {
             </Text>
             <Text
               style={{
-                color: '#6B7280',
+                color: 'rgba(93, 78, 64, 0.7)',
                 fontSize: 15,
                 marginTop: 8,
                 textAlign: 'center',
