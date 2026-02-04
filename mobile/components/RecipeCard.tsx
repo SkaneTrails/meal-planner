@@ -14,7 +14,6 @@ import {
   fontSize,
   fontWeight,
   letterSpacing,
-  shadows,
 } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
@@ -128,7 +127,7 @@ export function RecipeCard({
               style={{
                 fontSize: fontSize.lg,
                 fontWeight: fontWeight.semibold,
-                color: colors.text.primary,
+                color: colors.text.inverse,
                 letterSpacing: letterSpacing.normal,
               }}
               numberOfLines={1}
@@ -202,7 +201,7 @@ export function RecipeCard({
             <Ionicons
               name="chevron-forward"
               size={16}
-              color={colors.text.primary}
+              color={colors.text.inverse}
             />
           </View>
         </Animated.View>
@@ -263,13 +262,13 @@ export function RecipeCard({
               <Ionicons
                 name="star-outline"
                 size={12}
-                color={colors.text.primary}
+                color={colors.text.inverse}
               />
               <Text
                 style={{
                   fontSize: fontSize.xs,
                   fontWeight: fontWeight.semibold,
-                  color: colors.text.primary,
+                  color: colors.text.inverse,
                   marginLeft: 4,
                 }}
               >
@@ -316,7 +315,7 @@ export function RecipeCard({
             style={{
               fontSize: fontSize.md,
               fontWeight: fontWeight.semibold,
-              color: colors.text.primary,
+              color: colors.text.inverse,
               lineHeight: 20,
             }}
             numberOfLines={2}

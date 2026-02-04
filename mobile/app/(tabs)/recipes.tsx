@@ -32,7 +32,6 @@ import { useEnhancedMode, useRecipes } from '@/lib/hooks';
 import {
   borderRadius,
   colors,
-  fontFamily,
   fontSize,
   fontWeight,
   letterSpacing,
@@ -167,7 +166,7 @@ function RecipeGrid({
           </View>
           <Text
             style={{
-              color: colors.text.primary,
+              color: colors.text.inverse,
               fontSize: 18,
               fontWeight: '600',
               textAlign: 'center',
@@ -287,7 +286,7 @@ export default function RecipesScreen() {
               style={{
                 fontSize: fontSize['4xl'],
                 fontWeight: '600',
-                color: colors.text.primary,
+                color: colors.text.inverse,
                 letterSpacing: letterSpacing.tight,
               }}
             >
@@ -513,7 +512,7 @@ export default function RecipesScreen() {
                 <Text
                   style={{
                     fontSize: 15,
-                    color: colors.text.primary,
+                    color: colors.text.inverse,
                     fontWeight: '500',
                   }}
                 >

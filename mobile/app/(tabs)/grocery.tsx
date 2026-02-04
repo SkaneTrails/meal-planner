@@ -30,11 +30,9 @@ import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
   colors,
-  fontFamily,
   fontSize,
   fontWeight,
   letterSpacing,
-  shadows,
   spacing,
 } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';

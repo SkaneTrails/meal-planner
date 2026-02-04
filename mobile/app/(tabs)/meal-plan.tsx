@@ -36,11 +36,9 @@ import {
 import {
   borderRadius,
   colors,
-  fontFamily,
   fontSize,
   fontWeight,
   letterSpacing,
-  shadows,
   spacing,
 } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';

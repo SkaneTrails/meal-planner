@@ -2,29 +2,38 @@
  * Add Recipe modal - Import recipe from URL.
  */
 
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Pressable,
   Alert,
   KeyboardAvoidingView,
-  Platform,
-  Switch,
   Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useScrapeRecipe } from '@/lib/hooks';
-import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground } from '@/components';
+import { useScrapeRecipe } from '@/lib/hooks';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  iconContainer,
+  letterSpacing,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 
 export default function AddRecipeScreen() {
   const router = useRouter();
-  const [url, setUrl] = useState('');
+  const { url: urlParam } = useLocalSearchParams<{ url?: string }>();
+  const [url, setUrl] = useState(urlParam || '');
   const [enhanceWithAI, setEnhanceWithAI] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);
@@ -46,11 +55,18 @@ export default function AddRecipeScreen() {
     }
 
     try {
-      const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
+      const recipe = await scrapeRecipe.mutateAsync({
+        url,
+        enhance: enhanceWithAI,
+      });
       setImportedRecipe(recipe);
 
       // Show summary modal if enhanced, otherwise show simple alert
-      if (recipe.improved && recipe.changes_made && recipe.changes_made.length > 0) {
+      if (
+        recipe.improved &&
+        recipe.changes_made &&
+        recipe.changes_made.length > 0
+      ) {
         setShowSummaryModal(true);
       } else {
         Alert.alert('Klart!', `"${recipe.title}" har importerats!`, [
@@ -58,7 +74,9 @@ export default function AddRecipeScreen() {
             text: 'Visa recept',
             onPress: () => {
               router.back();
-              router.push(`/recipe/${recipe.id}${recipe.improved ? '?enhanced=true' : ''}`);
+              router.push(
+                `/recipe/${recipe.id}${recipe.improved ? '?enhanced=true' : ''}`,
+              );
             },
           },
           {
@@ -68,7 +86,8 @@ export default function AddRecipeScreen() {
         ]);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Kunde inte importera receptet';
+      const message =
+        err instanceof Error ? err.message : 'Kunde inte importera receptet';
       Alert.alert('Import misslyckades', message);
     }
   };
@@ -77,7 +96,9 @@ export default function AddRecipeScreen() {
     setShowSummaryModal(false);
     if (importedRecipe) {
       router.back();
-      router.push(`/recipe/${importedRecipe.id}${importedRecipe.improved ? '?enhanced=true' : ''}`);
+      router.push(
+        `/recipe/${importedRecipe.id}${importedRecipe.improved ? '?enhanced=true' : ''}`,
+      );
     }
   };
 
@@ -102,41 +123,83 @@ export default function AddRecipeScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Instructions */}
-          <View style={{
-            backgroundColor: colors.primary,
-            borderRadius: borderRadius.lg,
-            padding: spacing.lg,
-            marginBottom: spacing['2xl'],
-            ...shadows.md,
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
-              <Ionicons name="information-circle" size={22} color={colors.white} />
-              <Text style={{ marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontWeight: '600', color: colors.white, letterSpacing: letterSpacing.normal }}>
+          <View
+            style={{
+              backgroundColor: colors.primary,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              marginBottom: spacing['2xl'],
+              ...shadows.md,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: spacing.sm,
+              }}
+            >
+              <Ionicons
+                name="information-circle"
+                size={22}
+                color={colors.white}
+              />
+              <Text
+                style={{
+                  marginLeft: spacing.sm,
+                  fontSize: fontSize['2xl'],
+                  fontWeight: '600',
+                  color: colors.white,
+                  letterSpacing: letterSpacing.normal,
+                }}
+              >
                 Importera från URL
               </Text>
             </View>
-            <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, lineHeight: 22 }}>
-              Klistra in en recept-URL från valfri matlagningssajt. Vi extraherar
-              automatiskt titel, ingredienser, instruktioner och mer.
+            <Text
+              style={{
+                color: colors.text.secondary,
+                fontSize: fontSize.lg,
+                lineHeight: 22,
+              }}
+            >
+              Klistra in en recept-URL från valfri matlagningssajt. Vi
+              extraherar automatiskt titel, ingredienser, instruktioner och mer.
             </Text>
           </View>
 
           {/* URL input */}
           <View style={{ marginBottom: spacing.lg }}>
-            <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm, letterSpacing: letterSpacing.normal }}>
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontWeight: '600',
+                color: colors.text.inverse,
+                marginBottom: spacing.sm,
+                letterSpacing: letterSpacing.normal,
+              }}
+            >
               Recept-URL
             </Text>
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              paddingHorizontal: spacing.lg,
-              ...shadows.sm,
-            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                paddingHorizontal: spacing.lg,
+                ...shadows.sm,
+              }}
+            >
               <Ionicons name="link" size={20} color={colors.text.inverse} />
               <TextInput
-                style={{ flex: 1, paddingVertical: spacing.md, paddingHorizontal: spacing.md, fontSize: fontSize.lg, color: colors.text.inverse }}
+                style={{
+                  flex: 1,
+                  paddingVertical: spacing.md,
+                  paddingHorizontal: spacing.md,
+                  fontSize: fontSize.lg,
+                  color: colors.text.inverse,
+                }}
                 placeholder="https://example.com/recipe..."
                 placeholderTextColor={colors.gray[500]}
                 value={url}
@@ -149,40 +212,69 @@ export default function AddRecipeScreen() {
               />
               {url !== '' && (
                 <Pressable onPress={() => setUrl('')} disabled={isPending}>
-                  <Ionicons name="close-circle" size={20} color={colors.gray[500]} />
+                  <Ionicons
+                    name="close-circle"
+                    size={20}
+                    color={colors.gray[500]}
+                  />
                 </Pressable>
               )}
             </View>
           </View>
 
           {/* AI Enhancement toggle */}
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.md,
-            padding: spacing.lg,
-            marginBottom: spacing['2xl'],
-            ...shadows.sm,
-          }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <View style={{
-                width: iconContainer.md,
-                height: iconContainer.md,
-                borderRadius: iconContainer.md / 2,
-                backgroundColor: enhanceWithAI ? colors.accentLight : colors.glass.light,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: spacing.md
-              }}>
-                <Ionicons name="sparkles" size={18} color={enhanceWithAI ? colors.accent : colors.gray[500]} />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: colors.glass.card,
+              borderRadius: borderRadius.md,
+              padding: spacing.lg,
+              marginBottom: spacing['2xl'],
+              ...shadows.sm,
+            }}
+          >
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+            >
+              <View
+                style={{
+                  width: iconContainer.md,
+                  height: iconContainer.md,
+                  borderRadius: iconContainer.md / 2,
+                  backgroundColor: enhanceWithAI
+                    ? colors.accentLight
+                    : colors.glass.light,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: spacing.md,
+                }}
+              >
+                <Ionicons
+                  name="sparkles"
+                  size={18}
+                  color={enhanceWithAI ? colors.accent : colors.gray[500]}
+                />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.lg,
+                    fontWeight: '600',
+                    color: colors.text.inverse,
+                    letterSpacing: letterSpacing.normal,
+                  }}
+                >
                   Förbättra med AI
                 </Text>
-                <Text style={{ fontSize: fontSize.md, color: colors.gray[600], marginTop: spacing.xs }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    color: colors.gray[600],
+                    marginTop: spacing.xs,
+                  }}
+                >
                   Optimera mått, tider och instruktioner
                 </Text>
               </View>
@@ -206,22 +298,47 @@ export default function AddRecipeScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: url && !isPending ? colors.primary : colors.gray[300],
+              backgroundColor:
+                url && !isPending ? colors.primary : colors.gray[300],
               opacity: pressed ? 0.9 : 1,
               ...shadows.md,
             })}
           >
             {isPending ? (
               <>
-                <Ionicons name="hourglass-outline" size={20} color={colors.white} />
-                <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
-                  {enhanceWithAI ? 'Importerar och förbättrar...' : 'Importerar...'}
+                <Ionicons
+                  name="hourglass-outline"
+                  size={20}
+                  color={colors.white}
+                />
+                <Text
+                  style={{
+                    marginLeft: spacing.sm,
+                    color: colors.white,
+                    fontSize: fontSize.lg,
+                    fontWeight: '600',
+                  }}
+                >
+                  {enhanceWithAI
+                    ? 'Importerar och förbättrar...'
+                    : 'Importerar...'}
                 </Text>
               </>
             ) : (
               <>
-                <Ionicons name="download-outline" size={20} color={colors.white} />
-                <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
+                <Ionicons
+                  name="download-outline"
+                  size={20}
+                  color={colors.white}
+                />
+                <Text
+                  style={{
+                    marginLeft: spacing.sm,
+                    color: colors.white,
+                    fontSize: fontSize.lg,
+                    fontWeight: '600',
+                  }}
+                >
                   Importera recept
                 </Text>
               </>
@@ -230,10 +347,25 @@ export default function AddRecipeScreen() {
 
           {/* Supported sites */}
           <View style={{ marginTop: spacing['3xl'] }}>
-            <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.gray[600], marginBottom: spacing.md, letterSpacing: letterSpacing.wide, textTransform: 'uppercase' }}>
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontWeight: '600',
+                color: colors.gray[600],
+                marginBottom: spacing.md,
+                letterSpacing: letterSpacing.wide,
+                textTransform: 'uppercase',
+              }}
+            >
               Stödda sajter (400+)
             </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: spacing.sm,
+              }}
+            >
               {[
                 'AllRecipes',
                 'BBC Good Food',
@@ -247,9 +379,21 @@ export default function AddRecipeScreen() {
               ].map((site) => (
                 <View
                   key={site}
-                  style={{ backgroundColor: colors.glass.card, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.sm }}
+                  style={{
+                    backgroundColor: colors.glass.card,
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    borderRadius: borderRadius.sm,
+                  }}
                 >
-                  <Text style={{ fontSize: fontSize.md, color: colors.text.inverse }}>{site}</Text>
+                  <Text
+                    style={{
+                      fontSize: fontSize.md,
+                      color: colors.text.inverse,
+                    }}
+                  >
+                    {site}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -263,40 +407,66 @@ export default function AddRecipeScreen() {
           animationType="fade"
           onRequestClose={() => setShowSummaryModal(false)}
         >
-          <View style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: spacing['2xl'],
-          }}>
-            <View style={{
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.lg,
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              justifyContent: 'center',
+              alignItems: 'center',
               padding: spacing['2xl'],
-              width: '100%',
-              maxWidth: 400,
-              maxHeight: '80%',
-              ...shadows.xl,
-            }}>
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.lg,
+                padding: spacing['2xl'],
+                width: '100%',
+                maxWidth: 400,
+                maxHeight: '80%',
+                ...shadows.xl,
+              }}
+            >
               {/* Header */}
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
-                <View style={{
-                  width: iconContainer.lg,
-                  height: iconContainer.lg,
-                  borderRadius: iconContainer.lg / 2,
-                  backgroundColor: colors.accentLight,
+              <View
+                style={{
+                  flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: spacing.md
-                }}>
+                  marginBottom: spacing.lg,
+                }}
+              >
+                <View
+                  style={{
+                    width: iconContainer.lg,
+                    height: iconContainer.lg,
+                    borderRadius: iconContainer.lg / 2,
+                    backgroundColor: colors.accentLight,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: spacing.md,
+                  }}
+                >
                   <Ionicons name="sparkles" size={22} color={colors.accent} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
+                  <Text
+                    style={{
+                      fontSize: fontSize['3xl'],
+                      fontWeight: '700',
+                      color: colors.text.inverse,
+                      letterSpacing: letterSpacing.normal,
+                    }}
+                  >
                     Recept förbättrat!
                   </Text>
-                  <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }} numberOfLines={1}>
+                  <Text
+                    style={{
+                      fontSize: fontSize.lg,
+                      color: colors.gray[600],
+                      marginTop: spacing.xs,
+                    }}
+                    numberOfLines={1}
+                  >
                     {importedRecipe?.title}
                   </Text>
                 </View>
@@ -304,7 +474,14 @@ export default function AddRecipeScreen() {
 
               {/* Changes list */}
               <ScrollView style={{ maxHeight: 300, marginBottom: spacing.xl }}>
-                <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.md }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.lg,
+                    fontWeight: '600',
+                    color: colors.text.inverse,
+                    marginBottom: spacing.md,
+                  }}
+                >
                   AI-förbättringar:
                 </Text>
                 {importedRecipe?.changes_made?.map((change, index) => (
@@ -319,8 +496,20 @@ export default function AddRecipeScreen() {
                       borderRadius: borderRadius.sm,
                     }}
                   >
-                    <Ionicons name="checkmark-circle" size={18} color={colors.success} style={{ marginRight: spacing.sm, marginTop: 1 }} />
-                    <Text style={{ flex: 1, fontSize: fontSize.lg, color: colors.text.inverse, lineHeight: 22 }}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={18}
+                      color={colors.success}
+                      style={{ marginRight: spacing.sm, marginTop: 1 }}
+                    />
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: fontSize.lg,
+                        color: colors.text.inverse,
+                        lineHeight: 22,
+                      }}
+                    >
                       {change}
                     </Text>
                   </View>
@@ -340,7 +529,13 @@ export default function AddRecipeScreen() {
                     opacity: pressed ? 0.9 : 1,
                   })}
                 >
-                  <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
+                  <Text
+                    style={{
+                      fontSize: fontSize.lg,
+                      fontWeight: '600',
+                      color: colors.text.inverse,
+                    }}
+                  >
                     Lägg till fler
                   </Text>
                 </Pressable>
@@ -356,7 +551,13 @@ export default function AddRecipeScreen() {
                     ...shadows.sm,
                   })}
                 >
-                  <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
+                  <Text
+                    style={{
+                      fontSize: fontSize.lg,
+                      fontWeight: '600',
+                      color: colors.white,
+                    }}
+                  >
                     Visa recept
                   </Text>
                 </Pressable>

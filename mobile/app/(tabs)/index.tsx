@@ -4,13 +4,11 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -30,11 +28,9 @@ import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
   colors,
-  fontFamily,
   fontSize,
   letterSpacing,
   shadows,
-  spacing,
 } from '@/lib/theme';
 import type { GroceryItem, Recipe } from '@/lib/types';
 
