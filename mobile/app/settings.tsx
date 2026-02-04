@@ -3,22 +3,26 @@
  * Organized into sections: Language, Grocery List, etc.
  */
 
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Stack, useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Pressable,
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
+import {
+  type AppLanguage,
+  LANGUAGES,
+  useSettings,
+} from '@/lib/settings-context';
+import { borderRadius, colors, shadows, spacing } from '@/lib/theme';
 
 // Common items that people often have at home
 const SUGGESTED_ITEMS = [
@@ -45,7 +49,7 @@ function SectionHeader({
   iconColor = '#4A3728',
   iconBg = '#E8D5C4',
   title,
-  subtitle
+  subtitle,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   iconColor?: string;
@@ -54,16 +58,20 @@ function SectionHeader({
   subtitle: string;
 }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-      <View style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: iconBg,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 12,
-      }}>
+    <View
+      style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}
+    >
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          backgroundColor: iconBg,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 12,
+        }}
+      >
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>
       <View style={{ flex: 1 }}>
@@ -80,7 +88,8 @@ function SectionHeader({
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
+  const { settings, addItemAtHome, removeItemAtHome, setLanguage } =
+    useSettings();
   const [newItem, setNewItem] = useState('');
 
   const handleAddItem = async () => {
@@ -115,7 +124,7 @@ export default function SettingsScreen() {
   };
 
   const suggestedNotAdded = SUGGESTED_ITEMS.filter(
-    item => !settings.itemsAtHome.includes(item.toLowerCase())
+    (item) => !settings.itemsAtHome.includes(item.toLowerCase()),
   );
 
   const handleLanguageChange = async (language: AppLanguage) => {
@@ -137,10 +146,17 @@ export default function SettingsScreen() {
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}
-              style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -4 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 8,
+                marginLeft: -4,
+              }}
             >
               <Ionicons name="chevron-back" size={24} color="white" />
-              <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>Home</Text>
+              <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>
+                Home
+              </Text>
             </Pressable>
           ),
         }}
@@ -171,7 +187,16 @@ export default function SettingsScreen() {
             })}
           >
             <Ionicons name="arrow-back" size={20} color={colors.primary} />
-            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.primary, marginLeft: 8 }}>Back to Home</Text>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '600',
+                color: colors.primary,
+                marginLeft: 8,
+              }}
+            >
+              Back to Home
+            </Text>
           </Pressable>
 
           {/* Language Section */}
@@ -184,12 +209,14 @@ export default function SettingsScreen() {
               subtitle="Choose your preferred language"
             />
 
-            <View style={{
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.md,
-              overflow: 'hidden',
-              ...shadows.sm,
-            }}>
+            <View
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.md,
+                overflow: 'hidden',
+                ...shadows.sm,
+              }}
+            >
               {LANGUAGES.map((lang, index) => (
                 <Pressable
                   key={lang.code}
@@ -203,10 +230,18 @@ export default function SettingsScreen() {
                     borderBottomColor: '#F3F4F6',
                   })}
                 >
-                  <Text style={{ fontSize: 24, marginRight: 12 }}>{lang.flag}</Text>
-                  <Text style={{ flex: 1, fontSize: 16, color: '#4A3728' }}>{lang.label}</Text>
+                  <Text style={{ fontSize: 24, marginRight: 12 }}>
+                    {lang.flag}
+                  </Text>
+                  <Text style={{ flex: 1, fontSize: 16, color: '#4A3728' }}>
+                    {lang.label}
+                  </Text>
                   {settings.language === lang.code && (
-                    <Ionicons name="checkmark-circle" size={24} color="#2D5A3D" />
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={24}
+                      color="#2D5A3D"
+                    />
                   )}
                 </Pressable>
               ))}
@@ -224,14 +259,16 @@ export default function SettingsScreen() {
             />
 
             {/* Add new item input */}
-            <View style={{
-              flexDirection: 'row',
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.md,
-              padding: 4,
-              marginBottom: spacing.lg,
-              ...shadows.sm,
-            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.md,
+                padding: 4,
+                marginBottom: spacing.lg,
+                ...shadows.sm,
+              }}
+            >
               <TextInput
                 style={{
                   flex: 1,
@@ -267,17 +304,28 @@ export default function SettingsScreen() {
 
             {/* Current items */}
             {settings.itemsAtHome.length > 0 ? (
-              <View style={{
-                backgroundColor: colors.white,
-                borderRadius: borderRadius.md,
-                padding: spacing.lg,
-                marginBottom: spacing.lg,
-                ...shadows.sm,
-              }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280', marginBottom: 12 }}>
+              <View
+                style={{
+                  backgroundColor: colors.white,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.lg,
+                  marginBottom: spacing.lg,
+                  ...shadows.sm,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: '#6B7280',
+                    marginBottom: 12,
+                  }}
+                >
                   Your items ({settings.itemsAtHome.length})
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                <View
+                  style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}
+                >
                   {settings.itemsAtHome.map((item) => (
                     <Pressable
                       key={item}
@@ -292,7 +340,13 @@ export default function SettingsScreen() {
                         gap: 6,
                       })}
                     >
-                      <Text style={{ fontSize: 14, color: '#4A3728', textTransform: 'capitalize' }}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: '#4A3728',
+                          textTransform: 'capitalize',
+                        }}
+                      >
                         {item}
                       </Text>
                       <Ionicons name="close-circle" size={18} color="#9CA3AF" />
@@ -301,46 +355,75 @@ export default function SettingsScreen() {
                 </View>
               </View>
             ) : (
-              <View style={{
-                backgroundColor: colors.white,
-                borderRadius: borderRadius.md,
-                padding: spacing['2xl'],
-                alignItems: 'center',
-                marginBottom: spacing.lg,
-                ...shadows.sm,
-              }}>
-                <View style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: colors.bgMid,
+              <View
+                style={{
+                  backgroundColor: colors.white,
+                  borderRadius: borderRadius.md,
+                  padding: spacing['2xl'],
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 12,
-                }}>
+                  marginBottom: spacing.lg,
+                  ...shadows.sm,
+                }}
+              >
+                <View
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
+                    backgroundColor: colors.bgMid,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 12,
+                  }}
+                >
                   <Ionicons name="basket-outline" size={28} color="#4A3728" />
                 </View>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#4A3728', marginBottom: 4 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: '#4A3728',
+                    marginBottom: 4,
+                  }}
+                >
                   No items yet
                 </Text>
-                <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center' }}>
-                  Add items you always have at home to exclude them from your grocery list
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: '#6B7280',
+                    textAlign: 'center',
+                  }}
+                >
+                  Add items you always have at home to exclude them from your
+                  grocery list
                 </Text>
               </View>
             )}
 
             {/* Suggested items */}
             {suggestedNotAdded.length > 0 && (
-              <View style={{
-                backgroundColor: colors.white,
-                borderRadius: borderRadius.md,
-                padding: spacing.lg,
-                ...shadows.sm,
-              }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280', marginBottom: 12 }}>
+              <View
+                style={{
+                  backgroundColor: colors.white,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.lg,
+                  ...shadows.sm,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: '#6B7280',
+                    marginBottom: 12,
+                  }}
+                >
                   Suggestions
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                <View
+                  style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}
+                >
                   {suggestedNotAdded.map((item) => (
                     <Pressable
                       key={item}
@@ -359,7 +442,13 @@ export default function SettingsScreen() {
                       })}
                     >
                       <Ionicons name="add" size={16} color="#6B7280" />
-                      <Text style={{ fontSize: 14, color: '#6B7280', textTransform: 'capitalize' }}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: '#6B7280',
+                          textTransform: 'capitalize',
+                        }}
+                      >
                         {item}
                       </Text>
                     </Pressable>
@@ -379,18 +468,39 @@ export default function SettingsScreen() {
               subtitle="App information"
             />
 
-            <View style={{
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
-              ...shadows.sm,
-            }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <View
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                ...shadows.sm,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 12,
+                }}
+              >
                 <Text style={{ fontSize: 15, color: '#6B7280' }}>Version</Text>
-                <Text style={{ fontSize: 15, color: '#4A3728', fontWeight: '500' }}>1.0.0</Text>
+                <Text
+                  style={{ fontSize: 15, color: '#4A3728', fontWeight: '500' }}
+                >
+                  1.0.0
+                </Text>
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 15, color: '#6B7280' }}>Made with</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 15, color: '#6B7280' }}>
+                  Made with
+                </Text>
                 <Text style={{ fontSize: 15 }}>❤️</Text>
               </View>
             </View>

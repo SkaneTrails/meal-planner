@@ -4,12 +4,11 @@
  * Requires authentication - redirects to sign-in if not authenticated.
  */
 
-import React from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { Redirect, Tabs } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useAuth } from '@/lib/hooks/use-auth';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -18,7 +17,14 @@ export default function TabLayout() {
   // Show loading spinner while checking auth state
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+        }}
+      >
         <ActivityIndicator size="large" color="#10b981" />
       </View>
     );

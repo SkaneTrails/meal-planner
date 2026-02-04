@@ -3,8 +3,14 @@
  * Manages checked items in AsyncStorage, shareable across screens.
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface GroceryState {
   checkedItems: Set<string>;
@@ -43,7 +49,7 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
         const items = JSON.parse(customData);
         // Handle both old format (strings) and new format (GroceryItem objects)
         const names = items.map((i: string | { name: string }) =>
-          typeof i === 'string' ? i : i.name
+          typeof i === 'string' ? i : i.name,
         );
         setCustomItems(names);
       }
@@ -59,32 +65,42 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadFromStorage();
-  }, []);
+  }, [loadFromStorage]);
 
   const setCheckedItems = (items: Set<string>) => {
     setCheckedItemsState(items);
-    AsyncStorage.setItem('grocery_checked_items', JSON.stringify(Array.from(items)))
-      .catch(error => console.error('[GroceryContext] Error saving checked items:', error));
+    AsyncStorage.setItem(
+      'grocery_checked_items',
+      JSON.stringify(Array.from(items)),
+    ).catch((error) =>
+      console.error('[GroceryContext] Error saving checked items:', error),
+    );
   };
 
   const toggleItem = (itemName: string) => {
-    setCheckedItemsState(prev => {
+    setCheckedItemsState((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(itemName)) {
         newSet.delete(itemName);
       } else {
         newSet.add(itemName);
       }
-      AsyncStorage.setItem('grocery_checked_items', JSON.stringify(Array.from(newSet)))
-        .catch(error => console.error('[GroceryContext] Error saving checked items:', error));
+      AsyncStorage.setItem(
+        'grocery_checked_items',
+        JSON.stringify(Array.from(newSet)),
+      ).catch((error) =>
+        console.error('[GroceryContext] Error saving checked items:', error),
+      );
       return newSet;
     });
   };
 
   const clearChecked = () => {
     setCheckedItemsState(new Set());
-    AsyncStorage.setItem('grocery_checked_items', JSON.stringify([]))
-      .catch(error => console.error('[GroceryContext] Error clearing checked items:', error));
+    AsyncStorage.setItem('grocery_checked_items', JSON.stringify([])).catch(
+      (error) =>
+        console.error('[GroceryContext] Error clearing checked items:', error),
+    );
   };
 
   const refreshFromStorage = async () => {
@@ -93,16 +109,18 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <GroceryContext.Provider value={{
-      checkedItems,
-      customItems,
-      selectedMealKeys,
-      isLoading,
-      toggleItem,
-      setCheckedItems,
-      clearChecked,
-      refreshFromStorage,
-    }}>
+    <GroceryContext.Provider
+      value={{
+        checkedItems,
+        customItems,
+        selectedMealKeys,
+        isLoading,
+        toggleItem,
+        setCheckedItems,
+        clearChecked,
+        refreshFromStorage,
+      }}
+    >
       {children}
     </GroceryContext.Provider>
   );

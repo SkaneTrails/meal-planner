@@ -3,9 +3,16 @@
  * Provides household and member management functionality.
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api';
-import type { Household, HouseholdCreate, HouseholdMember, MemberAdd, CurrentUser, HouseholdSettings } from '../types';
+import type {
+  CurrentUser,
+  Household,
+  HouseholdCreate,
+  HouseholdMember,
+  HouseholdSettings,
+  MemberAdd,
+} from '../types';
 
 // Query keys
 const adminKeys = {
@@ -13,8 +20,10 @@ const adminKeys = {
   currentUser: () => [...adminKeys.all, 'currentUser'] as const,
   households: () => [...adminKeys.all, 'households'] as const,
   household: (id: string) => [...adminKeys.all, 'household', id] as const,
-  members: (householdId: string) => [...adminKeys.all, 'members', householdId] as const,
-  settings: (householdId: string) => [...adminKeys.all, 'settings', householdId] as const,
+  members: (householdId: string) =>
+    [...adminKeys.all, 'members', householdId] as const,
+  settings: (householdId: string) =>
+    [...adminKeys.all, 'settings', householdId] as const,
 };
 
 /**
@@ -83,10 +92,17 @@ export function useCreateHousehold() {
 export function useAddMember() {
   const queryClient = useQueryClient();
 
-  return useMutation<HouseholdMember, Error, { householdId: string; data: MemberAdd }>({
-    mutationFn: ({ householdId, data }) => api.addHouseholdMember(householdId, data),
+  return useMutation<
+    HouseholdMember,
+    Error,
+    { householdId: string; data: MemberAdd }
+  >({
+    mutationFn: ({ householdId, data }) =>
+      api.addHouseholdMember(householdId, data),
     onSuccess: (_, { householdId }) => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.members(householdId) });
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.members(householdId),
+      });
     },
   });
 }
@@ -98,9 +114,12 @@ export function useRemoveMember() {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, { householdId: string; email: string }>({
-    mutationFn: ({ householdId, email }) => api.removeHouseholdMember(householdId, email),
+    mutationFn: ({ householdId, email }) =>
+      api.removeHouseholdMember(householdId, email),
     onSuccess: (_, { householdId }) => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.members(householdId) });
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.members(householdId),
+      });
     },
   });
 }
@@ -122,10 +141,17 @@ export function useHouseholdSettings(householdId: string | null) {
 export function useUpdateHouseholdSettings() {
   const queryClient = useQueryClient();
 
-  return useMutation<HouseholdSettings, Error, { householdId: string; settings: Partial<HouseholdSettings> }>({
-    mutationFn: ({ householdId, settings }) => api.updateHouseholdSettings(householdId, settings),
+  return useMutation<
+    HouseholdSettings,
+    Error,
+    { householdId: string; settings: Partial<HouseholdSettings> }
+  >({
+    mutationFn: ({ householdId, settings }) =>
+      api.updateHouseholdSettings(householdId, settings),
     onSuccess: (_, { householdId }) => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.settings(householdId) });
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.settings(householdId),
+      });
     },
   });
 }

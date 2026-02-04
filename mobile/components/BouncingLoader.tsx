@@ -3,21 +3,27 @@
  * Uses React Native's built-in Animated API.
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
 interface BouncingLoaderProps {
   color?: string;
   size?: number;
 }
 
-export function BouncingLoader({ color = '#C4A77D', size = 12 }: BouncingLoaderProps) {
+export function BouncingLoader({
+  color = '#C4A77D',
+  size = 12,
+}: BouncingLoaderProps) {
   const bounce1 = useRef(new Animated.Value(0)).current;
   const bounce2 = useRef(new Animated.Value(0)).current;
   const bounce3 = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const createBounceAnimation = (animatedValue: Animated.Value, delay: number) => {
+    const createBounceAnimation = (
+      animatedValue: Animated.Value,
+      delay: number,
+    ) => {
       return Animated.loop(
         Animated.sequence([
           Animated.delay(delay),
@@ -31,7 +37,7 @@ export function BouncingLoader({ color = '#C4A77D', size = 12 }: BouncingLoaderP
             duration: 300,
             useNativeDriver: true,
           }),
-        ])
+        ]),
       );
     };
 
@@ -60,9 +66,15 @@ export function BouncingLoader({ color = '#C4A77D', size = 12 }: BouncingLoaderP
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[dotStyle, { transform: [{ translateY: bounce1 }] }]} />
-      <Animated.View style={[dotStyle, { transform: [{ translateY: bounce2 }] }]} />
-      <Animated.View style={[dotStyle, { transform: [{ translateY: bounce3 }] }]} />
+      <Animated.View
+        style={[dotStyle, { transform: [{ translateY: bounce1 }] }]}
+      />
+      <Animated.View
+        style={[dotStyle, { transform: [{ translateY: bounce2 }] }]}
+      />
+      <Animated.View
+        style={[dotStyle, { transform: [{ translateY: bounce3 }] }]}
+      />
     </View>
   );
 }

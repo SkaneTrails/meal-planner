@@ -3,14 +3,16 @@
  * When enabled, fetches from the meal-planner database instead of default.
  */
 
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, type ReactNode, useContext, useState } from 'react';
 
 interface EnhancedModeContextType {
   isEnhanced: boolean;
   setIsEnhanced: (value: boolean) => void;
 }
 
-const EnhancedModeContext = createContext<EnhancedModeContextType | undefined>(undefined);
+const EnhancedModeContext = createContext<EnhancedModeContextType | undefined>(
+  undefined,
+);
 
 export function EnhancedModeProvider({ children }: { children: ReactNode }) {
   const [isEnhanced, setIsEnhanced] = useState(false);
@@ -25,7 +27,9 @@ export function EnhancedModeProvider({ children }: { children: ReactNode }) {
 export function useEnhancedMode() {
   const context = useContext(EnhancedModeContext);
   if (context === undefined) {
-    throw new Error('useEnhancedMode must be used within an EnhancedModeProvider');
+    throw new Error(
+      'useEnhancedMode must be used within an EnhancedModeProvider',
+    );
   }
   return context;
 }
