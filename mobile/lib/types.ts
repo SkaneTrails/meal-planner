@@ -45,8 +45,6 @@ export interface Recipe {
   enhanced?: boolean;              // True if AI-enhanced
   enhanced_from?: string;          // ID of recipe this was enhanced from
   enhanced_at?: string;            // ISO timestamp of enhancement
-  improved?: boolean;              // Legacy alias for enhanced
-  original_id?: string;            // Legacy alias for enhanced_from
   tips?: string;
   changes_made?: string[];
 }

@@ -124,7 +124,6 @@ class TestDocToRecipe:
 
         assert result.enhanced is True
         assert result.enhanced_from == "orig123"
-        assert result.improved is True  # Legacy field still works
         assert result.tips == "Use fresh herbs"
         assert result.changes_made == ["Added spices", "Fixed timing"]
 
@@ -188,9 +187,6 @@ class TestSaveRecipe:
         assert call_args["enhanced"] is True
         assert call_args["enhanced_from"] == "original_123"
         assert call_args["changes_made"] == ["Added spices", "Fixed instructions"]
-        # Legacy fields should also be set
-        assert call_args["improved"] is True
-        assert call_args["original_id"] == "original_123"
 
         # Check returned recipe
         assert result.enhanced is True
@@ -211,7 +207,6 @@ class TestSaveRecipe:
 
         call_args = mock_doc_ref.set.call_args[0][0]
         assert "enhanced" not in call_args
-        assert "improved" not in call_args
 
     def test_saves_diet_and_meal_labels(self) -> None:
         """Should save diet_label and meal_label as string values."""

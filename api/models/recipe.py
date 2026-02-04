@@ -124,8 +124,6 @@ class Recipe(RecipeBase):
     enhanced_from: str | None = Field(default=None, description="Original recipe ID if this is an enhanced copy")
     enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
-    # Legacy field alias (for backwards compatibility during migration)
-    improved: bool = Field(default=False, description="Deprecated: use 'enhanced' instead")
 
     @computed_field
     @property

@@ -58,8 +58,6 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         enhanced=enhanced,
         enhanced_from=enhanced_from,
         enhanced_at=enhanced_at,
-        # Legacy field for backwards compatibility
-        improved=enhanced,
         tips=data.get("tips"),
         changes_made=data.get("changes_made"),
         # Household fields
@@ -221,10 +219,8 @@ def save_recipe(  # noqa: PLR0913
     # Add enhancement fields if present
     if enhanced:
         data["enhanced"] = enhanced
-        data["improved"] = enhanced  # Legacy field for backwards compatibility
     if enhanced_from:
         data["enhanced_from"] = enhanced_from
-        data["original_id"] = enhanced_from  # Legacy field for backwards compatibility
     if enhanced_at:
         data["enhanced_at"] = enhanced_at
     if changes_made:
@@ -242,7 +238,6 @@ def save_recipe(  # noqa: PLR0913
         enhanced=enhanced,
         enhanced_from=enhanced_from,
         enhanced_at=enhanced_at,
-        improved=enhanced,
         changes_made=changes_made,
         household_id=household_id,
         visibility=visibility_value,  # type: ignore[arg-type]

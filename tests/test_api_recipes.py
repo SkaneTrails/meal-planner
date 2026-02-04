@@ -230,7 +230,7 @@ class TestScrapeRecipe:
             id="test123",
             title="Enhanced Recipe",
             url="https://example.com/new",
-            improved=True,
+            enhanced=True,
             changes_made=["Added weight to flour"],
         )
 
@@ -263,7 +263,7 @@ class TestScrapeRecipe:
 
         assert response.status_code == 201
         data = response.json()
-        assert data["improved"] is True
+        assert data["enhanced"] is True
 
     def test_enhancement_failure_returns_unenhanced(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return unenhanced recipe if enhancement fails."""
@@ -299,7 +299,7 @@ class TestScrapeRecipe:
 
         # Should still succeed, returning the unenhanced recipe
         assert response.status_code == 201
-        assert response.json()["improved"] is False
+        assert response.json()["enhanced"] is False
 
     def test_returns_504_on_timeout(self, client: TestClient) -> None:
         """Should return 504 on scraping timeout."""

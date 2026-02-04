@@ -188,10 +188,6 @@ All fields must be at the **top level** (no nested objects). The `created_at` fi
     "enhanced_at": datetime | None,  # When enhancement was performed
     "changes_made": list[str],       # Summary of AI changes
     "tips": str | None,              # Cooking tips from AI
-
-    # Legacy fields (for backward compatibility)
-    "improved": bool,                # Alias for enhanced (deprecated)
-    "original_id": str | None,       # Alias for enhanced_from (deprecated)
 }
 ```
 
