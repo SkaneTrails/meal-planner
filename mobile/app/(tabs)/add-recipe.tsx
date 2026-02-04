@@ -15,7 +15,7 @@ import {
   Switch,
   Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useScrapeRecipe } from '@/lib/hooks';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
@@ -24,7 +24,8 @@ import type { Recipe } from '@/lib/types';
 
 export default function AddRecipeScreen() {
   const router = useRouter();
-  const [url, setUrl] = useState('');
+  const { url: urlParam } = useLocalSearchParams<{ url?: string }>();
+  const [url, setUrl] = useState(urlParam || '');
   const [enhanceWithAI, setEnhanceWithAI] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);

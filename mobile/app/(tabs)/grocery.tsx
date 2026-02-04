@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { shadows, borderRadius, colors, spacing, fontSize, fontFamily, letterSpacing, fontWeight } from '@/lib/theme';
+import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight } from '@/lib/theme';
 import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';

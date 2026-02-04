@@ -23,7 +23,7 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, fontFamily, letterSpacing, fontWeight } from '@/lib/theme';
+import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight } from '@/lib/theme';
 import { GradientBackground } from '@/components';
 import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';

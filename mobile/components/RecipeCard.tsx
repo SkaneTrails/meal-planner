@@ -8,7 +8,7 @@ import React from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, borderRadius, shadows, fontSize, fontWeight, letterSpacing } from '@/lib/theme';
+import { colors, borderRadius, fontSize, fontWeight, letterSpacing } from '@/lib/theme';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
 // Blurhash placeholder for loading state (soft cream color)
@@ -92,7 +92,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             <Text style={{
               fontSize: fontSize.lg,
               fontWeight: fontWeight.semibold,
-              color: colors.text.primary,
+              color: colors.text.inverse,
               letterSpacing: letterSpacing.normal,
             }} numberOfLines={1}>
               {recipe.title}
@@ -128,7 +128,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             </View>
           </View>
           <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: borderRadius.sm, padding: 10 }}>
-            <Ionicons name="chevron-forward" size={16} color={colors.text.primary} />
+            <Ionicons name="chevron-forward" size={16} color={colors.text.inverse} />
           </View>
         </Animated.View>
       </Pressable>
@@ -181,11 +181,11 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               paddingVertical: 4,
               borderRadius: 12,
             }}>
-              <Ionicons name="star-outline" size={12} color={colors.text.primary} />
+              <Ionicons name="star-outline" size={12} color={colors.text.inverse} />
               <Text style={{
                 fontSize: fontSize.xs,
                 fontWeight: fontWeight.semibold,
-                color: colors.text.primary,
+                color: colors.text.inverse,
                 marginLeft: 4,
               }}>{recipe.rating}.0</Text>
             </View>
@@ -224,7 +224,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           <Text style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
-            color: colors.text.primary,
+            color: colors.text.inverse,
             lineHeight: 20,
           }} numberOfLines={2}>
             {recipe.title}

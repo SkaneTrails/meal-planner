@@ -4,13 +4,12 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Platform } from 'react-native';
+import { View, Text, ScrollView, Pressable, RefreshControl, TextInput } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
-import { shadows, borderRadius, colors, spacing, fontSize, fontFamily, letterSpacing } from '@/lib/theme';
+import { shadows, borderRadius, colors, fontSize, letterSpacing } from '@/lib/theme';
 import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground, HomeScreenSkeleton } from '@/components';

@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, fontFamily, letterSpacing, fontWeight } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight } from '@/lib/theme';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
@@ -120,7 +120,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
           }}>
             <Ionicons name={searchQuery || dietFilter || mealFilter ? "search" : "book-outline"} size={36} color={colors.white} />
           </View>
-          <Text style={{ color: colors.text.primary, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+          <Text style={{ color: colors.text.inverse, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
             {searchQuery || dietFilter || mealFilter
               ? 'No matches found'
               : 'Your recipe book is empty'}
@@ -215,7 +215,7 @@ export default function RecipesScreen() {
           <Text style={{
             fontSize: fontSize['4xl'],
             fontWeight: '600',
-            color: colors.text.primary,
+            color: colors.text.inverse,
             letterSpacing: letterSpacing.tight,
           }}>Recipe Library</Text>
           <Text style={{
@@ -389,7 +389,7 @@ export default function RecipesScreen() {
               }}
               style={{ marginLeft: 12 }}
             >
-              <Text style={{ fontSize: 15, color: colors.text.primary, fontWeight: '500' }}>Cancel</Text>
+              <Text style={{ fontSize: 15, color: colors.text.inverse, fontWeight: '500' }}>Cancel</Text>
             </Pressable>
           )}
         </View>
