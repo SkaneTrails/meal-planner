@@ -15,6 +15,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
+  "email-validator>=2.3",
   "fastapi>=0.115",
   "firebase-admin>=7.1",
   "google-cloud-firestore>=2.19",
@@ -83,8 +84,11 @@ lint.ignore = [
 ]
 
 lint.per-file-ignores."scripts/**/*.py" = [
+  "ANN201",  # Missing return type annotation ok in CLI scripts
   "C901",    # Complex functions ok in CLI scripts (main, process_batch)
   "E402",    # Module-level import not at top (needed for sys.path manipulation)
+  "F841",    # Unused variable ok (sometimes used for debugging)
+  "PERF401", # List comprehension optimization not needed for Firestore iteration
   "PLR0911", # Too many return statements ok in CLI argument parsing
   "PLR0912", # Too many branches ok in CLI argument parsing
   "PLR0915", # Too many statements ok in batch processing scripts

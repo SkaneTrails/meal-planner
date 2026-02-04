@@ -1,7 +1,9 @@
 """Recipe Pydantic models."""
 
 import re
+from datetime import datetime
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
 
@@ -103,6 +105,12 @@ class RecipeBase(BaseModel):
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating from 1-5 stars")
     tips: str | None = Field(default=None, description="Cooking tips")
+    # Household fields (for multi-tenancy)
+    household_id: str | None = Field(default=None, description="Household that owns this recipe (None = legacy/shared)")
+    visibility: Literal["household", "shared"] = Field(
+        default="household", description="'household' = private, 'shared' = visible to all"
+    )
+    created_by: str | None = Field(default=None, description="Email of user who created the recipe")
 
 
 class Recipe(RecipeBase):
@@ -111,9 +119,10 @@ class Recipe(RecipeBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: str = Field(..., description="Firestore document ID")
-    # AI enhancement fields (only present in enhanced recipes)
-    improved: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
-    original_id: str | None = Field(default=None, description="Original recipe ID if this is enhanced")
+    # AI enhancement fields
+    enhanced: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
+    enhanced_from: str | None = Field(default=None, description="Original recipe ID if this is an enhanced copy")
+    enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
 
     @computed_field
@@ -170,6 +179,7 @@ class RecipeUpdate(BaseModel):
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5)
+    visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
 
 
 class RecipeScrapeRequest(BaseModel):

@@ -9,6 +9,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from api.auth.models import AuthenticatedUser
 from api.models.recipe import Recipe, RecipeCreate
 from api.routers.recipes import router
 
@@ -19,12 +20,13 @@ app.include_router(router)
 
 @pytest.fixture
 def client() -> TestClient:
-    """Create test client with mocked auth."""
-    # Override the require_auth dependency to allow unauthenticated requests
+    """Create test client with mocked auth (user with household)."""
     from api.auth.firebase import require_auth
 
-    async def mock_auth() -> dict[str, str]:
-        return {"uid": "test_user"}
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            uid="test_user", email="test@example.com", household_id="test_household", role="member"
+        )
 
     app.dependency_overrides[require_auth] = mock_auth
 
@@ -92,7 +94,9 @@ class TestListRecipes:
             response = client.get("/recipes?enhanced=true")
 
         assert response.status_code == 200
-        mock_get.assert_called_once_with(include_duplicates=False, database="meal-planner")
+        mock_get.assert_called_once_with(
+            include_duplicates=False, database="meal-planner", household_id="test_household"
+        )
 
 
 class TestGetRecipe:
@@ -226,7 +230,7 @@ class TestScrapeRecipe:
             id="test123",
             title="Enhanced Recipe",
             url="https://example.com/new",
-            improved=True,
+            enhanced=True,
             changes_made=["Added weight to flour"],
         )
 
@@ -259,7 +263,7 @@ class TestScrapeRecipe:
 
         assert response.status_code == 201
         data = response.json()
-        assert data["improved"] is True
+        assert data["enhanced"] is True
 
     def test_enhancement_failure_returns_unenhanced(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return unenhanced recipe if enhancement fails."""
@@ -295,7 +299,7 @@ class TestScrapeRecipe:
 
         # Should still succeed, returning the unenhanced recipe
         assert response.status_code == 201
-        assert response.json()["improved"] is False
+        assert response.json()["enhanced"] is False
 
     def test_returns_504_on_timeout(self, client: TestClient) -> None:
         """Should return 504 on scraping timeout."""
@@ -349,6 +353,78 @@ class TestDeleteRecipe:
         """Should return 404 when recipe not found."""
         with patch("api.routers.recipes.recipe_storage.delete_recipe", return_value=False):
             response = client.delete("/recipes/nonexistent")
+
+        assert response.status_code == 404
+
+
+class TestCopyRecipe:
+    """Tests for POST /recipes/{recipe_id}/copy endpoint."""
+
+    def test_copies_shared_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should copy a shared recipe to user's household."""
+        shared_recipe = Recipe(
+            id="shared123",
+            title="Shared Recipe",
+            url="https://example.com/shared",
+            household_id=None,  # Legacy/shared
+            visibility="shared",
+        )
+        copied_recipe = Recipe(
+            id="copied123",
+            title="Shared Recipe",
+            url="https://example.com/shared",
+            household_id="test_household",
+            visibility="household",
+            created_by="test@example.com",
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=shared_recipe),
+            patch("api.routers.recipes.recipe_storage.copy_recipe", return_value=copied_recipe),
+        ):
+            response = client.post("/recipes/shared123/copy")
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["id"] == "copied123"
+        assert data["household_id"] == "test_household"
+        assert data["visibility"] == "household"
+
+    def test_returns_400_when_already_owned(self, client: TestClient) -> None:
+        """Should return 400 when recipe already belongs to household."""
+        owned_recipe = Recipe(
+            id="owned123",
+            title="My Recipe",
+            url="https://example.com/mine",
+            household_id="test_household",  # Same as user's household
+            visibility="household",
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=owned_recipe):
+            response = client.post("/recipes/owned123/copy")
+
+        assert response.status_code == 400
+        assert "already belongs" in response.json()["detail"].lower()
+
+    def test_returns_404_when_recipe_not_found(self, client: TestClient) -> None:
+        """Should return 404 when recipe doesn't exist."""
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=None):
+            response = client.post("/recipes/nonexistent/copy")
+
+        assert response.status_code == 404
+
+    def test_returns_404_when_not_shared(self, client: TestClient) -> None:
+        """Should return 404 when trying to copy a private recipe from another household."""
+        private_recipe = Recipe(
+            id="private123",
+            title="Private Recipe",
+            url="https://example.com/private",
+            household_id="other_household",  # Different household
+            visibility="household",  # Not shared
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=private_recipe):
+            response = client.post("/recipes/private123/copy")
 
         assert response.status_code == 404
 

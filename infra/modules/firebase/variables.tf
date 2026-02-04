@@ -35,8 +35,8 @@ variable "firestore_ready" {
   type        = any
 }
 
-variable "allowed_users" {
-  description = "List of email addresses allowed to access the app"
+variable "superusers" {
+  description = "List of superuser email addresses with global app access"
   type        = list(string)
   default     = []
 }

@@ -49,12 +49,16 @@ Använd laktosfria alternativ för:
 
 ## Fett
 
+**GRANSKA ALLTID** vilken olja/fett som används och om det matchar tillagningsmetoden.
+
 ### Smör
 
-- **Smör → margarin** ENDAST när smörsmak inte spelar roll (vanlig stekning)
+- **Smör → margarin** för vanlig stekning där smörsmak inte spelar roll
 - **Behåll smör** för: brynt smör, smörsåser, örtsmör, bakning, finishing
 
 ### Olja
 
-- **Olivolja → matolja/rapsolja** ENDAST för stekning där olivsmak inte spelar roll
-- **Behåll olivolja** för: dressingar, finishing, medelhavsrätter
+- **Olivolja → matolja/rapsolja** för stekning vid hög värme (searing, wok, stekpanna)
+- **Behåll olivolja** för: dressingar, finishing, medelhavsrätter, låg-/medelvärme
+
+**Varför:** Extra virgin olivolja har låg rökpunkt (~190°C) och passar inte för högvärmestekning. Rapsolja/matolja tål högre temperaturer.

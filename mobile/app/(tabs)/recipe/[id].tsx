@@ -21,11 +21,11 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists } from '@/lib/hooks';
+import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists, useCurrentUser } from '@/lib/hooks';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { BouncingLoader } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
-import type { DietLabel, MealLabel, MealType, StructuredInstruction } from '@/lib/types';
+import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
 
 // Blurhash placeholder for loading state
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
@@ -36,6 +36,12 @@ const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] 
   { value: 'veggie', label: 'Vegetarian', emoji: '🥬' },
   { value: 'fish', label: 'Seafood', emoji: '🐟' },
   { value: 'meat', label: 'Meat', emoji: '🥩' },
+];
+
+// Visibility options
+const VISIBILITY_OPTIONS: { value: RecipeVisibility; label: string; emoji: string; description: string }[] = [
+  { value: 'household', label: 'Private', emoji: '🔒', description: 'Only your household' },
+  { value: 'shared', label: 'Shared', emoji: '🌍', description: 'Visible to everyone' },
 ];
 
 // All meal label options
@@ -358,6 +364,7 @@ export default function RecipeDetailScreen() {
   const { data: hasEnhancedVersion } = useEnhancedRecipeExists(id, isAuthReady);
 
   const { data: recipe, isLoading, error } = useRecipe(id, isEnhanced);
+  const { data: currentUser } = useCurrentUser({ enabled: isAuthReady });
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
   const setMeal = useSetMeal();
@@ -396,6 +403,7 @@ export default function RecipeDetailScreen() {
   const [editCookTime, setEditCookTime] = useState('');
   const [editServings, setEditServings] = useState('');
   const [editTags, setEditTags] = useState('');
+  const [editVisibility, setEditVisibility] = useState<RecipeVisibility>('household');
   const [newTag, setNewTag] = useState('');
   // URL input modal state (for cross-platform support)
   const [showUrlModal, setShowUrlModal] = useState(false);
@@ -410,6 +418,7 @@ export default function RecipeDetailScreen() {
       setEditCookTime(recipe.cook_time?.toString() || '');
       setEditServings(recipe.servings?.toString() || '');
       setEditTags(recipe.tags.join(', '));
+      setEditVisibility(recipe.visibility || 'household');
     }
     setShowEditModal(true);
   };
@@ -433,6 +442,7 @@ export default function RecipeDetailScreen() {
           cook_time: editCookTime ? parseInt(editCookTime, 10) : null,
           servings: editServings ? parseInt(editServings, 10) : null,
           tags: tagsArray,
+          visibility: editVisibility,
         },
         enhanced: isEnhanced,
       });
@@ -895,19 +905,28 @@ export default function RecipeDetailScreen() {
 
           {/* Action buttons row */}
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, alignItems: 'center' }}>
-            <Pressable
-              onPress={openEditModal}
-              style={({ pressed }) => ({
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
-                alignItems: 'center',
-                justifyContent: 'center',
-              })}
-            >
-              <Ionicons name="create-outline" size={20} color="#4A3728" />
-            </Pressable>
+            {/* Edit button - only enabled for recipes owned by user's household */}
+            {(() => {
+              const isOwned = recipe.household_id === currentUser?.household_id;
+              const isLegacy = recipe.household_id === null || recipe.household_id === undefined;
+              const canEdit = isOwned || isLegacy;
+              return (
+                <Pressable
+                  onPress={canEdit ? openEditModal : () => Alert.alert('Cannot Edit', 'Copy this recipe to your household first to make changes.')}
+                  style={({ pressed }) => ({
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: canEdit ? 1 : 0.5,
+                  })}
+                >
+                  <Ionicons name="create-outline" size={20} color="#4A3728" />
+                </Pressable>
+              );
+            })()}
             <Pressable
               onPress={() => setShowPlanModal(true)}
               style={({ pressed }) => ({
@@ -1510,6 +1529,42 @@ export default function RecipeDetailScreen() {
                       >
                         <Text style={{ fontSize: 14, fontWeight: '500', color: isSelected ? '#fff' : '#4A3728' }}>
                           {label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+
+              {/* Visibility */}
+              <View style={{ marginBottom: 24 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  Visibility
+                </Text>
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                  {VISIBILITY_OPTIONS.map(({ value, label, emoji, description }) => {
+                    const isSelected = editVisibility === value;
+                    return (
+                      <Pressable
+                        key={value}
+                        onPress={() => setEditVisibility(value)}
+                        style={({ pressed }) => ({
+                          flex: 1,
+                          alignItems: 'center',
+                          backgroundColor: isSelected ? '#4A3728' : pressed ? '#F5E6D3' : '#F9F5F0',
+                          paddingHorizontal: 14,
+                          paddingVertical: 14,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor: isSelected ? '#4A3728' : '#E8D5C4',
+                        })}
+                      >
+                        <Text style={{ fontSize: 20, marginBottom: 4 }}>{emoji}</Text>
+                        <Text style={{ fontSize: 14, fontWeight: '600', color: isSelected ? '#fff' : '#4A3728' }}>
+                          {label}
+                        </Text>
+                        <Text style={{ fontSize: 11, color: isSelected ? '#E8D5C4' : '#9ca3af', marginTop: 2 }}>
+                          {description}
                         </Text>
                       </Pressable>
                     );

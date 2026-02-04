@@ -3,14 +3,15 @@
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api.auth.firebase import require_auth
+from api.auth.models import AuthenticatedUser
 from api.models.grocery_list import GroceryCategory, GroceryItem, GroceryList, QuantitySource
 from api.services.ingredient_parser import parse_ingredient
 from api.storage import meal_plan_storage, recipe_storage
 
-router = APIRouter(prefix="/grocery", tags=["grocery"], dependencies=[Depends(require_auth)])
+router = APIRouter(prefix="/grocery", tags=["grocery"])
 
 # Expected number of parts when splitting meal key
 _MEAL_KEY_PARTS = 2
@@ -222,25 +223,36 @@ def _get_today() -> date:
     return datetime.now(tz=UTC).date()
 
 
-@router.get("/{user_id}")
+def _require_household(user: AuthenticatedUser) -> str:
+    """Require user to have a household, return household_id."""
+    if not user.household_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="You must be a member of a household to access grocery lists"
+        )
+    return user.household_id
+
+
+@router.get("")
 async def generate_grocery_list(
-    user_id: str,
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
     start_date: Annotated[date | None, Query(description="Start date for meal plan range")] = None,
     end_date: Annotated[date | None, Query(description="End date for meal plan range")] = None,
     days: Annotated[int, Query(ge=1, le=30, description="Number of days if start_date not provided")] = 7,
 ) -> GroceryList:
-    """Generate a grocery list from a user's meal plan.
+    """Generate a grocery list from the current user's household meal plan.
 
     If start_date is not provided, uses today as start.
     If end_date is not provided, uses an inclusive range of `days` starting at start_date
     (i.e., end_date = start_date + timedelta(days=days - 1)).
     """
+    household_id = _require_household(user)
+
     # Determine date range
     effective_start = start_date if start_date is not None else _get_today()
     effective_end = end_date if end_date is not None else effective_start + timedelta(days=days - 1)
 
     # Load meal plan
-    meals, _ = meal_plan_storage.load_meal_plan(user_id)
+    meals, _ = meal_plan_storage.load_meal_plan(household_id)
 
     # Collect recipe IDs for the date range
     recipe_ids: set[str] = set()

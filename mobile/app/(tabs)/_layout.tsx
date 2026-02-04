@@ -10,6 +10,7 @@ import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { colors, shadows } from '@/lib/theme';
 
 // Custom tab bar background with blur effect
@@ -51,6 +52,7 @@ function TabBarBackground() {
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
+  const { data: currentUser } = useCurrentUser({ enabled: !loading && !!user });
 
   // Show loading spinner while checking auth state
   if (loading) {
@@ -65,6 +67,9 @@ export default function TabLayout() {
   if (!user) {
     return <Redirect href="/sign-in" />;
   }
+
+  // Check if user is superuser (show admin tab)
+  const isSuperuser = currentUser?.role === 'superuser';
 
   return (
     <Tabs
@@ -154,6 +159,24 @@ export default function TabLayout() {
               <Ionicons name={focused ? "cart" : "cart-outline"} size={22} color={focused ? '#5D4E40' : color} />
             </View>
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="admin"
+        options={{
+          title: 'Admin',
+          tabBarAccessibilityLabel: 'Admin',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{
+              padding: 8,
+              borderRadius: 16,
+              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+            }}>
+              <Ionicons name={focused ? "settings" : "settings-outline"} size={22} color={focused ? '#5D4E40' : color} />
+            </View>
+          ),
+          // Only show admin tab for superusers
+          href: isSuperuser ? '/admin' : null,
         }}
       />
       {/* Hidden screens that still show tab bar */}

@@ -11,3 +11,5 @@ class AuthenticatedUser:
     email: str
     name: str | None = None
     picture: str | None = None
+    household_id: str | None = None  # None = superuser without household
+    role: str = "member"  # "superuser" | "admin" | "member"
