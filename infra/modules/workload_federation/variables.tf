@@ -13,7 +13,8 @@ variable "github_repository" {
   type        = string
 }
 
-variable "service_account_id" {
-  description = "Service account ID to allow WIF impersonation (format: projects/{project}/serviceAccounts/{email})"
-  type        = string
+variable "service_account_ids" {
+  description = "Map of service account names to IDs for WIF impersonation (format: projects/{project}/serviceAccounts/{email})"
+  type        = map(string)
+  default     = {}
 }

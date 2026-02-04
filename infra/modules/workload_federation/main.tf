@@ -32,9 +32,11 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   }
 }
 
-# Allow the GitHub Actions service account to be impersonated via WIF
+# Allow GitHub Actions service accounts to be impersonated via WIF
 resource "google_service_account_iam_member" "workload_identity_user" {
-  service_account_id = var.service_account_id
+  for_each = var.service_account_ids
+
+  service_account_id = each.value
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_repository}"
 }
