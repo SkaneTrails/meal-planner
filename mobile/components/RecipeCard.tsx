@@ -4,12 +4,18 @@
  * Uses expo-image for progressive loading and caching.
  */
 
-import React from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
-import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, borderRadius, shadows, fontSize, fontWeight } from '@/lib/theme';
-import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
+import { Image } from 'expo-image';
+import React from 'react';
+import { Animated, Pressable, Text, View } from 'react-native';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  shadows,
+} from '@/lib/theme';
+import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 // Blurhash placeholder for loading state (warm beige color)
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
@@ -21,15 +27,32 @@ interface RecipeCardProps {
   cardSize?: number;
 }
 
-const DIET_LABELS: Record<DietLabel, { label: string; color: string; bgColor: string }> = {
-  veggie: { label: 'Veggie', color: colors.diet.veggie.text, bgColor: colors.diet.veggie.bg },
-  fish: { label: 'Fish', color: colors.diet.fish.text, bgColor: colors.diet.fish.bg },
-  meat: { label: 'Meat', color: colors.diet.meat.text, bgColor: colors.diet.meat.bg },
+const DIET_LABELS: Record<
+  DietLabel,
+  { label: string; color: string; bgColor: string }
+> = {
+  veggie: {
+    label: 'Veggie',
+    color: colors.diet.veggie.text,
+    bgColor: colors.diet.veggie.bg,
+  },
+  fish: {
+    label: 'Fish',
+    color: colors.diet.fish.text,
+    bgColor: colors.diet.fish.bg,
+  },
+  meat: {
+    label: 'Meat',
+    color: colors.diet.meat.text,
+    bgColor: colors.diet.meat.bg,
+  },
 };
 
-const MEAL_LABELS: Record<MealLabel, string> = {
+const _MEAL_LABELS: Record<MealLabel, string> = {
   breakfast: 'Breakfast',
-  starter: 'Starter',  salad: 'Salad',  meal: 'Meal',
+  starter: 'Starter',
+  salad: 'Salad',
+  meal: 'Meal',
   dessert: 'Dessert',
   drink: 'Drink',
   sauce: 'Sauce',
@@ -37,11 +60,20 @@ const MEAL_LABELS: Record<MealLabel, string> = {
   grill: 'Grill',
 };
 
-const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
+const PLACEHOLDER_IMAGE =
+  'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
 
-export function RecipeCard({ recipe, onPress, compact = false, cardSize }: RecipeCardProps) {
-  const totalTime = recipe.total_time ||
-    (recipe.prep_time && recipe.cook_time ? recipe.prep_time + recipe.cook_time : null) ||
+export function RecipeCard({
+  recipe,
+  onPress,
+  compact = false,
+  cardSize,
+}: RecipeCardProps) {
+  const totalTime =
+    recipe.total_time ||
+    (recipe.prep_time && recipe.cook_time
+      ? recipe.prep_time + recipe.cook_time
+      : null) ||
     recipe.prep_time ||
     recipe.cook_time;
 
@@ -71,15 +103,17 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
         onPressOut={handlePressOut}
         style={{ marginBottom: 10 }}
       >
-        <Animated.View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 14,
-          backgroundColor: colors.white,
-          borderRadius: borderRadius.md,
-          ...shadows.md,
-          transform: [{ scale: scaleAnim }],
-        }}>
+        <Animated.View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 14,
+            backgroundColor: colors.white,
+            borderRadius: borderRadius.md,
+            ...shadows.md,
+            transform: [{ scale: scaleAnim }],
+          }}
+        >
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: 52, height: 52, borderRadius: 14 }}
@@ -88,18 +122,41 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             transition={200}
           />
           <View style={{ flex: 1, marginLeft: 14 }}>
-            <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.primary, letterSpacing: -0.2 }} numberOfLines={1}>
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontWeight: fontWeight.semibold,
+                color: colors.primary,
+                letterSpacing: -0.2,
+              }}
+              numberOfLines={1}
+            >
               {recipe.title}
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5, gap: 10 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 5,
+                gap: 10,
+              }}
+            >
               {recipe.diet_label && (
-                <View style={{
-                  backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
-                  paddingHorizontal: 8,
-                  paddingVertical: 3,
-                  borderRadius: 6,
-                }}>
-                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: DIET_LABELS[recipe.diet_label].color }}>
+                <View
+                  style={{
+                    backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: fontSize.xs,
+                      fontWeight: fontWeight.semibold,
+                      color: DIET_LABELS[recipe.diet_label].color,
+                    }}
+                  >
                     {DIET_LABELS[recipe.diet_label].label}
                   </Text>
                 </View>
@@ -115,13 +172,31 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               )}
               {totalTime && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons name="time-outline" size={13} color={colors.text.muted} />
-                  <Text style={{ fontSize: fontSize.base, color: colors.text.secondary, marginLeft: 4 }}>{totalTime}m</Text>
+                  <Ionicons
+                    name="time-outline"
+                    size={13}
+                    color={colors.text.muted}
+                  />
+                  <Text
+                    style={{
+                      fontSize: fontSize.base,
+                      color: colors.text.secondary,
+                      marginLeft: 4,
+                    }}
+                  >
+                    {totalTime}m
+                  </Text>
                 </View>
               )}
             </View>
           </View>
-          <View style={{ backgroundColor: colors.bgMid, borderRadius: 10, padding: 8 }}>
+          <View
+            style={{
+              backgroundColor: colors.bgMid,
+              borderRadius: 10,
+              padding: 8,
+            }}
+          >
             <Ionicons name="chevron-forward" size={18} color={colors.primary} />
           </View>
         </Animated.View>
@@ -159,54 +234,105 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
           />
           {/* Diet badge overlay */}
           {recipe.diet_label && (
-            <View style={{
-              position: 'absolute',
-              top: 10,
-              left: 10,
-              backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-              borderRadius: 8,
-            }}>
-              <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: DIET_LABELS[recipe.diet_label].color }}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 10,
+                left: 10,
+                backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                borderRadius: 8,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: fontSize.xs,
+                  fontWeight: fontWeight.semibold,
+                  color: DIET_LABELS[recipe.diet_label].color,
+                }}
+              >
                 {DIET_LABELS[recipe.diet_label].label}
               </Text>
             </View>
           )}
         </View>
-        <View style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 6, justifyContent: 'center' }}>
+        <View
+          style={{
+            flex: 1,
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            justifyContent: 'center',
+          }}
+        >
           {/* Title row with time aligned right */}
-          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
-            <Text style={{ flex: 1, fontSize: fontSize.base, fontWeight: fontWeight.semibold, color: colors.primary, lineHeight: 17, letterSpacing: -0.3 }} numberOfLines={2}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}
+          >
+            <Text
+              style={{
+                flex: 1,
+                fontSize: fontSize.base,
+                fontWeight: fontWeight.semibold,
+                color: colors.primary,
+                lineHeight: 17,
+                letterSpacing: -0.3,
+              }}
+              numberOfLines={2}
+            >
               {recipe.title}
             </Text>
             {totalTime && (
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: colors.bgMid,
-                paddingHorizontal: 6,
-                paddingVertical: 3,
-                borderRadius: 6,
-                marginTop: 1,
-              }}>
-                <Ionicons name="time-outline" size={11} color={colors.primary} />
-                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.primary, marginLeft: 3 }}>{totalTime}m</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: colors.bgMid,
+                  paddingHorizontal: 6,
+                  paddingVertical: 3,
+                  borderRadius: 6,
+                  marginTop: 1,
+                }}
+              >
+                <Ionicons
+                  name="time-outline"
+                  size={11}
+                  color={colors.primary}
+                />
+                <Text
+                  style={{
+                    fontSize: fontSize.xs,
+                    fontWeight: fontWeight.medium,
+                    color: colors.primary,
+                    marginLeft: 3,
+                  }}
+                >
+                  {totalTime}m
+                </Text>
               </View>
             )}
           </View>
 
           {/* Rating badge */}
           {recipe.rating && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-              <View style={{
+            <View
+              style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: recipe.rating >= 3 ? colors.successBg : colors.errorBg,
-                paddingHorizontal: 6,
-                paddingVertical: 3,
-                borderRadius: 6,
-              }}>
+                marginTop: 4,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor:
+                    recipe.rating >= 3 ? colors.successBg : colors.errorBg,
+                  paddingHorizontal: 6,
+                  paddingVertical: 3,
+                  borderRadius: 6,
+                }}
+              >
                 <Ionicons
                   name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
                   size={11}

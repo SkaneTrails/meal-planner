@@ -104,3 +104,13 @@ repos:
         language: system
         files: ^mobile/.*\.(ts|tsx)$
         pass_filenames: false
+
+  # Biome linter for mobile TypeScript/JavaScript
+  - repo: local
+    hooks:
+      - id: biome
+        name: Biome (mobile)
+        entry: bash -c "test -d mobile/node_modules && npx --prefix mobile biome check || echo 'Skipping - run npm install in mobile/ first'"
+        language: system
+        files: ^mobile/.*\.(ts|tsx|js|jsx|json|css)$
+        pass_filenames: false

@@ -38,7 +38,9 @@ export function hapticHeavy() {
  */
 export function hapticSuccess() {
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
+      () => {},
+    );
   }
 }
 
@@ -47,7 +49,9 @@ export function hapticSuccess() {
  */
 export function hapticWarning() {
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(
+      () => {},
+    );
   }
 }
 
@@ -56,7 +60,9 @@ export function hapticWarning() {
  */
 export function hapticError() {
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(
+      () => {},
+    );
   }
 }
 

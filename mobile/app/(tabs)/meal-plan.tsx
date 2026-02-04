@@ -3,34 +3,48 @@
  * Mobile-first design with meals grouped by day.
  */
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  Pressable,
-  Image,
-  Modal,
   Alert,
   Animated,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  TextInput,
-  Platform,
+  Image,
+  Modal,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   PanResponder,
+  Platform,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
 import { GradientBackground } from '@/components';
-import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
-import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
+import { hapticLight, hapticSuccess } from '@/lib/haptics';
+import {
+  useEnhancedMode,
+  useMealPlan,
+  useRecipes,
+  useRemoveMeal,
+  useSetMeal,
+  useUpdateNote,
+} from '@/lib/hooks';
+import { borderRadius, colors, shadows, spacing } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 
 // Quick note suggestions
-const NOTE_SUGGESTIONS = ['🏢 Office', '🏠 Home', '🏃 Gym', '🍽️ Dinner out', '✈️ Travel', '🎉 Party'];
+const NOTE_SUGGESTIONS = [
+  '🏢 Office',
+  '🏠 Home',
+  '🏃 Gym',
+  '🍽️ Dinner out',
+  '✈️ Travel',
+  '🎉 Party',
+];
 
 // Cross-platform confirm dialog
 const showConfirm = (title: string, message: string, onConfirm: () => void) => {
@@ -46,7 +60,8 @@ const showConfirm = (title: string, message: string, onConfirm: () => void) => {
   }
 };
 
-const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
+const PLACEHOLDER_IMAGE =
+  'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
 
 // Approximate height of each day section (header + 2 meal cards)
 const DAY_SECTION_HEIGHT = 180;
@@ -85,7 +100,10 @@ function formatDayHeader(date: Date): string {
   const today = new Date();
   const isToday = date.toDateString() === today.toDateString();
   const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-  const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const monthDay = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
 
   if (isToday) return `Today · ${monthDay}`;
   return `${dayName} · ${monthDay}`;
@@ -114,7 +132,9 @@ export default function MealPlanScreen() {
   // Find today's index in the week
   const todayIndex = useMemo(() => {
     const today = new Date();
-    return weekDates.findIndex(date => date.toDateString() === today.toDateString());
+    return weekDates.findIndex(
+      (date) => date.toDateString() === today.toDateString(),
+    );
   }, [weekDates]);
 
   // Handle scroll to show/hide jump button
@@ -166,33 +186,38 @@ export default function MealPlanScreen() {
         });
       }, 100);
     }
-  }, [todayIndex, weekOffset]);
+  }, [todayIndex]);
 
   // Swipe gesture for week navigation
   // Note: PanResponder only captures gestures when conditions are met,
   // allowing ScrollView's vertical scrolling to work normally.
   const swipeThreshold = 50; // Minimum horizontal distance to trigger week change
-  const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      // Only respond to horizontal swipes (not vertical scrolling)
-      // Requires: horizontal movement > 2x vertical (to distinguish from scroll)
-      // AND horizontal movement > 10px (to filter out small accidental movements)
-      const isHorizontalSwipe = Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
-      const hasMinimumMovement = Math.abs(gestureState.dx) > 10;
-      return isHorizontalSwipe && hasMinimumMovement;
-    },
-    onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dx > swipeThreshold) {
-        // Swipe right -> go to previous week
-        hapticLight();
-        setWeekOffset((prev) => prev - 1);
-      } else if (gestureState.dx < -swipeThreshold) {
-        // Swipe left -> go to next week
-        hapticLight();
-        setWeekOffset((prev) => prev + 1);
-      }
-    },
-  }), []);
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, gestureState) => {
+          // Only respond to horizontal swipes (not vertical scrolling)
+          // Requires: horizontal movement > 2x vertical (to distinguish from scroll)
+          // AND horizontal movement > 10px (to filter out small accidental movements)
+          const isHorizontalSwipe =
+            Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 2;
+          const hasMinimumMovement = Math.abs(gestureState.dx) > 10;
+          return isHorizontalSwipe && hasMinimumMovement;
+        },
+        onPanResponderRelease: (_, gestureState) => {
+          if (gestureState.dx > swipeThreshold) {
+            // Swipe right -> go to previous week
+            hapticLight();
+            setWeekOffset((prev) => prev - 1);
+          } else if (gestureState.dx < -swipeThreshold) {
+            // Swipe left -> go to next week
+            hapticLight();
+            setWeekOffset((prev) => prev + 1);
+          }
+        },
+      }),
+    [],
+  );
 
   const {
     data: mealPlan,
@@ -201,7 +226,7 @@ export default function MealPlanScreen() {
   } = useMealPlan();
   const { isEnhanced } = useEnhancedMode();
   const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
-  const setMeal = useSetMeal();
+  const _setMeal = useSetMeal();
   const updateNote = useUpdateNote();
   const removeMeal = useRemoveMeal();
 
@@ -228,10 +253,10 @@ export default function MealPlanScreen() {
   };
 
   const handleAddTag = (tag: string) => {
-    const currentTags = noteText.split(' ').filter(t => t.trim());
+    const currentTags = noteText.split(' ').filter((t) => t.trim());
     if (currentTags.includes(tag)) {
       // Remove tag if already present
-      setNoteText(currentTags.filter(t => t !== tag).join(' '));
+      setNoteText(currentTags.filter((t) => t !== tag).join(' '));
     } else {
       // Add tag
       setNoteText([...currentTags, tag].join(' '));
@@ -248,7 +273,10 @@ export default function MealPlanScreen() {
   }, [recipes]);
 
   // Get meal data for a specific date and meal type
-  const getMealForSlot = (date: Date, mealType: MealType): { recipe?: Recipe; customText?: string } | null => {
+  const getMealForSlot = (
+    date: Date,
+    mealType: MealType,
+  ): { recipe?: Recipe; customText?: string } | null => {
     if (!mealPlan || !mealPlan.meals) return null;
 
     const dateStr = formatDateLocal(date);
@@ -265,7 +293,11 @@ export default function MealPlanScreen() {
     return recipe ? { recipe } : { customText: value };
   };
 
-  const handleMealPress = (date: Date, mealType: MealType, mode?: 'library' | 'copy' | 'quick' | 'random') => {
+  const handleMealPress = (
+    date: Date,
+    mealType: MealType,
+    mode?: 'library' | 'copy' | 'quick' | 'random',
+  ) => {
     const dateStr = formatDateLocal(date);
 
     if (mode === 'quick') {
@@ -283,7 +315,11 @@ export default function MealPlanScreen() {
     });
   };
 
-  const handleToggleMeal = (date: Date, mealType: MealType, recipeServings?: number) => {
+  const handleToggleMeal = (
+    date: Date,
+    mealType: MealType,
+    recipeServings?: number,
+  ) => {
     const dateStr = formatDateLocal(date);
     const key = `${dateStr}_${mealType}`;
     setSelectedMeals((prev) => {
@@ -318,7 +354,10 @@ export default function MealPlanScreen() {
 
   const handleCreateGroceryList = async () => {
     if (selectedMeals.size === 0) {
-      Alert.alert('No meals selected', 'Please select at least one meal to create a grocery list.');
+      Alert.alert(
+        'No meals selected',
+        'Please select at least one meal to create a grocery list.',
+      );
       return;
     }
 
@@ -327,8 +366,14 @@ export default function MealPlanScreen() {
       const mealsArray = Array.from(selectedMeals);
       console.log('[MealPlan] Saving meals to storage:', mealsArray);
       console.log('[MealPlan] Saving servings:', mealServings);
-      await AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(mealsArray));
-      await AsyncStorage.setItem('grocery_meal_servings', JSON.stringify(mealServings));
+      await AsyncStorage.setItem(
+        'grocery_selected_meals',
+        JSON.stringify(mealsArray),
+      );
+      await AsyncStorage.setItem(
+        'grocery_meal_servings',
+        JSON.stringify(mealServings),
+      );
       console.log('[MealPlan] Saved successfully, navigating...');
 
       setShowGroceryModal(false);
@@ -347,11 +392,30 @@ export default function MealPlanScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 80 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View
+          style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
             <View>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>
-              <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>Plan your meals ahead</Text>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: '700',
+                  color: '#4A3728',
+                  letterSpacing: -0.5,
+                }}
+              >
+                Weekly Menu
+              </Text>
+              <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
+                Plan your meals ahead
+              </Text>
             </View>
             <Pressable
               onPress={() => {
@@ -369,7 +433,16 @@ export default function MealPlanScreen() {
               }}
             >
               <Ionicons name="cart" size={16} color={colors.white} />
-              <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600', color: colors.white }}>Create List</Text>
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 14,
+                  fontWeight: '600',
+                  color: colors.white,
+                }}
+              >
+                Create List
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -399,15 +472,23 @@ export default function MealPlanScreen() {
             </Pressable>
 
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
+              <Text
+                style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}
+              >
                 {formatWeekRange(weekDates)}
               </Text>
               {weekOffset !== 0 && (
-                <Pressable onPress={() => {
-                  hapticLight();
-                  setWeekOffset(0);
-                }}>
-                  <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>Back to today</Text>
+                <Pressable
+                  onPress={() => {
+                    hapticLight();
+                    setWeekOffset(0);
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}
+                  >
+                    Back to today
+                  </Text>
                 </Pressable>
               )}
             </View>
@@ -429,7 +510,10 @@ export default function MealPlanScreen() {
           <ScrollView
             ref={scrollViewRef}
             style={{ flex: 1 }}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              paddingBottom: 100,
+            }}
             onScroll={handleScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
@@ -441,341 +525,516 @@ export default function MealPlanScreen() {
               />
             }
           >
-          {weekDates.map((date) => {
-            const isToday = date.toDateString() === new Date().toDateString();
+            {weekDates.map((date) => {
+              const isToday = date.toDateString() === new Date().toDateString();
 
-            return (
-              <View key={date.toISOString()} style={{ marginBottom: 24 }}>
-                {/* Day header with note */}
-                {(() => {
-                  const dateStr = formatDateLocal(date);
-                  const note = getNoteForDate(date);
-                  const isEditing = editingNoteDate === dateStr;
+              return (
+                <View key={date.toISOString()} style={{ marginBottom: 24 }}>
+                  {/* Day header with note */}
+                  {(() => {
+                    const dateStr = formatDateLocal(date);
+                    const note = getNoteForDate(date);
+                    const isEditing = editingNoteDate === dateStr;
 
-                  return (
-                    <>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isEditing ? 8 : 12 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          {isToday && (
-                            <View style={{ backgroundColor: '#4A3728', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
-                              <Text style={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>TODAY</Text>
-                            </View>
-                          )}
-                          <Text style={{
-                            fontSize: 16,
-                            fontWeight: '600',
-                            color: isToday ? '#4A3728' : '#6B7280',
-                            letterSpacing: -0.2,
-                          }}>
-                            {formatDayHeader(date)}
-                          </Text>
-                        </View>
-
-                        {/* Note pill on right side */}
-                        {!isEditing && (
-                          <Pressable onPress={() => handleStartEditNote(date)}>
-                            {note ? (
-                              <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#E0F2FE',
-                                paddingHorizontal: 10,
-                                paddingVertical: 4,
-                                borderRadius: 12,
-                              }}>
-                                <Text style={{ fontSize: 12, color: '#0369A1' }}>{note}</Text>
-                              </View>
-                            ) : (
-                              <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#F3F4F6',
-                                paddingHorizontal: 10,
-                                paddingVertical: 4,
-                                borderRadius: 12,
-                              }}>
-                                <Ionicons name="add" size={12} color="#6B7280" />
-                                <Text style={{ fontSize: 12, color: '#6B7280', marginLeft: 2 }}>note</Text>
-                              </View>
-                            )}
-                          </Pressable>
-                        )}
-                      </View>
-
-                      {/* Note editor (below header when editing) */}
-                      {isEditing && (
-                        <View style={{ marginBottom: 12 }}>
-                          <View style={{
+                    return (
+                      <>
+                        <View
+                          style={{
                             flexDirection: 'row',
                             alignItems: 'center',
-                            backgroundColor: '#f9f5f0',
-                            borderRadius: 12,
-                            padding: 10,
-                            gap: 8,
-                          }}>
-                            <TextInput
-                              value={noteText}
-                              onChangeText={setNoteText}
-                              placeholder="Add a note..."
-                              style={{
-                                flex: 1,
-                                fontSize: 14,
-                                color: '#4A3728',
-                                padding: 0,
-                              }}
-                              autoFocus
-                            />
-                            <Pressable onPress={handleSaveNote}>
-                              <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>Save</Text>
-                            </Pressable>
-                            <Pressable onPress={() => { setEditingNoteDate(null); setNoteText(''); }}>
-                              <Text style={{ fontSize: 14, color: '#9ca3af' }}>Cancel</Text>
-                            </Pressable>
-                          </View>
-                          <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            style={{ marginTop: 8 }}
+                            justifyContent: 'space-between',
+                            marginBottom: isEditing ? 8 : 12,
+                          }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}
                           >
-                            <View style={{ flexDirection: 'row', gap: 6 }}>
-                              {NOTE_SUGGESTIONS.map((suggestion) => (
-                                <Pressable
-                                  key={suggestion}
-                                  onPress={() => handleAddTag(suggestion)}
+                            {isToday && (
+                              <View
+                                style={{
+                                  backgroundColor: '#4A3728',
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 4,
+                                  borderRadius: 8,
+                                  marginRight: 10,
+                                }}
+                              >
+                                <Text
                                   style={{
-                                    backgroundColor: noteText.includes(suggestion) ? '#e8dfd4' : '#fff',
-                                    paddingHorizontal: 12,
-                                    paddingVertical: 6,
-                                    borderRadius: 16,
-                                    borderWidth: 1,
-                                    borderColor: noteText.includes(suggestion) ? '#4A3728' : '#e5e7eb',
+                                    fontSize: 12,
+                                    fontWeight: '700',
+                                    color: '#fff',
                                   }}
                                 >
-                                  <Text style={{ fontSize: 13, color: '#4A3728' }}>{suggestion}</Text>
-                                </Pressable>
-                              ))}
-                            </View>
-                          </ScrollView>
+                                  TODAY
+                                </Text>
+                              </View>
+                            )}
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                fontWeight: '600',
+                                color: isToday ? '#4A3728' : '#6B7280',
+                                letterSpacing: -0.2,
+                              }}
+                            >
+                              {formatDayHeader(date)}
+                            </Text>
+                          </View>
+
+                          {/* Note pill on right side */}
+                          {!isEditing && (
+                            <Pressable
+                              onPress={() => handleStartEditNote(date)}
+                            >
+                              {note ? (
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    backgroundColor: '#E0F2FE',
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 4,
+                                    borderRadius: 12,
+                                  }}
+                                >
+                                  <Text
+                                    style={{ fontSize: 12, color: '#0369A1' }}
+                                  >
+                                    {note}
+                                  </Text>
+                                </View>
+                              ) : (
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    backgroundColor: '#F3F4F6',
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 4,
+                                    borderRadius: 12,
+                                  }}
+                                >
+                                  <Ionicons
+                                    name="add"
+                                    size={12}
+                                    color="#6B7280"
+                                  />
+                                  <Text
+                                    style={{
+                                      fontSize: 12,
+                                      color: '#6B7280',
+                                      marginLeft: 2,
+                                    }}
+                                  >
+                                    note
+                                  </Text>
+                                </View>
+                              )}
+                            </Pressable>
+                          )}
                         </View>
-                      )}
-                    </>
-                  );
-                })()}
 
-                {/* Meals for this day */}
-                {MEAL_TYPES.map(({ type, label }) => {
-                  const meal = getMealForSlot(date, type);
-                  const hasContent = meal !== null;
-                  const title = meal?.recipe?.title || meal?.customText;
-                  const imageUrl = meal?.recipe?.image_url || PLACEHOLDER_IMAGE;
+                        {/* Note editor (below header when editing) */}
+                        {isEditing && (
+                          <View style={{ marginBottom: 12 }}>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                backgroundColor: '#f9f5f0',
+                                borderRadius: 12,
+                                padding: 10,
+                                gap: 8,
+                              }}
+                            >
+                              <TextInput
+                                value={noteText}
+                                onChangeText={setNoteText}
+                                placeholder="Add a note..."
+                                style={{
+                                  flex: 1,
+                                  fontSize: 14,
+                                  color: '#4A3728',
+                                  padding: 0,
+                                }}
+                                autoFocus
+                              />
+                              <Pressable onPress={handleSaveNote}>
+                                <Text
+                                  style={{
+                                    fontSize: 14,
+                                    fontWeight: '600',
+                                    color: '#4A3728',
+                                  }}
+                                >
+                                  Save
+                                </Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() => {
+                                  setEditingNoteDate(null);
+                                  setNoteText('');
+                                }}
+                              >
+                                <Text
+                                  style={{ fontSize: 14, color: '#9ca3af' }}
+                                >
+                                  Cancel
+                                </Text>
+                              </Pressable>
+                            </View>
+                            <ScrollView
+                              horizontal
+                              showsHorizontalScrollIndicator={false}
+                              style={{ marginTop: 8 }}
+                            >
+                              <View style={{ flexDirection: 'row', gap: 6 }}>
+                                {NOTE_SUGGESTIONS.map((suggestion) => (
+                                  <Pressable
+                                    key={suggestion}
+                                    onPress={() => handleAddTag(suggestion)}
+                                    style={{
+                                      backgroundColor: noteText.includes(
+                                        suggestion,
+                                      )
+                                        ? '#e8dfd4'
+                                        : '#fff',
+                                      paddingHorizontal: 12,
+                                      paddingVertical: 6,
+                                      borderRadius: 16,
+                                      borderWidth: 1,
+                                      borderColor: noteText.includes(suggestion)
+                                        ? '#4A3728'
+                                        : '#e5e7eb',
+                                    }}
+                                  >
+                                    <Text
+                                      style={{ fontSize: 13, color: '#4A3728' }}
+                                    >
+                                      {suggestion}
+                                    </Text>
+                                  </Pressable>
+                                ))}
+                              </View>
+                            </ScrollView>
+                          </View>
+                        )}
+                      </>
+                    );
+                  })()}
 
-                  // Empty meal slot - show action buttons with dashed border
-                  if (!hasContent) {
+                  {/* Meals for this day */}
+                  {MEAL_TYPES.map(({ type, label }) => {
+                    const meal = getMealForSlot(date, type);
+                    const hasContent = meal !== null;
+                    const title = meal?.recipe?.title || meal?.customText;
+                    const imageUrl =
+                      meal?.recipe?.image_url || PLACEHOLDER_IMAGE;
+
+                    // Empty meal slot - show action buttons with dashed border
+                    if (!hasContent) {
+                      return (
+                        <View
+                          key={`${date.toISOString()}-${type}`}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            backgroundColor: 'rgba(248, 245, 242, 0.8)',
+                            borderRadius: 16,
+                            padding: 12,
+                            marginBottom: 8,
+                            borderWidth: 2,
+                            borderColor: '#D4C9BE',
+                            borderStyle: 'dashed',
+                          }}
+                        >
+                          {/* Plus icon + Meal type label */}
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              marginRight: 12,
+                            }}
+                          >
+                            <View
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: 14,
+                                backgroundColor: '#E8D5C4',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginRight: 8,
+                              }}
+                            >
+                              <Ionicons name="add" size={18} color="#4A3728" />
+                            </View>
+                            <Text
+                              style={{
+                                fontSize: 14,
+                                fontWeight: '600',
+                                color: '#8B7355',
+                              }}
+                            >
+                              {label}
+                            </Text>
+                          </View>
+
+                          {/* Action buttons in 2x2 grid */}
+                          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                gap: 6,
+                                marginBottom: 6,
+                              }}
+                            >
+                              <Pressable
+                                onPress={() =>
+                                  handleMealPress(date, type, 'library')
+                                }
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: '#F3E8E0',
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 6,
+                                  borderRadius: 10,
+                                  gap: 4,
+                                  minWidth: 75,
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Ionicons
+                                  name="book-outline"
+                                  size={14}
+                                  color="#4A3728"
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: '500',
+                                    color: '#4A3728',
+                                  }}
+                                >
+                                  Library
+                                </Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() =>
+                                  handleMealPress(date, type, 'random')
+                                }
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: '#FEF3C7',
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 6,
+                                  borderRadius: 10,
+                                  gap: 4,
+                                  minWidth: 75,
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Ionicons
+                                  name="dice-outline"
+                                  size={14}
+                                  color="#D97706"
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: '500',
+                                    color: '#D97706',
+                                  }}
+                                >
+                                  Random
+                                </Text>
+                              </Pressable>
+                            </View>
+                            <View style={{ flexDirection: 'row', gap: 6 }}>
+                              <Pressable
+                                onPress={() =>
+                                  handleMealPress(date, type, 'copy')
+                                }
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: '#E8F0E8',
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 6,
+                                  borderRadius: 10,
+                                  gap: 4,
+                                  minWidth: 75,
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={14}
+                                  color="#2D5A3D"
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: '500',
+                                    color: '#2D5A3D',
+                                  }}
+                                >
+                                  Copy
+                                </Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() =>
+                                  handleMealPress(date, type, 'quick')
+                                }
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  backgroundColor: '#E8E8F0',
+                                  paddingHorizontal: 10,
+                                  paddingVertical: 6,
+                                  borderRadius: 10,
+                                  gap: 4,
+                                  minWidth: 75,
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Ionicons
+                                  name="create-outline"
+                                  size={14}
+                                  color="#3D3D5A"
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    fontWeight: '500',
+                                    color: '#3D3D5A',
+                                  }}
+                                >
+                                  Quick
+                                </Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    }
+
+                    // Meal slot with content
                     return (
                       <View
                         key={`${date.toISOString()}-${type}`}
                         style={{
                           flexDirection: 'row',
                           alignItems: 'center',
-                          backgroundColor: 'rgba(248, 245, 242, 0.8)',
-                          borderRadius: 16,
-                          padding: 12,
-                          marginBottom: 8,
-                          borderWidth: 2,
-                          borderColor: '#D4C9BE',
-                          borderStyle: 'dashed',
+                          backgroundColor: colors.white,
+                          borderRadius: borderRadius.md,
+                          padding: spacing.md,
+                          marginBottom: spacing.sm,
+                          ...shadows.md,
                         }}
                       >
-                        {/* Plus icon + Meal type label */}
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 12 }}>
-                          <View style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: 14,
-                            backgroundColor: '#E8D5C4',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginRight: 8,
-                          }}>
-                            <Ionicons name="add" size={18} color="#4A3728" />
-                          </View>
-                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#8B7355' }}>
-                            {label}
-                          </Text>
-                        </View>
-
-                        {/* Action buttons in 2x2 grid */}
-                        <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                          <View style={{ flexDirection: 'row', gap: 6, marginBottom: 6 }}>
-                            <Pressable
-                              onPress={() => handleMealPress(date, type, 'library')}
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#F3E8E0',
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                                gap: 4,
-                                minWidth: 75,
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Ionicons name="book-outline" size={14} color="#4A3728" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#4A3728' }}>Library</Text>
-                            </Pressable>
-                            <Pressable
-                              onPress={() => handleMealPress(date, type, 'random')}
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#FEF3C7',
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                                gap: 4,
-                                minWidth: 75,
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Ionicons name="dice-outline" size={14} color="#D97706" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#D97706' }}>Random</Text>
-                            </Pressable>
-                          </View>
-                          <View style={{ flexDirection: 'row', gap: 6 }}>
-                            <Pressable
-                              onPress={() => handleMealPress(date, type, 'copy')}
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#E8F0E8',
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                                gap: 4,
-                                minWidth: 75,
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Ionicons name="copy-outline" size={14} color="#2D5A3D" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#2D5A3D' }}>Copy</Text>
-                            </Pressable>
-                            <Pressable
-                              onPress={() => handleMealPress(date, type, 'quick')}
-                              style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                backgroundColor: '#E8E8F0',
-                                paddingHorizontal: 10,
-                                paddingVertical: 6,
-                                borderRadius: 10,
-                                gap: 4,
-                                minWidth: 75,
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Ionicons name="create-outline" size={14} color="#3D3D5A" />
-                              <Text style={{ fontSize: 12, fontWeight: '500', color: '#3D3D5A' }}>Quick</Text>
-                            </Pressable>
-                          </View>
-                        </View>
-                      </View>
-                    );
-                  }
-
-                  // Meal slot with content
-                  return (
-                    <View
-                      key={`${date.toISOString()}-${type}`}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: colors.white,
-                        borderRadius: borderRadius.md,
-                        padding: spacing.md,
-                        marginBottom: spacing.sm,
-                        ...shadows.md,
-                      }}
-                    >
-                      {/* Tappable area for recipe details */}
-                      <Pressable
-                        onPress={() => handleMealPress(date, type, 'library')}
-                        style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
-                      >
-                        {/* Image */}
-                        <Image
-                          source={{ uri: imageUrl }}
-                          style={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: 12,
-                            backgroundColor: '#E8D5C4',
-                          }}
-                          resizeMode="cover"
-                        />
-
-                        {/* Content */}
-                        <View style={{ flex: 1, marginLeft: 12 }}>
-                          <Text style={{
-                            fontSize: 15,
-                            fontWeight: '600',
-                            color: '#4A3728',
-                          }}>
-                            {title}
-                          </Text>
-                          <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
-                            {label}
-                          </Text>
-                        </View>
-                      </Pressable>
-
-                      {/* View button - opens recipe detail */}
-                      {meal?.recipe && (
+                        {/* Tappable area for recipe details */}
                         <Pressable
-                          onPress={() => router.push(`/recipe/${meal.recipe!.id}`)}
+                          onPress={() => handleMealPress(date, type, 'library')}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            flex: 1,
+                          }}
+                        >
+                          {/* Image */}
+                          <Image
+                            source={{ uri: imageUrl }}
+                            style={{
+                              width: 56,
+                              height: 56,
+                              borderRadius: 12,
+                              backgroundColor: '#E8D5C4',
+                            }}
+                            resizeMode="cover"
+                          />
+
+                          {/* Content */}
+                          <View style={{ flex: 1, marginLeft: 12 }}>
+                            <Text
+                              style={{
+                                fontSize: 15,
+                                fontWeight: '600',
+                                color: '#4A3728',
+                              }}
+                            >
+                              {title}
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 13,
+                                color: '#6B7280',
+                                marginTop: 2,
+                              }}
+                            >
+                              {label}
+                            </Text>
+                          </View>
+                        </Pressable>
+
+                        {/* View button - opens recipe detail */}
+                        {meal?.recipe && (
+                          <Pressable
+                            onPress={() =>
+                              router.push(`/recipe/${meal.recipe?.id}`)
+                            }
+                            style={{
+                              width: 28,
+                              height: 28,
+                              borderRadius: 14,
+                              backgroundColor: '#DBEAFE',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              marginLeft: 8,
+                            }}
+                          >
+                            <Ionicons name="eye" size={16} color="#3B82F6" />
+                          </Pressable>
+                        )}
+                        {/* Remove button */}
+                        <Pressable
+                          onPress={() => {
+                            const dateStr = formatDateLocal(date);
+                            showConfirm(
+                              'Remove meal',
+                              `Remove ${title} from ${label.toLowerCase()}?`,
+                              () => {
+                                removeMeal.mutate({
+                                  date: dateStr,
+                                  mealType: type,
+                                });
+                              },
+                            );
+                          }}
                           style={{
                             width: 28,
                             height: 28,
                             borderRadius: 14,
-                            backgroundColor: '#DBEAFE',
+                            backgroundColor: '#FEE2E2',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginLeft: 8,
                           }}
                         >
-                          <Ionicons name="eye" size={16} color="#3B82F6" />
+                          <Ionicons name="close" size={18} color="#DC2626" />
                         </Pressable>
-                      )}
-                      {/* Remove button */}
-                      <Pressable
-                        onPress={() => {
-                          const dateStr = formatDateLocal(date);
-                          showConfirm(
-                            'Remove meal',
-                            `Remove ${title} from ${label.toLowerCase()}?`,
-                            () => {
-                              removeMeal.mutate({ date: dateStr, mealType: type });
-                            }
-                          );
-                        }}
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 14,
-                          backgroundColor: '#FEE2E2',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginLeft: 8,
-                        }}
-                      >
-                        <Ionicons name="close" size={18} color="#DC2626" />
-                      </Pressable>
-                    </View>
-                  );
-                })}
-              </View>
-            );
-          })}
+                      </View>
+                    );
+                  })}
+                </View>
+              );
+            })}
           </ScrollView>
         </View>
 
@@ -787,12 +1046,17 @@ export default function MealPlanScreen() {
               bottom: 100,
               alignSelf: 'center',
               opacity: weekOffset !== 0 ? 1 : jumpButtonOpacity,
-              transform: [{
-                scale: weekOffset !== 0 ? 1 : jumpButtonOpacity.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.8, 1],
-                }),
-              }],
+              transform: [
+                {
+                  scale:
+                    weekOffset !== 0
+                      ? 1
+                      : jumpButtonOpacity.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0.8, 1],
+                        }),
+                },
+              ],
             }}
           >
             <Pressable
@@ -808,7 +1072,14 @@ export default function MealPlanScreen() {
               }}
             >
               <Ionicons name="today" size={18} color={colors.white} />
-              <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600', color: colors.white }}>
+              <Text
+                style={{
+                  marginLeft: 8,
+                  fontSize: 14,
+                  fontWeight: '600',
+                  color: colors.white,
+                }}
+              >
                 Jump to Today
               </Text>
             </Pressable>
@@ -822,12 +1093,46 @@ export default function MealPlanScreen() {
           transparent
           onRequestClose={() => setShowGroceryModal(false)}
         >
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-            <View style={{ backgroundColor: '#F5E6D3', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '80%' }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: '#F5E6D3',
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                maxHeight: '80%',
+              }}
+            >
               {/* Modal header */}
-              <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#4A3728' }}>Select Meals</Text>
+              <View
+                style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 16,
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#e5e7eb',
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: '700',
+                      color: '#4A3728',
+                    }}
+                  >
+                    Select Meals
+                  </Text>
                   <Pressable onPress={() => setShowGroceryModal(false)}>
                     <Ionicons name="close" size={24} color="#4A3728" />
                   </Pressable>
@@ -838,7 +1143,11 @@ export default function MealPlanScreen() {
               </View>
 
               {/* Meal list */}
-              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ padding: 20 }}
+                showsVerticalScrollIndicator={false}
+              >
                 {weekDates.map((date) => {
                   const hasAnyMeal = MEAL_TYPES.some((mt) => {
                     const meal = getMealForSlot(date, mt.type);
@@ -849,7 +1158,14 @@ export default function MealPlanScreen() {
 
                   return (
                     <View key={date.toISOString()} style={{ marginBottom: 16 }}>
-                      <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728', marginBottom: 8 }}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontWeight: '600',
+                          color: '#4A3728',
+                          marginBottom: 8,
+                        }}
+                      >
                         {formatDayHeader(date)}
                       </Text>
                       {MEAL_TYPES.map(({ type, label }) => {
@@ -857,12 +1173,14 @@ export default function MealPlanScreen() {
                         const hasContent = meal?.recipe || meal?.customText;
                         if (!hasContent) return null;
 
-                        const title = meal?.recipe?.title || meal?.customText || '';
+                        const title =
+                          meal?.recipe?.title || meal?.customText || '';
                         const recipeServings = meal?.recipe?.servings;
                         const dateStr = formatDateLocal(date);
                         const key = `${dateStr}_${type}`;
                         const isSelected = selectedMeals.has(key);
-                        const currentServings = mealServings[key] || recipeServings || 2;
+                        const currentServings =
+                          mealServings[key] || recipeServings || 2;
 
                         return (
                           <View
@@ -875,8 +1193,17 @@ export default function MealPlanScreen() {
                             }}
                           >
                             <Pressable
-                              onPress={() => handleToggleMeal(date, type, recipeServings ?? undefined)}
-                              style={{ flexDirection: 'row', alignItems: 'center' }}
+                              onPress={() =>
+                                handleToggleMeal(
+                                  date,
+                                  type,
+                                  recipeServings ?? undefined,
+                                )
+                              }
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                              }}
                             >
                               {/* Checkbox */}
                               <View
@@ -885,49 +1212,89 @@ export default function MealPlanScreen() {
                                   height: 24,
                                   borderRadius: 6,
                                   borderWidth: 2,
-                                  borderColor: isSelected ? '#4A3728' : '#e5e7eb',
-                                  backgroundColor: isSelected ? '#4A3728' : '#fff',
+                                  borderColor: isSelected
+                                    ? '#4A3728'
+                                    : '#e5e7eb',
+                                  backgroundColor: isSelected
+                                    ? '#4A3728'
+                                    : '#fff',
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   marginRight: 12,
                                 }}
                               >
-                                {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
+                                {isSelected && (
+                                  <Ionicons
+                                    name="checkmark"
+                                    size={16}
+                                    color="#fff"
+                                  />
+                                )}
                               </View>
 
                               <View style={{ flex: 1 }}>
-                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>{title}</Text>
-                                <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{label}</Text>
+                                <Text
+                                  style={{
+                                    fontSize: 14,
+                                    fontWeight: '600',
+                                    color: '#4A3728',
+                                  }}
+                                >
+                                  {title}
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 12,
+                                    color: '#9ca3af',
+                                    marginTop: 2,
+                                  }}
+                                >
+                                  {label}
+                                </Text>
                               </View>
                             </Pressable>
 
                             {/* Servings picker - only show when selected */}
                             {isSelected && (
-                              <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                marginTop: 10,
-                                marginLeft: 36,
-                                backgroundColor: '#F5E6D3',
-                                borderRadius: 10,
-                                padding: 6,
-                                alignSelf: 'flex-start',
-                              }}>
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  marginTop: 10,
+                                  marginLeft: 36,
+                                  backgroundColor: '#F5E6D3',
+                                  borderRadius: 10,
+                                  padding: 6,
+                                  alignSelf: 'flex-start',
+                                }}
+                              >
                                 <Pressable
                                   onPress={() => handleChangeServings(key, -1)}
                                   style={({ pressed }) => ({
                                     width: 28,
                                     height: 28,
                                     borderRadius: 14,
-                                    backgroundColor: pressed ? '#E8D5C4' : '#fff',
+                                    backgroundColor: pressed
+                                      ? '#E8D5C4'
+                                      : '#fff',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                   })}
                                 >
-                                  <Ionicons name="remove" size={16} color="#4A3728" />
+                                  <Ionicons
+                                    name="remove"
+                                    size={16}
+                                    color="#4A3728"
+                                  />
                                 </Pressable>
                                 <View style={{ paddingHorizontal: 12 }}>
-                                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#4A3728' }}>
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      fontWeight: '600',
+                                      color: '#4A3728',
+                                    }}
+                                  >
                                     {currentServings} 👤
                                   </Text>
                                 </View>
@@ -937,12 +1304,18 @@ export default function MealPlanScreen() {
                                     width: 28,
                                     height: 28,
                                     borderRadius: 14,
-                                    backgroundColor: pressed ? '#E8D5C4' : '#fff',
+                                    backgroundColor: pressed
+                                      ? '#E8D5C4'
+                                      : '#fff',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                   })}
                                 >
-                                  <Ionicons name="add" size={16} color="#4A3728" />
+                                  <Ionicons
+                                    name="add"
+                                    size={16}
+                                    color="#4A3728"
+                                  />
                                 </Pressable>
                               </View>
                             )}
@@ -955,21 +1328,30 @@ export default function MealPlanScreen() {
               </ScrollView>
 
               {/* Modal footer */}
-              <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+              <View
+                style={{
+                  padding: 20,
+                  borderTopWidth: 1,
+                  borderTopColor: '#e5e7eb',
+                }}
+              >
                 <Pressable
                   onPress={() => {
                     hapticSuccess();
                     handleCreateGroceryList();
                   }}
                   style={{
-                    backgroundColor: selectedMeals.size > 0 ? '#4A3728' : '#E8D5C4',
+                    backgroundColor:
+                      selectedMeals.size > 0 ? '#4A3728' : '#E8D5C4',
                     paddingVertical: 14,
                     borderRadius: 12,
                     alignItems: 'center',
                   }}
                   disabled={selectedMeals.size === 0}
                 >
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff' }}>
+                  <Text
+                    style={{ fontSize: 16, fontWeight: '600', color: '#fff' }}
+                  >
                     Create Grocery List ({selectedMeals.size} meals)
                   </Text>
                 </Pressable>

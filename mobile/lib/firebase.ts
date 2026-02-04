@@ -8,11 +8,13 @@
  * and the app runs in "dev mode" with a mock authenticated user.
  */
 
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
+import { type FirebaseApp, getApps, initializeApp } from 'firebase/app';
+import { type Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
 
 // Check if Firebase is configured
-export const isFirebaseConfigured = Boolean(process.env.EXPO_PUBLIC_FIREBASE_API_KEY);
+export const isFirebaseConfigured = Boolean(
+  process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+);
 
 // Firebase configuration - use environment variables for production
 const firebaseConfig = {
