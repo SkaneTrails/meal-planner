@@ -165,6 +165,7 @@ module "storage" {
 
   project     = var.project
   bucket_name = var.recipe_images_bucket_name
+  location    = var.region # Keep in same region as other resources
 
   # Allow CORS from any origin (mobile and web apps)
   cors_origins = ["*"]
