@@ -69,7 +69,7 @@ uv run python scripts/recipe_reviewer.py update <id> '<json>'
 **When modifying an already-enhanced recipe (e.g., adding timeline, fixing an issue):**
 
 1. **ALWAYS fetch the enhanced version first**: `?enhanced=true` or `enhanced <id>` command
-2. **Verify you have the enhanced data** before editing (check `improved: true`, existing `changes_made`)
+2. **Verify you have the enhanced data** before editing (check `enhanced: true`, existing `changes_made`)
 3. **Apply changes to the enhanced version**, not the original
 4. **Never overwrite enhanced with original** - this loses all previous improvements
 

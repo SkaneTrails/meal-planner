@@ -15,6 +15,12 @@ import type {
   NoteUpdateRequest,
   GroceryList,
   ApiError,
+  Household,
+  HouseholdCreate,
+  HouseholdMember,
+  MemberAdd,
+  CurrentUser,
+  HouseholdSettings,
 } from './types';
 
 // API base URL - configurable for different environments
@@ -26,9 +32,6 @@ const getApiBaseUrl = (): string => {
 
 const API_BASE_URL = getApiBaseUrl();
 const API_PREFIX = '/api/v1';
-
-// Default user ID until multi-user is implemented
-const DEFAULT_USER_ID = 'default';
 
 // Token getter function - set by AuthProvider
 let getAuthToken: (() => Promise<string | null>) | null = null;
@@ -251,61 +254,99 @@ class ApiClient {
   }
 
   // Meal Plan endpoints
-  async getMealPlan(userId: string = DEFAULT_USER_ID): Promise<MealPlan> {
-    return this.request<MealPlan>(`/meal-plans/${userId}`);
+  // Note: household_id is resolved server-side from the authenticated user
+  async getMealPlan(): Promise<MealPlan> {
+    return this.request<MealPlan>('/meal-plans');
   }
 
-  async updateMealPlan(
-    updates: MealPlanUpdate,
-    userId: string = DEFAULT_USER_ID
-  ): Promise<MealPlan> {
-    return this.request<MealPlan>(`/meal-plans/${userId}`, {
+  async updateMealPlan(updates: MealPlanUpdate): Promise<MealPlan> {
+    return this.request<MealPlan>('/meal-plans', {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
-  async updateMeal(
-    request: MealUpdateRequest,
-    userId: string = DEFAULT_USER_ID
-  ): Promise<MealPlan> {
-    return this.request<MealPlan>(`/meal-plans/${userId}/meals`, {
+  async updateMeal(request: MealUpdateRequest): Promise<MealPlan> {
+    return this.request<MealPlan>('/meal-plans/meals', {
       method: 'POST',
       body: JSON.stringify(request),
     });
   }
 
-  async updateNote(
-    request: NoteUpdateRequest,
-    userId: string = DEFAULT_USER_ID
-  ): Promise<MealPlan> {
-    return this.request<MealPlan>(`/meal-plans/${userId}/notes`, {
+  async updateNote(request: NoteUpdateRequest): Promise<MealPlan> {
+    return this.request<MealPlan>('/meal-plans/notes', {
       method: 'POST',
       body: JSON.stringify(request),
     });
   }
 
-  async clearMealPlan(userId: string = DEFAULT_USER_ID): Promise<void> {
-    return this.request<void>(`/meal-plans/${userId}`, {
+  async clearMealPlan(): Promise<void> {
+    return this.request<void>('/meal-plans', {
       method: 'DELETE',
     });
   }
 
   // Grocery endpoints
-  async getGroceryList(
-    userId: string = DEFAULT_USER_ID,
-    options?: {
-      start_date?: string;
-      end_date?: string;
-      days?: number;
-    }
-  ): Promise<GroceryList> {
+  // Note: household_id is resolved server-side from the authenticated user
+  async getGroceryList(options?: {
+    start_date?: string;
+    end_date?: string;
+    days?: number;
+  }): Promise<GroceryList> {
     const params = new URLSearchParams();
     if (options?.start_date) params.set('start_date', options.start_date);
     if (options?.end_date) params.set('end_date', options.end_date);
     if (options?.days) params.set('days', options.days.toString());
     const query = params.toString();
-    return this.request<GroceryList>(`/grocery/${userId}${query ? `?${query}` : ''}`);
+    return this.request<GroceryList>(`/grocery${query ? `?${query}` : ''}`);
+  }
+
+  // Admin endpoints
+  async getCurrentUser(): Promise<CurrentUser> {
+    return this.request<CurrentUser>('/admin/me');
+  }
+
+  async getHouseholds(): Promise<Household[]> {
+    return this.request<Household[]>('/admin/households');
+  }
+
+  async createHousehold(data: HouseholdCreate): Promise<Household> {
+    return this.request<Household>('/admin/households', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getHousehold(id: string): Promise<Household> {
+    return this.request<Household>(`/admin/households/${id}`);
+  }
+
+  async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
+    return this.request<HouseholdMember[]>(`/admin/households/${householdId}/members`);
+  }
+
+  async addHouseholdMember(householdId: string, data: MemberAdd): Promise<HouseholdMember> {
+    return this.request<HouseholdMember>(`/admin/households/${householdId}/members`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async removeHouseholdMember(householdId: string, email: string): Promise<void> {
+    return this.request<void>(`/admin/households/${householdId}/members/${encodeURIComponent(email)}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getHouseholdSettings(householdId: string): Promise<HouseholdSettings> {
+    return this.request<HouseholdSettings>(`/admin/households/${householdId}/settings`);
+  }
+
+  async updateHouseholdSettings(householdId: string, settings: Partial<HouseholdSettings>): Promise<HouseholdSettings> {
+    return this.request<HouseholdSettings>(`/admin/households/${householdId}/settings`, {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
   }
 }
 

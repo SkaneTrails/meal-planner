@@ -24,6 +24,6 @@ variable "cors_origins" {
 
 variable "storage_api_service" {
   description = "Reference to storage API service for dependency ordering"
-  type        = string
+  type        = any
   default     = null
 }

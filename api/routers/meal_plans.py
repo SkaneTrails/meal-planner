@@ -1,13 +1,16 @@
 """Meal plan API endpoints."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from api.auth.firebase import require_auth
+from api.auth.models import AuthenticatedUser
 from api.models.meal_plan import MealPlan, MealPlanUpdate
 from api.storage import meal_plan_storage
 
-router = APIRouter(prefix="/meal-plans", tags=["meal-plans"], dependencies=[Depends(require_auth)])
+router = APIRouter(prefix="/meal-plans", tags=["meal-plans"])
 
 # Expected number of parts when splitting meal key
 _MEAL_KEY_PARTS = 2
@@ -28,20 +31,34 @@ class NoteUpdateRequest(BaseModel):
     note: str = Field(..., description="Note text (empty to delete)")
 
 
-@router.get("/{user_id}")
-async def get_meal_plan(user_id: str) -> MealPlan:
-    """Get a user's meal plan."""
-    meals, notes = meal_plan_storage.load_meal_plan(user_id)
-    return MealPlan(user_id=user_id, meals=meals, notes=notes)
+def _require_household(user: AuthenticatedUser) -> str:
+    """Require user to have a household, return household_id."""
+    if not user.household_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="You must be a member of a household to access meal plans"
+        )
+    return user.household_id
 
 
-@router.put("/{user_id}")
-async def update_meal_plan(user_id: str, updates: MealPlanUpdate) -> MealPlan:
-    """Update a user's meal plan (merge update).
+@router.get("")
+async def get_meal_plan(user: Annotated[AuthenticatedUser, Depends(require_auth)]) -> MealPlan:
+    """Get the current user's household meal plan."""
+    household_id = _require_household(user)
+    meals, notes = meal_plan_storage.load_meal_plan(household_id)
+    return MealPlan(user_id=household_id, meals=meals, notes=notes)
+
+
+@router.put("")
+async def update_meal_plan(
+    updates: MealPlanUpdate, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> MealPlan:
+    """Update the current user's household meal plan (merge update).
 
     Send only the meals/notes you want to change.
     Set value to None to delete a meal or note.
     """
+    household_id = _require_household(user)
+
     # Process meal updates
     for key, value in updates.meals.items():
         parts = key.rsplit("_", 1)
@@ -53,41 +70,49 @@ async def update_meal_plan(user_id: str, updates: MealPlanUpdate) -> MealPlan:
         date_str, meal_type_str = parts
 
         if value is None:
-            meal_plan_storage.delete_meal(user_id, date_str, meal_type_str)
+            meal_plan_storage.delete_meal(household_id, date_str, meal_type_str)
         else:
-            meal_plan_storage.update_meal(user_id, date_str, meal_type_str, value)
+            meal_plan_storage.update_meal(household_id, date_str, meal_type_str, value)
 
     # Process note updates
     for date_str, note in updates.notes.items():
-        meal_plan_storage.update_day_note(user_id, date_str, note or "")
+        meal_plan_storage.update_day_note(household_id, date_str, note or "")
 
     # Return updated meal plan
-    meals, notes = meal_plan_storage.load_meal_plan(user_id)
-    return MealPlan(user_id=user_id, meals=meals, notes=notes)
+    meals, notes = meal_plan_storage.load_meal_plan(household_id)
+    return MealPlan(user_id=household_id, meals=meals, notes=notes)
 
 
-@router.post("/{user_id}/meals")
-async def update_single_meal(user_id: str, request: MealUpdateRequest) -> MealPlan:
+@router.post("/meals")
+async def update_single_meal(
+    request: MealUpdateRequest, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> MealPlan:
     """Update or delete a single meal."""
+    household_id = _require_household(user)
+
     if request.value is None:
-        meal_plan_storage.delete_meal(user_id, request.date, request.meal_type)
+        meal_plan_storage.delete_meal(household_id, request.date, request.meal_type)
     else:
-        meal_plan_storage.update_meal(user_id, request.date, request.meal_type, request.value)
+        meal_plan_storage.update_meal(household_id, request.date, request.meal_type, request.value)
 
-    meals, notes = meal_plan_storage.load_meal_plan(user_id)
-    return MealPlan(user_id=user_id, meals=meals, notes=notes)
+    meals, notes = meal_plan_storage.load_meal_plan(household_id)
+    return MealPlan(user_id=household_id, meals=meals, notes=notes)
 
 
-@router.post("/{user_id}/notes")
-async def update_single_note(user_id: str, request: NoteUpdateRequest) -> MealPlan:
+@router.post("/notes")
+async def update_single_note(
+    request: NoteUpdateRequest, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> MealPlan:
     """Update or delete a day note."""
-    meal_plan_storage.update_day_note(user_id, request.date, request.note)
+    household_id = _require_household(user)
+    meal_plan_storage.update_day_note(household_id, request.date, request.note)
 
-    meals, notes = meal_plan_storage.load_meal_plan(user_id)
-    return MealPlan(user_id=user_id, meals=meals, notes=notes)
+    meals, notes = meal_plan_storage.load_meal_plan(household_id)
+    return MealPlan(user_id=household_id, meals=meals, notes=notes)
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def clear_meal_plan(user_id: str) -> None:
-    """Clear all meals and notes from a user's meal plan."""
-    meal_plan_storage.save_meal_plan(user_id, {}, {})
+@router.delete("", status_code=status.HTTP_204_NO_CONTENT)
+async def clear_meal_plan(user: Annotated[AuthenticatedUser, Depends(require_auth)]) -> None:
+    """Clear all meals and notes from the current user's household meal plan."""
+    household_id = _require_household(user)
+    meal_plan_storage.save_meal_plan(household_id, {}, {})

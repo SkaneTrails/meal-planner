@@ -95,6 +95,9 @@ What you're currently working on for this branch
 
 - Next step: Specific next action
 
+### Deferred (Post-Merge)
+- [ ] Performance: Issue deferred from PR review
+
 ### Completed
 - [x] Step that was finished on this branch
 
@@ -227,6 +230,47 @@ When working through Discovered Issues:
    ```
 1. Periodically clean up completed items (after 3+ completed, offer to remove them)
 1. Issues can be promoted to Active Task if the developer wants to focus on them
+
+---
+
+## Deferred issues from PR reviews
+
+When addressing PR review feedback, some issues may be intentionally deferred:
+
+### When to defer
+
+- Issue is valid but out of scope for the current PR
+- Fix requires broader architectural discussion
+- Performance optimization that doesn't block functionality
+- Security hardening that can be done post-merge
+
+### Tracking deferred PR issues
+
+1. **In the PR**: Add a comment explaining what's deferred and why
+2. **In `.copilot-tasks.md`**: Add to the branch section under `### Deferred (Post-Merge)`
+
+```markdown
+### Deferred (Post-Merge)
+- [ ] Performance: `get_all_recipes` full collection scan - optimize with Firestore queries
+- [ ] Security: Cross-household recipe ID visibility in grocery endpoint
+```
+
+3. **Do NOT resolve** the review thread if you haven't fixed it - leave unresolved threads with explanatory comments
+
+### After PR merges
+
+When branch is merged:
+
+1. Move deferred items from the branch section to `## General > ### Discovered Issues`
+2. Remove the branch section (it no longer exists)
+3. Prefix moved items with `[from PR #N]` for traceability
+
+### On conversation start (if PR work was in progress)
+
+Check for:
+- Unresolved review threads that were deferred
+- Items in `### Deferred (Post-Merge)` section
+- Mention: "This branch has N deferred issues from PR review"
 
 ---
 
