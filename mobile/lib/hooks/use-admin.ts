@@ -20,12 +20,13 @@ const adminKeys = {
 /**
  * Get current user info including role and household.
  */
-export function useCurrentUser() {
+export function useCurrentUser(options?: { enabled?: boolean }) {
   return useQuery<CurrentUser>({
     queryKey: adminKeys.currentUser(),
     queryFn: () => api.getCurrentUser(),
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     retry: false, // Don't retry on 403
+    enabled: options?.enabled ?? true,
   });
 }
 

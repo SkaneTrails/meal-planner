@@ -64,7 +64,8 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         changes_made=data.get("changes_made"),
         # Household fields
         household_id=data.get("household_id"),
-        visibility=data.get("visibility", "household"),
+        # Legacy recipes (no household_id) default to shared visibility
+        visibility=data.get("visibility", "shared" if data.get("household_id") is None else "household"),
         created_by=data.get("created_by"),
     )
 
@@ -231,6 +232,11 @@ def save_recipe(  # noqa: PLR0913
 
     doc_ref.set(data)
 
+    # Type cast visibility to match Recipe model's Literal type
+    visibility_value = data["visibility"]
+    if visibility_value not in ("household", "shared"):
+        visibility_value = "household"
+
     return Recipe(
         id=doc_ref.id,
         enhanced=enhanced,
@@ -239,7 +245,7 @@ def save_recipe(  # noqa: PLR0913
         improved=enhanced,
         changes_made=changes_made,
         household_id=household_id,
-        visibility=str(data["visibility"]),
+        visibility=visibility_value,  # type: ignore[arg-type]
         created_by=created_by,
         **recipe.model_dump(exclude={"household_id", "visibility", "created_by"}),
     )
@@ -270,10 +276,11 @@ def update_recipe(
     data = doc.to_dict()
 
     # Verify household ownership if specified
+    # Legacy/shared recipes (household_id=None) are read-only - must copy first
     if household_id is not None:
         recipe_household = data.get("household_id") if data else None
-        # Allow update if: owned by this household, OR it's a legacy recipe (no household)
-        if recipe_household is not None and recipe_household != household_id:
+        # Only allow update if recipe is owned by this household
+        if recipe_household != household_id:
             return None
 
     # Only update fields that are set
@@ -336,10 +343,11 @@ def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE, *, household
     data = doc.to_dict()
 
     # Verify household ownership if specified
+    # Legacy/shared recipes (household_id=None) are read-only - cannot be deleted
     if household_id is not None and data:
         recipe_household = data.get("household_id")
-        # Allow delete if: owned by this household, OR it's a legacy recipe (no household)
-        if recipe_household is not None and recipe_household != household_id:
+        # Only allow delete if recipe is owned by this household
+        if recipe_household != household_id:
             return False
 
     doc_ref.delete()

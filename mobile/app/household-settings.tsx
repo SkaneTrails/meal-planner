@@ -176,8 +176,8 @@ export default function HouseholdSettingsScreen() {
       setSettings({
         ...DEFAULT_SETTINGS,
         ...remoteSettings,
-        dietary: { ...DEFAULT_SETTINGS.dietary, ...remoteSettings.dietary },
-        equipment: { ...DEFAULT_SETTINGS.equipment, ...remoteSettings.equipment },
+        dietary: { ...DEFAULT_SETTINGS.dietary, ...(remoteSettings.dietary ?? {}) },
+        equipment: { ...DEFAULT_SETTINGS.equipment, ...(remoteSettings.equipment ?? {}) },
       });
     }
   }, [remoteSettings]);

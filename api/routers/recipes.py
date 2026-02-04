@@ -490,8 +490,10 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     """
     household_id = _require_household(user)
 
-    # Get the source recipe
+    # Get the source recipe - try enhanced DB first, then default
     recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
+    if recipe is None:
+        recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
@@ -548,8 +550,10 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             detail="Recipe enhancement is currently disabled. Set ENABLE_RECIPE_ENHANCEMENT=true to enable.",
         )
 
-    # Get the original recipe
+    # Get the original recipe - try enhanced DB first, then default
     recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
+    if recipe is None:
+        recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
@@ -602,7 +606,7 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             recipe_id=target_recipe.id,
             database=ENHANCED_DATABASE,
             enhanced=True,
-            enhanced_from=recipe_id if target_recipe.id != recipe_id else None,
+            enhanced_from=recipe_id,
             enhanced_at=datetime.now(tz=UTC),
             changes_made=enhanced_data.get("changes_made"),
             household_id=household_id,

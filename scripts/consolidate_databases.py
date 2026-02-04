@@ -135,7 +135,6 @@ def migrate_recipes(*, dry_run: bool = False) -> None:
 
     for doc_id, data in to_migrate:
         title = data.get("title", "Untitled")
-        data.get("url", "No URL")
 
         if dry_run:
             print(f"  [DRY RUN] Would migrate: {title[:50]}")

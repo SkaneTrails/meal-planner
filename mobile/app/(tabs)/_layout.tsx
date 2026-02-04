@@ -13,7 +13,7 @@ import { useCurrentUser } from '@/lib/hooks/use-admin';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser } = useCurrentUser({ enabled: !loading && !!user });
 
   // Show loading spinner while checking auth state
   if (loading) {

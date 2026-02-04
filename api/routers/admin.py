@@ -11,13 +11,15 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
+from api.models.settings import HouseholdSettingsUpdate  # noqa: TC001 - FastAPI needs at runtime
 from api.storage import household_storage
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 # Regex for valid household names: letters, numbers, spaces, hyphens, apostrophes
-# Allows Swedish/international characters
-VALID_NAME_PATTERN = re.compile(r"^[\w\s\-']+$", re.UNICODE)
+# Excludes underscores and non-space whitespace (tabs, newlines)
+# \p{L} = Unicode letters, \p{N} = Unicode numbers (Python re doesn't support \p, use character classes)
+VALID_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9\u00C0-\u017F \-']+$")
 MAX_NAME_LENGTH = 100
 
 # Validation error messages
@@ -285,12 +287,14 @@ async def get_household_settings(user: Annotated[AuthenticatedUser, Depends(requ
 
 @router.put("/households/{household_id}/settings")
 async def update_household_settings(
-    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, settings: dict
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, settings: "HouseholdSettingsUpdate"
 ) -> dict:
     """Update settings for a household. Superuser or household admin."""
     _require_admin_or_superuser(user, household_id)
 
-    success = household_storage.update_household_settings(household_id, settings)
+    # Convert to dict for storage, excluding unset fields
+    settings_dict = settings.model_dump(exclude_unset=True)
+    success = household_storage.update_household_settings(household_id, settings_dict)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 

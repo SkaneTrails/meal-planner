@@ -4,7 +4,7 @@
  * Only visible to users with 'superuser' role.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,

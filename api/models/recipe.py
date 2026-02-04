@@ -3,6 +3,7 @@
 import re
 from datetime import datetime
 from enum import Enum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
 
@@ -106,7 +107,9 @@ class RecipeBase(BaseModel):
     tips: str | None = Field(default=None, description="Cooking tips")
     # Household fields (for multi-tenancy)
     household_id: str | None = Field(default=None, description="Household that owns this recipe (None = legacy/shared)")
-    visibility: str = Field(default="household", description="'household' = private, 'shared' = visible to all")
+    visibility: Literal["household", "shared"] = Field(
+        default="household", description="'household' = private, 'shared' = visible to all"
+    )
     created_by: str | None = Field(default=None, description="Email of user who created the recipe")
 
 
@@ -178,7 +181,7 @@ class RecipeUpdate(BaseModel):
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5)
-    visibility: str | None = Field(default=None, description="'household' or 'shared'")
+    visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
 
 
 class RecipeScrapeRequest(BaseModel):

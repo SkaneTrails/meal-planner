@@ -2,8 +2,8 @@
 One-time migration script to move legacy data to a household.
 
 This script:
-1. Copies meal plans from (default) database to meal-planner database
-2. Assigns recipes to the household
+1. Copies meal plans within (default) database to household-based doc IDs
+2. Assigns recipes to the household in (meal-planner) database
 
 Usage:
     uv run python scripts/migrate_to_household.py <household_id> --dry-run  # Preview
