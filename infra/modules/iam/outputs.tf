@@ -21,3 +21,13 @@ output "github_actions_firebase_email" {
   description = "Email of the GitHub Actions Firebase service account"
   value       = google_service_account.github_actions_firebase.email
 }
+
+output "github_actions_cloudrun_service_account" {
+  description = "Service account for GitHub Actions Cloud Run deployment"
+  value       = google_service_account.github_actions_cloudrun
+}
+
+output "github_actions_cloudrun_email" {
+  description = "Email of the GitHub Actions Cloud Run service account"
+  value       = google_service_account.github_actions_cloudrun.email
+}

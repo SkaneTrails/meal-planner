@@ -50,6 +50,53 @@ resource "google_project_iam_member" "github_actions_firebase_hosting" {
 
   depends_on = [google_service_account.github_actions_firebase]
 }
+
+# Service account for GitHub Actions to deploy to Cloud Run
+resource "google_service_account" "github_actions_cloudrun" {
+  project      = var.project
+  account_id   = "github-actions-cloudrun"
+  display_name = "GitHub Actions Cloud Run Deploy"
+  description  = "Service account for GitHub Actions to deploy API to Cloud Run"
+
+  depends_on = [var.iam_api_service]
+}
+
+# Grant Cloud Run Admin role to deploy services
+resource "google_project_iam_member" "github_actions_cloudrun_admin" {
+  project = var.project
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.github_actions_cloudrun.email}"
+
+  depends_on = [google_service_account.github_actions_cloudrun]
+}
+
+# Grant Artifact Registry Writer role to push images
+resource "google_project_iam_member" "github_actions_cloudrun_artifact_registry" {
+  project = var.project
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.github_actions_cloudrun.email}"
+
+  depends_on = [google_service_account.github_actions_cloudrun]
+}
+
+# Grant Service Account User role (required to deploy Cloud Run with custom SA)
+resource "google_project_iam_member" "github_actions_cloudrun_sa_user" {
+  project = var.project
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.github_actions_cloudrun.email}"
+
+  depends_on = [google_service_account.github_actions_cloudrun]
+}
+
+# Grant Secret Manager access to Firebase service account (for fetching secrets in workflow)
+resource "google_project_iam_member" "github_actions_firebase_secretmanager" {
+  project = var.project
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.github_actions_firebase.email}"
+
+  depends_on = [google_service_account.github_actions_firebase]
+}
+
 # Grant prerequisite roles needed to create custom roles
 resource "google_project_iam_binding" "prerequisite_roles" {
   for_each = length(var.users) > 0 ? toset(local.prerequisite_roles) : toset([])
