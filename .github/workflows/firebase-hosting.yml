@@ -8,10 +8,6 @@ on:
       - ".github/workflows/firebase-hosting.yml"
   workflow_dispatch:
 
-env:
-  # Firebase project ID
-  FIREBASE_PROJECT_ID: hikes-482104
-
 # Required for Workload Identity Federation
 permissions:
   contents: read
@@ -22,6 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
+    env:
+      # GCP project ID from GitHub secret (only secret needed - rest from Secret Manager)
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -30,8 +30,8 @@ jobs:
         id: auth
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
-          workload_identity_provider: projects/666169448126/locations/global/workloadIdentityPools/github-actions/providers/github-provider
-          service_account: github-actions-firebase@hikes-482104.iam.gserviceaccount.com
+          workload_identity_provider: projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/github-provider
+          service_account: github-actions-firebase@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Setup Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
@@ -44,20 +44,30 @@ jobs:
         working-directory: mobile
         run: npm ci
 
+      - name: Fetch secrets from GCP Secret Manager
+        id: secrets
+        run: |
+          echo "EXPO_PUBLIC_API_URL=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_API_URL --project=${{ env.GCP_PROJECT_ID }})" >> $GITHUB_OUTPUT
+          echo "EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY --project=${{ env.GCP_PROJECT_ID }})" >> $GITHUB_OUTPUT
+          echo "EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID --project=${{ env.GCP_PROJECT_ID }})" >> $GITHUB_OUTPUT
+          echo "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID --project=${{ env.GCP_PROJECT_ID }})" >> $GITHUB_OUTPUT
+          echo "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id --project=${{ env.GCP_PROJECT_ID }})" >> $GITHUB_OUTPUT
+
       - name: Build web app
         working-directory: mobile
         env:
-          # Production Firebase config from secrets
-          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
-          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
-          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ secrets.EXPO_PUBLIC_FIREBASE_APP_ID }}
-          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+          # Secrets from GCP Secret Manager (Terraform-managed)
+          EXPO_PUBLIC_API_URL: ${{ steps.secrets.outputs.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_FIREBASE_API_KEY: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_API_KEY }}
+          EXPO_PUBLIC_FIREBASE_APP_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_APP_ID }}
+          EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ steps.secrets.outputs.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+          # Derived from project ID (no secrets needed)
+          EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ env.GCP_PROJECT_ID }}.firebaseapp.com
+          EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ env.GCP_PROJECT_ID }}
+          EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ env.GCP_PROJECT_ID }}.firebasestorage.app
         run: npx expo export --platform web
 
       - name: Deploy to Firebase Hosting
         working-directory: mobile
-        run: npx firebase-tools deploy --only hosting --project ${{ env.FIREBASE_PROJECT_ID }}
+        run: npx firebase-tools deploy --only hosting --project ${{ env.GCP_PROJECT_ID }}
