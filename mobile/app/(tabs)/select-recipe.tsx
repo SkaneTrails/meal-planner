@@ -2,28 +2,23 @@
  * Select Recipe modal - Choose a recipe for a meal slot.
  */
 
-import { Ionicons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-  Alert,
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
+  View,
   Text,
   TextInput,
-  View,
+  FlatList,
+  Pressable,
+  Alert,
+  ScrollView,
+  Image,
 } from 'react-native';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
+import { GradientBackground } from '@/components';
+import { useRecipes, useSetMeal, useRemoveMeal, useEnhancedMode, useMealPlan } from '@/lib/hooks';
 import { RecipeCard } from '@/components';
-import {
-  useEnhancedMode,
-  useMealPlan,
-  useRecipes,
-  useRemoveMeal,
-  useSetMeal,
-} from '@/lib/hooks';
-import { borderRadius, colors, shadows, spacing } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 
 const MEAL_TYPE_LABELS: Record<MealType, string> = {
@@ -60,13 +55,7 @@ export default function SelectRecipeScreen() {
 
   // Initialize tab based on mode param, default to library
   const [activeTab, setActiveTab] = useState<TabType>(
-    mode === 'copy'
-      ? 'copy'
-      : mode === 'random'
-        ? 'random'
-        : mode === 'quick'
-          ? 'quick'
-          : 'library',
+    mode === 'copy' ? 'copy' : mode === 'random' ? 'random' : mode === 'quick' ? 'quick' : 'library'
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState('');
@@ -75,7 +64,7 @@ export default function SelectRecipeScreen() {
   const filteredRecipes = useMemo(() => {
     if (searchQuery === '') return recipes;
     return recipes.filter((recipe) =>
-      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [recipes, searchQuery]);
 
@@ -101,7 +90,7 @@ export default function SelectRecipeScreen() {
   }, [mealTypeRecipes, randomSeed]);
 
   const shuffleRandom = () => {
-    setRandomSeed((prev) => prev + 1);
+    setRandomSeed(prev => prev + 1);
   };
 
   // Get current week date range
@@ -128,14 +117,8 @@ export default function SelectRecipeScreen() {
   const existingMeals = useMemo(() => {
     if (!mealPlan?.meals) return [];
 
-    const recipeMap = new Map(recipes.map((r) => [r.id, r]));
-    const meals: {
-      key: string;
-      date: string;
-      mealType: string;
-      recipe?: Recipe;
-      customText?: string;
-    }[] = [];
+    const recipeMap = new Map(recipes.map(r => [r.id, r]));
+    const meals: { key: string; date: string; mealType: string; recipe?: Recipe; customText?: string }[] = [];
 
     Object.entries(mealPlan.meals).forEach(([key, value]) => {
       const [dateStr, type] = key.split('_');
@@ -143,16 +126,10 @@ export default function SelectRecipeScreen() {
       if (key === `${date}_${mealType}`) return;
 
       // Only show meals from current week
-      if (dateStr < currentWeekDates.start || dateStr > currentWeekDates.end)
-        return;
+      if (dateStr < currentWeekDates.start || dateStr > currentWeekDates.end) return;
 
       if (value.startsWith('custom:')) {
-        meals.push({
-          key,
-          date: dateStr,
-          mealType: type,
-          customText: value.slice(7),
-        });
+        meals.push({ key, date: dateStr, mealType: type, customText: value.slice(7) });
       } else {
         const recipe = recipeMap.get(value);
         if (recipe) {
@@ -165,14 +142,11 @@ export default function SelectRecipeScreen() {
     return meals.sort((a, b) => a.date.localeCompare(b.date));
   }, [mealPlan, recipes, date, mealType, currentWeekDates]);
 
-  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString(
-    'en-US',
-    {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric',
-    },
-  );
+  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
 
   const handleSelectRecipe = async (recipeId: string) => {
     try {
@@ -202,10 +176,7 @@ export default function SelectRecipeScreen() {
     }
   };
 
-  const handleCopyMeal = async (
-    recipeId?: string,
-    customTextValue?: string,
-  ) => {
+  const handleCopyMeal = async (recipeId?: string, customTextValue?: string) => {
     try {
       if (recipeId) {
         await setMeal.mutateAsync({
@@ -237,11 +208,7 @@ export default function SelectRecipeScreen() {
 
   const formatMealDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    });
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
   return (
@@ -252,110 +219,84 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <View style={{ flex: 1, backgroundColor: '#F5E6D3' }}>
+      <GradientBackground style={{ flex: 1 }}>
         {/* Tab switcher - always show all 4 tabs */}
         {!mode && (
-          <View
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.55)',
-              paddingHorizontal: 12,
-              paddingTop: 12,
-              paddingBottom: 12,
-            }}
-          >
-            <View style={{ flexDirection: 'row', gap: 4 }}>
+          <View style={{ backgroundColor: colors.glass.card, paddingHorizontal: spacing.md, paddingTop: spacing.md, paddingBottom: spacing.md }}>
+            <View style={{ flexDirection: 'row', gap: spacing.xs }}>
               <Pressable
                 onPress={() => setActiveTab('library')}
-                style={{
+                style={({ pressed }) => ({
                   flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 10,
-                  backgroundColor:
-                    activeTab === 'library'
-                      ? '#5D4E40'
-                      : 'rgba(255, 255, 255, 0.6)',
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.sm,
+                  backgroundColor: activeTab === 'library' ? colors.primary : colors.glass.light,
                   alignItems: 'center',
-                }}
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                })}
               >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '600',
-                    color: activeTab === 'library' ? '#fff' : '#5D4E40',
-                  }}
-                >
+                <Text style={{
+                  fontSize: fontSize.sm,
+                  fontWeight: '600',
+                  color: activeTab === 'library' ? colors.white : colors.text.inverse
+                }}>
                   📚 Library
                 </Text>
               </Pressable>
               <Pressable
-                onPress={() => {
-                  setActiveTab('random');
-                  shuffleRandom();
-                }}
-                style={{
+                onPress={() => { setActiveTab('random'); shuffleRandom(); }}
+                style={({ pressed }) => ({
                   flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 10,
-                  backgroundColor:
-                    activeTab === 'random'
-                      ? '#5D4E40'
-                      : 'rgba(255, 255, 255, 0.6)',
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.sm,
+                  backgroundColor: activeTab === 'random' ? colors.primary : colors.glass.light,
                   alignItems: 'center',
-                }}
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                })}
               >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '600',
-                    color: activeTab === 'random' ? '#fff' : '#5D4E40',
-                  }}
-                >
+                <Text style={{
+                  fontSize: fontSize.sm,
+                  fontWeight: '600',
+                  color: activeTab === 'random' ? colors.white : colors.text.inverse
+                }}>
                   🎲 Random
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => setActiveTab('quick')}
-                style={{
+                style={({ pressed }) => ({
                   flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 10,
-                  backgroundColor:
-                    activeTab === 'quick'
-                      ? '#5D4E40'
-                      : 'rgba(255, 255, 255, 0.6)',
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.sm,
+                  backgroundColor: activeTab === 'quick' ? colors.primary : colors.glass.light,
                   alignItems: 'center',
-                }}
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                })}
               >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '600',
-                    color: activeTab === 'quick' ? '#fff' : '#5D4E40',
-                  }}
-                >
+                <Text style={{
+                  fontSize: fontSize.sm,
+                  fontWeight: '600',
+                  color: activeTab === 'quick' ? colors.white : colors.text.inverse
+                }}>
                   ✏️ Quick
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => setActiveTab('copy')}
-                style={{
+                style={({ pressed }) => ({
                   flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 10,
-                  backgroundColor:
-                    activeTab === 'copy'
-                      ? '#5D4E40'
-                      : 'rgba(255, 255, 255, 0.6)',
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.sm,
+                  backgroundColor: activeTab === 'copy' ? colors.primary : colors.glass.light,
                   alignItems: 'center',
-                }}
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                })}
               >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontWeight: '600',
-                    color: activeTab === 'copy' ? '#fff' : '#5D4E40',
-                  }}
-                >
+                <Text style={{
+                  fontSize: fontSize.sm,
+                  fontWeight: '600',
+                  color: activeTab === 'copy' ? colors.white : colors.text.inverse
+                }}>
                   📋 Copy
                 </Text>
               </Pressable>
@@ -364,52 +305,46 @@ export default function SelectRecipeScreen() {
         )}
 
         {/* Quick mode/tab - just show text input */}
-        {mode === 'quick' || activeTab === 'quick' ? (
-          <View style={{ flex: 1, padding: 20 }}>
-            <View
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                borderRadius: borderRadius.lg,
-                padding: spacing['2xl'],
-                ...shadows.md,
-              }}
-            >
-              <View style={{ alignItems: 'center', marginBottom: 20 }}>
-                <View
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 30,
-                    backgroundColor: 'rgba(232, 213, 196, 0.6)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 12,
-                  }}
-                >
-                  <Ionicons name="create-outline" size={28} color="#5D4E40" />
+        {(mode === 'quick' || activeTab === 'quick') ? (
+          <View style={{ flex: 1, padding: spacing.xl }}>
+            <View style={{
+              backgroundColor: colors.glass.card,
+              borderRadius: borderRadius.lg,
+              padding: spacing['2xl'],
+              ...shadows.md,
+            }}>
+              <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
+                <View style={{
+                  width: iconContainer.xl,
+                  height: iconContainer.xl,
+                  borderRadius: iconContainer.xl / 2,
+                  backgroundColor: colors.glass.light,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: spacing.md,
+                }}>
+                  <Ionicons name="create-outline" size={28} color={colors.text.inverse} />
                 </View>
-                <Text
-                  style={{ fontSize: 18, fontWeight: '600', color: '#5D4E40' }}
-                >
+                <Text style={{ fontSize: fontSize['3xl'], fontWeight: '600', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
                   Quick Meal
                 </Text>
-                <Text style={{ fontSize: 14, color: '#8B7355', marginTop: 4 }}>
+                <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }}>
                   What are you having?
                 </Text>
               </View>
 
               <TextInput
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                  borderRadius: 14,
-                  paddingHorizontal: 18,
-                  paddingVertical: 16,
-                  fontSize: 16,
-                  color: '#5D4E40',
-                  marginBottom: 16,
+                  backgroundColor: colors.glass.light,
+                  borderRadius: borderRadius.md,
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.lg,
+                  fontSize: fontSize.lg,
+                  color: colors.text.inverse,
+                  marginBottom: spacing.lg,
                 }}
                 placeholder="e.g., Leftovers, Eating out, Pasta..."
-                placeholderTextColor="#8B7355"
+                placeholderTextColor={colors.gray[500]}
                 value={customText}
                 onChangeText={setCustomText}
                 autoFocus
@@ -421,124 +356,60 @@ export default function SelectRecipeScreen() {
                 onPress={handleSetCustomText}
                 disabled={!customText.trim() || setMeal.isPending}
                 style={({ pressed }) => ({
-                  backgroundColor: customText.trim()
-                    ? '#5D4E40'
-                    : 'rgba(139, 115, 85, 0.3)',
-                  borderRadius: 14,
-                  paddingVertical: 16,
+                  backgroundColor: customText.trim() ? colors.primary : colors.gray[300],
+                  borderRadius: borderRadius.md,
+                  paddingVertical: spacing.lg,
                   alignItems: 'center',
                   opacity: pressed ? 0.9 : 1,
+                  ...shadows.sm,
                 })}
               >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: customText.trim() ? '#fff' : '#8B7355',
-                  }}
-                >
+                <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: customText.trim() ? colors.white : colors.gray[500] }}>
                   Add Meal
                 </Text>
               </Pressable>
             </View>
           </View>
         ) : activeTab === 'library' ? (
-          <>
+          <>  
             {/* Search bar */}
-            <View
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.55)',
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                }}
-              >
-                <Ionicons name="search" size={20} color="#8B7355" />
+            <View style={{ backgroundColor: colors.glass.card, paddingHorizontal: spacing.lg, paddingVertical: spacing.md }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.glass.light, borderRadius: borderRadius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}>
+                <Ionicons name="search" size={20} color={colors.gray[500]} />
                 <TextInput
-                  style={{
-                    flex: 1,
-                    marginLeft: 8,
-                    fontSize: 15,
-                    color: '#5D4E40',
-                  }}
+                  style={{ flex: 1, marginLeft: spacing.sm, fontSize: fontSize.lg, color: colors.text.inverse }}
                   placeholder="Search recipes..."
-                  placeholderTextColor="#8B7355"
+                  placeholderTextColor={colors.gray[500]}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
                 />
                 {searchQuery !== '' && (
                   <Pressable onPress={() => setSearchQuery('')}>
-                    <Ionicons name="close-circle" size={20} color="#8B7355" />
+                    <Ionicons name="close-circle" size={20} color={colors.gray[500]} />
                   </Pressable>
                 )}
               </View>
             </View>
 
             {/* Custom text input */}
-            <View
-              style={{
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                backgroundColor: 'rgba(255, 255, 255, 0.45)',
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: '600',
-                  color: '#5D4E40',
-                  marginBottom: 8,
-                }}
-              >
+            <View style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.md, backgroundColor: colors.glass.dark }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
                 Or enter custom text
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TextInput
-                  style={{
-                    flex: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                    borderRadius: 12,
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
-                    fontSize: 15,
-                    color: '#5D4E40',
-                  }}
+                  style={{ flex: 1, backgroundColor: colors.glass.light, borderRadius: borderRadius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, fontSize: fontSize.lg, color: colors.text.inverse }}
                   placeholder="e.g., Leftovers, Eating out..."
-                  placeholderTextColor="#8B7355"
+                  placeholderTextColor={colors.gray[500]}
                   value={customText}
                   onChangeText={setCustomText}
                 />
                 <Pressable
                   onPress={handleSetCustomText}
                   disabled={!customText.trim() || setMeal.isPending}
-                  style={{
-                    marginLeft: 8,
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
-                    borderRadius: 12,
-                    backgroundColor: customText.trim()
-                      ? '#5D4E40'
-                      : 'rgba(139, 115, 85, 0.3)',
-                  }}
+                  style={({ pressed }) => ({ marginLeft: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderRadius: borderRadius.sm, backgroundColor: customText.trim() ? colors.primary : colors.gray[300], opacity: pressed ? 0.9 : 1 })}
                 >
-                  <Text
-                    style={{
-                      color: customText.trim() ? '#fff' : '#8B7355',
-                      fontSize: 15,
-                      fontWeight: '600',
-                    }}
-                  >
-                    Add
-                  </Text>
+                  <Text style={{ color: customText.trim() ? colors.white : colors.gray[500], fontSize: fontSize.lg, fontWeight: '600' }}>Add</Text>
                 </Pressable>
               </View>
             </View>
@@ -554,78 +425,42 @@ export default function SelectRecipeScreen() {
                   onPress={() => handleSelectRecipe(item.id)}
                 />
               )}
-              contentContainerStyle={{ padding: 16 }}
+              contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
               ListEmptyComponent={
-                <View
-                  style={{
+                <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'] * 2, paddingHorizontal: spacing['3xl'] }}>
+                  <View style={{
+                    width: iconContainer['2xl'],
+                    height: iconContainer['2xl'],
+                    borderRadius: iconContainer['2xl'] / 2,
+                    backgroundColor: colors.glass.card,
                     alignItems: 'center',
-                    paddingVertical: 80,
-                    paddingHorizontal: 32,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 80,
-                      height: 80,
-                      borderRadius: 40,
-                      backgroundColor: 'rgba(232, 213, 196, 0.6)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: 20,
-                    }}
-                  >
-                    <Ionicons
-                      name={searchQuery ? 'search' : 'book-outline'}
-                      size={36}
-                      color="#5D4E40"
-                    />
+                    justifyContent: 'center',
+                    marginBottom: spacing.xl,
+                  }}>
+                    <Ionicons name={searchQuery ? "search" : "book-outline"} size={36} color={colors.text.inverse} />
                   </View>
-                  <Text
-                    style={{
-                      color: '#5D4E40',
-                      fontSize: 18,
-                      fontWeight: '600',
-                      textAlign: 'center',
-                    }}
-                  >
+                  <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
                     {searchQuery ? 'No matches found' : 'No recipes yet'}
                   </Text>
-                  <Text
-                    style={{
-                      color: '#8B7355',
-                      fontSize: 14,
-                      marginTop: 8,
-                      textAlign: 'center',
-                      lineHeight: 20,
-                    }}
-                  >
-                    {searchQuery
-                      ? 'Try a different search term'
-                      : 'Add some recipes first to plan your meals'}
+                  <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
+                    {searchQuery ? 'Try a different search term' : 'Add some recipes first to plan your meals'}
                   </Text>
                   <Pressable
                     onPress={() => {
                       router.back();
                       router.push('/add-recipe');
                     }}
-                    style={{
+                    style={({ pressed }) => ({
                       marginTop: spacing['2xl'],
-                      paddingHorizontal: 28,
-                      paddingVertical: 14,
+                      paddingHorizontal: spacing['2xl'],
+                      paddingVertical: spacing.md,
                       backgroundColor: colors.primary,
                       borderRadius: borderRadius.sm,
                       ...shadows.lg,
-                    }}
+                      transform: [{ scale: pressed ? 0.98 : 1 }],
+                    })}
                   >
-                    <Text
-                      style={{
-                        color: colors.white,
-                        fontSize: 15,
-                        fontWeight: '600',
-                      }}
-                    >
-                      Add a Recipe
-                    </Text>
+                    <Text style={{ color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>Add a Recipe</Text>
                   </Pressable>
                 </View>
               }
@@ -633,52 +468,41 @@ export default function SelectRecipeScreen() {
           </>
         ) : activeTab === 'random' ? (
           /* Random recipe suggestion */
-          <ScrollView contentContainerStyle={{ padding: 20, flex: 1 }}>
+          <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100, flex: 1 }}>
             {randomRecipe ? (
               <View style={{ alignItems: 'center' }}>
                 {/* Header */}
-                <View style={{ alignItems: 'center', marginBottom: 24 }}>
-                  <View
-                    style={{
-                      width: 64,
-                      height: 64,
-                      borderRadius: 32,
-                      backgroundColor: 'rgba(232, 213, 196, 0.6)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: 12,
-                    }}
-                  >
-                    <Ionicons name="dice" size={32} color="#5D4E40" />
+                <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
+                  <View style={{
+                    width: iconContainer.xl,
+                    height: iconContainer.xl,
+                    borderRadius: iconContainer.xl / 2,
+                    backgroundColor: colors.glass.card,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: spacing.md,
+                  }}>
+                    <Ionicons name="dice" size={32} color={colors.text.inverse} />
                   </View>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: '700',
-                      color: '#5D4E40',
-                      textAlign: 'center',
-                    }}
-                  >
+                  <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, textAlign: 'center', letterSpacing: letterSpacing.normal }}>
                     How about this?
                   </Text>
-                  <Text
-                    style={{ fontSize: 14, color: '#8B7355', marginTop: 4 }}
-                  >
-                    {mealTypeRecipes.length} recipes match{' '}
-                    {MEAL_TYPE_LABELS[mealType].toLowerCase()}
+                  <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }}>
+                    {mealTypeRecipes.length} recipes match {MEAL_TYPE_LABELS[mealType].toLowerCase()}
                   </Text>
                 </View>
 
                 {/* Recipe Card with extra details */}
-                <View style={{ width: '100%', marginBottom: 20 }}>
+                <View style={{ width: '100%', marginBottom: spacing.xl }}>
                   <Pressable
                     onPress={() => handleSelectRecipe(randomRecipe.id)}
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                      borderRadius: borderRadius.md,
+                    style={({ pressed }) => ({
+                      backgroundColor: colors.glass.card,
+                      borderRadius: borderRadius.lg,
                       overflow: 'hidden',
                       ...shadows.md,
-                    }}
+                      transform: [{ scale: pressed ? 0.99 : 1 }],
+                    })}
                   >
                     {randomRecipe.image_url && (
                       <Image
@@ -687,134 +511,68 @@ export default function SelectRecipeScreen() {
                         resizeMode="cover"
                       />
                     )}
-                    <View style={{ padding: 16 }}>
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontWeight: '700',
-                          color: '#5D4E40',
-                          marginBottom: 8,
-                        }}
-                      >
+                    <View style={{ padding: spacing.lg }}>
+                      <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, marginBottom: spacing.sm, letterSpacing: letterSpacing.normal }}>
                         {randomRecipe.title}
                       </Text>
 
                       {/* Time and servings info */}
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          flexWrap: 'wrap',
-                          gap: 12,
-                          marginBottom: 12,
-                        }}
-                      >
+                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.md }}>
                         {randomRecipe.total_time && (
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}
-                          >
-                            <Ionicons
-                              name="time-outline"
-                              size={16}
-                              color="#8B7355"
-                            />
-                            <Text style={{ fontSize: 13, color: '#8B7355' }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                            <Ionicons name="time-outline" size={16} color={colors.gray[500]} />
+                            <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
                               {randomRecipe.total_time} min
                             </Text>
                           </View>
                         )}
                         {randomRecipe.servings && (
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: 4,
-                            }}
-                          >
-                            <Ionicons
-                              name="people-outline"
-                              size={16}
-                              color="#8B7355"
-                            />
-                            <Text style={{ fontSize: 13, color: '#8B7355' }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                            <Ionicons name="people-outline" size={16} color={colors.gray[500]} />
+                            <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
                               {randomRecipe.servings} servings
                             </Text>
                           </View>
                         )}
                         {randomRecipe.diet_label && (
-                          <View
-                            style={{
-                              paddingHorizontal: 8,
-                              paddingVertical: 2,
-                              borderRadius: 10,
-                              backgroundColor:
-                                randomRecipe.diet_label === 'veggie'
-                                  ? '#DCFCE7'
-                                  : randomRecipe.diet_label === 'fish'
-                                    ? '#DBEAFE'
-                                    : '#FEF3C7',
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 11,
-                                fontWeight: '600',
-                                color:
-                                  randomRecipe.diet_label === 'veggie'
-                                    ? '#166534'
-                                    : randomRecipe.diet_label === 'fish'
-                                      ? '#1E40AF'
-                                      : '#92400E',
-                              }}
-                            >
-                              {randomRecipe.diet_label === 'veggie'
-                                ? '🥬 Veggie'
-                                : randomRecipe.diet_label === 'fish'
-                                  ? '🐟 Fish'
-                                  : '🥩 Meat'}
+                          <View style={{
+                            paddingHorizontal: spacing.sm,
+                            paddingVertical: spacing.xs,
+                            borderRadius: borderRadius.sm,
+                            backgroundColor: randomRecipe.diet_label === 'veggie' ? colors.diet.veggie.bg :
+                                           randomRecipe.diet_label === 'fish' ? colors.diet.fish.bg : colors.diet.meat.bg,
+                          }}>
+                            <Text style={{
+                              fontSize: fontSize.sm,
+                              fontWeight: '600',
+                              color: randomRecipe.diet_label === 'veggie' ? colors.diet.veggie.text :
+                                     randomRecipe.diet_label === 'fish' ? colors.diet.fish.text : colors.diet.meat.text,
+                            }}>
+                              {randomRecipe.diet_label === 'veggie' ? '🥬 Veggie' :
+                               randomRecipe.diet_label === 'fish' ? '🐟 Fish' : '🥩 Meat'}
                             </Text>
                           </View>
                         )}
                       </View>
 
                       {/* Ingredients preview */}
-                      {randomRecipe.ingredients &&
-                        randomRecipe.ingredients.length > 0 && (
-                          <View>
-                            <Text
-                              style={{
-                                fontSize: 13,
-                                fontWeight: '600',
-                                color: '#8B7355',
-                                marginBottom: 4,
-                              }}
-                            >
-                              Ingredients ({randomRecipe.ingredients.length})
-                            </Text>
-                            <Text
-                              style={{
-                                fontSize: 12,
-                                color: '#A89585',
-                                lineHeight: 18,
-                              }}
-                              numberOfLines={2}
-                            >
-                              {randomRecipe.ingredients.slice(0, 5).join(' • ')}
-                              {randomRecipe.ingredients.length > 5
-                                ? ' ...'
-                                : ''}
-                            </Text>
-                          </View>
-                        )}
+                      {randomRecipe.ingredients && randomRecipe.ingredients.length > 0 && (
+                        <View>
+                          <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.gray[600], marginBottom: spacing.xs }}>
+                            Ingredients ({randomRecipe.ingredients.length})
+                          </Text>
+                          <Text style={{ fontSize: fontSize.base, color: colors.gray[500], lineHeight: 18 }} numberOfLines={2}>
+                            {randomRecipe.ingredients.slice(0, 5).join(' • ')}
+                            {randomRecipe.ingredients.length > 5 ? ' ...' : ''}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </Pressable>
                 </View>
 
                 {/* Action buttons */}
-                <View style={{ flexDirection: 'row', gap: 12, width: '100%' }}>
+                <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
                   <Pressable
                     onPress={shuffleRandom}
                     style={({ pressed }) => ({
@@ -822,22 +580,14 @@ export default function SelectRecipeScreen() {
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      paddingVertical: 14,
+                      paddingVertical: spacing.md,
                       borderRadius: borderRadius.sm,
-                      backgroundColor: pressed
-                        ? 'rgba(232, 213, 196, 0.8)'
-                        : 'rgba(255, 255, 255, 0.6)',
+                      backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
+                      ...shadows.sm,
                     })}
                   >
-                    <Ionicons name="shuffle" size={20} color="#5D4E40" />
-                    <Text
-                      style={{
-                        marginLeft: 8,
-                        fontSize: 15,
-                        fontWeight: '600',
-                        color: '#5D4E40',
-                      }}
-                    >
+                    <Ionicons name="shuffle" size={20} color={colors.text.inverse} />
+                    <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
                       Shuffle
                     </Text>
                   </Pressable>
@@ -849,25 +599,14 @@ export default function SelectRecipeScreen() {
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      paddingVertical: 14,
+                      paddingVertical: spacing.md,
                       borderRadius: borderRadius.sm,
-                      backgroundColor: pressed ? '#4A3728' : '#5D4E40',
+                      backgroundColor: pressed ? colors.primaryDark : colors.primary,
                       ...shadows.md,
                     })}
                   >
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={20}
-                      color={colors.white}
-                    />
-                    <Text
-                      style={{
-                        marginLeft: 8,
-                        fontSize: 15,
-                        fontWeight: '600',
-                        color: colors.white,
-                      }}
-                    >
+                    <Ionicons name="checkmark-circle" size={20} color={colors.white} />
+                    <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
                       Add to Plan
                     </Text>
                   </Pressable>
@@ -875,99 +614,51 @@ export default function SelectRecipeScreen() {
               </View>
             ) : (
               /* No recipes for this meal type */
-              <View
-                style={{
+              <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'], paddingHorizontal: spacing['3xl'] }}>
+                <View style={{
+                  width: iconContainer['2xl'],
+                  height: iconContainer['2xl'],
+                  borderRadius: iconContainer['2xl'] / 2,
+                  backgroundColor: colors.glass.card,
                   alignItems: 'center',
-                  paddingVertical: 60,
-                  paddingHorizontal: 32,
-                }}
-              >
-                <View
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
-                    backgroundColor: 'rgba(232, 213, 196, 0.6)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 20,
-                  }}
-                >
-                  <Ionicons name="dice-outline" size={36} color="#5D4E40" />
+                  justifyContent: 'center',
+                  marginBottom: spacing.xl,
+                }}>
+                  <Ionicons name="dice-outline" size={36} color={colors.text.inverse} />
                 </View>
-                <Text
-                  style={{
-                    color: '#5D4E40',
-                    fontSize: 18,
-                    fontWeight: '600',
-                    textAlign: 'center',
-                  }}
-                >
+                <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
                   No {MEAL_TYPE_LABELS[mealType].toLowerCase()} recipes
                 </Text>
-                <Text
-                  style={{
-                    color: '#8B7355',
-                    fontSize: 14,
-                    marginTop: 8,
-                    textAlign: 'center',
-                    lineHeight: 20,
-                  }}
-                >
-                  Add some recipes with the "
-                  {MEAL_TYPE_LABELS[mealType].toLowerCase()}" meal type to use
-                  random selection
+                <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
+                  Add some recipes with the "{MEAL_TYPE_LABELS[mealType].toLowerCase()}" meal type to use random selection
                 </Text>
               </View>
             )}
           </ScrollView>
         ) : (
           /* Copy from existing meals */
-          <ScrollView contentContainerStyle={{ padding: 16 }}>
-            <Text style={{ fontSize: 14, color: '#8B7355', marginBottom: 16 }}>
+          <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}>
+            <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginBottom: spacing.lg }}>
               Copy a meal from your existing plan:
             </Text>
 
             {existingMeals.length === 0 ? (
-              <View
-                style={{
+              <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'], paddingHorizontal: spacing['3xl'] }}>
+                <View style={{
+                  width: iconContainer['2xl'],
+                  height: iconContainer['2xl'],
+                  borderRadius: iconContainer['2xl'] / 2,
+                  backgroundColor: colors.glass.card,
                   alignItems: 'center',
-                  paddingVertical: 60,
-                  paddingHorizontal: 32,
-                }}
-              >
-                <View
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
-                    backgroundColor: 'rgba(232, 213, 196, 0.6)',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 20,
-                  }}
-                >
-                  <Ionicons name="calendar-outline" size={36} color="#5D4E40" />
+                  justifyContent: 'center',
+                  marginBottom: spacing.xl,
+                }}>
+                  <Ionicons name="calendar-outline" size={36} color={colors.text.inverse} />
                 </View>
-                <Text
-                  style={{
-                    color: '#5D4E40',
-                    fontSize: 18,
-                    fontWeight: '600',
-                    textAlign: 'center',
-                  }}
-                >
+                <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
                   No meals to copy
                 </Text>
-                <Text
-                  style={{
-                    color: '#8B7355',
-                    fontSize: 14,
-                    marginTop: 8,
-                    textAlign: 'center',
-                    lineHeight: 20,
-                  }}
-                >
+                <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
                   Plan some meals first, then you can copy them to other days
                 </Text>
               </View>
@@ -975,15 +666,11 @@ export default function SelectRecipeScreen() {
               existingMeals.map((meal) => (
                 <Pressable
                   key={meal.key}
-                  onPress={() =>
-                    handleCopyMeal(meal.recipe?.id, meal.customText)
-                  }
+                  onPress={() => handleCopyMeal(meal.recipe?.id, meal.customText)}
                   style={({ pressed }) => ({
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: pressed
-                      ? 'rgba(232, 213, 196, 0.6)'
-                      : 'rgba(255, 255, 255, 0.7)',
+                    backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
                     borderRadius: borderRadius.sm,
                     padding: spacing.lg,
                     marginBottom: spacing.sm,
@@ -991,34 +678,22 @@ export default function SelectRecipeScreen() {
                   })}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        fontWeight: '600',
-                        color: '#5D4E40',
-                      }}
-                    >
+                    <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
                       {meal.recipe?.title || meal.customText}
                     </Text>
-                    <Text
-                      style={{ fontSize: 13, color: '#8B7355', marginTop: 4 }}
-                    >
-                      {formatMealDate(meal.date)} ·{' '}
-                      {meal.mealType.charAt(0).toUpperCase() +
-                        meal.mealType.slice(1)}
+                    <Text style={{ fontSize: fontSize.md, color: colors.gray[600], marginTop: spacing.xs }}>
+                      {formatMealDate(meal.date)} · {meal.mealType.charAt(0).toUpperCase() + meal.mealType.slice(1)}
                     </Text>
                   </View>
-                  <View
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 18,
-                      backgroundColor: 'rgba(232, 213, 196, 0.6)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Ionicons name="copy-outline" size={18} color="#5D4E40" />
+                  <View style={{
+                    width: iconContainer.md,
+                    height: iconContainer.md,
+                    borderRadius: iconContainer.md / 2,
+                    backgroundColor: colors.glass.light,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Ionicons name="copy-outline" size={18} color={colors.text.inverse} />
                   </View>
                 </Pressable>
               ))
@@ -1027,35 +702,26 @@ export default function SelectRecipeScreen() {
         )}
 
         {/* Remove meal button */}
-        <View
-          style={{ padding: 16, backgroundColor: 'rgba(255, 255, 255, 0.55)' }}
-        >
+        <View style={{ padding: spacing.lg, backgroundColor: colors.glass.card }}>
           <Pressable
             onPress={handleRemoveMeal}
             disabled={removeMeal.isPending}
-            style={{
+            style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              paddingVertical: 12,
-              borderRadius: 12,
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-            }}
+              paddingVertical: spacing.md,
+              borderRadius: borderRadius.sm,
+              backgroundColor: pressed ? colors.glass.medium : colors.glass.light,
+            })}
           >
-            <Ionicons name="trash-outline" size={18} color="#5D4E40" />
-            <Text
-              style={{
-                marginLeft: 8,
-                fontSize: 15,
-                fontWeight: '600',
-                color: '#5D4E40',
-              }}
-            >
+            <Ionicons name="trash-outline" size={18} color={colors.text.inverse} />
+            <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
               Clear This Meal
             </Text>
           </Pressable>
         </View>
-      </View>
+      </GradientBackground>
     </>
   );
 }

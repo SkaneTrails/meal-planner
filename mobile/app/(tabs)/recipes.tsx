@@ -128,7 +128,7 @@ function RecipeGrid({
           />
         </View>
       )}
-      contentContainerStyle={{ padding: 8 }}
+      contentContainerStyle={{ padding: 8, paddingBottom: 100 }}
       refreshControl={
         <RefreshControl
           refreshing={isLoading}
