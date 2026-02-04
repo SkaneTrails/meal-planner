@@ -5,7 +5,7 @@
 #
 # Setup:
 # 1. Copy terraform.tfvars.example to terraform.tfvars and fill in values
-# 2. Create access/users.txt with user emails (one per line)
+# 2. Create access/superusers.txt with superuser emails (one per line)
 # 3. Run: terraform init && terraform apply
 
 provider "google" {
@@ -37,12 +37,12 @@ locals {
     if trimspace(line) != "" && !startswith(trimspace(line), "#")
   ])
 
-  # Read allowed app users from access/allowed_users.txt (gitignored)
-  # These users can access the app after Firebase Auth
-  allowed_users_file_content = fileexists("${path.module}/access/allowed_users.txt") ? file("${path.module}/access/allowed_users.txt") : ""
-  allowed_users_lines        = split("\n", trimspace(local.allowed_users_file_content))
-  allowed_users = compact([
-    for line in local.allowed_users_lines :
+  # Read superusers from access/superusers.txt (gitignored)
+  # Superusers have global access and can manage households
+  superusers_file_content = fileexists("${path.module}/access/superusers.txt") ? file("${path.module}/access/superusers.txt") : ""
+  superusers_lines        = split("\n", trimspace(local.superusers_file_content))
+  superusers = compact([
+    for line in local.superusers_lines :
     trimspace(line)
     if trimspace(line) != "" && !startswith(trimspace(line), "#")
   ])
@@ -112,8 +112,8 @@ module "firebase" {
   # Add Cloud Run URL after first deployment
   authorized_domains = var.firebase_authorized_domains
 
-  # Users allowed to access the app (from access/allowed_users.txt)
-  allowed_users = local.allowed_users
+  # Superusers with global app access (from access/superusers.txt)
+  superusers = local.superusers
 
   # OAuth credentials are read from Secret Manager
   # Set to true after running: ./scripts/create-oauth-client.ps1

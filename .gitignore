@@ -64,6 +64,8 @@ mobile/scripts/deploy-web.sh
 
 # Terraform user access files (contain personal emails)
 infra/**/access/users.txt
+infra/**/access/superusers.txt
+infra/**/access/allowed_users.txt
 
 # GCP credentials (if using service accounts locally)
 # gcloud-config/
@@ -125,4 +127,3 @@ mobile/.env.local
 ./.copilot-tasks.md
 infra/environments/*/import_tfstate_bucket.ps1
 infra/environments/*/import_tfstate_bucket.sh
-infra/environments/*/access/allowed_users.txt

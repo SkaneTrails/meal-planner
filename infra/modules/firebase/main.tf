@@ -146,20 +146,17 @@ resource "google_identity_platform_default_supported_idp_config" "google" {
   depends_on = [google_identity_platform_config.auth]
 }
 
-# Create Firestore documents for allowed users
-# Users are defined in environments/dev/access/allowed_users.txt
-resource "google_firestore_document" "allowed_user" {
-  for_each = toset(var.allowed_users)
+# Create Firestore documents for superusers (global admin access)
+# Superusers are defined in environments/dev/access/superusers.txt
+resource "google_firestore_document" "superuser" {
+  for_each = toset(var.superusers)
 
   project     = var.project
   database    = var.firestore_database
-  collection  = "allowed_users"
+  collection  = "superusers"
   document_id = each.value # Email as document ID for O(1) lookup
 
   fields = jsonencode({
-    email = {
-      stringValue = each.value
-    }
     added_by = {
       stringValue = "terraform"
     }

@@ -7,6 +7,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from api.auth.models import AuthenticatedUser
 from api.models.grocery_list import GroceryCategory
 from api.routers.grocery import CATEGORY_KEYWORDS, router
 
@@ -17,11 +18,13 @@ app.include_router(router)
 
 @pytest.fixture
 def client() -> TestClient:
-    """Create test client with mocked auth."""
+    """Create test client with mocked auth (user with household)."""
     from api.auth.firebase import require_auth
 
-    async def mock_auth() -> dict[str, str]:
-        return {"uid": "test_user"}
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            uid="test_user", email="test@example.com", household_id="test_household", role="member"
+        )
 
     app.dependency_overrides[require_auth] = mock_auth
 
@@ -54,17 +57,40 @@ class TestCategoryKeywords:
         assert "salmon" in CATEGORY_KEYWORDS[GroceryCategory.MEAT_SEAFOOD]
 
 
+@pytest.fixture
+def client_no_household() -> TestClient:
+    """Create test client with mocked auth (superuser without household)."""
+    from api.auth.firebase import require_auth
+
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(uid="superuser", email="super@example.com", household_id=None, role="superuser")
+
+    app.dependency_overrides[require_auth] = mock_auth
+
+    with TestClient(app) as c:
+        yield c
+
+    app.dependency_overrides.clear()
+
+
 class TestGenerateGroceryList:
-    """Tests for GET /grocery/{user_id} endpoint."""
+    """Tests for GET /grocery endpoint."""
 
     def test_generate_empty_meal_plan(self, client: TestClient) -> None:
         """Should return empty list for empty meal plan."""
         with patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=({}, {})):
-            response = client.get("/grocery/test_user")
+            response = client.get("/grocery")
 
         assert response.status_code == 200
         data = response.json()
         assert data["items"] == []
+
+    def test_requires_household(self, client_no_household: TestClient) -> None:
+        """Should return 403 if user has no household."""
+        response = client_no_household.get("/grocery")
+
+        assert response.status_code == 403
+        assert "household" in response.json()["detail"].lower()
 
     def test_generate_with_custom_meals_only(self, client: TestClient) -> None:
         """Should skip custom meals (not recipes)."""
@@ -73,7 +99,7 @@ class TestGenerateGroceryList:
             patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {})),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
-            response = client.get("/grocery/test_user")
+            response = client.get("/grocery")
 
         assert response.status_code == 200
         data = response.json()
@@ -91,7 +117,7 @@ class TestGenerateGroceryList:
             patch("api.routers.grocery.recipe_storage.get_recipe", return_value=mock_recipe),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
-            response = client.get("/grocery/test_user")
+            response = client.get("/grocery")
 
         assert response.status_code == 200
         data = response.json()
@@ -117,7 +143,7 @@ class TestGenerateGroceryList:
             patch("api.routers.grocery.recipe_storage.get_recipe", side_effect=get_recipe_side_effect),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
-            response = client.get("/grocery/test_user")
+            response = client.get("/grocery")
 
         assert response.status_code == 200
         data = response.json()
@@ -139,7 +165,7 @@ class TestGenerateGroceryList:
             patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {})),
             patch("api.routers.grocery.recipe_storage.get_recipe", return_value=mock_recipe),
         ):
-            response = client.get("/grocery/test_user?start_date=2025-01-14&end_date=2025-01-16")
+            response = client.get("/grocery?start_date=2025-01-14&end_date=2025-01-16")
 
         assert response.status_code == 200
         # Should only call get_recipe once (for the meal within date range)

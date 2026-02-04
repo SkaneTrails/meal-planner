@@ -1,0 +1,11 @@
+# Superusers - administrators with global access
+# One email per line
+# Lines starting with # are comments
+#
+# Superusers can:
+# - Access the app without being in a household
+# - Create and manage households
+# - Add users to households
+# - See all households in admin view
+#
+# Add your email here:

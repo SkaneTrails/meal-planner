@@ -10,6 +10,7 @@ Ta emot ett recept och förbättra det genom att:
 2. Optimera tillagningsinstruktioner för tillgänglig utrustning
 3. Anpassa för hushållets kostpreferenser
 4. Ersätta HelloFresh-kryddblandningar med individuella kryddor
+5. Granska och korrigera matfett efter tillagningsmetod (se Fett-regler)
 
 ## Output JSON
 

@@ -114,16 +114,16 @@ class TestDocToRecipe:
         """Should include AI enhancement fields."""
         data = {
             "title": "Enhanced Recipe",
-            "improved": True,
-            "original_id": "orig123",
+            "enhanced": True,
+            "enhanced_from": "orig123",
             "tips": "Use fresh herbs",
             "changes_made": ["Added spices", "Fixed timing"],
         }
 
         result = _doc_to_recipe("doc123", data)
 
-        assert result.improved is True
-        assert result.original_id == "orig123"
+        assert result.enhanced is True
+        assert result.enhanced_from == "orig123"
         assert result.tips == "Use fresh herbs"
         assert result.changes_made == ["Added spices", "Fixed timing"]
 
@@ -177,24 +177,24 @@ class TestSaveRecipe:
             result = save_recipe(
                 recipe,
                 recipe_id="enhanced_id",
-                improved=True,
-                original_id="original_123",
+                enhanced=True,
+                enhanced_from="original_123",
                 changes_made=["Added spices", "Fixed instructions"],
             )
 
         # Check the data passed to set()
         call_args = mock_doc_ref.set.call_args[0][0]
-        assert call_args["improved"] is True
-        assert call_args["original_id"] == "original_123"
+        assert call_args["enhanced"] is True
+        assert call_args["enhanced_from"] == "original_123"
         assert call_args["changes_made"] == ["Added spices", "Fixed instructions"]
 
         # Check returned recipe
-        assert result.improved is True
-        assert result.original_id == "original_123"
+        assert result.enhanced is True
+        assert result.enhanced_from == "original_123"
         assert result.changes_made == ["Added spices", "Fixed instructions"]
 
-    def test_does_not_include_false_improved(self) -> None:
-        """Should not include improved=False in saved data."""
+    def test_does_not_include_false_enhanced(self) -> None:
+        """Should not include enhanced=False in saved data."""
         mock_db = MagicMock()
         mock_doc_ref = MagicMock()
         mock_doc_ref.id = "doc_id"
@@ -203,10 +203,10 @@ class TestSaveRecipe:
         recipe = RecipeCreate(title="Test", url="https://example.com")
 
         with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            save_recipe(recipe, improved=False)
+            save_recipe(recipe, enhanced=False)
 
         call_args = mock_doc_ref.set.call_args[0][0]
-        assert "improved" not in call_args
+        assert "enhanced" not in call_args
 
     def test_saves_diet_and_meal_labels(self) -> None:
         """Should save diet_label and meal_label as string values."""
@@ -458,3 +458,53 @@ class TestSearchRecipes:
 
         assert len(result) == 1
         assert result[0].title == "Pasta Carbonara"
+
+
+class TestCopyRecipe:
+    """Tests for copy_recipe function."""
+
+    def test_copies_recipe_to_new_household(self) -> None:
+        """Should copy recipe with new ownership."""
+        from api.storage.recipe_storage import copy_recipe
+
+        source_recipe = Recipe(
+            id="source_id",
+            title="Shared Recipe",
+            url="https://example.com",
+            ingredients=["flour", "eggs"],
+            instructions=["Mix", "Bake"],
+            household_id=None,
+            visibility="shared",
+        )
+
+        copied_recipe = Recipe(
+            id="copied_id",
+            title="Shared Recipe",
+            url="https://example.com",
+            ingredients=["flour", "eggs"],
+            instructions=["Mix", "Bake"],
+            household_id="hh123",
+            visibility="household",
+            created_by="user@test.com",
+        )
+
+        with (
+            patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe),
+        ):
+            result = copy_recipe("source_id", to_household_id="hh123", copied_by="user@test.com")
+
+        assert result is not None
+        assert result.id == "copied_id"
+        assert result.household_id == "hh123"
+        assert result.visibility == "household"
+        assert result.created_by == "user@test.com"
+
+    def test_returns_none_for_missing_recipe(self) -> None:
+        """Should return None if source recipe doesn't exist."""
+        from api.storage.recipe_storage import copy_recipe
+
+        with patch("api.storage.recipe_storage.get_recipe", return_value=None):
+            result = copy_recipe("nonexistent", to_household_id="hh123", copied_by="user@test.com")
+
+        assert result is None
