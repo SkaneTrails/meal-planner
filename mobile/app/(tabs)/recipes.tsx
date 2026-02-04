@@ -103,7 +103,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
           />
         </View>
       )}
-      contentContainerStyle={{ padding: 8 }}
+      contentContainerStyle={{ padding: 8, paddingBottom: 100 }}
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
       }
