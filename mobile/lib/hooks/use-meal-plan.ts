@@ -3,9 +3,13 @@
  * Note: household_id is resolved server-side from authentication.
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api';
-import type { MealPlanUpdate, MealUpdateRequest, NoteUpdateRequest } from '../types';
+import type {
+  MealPlanUpdate,
+  MealUpdateRequest,
+  NoteUpdateRequest,
+} from '../types';
 
 // Query keys
 export const mealPlanKeys = {
@@ -86,7 +90,12 @@ export function useSetMeal() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ date, mealType, recipeId, customText }: {
+    mutationFn: ({
+      date,
+      mealType,
+      recipeId,
+      customText,
+    }: {
       date: string;
       mealType: string;
       recipeId?: string;

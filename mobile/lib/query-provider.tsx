@@ -2,9 +2,9 @@
  * React Query provider with AsyncStorage persistence for offline support.
  */
 
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type React from 'react';
 
 // Create a client with offline-friendly defaults
 const queryClient = new QueryClient({
@@ -48,11 +48,17 @@ export async function restoreQueryCache(): Promise<void> {
     const cached = await AsyncStorage.getItem(CACHE_KEY);
     if (cached) {
       const data = JSON.parse(cached);
-      data.forEach((item: { queryKey: unknown[]; data: unknown; dataUpdatedAt?: number }) => {
-        queryClient.setQueryData(item.queryKey, item.data, {
-          updatedAt: item.dataUpdatedAt,
-        });
-      });
+      data.forEach(
+        (item: {
+          queryKey: unknown[];
+          data: unknown;
+          dataUpdatedAt?: number;
+        }) => {
+          queryClient.setQueryData(item.queryKey, item.data, {
+            updatedAt: item.dataUpdatedAt,
+          });
+        },
+      );
     }
   } catch (error) {
     console.warn('Failed to restore query cache:', error);
@@ -65,9 +71,7 @@ interface QueryProviderProps {
 
 export function QueryProvider({ children }: QueryProviderProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 

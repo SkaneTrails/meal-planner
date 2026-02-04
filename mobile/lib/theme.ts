@@ -15,16 +15,16 @@ export const fontFamily = Platform.select({
 
 // Typography scale - harmonious sizes for clean, modern look
 export const fontSize = {
-  xs: 11,      // Tiny labels
-  sm: 12,      // Small labels, timestamps
-  base: 13,    // Secondary text, captions
-  md: 14,      // Body text small
-  lg: 15,      // Body text
-  xl: 16,      // Emphasized body
-  '2xl': 18,   // Section titles
-  '3xl': 20,   // Subheadings
-  '4xl': 28,   // Page titles
-  '5xl': 30,   // Hero stats
+  xs: 11, // Tiny labels
+  sm: 12, // Small labels, timestamps
+  base: 13, // Secondary text, captions
+  md: 14, // Body text small
+  lg: 15, // Body text
+  xl: 16, // Emphasized body
+  '2xl': 18, // Section titles
+  '3xl': 20, // Subheadings
+  '4xl': 28, // Page titles
+  '5xl': 30, // Hero stats
 } as const;
 
 // Font weights for typography hierarchy
@@ -37,9 +37,9 @@ export const fontWeight = {
 
 // Letter spacing for typography refinement
 export const letterSpacing = {
-  tight: -0.5,    // Page titles
-  normal: -0.3,   // Section titles
-  wide: 0.5,      // Uppercase labels
+  tight: -0.5, // Page titles
+  normal: -0.3, // Section titles
+  wide: 0.5, // Uppercase labels
 } as const;
 
 // Light theme color palette - warm food delivery app inspired
@@ -78,12 +78,12 @@ export const lightColors = {
   // Neutrals - standardized gray scale
   white: '#FFFFFF',
   text: {
-    primary: '#4A3728',      // Main text
-    secondary: '#6B7280',    // Body text, descriptions
-    muted: '#9CA3AF',        // Placeholder, disabled
-    inverse: '#FFFFFF',      // Text on dark backgrounds
+    primary: '#4A3728', // Main text
+    secondary: '#6B7280', // Body text, descriptions
+    muted: '#9CA3AF', // Placeholder, disabled
+    inverse: '#FFFFFF', // Text on dark backgrounds
   },
-  border: '#E5E7EB',         // Standard border color
+  border: '#E5E7EB', // Standard border color
 
   // Legacy gray scale (for compatibility)
   gray: {
@@ -126,40 +126,40 @@ export const spacing = {
 
 // Layout constants
 export const layout = {
-  screenPaddingTop: 60,      // Consistent header padding
+  screenPaddingTop: 60, // Consistent header padding
   screenPaddingHorizontal: 20,
-  sectionGap: 24,            // Gap between sections
-  cardGap: 8,                // Gap between cards
-  tabBarHeight: 88,          // Tab bar + safe area
+  sectionGap: 24, // Gap between sections
+  cardGap: 8, // Gap between cards
+  tabBarHeight: 88, // Tab bar + safe area
 } as const;
 
 // Border radius - standardized to 3 sizes
 export const borderRadius = {
-  sm: 12,      // Small elements, chips, badges
-  md: 16,      // Cards, inputs, buttons
-  lg: 20,      // Large cards, modals
-  xl: 24,      // Extra large, floating elements
-  full: 9999,  // Circles, pills
+  sm: 12, // Small elements, chips, badges
+  md: 16, // Cards, inputs, buttons
+  lg: 20, // Large cards, modals
+  xl: 24, // Extra large, floating elements
+  full: 9999, // Circles, pills
 } as const;
 
 // Icon sizes - standardized
 export const iconSize = {
-  xs: 14,      // Inline with small text
-  sm: 16,      // Inline with body text
-  md: 18,      // Standard icons
-  lg: 20,      // Emphasized icons
-  xl: 24,      // Large icons
-  '2xl': 32,   // Section header icons
-  '3xl': 40,   // Hero icons
+  xs: 14, // Inline with small text
+  sm: 16, // Inline with body text
+  md: 18, // Standard icons
+  lg: 20, // Emphasized icons
+  xl: 24, // Large icons
+  '2xl': 32, // Section header icons
+  '3xl': 40, // Hero icons
 } as const;
 
 // Icon container sizes (circles around icons)
 export const iconContainer = {
-  sm: 32,      // Inline section headers
-  md: 40,      // Standard icon circles
-  lg: 48,      // Large icon circles
-  xl: 56,      // Extra large (like meal images)
-  '2xl': 80,   // Empty state illustrations
+  sm: 32, // Inline section headers
+  md: 40, // Standard icon circles
+  lg: 48, // Large icon circles
+  xl: 56, // Extra large (like meal images)
+  '2xl': 80, // Empty state illustrations
 } as const;
 
 // Shadow presets for consistent elevation

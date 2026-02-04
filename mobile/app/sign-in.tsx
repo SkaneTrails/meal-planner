@@ -3,10 +3,10 @@
  * Clean, minimal design with centered content.
  */
 
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Redirect } from 'expo-router';
-import { useAuth } from '../lib/hooks/use-auth';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { GoogleLogo } from '../components/GoogleLogo';
+import { useAuth } from '../lib/hooks/use-auth';
 
 export default function SignInScreen() {
   const { user, loading, error, signIn } = useAuth();
