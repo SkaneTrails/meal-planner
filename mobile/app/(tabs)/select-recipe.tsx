@@ -16,9 +16,8 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
-import { GradientBackground } from '@/components';
+import { GradientBackground, RecipeCard } from '@/components';
 import { useRecipes, useSetMeal, useRemoveMeal, useEnhancedMode, useMealPlan } from '@/lib/hooks';
-import { RecipeCard } from '@/components';
 import type { MealType, Recipe } from '@/lib/types';
 
 const MEAL_TYPE_LABELS: Record<MealType, string> = {
