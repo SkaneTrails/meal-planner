@@ -57,6 +57,22 @@ class TestCategoryKeywords:
         assert "salmon" in CATEGORY_KEYWORDS[GroceryCategory.MEAT_SEAFOOD]
 
 
+@pytest.fixture
+def client_no_household() -> TestClient:
+    """Create test client with mocked auth (superuser without household)."""
+    from api.auth.firebase import require_auth
+
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(uid="superuser", email="super@example.com", household_id=None, role="superuser")
+
+    app.dependency_overrides[require_auth] = mock_auth
+
+    with TestClient(app) as c:
+        yield c
+
+    app.dependency_overrides.clear()
+
+
 class TestGenerateGroceryList:
     """Tests for GET /grocery endpoint."""
 
@@ -68,6 +84,13 @@ class TestGenerateGroceryList:
         assert response.status_code == 200
         data = response.json()
         assert data["items"] == []
+
+    def test_requires_household(self, client_no_household: TestClient) -> None:
+        """Should return 403 if user has no household."""
+        response = client_no_household.get("/grocery")
+
+        assert response.status_code == 403
+        assert "household" in response.json()["detail"].lower()
 
     def test_generate_with_custom_meals_only(self, client: TestClient) -> None:
         """Should skip custom meals (not recipes)."""

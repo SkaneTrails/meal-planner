@@ -37,7 +37,10 @@ export interface Recipe {
   diet_label: DietLabel | null;
   meal_label: MealLabel | null;
   rating: number | null;
-  visibility?: RecipeVisibility;  // 'household' = private, 'shared' = public
+  // Household ownership fields
+  household_id?: string | null;    // Owning household (null = legacy/unassigned)
+  visibility?: RecipeVisibility;   // 'household' = private, 'shared' = public
+  created_by?: string | null;      // Email of user who created the recipe
   // AI enhancement fields
   enhanced?: boolean;              // True if AI-enhanced
   enhanced_from?: string;          // ID of recipe this was enhanced from

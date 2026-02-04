@@ -514,9 +514,13 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     if not is_shared_or_legacy:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    # Create the copy from the source database, save to enhanced database
+    # Create the copy in the same database where the source recipe was found
     copied = recipe_storage.copy_recipe(
-        recipe_id, to_household_id=household_id, copied_by=user.email, source_database=source_database
+        recipe_id,
+        to_household_id=household_id,
+        copied_by=user.email,
+        source_database=source_database,
+        target_database=source_database,
     )
 
     if copied is None:  # pragma: no cover

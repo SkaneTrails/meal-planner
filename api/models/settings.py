@@ -67,6 +67,27 @@ class HouseholdSettings(BaseModel):
     equipment: EquipmentSettings = Field(default_factory=EquipmentSettings)
 
 
+class DietarySettingsUpdate(BaseModel):
+    """Partial update for dietary settings (all fields optional)."""
+
+    seafood_ok: bool | None = None
+    meat: MeatPreference | None = None
+    minced_meat: MincedMeatPreference | None = None
+    dairy: DairyPreference | None = None
+    chicken_alternative: str | None = None
+    meat_alternative: str | None = None
+
+
+class EquipmentSettingsUpdate(BaseModel):
+    """Partial update for equipment settings (all fields optional)."""
+
+    airfryer: bool | None = None
+    airfryer_model: str | None = None
+    airfryer_capacity_liters: float | None = Field(default=None, ge=1, le=10)
+    convection_oven: bool | None = None
+    grill_function: bool | None = None
+
+
 class HouseholdSettingsUpdate(BaseModel):
     """Partial update for household settings (all fields optional)."""
 
@@ -74,5 +95,5 @@ class HouseholdSettingsUpdate(BaseModel):
     default_servings: int | None = Field(default=None, ge=1, le=20)
     language: str | None = None
 
-    dietary: DietarySettings | None = None
-    equipment: EquipmentSettings | None = None
+    dietary: DietarySettingsUpdate | None = None
+    equipment: EquipmentSettingsUpdate | None = None

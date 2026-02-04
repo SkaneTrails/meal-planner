@@ -20,7 +20,7 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
-import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists } from '@/lib/hooks';
+import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists, useCurrentUser } from '@/lib/hooks';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { BouncingLoader } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
@@ -356,6 +356,7 @@ export default function RecipeDetailScreen() {
   const { data: hasEnhancedVersion } = useEnhancedRecipeExists(id, isAuthReady);
 
   const { data: recipe, isLoading, error } = useRecipe(id, isEnhanced);
+  const { data: currentUser } = useCurrentUser({ enabled: isAuthReady });
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
   const setMeal = useSetMeal();
@@ -851,19 +852,28 @@ export default function RecipeDetailScreen() {
 
           {/* Action buttons row */}
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, alignItems: 'center' }}>
-            <Pressable
-              onPress={openEditModal}
-              style={({ pressed }) => ({
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
-                alignItems: 'center',
-                justifyContent: 'center',
-              })}
-            >
-              <Ionicons name="create-outline" size={20} color="#4A3728" />
-            </Pressable>
+            {/* Edit button - only enabled for recipes owned by user's household */}
+            {(() => {
+              const isOwned = recipe.household_id === currentUser?.household_id;
+              const isLegacy = recipe.household_id === null || recipe.household_id === undefined;
+              const canEdit = isOwned || isLegacy;
+              return (
+                <Pressable
+                  onPress={canEdit ? openEditModal : () => Alert.alert('Cannot Edit', 'Copy this recipe to your household first to make changes.')}
+                  style={({ pressed }) => ({
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: pressed ? '#E8D5C4' : '#F5E6D3',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: canEdit ? 1 : 0.5,
+                  })}
+                >
+                  <Ionicons name="create-outline" size={20} color="#4A3728" />
+                </Pressable>
+              );
+            })()}
             <Pressable
               onPress={() => setShowPlanModal(true)}
               style={({ pressed }) => ({
