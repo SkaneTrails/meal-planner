@@ -117,7 +117,11 @@ extend_exclude = [ ".venv/", "functions/", "scripts/" ]
 testpaths = [ "tests" ]
 python_files = [ "test_*.py" ]
 python_functions = [ "test_*" ]
-filterwarnings = [ "error" ]
+filterwarnings = [
+  "error",
+  # MagicMock in tests can trigger this when Pydantic validates async clients
+  "ignore::pydantic.warnings.ArbitraryTypeWarning",
+]
 addopts = "-W error --strict-markers"
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",

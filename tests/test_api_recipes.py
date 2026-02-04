@@ -124,6 +124,54 @@ class TestGetRecipe:
 
         mock_get.assert_called_once_with("test123", database="meal-planner")
 
+    def test_returns_404_for_other_household_private_recipe(self, client: TestClient) -> None:
+        """Should return 404 for a private recipe owned by another household."""
+        other_household_recipe = Recipe(
+            id="private123",
+            title="Private Recipe",
+            url="https://example.com/private",
+            household_id="other_household",  # Different from test_household
+            visibility="household",  # Private
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=other_household_recipe):
+            response = client.get("/recipes/private123")
+
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Recipe not found"
+
+    def test_returns_recipe_for_shared_from_other_household(self, client: TestClient) -> None:
+        """Should return a shared recipe even if owned by another household."""
+        shared_recipe = Recipe(
+            id="shared123",
+            title="Shared Recipe",
+            url="https://example.com/shared",
+            household_id="other_household",
+            visibility="shared",  # Shared = accessible
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=shared_recipe):
+            response = client.get("/recipes/shared123")
+
+        assert response.status_code == 200
+        assert response.json()["title"] == "Shared Recipe"
+
+    def test_returns_recipe_for_legacy_without_household(self, client: TestClient) -> None:
+        """Should return a legacy recipe (no household_id)."""
+        legacy_recipe = Recipe(
+            id="legacy123",
+            title="Legacy Recipe",
+            url="https://example.com/legacy",
+            household_id=None,  # Legacy/unassigned
+            visibility="household",
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=legacy_recipe):
+            response = client.get("/recipes/legacy123")
+
+        assert response.status_code == 200
+        assert response.json()["title"] == "Legacy Recipe"
+
 
 class TestCreateRecipe:
     """Tests for POST /recipes endpoint."""
