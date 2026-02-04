@@ -3,12 +3,18 @@
  * Provides animated shimmer effect for loading states.
  */
 
-import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+  Animated,
+  type DimensionValue,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { borderRadius, colors } from '@/lib/theme';
 
 interface SkeletonProps {
-  width?: number | string;
+  width?: DimensionValue;
   height?: number;
   borderRadius?: number;
   style?: ViewStyle;

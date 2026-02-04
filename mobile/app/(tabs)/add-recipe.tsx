@@ -63,7 +63,7 @@ export default function AddRecipeScreen() {
 
       // Show summary modal if enhanced, otherwise show simple alert
       if (
-        recipe.improved &&
+        recipe.enhanced &&
         recipe.changes_made &&
         recipe.changes_made.length > 0
       ) {
@@ -75,7 +75,7 @@ export default function AddRecipeScreen() {
             onPress: () => {
               router.back();
               router.push(
-                `/recipe/${recipe.id}${recipe.improved ? '?enhanced=true' : ''}`,
+                `/recipe/${recipe.id}${recipe.enhanced ? '?enhanced=true' : ''}`,
               );
             },
           },
@@ -97,7 +97,7 @@ export default function AddRecipeScreen() {
     if (importedRecipe) {
       router.back();
       router.push(
-        `/recipe/${importedRecipe.id}${importedRecipe.improved ? '?enhanced=true' : ''}`,
+        `/recipe/${importedRecipe.id}${importedRecipe.enhanced ? '?enhanced=true' : ''}`,
       );
     }
   };
