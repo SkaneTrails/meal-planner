@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, fontFamily, letterSpacing, fontWeight } from '@/lib/theme';
 import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
@@ -335,21 +335,27 @@ export default function GroceryScreen() {
   // Show skeleton on initial load only (not on subsequent focus events)
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground>
+      <GradientBackground variant="soft">
         <View style={{ flex: 1 }}>
-          <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}>
+          <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
+              <Text style={{
+                fontSize: fontSize['4xl'],
+                fontFamily: fontFamily.display,
+                fontWeight: '600',
+                color: colors.text.primary,
+                letterSpacing: letterSpacing.tight,
+              }}>Grocery List</Text>
               <View style={{
-                width: 44,
-                height: 44,
-                borderRadius: borderRadius.md,
-                backgroundColor: colors.bgDark,
+                width: 48,
+                height: 48,
+                borderRadius: borderRadius.lg,
+                backgroundColor: colors.category.grocery.bg,
                 alignItems: 'center',
                 justifyContent: 'center',
                 ...shadows.sm,
               }}>
-                <Ionicons name="cart" size={22} color={colors.primary} />
+                <Ionicons name="cart-outline" size={22} color={colors.category.grocery.text} />
               </View>
             </View>
           </View>
@@ -360,43 +366,60 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground>
+    <GradientBackground variant="soft">
       <View style={{ flex: 1 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text.secondary, letterSpacing: 0.5, textTransform: 'uppercase' }}>Shopping</Text>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: colors.primary, letterSpacing: -0.5 }}>Grocery List</Text>
+            <Text style={{
+              fontSize: fontSize.sm,
+              fontWeight: fontWeight.medium,
+              color: colors.text.secondary,
+              letterSpacing: letterSpacing.wide,
+              textTransform: 'uppercase',
+            }}>Shopping</Text>
+            <Text style={{
+              fontSize: fontSize['4xl'],
+              fontFamily: fontFamily.display,
+              fontWeight: '600',
+              color: colors.text.primary,
+              letterSpacing: letterSpacing.tight,
+            }}>Grocery List</Text>
           </View>
           <View style={{
-            width: 44,
-            height: 44,
-            borderRadius: borderRadius.md,
-            backgroundColor: colors.bgDark,
+            width: 48,
+            height: 48,
+            borderRadius: borderRadius.lg,
+            backgroundColor: colors.category.grocery.bg,
             alignItems: 'center',
             justifyContent: 'center',
             ...shadows.sm,
           }}>
-            <Ionicons name="cart" size={22} color={colors.primary} />
+            <Ionicons name="cart-outline" size={22} color={colors.category.grocery.text} />
           </View>
         </View>
       </View>
 
       {/* Stats and controls */}
-      <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.lg }}>
+      <View style={{ paddingHorizontal: spacing['2xl'], paddingBottom: spacing.lg }}>
         {/* Stats card */}
         <View style={{
           backgroundColor: colors.white,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
+          borderRadius: borderRadius.lg,
+          padding: spacing.xl,
           marginBottom: spacing.md,
           ...shadows.md,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: 13, color: colors.text.secondary }}>This week's shopping</Text>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.primary, marginTop: 2 }}>
+              <Text style={{ fontSize: fontSize.md, color: colors.text.secondary }}>This week's shopping</Text>
+              <Text style={{
+                fontSize: fontSize['3xl'],
+                fontWeight: fontWeight.bold,
+                color: colors.text.primary,
+                marginTop: 4,
+              }}>
                 {itemsToBuy === 0
                   ? 'No items yet'
                   : `${checkedItemsToBuy} of ${itemsToBuy} items`}

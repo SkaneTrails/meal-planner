@@ -8,40 +8,53 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Meal Planner Palette - Soft Beige/Cream
-        background: '#F5E6D3', // Soft beige
+        // Luxurious Meal Planner Palette
+        background: '#FEFDFB',
         cream: {
-          50: '#FFFDF7',
-          100: '#FFF8E7', // Light cream accent
-          200: '#FEF3C7',
-          300: '#FDE68A',
-          400: '#FBBF24',
-          500: '#F5DEB3', // Main wheat
-          600: '#D9C89C',
-          700: '#B8A67C',
-          800: '#8B7355',
-          900: '#5C4A33',
+          50: '#FEFDFB',
+          100: '#FAF7F2',
+          200: '#F5F0E8',
+          300: '#EDE5D8',
+          400: '#E0D4C3',
+          500: '#D0C0A8',
+          600: '#B8A78C',
+          700: '#9A8A70',
+          800: '#7A6D58',
+          900: '#5A5040',
         },
-        // Alias primary to black/dark
+        coral: {
+          50: '#FFF8F0',
+          100: '#FFE8D6',
+          200: '#FFD4B8',
+          300: '#FFAB91',
+          400: '#FF8A65',
+          500: '#E8A87C',
+          600: '#D4956A',
+          700: '#B8785A',
+          800: '#8B5A3C',
+          900: '#5C3A28',
+        },
+        // Primary - elegant charcoal
         primary: {
           50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827',
+          100: '#F5F5F5',
+          200: '#EEEEEE',
+          300: '#E0E0E0',
+          400: '#BDBDBD',
+          500: '#9E9E9E',
+          600: '#757575',
+          700: '#616161',
+          800: '#424242',
+          900: '#2D2D2D',
         },
       },
       backgroundColor: {
-        DEFAULT: '#F5DEB3',
+        DEFAULT: '#FEFDFB',
       },
       borderRadius: {
         'xl': '20px',
         '2xl': '24px',
+        '3xl': '28px',
       },
     },
   },

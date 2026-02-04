@@ -23,7 +23,7 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, fontFamily, letterSpacing, fontWeight } from '@/lib/theme';
 import { GradientBackground } from '@/components';
 import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
@@ -344,47 +344,62 @@ export default function MealPlanScreen() {
   };
 
   return (
-    <GradientBackground>
-      <View style={{ flex: 1, paddingBottom: 80 }}>
+    <GradientBackground variant="soft">
+      <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 8 }}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.5 }}>Weekly Menu</Text>
-              <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>Plan your meals ahead</Text>
+              <Text style={{
+                fontSize: fontSize['4xl'],
+                fontFamily: fontFamily.display,
+                fontWeight: '600',
+                color: colors.text.primary,
+                letterSpacing: letterSpacing.tight,
+              }}>Weekly Menu</Text>
+              <Text style={{
+                fontSize: fontSize.lg,
+                color: colors.text.secondary,
+                marginTop: 4,
+              }}>Plan your meals ahead</Text>
             </View>
             <Pressable
               onPress={() => {
                 hapticLight();
                 setShowGroceryModal(true);
               }}
-              style={{
+              style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.primary,
-                paddingHorizontal: 14,
-                paddingVertical: 10,
-                borderRadius: borderRadius.sm,
-                ...shadows.lg,
-              }}
+                backgroundColor: pressed ? colors.accentDark : colors.accent,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                borderRadius: borderRadius.lg,
+                ...shadows.glowSoft,
+              })}
             >
-              <Ionicons name="cart" size={16} color={colors.white} />
-              <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600', color: colors.white }}>Create List</Text>
+              <Ionicons name="cart-outline" size={16} color={colors.white} />
+              <Text style={{
+                marginLeft: 8,
+                fontSize: fontSize.md,
+                fontWeight: fontWeight.semibold,
+                color: colors.white,
+              }}>Create List</Text>
             </Pressable>
           </View>
         </View>
 
         {/* Week selector */}
-        <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+        <View style={{ paddingHorizontal: 24, marginBottom: 20 }}>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
               backgroundColor: colors.white,
-              borderRadius: borderRadius.sm,
-              paddingHorizontal: spacing.lg,
-              paddingVertical: 14,
+              borderRadius: borderRadius.lg,
+              paddingHorizontal: spacing.xl,
+              paddingVertical: 16,
               ...shadows.md,
             }}
           >
@@ -393,13 +408,21 @@ export default function MealPlanScreen() {
                 hapticLight();
                 setWeekOffset((prev) => prev - 1);
               }}
-              style={{ padding: 4 }}
+              style={({ pressed }) => ({
+                padding: 6,
+                backgroundColor: pressed ? colors.gray[100] : 'transparent',
+                borderRadius: borderRadius.sm,
+              })}
             >
-              <Ionicons name="chevron-back" size={20} color="#4A3728" />
+              <Ionicons name="chevron-back" size={20} color={colors.text.primary} />
             </Pressable>
 
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#4A3728' }}>
+              <Text style={{
+                fontSize: fontSize.lg,
+                fontWeight: fontWeight.semibold,
+                color: colors.text.primary,
+              }}>
                 {formatWeekRange(weekDates)}
               </Text>
               {weekOffset !== 0 && (
@@ -407,7 +430,12 @@ export default function MealPlanScreen() {
                   hapticLight();
                   setWeekOffset(0);
                 }}>
-                  <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>Back to today</Text>
+                  <Text style={{
+                    fontSize: fontSize.sm,
+                    color: colors.accent,
+                    marginTop: 4,
+                    fontWeight: fontWeight.medium,
+                  }}>Back to today</Text>
                 </Pressable>
               )}
             </View>
@@ -417,9 +445,13 @@ export default function MealPlanScreen() {
                 hapticLight();
                 setWeekOffset((prev) => prev + 1);
               }}
-              style={{ padding: 4 }}
+              style={({ pressed }) => ({
+                padding: 6,
+                backgroundColor: pressed ? colors.gray[100] : 'transparent',
+                borderRadius: borderRadius.sm,
+              })}
             >
-              <Ionicons name="chevron-forward" size={20} color="#4A3728" />
+              <Ionicons name="chevron-forward" size={20} color={colors.text.primary} />
             </Pressable>
           </View>
         </View>
@@ -429,7 +461,7 @@ export default function MealPlanScreen() {
           <ScrollView
             ref={scrollViewRef}
             style={{ flex: 1 }}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
             onScroll={handleScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
@@ -437,7 +469,7 @@ export default function MealPlanScreen() {
               <RefreshControl
                 refreshing={mealPlanLoading}
                 onRefresh={() => refetchMealPlan()}
-                tintColor="#4A3728"
+                tintColor={colors.accent}
               />
             }
           >

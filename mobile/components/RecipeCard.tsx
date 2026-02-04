@@ -1,6 +1,6 @@
 /**
  * Recipe card component for displaying a recipe in a grid or list.
- * Modern card design with smooth press animations.
+ * Luxurious card design with refined shadows and smooth animations.
  * Uses expo-image for progressive loading and caching.
  */
 
@@ -8,11 +8,11 @@ import React from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, borderRadius, shadows, fontSize, fontWeight } from '@/lib/theme';
+import { colors, borderRadius, shadows, fontSize, fontWeight, letterSpacing } from '@/lib/theme';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
-// Blurhash placeholder for loading state (warm beige color)
-const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
+// Blurhash placeholder for loading state (soft cream color)
+const PLACEHOLDER_BLURHASH = 'L5PZfS~q.8-;_3t7xuIU00og?bD%';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -49,17 +49,19 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
-      toValue: 0.97,
+      toValue: 0.98,
       useNativeDriver: true,
+      damping: 15,
+      stiffness: 200,
     }).start();
   };
 
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
       toValue: 1,
-      friction: 3,
-      tension: 40,
       useNativeDriver: true,
+      damping: 15,
+      stiffness: 200,
     }).start();
   };
 
@@ -69,37 +71,42 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={{ marginBottom: 10 }}
+        style={{ marginBottom: 12 }}
       >
         <Animated.View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          padding: 14,
+          padding: 12,
           backgroundColor: colors.white,
-          borderRadius: borderRadius.md,
+          borderRadius: borderRadius.lg,
           ...shadows.md,
           transform: [{ scale: scaleAnim }],
         }}>
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-            style={{ width: 52, height: 52, borderRadius: 14 }}
+            style={{ width: 56, height: 56, borderRadius: borderRadius.sm }}
             contentFit="cover"
             placeholder={PLACEHOLDER_BLURHASH}
             transition={200}
           />
           <View style={{ flex: 1, marginLeft: 14 }}>
-            <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.primary, letterSpacing: -0.2 }} numberOfLines={1}>
+            <Text style={{
+              fontSize: fontSize.lg,
+              fontWeight: fontWeight.semibold,
+              color: colors.text.primary,
+              letterSpacing: letterSpacing.normal,
+            }} numberOfLines={1}>
               {recipe.title}
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5, gap: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 }}>
               {recipe.diet_label && (
                 <View style={{
                   backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
                   paddingHorizontal: 8,
-                  paddingVertical: 3,
-                  borderRadius: 6,
+                  paddingVertical: 4,
+                  borderRadius: borderRadius.full,
                 }}>
-                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: DIET_LABELS[recipe.diet_label].color }}>
+                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: DIET_LABELS[recipe.diet_label].color }}>
                     {DIET_LABELS[recipe.diet_label].label}
                   </Text>
                 </View>
@@ -116,21 +123,21 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               {totalTime && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons name="time-outline" size={13} color={colors.text.muted} />
-                  <Text style={{ fontSize: fontSize.base, color: colors.text.secondary, marginLeft: 4 }}>{totalTime}m</Text>
+                  <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary, marginLeft: 4 }}>{totalTime}m</Text>
                 </View>
               )}
             </View>
           </View>
-          <View style={{ backgroundColor: colors.bgMid, borderRadius: 10, padding: 8 }}>
-            <Ionicons name="chevron-forward" size={18} color={colors.primary} />
+          <View style={{ backgroundColor: colors.gray[100], borderRadius: borderRadius.sm, padding: 10 }}>
+            <Ionicons name="chevron-forward" size={16} color={colors.text.secondary} />
           </View>
         </Animated.View>
       </Pressable>
     );
   }
 
-  // Grid card layout - square cards with image taking most of the space
-  const imageHeight = cardSize ? cardSize * 0.72 : 128;
+  // Grid card layout - elegant cards with generous image space
+  const imageHeight = cardSize ? cardSize * 0.7 : 128;
 
   return (
     <Pressable
@@ -141,7 +148,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
       <Animated.View
         style={{
           backgroundColor: colors.white,
-          borderRadius: borderRadius.md,
+          borderRadius: borderRadius.lg,
           overflow: 'hidden',
           width: cardSize,
           height: cardSize,
@@ -157,7 +164,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             placeholder={PLACEHOLDER_BLURHASH}
             transition={300}
           />
-          {/* Diet badge overlay */}
+          {/* Diet badge overlay - refined pill style */}
           {recipe.diet_label && (
             <View style={{
               position: 'absolute',
@@ -166,46 +173,62 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
               backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
               paddingHorizontal: 10,
               paddingVertical: 5,
-              borderRadius: 8,
+              borderRadius: borderRadius.full,
             }}>
-              <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: DIET_LABELS[recipe.diet_label].color }}>
+              <Text style={{
+                fontSize: fontSize.xs,
+                fontWeight: fontWeight.medium,
+                color: DIET_LABELS[recipe.diet_label].color,
+              }}>
                 {DIET_LABELS[recipe.diet_label].label}
               </Text>
             </View>
           )}
         </View>
-        <View style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 6, justifyContent: 'center' }}>
+        <View style={{ flex: 1, paddingHorizontal: 12, paddingVertical: 8, justifyContent: 'center' }}>
           {/* Title row with time aligned right */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
-            <Text style={{ flex: 1, fontSize: fontSize.base, fontWeight: fontWeight.semibold, color: colors.primary, lineHeight: 17, letterSpacing: -0.3 }} numberOfLines={2}>
+            <Text style={{
+              flex: 1,
+              fontSize: fontSize.md,
+              fontWeight: fontWeight.semibold,
+              color: colors.text.primary,
+              lineHeight: 18,
+              letterSpacing: letterSpacing.normal,
+            }} numberOfLines={2}>
               {recipe.title}
             </Text>
             {totalTime && (
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.bgMid,
+                backgroundColor: colors.gray[100],
                 paddingHorizontal: 6,
-                paddingVertical: 3,
-                borderRadius: 6,
+                paddingVertical: 4,
+                borderRadius: borderRadius.full,
                 marginTop: 1,
               }}>
-                <Ionicons name="time-outline" size={11} color={colors.primary} />
-                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.primary, marginLeft: 3 }}>{totalTime}m</Text>
+                <Ionicons name="time-outline" size={11} color={colors.text.secondary} />
+                <Text style={{
+                  fontSize: fontSize.xs,
+                  fontWeight: fontWeight.medium,
+                  color: colors.text.secondary,
+                  marginLeft: 3,
+                }}>{totalTime}m</Text>
               </View>
             )}
           </View>
 
           {/* Rating badge */}
           {recipe.rating && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: recipe.rating >= 3 ? colors.successBg : colors.errorBg,
-                paddingHorizontal: 6,
-                paddingVertical: 3,
-                borderRadius: 6,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: borderRadius.full,
               }}>
                 <Ionicons
                   name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
