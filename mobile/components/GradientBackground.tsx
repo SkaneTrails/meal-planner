@@ -3,16 +3,19 @@
  * Flows from warm beige at top to light cream at bottom (inverted).
  */
 
-import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import type React from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
   style?: object;
 }
 
-export function GradientBackground({ children, style }: GradientBackgroundProps) {
+export function GradientBackground({
+  children,
+  style,
+}: GradientBackgroundProps) {
   // For web, use CSS gradient for better performance
   if (Platform.OS === 'web') {
     return (
@@ -20,8 +23,9 @@ export function GradientBackground({ children, style }: GradientBackgroundProps)
         style={[
           styles.container,
           {
-            // @ts-ignore - web-specific CSS property
-            background: 'linear-gradient(180deg, #E8D5C4 0%, #F5E6D3 50%, #FDFBF7 100%)',
+            // @ts-expect-error - web-specific CSS property
+            background:
+              'linear-gradient(180deg, #E8D5C4 0%, #F5E6D3 50%, #FDFBF7 100%)',
           },
           style,
         ]}

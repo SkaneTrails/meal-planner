@@ -4,16 +4,16 @@
  * Supports drag-and-drop reordering within categories.
  */
 
-import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useState } from 'react';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
+  type RenderItemParams,
   ScaleDecorator,
-  RenderItemParams
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { hapticSelection } from '@/lib/haptics';
-import type { GroceryItem, GroceryCategory, GroceryList } from '@/lib/types';
+import type { GroceryCategory, GroceryItem, GroceryList } from '@/lib/types';
 
 interface GroceryItemRowProps {
   item: GroceryItem;
@@ -66,7 +66,13 @@ function formatQuantity(item: GroceryItem): string {
   return '';
 }
 
-export function GroceryItemRow({ item, onToggle, drag, isActive, showReorder }: GroceryItemRowProps) {
+export function GroceryItemRow({
+  item,
+  onToggle,
+  drag,
+  isActive,
+  showReorder,
+}: GroceryItemRowProps) {
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 
@@ -100,12 +106,14 @@ export function GroceryItemRow({ item, onToggle, drag, isActive, showReorder }: 
           onLongPress={Platform.OS !== 'web' ? drag : undefined}
           onPressIn={Platform.OS === 'web' ? drag : undefined}
           delayLongPress={100}
-          style={({ pressed }) => ({
-            padding: 8,
-            marginRight: 4,
-            opacity: pressed ? 0.6 : 1,
-            cursor: Platform.OS === 'web' ? 'grab' : undefined,
-          } as any)}
+          style={({ pressed }) =>
+            ({
+              padding: 8,
+              marginRight: 4,
+              opacity: pressed ? 0.6 : 1,
+              cursor: Platform.OS === 'web' ? 'grab' : undefined,
+            }) as any
+          }
         >
           <Ionicons name="reorder-three" size={24} color="#9CA3AF" />
         </Pressable>
@@ -160,19 +168,27 @@ interface GroceryListViewProps {
   onReorder?: (items: GroceryItem[]) => void; // Callback when items are reordered
 }
 
-export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onReorder }: GroceryListViewProps) {
+export function GroceryListView({
+  groceryList,
+  onItemToggle,
+  filterOutItems,
+  onReorder,
+}: GroceryListViewProps) {
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
   // Track checked state locally to enable moving items to bottom
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
-    () => new Set(groceryList.items.filter(i => i.checked).map(i => i.name))
+    () =>
+      new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
   );
   // Track collapsed categories
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleCategory = (category: string) => {
     hapticSelection();
-    setCollapsedCategories(prev => {
+    setCollapsedCategories((prev) => {
       const next = new Set(prev);
       if (next.has(category)) {
         next.delete(category);
@@ -185,37 +201,44 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
 
   // Filter items if filter function provided
   const filteredItems = filterOutItems
-    ? groceryList.items.filter(item => !filterOutItems(item.name))
+    ? groceryList.items.filter((item) => !filterOutItems(item.name))
     : groceryList.items;
 
   // Sort items: unchecked first, checked at bottom
-  const sortByChecked = useCallback((items: GroceryItem[]) => {
-    return [...items].sort((a, b) => {
-      const aChecked = checkedItems.has(a.name);
-      const bChecked = checkedItems.has(b.name);
-      if (aChecked === bChecked) return 0;
-      return aChecked ? 1 : -1;
-    });
-  }, [checkedItems]);
+  const sortByChecked = useCallback(
+    (items: GroceryItem[]) => {
+      return [...items].sort((a, b) => {
+        const aChecked = checkedItems.has(a.name);
+        const bChecked = checkedItems.has(b.name);
+        if (aChecked === bChecked) return 0;
+        return aChecked ? 1 : -1;
+      });
+    },
+    [checkedItems],
+  );
 
   // Use ordered items if in reorder mode, otherwise use filtered items (sorted by checked)
-  const displayItems = reorderMode && orderedItems.length > 0
-    ? orderedItems
-    : sortByChecked(filteredItems);
+  const displayItems =
+    reorderMode && orderedItems.length > 0
+      ? orderedItems
+      : sortByChecked(filteredItems);
 
   // Handle item toggle - move checked items to bottom
-  const handleItemToggle = useCallback((itemName: string, checked: boolean) => {
-    setCheckedItems(prev => {
-      const next = new Set(prev);
-      if (checked) {
-        next.add(itemName);
-      } else {
-        next.delete(itemName);
-      }
-      return next;
-    });
-    onItemToggle?.(itemName, checked);
-  }, [onItemToggle]);
+  const handleItemToggle = useCallback(
+    (itemName: string, checked: boolean) => {
+      setCheckedItems((prev) => {
+        const next = new Set(prev);
+        if (checked) {
+          next.add(itemName);
+        } else {
+          next.delete(itemName);
+        }
+        return next;
+      });
+      onItemToggle?.(itemName, checked);
+    },
+    [onItemToggle],
+  );
 
   // Initialize ordered items when entering reorder mode
   const handleToggleReorder = useCallback(() => {
@@ -241,7 +264,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
     ({ item, drag, isActive }: RenderItemParams<GroceryItem>) => (
       <ScaleDecorator>
         <GroceryItemRow
-          item={{...item, checked: checkedItems.has(item.name)}}
+          item={{ ...item, checked: checkedItems.has(item.name) }}
           onToggle={(checked) => handleItemToggle(item.name, checked)}
           drag={drag}
           isActive={isActive}
@@ -249,7 +272,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
         />
       </ScaleDecorator>
     ),
-    [handleItemToggle, checkedItems]
+    [handleItemToggle, checkedItems],
   );
 
   // Group items by category (only when not in reorder mode)
@@ -285,22 +308,47 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
 
   if (displayItems.length === 0) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-        <View style={{
-          width: 80,
-          height: 80,
-          borderRadius: 24,
-          backgroundColor: '#E8D5C4',
+      <View
+        style={{
+          flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: 20,
-        }}>
+          padding: 32,
+        }}
+      >
+        <View
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: 24,
+            backgroundColor: '#E8D5C4',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 20,
+          }}
+        >
           <Ionicons name="cart-outline" size={40} color="#4A3728" />
         </View>
-        <Text style={{ color: '#4A3728', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+        <Text
+          style={{
+            color: '#4A3728',
+            fontSize: 18,
+            fontWeight: '600',
+            textAlign: 'center',
+          }}
+        >
           No items yet
         </Text>
-        <Text style={{ color: '#6B7280', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
+        <Text
+          style={{
+            color: '#6B7280',
+            fontSize: 15,
+            marginTop: 8,
+            textAlign: 'center',
+            lineHeight: 22,
+            maxWidth: 280,
+          }}
+        >
           Add meals to your plan to generate a shopping list
         </Text>
       </View>
@@ -329,11 +377,13 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
             size={16}
             color={reorderMode ? '#fff' : '#4A3728'}
           />
-          <Text style={{
-            fontSize: 13,
-            fontWeight: '600',
-            color: reorderMode ? '#fff' : '#4A3728'
-          }}>
+          <Text
+            style={{
+              fontSize: 13,
+              fontWeight: '600',
+              color: reorderMode ? '#fff' : '#4A3728',
+            }}
+          >
             {reorderMode ? 'Done sorting' : 'Sort items'}
           </Text>
         </Pressable>
@@ -342,12 +392,14 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
       {reorderMode ? (
         // Draggable list for reorder mode
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
-          <Text style={{
-            fontSize: 13,
-            color: '#6B7280',
-            marginBottom: 12,
-            fontStyle: 'italic',
-          }}>
+          <Text
+            style={{
+              fontSize: 13,
+              color: '#6B7280',
+              marginBottom: 12,
+              fontStyle: 'italic',
+            }}
+          >
             {Platform.OS === 'web'
               ? 'Click and drag ☰ to reorder items'
               : 'Hold and drag ☰ to reorder items'}
@@ -370,7 +422,9 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
         >
           {sections.map((section) => {
             const isCollapsed = collapsedCategories.has(section.title);
-            const checkedCount = section.data.filter(item => checkedItems.has(item.name)).length;
+            const checkedCount = section.data.filter((item) =>
+              checkedItems.has(item.name),
+            ).length;
 
             return (
               <View key={section.title}>
@@ -388,8 +442,21 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
                     borderRadius: 8,
                   })}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#4A3728', letterSpacing: -0.2 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '700',
+                        color: '#4A3728',
+                        letterSpacing: -0.2,
+                      }}
+                    >
                       {section.title}
                     </Text>
                     <Text style={{ fontSize: 13, color: '#9CA3AF' }}>
@@ -402,14 +469,17 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
                     color="#9CA3AF"
                   />
                 </Pressable>
-                {!isCollapsed && section.data.map((item) => (
-                  <GroceryItemRow
-                    key={item.name}
-                    item={{...item, checked: checkedItems.has(item.name)}}
-                    onToggle={(checked) => handleItemToggle(item.name, checked)}
-                    showReorder={false}
-                  />
-                ))}
+                {!isCollapsed &&
+                  section.data.map((item) => (
+                    <GroceryItemRow
+                      key={item.name}
+                      item={{ ...item, checked: checkedItems.has(item.name) }}
+                      onToggle={(checked) =>
+                        handleItemToggle(item.name, checked)
+                      }
+                      showReorder={false}
+                    />
+                  ))}
               </View>
             );
           })}

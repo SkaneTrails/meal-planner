@@ -7,7 +7,10 @@
   ],
   "rebaseWhen": "behind-base-branch",
   "branchPrefix": "renovate/",
-  "labels": ["🧹 renovate", "📦 type: dependencies"],
+  "labels": [
+    "🧹 renovate",
+    "📦 type: dependencies"
+  ],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "🤖 Renovate Dependency Dashboard",
   "minimumReleaseAge": "3 days",
@@ -19,40 +22,79 @@
       "automerge": true,
       "platformAutomerge": true,
       "automergeStrategy": "squash",
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ]
     },
     {
-      "matchDatasources": ["pypi"],
-      "registryUrls": ["https://pypi.org/simple"]
+      "matchDatasources": [
+        "pypi"
+      ],
+      "registryUrls": [
+        "https://pypi.org/simple"
+      ]
     },
     {
       "groupName": "Python testing tools",
       "groupSlug": "python-testing",
-      "matchPackageNames": ["pytest*", "coverage", "pytest-cov", "pytest-mock", "pytest-xdist"],
-      "matchManagers": ["pep621", "pip_requirements", "pip-compile"]
+      "matchPackageNames": [
+        "pytest*",
+        "coverage",
+        "pytest-cov",
+        "pytest-mock",
+        "pytest-xdist"
+      ],
+      "matchManagers": [
+        "pep621",
+        "pip_requirements",
+        "pip-compile"
+      ]
     },
     {
       "groupName": "Linting tools",
       "groupSlug": "linting",
-      "matchPackageNames": ["ruff", "deptry", "pre-commit"],
-      "matchManagers": ["pep621", "pip_requirements", "pip-compile"]
+      "matchPackageNames": [
+        "ruff",
+        "deptry",
+        "pre-commit"
+      ],
+      "matchManagers": [
+        "pep621",
+        "pip_requirements",
+        "pip-compile"
+      ]
     },
     {
       "groupName": "GitHub Actions",
       "groupSlug": "github-actions",
-      "matchManagers": ["github-actions"],
-      "addLabels": ["🔧 type: ci"]
+      "matchManagers": [
+        "github-actions"
+      ],
+      "addLabels": [
+        "🔧 type: ci"
+      ]
     },
     {
       "groupName": "Pre-commit hooks",
       "groupSlug": "pre-commit",
-      "matchManagers": ["pre-commit"],
-      "addLabels": ["🔧 type: ci"]
+      "matchManagers": [
+        "pre-commit"
+      ],
+      "addLabels": [
+        "🔧 type: ci"
+      ]
     },
     {
       "description": "NativeWind 4 only supports Tailwind CSS v3",
-      "matchPackageNames": ["tailwindcss"],
-      "matchPaths": ["mobile/**"],
+      "matchPackageNames": [
+        "tailwindcss"
+      ],
+      "matchFileNames": [
+        "mobile/**"
+      ],
       "allowedVersions": "<4.0.0"
     }
   ]

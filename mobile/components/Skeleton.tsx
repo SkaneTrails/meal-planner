@@ -3,9 +3,9 @@
  * Provides animated shimmer effect for loading states.
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet, ViewStyle } from 'react-native';
-import { colors, borderRadius } from '@/lib/theme';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
+import { borderRadius, colors } from '@/lib/theme';
 
 interface SkeletonProps {
   width?: number | string;
@@ -35,7 +35,7 @@ export function Skeleton({
           duration: 800,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     animation.start();
     return () => animation.stop();
@@ -61,7 +61,9 @@ interface RecipeCardSkeletonProps {
   cardSize?: number;
 }
 
-export function RecipeCardSkeleton({ cardSize = 170 }: RecipeCardSkeletonProps) {
+export function RecipeCardSkeleton({
+  cardSize = 170,
+}: RecipeCardSkeletonProps) {
   const imageHeight = cardSize * 0.72;
 
   return (
@@ -77,7 +79,13 @@ export function RecipeCardSkeleton({ cardSize = 170 }: RecipeCardSkeletonProps) 
   );
 }
 
-export function RecipeListSkeleton({ count = 6, cardSize = 170 }: { count?: number; cardSize?: number }) {
+export function RecipeListSkeleton({
+  count = 6,
+  cardSize = 170,
+}: {
+  count?: number;
+  cardSize?: number;
+}) {
   return (
     <View style={styles.gridContainer}>
       {Array.from({ length: count }).map((_, i) => (
@@ -95,7 +103,12 @@ export function StatCardSkeleton() {
       <Skeleton width={32} height={32} borderRadius={10} />
       <Skeleton width={40} height={10} style={{ marginTop: 8 }} />
       <Skeleton width={30} height={24} style={{ marginTop: 4 }} />
-      <Skeleton width="100%" height={32} style={{ marginTop: 8 }} borderRadius={borderRadius.sm} />
+      <Skeleton
+        width="100%"
+        height={32}
+        style={{ marginTop: 8 }}
+        borderRadius={borderRadius.sm}
+      />
     </View>
   );
 }
@@ -160,7 +173,12 @@ export function GroceryListSkeleton({ count = 8 }: { count?: number }) {
           <Skeleton width={44} height={38} borderRadius={borderRadius.sm} />
         </View>
       </View>
-      <Skeleton width="100%" height={6} borderRadius={3} style={{ marginTop: 16 }} />
+      <Skeleton
+        width="100%"
+        height={6}
+        borderRadius={3}
+        style={{ marginTop: 16 }}
+      />
 
       {/* List items */}
       <View style={{ marginTop: 20 }}>

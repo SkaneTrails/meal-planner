@@ -2,17 +2,19 @@
  * React Query hooks for recipes.
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, ApiClientError } from '../api';
-import type { Recipe, RecipeCreate, RecipeUpdate } from '../types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ApiClientError, api } from '../api';
+import type { RecipeCreate, RecipeUpdate } from '../types';
 
 // Query keys
 export const recipeKeys = {
   all: ['recipes'] as const,
   lists: () => [...recipeKeys.all, 'list'] as const,
-  list: (search?: string, enhanced?: boolean) => [...recipeKeys.lists(), { search, enhanced }] as const,
+  list: (search?: string, enhanced?: boolean) =>
+    [...recipeKeys.lists(), { search, enhanced }] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
-  detail: (id: string, enhanced?: boolean) => [...recipeKeys.details(), id, { enhanced }] as const,
+  detail: (id: string, enhanced?: boolean) =>
+    [...recipeKeys.details(), id, { enhanced }] as const,
 };
 
 /**
@@ -42,7 +44,10 @@ export function useRecipe(id: string, enhanced: boolean = false) {
  * @param id - Recipe ID
  * @param isAuthReady - Whether auth is ready (prevents premature fetching)
  */
-export function useEnhancedRecipeExists(id: string, isAuthReady: boolean = true) {
+export function useEnhancedRecipeExists(
+  id: string,
+  isAuthReady: boolean = true,
+) {
   return useQuery({
     queryKey: [...recipeKeys.detail(id, true), 'exists'] as const,
     queryFn: async () => {
@@ -85,8 +90,13 @@ export function useScrapeRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ url, enhance = false }: { url: string; enhance?: boolean }) =>
-      api.scrapeRecipe(url, enhance),
+    mutationFn: ({
+      url,
+      enhance = false,
+    }: {
+      url: string;
+      enhance?: boolean;
+    }) => api.scrapeRecipe(url, enhance),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
@@ -100,11 +110,21 @@ export function useUpdateRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, updates, enhanced = false }: { id: string; updates: RecipeUpdate; enhanced?: boolean }) =>
-      api.updateRecipe(id, updates, enhanced),
+    mutationFn: ({
+      id,
+      updates,
+      enhanced = false,
+    }: {
+      id: string;
+      updates: RecipeUpdate;
+      enhanced?: boolean;
+    }) => api.updateRecipe(id, updates, enhanced),
     onSuccess: (data, variables) => {
       // Update the cache with new data - use correct enhanced key
-      queryClient.setQueryData(recipeKeys.detail(data.id, variables.enhanced), data);
+      queryClient.setQueryData(
+        recipeKeys.detail(data.id, variables.enhanced),
+        data,
+      );
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
@@ -117,11 +137,18 @@ export function useDeleteRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, enhanced = false }: { id: string; enhanced?: boolean }) =>
-      api.deleteRecipe(id, enhanced),
+    mutationFn: ({
+      id,
+      enhanced = false,
+    }: {
+      id: string;
+      enhanced?: boolean;
+    }) => api.deleteRecipe(id, enhanced),
     onSuccess: (_, variables) => {
       // Remove from cache - use correct enhanced key
-      queryClient.removeQueries({ queryKey: recipeKeys.detail(variables.id, variables.enhanced) });
+      queryClient.removeQueries({
+        queryKey: recipeKeys.detail(variables.id, variables.enhanced),
+      });
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
