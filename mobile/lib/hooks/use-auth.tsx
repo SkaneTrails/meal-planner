@@ -159,8 +159,8 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
       }
 
       if (Platform.OS === 'web') {
-        // Use window.alert on web for reliability
-        window.alert(message);
+        // Use window.alert on web for reliability; include title for consistency
+        window.alert(`${title}\n\n${message}`);
       } else {
         Alert.alert(title, message, [{ text: 'OK' }]);
       }

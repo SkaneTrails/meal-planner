@@ -101,8 +101,8 @@ else
 # GCP project ID for Firestore
 GOOGLE_CLOUD_PROJECT=$PROJECT
 
-# Recipe scraping Cloud Function URL
-SCRAPE_FUNCTION_URL=https://scrape-recipe-vt7bvshx5q-ew.a.run.app
+# Recipe scraping Cloud Function URL (update with your deployed function URL)
+SCRAPE_FUNCTION_URL=https://YOUR_SCRAPE_FUNCTION_URL_HERE
 
 # Skip Firebase authentication for local development
 SKIP_AUTH=true
