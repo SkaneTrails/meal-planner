@@ -168,7 +168,7 @@ For 1½ tsk total:
 **Substitutions for products without lactose-free variant:**
 
 | Original | Substitution | Notes |
-|----------|--------------|-------|
+| -------- | ------------ | ----- |
 | Syrad grädde (2½ dl) | 1½ dl crème fraîche (laktosfri) + 1 dl grädde (laktosfri) | Mix together before using. Ratio ~60/40. |
 
 **Exceptions - do NOT change to lactose-free:**
@@ -239,7 +239,7 @@ Assume these are always available for flavor enhancements:
 **"Sojasås" is too vague** - always specify which type based on cuisine:
 
 | Cuisine | Use | Notes |
-|---------|-----|-------|
+| ------- | --- | ----- |
 | **Chinese** | Kinesisk soja (ljus/mörk) | Saltier, more intense. "Ljus soja" (生抽) for cooking, "mörk soja" (老抽) for color |
 | **Japanese** | Japansk soja (Kikkoman-stil) | Lighter, slightly sweet, all-purpose |
 | **Korean** | Koreansk soja (guk-ganjang för soppor, jin-ganjang för övrigt) | Similar to Japanese but varies by dish type |
@@ -292,7 +292,7 @@ All spices grouped at the end of the ingredient list:
 Some ingredients require specification:
 
 | Vague | Clarify to |
-|-------|------------|
+| ----- | ---------- |
 | sojasås / soja | japansk soja / kinesisk ljus soja / kinesisk mörk soja |
 | vinäger | risvinäger / vitt vinvinäger / balsamvinäger / äppelcidervinäger |
 | olja | olivolja / rapsolja / sesamolja / neutral olja |

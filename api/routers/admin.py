@@ -320,8 +320,7 @@ async def transfer_recipe(
     enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
 ) -> dict:
     """Transfer a recipe to a different household. Superuser only."""
-    if user.role != "superuser":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Superuser role required")
+    _require_superuser(user)
 
     # Verify target household exists
     target_household = household_storage.get_household(transfer.target_household_id)

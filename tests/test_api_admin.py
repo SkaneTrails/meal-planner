@@ -611,7 +611,7 @@ class TestTransferRecipe:
         )
 
         assert response.status_code == 403
-        assert "Superuser role required" in response.json()["detail"]
+        assert "Superuser" in response.json()["detail"]
 
     def test_member_cannot_transfer(self, member_client: TestClient) -> None:
         """Member cannot transfer recipes (superuser only)."""

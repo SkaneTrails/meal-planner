@@ -494,6 +494,7 @@ export default function RecipeDetailScreen() {
                 enhanced: isEnhanced,
               });
               setEditHouseholdId(targetHouseholdId);
+              setShowEditModal(false);
               hapticSuccess();
               Alert.alert('Transferred', `Recipe moved to ${targetHousehold.name}`);
             } catch {

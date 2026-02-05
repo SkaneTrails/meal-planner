@@ -9,7 +9,7 @@
 
 **Bra för airfryer:**
 | Mat | Temperatur | Tid |
-|-----|------------|-----|
+| --- | ---------- | --- |
 | Kycklingbröst/lår (torra) | 180°C → 200°C | 10-12 min + 2-3 min |
 | Panerad/panko-crustad fisk | 180°C | 8-10 min |
 | Halloumi, paneer | 180°C | 8-10 min |
