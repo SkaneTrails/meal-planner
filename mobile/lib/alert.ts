@@ -38,9 +38,9 @@ export function showAlert(
     }
 
     if (buttons.length === 1) {
-      // Single button - just an alert. Browser alert() has no button callback,
-      // so we do not invoke onPress here to match native behavior where
-      // the callback fires after the user taps the button.
+      // Single button - just an alert. Browser alert() has no per-button callback,
+      // so on web we cannot reliably invoke onPress when the user dismisses the alert.
+      // This differs from native React Native behavior and is a known web limitation.
       window.alert(message ? `${title}\n\n${message}` : title);
       return;
     }

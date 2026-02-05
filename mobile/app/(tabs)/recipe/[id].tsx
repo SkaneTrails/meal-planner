@@ -722,6 +722,7 @@ export default function RecipeDetailScreen() {
         [
           {
             text: 'No, just mark as not favorite',
+            style: 'cancel',
             onPress: async () => {
               try {
                 await updateRecipe.mutateAsync({
