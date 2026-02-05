@@ -6,7 +6,7 @@ FROM python:3.14-slim@sha256:1a3c6dbfd2173971abba880c3cc2ec4643690901f6ad6742d08
 
 # Install uv for fast dependency resolution
 # Pinned to digest for supply-chain security
-COPY --from=ghcr.io/astral-sh/uv@sha256:db9370c2b0b837c74f454bea914343da9f29232035aa7632a1b14dc03add9edb /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv@sha256:538e0b39736e7feae937a65983e49d2ab75e1559d35041f9878b7b7e51de91e4 /uv /usr/local/bin/uv
 
 WORKDIR /app
 
