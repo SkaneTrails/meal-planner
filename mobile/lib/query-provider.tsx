@@ -30,8 +30,6 @@ const queryClient = new QueryClient({
 
 // Persist query cache to AsyncStorage
 const CACHE_KEY = 'meal-planner-query-cache';
-// Only persist smaller queries to avoid quota issues
-const MAX_CACHE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB limit
 
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
@@ -44,7 +42,8 @@ export async function persistQueryCache(): Promise<void> {
         return true;
       }
 
-      const [resource, type] = key as unknown[];
+      const resource = key[0];
+      const type = key[1];
 
       // Skip recipes list (can be large) but allow individual recipe details
       if (resource === 'recipes' && type === 'list') {
@@ -61,23 +60,29 @@ export async function persistQueryCache(): Promise<void> {
 
   try {
     const serialized = JSON.stringify(data);
-    const byteLength = new TextEncoder().encode(serialized).length;
-    // Only persist if under size limit
-    if (byteLength < MAX_CACHE_SIZE_BYTES) {
-      await AsyncStorage.setItem(CACHE_KEY, serialized);
-    } else {
-      console.warn('Query cache not persisted: size exceeds limit', {
-        byteLength,
-        maxCacheSizeBytes: MAX_CACHE_SIZE_BYTES,
-      });
-    }
+    // Let AsyncStorage handle quota - catch will handle QuotaExceededError
+    await AsyncStorage.setItem(CACHE_KEY, serialized);
   } catch (error) {
-    // Quota exceeded or other storage error - clear cache and continue
-    console.warn('Failed to persist query cache:', error);
-    try {
-      await AsyncStorage.removeItem(CACHE_KEY);
-    } catch {
-      // Ignore cleanup errors
+    const message =
+      error instanceof Error ? error.message : String(error);
+    const name = error instanceof Error ? error.name : 'UnknownError';
+
+    console.warn('Failed to persist query cache', {
+      name,
+      message,
+    });
+
+    const isQuotaOrStorageError = /quota|storage|capacity/i.test(message);
+
+    if (isQuotaOrStorageError) {
+      // Quota exceeded - clear cache and continue
+      try {
+        await AsyncStorage.removeItem(CACHE_KEY);
+      } catch (cleanupError) {
+        console.warn('Failed to clear persisted query cache after error', {
+          error: cleanupError,
+        });
+      }
     }
   }
 }
