@@ -5,7 +5,16 @@
 
 // Recipe types
 export type DietLabel = 'veggie' | 'fish' | 'meat';
-export type MealLabel = 'breakfast' | 'starter' | 'salad' | 'meal' | 'dessert' | 'drink' | 'sauce' | 'pickle' | 'grill';
+export type MealLabel =
+  | 'breakfast'
+  | 'starter'
+  | 'salad'
+  | 'meal'
+  | 'dessert'
+  | 'drink'
+  | 'sauce'
+  | 'pickle'
+  | 'grill';
 
 // Instruction types for enhanced UI rendering
 export type InstructionType = 'step' | 'timeline' | 'tip' | 'heading';
@@ -13,8 +22,8 @@ export type InstructionType = 'step' | 'timeline' | 'tip' | 'heading';
 export interface StructuredInstruction {
   type: InstructionType;
   content: string;
-  time?: number | null;  // For timeline entries, the time in minutes
-  step_number?: number | null;  // For step entries, 1-indexed
+  time?: number | null; // For timeline entries, the time in minutes
+  step_number?: number | null; // For step entries, 1-indexed
 }
 
 export type RecipeVisibility = 'household' | 'shared';
@@ -25,7 +34,7 @@ export interface Recipe {
   url: string;
   ingredients: string[];
   instructions: string[];
-  structured_instructions?: StructuredInstruction[];  // Parsed instructions with types
+  structured_instructions?: StructuredInstruction[]; // Parsed instructions with types
   image_url: string | null;
   servings: number | null;
   prep_time: number | null;
@@ -38,13 +47,13 @@ export interface Recipe {
   meal_label: MealLabel | null;
   rating: number | null;
   // Household ownership fields
-  household_id?: string | null;    // Owning household (null = legacy/unassigned)
-  visibility?: RecipeVisibility;   // 'household' = private, 'shared' = public
-  created_by?: string | null;      // Email of user who created the recipe
+  household_id?: string | null; // Owning household (null = legacy/unassigned)
+  visibility?: RecipeVisibility; // 'household' = private, 'shared' = public
+  created_by?: string | null; // Email of user who created the recipe
   // AI enhancement fields
-  enhanced?: boolean;              // True if AI-enhanced
-  enhanced_from?: string;          // ID of recipe this was enhanced from
-  enhanced_at?: string;            // ISO timestamp of enhancement
+  enhanced?: boolean; // True if AI-enhanced
+  enhanced_from?: string; // ID of recipe this was enhanced from
+  enhanced_at?: string; // ISO timestamp of enhancement
   tips?: string;
   changes_made?: string[];
 }

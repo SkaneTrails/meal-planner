@@ -4,23 +4,23 @@
  */
 
 import type {
-  Recipe,
-  RecipeCreate,
-  RecipeUpdate,
-  RecipeScrapeRequest,
-  RecipeParseRequest,
-  MealPlan,
-  MealPlanUpdate,
-  MealUpdateRequest,
-  NoteUpdateRequest,
-  GroceryList,
   ApiError,
+  CurrentUser,
+  GroceryList,
   Household,
   HouseholdCreate,
   HouseholdMember,
-  MemberAdd,
-  CurrentUser,
   HouseholdSettings,
+  MealPlan,
+  MealPlanUpdate,
+  MealUpdateRequest,
+  MemberAdd,
+  NoteUpdateRequest,
+  Recipe,
+  RecipeCreate,
+  RecipeParseRequest,
+  RecipeScrapeRequest,
+  RecipeUpdate,
 } from './types';
 
 // API base URL - configurable for different environments
@@ -49,7 +49,7 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${API_PREFIX}${endpoint}`;
 
@@ -61,7 +61,8 @@ class ApiClient {
     if (getAuthToken) {
       const token = await getAuthToken();
       if (token) {
-        (defaultHeaders as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+        (defaultHeaders as Record<string, string>).Authorization =
+          `Bearer ${token}`;
       }
     }
 
@@ -81,8 +82,10 @@ class ApiClient {
         error = { detail: `HTTP ${response.status}: ${response.statusText}` };
       }
       throw new ApiClientError(
-        typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail),
-        response.status
+        typeof error.detail === 'string'
+          ? error.detail
+          : JSON.stringify(error.detail),
+        response.status,
       );
     }
 
@@ -95,7 +98,10 @@ class ApiClient {
   }
 
   // Recipe endpoints
-  async getRecipes(search?: string, enhanced: boolean = false): Promise<Recipe[]> {
+  async getRecipes(
+    search?: string,
+    enhanced: boolean = false,
+  ): Promise<Recipe[]> {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (enhanced) params.set('enhanced', 'true');
@@ -124,15 +130,22 @@ class ApiClient {
     try {
       const htmlResponse = await fetch(url, {
         headers: {
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
         },
       });
 
-      console.log('[scrapeRecipe] Client fetch response status:', htmlResponse.status);
+      console.log(
+        '[scrapeRecipe] Client fetch response status:',
+        htmlResponse.status,
+      );
 
       if (!htmlResponse.ok) {
-        throw new ApiClientError(`Failed to fetch recipe page: ${htmlResponse.status}`, htmlResponse.status);
+        throw new ApiClientError(
+          `Failed to fetch recipe page: ${htmlResponse.status}`,
+          htmlResponse.status,
+        );
       }
 
       const html = await htmlResponse.text();
@@ -160,14 +173,21 @@ class ApiClient {
       const params = new URLSearchParams();
       if (enhance) params.set('enhance', 'true');
       const query = params.toString();
-      return this.request<Recipe>(`/recipes/scrape${query ? `?${query}` : ''}`, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      });
+      return this.request<Recipe>(
+        `/recipes/scrape${query ? `?${query}` : ''}`,
+        {
+          method: 'POST',
+          body: JSON.stringify(request),
+        },
+      );
     }
   }
 
-  async updateRecipe(id: string, updates: RecipeUpdate, enhanced: boolean = false): Promise<Recipe> {
+  async updateRecipe(
+    id: string,
+    updates: RecipeUpdate,
+    enhanced: boolean = false,
+  ): Promise<Recipe> {
     const params = new URLSearchParams();
     if (enhanced) params.set('enhanced', 'true');
     const query = params.toString();
@@ -186,7 +206,11 @@ class ApiClient {
     });
   }
 
-  async uploadRecipeImage(id: string, imageUri: string, enhanced: boolean = false): Promise<Recipe> {
+  async uploadRecipeImage(
+    id: string,
+    imageUri: string,
+    enhanced: boolean = false,
+  ): Promise<Recipe> {
     const url = `${this.baseUrl}${API_PREFIX}/recipes/${id}/image${enhanced ? '?enhanced=true' : ''}`;
 
     // Create form data for image upload
@@ -220,14 +244,14 @@ class ApiClient {
     } as unknown as Blob);
 
     const headers: Record<string, string> = {
-      'Accept': 'application/json',
+      Accept: 'application/json',
     };
 
     // Add auth token if available
     if (getAuthToken) {
       const token = await getAuthToken();
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
       }
     }
 
@@ -238,15 +262,17 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      let error;
+      let error: { detail?: string | unknown } = {};
       try {
         error = await response.json();
       } catch {
         error = { detail: `HTTP ${response.status}: ${response.statusText}` };
       }
       throw new ApiClientError(
-        typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail),
-        response.status
+        typeof error.detail === 'string'
+          ? error.detail
+          : JSON.stringify(error.detail),
+        response.status,
       );
     }
 
@@ -322,31 +348,53 @@ class ApiClient {
   }
 
   async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
-    return this.request<HouseholdMember[]>(`/admin/households/${householdId}/members`);
+    return this.request<HouseholdMember[]>(
+      `/admin/households/${householdId}/members`,
+    );
   }
 
-  async addHouseholdMember(householdId: string, data: MemberAdd): Promise<HouseholdMember> {
-    return this.request<HouseholdMember>(`/admin/households/${householdId}/members`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+  async addHouseholdMember(
+    householdId: string,
+    data: MemberAdd,
+  ): Promise<HouseholdMember> {
+    return this.request<HouseholdMember>(
+      `/admin/households/${householdId}/members`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+    );
   }
 
-  async removeHouseholdMember(householdId: string, email: string): Promise<void> {
-    return this.request<void>(`/admin/households/${householdId}/members/${encodeURIComponent(email)}`, {
-      method: 'DELETE',
-    });
+  async removeHouseholdMember(
+    householdId: string,
+    email: string,
+  ): Promise<void> {
+    return this.request<void>(
+      `/admin/households/${householdId}/members/${encodeURIComponent(email)}`,
+      {
+        method: 'DELETE',
+      },
+    );
   }
 
   async getHouseholdSettings(householdId: string): Promise<HouseholdSettings> {
-    return this.request<HouseholdSettings>(`/admin/households/${householdId}/settings`);
+    return this.request<HouseholdSettings>(
+      `/admin/households/${householdId}/settings`,
+    );
   }
 
-  async updateHouseholdSettings(householdId: string, settings: Partial<HouseholdSettings>): Promise<HouseholdSettings> {
-    return this.request<HouseholdSettings>(`/admin/households/${householdId}/settings`, {
-      method: 'PUT',
-      body: JSON.stringify(settings),
-    });
+  async updateHouseholdSettings(
+    householdId: string,
+    settings: Partial<HouseholdSettings>,
+  ): Promise<HouseholdSettings> {
+    return this.request<HouseholdSettings>(
+      `/admin/households/${householdId}/settings`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(settings),
+      },
+    );
   }
 }
 

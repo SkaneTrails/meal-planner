@@ -444,5 +444,14 @@ def copy_recipe(
         visibility="household",  # Copies are private by default
     )
 
-    # Save as a new recipe owned by the target household
-    return save_recipe(recipe_data, database=target_database, household_id=to_household_id, created_by=copied_by)
+    # Preserve enhancement metadata if copying from an enhanced recipe
+    return save_recipe(
+        recipe_data,
+        database=target_database,
+        household_id=to_household_id,
+        created_by=copied_by,
+        enhanced=source.enhanced,
+        enhanced_from=source.enhanced_from,
+        enhanced_at=source.enhanced_at,
+        changes_made=source.changes_made,
+    )

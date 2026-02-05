@@ -1,11 +1,13 @@
-name: Tests
+name: Update caches on main
 
 on:
-  pull_request:
+  push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  pre-commit:
+  update-caches:
+    name: Update caches
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +23,7 @@ jobs:
       - name: Set up Python
         run: uv python install 3.14
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: uv sync
 
       - name: Setup Node.js
@@ -30,14 +32,12 @@ jobs:
           node-version: "24"
 
       - name: Cache mobile node_modules
-        id: cache-mobile
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: mobile/node_modules
           key: ${{ runner.os }}-mobile-node-modules-${{ hashFiles('mobile/package-lock.json') }}
 
       - name: Install mobile dependencies
-        if: steps.cache-mobile.outputs.cache-hit != 'true'
         working-directory: mobile
         run: npm ci
 
@@ -46,31 +46,6 @@ jobs:
         with:
           path: ~/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pre-commit-
 
-      # Use uv run instead of pre-commit/action to avoid duplicate pip install
-      - name: Run pre-commit on all files
-        run: uv run pre-commit run --all-files
-
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7.2.1
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-
-      - name: Set up Python
-        run: uv python install 3.14
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Run tests with coverage
-        run: uv run pytest -n auto --tb=short --durations=10 --cov=api --cov-report=term-missing -v
+      - name: Prime pre-commit cache
+        run: uv run pre-commit install-hooks

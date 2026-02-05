@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-  ],
-  presets: [require("nativewind/preset")],
+  content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+  presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: {
@@ -52,7 +49,7 @@ module.exports = {
         DEFAULT: '#FEFDFB',
       },
       borderRadius: {
-        'xl': '20px',
+        xl: '20px',
         '2xl': '24px',
         '3xl': '28px',
       },

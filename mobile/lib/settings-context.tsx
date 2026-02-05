@@ -3,8 +3,15 @@
  * Uses AsyncStorage for persistence.
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type React from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
@@ -70,41 +77,57 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const addItemAtHome = useCallback(async (item: string) => {
-    const normalizedItem = item.toLowerCase().trim();
-    if (!normalizedItem) return;
+  const addItemAtHome = useCallback(
+    async (item: string) => {
+      const normalizedItem = item.toLowerCase().trim();
+      if (!normalizedItem) return;
 
-    const newSettings = {
-      ...settings,
-      itemsAtHome: [...new Set([...settings.itemsAtHome, normalizedItem])].sort(),
-    };
-    await saveSettings(newSettings);
-  }, [settings, saveSettings]);
+      const newSettings = {
+        ...settings,
+        itemsAtHome: [
+          ...new Set([...settings.itemsAtHome, normalizedItem]),
+        ].sort(),
+      };
+      await saveSettings(newSettings);
+    },
+    [settings, saveSettings],
+  );
 
-  const removeItemAtHome = useCallback(async (item: string) => {
-    const normalizedItem = item.toLowerCase().trim();
-    const newSettings = {
-      ...settings,
-      itemsAtHome: settings.itemsAtHome.filter(i => i !== normalizedItem),
-    };
-    await saveSettings(newSettings);
-  }, [settings, saveSettings]);
+  const removeItemAtHome = useCallback(
+    async (item: string) => {
+      const normalizedItem = item.toLowerCase().trim();
+      const newSettings = {
+        ...settings,
+        itemsAtHome: settings.itemsAtHome.filter((i) => i !== normalizedItem),
+      };
+      await saveSettings(newSettings);
+    },
+    [settings, saveSettings],
+  );
 
-  const isItemAtHome = useCallback((item: string) => {
-    const normalizedItem = item.toLowerCase().trim();
-    // Check if the item or any word in it matches items at home
-    return settings.itemsAtHome.some(homeItem =>
-      normalizedItem.includes(homeItem) || homeItem.includes(normalizedItem)
-    );
-  }, [settings.itemsAtHome]);
+  const isItemAtHome = useCallback(
+    (item: string) => {
+      const normalizedItem = item.toLowerCase().trim();
+      // Check if the item or any word in it matches items at home
+      return settings.itemsAtHome.some(
+        (homeItem) =>
+          normalizedItem.includes(homeItem) ||
+          homeItem.includes(normalizedItem),
+      );
+    },
+    [settings.itemsAtHome],
+  );
 
-  const setLanguage = useCallback(async (language: AppLanguage) => {
-    const newSettings = {
-      ...settings,
-      language,
-    };
-    await saveSettings(newSettings);
-  }, [settings, saveSettings]);
+  const setLanguage = useCallback(
+    async (language: AppLanguage) => {
+      const newSettings = {
+        ...settings,
+        language,
+      };
+      await saveSettings(newSettings);
+    },
+    [settings, saveSettings],
+  );
 
   return (
     <SettingsContext.Provider

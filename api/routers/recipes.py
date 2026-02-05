@@ -484,7 +484,14 @@ async def upload_recipe_image(  # pragma: no cover
 
 
 @router.post("/{recipe_id}/copy", status_code=status.HTTP_201_CREATED)
-async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
+async def copy_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    recipe_id: str,
+    *,
+    enhanced: Annotated[
+        bool | None, Query(description="Source database: True=enhanced, False=default, None=auto-detect")
+    ] = None,
+) -> Recipe:
     """
     Create a copy of a shared/legacy recipe for your household.
 
@@ -493,15 +500,24 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     - Copy recipes before enhancing them (auto-done by enhance endpoint)
 
     The copy will be owned by the user's household with visibility="household".
+    Use enhanced=true/false to select source database explicitly, or omit to auto-detect.
     """
     household_id = _require_household(user)
 
-    # Get the source recipe - try enhanced DB first, then default
-    source_database = ENHANCED_DATABASE
-    recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
-    if recipe is None:
+    # Get the source recipe from specified or auto-detected database
+    if enhanced is True:
+        source_database = ENHANCED_DATABASE
+        recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
+    elif enhanced is False:
         source_database = DEFAULT_DATABASE
         recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
+    else:
+        # Auto-detect: try enhanced DB first, then default
+        source_database = ENHANCED_DATABASE
+        recipe = recipe_storage.get_recipe(recipe_id, database=ENHANCED_DATABASE)
+        if recipe is None:
+            source_database = DEFAULT_DATABASE
+            recipe = recipe_storage.get_recipe(recipe_id, database=DEFAULT_DATABASE)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 

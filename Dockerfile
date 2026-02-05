@@ -2,29 +2,22 @@
 # Multi-stage build for smaller image size
 
 # Stage 1: Build dependencies
-FROM python:3.14-slim@sha256:9b81fe9acff79e61affb44aaf3b6ff234392e8ca477cb86c9f7fd11732ce9b6a AS builder
+FROM python:3.14-slim@sha256:fa0acdcd760f0bf265bc2c1ee6120776c4d92a9c3a37289e17b9642ad2e5b83b AS builder
 
 # Install uv for fast dependency resolution
 # Pinned to digest for supply-chain security
-COPY --from=ghcr.io/astral-sh/uv@sha256:59240a65d6b57e6c507429b45f01b8f2c7c0bbeee0fb697c41a39c6a8e3a4cfb /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv@sha256:538e0b39736e7feae937a65983e49d2ab75e1559d35041f9878b7b7e51de91e4 /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-# Create virtual environment and install production dependencies
-RUN uv venv && \
-    uv pip install --no-cache \
-    fastapi \
-    uvicorn[standard] \
-    google-cloud-firestore \
-    google-cloud-storage \
-    firebase-admin \
-    pydantic \
-    python-dotenv \
-    python-multipart \
-    httpx
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+
+# Create virtual environment and install from lockfile (production deps only)
+RUN uv sync --frozen --no-dev --no-install-project
 
 # Stage 2: Runtime image
-FROM python:3.14-slim@sha256:9b81fe9acff79e61affb44aaf3b6ff234392e8ca477cb86c9f7fd11732ce9b6a AS runtime
+FROM python:3.14-slim@sha256:fa0acdcd760f0bf265bc2c1ee6120776c4d92a9c3a37289e17b9642ad2e5b83b AS runtime
 
 WORKDIR /app
 

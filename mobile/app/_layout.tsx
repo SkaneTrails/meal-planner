@@ -7,17 +7,21 @@
 // communication correctly. The expo-web-browser maybeCompleteAuthSession is only
 // needed for native platforms using expo-auth-session.
 
-import React, { useEffect } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { QueryProvider, restoreQueryCache, persistQueryCache } from '@/lib/query-provider';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
 import { EnhancedModeProvider } from '@/lib/enhanced-mode-context';
-import { SettingsProvider } from '@/lib/settings-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
+import {
+  persistQueryCache,
+  QueryProvider,
+  restoreQueryCache,
+} from '@/lib/query-provider';
+import { SettingsProvider } from '@/lib/settings-context';
 import '../global.css';
 
 // Prevent splash screen from auto-hiding until fonts are loaded
@@ -51,7 +55,10 @@ export default function RootLayout() {
       }
     };
 
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
     return () => subscription.remove();
   }, []);
 

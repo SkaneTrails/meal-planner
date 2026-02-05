@@ -57,10 +57,15 @@ repos:
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
 
-  - repo: https://github.com/fpgmaas/deptry
-    rev: 0.24.0
+  # Deptry - check for missing/unused dependencies (runs from uv venv)
+  - repo: local
     hooks:
       - id: deptry
+        name: deptry
+        entry: uv run deptry .
+        language: system
+        types: [python]
+        pass_filenames: false
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: "v4.0.0-alpha.8"
@@ -74,6 +79,20 @@ repos:
     hooks:
       - id: uv-lock
       - id: uv-sync
+        stages:
+          - post-checkout
+          - post-merge
+          - post-rewrite
+
+  # npm sync for mobile app on branch switch
+  - repo: local
+    hooks:
+      - id: npm-sync-mobile
+        name: npm sync (mobile)
+        entry: bash -c "cd mobile && npm ci --prefer-offline --silent"
+        language: system
+        always_run: true
+        pass_filenames: false
         stages:
           - post-checkout
           - post-merge
@@ -98,4 +117,14 @@ repos:
         entry: bash -c "test -d mobile/node_modules && npx --prefix mobile tsc --noEmit -p mobile/tsconfig.json || echo 'Skipping - run npm install in mobile/ first'"
         language: system
         files: ^mobile/.*\.(ts|tsx)$
+        pass_filenames: false
+
+  # Biome linter for mobile TypeScript/JavaScript
+  - repo: local
+    hooks:
+      - id: biome
+        name: Biome (mobile)
+        entry: bash -c "test -d mobile/node_modules && npx --prefix mobile biome check || echo 'Skipping - run npm install in mobile/ first'"
+        language: system
+        files: ^mobile/.*\.(ts|tsx|js|jsx|json|css)$
         pass_filenames: false

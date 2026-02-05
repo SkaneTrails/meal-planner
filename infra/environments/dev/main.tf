@@ -165,6 +165,7 @@ module "storage" {
 
   project     = var.project
   bucket_name = var.recipe_images_bucket_name
+  location    = var.region # Keep in same region as other resources
 
   # Allow CORS from any origin (mobile and web apps)
   cors_origins = ["*"]
@@ -195,5 +196,8 @@ module "workload_federation" {
   project                 = var.project
   github_repository_owner = var.github_repository_owner
   github_repository       = var.github_repository
-  service_account_id      = module.iam.github_actions_firebase_service_account.id
+  service_account_ids = {
+    firebase = module.iam.github_actions_firebase_service_account.id
+    cloudrun = module.iam.github_actions_cloudrun_service_account.id
+  }
 }

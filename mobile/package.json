@@ -7,7 +7,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "mkdir -p public/fonts && cp node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf public/fonts/ && npx expo export --platform web"
+    "build:web": "mkdir -p public/fonts && cp node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf public/fonts/ && npx expo export --platform web",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "format": "biome format --write"
   },
   "dependencies": {
     "@expo/ngrok": "^4.1.0",
@@ -39,7 +42,7 @@
     "react-native-gesture-handler": "~2.30.0",
     "react-native-reanimated": "~4.2.0",
     "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.20.0",
+    "react-native-screens": "~4.22.0",
     "react-native-svg": "^15.15.1",
     "react-native-web": "^0.21.2",
     "react-native-worklets": "^0.7.0",
@@ -48,6 +51,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@biomejs/biome": "^2.3.14",
     "@types/react": "~19.2.0",
     "typescript": "~5.9.2"
   },
