@@ -81,7 +81,7 @@ Items not tied to a specific branch:
 ## Failure Tracking
 
 | Pattern | Count | Last seen | Context | Fix when promoted |
-|---------|-------|-----------|---------|-------------------|
+| ------- | ----- | --------- | ------- | ----------------- |
 | shell-escaping | 2 | 2026-02-02 | PowerShell quotes | Use array splatting |
 ```
 
@@ -375,7 +375,7 @@ Check if pattern is already documented:
 
 ```markdown
 | Pattern | Count | Last seen | Context | Fix when promoted |
-|---------|-------|-----------|---------|-------------------|
+| ------- | ----- | --------- | ------- | ----------------- |
 ```
 
 **Rules:**

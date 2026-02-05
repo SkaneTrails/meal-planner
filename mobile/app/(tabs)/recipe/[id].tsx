@@ -22,6 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists, useCurrentUser } from '@/lib/hooks';
+import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
 import { BouncingLoader } from '@/components';
@@ -412,10 +413,17 @@ export default function RecipeDetailScreen() {
   const [editServings, setEditServings] = useState('');
   const [editTags, setEditTags] = useState('');
   const [editVisibility, setEditVisibility] = useState<RecipeVisibility>('household');
+  const [editHouseholdId, setEditHouseholdId] = useState<string | null>(null);
+  const [isTransferring, setIsTransferring] = useState(false);
   const [newTag, setNewTag] = useState('');
   // URL input modal state (for cross-platform support)
   const [showUrlModal, setShowUrlModal] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState('');
+
+  // Household data for superuser transfer feature
+  const isSuperuser = currentUser?.role === 'superuser';
+  const { data: households } = useHouseholds();
+  const transferRecipe = useTransferRecipe();
 
   // Initialize edit form when opening modal
   const openEditModal = () => {
@@ -427,6 +435,7 @@ export default function RecipeDetailScreen() {
       setEditServings(recipe.servings?.toString() || '');
       setEditTags(recipe.tags.join(', '));
       setEditVisibility(recipe.visibility || 'household');
+      setEditHouseholdId(recipe.household_id || null);
     }
     setShowEditModal(true);
   };
@@ -461,6 +470,43 @@ export default function RecipeDetailScreen() {
     } finally {
       setIsSavingEdit(false);
     }
+  };
+
+  const handleTransferRecipe = async (targetHouseholdId: string) => {
+    if (!id || !recipe) return;
+
+    const targetHousehold = households?.find(h => h.id === targetHouseholdId);
+    if (!targetHousehold) return;
+
+    Alert.alert(
+      'Transfer Recipe',
+      `Move "${recipe.title}" to ${targetHousehold.name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Transfer',
+          onPress: async () => {
+            setIsTransferring(true);
+            try {
+              await transferRecipe.mutateAsync({
+                recipeId: id,
+                targetHouseholdId,
+                enhanced: isEnhanced,
+              });
+              setEditHouseholdId(targetHouseholdId);
+              setShowEditModal(false);
+              hapticSuccess();
+              Alert.alert('Transferred', `Recipe moved to ${targetHousehold.name}`);
+            } catch {
+              hapticWarning();
+              Alert.alert('Error', 'Failed to transfer recipe');
+            } finally {
+              setIsTransferring(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleAddTag = () => {
@@ -1595,6 +1641,74 @@ export default function RecipeDetailScreen() {
                   })}
                 </View>
               </View>
+
+              {/* Household Transfer (Superuser only) */}
+              {isSuperuser && households && households.length > 0 && (
+                <View style={{ marginBottom: spacing.xl }}>
+                  <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
+                    Household
+                  </Text>
+                  <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.md }}>
+                    Transfer this recipe to a different household
+                  </Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+                    {households.map((household) => {
+                      const isCurrentHousehold = editHouseholdId === household.id;
+                      return (
+                        <Pressable
+                          key={household.id}
+                          onPress={() => !isCurrentHousehold && handleTransferRecipe(household.id)}
+                          disabled={isCurrentHousehold || isTransferring}
+                          style={({ pressed }) => ({
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            backgroundColor: isCurrentHousehold ? colors.primary : pressed ? colors.bgMid : colors.gray[50],
+                            paddingHorizontal: spacing.md,
+                            paddingVertical: spacing.sm,
+                            borderRadius: 20,
+                            borderWidth: 1,
+                            borderColor: isCurrentHousehold ? colors.primary : colors.bgDark,
+                            opacity: isTransferring && !isCurrentHousehold ? 0.5 : 1,
+                          })}
+                        >
+                          {isCurrentHousehold && (
+                            <Ionicons name="checkmark-circle" size={16} color={colors.white} style={{ marginRight: spacing.xs }} />
+                          )}
+                          <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: isCurrentHousehold ? colors.white : colors.text.inverse }}>
+                            {household.name}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                    {/* Show "Unassigned" option for legacy recipes */}
+                    {!editHouseholdId && (
+                      <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: colors.gray[200],
+                        paddingHorizontal: spacing.md,
+                        paddingVertical: spacing.sm,
+                        borderRadius: 20,
+                        borderWidth: 1,
+                        borderColor: colors.gray[300],
+                      }}>
+                        <Ionicons name="help-circle-outline" size={16} color={colors.gray[500]} style={{ marginRight: spacing.xs }} />
+                        <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: colors.gray[500] }}>
+                          Unassigned
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  {isTransferring && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: spacing.sm }}>
+                      <ActivityIndicator size="small" color={colors.primary} />
+                      <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.body, color: colors.gray[400], marginLeft: spacing.xs }}>
+                        Transferring...
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
 
               {/* Time & Servings */}
               <View style={{ marginBottom: spacing.xl }}>
