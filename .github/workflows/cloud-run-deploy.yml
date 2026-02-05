@@ -38,7 +38,7 @@ jobs:
           service_account: github-actions-cloudrun@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@7db2b8c86f67c6f95e37d9f4f9f2c68e7a45a4a5 # v2
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v2
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
 
