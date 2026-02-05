@@ -2,14 +2,71 @@
 
 Instructions for setting up and running the Meal Planner app locally.
 
+## ⚠️ FIRST: Check Environment Setup
+
+**Before starting any local development, ALWAYS check if `mobile/.env.development` exists:**
+
+```bash
+# Check if the file exists
+ls mobile/.env.development
+```
+
+**If the file does NOT exist:**
+
+1. **Ask the user** for the GCP project ID
+2. **Verify gcloud authentication**: `gcloud auth list`
+3. **Create the file** by fetching secrets:
+
+```bash
+PROJECT=<project-id-from-user>
+
+cat > mobile/.env.development << EOF
+# Development environment variables
+EXPO_PUBLIC_API_URL=http://localhost:8000
+
+# Firebase Configuration
+EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY --project=$PROJECT)
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=${PROJECT}.firebaseapp.com
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=$PROJECT
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=${PROJECT}.firebasestorage.app
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID --project=$PROJECT)
+EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID --project=$PROJECT)
+
+# Google OAuth Client ID
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id --project=$PROJECT)
+EOF
+
+echo "Created mobile/.env.development"
+```
+
+4. **Verify the file** has actual values (not error messages)
+
+---
+
 ## ⚠️ IMPORTANT: Running the App for Debugging
 
-**When starting the mobile app for debugging/testing, ALWAYS start BOTH:**
+**Before starting services, check if they're already running:**
 
-1. **API server** (for data): `./scripts/run-api.sh`
-2. **Mobile app** (Expo): `cd mobile && npx expo start`
+```bash
+# Check if API is running (port 8000)
+curl -s http://localhost:8000/health && echo "API already running" || echo "API not running"
 
-Or use the combined script: `./scripts/run-dev.sh`
+# Check if Expo is running (port 8081)
+curl -s http://localhost:8081 && echo "Expo already running" || echo "Expo not running"
+```
+
+```powershell
+# Windows PowerShell - check ports
+netstat -ano | findstr :8000   # API
+netstat -ano | findstr :8081   # Expo
+```
+
+**Only start services that are NOT already running:**
+
+1. **API server** (for data): `uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload`
+2. **Mobile app** (Expo): `cd mobile && npx expo start --web`
+
+Or use the combined script (bash): `./scripts/run-dev.sh`
 
 The mobile app requires the API to be running for all data operations (recipes, meal plans, grocery lists).
 
@@ -17,13 +74,7 @@ The mobile app requires the API to be running for all data operations (recipes, 
 
 ## Finding the GCP Project ID
 
-The project ID is stored in `infra/environments/dev/terraform.tfvars` (gitignored). Check this file first:
-
-```bash
-grep "^project" infra/environments/dev/terraform.tfvars
-```
-
-If the file doesn't exist or the project isn't set, **ask the user for the GCP project ID**.
+The project ID is stored in `infra/environments/dev/terraform.tfvars` (gitignored). Ask the user if not available.
 
 ## Prerequisites
 
@@ -47,46 +98,50 @@ The API will be available at `http://localhost:8000`.
 
 ### 2. Mobile App (Expo)
 
-First, populate the `.env` file with secrets from GCP:
-
-```bash
-cd mobile
-
-# Get your local IP for the API URL
-LOCAL_IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1)
-
-# Set the project ID (from terraform.tfvars or ask user)
-PROJECT=<project-id>
-
-# Fetch secrets and create .env
-cat > .env << EOF
-EXPO_PUBLIC_API_URL=http://${LOCAL_IP}:8000
-EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY --project=$PROJECT)
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=${PROJECT}.firebaseapp.com
-EXPO_PUBLIC_FIREBASE_PROJECT_ID=$PROJECT
-EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID --project=$PROJECT)
-EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID --project=$PROJECT)
-EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id --project=$PROJECT)
-EOF
-```
+Ensure `mobile/.env.development` exists (see "FIRST: Check Environment Setup" above).
 
 Then start the app:
 
 ```bash
+cd mobile
 npm install
-npx expo start --lan
+npx expo start --web    # For web debugging
+npx expo start --lan    # For mobile device (Expo Go)
 ```
 
-### 3. Both Services Together
+To test against the production API instead of local:
+```bash
+# In mobile/.env.development, change to Cloud Run URL:
+EXPO_PUBLIC_API_URL=https://<service>-<hash>-<region>.a.run.app
+# Get the actual URL from: gcloud run services describe meal-planner-api --region=<region> --format='value(status.url)'
+```
+
+### 3. Both Services Together (Bash/macOS/Linux only)
 
 ```bash
 ./scripts/run-dev.sh
 ```
 
+### 4. Windows Quick Start
+
+```powershell
+# Terminal 1: API
+cd c:\git\meal-planner
+uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Terminal 2: Mobile
+cd c:\git\meal-planner\mobile
+npm install
+npx expo start --web --port 8081
+```
+
 ## Secret Manager Secrets
+
+These secrets are used by GitHub Actions for CI/CD deployments and can be used locally to populate `.env.development`.
 
 | Secret Name | Purpose |
 |-------------|---------|
+| `github_EXPO_PUBLIC_API_URL` | Production API URL for Firebase Hosting deploy |
 | `github_EXPO_PUBLIC_FIREBASE_API_KEY` | Firebase Web API key |
 | `github_EXPO_PUBLIC_FIREBASE_APP_ID` | Firebase Web App ID |
 | `github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase sender ID |
@@ -94,16 +149,22 @@ npx expo start --lan
 | `meal-planner_oauth_client_secret` | Google OAuth client secret |
 | `meal-planner-database-name` | Firestore database name |
 | `meal-planner-project-id` | GCP project ID |
-| `gemini-api-key` | Gemini API key (for recipe enhancement) |
+| `firestore-database-name` | Firestore database name (duplicate) |
+| `firestore-location-id` | Firestore location |
+| `firestore-project-id` | Firestore project ID |
+| `gemini-api-key` | Gemini API key (for recipe enhancement scripts) |
 
-## Dev Mode (Without Firebase)
+## Dev Mode (Without Firebase Auth)
 
-If you don't have access to GCP secrets, the app can run in "dev mode":
+If you want to test without real Google authentication, remove or comment out the Firebase credentials in `.env.development`:
 
-1. Only set `EXPO_PUBLIC_API_URL` in `.env`
-2. The app will use a mock user (`dev@localhost`) instead of real authentication
+```bash
+# Comment out these lines in mobile/.env.development:
+# EXPO_PUBLIC_FIREBASE_API_KEY=...
+# EXPO_PUBLIC_FIREBASE_APP_ID=...
+```
 
-This is handled by conditional Firebase initialization in `mobile/lib/firebase.ts`.
+The app checks `isFirebaseConfigured` in `mobile/lib/firebase.ts` and will use a mock user (`dev@localhost`) when Firebase isn't configured.
 
 ## Troubleshooting
 
@@ -118,7 +179,7 @@ gcloud config set project <project-id>
 
 ### Firebase auth/invalid-api-key error
 
-The `.env` file is missing or has incorrect Firebase credentials. Re-run the secret fetching commands above.
+The `.env.development` file is missing or has incorrect Firebase credentials. Check that the file exists and has valid values for `EXPO_PUBLIC_FIREBASE_API_KEY` and `EXPO_PUBLIC_FIREBASE_APP_ID`.
 
 ### API not reachable from mobile
 
@@ -129,10 +190,18 @@ The `.env` file is missing or has incorrect Firebase credentials. Re-run the sec
 ### Port already in use
 
 ```bash
-# Kill existing processes
+# macOS/Linux
 pkill -f "uvicorn"
 pkill -f "expo"
 pkill -f "node.*metro"
+```
+
+```powershell
+# Windows PowerShell
+Get-Process | Where-Object { $_.ProcessName -match "node|python" } | Stop-Process -Force
+# Or find specific port:
+netstat -ano | findstr :8000
+taskkill /PID <pid> /F
 ```
 
 ---

@@ -87,50 +87,6 @@ export default function RootLayout() {
                   name="(tabs)"
                   options={{ headerShown: false, animation: 'fade' }}
                 />
-                <Stack.Screen
-                  name="recipe/[id]"
-                  options={{
-                    title: 'Recipe',
-                    headerShown: true,
-                    headerStyle: { backgroundColor: '#4A3728' },
-                    headerTintColor: '#FFFFFF',
-                    headerBackTitle: 'Back',
-                    animation: 'slide_from_right',
-                  }}
-                />
-                <Stack.Screen
-                  name="add-recipe"
-                  options={{
-                    title: 'Add Recipe',
-                    presentation: 'modal',
-                    headerShown: true,
-                    headerStyle: { backgroundColor: '#4A3728' },
-                    headerTintColor: '#FFFFFF',
-                    headerBackTitle: 'Cancel',
-                    animation: 'slide_from_bottom',
-                  }}
-                />
-                <Stack.Screen
-                  name="select-recipe"
-                  options={{
-                    title: 'Select Recipe',
-                    presentation: 'modal',
-                    headerShown: true,
-                    headerStyle: { backgroundColor: '#4A3728' },
-                    headerTintColor: '#FFFFFF',
-                    headerBackTitle: 'Cancel',
-                    animation: 'slide_from_bottom',
-                  }}
-                />
-                <Stack.Screen
-                  name="settings"
-                  options={{
-                    title: 'Settings',
-                    presentation: 'card',
-                    headerShown: false,
-                    animation: 'slide_from_right',
-                  }}
-                />
               </Stack>
             </GroceryProvider>
           </SettingsProvider>

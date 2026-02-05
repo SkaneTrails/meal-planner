@@ -63,9 +63,11 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Load from storage only once on mount
   useEffect(() => {
     loadFromStorage();
-  }, [loadFromStorage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const setCheckedItems = (items: Set<string>) => {
     setCheckedItemsState(items);
