@@ -36,8 +36,17 @@ const API_PREFIX = '/api/v1';
 // Token getter function - set by AuthProvider
 let getAuthToken: (() => Promise<string | null>) | null = null;
 
+// Sign out callback - called when API returns 401/403 (auth failure)
+// status: 401 = token invalid/expired, 403 = no household access
+// hadToken: true if a token was sent with the request (helps distinguish auth failure from timing issues)
+let onUnauthorized: ((status: number, hadToken: boolean) => void) | null = null;
+
 export function setAuthTokenGetter(getter: () => Promise<string | null>) {
   getAuthToken = getter;
+}
+
+export function setOnUnauthorized(callback: (status: number, hadToken: boolean) => void) {
+  onUnauthorized = callback;
 }
 
 class ApiClient {
@@ -58,9 +67,11 @@ class ApiClient {
     };
 
     // Add auth token if available
+    let hadToken = false;
     if (getAuthToken) {
       const token = await getAuthToken();
       if (token) {
+        hadToken = true;
         (defaultHeaders as Record<string, string>).Authorization =
           `Bearer ${token}`;
       }
@@ -75,6 +86,13 @@ class ApiClient {
     });
 
     if (!response.ok) {
+      // Handle 401/403 - trigger sign out to clear stale auth state
+      // 401 = token invalid/expired, 403 = no household access
+      // Only trigger if a token was sent (hadToken=true) - otherwise it's a race condition
+      if ((response.status === 401 || response.status === 403) && onUnauthorized) {
+        onUnauthorized(response.status, hadToken);
+      }
+
       let error: ApiError;
       try {
         error = await response.json();

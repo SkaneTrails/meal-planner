@@ -64,13 +64,25 @@ npx expo start
 
 The FastAPI backend requires the following environment variables:
 
-| Variable                         | Required | Description                                               |
-| -------------------------------- | -------- | --------------------------------------------------------- |
-| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                              |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Yes      | Path to service account JSON                              |
-| `SCRAPE_FUNCTION_URL`            | No       | URL of scrape function (default: `http://localhost:8001`) |
-| `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev)           |
-| `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check                |
+| Variable                         | Required | Description                                                  |
+| -------------------------------- | -------- | ------------------------------------------------------------ |
+| `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                                 |
+| `GOOGLE_APPLICATION_CREDENTIALS` | No       | Path to service account JSON (not needed with impersonation) |
+| `SCRAPE_FUNCTION_URL`            | No       | URL of scrape function (default: `http://localhost:8001`)    |
+| `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev)              |
+| `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check                   |
+
+**GCP Authentication:** Use the setup script to configure service account impersonation (recommended):
+
+```powershell
+# PowerShell (Windows)
+.\scripts\setup-local-dev.ps1 -ProjectId <your-project-id>
+```
+
+```bash
+# Bash (Linux/macOS)
+./scripts/setup-local-dev.sh <your-project-id>
+```
 
 **Scrape Function:** The API calls a separate Cloud Function to scrape recipes. For local development, run `./scripts/run-function.sh` in a separate terminal, or point to the deployed function:
 

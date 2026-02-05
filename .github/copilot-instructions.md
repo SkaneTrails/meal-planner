@@ -100,6 +100,8 @@ mobile/                  # React Native mobile app
 functions/scrape_recipe/ # Cloud Function for recipe scraping
 
 scripts/                 # CLI tools
+├── setup-local-dev.ps1  # Local dev setup (Windows) - configures GCP auth
+├── setup-local-dev.sh   # Local dev setup (macOS/Linux)
 ├── recipe_enhancer.py   # Gemini AI recipe enhancement
 ├── recipe_reviewer.py   # Manual recipe review helper
 ├── validate_gemini.py   # Validate enhanced recipes

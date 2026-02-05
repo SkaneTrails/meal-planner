@@ -507,6 +507,7 @@ Perform these checks at the specified frequency:
 |-------|-----------|--------|
 | Unconditional content review | Every edit | Is there content that could be conditionally loaded? |
 | Misplaced content scan | Every edit | File-type patterns, procedures, external refs |
+| Fitness-for-purpose assessment | On skill review | Does each skill serve its intended purpose effectively? |
 | Stale references | Weekly | Test 2-3 references for continued relevance |
 | Unused skills | Weekly | Check if any skills haven't been invoked recently |
 | `.copilot-tasks.md` cleanup | Per branch merge | Remove completed branch sections |
@@ -519,6 +520,66 @@ Perform these checks at the specified frequency:
 4. Report findings and reasoning
 
 **The goal is efficiency, not arbitrary limits.** A large file of essential content is fine. A small file with extractable content is not.
+
+---
+
+## 10a. Fitness-for-Purpose Assessment
+
+When reviewing skills (either on request or during health checks), assess each skill against these criteria:
+
+### Assessment Criteria
+
+| Criterion | Question to Ask |
+|-----------|-----------------|
+| **Purpose clarity** | Is the skill's purpose immediately clear from the name and description? |
+| **Audience fit** | Is it written FOR Copilot (AI parsing) rather than human reading? |
+| **Actionable guidance** | Does it provide specific, executable instructions vs vague principles? |
+| **Domain value** | Does it contain knowledge Copilot wouldn't have from training? |
+| **Up-to-date** | Does it reflect current project state (tools, APIs, conventions)? |
+| **Activation triggers** | Is the activation context specific enough to invoke when needed? |
+| **Dependencies valid** | Do referenced files/configs actually exist? |
+
+### Assessment Format
+
+For each skill, report:
+
+```markdown
+### `skill-name` (N lines)
+
+| Criterion | Assessment |
+|-----------|------------|
+| Purpose | ✅/🟡/❌ [brief note] |
+| Audience fit | ✅/🟡/❌ [brief note] |
+| Actionable | ✅/🟡/❌ [brief note] |
+| Domain value | ✅/🟡/❌ [brief note] |
+| Up-to-date | ✅/🟡/❌ [brief note] |
+| Dependencies | ✅/🟡/❌ [list any missing] |
+
+**Verdict:** ✅ Fit / 🟡 Needs attention / ❌ Needs rewrite
+**Issues:** [list specific problems if any]
+```
+
+### When to Assess
+
+- **On explicit request:** "assess skills", "review Copilot config"
+- **During health checks:** When this skill is invoked for any reason
+- **After major project changes:** New tools, changed architecture
+
+### Indicators of Poor Fitness
+
+| Symptom | Likely Problem |
+|---------|----------------|
+| Skill never invoked | Activation context too narrow or misaligned with real tasks |
+| Copilot ignores skill guidance | Instructions too vague or conflicting with training |
+| Skill content duplicated elsewhere | Extraction wasn't complete, or scope unclear |
+| Referenced files don't exist | Skill out of sync with project structure |
+| Human-formatted content | Tables for visual appeal, verbose explanations |
+
+### Acting on Assessment
+
+- **✅ Fit:** No action needed
+- **🟡 Needs attention:** Note issues, propose specific fixes
+- **❌ Needs rewrite:** Block on fixing before other work (per No Deferral Rule)
 
 ---
 

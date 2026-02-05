@@ -31,3 +31,13 @@ output "github_actions_cloudrun_email" {
   description = "Email of the GitHub Actions Cloud Run service account"
   value       = google_service_account.github_actions_cloudrun.email
 }
+
+output "local_dev_service_account" {
+  description = "Service account for local development"
+  value       = google_service_account.local_dev
+}
+
+output "local_dev_email" {
+  description = "Email of the local development service account"
+  value       = google_service_account.local_dev.email
+}

@@ -20,10 +20,11 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
-import { setAuthTokenGetter } from '../api';
+import { Alert, Platform } from 'react-native';
+import { setAuthTokenGetter, setOnUnauthorized } from '../api';
 import { auth, isFirebaseConfigured } from '../firebase';
 
 interface AuthContextType {
@@ -78,6 +79,10 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Track if we're currently handling an unauthorized response to prevent duplicates
+  const handlingUnauthorizedRef = useRef(false);
+  // Keep a ref to the current user for the token getter to avoid closure issues
+  const userRef = useRef<User | null>(null);
 
   // For web: use Firebase's native GoogleAuthProvider
   const googleProvider =
@@ -99,16 +104,61 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   );
 
   // Register token getter for API client
+  // Uses userRef to avoid stale closure issues - the ref is always current
+  // forceRefresh: true ensures we get a fresh token
   useEffect(() => {
     setAuthTokenGetter(async () => {
-      if (!user) return null;
+      const currentUser = userRef.current;
+      if (!currentUser) return null;
       try {
-        return await user.getIdToken();
+        return await currentUser.getIdToken(true);
       } catch {
         return null;
       }
     });
-  }, [user]);
+  }, []); // Empty deps - we read from ref, not state
+
+  // Register sign-out callback for API 401/403 responses
+  // This ensures stale auth state is cleared when token is invalid/expired
+  // or when user doesn't have household access
+  // hadToken: true means we sent a token but server rejected it (real auth failure)
+  //           false means no token was available (race condition during sign-in)
+  useEffect(() => {
+    setOnUnauthorized((status: number, hadToken: boolean) => {
+      // Only sign out and show alert if we actually sent a token
+      // If no token was sent, it's likely a race condition during sign-in
+      if (!hadToken) {
+        return;
+      }
+
+      // Prevent duplicate handling from parallel requests
+      if (handlingUnauthorizedRef.current) {
+        return;
+      }
+      handlingUnauthorizedRef.current = true;
+
+      firebaseSignOut(auth!).catch(() => {
+        // Sign out error - user will need to retry
+      });
+
+      // Show user-friendly message for auth failures
+      // 401 = token issue (could be no household if token was valid but user lacks access)
+      // 403 = explicitly no household access
+      const message =
+        'Your account is not part of any household. Please contact an administrator to be added.';
+      if (Platform.OS === 'web') {
+        // Use window.alert on web for reliability
+        window.alert(message);
+      } else {
+        Alert.alert('No Access', message, [{ text: 'OK' }]);
+      }
+
+      // Reset after a short delay to allow for retry after re-auth
+      setTimeout(() => {
+        handlingUnauthorizedRef.current = false;
+      }, 1000);
+    });
+  }, []);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -116,9 +166,15 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
       setLoading(false);
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      // Update ref immediately for the token getter
+      userRef.current = firebaseUser;
+      setUser(firebaseUser);
       setLoading(false);
+      // Reset unauthorized flag when user signs in again
+      if (firebaseUser) {
+        handlingUnauthorizedRef.current = false;
+      }
     });
 
     return unsubscribe;
