@@ -11,10 +11,8 @@ import {
   TextInput,
   Pressable,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
@@ -124,51 +122,26 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground>
-      <Stack.Screen
-        options={{
-          title: 'Settings',
-          headerStyle: { backgroundColor: '#4A3728' },
-          headerTintColor: '#fff',
-          headerBackTitle: 'Home',
-          headerLeft: () => (
-            <Pressable
-              onPress={() => router.back()}
-              style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -4 }}
-            >
-              <Ionicons name="chevron-back" size={24} color="white" />
-              <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>Home</Text>
-            </Pressable>
-          ),
-        }}
-      />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
+      <View style={{ flex: 1, paddingBottom: 100 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 20, paddingBottom: 140 }}
+          contentContainerStyle={{ padding: 20, paddingTop: 60, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Close button */}
-          <Pressable
-            onPress={() => router.back()}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              alignSelf: 'flex-start',
-              backgroundColor: pressed ? colors.bgDark : colors.white,
-              paddingHorizontal: spacing.lg,
-              paddingVertical: 10,
-              borderRadius: borderRadius.lg,
-              marginBottom: spacing['2xl'],
-              ...shadows.sm,
-            })}
-          >
-            <Ionicons name="arrow-back" size={20} color={colors.primary} />
-            <Text style={{ fontSize: 15, fontWeight: '600', color: colors.primary, marginLeft: 8 }}>Back to Home</Text>
-          </Pressable>
+          {/* Header */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <Text style={{
+              fontSize: fontSize['4xl'],
+              fontWeight: '600',
+              color: colors.text.primary,
+            }}>Settings</Text>
+            <Text style={{
+              fontSize: fontSize.lg,
+              color: colors.text.secondary,
+              marginTop: 4,
+            }}>Customize your experience</Text>
+          </View>
 
           {/* Household Settings Section */}
           <View style={{ marginBottom: spacing['2xl'] }}>
@@ -417,7 +390,7 @@ export default function SettingsScreen() {
             </View>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
     </GradientBackground>
   );
 }

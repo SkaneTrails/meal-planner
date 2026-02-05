@@ -137,8 +137,8 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
 
   // Grid card layout - streaming app style with large image and text below
   // Image takes most of the card with generous rounded corners
-  const imageHeight = cardSize ? cardSize * 0.75 : 140;
-  const cardHeight = cardSize ? cardSize * 1.15 : 200;
+  const imageHeight = cardSize ? cardSize * 0.72 : 140;
+  const cardHeight = cardSize ? cardSize * 1.0 : 180;
 
   return (
     <Pressable
@@ -168,63 +168,53 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             transition={300}
           />
           
-          {/* Rating badge - top left like in reference */}
+          {/* Diet label badge - bottom left overlaid on image */}
+          {recipe.diet_label && (
+            <View style={{
+              position: 'absolute',
+              bottom: 8,
+              left: 8,
+              backgroundColor: recipe.diet_label === 'veggie'
+                ? 'rgba(46, 125, 50, 0.85)'
+                : recipe.diet_label === 'fish'
+                  ? 'rgba(21, 101, 192, 0.85)'
+                  : 'rgba(198, 40, 40, 0.85)',
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: borderRadius.full,
+            }}>
+              <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.white }}>
+                {DIET_LABELS[recipe.diet_label].label}
+              </Text>
+            </View>
+          )}
+
+          {/* Rating badge - top right */}
           {recipe.rating && (
             <View style={{
               position: 'absolute',
-              top: 10,
-              left: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+              top: 8,
+              right: 8,
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
               paddingHorizontal: 8,
               paddingVertical: 4,
               borderRadius: 12,
             }}>
-              <Ionicons name="star-outline" size={12} color={colors.text.inverse} />
-              <Text style={{
-                fontSize: fontSize.xs,
-                fontWeight: fontWeight.semibold,
-                color: colors.text.inverse,
-                marginLeft: 4,
-              }}>{recipe.rating}.0</Text>
+              <Ionicons
+                name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
+                size={12}
+                color={recipe.rating >= 3 ? colors.success : colors.error}
+              />
             </View>
           )}
-
-          {/* Favorite/heart icon - top right */}
-          <View style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            padding: 6,
-            borderRadius: 14,
-          }}>
-            <Ionicons name="heart-outline" size={14} color={colors.white} />
-          </View>
         </View>
 
-        {/* Text below card - streaming app style */}
-        <View style={{ paddingTop: 10, paddingHorizontal: 4 }}>
-          {/* Category/diet label */}
-          {recipe.diet_label && (
-            <Text style={{
-              fontSize: 11,
-              fontWeight: fontWeight.medium,
-              color: colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-              marginBottom: 2,
-            }}>
-              {DIET_LABELS[recipe.diet_label].label}
-            </Text>
-          )}
-          
-          {/* Title */}
+        {/* Title below card */}
+        <View style={{ paddingTop: 6, paddingHorizontal: 2 }}>
           <Text style={{
-            fontSize: fontSize.md,
+            fontSize: fontSize.lg,
             fontWeight: fontWeight.semibold,
-            color: colors.text.inverse,
+            color: colors.white,
             lineHeight: 20,
           }} numberOfLines={2}>
             {recipe.title}

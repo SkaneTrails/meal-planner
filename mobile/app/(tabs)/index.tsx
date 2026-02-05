@@ -204,40 +204,23 @@ export default function HomeScreen() {
       >
       {/* Elegant header with greeting */}
       <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 24 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{
-              fontSize: fontSize['6xl'],
-              fontWeight: '600',
-              color: colors.text.primary,
-              letterSpacing: letterSpacing.tight,
-              marginBottom: 4,
-            }}>
-              Good morning
-            </Text>
-            <Text style={{
-              fontSize: fontSize.lg,
-              color: colors.text.secondary,
-              letterSpacing: letterSpacing.normal,
-            }}>
-              What shall we cook today?
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => router.push('/settings')}
-            style={({ pressed }) => ({
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: colors.glass.card,
-              alignItems: 'center',
-              justifyContent: 'center',
-              ...shadows.sm,
-              opacity: pressed ? 0.8 : 1,
-            })}
-          >
-            <Ionicons name="settings-outline" size={20} color="#5D4E40" />
-          </Pressable>
+        <View>
+          <Text style={{
+            fontSize: fontSize['6xl'],
+            fontWeight: '600',
+            color: colors.text.primary,
+            letterSpacing: letterSpacing.tight,
+            marginBottom: 4,
+          }}>
+            Good morning
+          </Text>
+          <Text style={{
+            fontSize: fontSize.lg,
+            color: colors.text.secondary,
+            letterSpacing: letterSpacing.normal,
+          }}>
+            What shall we cook today?
+          </Text>
         </View>
       </View>
 
@@ -255,17 +238,7 @@ export default function HomeScreen() {
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <View style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
-            borderRadius: borderRadius.sm,
-            width: 36,
-            height: 36,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 12,
-          }}>
-            <Ionicons name="book-outline" size={18} color="#8B7355" />
-          </View>
+          <Ionicons name="book-outline" size={22} color="#8B7355" style={{ marginBottom: 12 }} />
           <Text style={{
             fontSize: fontSize['5xl'],
             fontWeight: '600',
@@ -294,17 +267,7 @@ export default function HomeScreen() {
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <View style={{
-            backgroundColor: colors.category.planned.bg,
-            borderRadius: borderRadius.sm,
-            width: 36,
-            height: 36,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 12,
-          }}>
-            <Ionicons name="calendar-outline" size={18} color={colors.category.planned.text} />
-          </View>
+          <Ionicons name="calendar-outline" size={22} color="#8B7355" style={{ marginBottom: 12 }} />
           <Text style={{
             fontSize: fontSize['5xl'],
             fontWeight: '600',
@@ -333,17 +296,7 @@ export default function HomeScreen() {
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <View style={{
-            backgroundColor: colors.category.grocery.bg,
-            borderRadius: borderRadius.sm,
-            width: 36,
-            height: 36,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 12,
-          }}>
-            <Ionicons name="cart-outline" size={18} color={colors.category.grocery.text} />
-          </View>
+          <Ionicons name="cart-outline" size={22} color="#8B7355" style={{ marginBottom: 12 }} />
           <Text style={{
             fontSize: fontSize['5xl'],
             fontWeight: '600',
@@ -367,7 +320,7 @@ export default function HomeScreen() {
         <Text style={{
           fontSize: fontSize['2xl'],
           fontWeight: '600',
-          color: '#5D4E40',
+          color: colors.white,
           marginBottom: 12,
           letterSpacing: letterSpacing.normal,
         }}>
@@ -380,27 +333,17 @@ export default function HomeScreen() {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-          <View style={{
-            backgroundColor: colors.bgWarm,
-            borderRadius: borderRadius.sm,
-            width: 44,
-            height: 44,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 8,
-          }}>
-            <Ionicons name="link-outline" size={20} color={colors.accent} />
-          </View>
+          <Ionicons name="link-outline" size={20} color="#8B7355" style={{ marginLeft: 14 }} />
           <TextInput
             style={{
               flex: 1,
-              paddingHorizontal: 8,
+              paddingHorizontal: 12,
               paddingVertical: 12,
               fontSize: fontSize.lg,
               color: '#5D4E40',
             }}
             placeholder="Paste recipe URL..."
-            placeholderTextColor={colors.text.muted}
+            placeholderTextColor="#A89585"
             value={recipeUrl}
             onChangeText={setRecipeUrl}
             autoCapitalize="none"
@@ -415,7 +358,7 @@ export default function HomeScreen() {
             style={({ pressed }) => ({
               backgroundColor: recipeUrl.trim()
                 ? (pressed ? colors.accentDark : colors.accent)
-                : colors.gray[200],
+                : 'rgba(93, 78, 64, 0.15)',
               borderRadius: borderRadius.sm,
               paddingVertical: 12,
               paddingHorizontal: 20,
@@ -423,7 +366,7 @@ export default function HomeScreen() {
             })}
           >
             <Text style={{
-              color: recipeUrl.trim() ? colors.white : colors.text.muted,
+              color: recipeUrl.trim() ? colors.white : '#8B7355',
               fontSize: fontSize.md,
               fontWeight: '600',
             }}>Import</Text>
@@ -436,7 +379,7 @@ export default function HomeScreen() {
         <Text style={{
           fontSize: fontSize['2xl'],
           fontWeight: '600',
-          color: '#5D4E40',
+          color: colors.white,
           marginBottom: 12,
           letterSpacing: letterSpacing.normal,
         }}>
@@ -464,15 +407,11 @@ export default function HomeScreen() {
             />
           ) : (
             <View style={{
-              backgroundColor: colors.category.planned.bg,
+              backgroundColor: colors.bgDark,
               borderRadius: borderRadius.sm,
               width: 56,
               height: 56,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Ionicons name="restaurant-outline" size={24} color={colors.category.planned.text} />
-            </View>
+            }} />
           )}
           <View style={{ flex: 1, marginLeft: 16 }}>
             <Text style={{
@@ -489,7 +428,7 @@ export default function HomeScreen() {
             <Text style={{
               fontSize: fontSize.xl,
               fontWeight: '600',
-              color: nextMeal ? '#5D4E40' : colors.text.muted,
+              color: '#5D4E40',
             }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
             </Text>
@@ -499,13 +438,13 @@ export default function HomeScreen() {
       </View>
 
       {/* Inspiration section - beautiful card */}
-      {inspirationRecipes.length > 0 && inspirationRecipe && (
+      {inspirationRecipes.length > 0 && inspirationRecipe ? (
         <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <Text style={{
               fontSize: fontSize['2xl'],
               fontWeight: '600',
-              color: '#5D4E40',
+              color: colors.white,
               letterSpacing: letterSpacing.normal,
             }}>
               Inspiration
@@ -600,6 +539,65 @@ export default function HomeScreen() {
                   </View>
                 )}
               </View>
+            </LinearGradient>
+          </Pressable>
+        </View>
+      ) : (
+        /* Fallback: Get Started section with hero image when no recipes */
+        <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
+          <Text style={{
+            fontSize: fontSize['2xl'],
+            fontWeight: '600',
+            color: colors.white,
+            marginBottom: 12,
+            letterSpacing: letterSpacing.normal,
+          }}>
+            Get Started
+          </Text>
+
+          <Pressable
+            onPress={() => router.push('/recipes')}
+            style={({ pressed }) => ({
+              backgroundColor: colors.glass.card,
+              borderRadius: borderRadius.lg,
+              overflow: 'hidden',
+              transform: [{ scale: pressed ? 0.99 : 1 }],
+            })}
+          >
+            <Image
+              source={HOMEPAGE_HERO}
+              style={{ width: '100%', height: 180 }}
+              contentFit="cover"
+              placeholder={PLACEHOLDER_BLURHASH}
+              transition={200}
+            />
+            <LinearGradient
+              colors={['transparent', 'rgba(0,0,0,0.6)']}
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 100,
+                justifyContent: 'flex-end',
+                padding: 16,
+              }}
+            >
+              <Text style={{
+                fontSize: fontSize['3xl'],
+                fontWeight: '600',
+                color: colors.white,
+                letterSpacing: letterSpacing.tight,
+              }} numberOfLines={2}>
+                Add your first recipe
+              </Text>
+              <Text style={{
+                fontSize: fontSize.lg,
+                color: 'rgba(255, 255, 255, 0.8)',
+                marginTop: 4,
+              }}>
+                Paste a URL above to import
+              </Text>
             </LinearGradient>
           </Pressable>
         </View>

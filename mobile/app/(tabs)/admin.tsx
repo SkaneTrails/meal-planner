@@ -88,22 +88,22 @@ export default function AdminScreen() {
       <View style={{ flex: 1 }}>
         {/* Header */}
         <View style={{
-          paddingHorizontal: spacing.lg,
-          paddingTop: spacing['2xl'],
+          paddingHorizontal: 24,
+          paddingTop: 60,
           paddingBottom: spacing.md,
         }}>
           <Text style={{
             fontSize: fontSize['4xl'],
-            fontWeight: fontWeight.bold,
-            color: colors.primary,
+            fontWeight: '600',
+            color: colors.text.primary,
             letterSpacing: -0.5,
           }}>
             Admin
           </Text>
           <Text style={{
             fontSize: fontSize.lg,
-            color: colors.text.muted,
-            marginTop: spacing.xs,
+            color: colors.text.secondary,
+            marginTop: 4,
           }}>
             Manage households and members
           </Text>

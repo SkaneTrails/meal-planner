@@ -95,15 +95,15 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={{ width: cardWidth, padding: 4 }}>
+        <View style={{ width: cardWidth, padding: 2 }}>
           <RecipeCard
             recipe={item}
             onPress={() => onRecipePress(item.id)}
-            cardSize={cardWidth - 8}
+            cardSize={cardWidth - 4}
           />
         </View>
       )}
-      contentContainerStyle={{ padding: 8, paddingBottom: 100 }}
+      contentContainerStyle={{ padding: 4, paddingBottom: 100 }}
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
       }
