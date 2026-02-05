@@ -84,6 +84,20 @@ repos:
           - post-merge
           - post-rewrite
 
+  # npm sync for mobile app on branch switch
+  - repo: local
+    hooks:
+      - id: npm-sync-mobile
+        name: npm sync (mobile)
+        entry: bash -c "cd mobile && npm ci --prefer-offline --silent"
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages:
+          - post-checkout
+          - post-merge
+          - post-rewrite
+
   # Ty type checker
   - repo: local
     hooks:

@@ -3,8 +3,9 @@
  * Layout matches Streamlit app design.
  */
 
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
 import type { MealType, Recipe } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -56,28 +57,17 @@ export function MealCell({
         padding: 12,
         borderRadius: 16,
         minHeight: 80,
-        backgroundColor: '#fff',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.06,
-        shadowRadius: 3,
-        elevation: 2,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
       }}
     >
-      <View
-        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
-      >
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
           size={14}
-          color={hasContent ? '#4A3728' : '#9ca3af'}
+          color={hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'}
         />
         <Text
-          style={{
-            fontSize: 12,
-            marginLeft: 4,
-            color: hasContent ? '#4A3728' : '#9ca3af',
-          }}
+          style={{ fontSize: 12, marginLeft: 4, color: hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)' }}
         >
           {MEAL_TYPE_LABELS[mealType]}
         </Text>
@@ -85,16 +75,14 @@ export function MealCell({
 
       {displayText ? (
         <Text
-          style={{ fontSize: 14, color: '#4A3728', fontWeight: '500' }}
+          style={{ fontSize: 14, color: '#FFFFFF', fontWeight: '500' }}
           numberOfLines={2}
         >
           {displayText}
         </Text>
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Ionicons name="add" size={20} color="#9ca3af" />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Ionicons name="add" size={20} color="rgba(255, 255, 255, 0.5)" />
         </View>
       )}
     </Pressable>
@@ -126,23 +114,15 @@ export function DayColumn({
     <View style={{ flex: 1, marginHorizontal: 4 }}>
       {/* Day header */}
       <View
-        style={{
-          alignItems: 'center',
-          paddingVertical: 8,
-          marginBottom: 8,
-          borderRadius: 16,
-          backgroundColor: isToday ? '#4A3728' : '#f3f4f6',
-        }}
+        style={{ alignItems: 'center', paddingVertical: 8, marginBottom: 8, borderRadius: 16, backgroundColor: isToday ? '#4A3728' : '#f3f4f6' }}
       >
-        <Text style={{ fontSize: 12, color: isToday ? '#fff' : '#4b5563' }}>
+        <Text
+          style={{ fontSize: 12, color: isToday ? '#fff' : '#4b5563' }}
+        >
           {dayName}
         </Text>
         <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: isToday ? '#fff' : '#4A3728',
-          }}
+          style={{ fontSize: 18, fontWeight: 'bold', color: isToday ? '#fff' : '#4A3728' }}
         >
           {dayNumber}
         </Text>
@@ -168,14 +148,7 @@ export function DayColumn({
 
       {/* Note indicator */}
       {note && (
-        <View
-          style={{
-            marginTop: 8,
-            padding: 8,
-            backgroundColor: '#E8D5C4',
-            borderRadius: 16,
-          }}
-        >
+        <View style={{ marginTop: 8, padding: 8, backgroundColor: '#E8D5C4', borderRadius: 16 }}>
           <Text style={{ fontSize: 12, color: '#4A3728' }} numberOfLines={2}>
             {note}
           </Text>

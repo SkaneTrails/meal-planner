@@ -1,31 +1,54 @@
 /**
- * Gradient background component matching the food delivery app design.
- * Flows from warm beige at top to light cream at bottom (inverted).
+ * Luxurious gradient background component.
+ * Soft cream to warm peach gradient for premium feel.
  */
 
+import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import type React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
   style?: object;
+  variant?: 'default' | 'warm' | 'soft';
 }
 
-export function GradientBackground({
-  children,
-  style,
-}: GradientBackgroundProps) {
+// Gradient color presets - warm brown/peach tones (lighter for better contrast)
+const gradients = {
+  // Default: soft warm gradient
+  default: {
+    colors: ['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078'] as const,
+    locations: [0, 0.25, 0.5, 0.75, 1] as const,
+  },
+  // Warm: richer brown to orange
+  warm: {
+    colors: ['#C8B8A8', '#D0B098', '#D8A888', '#E0A078'] as const,
+    locations: [0, 0.33, 0.66, 1] as const,
+  },
+  // Soft: muted warm tones
+  soft: {
+    colors: ['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078'] as const,
+    locations: [0, 0.25, 0.5, 0.75, 1] as const,
+  },
+};
+
+export function GradientBackground({ children, style, variant = 'default' }: GradientBackgroundProps) {
+  const gradient = gradients[variant];
+
   // For web, use CSS gradient for better performance
   if (Platform.OS === 'web') {
+    // Build CSS gradient string dynamically for any number of color stops
+    const colorStops = gradient.colors.map((color, i) =>
+      `${color} ${gradient.locations[i] * 100}%`
+    ).join(', ');
+    const cssGradient = `linear-gradient(180deg, ${colorStops})`;
     return (
       <View
         style={[
           styles.container,
           {
-            // @ts-expect-error - web-specific CSS property
-            background:
-              'linear-gradient(180deg, #E8D5C4 0%, #F5E6D3 50%, #FDFBF7 100%)',
+            // @ts-ignore - web-specific CSS property
+            background: cssGradient,
           },
           style,
         ]}
@@ -37,8 +60,8 @@ export function GradientBackground({
 
   return (
     <LinearGradient
-      colors={['#E8D5C4', '#F5E6D3', '#FDFBF7']}
-      locations={[0, 0.5, 1]}
+      colors={[...gradient.colors]}
+      locations={[...gradient.locations]}
       style={[styles.container, style]}
     >
       {children}
