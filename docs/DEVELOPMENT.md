@@ -41,7 +41,7 @@ uv run uvicorn api.main:app --reload --port 8000
 
 ```bash
 cd mobile
-npm install
+pnpm install
 npx expo start
 ```
 
