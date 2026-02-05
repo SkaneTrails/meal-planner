@@ -162,6 +162,22 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarAccessibilityLabel: 'Settings',
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{
+              padding: 8,
+              borderRadius: 16,
+              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+            }}>
+              <Ionicons name={focused ? "settings" : "settings-outline"} size={22} color={focused ? '#5D4E40' : color} />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="admin"
         options={{
           title: 'Admin',
@@ -172,7 +188,7 @@ export default function TabLayout() {
               borderRadius: 16,
               backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "settings" : "settings-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "shield-checkmark" : "shield-checkmark-outline"} size={22} color={focused ? '#5D4E40' : color} />
             </View>
           ),
           // Only show admin tab for superusers
@@ -199,13 +215,6 @@ export default function TabLayout() {
         options={{
           href: null, // Hide from tab bar
           title: 'Select Recipe',
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          href: null, // Hide from tab bar
-          title: 'Settings',
         }}
       />
     </Tabs>

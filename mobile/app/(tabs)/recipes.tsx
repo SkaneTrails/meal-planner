@@ -215,7 +215,7 @@ export default function RecipesScreen() {
           <Text style={{
             fontSize: fontSize['4xl'],
             fontWeight: '600',
-            color: colors.text.inverse,
+            color: colors.text.primary,
             letterSpacing: letterSpacing.tight,
           }}>Recipe Library</Text>
           <Text style={{

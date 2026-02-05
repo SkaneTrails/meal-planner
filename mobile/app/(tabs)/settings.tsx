@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
 
@@ -42,35 +42,31 @@ const SUGGESTED_ITEMS = [
 // Section header component
 function SectionHeader({
   icon,
-  iconColor = '#4A3728',
-  iconBg = '#E8D5C4',
   title,
   subtitle
 }: {
   icon: keyof typeof Ionicons.glyphMap;
-  iconColor?: string;
-  iconBg?: string;
   title: string;
   subtitle: string;
 }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
       <View style={{
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: iconBg,
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 12,
+        marginRight: spacing.md,
       }}>
-        <Ionicons name={icon} size={20} color={iconColor} />
+        <Ionicons name={icon} size={20} color="#5D4E40" />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 18, fontWeight: '700', color: '#4A3728' }}>
+        <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.text.primary }}>
           {title}
         </Text>
-        <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>
+        <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary, marginTop: 2 }}>
           {subtitle}
         </Text>
       </View>
@@ -152,7 +148,7 @@ export default function SettingsScreen() {
       >
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+          contentContainerStyle={{ padding: 20, paddingBottom: 140 }}
           keyboardShouldPersistTaps="handled"
         >
           {/* Close button */}
@@ -174,18 +170,47 @@ export default function SettingsScreen() {
             <Text style={{ fontSize: 15, fontWeight: '600', color: colors.primary, marginLeft: 8 }}>Back to Home</Text>
           </Pressable>
 
+          {/* Household Settings Section */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <SectionHeader
+              icon="people"
+              title="Household"
+              subtitle="Dietary preferences, equipment & more"
+            />
+
+            <Pressable
+              onPress={() => router.push('/household-settings')}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: pressed ? colors.bgDark : colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                ...shadows.sm,
+              })}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+                  Household Settings
+                </Text>
+                <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
+                  Configure dietary preferences, kitchen equipment, and household size
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+            </Pressable>
+          </View>
+
           {/* Language Section */}
-          <View style={{ marginBottom: 28 }}>
+          <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="language"
-              iconBg="#E8E8F0"
-              iconColor="#3D3D5A"
               title="Language"
               subtitle="Choose your preferred language"
             />
 
             <View style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.md,
               overflow: 'hidden',
               ...shadows.sm,
@@ -197,16 +222,16 @@ export default function SettingsScreen() {
                   style={({ pressed }) => ({
                     flexDirection: 'row',
                     alignItems: 'center',
-                    padding: 16,
-                    backgroundColor: pressed ? '#F9FAFB' : '#fff',
+                    padding: spacing.lg,
+                    backgroundColor: pressed ? colors.bgMid : 'transparent',
                     borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
-                    borderBottomColor: '#F3F4F6',
+                    borderBottomColor: 'rgba(93, 78, 64, 0.15)',
                   })}
                 >
-                  <Text style={{ fontSize: 24, marginRight: 12 }}>{lang.flag}</Text>
-                  <Text style={{ flex: 1, fontSize: 16, color: '#4A3728' }}>{lang.label}</Text>
+                  <Text style={{ fontSize: 24, marginRight: spacing.md }}>{lang.flag}</Text>
+                  <Text style={{ flex: 1, fontSize: fontSize.lg, color: colors.text.dark }}>{lang.label}</Text>
                   {settings.language === lang.code && (
-                    <Ionicons name="checkmark-circle" size={24} color="#2D5A3D" />
+                    <Ionicons name="checkmark-circle" size={24} color={colors.accent} />
                   )}
                 </Pressable>
               ))}
@@ -214,11 +239,9 @@ export default function SettingsScreen() {
           </View>
 
           {/* Grocery List Section */}
-          <View style={{ marginBottom: 28 }}>
+          <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="home"
-              iconBg="#E8F0E8"
-              iconColor="#2D5A3D"
               title="Items at Home"
               subtitle="These won't appear in your grocery list"
             />
@@ -226,7 +249,7 @@ export default function SettingsScreen() {
             {/* Add new item input */}
             <View style={{
               flexDirection: 'row',
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.md,
               padding: 4,
               marginBottom: spacing.lg,
@@ -235,13 +258,13 @@ export default function SettingsScreen() {
               <TextInput
                 style={{
                   flex: 1,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  fontSize: 16,
-                  color: '#4A3728',
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.md,
+                  fontSize: fontSize.lg,
+                  color: colors.text.dark,
                 }}
                 placeholder="Add an item (e.g., salt, olive oil)"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.text.dark + '60'}
                 value={newItem}
                 onChangeText={setNewItem}
                 onSubmitEditing={handleAddItem}
@@ -251,16 +274,16 @@ export default function SettingsScreen() {
                 onPress={handleAddItem}
                 disabled={!newItem.trim()}
                 style={({ pressed }) => ({
-                  backgroundColor: newItem.trim() ? '#4A3728' : '#E5E7EB',
-                  borderRadius: 12,
-                  padding: 12,
+                  backgroundColor: newItem.trim() ? colors.primary : colors.bgDark,
+                  borderRadius: borderRadius.sm,
+                  padding: spacing.md,
                   opacity: pressed ? 0.8 : 1,
                 })}
               >
                 <Ionicons
                   name="add"
                   size={24}
-                  color={newItem.trim() ? '#fff' : '#9CA3AF'}
+                  color={newItem.trim() ? colors.white : colors.text.inverse + '60'}
                 />
               </Pressable>
             </View>
@@ -268,13 +291,13 @@ export default function SettingsScreen() {
             {/* Current items */}
             {settings.itemsAtHome.length > 0 ? (
               <View style={{
-                backgroundColor: colors.white,
+                backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
                 marginBottom: spacing.lg,
                 ...shadows.sm,
               }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280', marginBottom: 12 }}>
+                <Text style={{ fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.md }}>
                   Your items ({settings.itemsAtHome.length})
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -285,24 +308,24 @@ export default function SettingsScreen() {
                       style={({ pressed }) => ({
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: pressed ? '#FEE2E2' : '#F5E6D3',
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        borderRadius: 20,
+                        backgroundColor: pressed ? colors.errorBg : colors.bgDark,
+                        paddingHorizontal: spacing.md,
+                        paddingVertical: spacing.sm,
+                        borderRadius: borderRadius.full,
                         gap: 6,
                       })}
                     >
-                      <Text style={{ fontSize: 14, color: '#4A3728', textTransform: 'capitalize' }}>
+                      <Text style={{ fontSize: fontSize.base, color: colors.text.dark, textTransform: 'capitalize' }}>
                         {item}
                       </Text>
-                      <Ionicons name="close-circle" size={18} color="#9CA3AF" />
+                      <Ionicons name="close-circle" size={18} color={colors.text.dark + '60'} />
                     </Pressable>
                   ))}
                 </View>
               </View>
             ) : (
               <View style={{
-                backgroundColor: colors.white,
+                backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing['2xl'],
                 alignItems: 'center',
@@ -313,17 +336,17 @@ export default function SettingsScreen() {
                   width: 60,
                   height: 60,
                   borderRadius: 30,
-                  backgroundColor: colors.bgMid,
+                  backgroundColor: colors.bgDark,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginBottom: 12,
+                  marginBottom: spacing.md,
                 }}>
-                  <Ionicons name="basket-outline" size={28} color="#4A3728" />
+                  <Ionicons name="basket-outline" size={28} color={colors.text.dark} />
                 </View>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#4A3728', marginBottom: 4 }}>
+                <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.text.dark, marginBottom: 4 }}>
                   No items yet
                 </Text>
-                <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center' }}>
+                <Text style={{ fontSize: fontSize.base, color: colors.text.dark + '80', textAlign: 'center' }}>
                   Add items you always have at home to exclude them from your grocery list
                 </Text>
               </View>
@@ -332,12 +355,12 @@ export default function SettingsScreen() {
             {/* Suggested items */}
             {suggestedNotAdded.length > 0 && (
               <View style={{
-                backgroundColor: colors.white,
+                backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
                 ...shadows.sm,
               }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280', marginBottom: 12 }}>
+                <Text style={{ fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.md }}>
                   Suggestions
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -348,18 +371,18 @@ export default function SettingsScreen() {
                       style={({ pressed }) => ({
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: pressed ? '#DCFCE7' : '#F9FAFB',
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        borderRadius: 20,
+                        backgroundColor: pressed ? colors.successBg : 'transparent',
+                        paddingHorizontal: spacing.md,
+                        paddingVertical: spacing.sm,
+                        borderRadius: borderRadius.full,
                         borderWidth: 1,
-                        borderColor: '#E5E7EB',
+                        borderColor: colors.text.dark + '30',
                         borderStyle: 'dashed',
                         gap: 6,
                       })}
                     >
-                      <Ionicons name="add" size={16} color="#6B7280" />
-                      <Text style={{ fontSize: 14, color: '#6B7280', textTransform: 'capitalize' }}>
+                      <Ionicons name="add" size={16} color={colors.text.dark + '80'} />
+                      <Text style={{ fontSize: fontSize.base, color: colors.text.dark + '80', textTransform: 'capitalize' }}>
                         {item}
                       </Text>
                     </Pressable>
@@ -370,28 +393,26 @@ export default function SettingsScreen() {
           </View>
 
           {/* About Section */}
-          <View style={{ marginBottom: 28 }}>
+          <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="information-circle"
-              iconBg="#F3E8E0"
-              iconColor="#4A3728"
               title="About"
               subtitle="App information"
             />
 
             <View style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.glass.card,
               borderRadius: borderRadius.md,
               padding: spacing.lg,
               ...shadows.sm,
             }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <Text style={{ fontSize: 15, color: '#6B7280' }}>Version</Text>
-                <Text style={{ fontSize: 15, color: '#4A3728', fontWeight: '500' }}>1.0.0</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
+                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>Version</Text>
+                <Text style={{ fontSize: fontSize.md, color: colors.text.dark, fontWeight: fontWeight.medium }}>1.0.0</Text>
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 15, color: '#6B7280' }}>Made with</Text>
-                <Text style={{ fontSize: 15 }}>❤️</Text>
+                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>Made with</Text>
+                <Text style={{ fontSize: fontSize.md }}>❤️</Text>
               </View>
             </View>
           </View>

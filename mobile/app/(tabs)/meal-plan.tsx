@@ -407,18 +407,18 @@ export default function MealPlanScreen() {
               }}
               style={({ pressed }) => ({
                 padding: 6,
-                backgroundColor: pressed ? colors.gray[100] : 'transparent',
+                backgroundColor: pressed ? 'rgba(93, 78, 64, 0.1)' : 'transparent',
                 borderRadius: borderRadius.sm,
               })}
             >
-              <Ionicons name="chevron-back" size={20} color={colors.text.primary} />
+              <Ionicons name="chevron-back" size={20} color="#5D4E40" />
             </Pressable>
 
             <View style={{ alignItems: 'center' }}>
               <Text style={{
                 fontSize: fontSize.lg,
-                fontWeight: fontWeight.semibold,
-                color: colors.text.primary,
+                fontWeight: fontWeight.bold,
+                color: '#5D4E40',
               }}>
                 {formatWeekRange(weekDates)}
               </Text>
@@ -444,11 +444,11 @@ export default function MealPlanScreen() {
               }}
               style={({ pressed }) => ({
                 padding: 6,
-                backgroundColor: pressed ? colors.gray[100] : 'transparent',
+                backgroundColor: pressed ? 'rgba(93, 78, 64, 0.1)' : 'transparent',
                 borderRadius: borderRadius.sm,
               })}
             >
-              <Ionicons name="chevron-forward" size={20} color={colors.text.primary} />
+              <Ionicons name="chevron-forward" size={20} color="#5D4E40" />
             </Pressable>
           </View>
         </View>

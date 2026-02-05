@@ -381,11 +381,11 @@ export default function GroceryScreen() {
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: fontSize.md, color: colors.text.secondary }}>This week's shopping</Text>
+              <Text style={{ fontSize: fontSize.md, color: '#8B7355' }}>This week's shopping</Text>
               <Text style={{
                 fontSize: fontSize['3xl'],
                 fontWeight: fontWeight.bold,
-                color: colors.text.primary,
+                color: '#5D4E40',
                 marginTop: 4,
               }}>
                 {itemsToBuy === 0
