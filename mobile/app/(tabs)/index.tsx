@@ -233,7 +233,7 @@ export default function HomeScreen() {
               opacity: pressed ? 0.8 : 1,
             })}
           >
-            <Ionicons name="settings-outline" size={20} color={colors.text.primary} />
+            <Ionicons name="settings-outline" size={20} color="#5D4E40" />
           </Pressable>
         </View>
       </View>
@@ -261,12 +261,12 @@ export default function HomeScreen() {
             justifyContent: 'center',
             marginBottom: 12,
           }}>
-            <Ionicons name="book-outline" size={18} color={colors.text.primary} />
+            <Ionicons name="book-outline" size={18} color="#8B7355" />
           </View>
           <Text style={{
             fontSize: fontSize['5xl'],
             fontWeight: '600',
-            color: colors.text.primary,
+            color: '#5D4E40',
             letterSpacing: letterSpacing.tight,
             marginBottom: 2,
           }}>
@@ -274,7 +274,7 @@ export default function HomeScreen() {
           </Text>
           <Text style={{
             fontSize: fontSize.sm,
-            color: colors.text.secondary,
+            color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
           }}>Recipes</Text>
@@ -305,7 +305,7 @@ export default function HomeScreen() {
           <Text style={{
             fontSize: fontSize['5xl'],
             fontWeight: '600',
-            color: colors.text.primary,
+            color: '#5D4E40',
             letterSpacing: letterSpacing.tight,
             marginBottom: 2,
           }}>
@@ -313,7 +313,7 @@ export default function HomeScreen() {
           </Text>
           <Text style={{
             fontSize: fontSize.sm,
-            color: colors.text.secondary,
+            color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
           }}>Planned</Text>
@@ -344,7 +344,7 @@ export default function HomeScreen() {
           <Text style={{
             fontSize: fontSize['5xl'],
             fontWeight: '600',
-            color: colors.text.primary,
+            color: '#5D4E40',
             letterSpacing: letterSpacing.tight,
             marginBottom: 2,
           }}>
@@ -352,7 +352,7 @@ export default function HomeScreen() {
           </Text>
           <Text style={{
             fontSize: fontSize.sm,
-            color: colors.text.secondary,
+            color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
           }}>To Buy</Text>
@@ -364,7 +364,7 @@ export default function HomeScreen() {
         <Text style={{
           fontSize: fontSize['2xl'],
           fontWeight: '600',
-          color: colors.text.primary,
+          color: '#5D4E40',
           marginBottom: 12,
           letterSpacing: letterSpacing.normal,
         }}>
@@ -394,7 +394,7 @@ export default function HomeScreen() {
               paddingHorizontal: 8,
               paddingVertical: 12,
               fontSize: fontSize.lg,
-              color: colors.text.primary,
+              color: '#5D4E40',
             }}
             placeholder="Paste recipe URL..."
             placeholderTextColor={colors.text.muted}
@@ -433,7 +433,7 @@ export default function HomeScreen() {
         <Text style={{
           fontSize: fontSize['2xl'],
           fontWeight: '600',
-          color: colors.text.primary,
+          color: '#5D4E40',
           marginBottom: 12,
           letterSpacing: letterSpacing.normal,
         }}>
@@ -474,7 +474,7 @@ export default function HomeScreen() {
           <View style={{ flex: 1, marginLeft: 16 }}>
             <Text style={{
               fontSize: fontSize.sm,
-              color: colors.text.secondary,
+              color: '#8B7355',
               marginBottom: 4,
               textTransform: 'uppercase',
               letterSpacing: letterSpacing.wide,
@@ -486,12 +486,12 @@ export default function HomeScreen() {
             <Text style={{
               fontSize: fontSize.xl,
               fontWeight: '600',
-              color: nextMeal ? colors.text.primary : colors.text.muted,
+              color: nextMeal ? '#5D4E40' : colors.text.muted,
             }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color={colors.text.light} />
+          <Ionicons name="chevron-forward" size={20} color="#8B7355" />
         </Pressable>
       </View>
 
@@ -502,7 +502,7 @@ export default function HomeScreen() {
             <Text style={{
               fontSize: fontSize['2xl'],
               fontWeight: '600',
-              color: colors.text.primary,
+              color: '#5D4E40',
               letterSpacing: letterSpacing.normal,
             }}>
               Inspiration
@@ -515,15 +515,15 @@ export default function HomeScreen() {
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: pressed ? colors.gray[200] : colors.gray[100],
+                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.3)',
                 paddingHorizontal: 14,
                 paddingVertical: 8,
                 borderRadius: borderRadius.full,
               })}
             >
-              <Ionicons name="shuffle" size={14} color={colors.text.secondary} />
+              <Ionicons name="shuffle" size={14} color="#8B7355" />
               <Text style={{
-                color: colors.text.secondary,
+                color: '#5D4E40',
                 fontWeight: '500',
                 fontSize: fontSize.sm,
                 marginLeft: 6,
