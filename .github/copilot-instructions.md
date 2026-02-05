@@ -5,9 +5,12 @@
 **At conversation start, ALWAYS:**
 1. Read `.copilot-tasks.md` using `read_file`
 2. Check for active tasks on current branch
-3. Acknowledge what you found before proceeding
+3. Skim Failure Tracking table for patterns relevant to current topic
+4. Acknowledge what you found before proceeding
 
 This file persists across conversations. Ignoring it loses track of work.
+
+**On failure:** Log to Failure Tracking table in `.copilot-tasks.md`; when count reaches 3, promote to permanent documentation.
 
 ---
 
@@ -213,33 +216,11 @@ Skills in `.github/skills/` provide domain-specific instructions:
 
 ## Development Workflows
 
-### Running the API
+For local development setup, environment configuration, and troubleshooting, see the `local-development` skill.
 
-```bash
-uv sync                                    # Install dependencies
-./scripts/run-api.sh                       # Start API (or: uv run uvicorn api.main:app --reload --port 8000)
-./scripts/run-dev.sh                       # Start all dev services
-./scripts/run-function.sh                  # Run Cloud Function locally
-```
-
-**Note:** The API requires the scrape Cloud Function to be running. Either:
-1. Run `./scripts/run-function.sh` in a separate terminal, or
-2. Set `SCRAPE_FUNCTION_URL` to point to the deployed Cloud Function
-
-```powershell
-# PowerShell - use deployed function instead of local
-$env:SCRAPE_FUNCTION_URL = "https://your-region-your-project.cloudfunctions.net/scrape_recipe"
-```
-
-### Running the Mobile App
-
-```bash
-cd mobile
-npm install
-npx expo start
-```
-
-For web deployment and Firebase Hosting, see `local-development` skill.
+**Quick reference:**
+- API: `uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload`
+- Mobile: `cd mobile && npx expo start --web`
 
 ### Code Quality Tools
 
