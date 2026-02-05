@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { View, ActivityIndicator, Platform, Pressable, Text } from 'react-native';
+import { View, ActivityIndicator, Platform } from 'react-native';
 import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
@@ -57,7 +57,6 @@ export default function TabLayout() {
     data: currentUser,
     isLoading: userLoading,
     isError,
-    refetch,
   } = useCurrentUser({ enabled: !loading && !!user });
 
   // Show loading spinner while checking auth state
@@ -90,63 +89,10 @@ export default function TabLayout() {
     );
   }
 
-  // Show error state if there was an API error (don't redirect, could be temporary)
+  // If API returns error (likely 403 - user not in any household), redirect to sign-in
+  // Users without household access will be manually added to households
   if (isError) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'white',
-          padding: 24,
-        }}
-      >
-        <Ionicons name="cloud-offline-outline" size={48} color="#EF4444" />
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: '600',
-            color: '#374151',
-            marginTop: 16,
-            textAlign: 'center',
-          }}
-        >
-          Connection Error
-        </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            color: '#6B7280',
-            marginTop: 8,
-            textAlign: 'center',
-          }}
-        >
-          Could not load your account info
-        </Text>
-        <Pressable
-          onPress={() => refetch()}
-          style={{
-            marginTop: 24,
-            backgroundColor: '#10b981',
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 8,
-          }}
-        >
-          <Text style={{ color: 'white', fontWeight: '600' }}>Retry</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  // Redirect to no-access if user doesn't have a household (unless superuser)
-  if (
-    currentUser &&
-    !currentUser.household_id &&
-    currentUser.role !== 'superuser'
-  ) {
-    return <Redirect href="/no-access" />;
+    return <Redirect href="/sign-in" />;
   }
 
   // Check if user is superuser (show admin tab)
