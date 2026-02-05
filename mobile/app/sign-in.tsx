@@ -20,14 +20,14 @@ export default function SignInScreen() {
 
   if (loading) {
     return (
-      <GradientBackground style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <GradientBackground animated style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={colors.primary} />
       </GradientBackground>
     );
   }
 
   return (
-    <GradientBackground style={{ flex: 1 }}>
+    <GradientBackground animated style={{ flex: 1 }}>
       {/* Main content - centered */}
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xl }}>
         {/* Brand Name - elegant typography */}
