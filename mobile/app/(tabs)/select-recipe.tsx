@@ -370,7 +370,7 @@ export default function SelectRecipeScreen() {
             </View>
           </View>
         ) : activeTab === 'library' ? (
-          <>  
+          <>
             {/* Search bar */}
             <View style={{ backgroundColor: colors.glass.card, paddingHorizontal: spacing.lg, paddingVertical: spacing.md }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.glass.light, borderRadius: borderRadius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}>

@@ -167,7 +167,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             placeholder={PLACEHOLDER_BLURHASH}
             transition={300}
           />
-          
+
           {/* Diet label badge - bottom left overlaid on image */}
           {recipe.diet_label && (
             <View style={{

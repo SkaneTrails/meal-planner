@@ -38,7 +38,7 @@ export function GradientBackground({ children, style, variant = 'default' }: Gra
   // For web, use CSS gradient for better performance
   if (Platform.OS === 'web') {
     // Build CSS gradient string dynamically for any number of color stops
-    const colorStops = gradient.colors.map((color, i) => 
+    const colorStops = gradient.colors.map((color, i) =>
       `${color} ${gradient.locations[i] * 100}%`
     ).join(', ');
     const cssGradient = `linear-gradient(180deg, ${colorStops})`;
