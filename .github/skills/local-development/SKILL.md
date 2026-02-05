@@ -212,7 +212,7 @@ Then start the app:
 
 ```bash
 cd mobile
-npm install
+pnpm install
 npx expo start --web    # For web debugging
 npx expo start --lan    # For mobile device (Expo Go)
 ```
@@ -239,7 +239,7 @@ uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
 # Terminal 2: Mobile
 cd c:\git\meal-planner\mobile
-npm install
+pnpm install
 npx expo start --web --port 8081
 ```
 
@@ -331,7 +331,7 @@ taskkill /PID <pid> /F
 
 The mobile app is deployed as a static web export to Firebase Hosting.
 
-**Build command:** `npm run build:web` (runs font copy + `npx expo export --platform web`)
+**Build command:** `pnpm run build:web` (runs font copy + `npx expo export --platform web`)
 
 ### Known Pitfalls
 
