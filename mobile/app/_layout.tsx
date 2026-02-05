@@ -101,6 +101,10 @@ export default function RootLayout() {
                   options={{ headerShown: false, animation: 'fade' }}
                 />
                 <Stack.Screen
+                  name="no-access"
+                  options={{ headerShown: false, animation: 'fade' }}
+                />
+                <Stack.Screen
                   name="(tabs)"
                   options={{ headerShown: false, animation: 'fade' }}
                 />

@@ -35,12 +35,56 @@ export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
   const data = cache
     .filter((query) => query.state.data !== undefined)
+    // Skip large data like full recipe lists - only cache smaller queries
+    .filter((query) => {
+      const key = query.queryKey;
+      if (!Array.isArray(key)) {
+        return true;
+      }
+
+      const resource = key[0];
+      const type = key[1];
+
+      // Skip recipes list (can be large) but allow individual recipe details
+      if (resource === 'recipes' && type === 'list') {
+        return false;
+      }
+
+      return true;
+    })
     .map((query) => ({
       queryKey: query.queryKey,
       data: query.state.data,
       dataUpdatedAt: query.state.dataUpdatedAt,
     }));
-  await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
+  try {
+    const serialized = JSON.stringify(data);
+    // Let AsyncStorage handle quota - catch will handle QuotaExceededError
+    await AsyncStorage.setItem(CACHE_KEY, serialized);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : String(error);
+    const name = error instanceof Error ? error.name : 'UnknownError';
+
+    console.warn('Failed to persist query cache', {
+      name,
+      message,
+    });
+
+    const isQuotaOrStorageError = /quota|storage|capacity/i.test(message);
+
+    if (isQuotaOrStorageError) {
+      // Quota exceeded - clear cache and continue
+      try {
+        await AsyncStorage.removeItem(CACHE_KEY);
+      } catch (cleanupError) {
+        console.warn('Failed to clear persisted query cache after error', {
+          error: cleanupError,
+        });
+      }
+    }
+  }
 }
 
 export async function restoreQueryCache(): Promise<void> {

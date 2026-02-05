@@ -17,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { GradientBackground } from '@/components';
 
 // Common items that people often have at home
@@ -75,8 +76,18 @@ function SectionHeader({
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { user, signOut } = useAuth();
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
   const [newItem, setNewItem] = useState('');
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/sign-in');
+    } catch {
+      Alert.alert('Error', 'Failed to sign out');
+    }
+  };
 
   const handleAddItem = async () => {
     const item = newItem.trim();
@@ -415,6 +426,40 @@ export default function SettingsScreen() {
                 <Text style={{ fontSize: fontSize.md }}>❤️</Text>
               </View>
             </View>
+          </View>
+
+          {/* Account Section */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <SectionHeader
+              icon="person-circle"
+              title="Account"
+              subtitle={user?.email || 'Email unavailable'}
+            />
+
+            <Pressable
+              onPress={handleSignOut}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? '#FEE2E2' : colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                ...shadows.sm,
+              })}
+            >
+              <Ionicons name="log-out-outline" size={20} color="#DC2626" />
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontWeight: fontWeight.semibold,
+                  color: '#DC2626',
+                  marginLeft: spacing.sm,
+                }}
+              >
+                Sign Out
+              </Text>
+            </Pressable>
           </View>
         </ScrollView>
       </View>
