@@ -23,7 +23,7 @@ app = FastAPI(
 # Allows both local development and production domains
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:8081,http://localhost:19006,http://localhost:3000,https://REDACTED_PROJECT_ID.web.app,https://REDACTED_PROJECT_ID.firebaseapp.com",
+    "http://localhost:8081,http://localhost:8085,http://localhost:19006,http://localhost:3000,https://REDACTED_PROJECT_ID.web.app,https://REDACTED_PROJECT_ID.firebaseapp.com",
 ).split(",")
 
 app.add_middleware(

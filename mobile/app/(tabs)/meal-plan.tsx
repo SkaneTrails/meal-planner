@@ -23,7 +23,7 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight } from '@/lib/theme';
+import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { GradientBackground } from '@/components';
 import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
@@ -347,17 +347,18 @@ export default function MealPlanScreen() {
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12 }}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 44, paddingBottom: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
               <Text style={{
                 fontSize: fontSize['4xl'],
-                fontWeight: '600',
+                fontFamily: fontFamily.display,
                 color: colors.text.primary,
                 letterSpacing: letterSpacing.tight,
               }}>Weekly Menu</Text>
               <Text style={{
                 fontSize: fontSize.lg,
+                fontFamily: fontFamily.body,
                 color: colors.text.secondary,
                 marginTop: 4,
               }}>Plan your meals ahead</Text>
