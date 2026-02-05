@@ -516,8 +516,8 @@ Scan for project-specific patterns:
 
 ```bash
 # Patterns that should NOT appear in committed files
-grep -r "hikes-482104" .github/ --include="*.md"
-grep -r "@gmail.com\|@outlook.com" . --include="*.md" --include="*.py"
+grep -r "<your-project-id>" .github/ --include="*.md"
+grep -r "@gmail.com\\|@outlook.com" . --include="*.md" --include="*.py"
 grep -r "AIzaSy[A-Za-z0-9_-]{33}" . --include="*.ts" --include="*.py"
 ```
 

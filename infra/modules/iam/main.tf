@@ -1,7 +1,7 @@
 # IAM Module - Grant permissions to users
 #
 # This module assigns custom IAM roles to users for accessing the Meal Planner project.
-# All personal user emails should be defined in environments/dev/access/users.txt
+# User emails come from environments/dev/access/users.txt and superusers.txt
 #
 # Custom roles defined in custom_roles.tf:
 # 1. Infrastructure Manager - Create/manage infrastructure (can be revoked after setup)
@@ -9,8 +9,11 @@
 
 # Project-level IAM bindings for users
 locals {
+  # Combine users and superusers, removing duplicates
+  all_users = distinct(concat(var.users, var.superusers))
+
   # Transform user list into member format
-  user_members = [for email in var.users : "user:${email}"]
+  user_members = [for email in local.all_users : "user:${email}"]
 
   # Built-in roles needed to create custom roles
   # These must be granted BEFORE custom roles can be created
@@ -97,9 +100,50 @@ resource "google_project_iam_member" "github_actions_firebase_secretmanager" {
   depends_on = [google_service_account.github_actions_firebase]
 }
 
+# -----------------------------------------------------------------------------
+# Local Development Service Account
+# -----------------------------------------------------------------------------
+
+# Service account for local development (avoids ADC OAuth client issues)
+resource "google_service_account" "local_dev" {
+  project      = var.project
+  account_id   = "local-dev"
+  display_name = "Local Development"
+  description  = "Service account for local development, used via impersonation (no key download needed)"
+
+  depends_on = [var.iam_api_service]
+}
+
+# Grant Firestore access to local dev service account
+resource "google_project_iam_member" "local_dev_firestore" {
+  project = var.project
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${google_service_account.local_dev.email}"
+
+  depends_on = [google_service_account.local_dev]
+}
+
+# Grant Storage access to local dev service account (for recipe images)
+resource "google_project_iam_member" "local_dev_storage" {
+  project = var.project
+  role    = "roles/storage.objectUser"
+  member  = "serviceAccount:${google_service_account.local_dev.email}"
+
+  depends_on = [google_service_account.local_dev]
+}
+
+# Grant Secret Manager access to local dev service account (for fetching secrets)
+resource "google_project_iam_member" "local_dev_secrets" {
+  project = var.project
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.local_dev.email}"
+
+  depends_on = [google_service_account.local_dev]
+}
+
 # Grant prerequisite roles needed to create custom roles
 resource "google_project_iam_binding" "prerequisite_roles" {
-  for_each = length(var.users) > 0 ? toset(local.prerequisite_roles) : toset([])
+  for_each = length(local.all_users) > 0 ? toset(local.prerequisite_roles) : toset([])
 
   project = var.project
   role    = each.value
@@ -108,9 +152,9 @@ resource "google_project_iam_binding" "prerequisite_roles" {
   depends_on = [var.iam_api_service]
 }
 
-# Grant each role to all users
+# Grant each role to all users (including superusers)
 resource "google_project_iam_binding" "user_access" {
-  for_each = length(var.users) > 0 ? toset(local.user_roles) : toset([])
+  for_each = length(local.all_users) > 0 ? toset(local.user_roles) : toset([])
 
   project = var.project
   role    = each.value

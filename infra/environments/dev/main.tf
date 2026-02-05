@@ -59,8 +59,9 @@ module "apis" {
 module "iam" {
   source = "../../modules/iam"
 
-  project = var.project
-  users   = local.users
+  project    = var.project
+  users      = local.users
+  superusers = local.superusers
 
   # Implicit dependency on APIs module through output reference
   iam_api_service = module.apis.iam_service

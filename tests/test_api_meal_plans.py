@@ -48,6 +48,22 @@ def client_no_household() -> TestClient:
     app.dependency_overrides.clear()
 
 
+@pytest.fixture
+def client_regular_no_household() -> TestClient:
+    """Create test client with mocked auth (regular user without household)."""
+    from api.auth.firebase import require_auth
+
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(uid="orphan", email="orphan@example.com", household_id=None, role="member")
+
+    app.dependency_overrides[require_auth] = mock_auth
+
+    with TestClient(app) as c:
+        yield c
+
+    app.dependency_overrides.clear()
+
+
 class TestGetMealPlan:
     """Tests for GET /meal-plans endpoint."""
 
@@ -75,9 +91,25 @@ class TestGetMealPlan:
         assert data["meals"]["2025-01-15_dinner"] == "custom:Pizza"
         assert data["notes"]["2025-01-15"] == "office day"
 
-    def test_get_meal_plan_requires_household(self, client_no_household: TestClient) -> None:
-        """Should return 403 if user has no household."""
+    def test_get_meal_plan_superuser_requires_household_id(self, client_no_household: TestClient) -> None:
+        """Superuser without household must specify household_id parameter."""
         response = client_no_household.get("/meal-plans")
+
+        assert response.status_code == 400
+        assert "household_id" in response.json()["detail"].lower()
+
+    def test_get_meal_plan_superuser_with_household_id(self, client_no_household: TestClient) -> None:
+        """Superuser can access any household by specifying household_id."""
+        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {})):
+            response = client_no_household.get("/meal-plans?household_id=test-household")
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["user_id"] == "test-household"
+
+    def test_get_meal_plan_regular_user_no_household(self, client_regular_no_household: TestClient) -> None:
+        """Regular user without household gets 403."""
+        response = client_regular_no_household.get("/meal-plans")
 
         assert response.status_code == 403
         assert "household" in response.json()["detail"].lower()

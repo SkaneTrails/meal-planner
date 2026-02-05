@@ -42,6 +42,13 @@ async def get_current_user(  # pragma: no cover
     Returns None if no token provided (for optional auth endpoints).
     Raises HTTPException if token is invalid.
     """
+    # Skip token validation in development mode - return a dev user if token provided
+    if os.getenv("SKIP_AUTH", "").lower() == "true":
+        if credentials is not None:
+            # Return a placeholder user - require_auth will replace with full dev user
+            return AuthenticatedUser(uid="dev-user", email="dev@localhost", name="Dev User", picture=None)
+        return None
+
     if credentials is None:
         return None
 
