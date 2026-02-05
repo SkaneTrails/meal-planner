@@ -56,13 +56,27 @@ export default function TabLayout() {
     );
   }
 
+  // Show error state if there was an API error (don't redirect, could be temporary)
+  if (isError) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+        }}
+      >
+        <ActivityIndicator size="large" color="#EF4444" />
+      </View>
+    );
+  }
+
   // Redirect to no-access if user doesn't have a household (unless superuser)
-  // Also redirect if there was an error fetching user info (likely 403)
   if (
-    (currentUser &&
-      !currentUser.household_id &&
-      currentUser.role !== 'superuser') ||
-    isError
+    currentUser &&
+    !currentUser.household_id &&
+    currentUser.role !== 'superuser'
   ) {
     return <Redirect href="/no-access" />;
   }

@@ -4,16 +4,26 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { Redirect } from 'expo-router';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { Redirect, useRouter } from 'expo-router';
+import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 
 export default function NoAccessScreen() {
+  const router = useRouter();
   const { user, loading, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser({
     enabled: !loading && !!user,
   });
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/sign-in');
+    } catch {
+      Alert.alert('Error', 'Failed to sign out');
+    }
+  };
 
   // If not authenticated, redirect to sign-in
   if (!loading && !user) {
@@ -60,7 +70,7 @@ export default function NoAccessScreen() {
 
         {/* Sign Out Button */}
         <Pressable
-          onPress={signOut}
+          onPress={handleSignOut}
           className="bg-white border border-stone-200 rounded-2xl px-6 py-4 flex-row items-center justify-center w-full shadow-sm active:bg-stone-50"
           style={{ elevation: 2 }}
         >
