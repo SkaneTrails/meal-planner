@@ -155,3 +155,24 @@ export function useUpdateHouseholdSettings() {
     },
   });
 }
+
+/**
+ * Transfer a recipe to a different household (superuser only).
+ */
+export function useTransferRecipe() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    { id: string; title: string; household_id: string; message: string },
+    Error,
+    { recipeId: string; targetHouseholdId: string; enhanced?: boolean }
+  >({
+    mutationFn: ({ recipeId, targetHouseholdId, enhanced }) =>
+      api.transferRecipe(recipeId, targetHouseholdId, enhanced),
+    onSuccess: (_, { recipeId }) => {
+      // Invalidate the recipe query to refresh the data
+      queryClient.invalidateQueries({ queryKey: ['recipe', recipeId] });
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}

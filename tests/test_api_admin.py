@@ -537,3 +537,113 @@ class TestUpdateHouseholdSettings:
             response = superuser_client.put("/admin/households/nonexistent/settings", json={"foo": "bar"})
 
         assert response.status_code == 404
+
+
+class TestTransferRecipe:
+    """Tests for POST /admin/recipes/{recipe_id}/transfer."""
+
+    def test_superuser_can_transfer(self, superuser_client: TestClient) -> None:
+        """Superuser can transfer a recipe to another household."""
+        from api.models.recipe import Recipe
+
+        target_household = Household(
+            id="target_household", name="Target Home", created_at="2024-01-01T00:00:00Z", created_by="test@example.com"
+        )
+        transferred_recipe = Recipe(
+            id="recipe_123",
+            title="Test Recipe",
+            url="https://example.com/recipe",
+            ingredients=[],
+            instructions=[],
+            household_id="target_household",
+        )
+
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value=target_household),
+            patch("api.routers.admin.recipe_storage.transfer_recipe_to_household", return_value=transferred_recipe),
+        ):
+            response = superuser_client.post(
+                "/admin/recipes/recipe_123/transfer", json={"target_household_id": "target_household"}
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == "recipe_123"
+        assert data["household_id"] == "target_household"
+        assert "Target Home" in data["message"]
+
+    def test_superuser_can_transfer_enhanced(self, superuser_client: TestClient) -> None:
+        """Superuser can transfer an enhanced recipe."""
+        from api.models.recipe import Recipe
+
+        target_household = Household(
+            id="target_household", name="Target Home", created_at="2024-01-01T00:00:00Z", created_by="test@example.com"
+        )
+        transferred_recipe = Recipe(
+            id="recipe_123",
+            title="Enhanced Recipe",
+            url="https://example.com/recipe",
+            ingredients=[],
+            instructions=[],
+            household_id="target_household",
+            enhanced=True,
+        )
+
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value=target_household),
+            patch(
+                "api.routers.admin.recipe_storage.transfer_recipe_to_household", return_value=transferred_recipe
+            ) as mock_transfer,
+        ):
+            response = superuser_client.post(
+                "/admin/recipes/recipe_123/transfer?enhanced=true", json={"target_household_id": "target_household"}
+            )
+
+        assert response.status_code == 200
+        # Verify the correct database was passed
+        mock_transfer.assert_called_once()
+        assert mock_transfer.call_args.kwargs.get("database") == "meal-planner"
+
+    def test_admin_cannot_transfer(self, admin_client: TestClient) -> None:
+        """Admin cannot transfer recipes (superuser only)."""
+        response = admin_client.post(
+            "/admin/recipes/recipe_123/transfer", json={"target_household_id": "target_household"}
+        )
+
+        assert response.status_code == 403
+        assert "Superuser role required" in response.json()["detail"]
+
+    def test_member_cannot_transfer(self, member_client: TestClient) -> None:
+        """Member cannot transfer recipes (superuser only)."""
+        response = member_client.post(
+            "/admin/recipes/recipe_123/transfer", json={"target_household_id": "target_household"}
+        )
+
+        assert response.status_code == 403
+
+    def test_target_household_not_found(self, superuser_client: TestClient) -> None:
+        """Should return 404 if target household doesn't exist."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=None):
+            response = superuser_client.post(
+                "/admin/recipes/recipe_123/transfer", json={"target_household_id": "nonexistent"}
+            )
+
+        assert response.status_code == 404
+        assert "Target household not found" in response.json()["detail"]
+
+    def test_recipe_not_found(self, superuser_client: TestClient) -> None:
+        """Should return 404 if recipe doesn't exist."""
+        target_household = Household(
+            id="target_household", name="Target Home", created_at="2024-01-01T00:00:00Z", created_by="test@example.com"
+        )
+
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value=target_household),
+            patch("api.routers.admin.recipe_storage.transfer_recipe_to_household", return_value=None),
+        ):
+            response = superuser_client.post(
+                "/admin/recipes/recipe_123/transfer", json={"target_household_id": "target_household"}
+            )
+
+        assert response.status_code == 404
+        assert "Recipe not found" in response.json()["detail"]

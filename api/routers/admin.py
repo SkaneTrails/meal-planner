@@ -6,13 +6,14 @@ These endpoints require superuser or admin role access.
 import re
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
 from api.models.settings import HouseholdSettingsUpdate  # noqa: TC001 - FastAPI needs at runtime
-from api.storage import household_storage
+from api.storage import household_storage, recipe_storage
+from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -300,3 +301,42 @@ async def update_household_settings(
 
     # Return the updated settings
     return household_storage.get_household_settings(household_id) or {}
+
+
+# --- Recipe Management Endpoints ---
+
+
+class RecipeTransfer(BaseModel):
+    """Request to transfer a recipe to a different household."""
+
+    target_household_id: str = Field(..., description="The household ID to transfer the recipe to")
+
+
+@router.post("/recipes/{recipe_id}/transfer")
+async def transfer_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    recipe_id: str,
+    transfer: RecipeTransfer,
+    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
+) -> dict:
+    """Transfer a recipe to a different household. Superuser only."""
+    if user.role != "superuser":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Superuser role required")
+
+    # Verify target household exists
+    target_household = household_storage.get_household(transfer.target_household_id)
+    if target_household is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target household not found")
+
+    # Transfer the recipe
+    database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
+    recipe = recipe_storage.transfer_recipe_to_household(recipe_id, transfer.target_household_id, database=database)
+    if recipe is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+
+    return {
+        "id": recipe.id,
+        "title": recipe.title,
+        "household_id": recipe.household_id,
+        "message": f"Recipe transferred to {target_household.name}",
+    }

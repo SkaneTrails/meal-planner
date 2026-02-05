@@ -414,6 +414,20 @@ class ApiClient {
       },
     );
   }
+
+  async transferRecipe(
+    recipeId: string,
+    targetHouseholdId: string,
+    enhanced: boolean = false,
+  ): Promise<{ id: string; title: string; household_id: string; message: string }> {
+    return this.request<{ id: string; title: string; household_id: string; message: string }>(
+      `/admin/recipes/${recipeId}/transfer?enhanced=${enhanced}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ target_household_id: targetHouseholdId }),
+      },
+    );
+  }
 }
 
 export class ApiClientError extends Error {

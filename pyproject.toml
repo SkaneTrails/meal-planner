@@ -83,6 +83,11 @@ lint.ignore = [
   "TRY300",  # Consider else block (style preference)
 ]
 
+lint.per-file-ignores."api/routers/**/*.py" = [
+  "FBT001", # Boolean positional argument (FastAPI Query parameters)
+  "FBT002", # Boolean default positional argument (FastAPI Query parameters)
+]
+
 lint.per-file-ignores."scripts/**/*.py" = [
   "ANN201",  # Missing return type annotation ok in CLI scripts
   "C901",    # Complex functions ok in CLI scripts (main, process_batch)
