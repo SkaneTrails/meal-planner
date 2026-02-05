@@ -58,13 +58,13 @@ export default function NoAccessScreen() {
           No Access
         </Text>
         <Text className="text-stone-500 text-center text-base leading-relaxed mb-4">
-          You&apos;re signed in as
+          You're signed in as
         </Text>
         <Text className="text-stone-700 font-semibold text-lg mb-4">
           {user?.email}
         </Text>
         <Text className="text-stone-500 text-center text-base leading-relaxed mb-12">
-          but you haven&apos;t been added to a household yet.{'\n\n'}
+          but you haven't been added to a household yet.{'\n\n'}
           Ask a household admin to invite you.
         </Text>
 
