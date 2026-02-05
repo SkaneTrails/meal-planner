@@ -51,7 +51,7 @@ export default function AddRecipeScreen() {
       setImportedRecipe(recipe);
 
       // Show summary modal if enhanced, otherwise show simple alert
-      if (recipe.improved && recipe.changes_made && recipe.changes_made.length > 0) {
+      if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
         setShowSummaryModal(true);
       } else {
         Alert.alert('Klart!', `"${recipe.title}" har importerats!`, [
@@ -59,7 +59,7 @@ export default function AddRecipeScreen() {
             text: 'Visa recept',
             onPress: () => {
               router.back();
-              router.push(`/recipe/${recipe.id}${recipe.improved ? '?enhanced=true' : ''}`);
+              router.push(`/recipe/${recipe.id}${recipe.enhanced ? '?enhanced=true' : ''}`);
             },
           },
           {
@@ -78,7 +78,7 @@ export default function AddRecipeScreen() {
     setShowSummaryModal(false);
     if (importedRecipe) {
       router.back();
-      router.push(`/recipe/${importedRecipe.id}${importedRecipe.improved ? '?enhanced=true' : ''}`);
+      router.push(`/recipe/${importedRecipe.id}${importedRecipe.enhanced ? '?enhanced=true' : ''}`);
     }
   };
 
