@@ -16,6 +16,9 @@ import { GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { Recipe, GroceryItem } from '@/lib/types';
 
+// Local fallback image for inspiration section
+const HOMEPAGE_HERO = require('@/assets/images/homepage-hero.png');
+
 // Blurhash placeholder for loading state
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
@@ -541,7 +544,7 @@ export default function HomeScreen() {
             })}
           >
             <Image
-              source={{ uri: inspirationRecipe.image_url || 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400' }}
+              source={inspirationRecipe.image_url ? { uri: inspirationRecipe.image_url } : HOMEPAGE_HERO}
               style={{ width: '100%', height: 180 }}
               contentFit="cover"
               placeholder={PLACEHOLDER_BLURHASH}
