@@ -1,3 +1,8 @@
+---
+name: local-development
+description: GCP secrets, .env setup, starting servers, and troubleshooting local development
+---
+
 # Local Development Setup
 
 Instructions for setting up and running the Meal Planner app locally.
