@@ -23,7 +23,7 @@ app = FastAPI(
 # Allows both local development and production domains
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:8081,http://localhost:19006,http://localhost:3000,https://hikes-482104.web.app,https://hikes-482104.firebaseapp.com",
+    "http://localhost:8081,http://localhost:8085,http://localhost:19006,http://localhost:3000,https://hikes-482104.web.app,https://hikes-482104.firebaseapp.com",
 ).split(",")
 
 app.add_middleware(
