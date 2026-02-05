@@ -1,11 +1,16 @@
 /**
- * Luxurious gradient background component.
- * Soft cream to warm peach gradient for premium feel.
+ * Luxurious background component.
+ * Uses a soft gradient image for premium feel.
+ * Adapts to all screen sizes with proper scaling.
  */
 
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, View, Platform } from 'react-native';
+import { ImageBackground } from 'react-native';
+import { Image } from 'expo-image';
+
+// Background image - soft peach/cream gradient
+const BACKGROUND_IMAGE = require('@/assets/images/background.png');
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
@@ -13,64 +18,40 @@ interface GradientBackgroundProps {
   variant?: 'default' | 'warm' | 'soft';
 }
 
-// Gradient color presets - warm brown/peach tones (lighter for better contrast)
-const gradients = {
-  // Default: soft warm gradient
-  default: {
-    colors: ['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078'] as const,
-    locations: [0, 0.25, 0.5, 0.75, 1] as const,
-  },
-  // Warm: richer brown to orange
-  warm: {
-    colors: ['#C8B8A8', '#D0B098', '#D8A888', '#E0A078'] as const,
-    locations: [0, 0.33, 0.66, 1] as const,
-  },
-  // Soft: muted warm tones
-  soft: {
-    colors: ['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078'] as const,
-    locations: [0, 0.25, 0.5, 0.75, 1] as const,
-  },
-};
-
-export function GradientBackground({ children, style, variant = 'default' }: GradientBackgroundProps) {
-  const gradient = gradients[variant];
-
-  // For web, use CSS gradient for better performance
+export function GradientBackground({ children, style }: GradientBackgroundProps) {
+  // Use expo-image for web to handle the image properly
   if (Platform.OS === 'web') {
-    // Build CSS gradient string dynamically for any number of color stops
-    const colorStops = gradient.colors.map((color, i) =>
-      `${color} ${gradient.locations[i] * 100}%`
-    ).join(', ');
-    const cssGradient = `linear-gradient(180deg, ${colorStops})`;
     return (
-      <View
-        style={[
-          styles.container,
-          {
-            // @ts-ignore - web-specific CSS property
-            background: cssGradient,
-          },
-          style,
-        ]}
-      >
+      <View style={[styles.container, style]}>
+        <Image
+          source={BACKGROUND_IMAGE}
+          style={StyleSheet.absoluteFill}
+          contentFit="cover"
+          contentPosition="center"
+        />
         {children}
       </View>
     );
   }
 
   return (
-    <LinearGradient
-      colors={[...gradient.colors]}
-      locations={[...gradient.locations]}
+    <ImageBackground
+      source={BACKGROUND_IMAGE}
       style={[styles.container, style]}
+      imageStyle={styles.image}
+      resizeMode="cover"
     >
       {children}
-    </LinearGradient>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
 });

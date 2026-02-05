@@ -22,10 +22,11 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useRecipes, useEnhancedMode } from '@/lib/hooks';
 import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
+import { useSettings } from '@/lib/settings-context';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 // Enable LayoutAnimation on Android
@@ -72,17 +73,17 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
 
   // Calculate number of columns based on screen width
   // Card width for readable titles with time info
-  const minCardWidth = 185;
-  const padding = 16;
-  const availableWidth = width - padding;
+  const minCardWidth = 180;
+  const horizontalPadding = 12; // Symmetric padding on both sides
+  const availableWidth = width - (horizontalPadding * 2);
   const numColumns = Math.max(2, Math.floor(availableWidth / minCardWidth));
-  const cardWidth = (availableWidth - (numColumns - 1) * 8) / numColumns;
+  const cardWidth = (availableWidth - (numColumns - 1) * 6) / numColumns;
 
   // Show skeleton when loading and no recipes yet
   if (isLoading && recipes.length === 0) {
     return (
-      <View style={{ padding: 8 }}>
-        <RecipeListSkeleton count={numColumns * 3} cardSize={cardWidth - 8} />
+      <View style={{ paddingHorizontal: horizontalPadding }}>
+        <RecipeListSkeleton count={numColumns * 3} cardSize={cardWidth - 6} />
       </View>
     );
   }
@@ -95,15 +96,15 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={{ width: cardWidth, padding: 2 }}>
+        <View style={{ width: cardWidth, padding: 3 }}>
           <RecipeCard
             recipe={item}
             onPress={() => onRecipePress(item.id)}
-            cardSize={cardWidth - 4}
+            cardSize={cardWidth - 6}
           />
         </View>
       )}
-      contentContainerStyle={{ padding: 4, paddingBottom: 100 }}
+      contentContainerStyle={{ paddingHorizontal: horizontalPadding, paddingBottom: 100 }}
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
       }
@@ -159,6 +160,10 @@ export default function RecipesScreen() {
   const [sortBy, setSortBy] = useState('newest');
   const [showAllRecipes, setShowAllRecipes] = useState(true);
   const [filtersExpanded, setFiltersExpanded] = useState(true);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  // Get favorites from settings
+  const { isFavorite, settings } = useSettings();
 
   // Modal states for filter pickers
   const [showDietPicker, setShowDietPicker] = useState(false);
@@ -174,7 +179,7 @@ export default function RecipesScreen() {
   };
 
   // Check if any filters are active
-  const hasActiveFilters = dietFilter !== null || mealFilter !== null || searchQuery !== '';
+  const hasActiveFilters = dietFilter !== null || mealFilter !== null || searchQuery !== '' || showFavoritesOnly;
 
   // Use global enhanced mode context
   const { isEnhanced, setIsEnhanced } = useEnhancedMode();
@@ -193,7 +198,8 @@ export default function RecipesScreen() {
         );
       const matchesDiet = !dietFilter || recipe.diet_label === dietFilter;
       const matchesMeal = !mealFilter || recipe.meal_label === mealFilter;
-      return matchesSearch && matchesDiet && matchesMeal;
+      const matchesFavorites = !showFavoritesOnly || isFavorite(recipe.id);
+      return matchesSearch && matchesDiet && matchesMeal && matchesFavorites;
     });
 
     // Sort
@@ -204,22 +210,23 @@ export default function RecipesScreen() {
     }
 
     return result;
-  }, [recipes, searchQuery, dietFilter, mealFilter, sortBy]);
+  }, [recipes, searchQuery, dietFilter, mealFilter, sortBy, showFavoritesOnly, isFavorite]);
 
   return (
     <GradientBackground>
       <View style={{ flex: 1, paddingBottom: 100 }}>
       {/* Header */}
-      <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 8 }}>
-        <View style={{ marginBottom: 16 }}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 44, paddingBottom: 4 }}>
+        <View style={{ marginBottom: 8 }}>
           <Text style={{
             fontSize: fontSize['4xl'],
-            fontWeight: '600',
+            fontFamily: fontFamily.display,
             color: colors.text.primary,
             letterSpacing: letterSpacing.tight,
           }}>Recipe Library</Text>
           <Text style={{
             fontSize: fontSize.lg,
+            fontFamily: fontFamily.body,
             color: colors.text.secondary,
             marginTop: 4,
           }}>{recipes.length} recipes in your collection</Text>
@@ -231,33 +238,26 @@ export default function RecipesScreen() {
           alignItems: 'center',
           justifyContent: 'space-between',
           backgroundColor: isEnhanced ? '#7A6858' : colors.glass.card,
-          borderRadius: borderRadius.lg,
-          paddingHorizontal: 18,
-          paddingVertical: 14,
-          marginBottom: 16,
+          borderRadius: borderRadius.md,
+          paddingHorizontal: 14,
+          paddingVertical: 10,
+          marginBottom: 8,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
             <View style={{
               backgroundColor: isEnhanced ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.3)',
               borderRadius: borderRadius.sm,
-              padding: 8
+              padding: 6
             }}>
-              <Ionicons name="sparkles" size={20} color={isEnhanced ? '#FFD700' : '#8B7355'} />
+              <Ionicons name="sparkles" size={16} color={isEnhanced ? '#FFD700' : '#8B7355'} />
             </View>
-            <View style={{ marginLeft: 14, flex: 1 }}>
+            <View style={{ marginLeft: 10, flex: 1 }}>
               <Text style={{
-                fontSize: fontSize.xl,
+                fontSize: fontSize.md,
                 fontWeight: fontWeight.semibold,
                 color: isEnhanced ? colors.white : '#5D4E40',
               }}>
                 AI Enhanced
-              </Text>
-              <Text style={{
-                fontSize: fontSize.sm,
-                color: isEnhanced ? 'rgba(255, 255, 255, 0.8)' : '#8B7355',
-                marginTop: 2,
-              }}>
-                {isEnhanced ? 'Showing improved recipes' : 'Try AI-improved instructions'}
               </Text>
             </View>
           </View>
@@ -268,82 +268,33 @@ export default function RecipesScreen() {
             thumbColor={colors.white}
           />
         </View>
-
-        {/* All Recipes / Add Recipe toggle buttons */}
-        <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
-          <Pressable
-            onPress={() => setShowAllRecipes(true)}
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: 14,
-              borderRadius: borderRadius.lg,
-              backgroundColor: showAllRecipes ? '#7A6858' : colors.glass.card,
-            }}
-          >
-            <Ionicons name={showAllRecipes ? "book" : "book-outline"} size={18} color={showAllRecipes ? colors.white : '#5D4E40'} />
-            <Text style={{
-              marginLeft: 8,
-              fontSize: fontSize.lg,
-              fontWeight: fontWeight.semibold,
-              color: showAllRecipes ? colors.white : '#5D4E40',
-            }}>
-              All Recipes
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => {
-              hapticLight();
-              router.push('/add-recipe');
-            }}
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: 14,
-              borderRadius: borderRadius.lg,
-              backgroundColor: colors.glass.card,
-            }}
-          >
-            <Ionicons name="add-circle-outline" size={18} color="#8B7355" />
-            <Text style={{
-              marginLeft: 6,
-              fontSize: fontSize.lg,
-              fontWeight: fontWeight.semibold,
-              color: '#5D4E40',
-            }}>Add Recipe</Text>
-          </Pressable>
-        </View>
       </View>
 
       {/* Search and filters */}
-      <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
+      <View style={{ paddingHorizontal: 16, paddingBottom: 4 }}>
         {/* Search bar with filter toggle and cancel button */}
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginBottom: 8,
+          marginBottom: 6,
         }}>
           <View style={{
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
             backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.lg,
-            paddingHorizontal: 14,
-            paddingVertical: 12,
+            borderRadius: borderRadius.md,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
           }}>
-            <Ionicons name="search" size={18} color="#8B7355" />
+            <Ionicons name="search" size={16} color="#8B7355" />
             <TextInput
               ref={searchInputRef}
               style={{
                 flex: 1,
-                fontSize: fontSize.lg,
+                fontSize: fontSize.md,
                 color: '#5D4E40',
-                marginLeft: 10,
+                marginLeft: 8,
               }}
               placeholder="Search recipes..."
               placeholderTextColor="#8B7355"
@@ -353,8 +304,8 @@ export default function RecipesScreen() {
               onBlur={() => setIsSearchFocused(false)}
             />
             {searchQuery !== '' && (
-              <Pressable onPress={() => setSearchQuery('')} style={{ padding: 4 }}>
-                <Ionicons name="close-circle" size={18} color={colors.text.muted} />
+              <Pressable onPress={() => setSearchQuery('')} style={{ padding: 2 }}>
+                <Ionicons name="close-circle" size={16} color={colors.text.muted} />
               </Pressable>
             )}
             <Pressable
@@ -366,16 +317,16 @@ export default function RecipesScreen() {
               }}
               disabled={isSearchFocused}
               style={{
-                marginLeft: 8,
-                padding: 6,
+                marginLeft: 6,
+                padding: 4,
                 backgroundColor: hasActiveFilters ? '#E8F5E8' : '#F3F4F6',
-                borderRadius: 8,
+                borderRadius: 6,
                 opacity: isSearchFocused ? 0.4 : 1,
               }}
             >
               <Ionicons
                 name={filtersExpanded ? "options" : "options-outline"}
-                size={18}
+                size={16}
                 color={hasActiveFilters ? '#2D5A3D' : '#6B7280'}
               />
             </Pressable>
@@ -396,7 +347,35 @@ export default function RecipesScreen() {
 
         {/* Collapsible filter dropdowns row */}
         {filtersExpanded && (
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flexDirection: 'row', gap: 6 }}>
+            {/* Favorites filter */}
+            <Pressable
+              onPress={() => {
+                hapticLight();
+                setShowFavoritesOnly(!showFavoritesOnly);
+              }}
+              style={{
+                backgroundColor: showFavoritesOnly ? 'rgba(220, 38, 38, 0.85)' : colors.glass.card,
+                borderRadius: borderRadius.sm,
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              <Ionicons
+                name={showFavoritesOnly ? 'heart' : 'heart-outline'}
+                size={14}
+                color={showFavoritesOnly ? colors.white : '#5D4E40'}
+              />
+              {showFavoritesOnly && (
+                <Text style={{ fontSize: 12, fontWeight: '500', color: colors.white }}>
+                  {settings.favoriteRecipes.length}
+                </Text>
+              )}
+            </Pressable>
+
             {/* Diet filter */}
             <View style={{ flex: 1 }}>
               <Pressable
@@ -404,17 +383,17 @@ export default function RecipesScreen() {
                 style={{
                   backgroundColor: dietFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
                   borderRadius: borderRadius.sm,
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '500', color: dietFilter ? '#2D5A3D' : '#5D4E40' }}>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: dietFilter ? '#2D5A3D' : '#5D4E40' }}>
                   {DIET_OPTIONS.find(o => o.value === dietFilter)?.label || 'Diet'}
                 </Text>
-                <Ionicons name="chevron-down" size={14} color="#8B7355" />
+                <Ionicons name="chevron-down" size={12} color="#8B7355" />
               </Pressable>
             </View>
 
@@ -425,17 +404,17 @@ export default function RecipesScreen() {
                 style={{
                   backgroundColor: mealFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
                   borderRadius: borderRadius.sm,
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '500', color: mealFilter ? '#2D5A3D' : '#5D4E40' }}>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: mealFilter ? '#2D5A3D' : '#5D4E40' }}>
                   {MEAL_OPTIONS.find(o => o.value === mealFilter)?.label || 'Meal'}
                 </Text>
-                <Ionicons name="chevron-down" size={14} color="#8B7355" />
+                <Ionicons name="chevron-down" size={12} color="#8B7355" />
               </Pressable>
             </View>
 
@@ -446,17 +425,17 @@ export default function RecipesScreen() {
                 style={{
                   backgroundColor: colors.glass.card,
                   borderRadius: borderRadius.sm,
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '500', color: '#5D4E40' }}>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: '#5D4E40' }}>
                   {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Sort'}
                 </Text>
-                <Ionicons name="chevron-down" size={14} color="#8B7355" />
+                <Ionicons name="chevron-down" size={12} color="#8B7355" />
               </Pressable>
             </View>
           </View>

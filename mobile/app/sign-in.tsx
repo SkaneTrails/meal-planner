@@ -8,6 +8,7 @@ import { Redirect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../lib/hooks/use-auth';
 import { GoogleLogo } from '../components/GoogleLogo';
+import { fontFamily } from '../lib/theme';
 
 export default function SignInScreen() {
   const { user, loading, error, signIn } = useAuth();
@@ -95,7 +96,7 @@ export default function SignInScreen() {
         {/* App Title */}
         <Text style={{
           fontSize: 34,
-          fontWeight: '700',
+          fontFamily: fontFamily.displayBold,
           color: '#5D4E40',
           marginBottom: 8,
           letterSpacing: -0.5,

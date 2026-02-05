@@ -268,9 +268,10 @@ export default function HouseholdSettingsScreen() {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
+        <>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
+          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }}
         >
           {/* General Settings */}
           <View style={{ marginBottom: spacing['2xl'] }}>
@@ -609,6 +610,48 @@ export default function HouseholdSettingsScreen() {
             </View>
           </View>
         </ScrollView>
+
+        {/* Persistent bottom save bar */}
+        {hasChanges && (
+          <View style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: 'rgba(253, 246, 240, 0.95)',
+            borderTopWidth: 1,
+            borderTopColor: 'rgba(139, 115, 85, 0.2)',
+            paddingHorizontal: spacing.lg,
+            paddingVertical: spacing.md,
+            paddingBottom: spacing.xl,
+          }}>
+            <Pressable
+              onPress={handleSave}
+              disabled={updateSettings.isPending}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? '#5D4E40' : colors.primary,
+                borderRadius: borderRadius.md,
+                paddingVertical: 14,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+                gap: 8,
+              })}
+            >
+              {updateSettings.isPending ? (
+                <ActivityIndicator color="white" size="small" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark" size={20} color="white" />
+                  <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
+                    Save Changes
+                  </Text>
+                </>
+              )}
+            </Pressable>
+          </View>
+        )}
+        </>
       )}
     </GradientBackground>
   );

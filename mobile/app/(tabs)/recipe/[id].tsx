@@ -20,9 +20,10 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { shadows, borderRadius, colors, spacing } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontFamily } from '@/lib/theme';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists, useCurrentUser } from '@/lib/hooks';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useSettings } from '@/lib/settings-context';
 import { BouncingLoader } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
@@ -349,6 +350,10 @@ export default function RecipeDetailScreen() {
   const { isEnhanced: globalEnhanced } = useEnhancedMode();
   const { user, loading: authLoading } = useAuth();
   const isAuthReady = !authLoading && !!user;
+
+  // Favorites
+  const { isFavorite, toggleFavorite } = useSettings();
+  const isRecipeFavorite = id ? isFavorite(id) : false;
 
   // Parallax scroll animation
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -808,9 +813,24 @@ export default function RecipeDetailScreen() {
             </Pressable>
           ),
           headerRight: () => (
-            <Pressable onPress={handleDelete} style={{ padding: 8 }}>
-              <Ionicons name="trash-outline" size={24} color="white" />
-            </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Pressable
+                onPress={() => {
+                  hapticLight();
+                  if (id) toggleFavorite(id);
+                }}
+                style={{ padding: 8 }}
+              >
+                <Ionicons
+                  name={isRecipeFavorite ? 'heart' : 'heart-outline'}
+                  size={24}
+                  color={isRecipeFavorite ? '#FF6B6B' : 'white'}
+                />
+              </Pressable>
+              <Pressable onPress={handleDelete} style={{ padding: 8 }}>
+                <Ionicons name="trash-outline" size={24} color="white" />
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -892,7 +912,7 @@ export default function RecipeDetailScreen() {
         }}>
           {/* Title and rating */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#4A3728', letterSpacing: -0.3, flex: 1, marginRight: 12 }}>
+            <Text style={{ fontSize: 24, fontFamily: fontFamily.displayBold, color: '#4A3728', letterSpacing: -0.3, flex: 1, marginRight: 12 }}>
               {recipe.title}
             </Text>
             <ThumbRating

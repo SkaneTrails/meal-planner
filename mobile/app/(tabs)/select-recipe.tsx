@@ -390,29 +390,6 @@ export default function SelectRecipeScreen() {
               </View>
             </View>
 
-            {/* Custom text input */}
-            <View style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.md, backgroundColor: colors.glass.dark }}>
-              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
-                Or enter custom text
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TextInput
-                  style={{ flex: 1, backgroundColor: colors.glass.light, borderRadius: borderRadius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, fontSize: fontSize.lg, color: colors.text.inverse }}
-                  placeholder="e.g., Leftovers, Eating out..."
-                  placeholderTextColor={colors.gray[500]}
-                  value={customText}
-                  onChangeText={setCustomText}
-                />
-                <Pressable
-                  onPress={handleSetCustomText}
-                  disabled={!customText.trim() || setMeal.isPending}
-                  style={({ pressed }) => ({ marginLeft: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderRadius: borderRadius.sm, backgroundColor: customText.trim() ? colors.primary : colors.gray[300], opacity: pressed ? 0.9 : 1 })}
-                >
-                  <Text style={{ color: customText.trim() ? colors.white : colors.gray[500], fontSize: fontSize.lg, fontWeight: '600' }}>Add</Text>
-                </Pressable>
-              </View>
-            </View>
-
             {/* Recipe list */}
             <FlatList
               data={filteredRecipes}
@@ -700,26 +677,28 @@ export default function SelectRecipeScreen() {
           </ScrollView>
         )}
 
-        {/* Remove meal button */}
-        <View style={{ padding: spacing.lg, backgroundColor: colors.glass.card }}>
-          <Pressable
-            onPress={handleRemoveMeal}
-            disabled={removeMeal.isPending}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? colors.glass.medium : colors.glass.light,
-            })}
-          >
-            <Ionicons name="trash-outline" size={18} color={colors.text.inverse} />
-            <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
-              Clear This Meal
-            </Text>
-          </Pressable>
-        </View>
+        {/* Remove meal button - only show for Quick and Copy tabs */}
+        {(activeTab === 'quick' || activeTab === 'copy') && (
+          <View style={{ padding: spacing.lg, backgroundColor: colors.glass.card }}>
+            <Pressable
+              onPress={handleRemoveMeal}
+              disabled={removeMeal.isPending}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: spacing.md,
+                borderRadius: borderRadius.sm,
+                backgroundColor: pressed ? colors.glass.medium : colors.glass.light,
+              })}
+            >
+              <Ionicons name="trash-outline" size={18} color={colors.text.inverse} />
+              <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
+                Clear This Meal
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </GradientBackground>
     </>
   );

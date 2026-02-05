@@ -12,9 +12,10 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
 import { GradientBackground } from '@/components';
 
@@ -125,19 +126,21 @@ export default function SettingsScreen() {
       <View style={{ flex: 1, paddingBottom: 100 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 20, paddingTop: 60, paddingBottom: 40 }}
+          contentContainerStyle={{ padding: 16, paddingTop: 44, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <View style={{ marginBottom: spacing['2xl'] }}>
+          <View style={{ marginBottom: spacing.lg }}>
             <Text style={{
               fontSize: fontSize['4xl'],
-              fontWeight: '600',
+              fontFamily: fontFamily.display,
               color: colors.text.primary,
+              letterSpacing: -0.5,
             }}>Settings</Text>
             <Text style={{
               fontSize: fontSize.lg,
+              fontFamily: fontFamily.body,
               color: colors.text.secondary,
               marginTop: 4,
             }}>Customize your experience</Text>
@@ -188,26 +191,47 @@ export default function SettingsScreen() {
               overflow: 'hidden',
               ...shadows.sm,
             }}>
-              {LANGUAGES.map((lang, index) => (
+              {LANGUAGES.map((lang, index) => {
+                // Flag image URLs - using circular flag icons
+                const flagUrls: Record<AppLanguage, string> = {
+                  en: 'https://flagcdn.com/w80/gb.png',
+                  sv: 'https://flagcdn.com/w80/se.png',
+                  it: 'https://flagcdn.com/w80/it.png',
+                };
+                
+                return (
                 <Pressable
                   key={lang.code}
                   onPress={() => handleLanguageChange(lang.code)}
                   style={({ pressed }) => ({
                     flexDirection: 'row',
                     alignItems: 'center',
-                    padding: spacing.lg,
+                    padding: spacing.md,
                     backgroundColor: pressed ? colors.bgMid : 'transparent',
                     borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
                     borderBottomColor: 'rgba(93, 78, 64, 0.15)',
                   })}
                 >
-                  <Text style={{ fontSize: 24, marginRight: spacing.md }}>{lang.flag}</Text>
-                  <Text style={{ flex: 1, fontSize: fontSize.lg, color: colors.text.dark }}>{lang.label}</Text>
+                  <View style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    marginRight: spacing.md,
+                    backgroundColor: '#E8E8E8',
+                  }}>
+                    <Image
+                      source={{ uri: flagUrls[lang.code] }}
+                      style={{ width: 32, height: 32 }}
+                      contentFit="cover"
+                    />
+                  </View>
+                  <Text style={{ flex: 1, fontSize: fontSize.md, color: colors.text.dark }}>{lang.label}</Text>
                   {settings.language === lang.code && (
-                    <Ionicons name="checkmark-circle" size={24} color={colors.accent} />
+                    <Ionicons name="checkmark-circle" size={20} color={colors.accent} />
                   )}
                 </Pressable>
-              ))}
+              );})}
             </View>
           </View>
 
@@ -219,21 +243,58 @@ export default function SettingsScreen() {
               subtitle="These won't appear in your grocery list"
             />
 
-            {/* Add new item input */}
+            {/* Current items - show first */}
+            {settings.itemsAtHome.length > 0 && (
+              <View style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.md,
+                marginBottom: spacing.md,
+                ...shadows.sm,
+              }}>
+                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.sm }}>
+                  Your items ({settings.itemsAtHome.length})
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                  {settings.itemsAtHome.map((item) => (
+                    <Pressable
+                      key={item}
+                      onPress={() => handleRemoveItem(item)}
+                      style={({ pressed }) => ({
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: pressed ? colors.errorBg : colors.bgDark,
+                        paddingHorizontal: spacing.sm,
+                        paddingVertical: spacing.xs,
+                        borderRadius: borderRadius.full,
+                        gap: 4,
+                      })}
+                    >
+                      <Text style={{ fontSize: fontSize.sm, color: colors.text.dark, textTransform: 'capitalize' }}>
+                        {item}
+                      </Text>
+                      <Ionicons name="close-circle" size={14} color={colors.text.dark + '60'} />
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {/* Add new item input - second */}
             <View style={{
               flexDirection: 'row',
               backgroundColor: colors.glass.card,
               borderRadius: borderRadius.md,
               padding: 4,
-              marginBottom: spacing.lg,
+              marginBottom: spacing.md,
               ...shadows.sm,
             }}>
               <TextInput
                 style={{
                   flex: 1,
-                  paddingHorizontal: spacing.lg,
-                  paddingVertical: spacing.md,
-                  fontSize: fontSize.lg,
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.sm,
+                  fontSize: fontSize.md,
                   color: colors.text.dark,
                 }}
                 placeholder="Add an item (e.g., salt, olive oil)"
@@ -249,94 +310,30 @@ export default function SettingsScreen() {
                 style={({ pressed }) => ({
                   backgroundColor: newItem.trim() ? colors.primary : colors.bgDark,
                   borderRadius: borderRadius.sm,
-                  padding: spacing.md,
+                  padding: spacing.sm,
                   opacity: pressed ? 0.8 : 1,
                 })}
               >
                 <Ionicons
                   name="add"
-                  size={24}
+                  size={20}
                   color={newItem.trim() ? colors.white : colors.text.inverse + '60'}
                 />
               </Pressable>
             </View>
 
-            {/* Current items */}
-            {settings.itemsAtHome.length > 0 ? (
-              <View style={{
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.lg,
-                marginBottom: spacing.lg,
-                ...shadows.sm,
-              }}>
-                <Text style={{ fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.md }}>
-                  Your items ({settings.itemsAtHome.length})
-                </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                  {settings.itemsAtHome.map((item) => (
-                    <Pressable
-                      key={item}
-                      onPress={() => handleRemoveItem(item)}
-                      style={({ pressed }) => ({
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: pressed ? colors.errorBg : colors.bgDark,
-                        paddingHorizontal: spacing.md,
-                        paddingVertical: spacing.sm,
-                        borderRadius: borderRadius.full,
-                        gap: 6,
-                      })}
-                    >
-                      <Text style={{ fontSize: fontSize.base, color: colors.text.dark, textTransform: 'capitalize' }}>
-                        {item}
-                      </Text>
-                      <Ionicons name="close-circle" size={18} color={colors.text.dark + '60'} />
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            ) : (
-              <View style={{
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing['2xl'],
-                alignItems: 'center',
-                marginBottom: spacing.lg,
-                ...shadows.sm,
-              }}>
-                <View style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: colors.bgDark,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: spacing.md,
-                }}>
-                  <Ionicons name="basket-outline" size={28} color={colors.text.dark} />
-                </View>
-                <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.text.dark, marginBottom: 4 }}>
-                  No items yet
-                </Text>
-                <Text style={{ fontSize: fontSize.base, color: colors.text.dark + '80', textAlign: 'center' }}>
-                  Add items you always have at home to exclude them from your grocery list
-                </Text>
-              </View>
-            )}
-
-            {/* Suggested items */}
+            {/* Suggested items - third */}
             {suggestedNotAdded.length > 0 && (
               <View style={{
                 backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
-                padding: spacing.lg,
+                padding: spacing.md,
                 ...shadows.sm,
               }}>
-                <Text style={{ fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.md }}>
+                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.sm }}>
                   Suggestions
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {suggestedNotAdded.map((item) => (
                     <Pressable
                       key={item}
@@ -345,22 +342,52 @@ export default function SettingsScreen() {
                         flexDirection: 'row',
                         alignItems: 'center',
                         backgroundColor: pressed ? colors.successBg : 'transparent',
-                        paddingHorizontal: spacing.md,
-                        paddingVertical: spacing.sm,
+                        paddingHorizontal: spacing.sm,
+                        paddingVertical: spacing.xs,
                         borderRadius: borderRadius.full,
                         borderWidth: 1,
                         borderColor: colors.text.dark + '30',
                         borderStyle: 'dashed',
-                        gap: 6,
+                        gap: 4,
                       })}
                     >
-                      <Ionicons name="add" size={16} color={colors.text.dark + '80'} />
-                      <Text style={{ fontSize: fontSize.base, color: colors.text.dark + '80', textTransform: 'capitalize' }}>
+                      <Ionicons name="add" size={14} color={colors.text.dark + '80'} />
+                      <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', textTransform: 'capitalize' }}>
                         {item}
                       </Text>
                     </Pressable>
                   ))}
                 </View>
+              </View>
+            )}
+
+            {/* Empty state - only show when no items */}
+            {settings.itemsAtHome.length === 0 && (
+              <View style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                alignItems: 'center',
+                marginTop: spacing.sm,
+                ...shadows.sm,
+              }}>
+                <View style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: colors.bgDark,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: spacing.sm,
+                }}>
+                  <Ionicons name="basket-outline" size={24} color={colors.text.dark} />
+                </View>
+                <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.text.dark, marginBottom: 2 }}>
+                  No items yet
+                </Text>
+                <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', textAlign: 'center' }}>
+                  Add items you always have at home
+                </Text>
               </View>
             )}
           </View>
