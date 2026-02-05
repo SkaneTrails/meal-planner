@@ -41,7 +41,7 @@ export async function persistQueryCache(): Promise<void> {
     .filter((query) => {
       const key = query.queryKey[0];
       // Skip recipes list (can be large) and any image data
-      return key !== 'recipes' && key !== 'recipe';
+      return key !== 'recipes';
     })
     .map((query) => ({
       queryKey: query.queryKey,
@@ -51,8 +51,9 @@ export async function persistQueryCache(): Promise<void> {
 
   try {
     const serialized = JSON.stringify(data);
+    const byteLength = new TextEncoder().encode(serialized).length;
     // Only persist if under size limit
-    if (serialized.length < MAX_CACHE_SIZE_BYTES) {
+    if (byteLength < MAX_CACHE_SIZE_BYTES) {
       await AsyncStorage.setItem(CACHE_KEY, serialized);
     }
   } catch (error) {
