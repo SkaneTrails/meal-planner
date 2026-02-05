@@ -455,3 +455,33 @@ def copy_recipe(
         enhanced_at=source.enhanced_at,
         changes_made=source.changes_made,
     )
+
+
+def transfer_recipe_to_household(
+    recipe_id: str, to_household_id: str, database: str = DEFAULT_DATABASE
+) -> Recipe | None:
+    """
+    Transfer a recipe to a different household.
+
+    This is an admin operation that changes the household_id of a recipe
+    without copying it. The recipe keeps its ID and all other data.
+
+    Args:
+        recipe_id: The recipe ID to transfer.
+        to_household_id: The target household ID.
+        database: The database where the recipe lives.
+
+    Returns:
+        The updated recipe, or None if recipe not found.
+    """
+    db = get_firestore_client(database)
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+
+    doc = cast("DocumentSnapshot", doc_ref.get())
+    if not doc.exists:
+        return None
+
+    # Update household_id
+    doc_ref.update({"household_id": to_household_id, "updated_at": datetime.now(tz=UTC)})
+
+    return get_recipe(recipe_id, database=database)

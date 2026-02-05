@@ -58,7 +58,7 @@ You are collaborating with a human who may make changes between your edits:
 The project is a multi-platform meal planning system with three main interfaces:
 
 | Platform | Directory | Stack | Purpose |
-|----------|-----------|-------|--------|
+| -------- | --------- | ----- | ------ |
 | Mobile | `mobile/` | React Native + Expo | iOS/Android + Web app |
 | API | `api/` | FastAPI | REST backend |
 | Functions | `functions/` | Google Cloud Functions | Serverless recipe scraping |
@@ -132,7 +132,7 @@ infra/                   # Terraform infrastructure
 ### Key Dependencies
 
 | Component | Key Packages |
-|-----------|--------------|
+| --------- | ------------ |
 | API (`api/`) | fastapi, uvicorn, pydantic, google-cloud-firestore, google-cloud-storage, google-genai, recipe-scrapers, pillow |
 | Mobile (`mobile/`) | expo, expo-router, @tanstack/react-query, nativewind |
 | Functions (`functions/`) | functions-framework, recipe-scrapers |

@@ -133,7 +133,7 @@ except:
 ### Never Commit
 
 | Type | Examples | Detection Pattern |
-|------|----------|-------------------|
+| ---- | -------- | ----------------- |
 | API keys | `AIzaSy...`, `sk-...`, `ghp_...` | Regex: `[A-Za-z0-9_-]{20,}` in code |
 | Passwords | `password=`, `secret=` | Grep for `password`, `secret`, `token` in non-test code |
 | Project IDs | GCP project IDs, AWS account IDs | Grep for specific project patterns |
@@ -524,7 +524,7 @@ grep -r "AIzaSy[A-Za-z0-9_-]{33}" . --include="*.ts" --include="*.py"
 ### When Creating Config Files
 
 | File Type | Should Contain | Should NOT Contain |
-|-----------|----------------|-------------------|
+| --------- | -------------- | ----------------- |
 | `.example` files | Placeholder values, structure | Actual values |
 | Skills/Instructions | Generic patterns | Specific project IDs, URLs |
 | Workflows | Environment variable references | Hardcoded secrets |
@@ -576,7 +576,7 @@ git log -p --all -S "secret-value" --source
 ## 8. Security Anti-Patterns to Challenge
 
 | Anti-Pattern | Challenge With |
-|--------------|----------------|
+| ------------ | -------------- |
 | "It's just internal" | Internal networks get breached. Defense in depth. |
 | "No one will guess that URL" | Security through obscurity fails. Add proper auth. |
 | "We'll add security later" | Security debt compounds. Add it now. |

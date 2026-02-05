@@ -76,7 +76,7 @@ uv run python scripts/recipe_reviewer.py update <id> '<json>'
 **Common mistakes that destroy enhanced recipes:**
 
 | ❌ Wrong | ✅ Correct |
-|----------|-----------|
+| -------- | --------- |
 | Fetch original, add timeline, upload | Fetch enhanced, add timeline, upload |
 | Scale original to 4P and call it "enhanced" | Apply real cooking improvements (techniques, timing, tips) |
 | Assume you know what's there | Always read current state before modifying |
@@ -138,14 +138,14 @@ This skill requires two configuration files in the same directory:
 **The goal is better food, not simplicity.** Use airfryer when it improves results:
 
 | ✅ Good candidates | Why |
-|-------------------|-----|
+| ----------------- | --- |
 | Sheet pan chicken + vegetables | Chicken dries out waiting for vegetables - separate cooking gives control |
 | Whole chicken breast, thighs | Precise doneness, juicier result than oven |
 | Halloumi, paneer | Crispy exterior without pan-frying |
 | When oven is occupied | Parallel cooking reduces total time |
 
 | ❌ Not a good fit | Why |
-|------------------|-----|
+| ---------------- | --- |
 | Proteins that simmer in sauce | Pre-cooking adds complexity without benefit |
 | Large roasts (whole chicken) | Won't fit, needs even heat circulation |
 | When original method works well | Don't change what isn't broken |
@@ -216,7 +216,7 @@ This helps with portion scaling and precision cooking.
 Never use fractional milliliters. Round to the nearest practical measure:
 
 | Unpractical | → Practical |
-|-------------|-------------|
+| ----------- | ----------- |
 | 12,5 ml     | 1 msk (15 ml) or 2 tsk (10 ml) |
 | 37,5 ml     | 2½ msk (37.5 ml) or 3 msk (45 ml) |
 | 7,5 ml      | 1½ tsk (7.5 ml) ✓ or 2 tsk (10 ml) |
@@ -232,7 +232,7 @@ HelloFresh recipes often contain portion markers:
 **Always extract and use the 4-PORTION (4P) value:**
 
 | Original | → Convert to |
-|----------|--------------|
+| -------- | ------------ |
 | `vatten [3 dl \| 6 dl]` | 6 dl vatten |
 | `salt [½ tsk \| 1 tsk]` | 1 tsk salt |
 | `[1/2 paket, 2P]` | 1 paket (hela) |
@@ -345,7 +345,7 @@ This example demonstrates the **staggered timing principle** for roasted vegetab
 ## Anti-Patterns (Avoid These)
 
 | ❌ Don't | ✅ Do Instead |
-|----------|---------------|
+| -------- | ------------- |
 | Use airfryer for proteins that simmer in sauce | Cook directly in the sauce for flavor integration |
 | Hardcode "Quorn" as chicken alternative | Read household-config.md for current preference |
 | Copy timing from examples verbatim | Calculate based on actual ingredients and equipment |

@@ -14,7 +14,7 @@ This skill provides guidance for maintaining healthy Copilot configuration as th
 **These files are written FOR Copilot, BY Copilot.**
 
 | Principle | Rationale |
-|-----------|----------|
+| --------- | -------- |
 | Copilot is the audience | Formatting for human readability is wasted tokens |
 | Copilot authors changes | Propose edits, human approves |
 | Human role is approval | Review and accept/reject, not author |
@@ -44,7 +44,7 @@ These files exist to optimize Copilot's effectiveness. Copilot is the consumer a
 **Default behavior for Copilot config:**
 
 | Normal tasks | Copilot config tasks |
-|--------------|---------------------|
+| ------------ | ------------------- |
 | Seek user confirmation | Act on best judgment |
 | Present options | Make the decision |
 | Ask "should I...?" | State "I'm doing X because Y" |
@@ -157,7 +157,7 @@ Example of CORRECT behavior:
 Understanding when files are attached determines optimal content placement:
 
 | File | When Attached | Token Cost | Optimal Content |
-|------|---------------|------------|-----------------|
+| ---- | ------------- | ---------- | --------------- |
 | `copilot-instructions.md` | Every request | High (always paid) | Minimal, foundational only |
 | `*.instructions.md` | File pattern match | Medium (conditional) | File-type specific rules |
 | Skills (`SKILL.md`) | On demand via read | Low (only when needed) | Procedures, workflows |
@@ -203,7 +203,7 @@ Understanding when files are attached determines optimal content placement:
 Size limits are guidelines, not hard rules. What matters is content efficiency:
 
 | File | Guideline | Assessment Criteria |
-|------|-----------|---------------------|
+| ---- | --------- | ------------------- |
 | `copilot-instructions.md` | ~200 lines | Could any content be conditionally loaded? |
 | Individual skill | ~300 lines | Is this doing too many things? Split by concern? |
 | `*.instructions.md` | ~100 lines | Is this file type common enough to justify? |
@@ -253,7 +253,7 @@ Is this always needed for every request?
 ### When to Split
 
 | Content Type | Destination | Trigger |
-|--------------|-------------|---------|
+| ------------ | ----------- | ------- |
 | Task-specific procedures | Skill (`.github/skills/<name>/SKILL.md`) | Activated by task type or user request |
 | File/language patterns | Instructions file (`*.instructions.md`) | Activated by file pattern match |
 | Reference data/links | `copilot-references.md` | Fetched on demand |
@@ -305,7 +305,7 @@ Maintain a gitignored file that survives summarization:
 **Behaviors:**
 
 | When | Action |
-|------|--------|
+| ---- | ------ |
 | Conversation starts | Read `.copilot-tasks.md`, resume context |
 | Completing a step | Update "Next step" immediately |
 | Task complete | Clear Active Task |
@@ -335,14 +335,14 @@ When I encounter a knowledge gap:
 ## <Topic Category>
 
 | Topic | Link | Description | Last verified |
-|-------|------|-------------|---------------|
+| ----- | ---- | ----------- | ------------- |
 | ... | ... | ... | YYYY-MM-DD |
 ```
 
 **Behaviors:**
 
 | Trigger | Action |
-|---------|--------|
+| ------- | ------ |
 | Uncertain about current syntax/API | Check `copilot-references.md` first |
 | User says "check for updates" | Fetch from references |
 | User provides corrective link | Offer to add it |
@@ -412,9 +412,11 @@ This meta-skill is designed to be copied to other repositories. To adopt:
 1. Copy `.github/skills/copilot-self-improvement/` to the target repo
 2. Add the skill reference to that repo's `copilot-instructions.md`
 3. **Add trigger rule** to the Collaboration Rules section:
+
    ```
    - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
    ```
+
 4. Create `copilot-references.md` if knowledge gaps are common
 5. Add `.copilot-tasks.md` to `.gitignore`
 
@@ -449,7 +451,7 @@ If any are missing, add them before making other changes to Copilot config files
 Avoid these common mistakes:
 
 | Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
+| ------------ | ------- | -------- |
 | Everything in `copilot-instructions.md` | Bloated, slow, diluted focus | Split per decision tree above |
 | Duplicated content across files | Inconsistent, hard to maintain | Single source of truth, link to it |
 | Procedures in instructions | Always loaded but rarely needed | Move to skills |
@@ -504,7 +506,7 @@ Target: 150-200 lines total.
 Perform these checks at the specified frequency:
 
 | Check | Frequency | Action |
-|-------|-----------|--------|
+| ----- | --------- | ------ |
 | Unconditional content review | Every edit | Is there content that could be conditionally loaded? |
 | Misplaced content scan | Every edit | File-type patterns, procedures, external refs |
 | Fitness-for-purpose assessment | On skill review | Does each skill serve its intended purpose effectively? |
@@ -530,7 +532,7 @@ When reviewing skills (either on request or during health checks), assess each s
 ### Assessment Criteria
 
 | Criterion | Question to Ask |
-|-----------|-----------------|
+| --------- | --------------- |
 | **Purpose clarity** | Is the skill's purpose immediately clear from the name and description? |
 | **Audience fit** | Is it written FOR Copilot (AI parsing) rather than human reading? |
 | **Actionable guidance** | Does it provide specific, executable instructions vs vague principles? |
@@ -547,7 +549,7 @@ For each skill, report:
 ### `skill-name` (N lines)
 
 | Criterion | Assessment |
-|-----------|------------|
+| --------- | ---------- |
 | Purpose | ✅/🟡/❌ [brief note] |
 | Audience fit | ✅/🟡/❌ [brief note] |
 | Actionable | ✅/🟡/❌ [brief note] |
@@ -568,7 +570,7 @@ For each skill, report:
 ### Indicators of Poor Fitness
 
 | Symptom | Likely Problem |
-|---------|----------------|
+| ------- | -------------- |
 | Skill never invoked | Activation context too narrow or misaligned with real tasks |
 | Copilot ignores skill guidance | Instructions too vague or conflicting with training |
 | Skill content duplicated elsewhere | Extraction wasn't complete, or scope unclear |
@@ -622,10 +624,11 @@ See `working-context` skill for table format and full workflow.
 
 ```markdown
 | Pattern | Count | Last seen | Context | Fix when promoted |
-|---------|-------|-----------|---------|-------------------|
+| ------- | ----- | --------- | ------- | ----------------- |
 ```
 
 **Rules:**
+
 - Never change the header row
 - One row per pattern (no duplicates)
 - Pattern should be a short identifier (e.g., `shell-escaping`, `json-quotes`)
@@ -652,7 +655,7 @@ When trying multiple approaches:
 ### Where to Promote (at threshold)
 
 | Learning Type | Destination | Example |
-|---------------|-------------|--------|
+| ------------- | ----------- | ------ |
 | Shell/language pattern | `*.instructions.md` | PowerShell escaping rules → `powershell.instructions.md` |
 | Workflow/procedure | Relevant skill | API retry pattern → skill that uses that API |
 | External API behavior | `copilot-references.md` | Jira field format → link to Jira API docs |
@@ -677,7 +680,7 @@ When promoting to permanent documentation:
 ### User Triggers
 
 | User Says | Action |
-|-----------|--------|
+| --------- | ------ |
 | "log this failure" | Add/update row in Failure Tracking table now |
 | "update failure tracking" | Scan recent conversation, sync table |
 | "save this learning" | Promote immediately (skip threshold) |
@@ -688,6 +691,7 @@ When promoting to permanent documentation:
 ### Success Criteria
 
 Iteration learning works when:
+
 - Failures are logged to `.copilot-tasks.md` (not forgotten)
 - Counter persists across conversations
 - Threshold triggers automatic promotion
@@ -699,7 +703,7 @@ Iteration learning works when:
 ## 13. File Inventory
 
 | File | Purpose | Attached | Gitignored |
-|------|---------|----------|------------|
+| ---- | ------- | -------- | ---------- |
 | `copilot-instructions.md` | Core project context | Always | No |
 | `copilot-references.md` | Knowledge links | On demand | No |
 | `.copilot-tasks.md` | Cross-conversation state | On demand | Yes |

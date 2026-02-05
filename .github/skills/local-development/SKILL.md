@@ -105,7 +105,7 @@ The script will:
 ### Why Impersonation Instead of Key Files?
 
 | Key Files | Impersonation |
-|-----------|---------------|
+| --------- | ------------- |
 | Long-lived credentials on disk | Short-lived tokens (1 hour) |
 | Must rotate manually | Automatic token refresh |
 | Can be accidentally committed | Nothing to commit |
@@ -248,7 +248,7 @@ npx expo start --web --port 8081
 These secrets are used by GitHub Actions for CI/CD deployments and can be used locally to populate `.env.development`.
 
 | Secret Name | Purpose |
-|-------------|---------|
+| ----------- | ------- |
 | `github_EXPO_PUBLIC_API_URL` | Production API URL for Firebase Hosting deploy |
 | `github_EXPO_PUBLIC_FIREBASE_API_KEY` | Firebase Web API key |
 | `github_EXPO_PUBLIC_FIREBASE_APP_ID` | Firebase Web App ID |
@@ -336,7 +336,7 @@ The mobile app is deployed as a static web export to Firebase Hosting.
 ### Known Pitfalls
 
 | Issue | Solution |
-|-------|----------|
+| ----- | -------- |
 | **Fonts not bundled** | Expo static export doesn't include `@expo/vector-icons` fonts. Copy TTF to `public/fonts/` and load via `useFonts({ Ionicons: require('../public/fonts/Ionicons.ttf') })` |
 | **NativeWind + Tailwind v4** | NativeWind 4 only supports Tailwind CSS v3. Renovate rule prevents v4 upgrades in `mobile/` |
 | **OAuth redirect_uri_mismatch** | Add `https://<project>.firebaseapp.com/__/auth/handler` to BOTH OAuth clients in Google Cloud Console |

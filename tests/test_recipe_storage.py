@@ -508,3 +508,87 @@ class TestCopyRecipe:
             result = copy_recipe("nonexistent", to_household_id="hh123", copied_by="user@test.com")
 
         assert result is None
+
+
+class TestTransferRecipeToHousehold:
+    """Tests for transfer_recipe_to_household function."""
+
+    def test_transfers_recipe_successfully(self) -> None:
+        """Should update household_id and return the recipe."""
+        from api.storage.recipe_storage import transfer_recipe_to_household
+
+        transferred_recipe = Recipe(
+            id="recipe_id",
+            title="Test Recipe",
+            url="https://example.com",
+            ingredients=[],
+            instructions=[],
+            household_id="new_household",
+        )
+
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client") as mock_client,
+            patch("api.storage.recipe_storage.get_recipe", return_value=transferred_recipe),
+        ):
+            mock_client.return_value.collection.return_value.document.return_value = mock_doc_ref
+
+            result = transfer_recipe_to_household("recipe_id", "new_household")
+
+        assert result is not None
+        assert result.household_id == "new_household"
+        mock_doc_ref.update.assert_called_once()
+        # Verify household_id and updated_at were set
+        update_call = mock_doc_ref.update.call_args[0][0]
+        assert update_call["household_id"] == "new_household"
+        assert "updated_at" in update_call
+
+    def test_returns_none_for_missing_recipe(self) -> None:
+        """Should return None if recipe doesn't exist."""
+        from api.storage.recipe_storage import transfer_recipe_to_household
+
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.document.return_value = mock_doc_ref
+
+            result = transfer_recipe_to_household("nonexistent", "new_household")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_uses_specified_database(self) -> None:
+        """Should use the specified database."""
+        from api.storage.recipe_storage import transfer_recipe_to_household
+
+        transferred_recipe = Recipe(
+            id="recipe_id",
+            title="Enhanced Recipe",
+            url="https://example.com",
+            ingredients=[],
+            instructions=[],
+            household_id="new_household",
+            enhanced=True,
+        )
+
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client") as mock_client,
+            patch("api.storage.recipe_storage.get_recipe", return_value=transferred_recipe),
+        ):
+            mock_client.return_value.collection.return_value.document.return_value = mock_doc_ref
+
+            transfer_recipe_to_household("recipe_id", "new_household", database="meal-planner")
+
+        mock_client.assert_called_with("meal-planner")
