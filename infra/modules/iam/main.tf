@@ -109,7 +109,7 @@ resource "google_service_account" "local_dev" {
   project      = var.project
   account_id   = "local-dev"
   display_name = "Local Development"
-  description  = "Service account for local development - download key and set GOOGLE_APPLICATION_CREDENTIALS"
+  description  = "Service account for local development, used via impersonation (no key download needed)"
 
   depends_on = [var.iam_api_service]
 }

@@ -87,12 +87,24 @@ if (Test-Path $ENV_FILE) {
         Write-Host "Removing GOOGLE_APPLICATION_CREDENTIALS from .env (not needed with impersonation)..." -ForegroundColor Yellow
         $envContent = $envContent -replace "(?m)^.*GOOGLE_APPLICATION_CREDENTIALS.*\r?\n?", ""
         Set-Content $ENV_FILE $envContent.TrimEnd()
+        # Reload after modification
+        $envContent = Get-Content $ENV_FILE -Raw
     }
 
-    # Ensure GOOGLE_CLOUD_PROJECT is set
+    # Ensure GOOGLE_CLOUD_PROJECT is set and matches the provided project
     if ($envContent -notmatch "GOOGLE_CLOUD_PROJECT") {
         Write-Host "Adding GOOGLE_CLOUD_PROJECT to .env..." -ForegroundColor Yellow
         Add-Content $ENV_FILE "`n# GCP project ID for Firestore`nGOOGLE_CLOUD_PROJECT=$PROJECT"
+    } else {
+        $projectMatch = [regex]::Match($envContent, "(?m)^GOOGLE_CLOUD_PROJECT=(.+)$")
+        if ($projectMatch.Success) {
+            $currentProject = $projectMatch.Groups[1].Value.Trim()
+            if ($currentProject -ne $PROJECT) {
+                Write-Host "Updating GOOGLE_CLOUD_PROJECT in .env from '$currentProject' to '$PROJECT'..." -ForegroundColor Yellow
+                $envContent = [regex]::Replace($envContent, "(?m)^GOOGLE_CLOUD_PROJECT=.*$", "GOOGLE_CLOUD_PROJECT=$PROJECT")
+                Set-Content $ENV_FILE $envContent.TrimEnd()
+            }
+        }
     }
     Write-Host ".env is configured." -ForegroundColor Green
 } else {

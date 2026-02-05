@@ -105,13 +105,13 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
 
   // Register token getter for API client
   // Uses userRef to avoid stale closure issues - the ref is always current
-  // forceRefresh: true ensures we get a fresh token
+  // Firebase automatically refreshes tokens when they're close to expiration
   useEffect(() => {
     setAuthTokenGetter(async () => {
       const currentUser = userRef.current;
       if (!currentUser) return null;
       try {
-        return await currentUser.getIdToken(true);
+        return await currentUser.getIdToken();
       } catch {
         return null;
       }
@@ -142,15 +142,27 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
       });
 
       // Show user-friendly message for auth failures
-      // 401 = token issue (could be no household if token was valid but user lacks access)
+      // 401 = token invalid/expired session
       // 403 = explicitly no household access
-      const message =
-        'Your account is not part of any household. Please contact an administrator to be added.';
+      let title: string;
+      let message: string;
+      if (status === 401) {
+        title = 'Session Expired';
+        message = 'Your session has expired. Please sign in again.';
+      } else if (status === 403) {
+        title = 'No Access';
+        message =
+          'Your account is not part of any household. Please contact an administrator to be added.';
+      } else {
+        title = 'Authentication Error';
+        message = 'There was a problem with your session. Please sign in again.';
+      }
+
       if (Platform.OS === 'web') {
         // Use window.alert on web for reliability
         window.alert(message);
       } else {
-        Alert.alert('No Access', message, [{ text: 'OK' }]);
+        Alert.alert(title, message, [{ text: 'OK' }]);
       }
 
       // Reset after a short delay to allow for retry after re-auth

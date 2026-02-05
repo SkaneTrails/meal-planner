@@ -38,8 +38,12 @@ def _resolve_household(user: AuthenticatedUser, household_id_override: str | Non
     Regular users must use their own household.
     Returns the resolved household_id or raises 403.
     """
-    # Superusers can access any household
-    if user.role == "superuser" and household_id_override:
+    # Superusers can access any household, but must provide a valid ID
+    if user.role == "superuser" and household_id_override is not None:
+        if not household_id_override.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="household_id parameter must be a non-empty string"
+            )
         return household_id_override
 
     # Use user's household if available

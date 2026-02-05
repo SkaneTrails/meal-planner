@@ -38,8 +38,16 @@ echo "Checking if local-dev service account exists..."
 if ! gcloud iam service-accounts describe "$SA_EMAIL" --project="$PROJECT" >/dev/null 2>&1; then
     echo "Service account doesn't exist. Running Terraform..."
     pushd "$TERRAFORM_DIR" > /dev/null
-    terraform init -upgrade
-    terraform apply -auto-approve
+    if ! terraform init -upgrade; then
+        echo "ERROR: terraform init failed. Aborting setup."
+        popd > /dev/null
+        exit 1
+    fi
+    if ! terraform apply -auto-approve; then
+        echo "ERROR: terraform apply failed. Aborting setup."
+        popd > /dev/null
+        exit 1
+    fi
     popd > /dev/null
 else
     echo "Service account exists: $SA_EMAIL"
@@ -72,12 +80,19 @@ if [ -f "$ENV_FILE" ]; then
         rm -f "$ENV_FILE.bak"
     fi
 
-    # Ensure GOOGLE_CLOUD_PROJECT is set
+    # Ensure GOOGLE_CLOUD_PROJECT is set and matches the provided project
     if ! grep -q "GOOGLE_CLOUD_PROJECT" "$ENV_FILE"; then
         echo "Adding GOOGLE_CLOUD_PROJECT to .env..."
         echo "" >> "$ENV_FILE"
         echo "# GCP project ID for Firestore" >> "$ENV_FILE"
         echo "GOOGLE_CLOUD_PROJECT=$PROJECT" >> "$ENV_FILE"
+    else
+        CURRENT_PROJECT=$(grep -E '^GOOGLE_CLOUD_PROJECT=' "$ENV_FILE" | tail -n 1 | cut -d'=' -f2-)
+        if [ "$CURRENT_PROJECT" != "$PROJECT" ]; then
+            echo "Updating GOOGLE_CLOUD_PROJECT in .env from '$CURRENT_PROJECT' to '$PROJECT'..."
+            sed -i.bak "s/^GOOGLE_CLOUD_PROJECT=.*/GOOGLE_CLOUD_PROJECT=$PROJECT/" "$ENV_FILE"
+            rm -f "$ENV_FILE.bak"
+        fi
     fi
     echo ".env is configured."
 else
