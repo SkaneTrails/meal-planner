@@ -305,7 +305,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* Reorder toggle button */}
-      <View style={{ paddingHorizontal: 20, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
         <Pressable
           onPress={handleToggleReorder}
           style={{
@@ -313,19 +313,19 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
             alignItems: 'center',
             alignSelf: 'flex-start',
             backgroundColor: reorderMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.6)',
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-            borderRadius: 10,
-            gap: 6,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+            gap: 4,
           }}
         >
           <Ionicons
             name={reorderMode ? 'checkmark' : 'swap-vertical'}
-            size={16}
+            size={14}
             color={reorderMode ? '#5D4E40' : '#5D4E40'}
           />
           <Text style={{
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: '600',
             color: reorderMode ? '#5D4E40' : '#5D4E40'
           }}>
@@ -336,11 +336,11 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
 
       {reorderMode ? (
         // Draggable list for reorder mode
-        <View style={{ flex: 1, paddingHorizontal: 20 }}>
+        <View style={{ flex: 1, paddingHorizontal: 16 }}>
           <Text style={{
-            fontSize: 13,
+            fontSize: 12,
             color: 'rgba(93, 78, 64, 0.7)',
-            marginBottom: 12,
+            marginBottom: 10,
             fontStyle: 'italic',
           }}>
             {Platform.OS === 'web'
@@ -357,57 +357,20 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
           />
         </View>
       ) : (
-        // Sectioned list for normal mode
+        // Simple flat list without categories
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
-          {sections.map((section) => {
-            const isCollapsed = collapsedCategories.has(section.title);
-            const checkedCount = section.data.filter(item => checkedItems.has(item.name)).length;
-
-            return (
-              <View key={section.title}>
-                <Pressable
-                  onPress={() => toggleCategory(section.title)}
-                  style={({ pressed }) => ({
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingVertical: 10,
-                    paddingHorizontal: 4,
-                    marginTop: 20,
-                    marginBottom: 4,
-                    backgroundColor: pressed ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                    borderRadius: 8,
-                  })}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#5D4E40', letterSpacing: -0.2 }}>
-                      {section.title}
-                    </Text>
-                    <Text style={{ fontSize: 13, color: 'rgba(93, 78, 64, 0.7)' }}>
-                      ({checkedCount}/{section.data.length})
-                    </Text>
-                  </View>
-                  <Ionicons
-                    name={isCollapsed ? 'chevron-down' : 'chevron-up'}
-                    size={20}
-                    color="rgba(93, 78, 64, 0.6)"
-                  />
-                </Pressable>
-                {!isCollapsed && section.data.map((item) => (
-                  <GroceryItemRow
-                    key={item.name}
-                    item={{...item, checked: checkedItems.has(item.name)}}
-                    onToggle={(checked) => handleItemToggle(item.name, checked)}
-                    showReorder={false}
-                  />
-                ))}
-              </View>
-            );
-          })}
+          {displayItems.map((item) => (
+            <GroceryItemRow
+              key={item.name}
+              item={{...item, checked: checkedItems.has(item.name)}}
+              onToggle={(checked) => handleItemToggle(item.name, checked)}
+              showReorder={false}
+            />
+          ))}
         </ScrollView>
       )}
     </GestureHandlerRootView>

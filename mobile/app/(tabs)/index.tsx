@@ -9,7 +9,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { shadows, borderRadius, colors, fontSize, letterSpacing } from '@/lib/theme';
+import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib/theme';
 import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground, HomeScreenSkeleton } from '@/components';
@@ -203,11 +203,11 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
       {/* Elegant header with greeting */}
-      <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 24 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 16 }}>
         <View>
           <Text style={{
-            fontSize: fontSize['6xl'],
-            fontWeight: '600',
+            fontSize: fontSize['4xl'],
+            fontFamily: fontFamily.display,
             color: colors.text.primary,
             letterSpacing: letterSpacing.tight,
             marginBottom: 4,
@@ -216,6 +216,7 @@ export default function HomeScreen() {
           </Text>
           <Text style={{
             fontSize: fontSize.lg,
+            fontFamily: fontFamily.body,
             color: colors.text.secondary,
             letterSpacing: letterSpacing.normal,
           }}>
@@ -225,23 +226,23 @@ export default function HomeScreen() {
       </View>
 
       {/* Stats cards - glass effect 3-column layout */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 20, gap: 12, marginBottom: 24 }}>
+      <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
         {/* Recipe Library */}
         <Pressable
           onPress={() => router.push('/recipes')}
           style={({ pressed }) => ({
             flex: 1,
             backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.lg,
-            padding: 16,
+            borderRadius: borderRadius.md,
+            padding: 12,
             ...shadows.sm,
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <Ionicons name="book-outline" size={22} color="#8B7355" style={{ marginBottom: 12 }} />
+          <Ionicons name="book-outline" size={18} color="#8B7355" style={{ marginBottom: 8 }} />
           <Text style={{
-            fontSize: fontSize['5xl'],
-            fontWeight: '600',
+            fontSize: fontSize['3xl'],
+            fontFamily: fontFamily.bodySemibold,
             color: '#5D4E40',
             letterSpacing: letterSpacing.tight,
             marginBottom: 2,
@@ -249,7 +250,7 @@ export default function HomeScreen() {
             {recipes.length}
           </Text>
           <Text style={{
-            fontSize: fontSize.sm,
+            fontSize: fontSize.xs,
             color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
@@ -262,15 +263,15 @@ export default function HomeScreen() {
           style={({ pressed }) => ({
             flex: 1,
             backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.lg,
-            padding: 16,
+            borderRadius: borderRadius.md,
+            padding: 12,
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <Ionicons name="calendar-outline" size={22} color="#8B7355" style={{ marginBottom: 12 }} />
+          <Ionicons name="calendar-outline" size={18} color="#8B7355" style={{ marginBottom: 8 }} />
           <Text style={{
-            fontSize: fontSize['5xl'],
-            fontWeight: '600',
+            fontSize: fontSize['3xl'],
+            fontFamily: fontFamily.bodySemibold,
             color: '#5D4E40',
             letterSpacing: letterSpacing.tight,
             marginBottom: 2,
@@ -278,7 +279,7 @@ export default function HomeScreen() {
             {plannedMealsCount}
           </Text>
           <Text style={{
-            fontSize: fontSize.sm,
+            fontSize: fontSize.xs,
             color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
@@ -291,15 +292,15 @@ export default function HomeScreen() {
           style={({ pressed }) => ({
             flex: 1,
             backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.lg,
-            padding: 16,
+            borderRadius: borderRadius.md,
+            padding: 12,
             transform: [{ scale: pressed ? 0.98 : 1 }],
           })}
         >
-          <Ionicons name="cart-outline" size={22} color="#8B7355" style={{ marginBottom: 12 }} />
+          <Ionicons name="cart-outline" size={18} color="#8B7355" style={{ marginBottom: 8 }} />
           <Text style={{
-            fontSize: fontSize['5xl'],
-            fontWeight: '600',
+            fontSize: fontSize['3xl'],
+            fontFamily: fontFamily.bodySemibold,
             color: '#5D4E40',
             letterSpacing: letterSpacing.tight,
             marginBottom: 2,
@@ -307,7 +308,7 @@ export default function HomeScreen() {
             {groceryItemsCount}
           </Text>
           <Text style={{
-            fontSize: fontSize.sm,
+            fontSize: fontSize.xs,
             color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
@@ -316,30 +317,30 @@ export default function HomeScreen() {
       </View>
 
       {/* Quick Add Recipe */}
-      <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
+      <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
         <Text style={{
-          fontSize: fontSize['2xl'],
-          fontWeight: '600',
+          fontSize: fontSize.xl,
+          fontFamily: fontFamily.display,
           color: colors.white,
-          marginBottom: 12,
+          marginBottom: 8,
           letterSpacing: letterSpacing.normal,
         }}>
           Add Recipe
         </Text>
         <View style={{
           backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.lg,
-          padding: 6,
+          borderRadius: borderRadius.md,
+          padding: 4,
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-          <Ionicons name="link-outline" size={20} color="#8B7355" style={{ marginLeft: 14 }} />
+          <Ionicons name="link-outline" size={18} color="#8B7355" style={{ marginLeft: 12 }} />
           <TextInput
             style={{
               flex: 1,
-              paddingHorizontal: 12,
-              paddingVertical: 12,
-              fontSize: fontSize.lg,
+              paddingHorizontal: 10,
+              paddingVertical: 10,
+              fontSize: fontSize.md,
               color: '#5D4E40',
             }}
             placeholder="Paste recipe URL..."
@@ -360,27 +361,39 @@ export default function HomeScreen() {
                 ? (pressed ? colors.accentDark : colors.accent)
                 : 'rgba(93, 78, 64, 0.15)',
               borderRadius: borderRadius.sm,
-              paddingVertical: 12,
-              paddingHorizontal: 20,
+              paddingVertical: 10,
+              paddingHorizontal: 14,
               marginRight: 2,
             })}
           >
             <Text style={{
               color: recipeUrl.trim() ? colors.white : '#8B7355',
-              fontSize: fontSize.md,
+              fontSize: fontSize.sm,
               fontWeight: '600',
             }}>Import</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/add-recipe')}
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? 'rgba(139, 115, 85, 0.2)' : 'rgba(139, 115, 85, 0.1)',
+              borderRadius: borderRadius.sm,
+              paddingVertical: 10,
+              paddingHorizontal: 10,
+              marginRight: 2,
+            })}
+          >
+            <Ionicons name="create-outline" size={18} color="#5D4E40" />
           </Pressable>
         </View>
       </View>
 
       {/* Next Meal - elegant card */}
-      <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
+      <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
         <Text style={{
-          fontSize: fontSize['2xl'],
-          fontWeight: '600',
+          fontSize: fontSize.xl,
+          fontFamily: fontFamily.display,
           color: colors.white,
-          marginBottom: 12,
+          marginBottom: 8,
           letterSpacing: letterSpacing.normal,
         }}>
           Next Up
@@ -390,8 +403,8 @@ export default function HomeScreen() {
           onPress={() => nextMeal?.recipeId ? router.push(`/recipe/${nextMeal.recipeId}`) : router.push('/meal-plan')}
           style={({ pressed }) => ({
             backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.lg,
-            padding: 16,
+            borderRadius: borderRadius.md,
+            padding: 12,
             flexDirection: 'row',
             alignItems: 'center',
             transform: [{ scale: pressed ? 0.99 : 1 }],
@@ -400,24 +413,25 @@ export default function HomeScreen() {
           {nextMeal?.imageUrl ? (
             <Image
               source={{ uri: nextMeal.imageUrl }}
-              style={{ width: 56, height: 56, borderRadius: borderRadius.sm }}
+              style={{ width: 48, height: 48, borderRadius: borderRadius.sm }}
               contentFit="cover"
               placeholder={PLACEHOLDER_BLURHASH}
               transition={200}
             />
           ) : (
-            <View style={{
-              backgroundColor: colors.bgDark,
-              borderRadius: borderRadius.sm,
-              width: 56,
-              height: 56,
-            }} />
+            <Image
+              source={HOMEPAGE_HERO}
+              style={{ width: 48, height: 48, borderRadius: borderRadius.sm }}
+              contentFit="cover"
+              placeholder={PLACEHOLDER_BLURHASH}
+              transition={200}
+            />
           )}
-          <View style={{ flex: 1, marginLeft: 16 }}>
+          <View style={{ flex: 1, marginLeft: 12 }}>
             <Text style={{
-              fontSize: fontSize.sm,
+              fontSize: fontSize.xs,
               color: '#8B7355',
-              marginBottom: 4,
+              marginBottom: 2,
               textTransform: 'uppercase',
               letterSpacing: letterSpacing.wide,
             }}>
@@ -426,24 +440,24 @@ export default function HomeScreen() {
                 : 'No meal planned'}
             </Text>
             <Text style={{
-              fontSize: fontSize.xl,
-              fontWeight: '600',
+              fontSize: fontSize.md,
+              fontFamily: fontFamily.bodySemibold,
               color: '#5D4E40',
             }} numberOfLines={1}>
               {nextMeal?.title || 'Plan your next meal'}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#8B7355" />
+          <Ionicons name="chevron-forward" size={18} color="#8B7355" />
         </Pressable>
       </View>
 
       {/* Inspiration section - beautiful card */}
       {inspirationRecipes.length > 0 && inspirationRecipe ? (
-        <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <Text style={{
-              fontSize: fontSize['2xl'],
-              fontWeight: '600',
+              fontSize: fontSize.xl,
+              fontFamily: fontFamily.display,
               color: colors.white,
               letterSpacing: letterSpacing.normal,
             }}>
@@ -458,17 +472,17 @@ export default function HomeScreen() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: pressed ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.3)',
-                paddingHorizontal: 14,
-                paddingVertical: 8,
+                paddingHorizontal: 10,
+                paddingVertical: 6,
                 borderRadius: borderRadius.full,
               })}
             >
-              <Ionicons name="shuffle" size={14} color="#8B7355" />
+              <Ionicons name="shuffle" size={12} color="#8B7355" />
               <Text style={{
                 color: '#5D4E40',
                 fontWeight: '500',
-                fontSize: fontSize.sm,
-                marginLeft: 6,
+                fontSize: fontSize.xs,
+                marginLeft: 4,
               }}>Shuffle</Text>
             </Pressable>
           </View>
@@ -477,14 +491,14 @@ export default function HomeScreen() {
             onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
             style={({ pressed }) => ({
               backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.lg,
+              borderRadius: borderRadius.md,
               overflow: 'hidden',
               transform: [{ scale: pressed ? 0.99 : 1 }],
             })}
           >
             <Image
               source={inspirationRecipe.image_url ? { uri: inspirationRecipe.image_url } : HOMEPAGE_HERO}
-              style={{ width: '100%', height: 180 }}
+              style={{ width: '100%', height: 140 }}
               contentFit="cover"
               placeholder={PLACEHOLDER_BLURHASH}
               transition={200}
@@ -496,28 +510,28 @@ export default function HomeScreen() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: 100,
+                height: 80,
                 justifyContent: 'flex-end',
-                padding: 16,
+                padding: 12,
               }}
             >
               <Text style={{
-                fontSize: fontSize['3xl'],
+                fontSize: fontSize.xl,
                 fontWeight: '600',
                 color: colors.white,
                 letterSpacing: letterSpacing.tight,
               }} numberOfLines={2}>
                 {inspirationRecipe.title}
               </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 6 }}>
                 {inspirationRecipe.meal_label && (
                   <View style={{
                     backgroundColor: 'rgba(255,255,255,0.2)',
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
                     borderRadius: borderRadius.full,
                   }}>
-                    <Text style={{ fontSize: fontSize.sm, fontWeight: '500', color: colors.white }}>
+                    <Text style={{ fontSize: fontSize.xs, fontWeight: '500', color: colors.white }}>
                       {inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1)}
                     </Text>
                   </View>
@@ -529,11 +543,11 @@ export default function HomeScreen() {
                       : inspirationRecipe.diet_label === 'fish'
                         ? 'rgba(21, 101, 192, 0.8)'
                         : 'rgba(198, 40, 40, 0.8)',
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
                     borderRadius: borderRadius.full,
                   }}>
-                    <Text style={{ fontSize: fontSize.sm, fontWeight: '500', color: colors.white }}>
+                    <Text style={{ fontSize: fontSize.xs, fontWeight: '500', color: colors.white }}>
                       {inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}
                     </Text>
                   </View>
@@ -544,13 +558,13 @@ export default function HomeScreen() {
         </View>
       ) : (
         /* Fallback: Get Started section with hero image when no recipes */
-        <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
+        <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
           <Text style={{
-            fontSize: fontSize['2xl'],
-            fontWeight: '600',
+            fontSize: fontSize['4xl'],
+            fontFamily: fontFamily.display,
             color: colors.white,
-            marginBottom: 12,
-            letterSpacing: letterSpacing.normal,
+            marginBottom: 8,
+            letterSpacing: letterSpacing.tight,
           }}>
             Get Started
           </Text>
@@ -559,14 +573,14 @@ export default function HomeScreen() {
             onPress={() => router.push('/recipes')}
             style={({ pressed }) => ({
               backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.lg,
+              borderRadius: borderRadius.md,
               overflow: 'hidden',
               transform: [{ scale: pressed ? 0.99 : 1 }],
             })}
           >
             <Image
               source={HOMEPAGE_HERO}
-              style={{ width: '100%', height: 180 }}
+              style={{ width: '100%', height: 140 }}
               contentFit="cover"
               placeholder={PLACEHOLDER_BLURHASH}
               transition={200}
@@ -578,13 +592,13 @@ export default function HomeScreen() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: 100,
+                height: 80,
                 justifyContent: 'flex-end',
-                padding: 16,
+                padding: 12,
               }}
             >
               <Text style={{
-                fontSize: fontSize['3xl'],
+                fontSize: fontSize.xl,
                 fontWeight: '600',
                 color: colors.white,
                 letterSpacing: letterSpacing.tight,
@@ -592,7 +606,7 @@ export default function HomeScreen() {
                 Add your first recipe
               </Text>
               <Text style={{
-                fontSize: fontSize.lg,
+                fontSize: fontSize.sm,
                 color: 'rgba(255, 255, 255, 0.8)',
                 marginTop: 4,
               }}>

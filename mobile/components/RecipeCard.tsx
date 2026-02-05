@@ -9,6 +9,8 @@ import { View, Text, Pressable, Animated } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, borderRadius, fontSize, fontWeight, letterSpacing } from '@/lib/theme';
+import { useSettings } from '@/lib/settings-context';
+import { hapticLight } from '@/lib/haptics';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
 // Blurhash placeholder for loading state (soft cream color)
@@ -19,6 +21,7 @@ interface RecipeCardProps {
   onPress?: () => void;
   compact?: boolean;
   cardSize?: number;
+  showFavorite?: boolean; // Whether to show favorite heart icon
 }
 
 const DIET_LABELS: Record<DietLabel, { label: string; color: string; bgColor: string }> = {
@@ -39,7 +42,10 @@ const MEAL_LABELS: Record<MealLabel, string> = {
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
 
-export function RecipeCard({ recipe, onPress, compact = false, cardSize }: RecipeCardProps) {
+export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFavorite = true }: RecipeCardProps) {
+  const { isFavorite, toggleFavorite } = useSettings();
+  const isRecipeFavorite = isFavorite(recipe.id);
+
   const totalTime = recipe.total_time ||
     (recipe.prep_time && recipe.cook_time ? recipe.prep_time + recipe.cook_time : null) ||
     recipe.prep_time ||
@@ -63,6 +69,12 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
       damping: 15,
       stiffness: 200,
     }).start();
+  };
+
+  const handleToggleFavorite = (e: any) => {
+    e.stopPropagation();
+    hapticLight();
+    toggleFavorite(recipe.id);
   };
 
   if (compact) {
@@ -189,33 +201,37 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize }: Recip
             </View>
           )}
 
-          {/* Rating badge - top right */}
-          {recipe.rating && (
-            <View style={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
-              paddingHorizontal: 8,
-              paddingVertical: 4,
-              borderRadius: 12,
-            }}>
+          {/* Favorite heart icon - top right */}
+          {showFavorite && (
+            <Pressable
+              onPress={handleToggleFavorite}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                backgroundColor: isRecipeFavorite ? 'rgba(220, 38, 38, 0.9)' : 'rgba(255, 255, 255, 0.85)',
+                paddingHorizontal: 8,
+                paddingVertical: 6,
+                borderRadius: 12,
+              }}
+            >
               <Ionicons
-                name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
-                size={12}
-                color={recipe.rating >= 3 ? colors.success : colors.error}
+                name={isRecipeFavorite ? 'heart' : 'heart-outline'}
+                size={14}
+                color={isRecipeFavorite ? colors.white : '#5D4E40'}
               />
-            </View>
+            </Pressable>
           )}
         </View>
 
         {/* Title below card */}
-        <View style={{ paddingTop: 6, paddingHorizontal: 2 }}>
+        <View style={{ paddingTop: 5, paddingHorizontal: 2 }}>
           <Text style={{
-            fontSize: fontSize.lg,
+            fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
             color: colors.white,
-            lineHeight: 20,
+            lineHeight: 18,
           }} numberOfLines={2}>
             {recipe.title}
           </Text>

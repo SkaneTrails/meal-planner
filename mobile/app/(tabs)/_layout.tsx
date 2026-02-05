@@ -14,26 +14,27 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { colors, shadows } from '@/lib/theme';
 
-// Custom tab bar background with blur effect
+// Custom tab bar background with solid cream/peach background
 function TabBarBackground() {
   if (Platform.OS === 'ios') {
     return (
       <BlurView
-        intensity={60}
-        tint="dark"
+        intensity={80}
+        tint="light"
         style={{
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          borderRadius: 28,
+          borderRadius: 24,
           overflow: 'hidden',
+          backgroundColor: 'rgba(253, 246, 240, 0.95)',
         }}
       />
     );
   }
-  // Fallback for Android/web - glass effect
+  // Fallback for Android/web - solid cream background
   return (
     <View
       style={{
@@ -42,10 +43,10 @@ function TabBarBackground() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderRadius: 28,
+        backgroundColor: '#FDF6F0',
+        borderRadius: 24,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.3)',
+        borderColor: 'rgba(139, 115, 85, 0.15)',
       }}
     />
   );
@@ -101,25 +102,25 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.white,
-        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)',
+        tabBarActiveTintColor: '#5D4E40',
+        tabBarInactiveTintColor: '#8B7355',
         tabBarShowLabel: false,
         tabBarBackground: TabBarBackground,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 24,
-          left: 24,
-          right: 24,
+          bottom: 20,
+          left: 20,
+          right: 20,
           backgroundColor: 'transparent',
           borderTopWidth: 0,
-          borderRadius: 28,
-          height: 64,
+          borderRadius: 24,
+          height: 56,
           paddingBottom: 0,
           paddingTop: 0,
-          ...shadows.lg,
+          ...shadows.md,
         },
         tabBarItemStyle: {
-          paddingVertical: 12,
+          paddingVertical: 8,
         },
         headerShown: false,
       }}
@@ -131,11 +132,11 @@ export default function TabLayout() {
           tabBarAccessibilityLabel: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <View style={{
-              padding: 8,
-              borderRadius: 16,
-              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+              padding: 6,
+              borderRadius: 12,
+              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "home" : "home-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "home" : "home-outline"} size={20} color={color} />
             </View>
           ),
         }}
@@ -147,11 +148,11 @@ export default function TabLayout() {
           tabBarAccessibilityLabel: 'Recipes',
           tabBarIcon: ({ color, focused }) => (
             <View style={{
-              padding: 8,
-              borderRadius: 16,
-              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+              padding: 6,
+              borderRadius: 12,
+              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "book" : "book-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "book" : "book-outline"} size={20} color={color} />
             </View>
           ),
         }}
@@ -163,11 +164,11 @@ export default function TabLayout() {
           tabBarAccessibilityLabel: 'Meal Plan',
           tabBarIcon: ({ color, focused }) => (
             <View style={{
-              padding: 8,
-              borderRadius: 16,
-              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+              padding: 6,
+              borderRadius: 12,
+              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={color} />
             </View>
           ),
         }}
@@ -179,11 +180,11 @@ export default function TabLayout() {
           tabBarAccessibilityLabel: 'Grocery List',
           tabBarIcon: ({ color, focused }) => (
             <View style={{
-              padding: 8,
-              borderRadius: 16,
-              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+              padding: 6,
+              borderRadius: 12,
+              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "cart" : "cart-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={color} />
             </View>
           ),
         }}
@@ -195,11 +196,11 @@ export default function TabLayout() {
           tabBarAccessibilityLabel: 'Settings',
           tabBarIcon: ({ color, focused }) => (
             <View style={{
-              padding: 8,
-              borderRadius: 16,
-              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+              padding: 6,
+              borderRadius: 12,
+              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "settings" : "settings-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "settings" : "settings-outline"} size={20} color={color} />
             </View>
           ),
         }}
@@ -211,11 +212,11 @@ export default function TabLayout() {
           tabBarAccessibilityLabel: 'Admin',
           tabBarIcon: ({ color, focused }) => (
             <View style={{
-              padding: 8,
-              borderRadius: 16,
-              backgroundColor: focused ? 'rgba(255, 255, 255, 0.25)' : 'transparent',
+              padding: 6,
+              borderRadius: 12,
+              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
             }}>
-              <Ionicons name={focused ? "shield-checkmark" : "shield-checkmark-outline"} size={22} color={focused ? '#5D4E40' : color} />
+              <Ionicons name={focused ? "shield-checkmark" : "shield-checkmark-outline"} size={20} color={color} />
             </View>
           ),
           // Only show admin tab for superusers
