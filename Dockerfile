@@ -2,7 +2,7 @@
 # Multi-stage build for smaller image size
 
 # Stage 1: Build dependencies
-FROM python:3.14-slim@sha256:1a3c6dbfd2173971abba880c3cc2ec4643690901f6ad6742d0827bae6cefc925 AS builder
+FROM python:3.14-slim@sha256:fa0acdcd760f0bf265bc2c1ee6120776c4d92a9c3a37289e17b9642ad2e5b83b AS builder
 
 # Install uv for fast dependency resolution
 # Pinned to digest for supply-chain security
@@ -17,7 +17,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 # Stage 2: Runtime image
-FROM python:3.14-slim@sha256:1a3c6dbfd2173971abba880c3cc2ec4643690901f6ad6742d0827bae6cefc925 AS runtime
+FROM python:3.14-slim@sha256:fa0acdcd760f0bf265bc2c1ee6120776c4d92a9c3a37289e17b9642ad2e5b83b AS runtime
 
 WORKDIR /app
 
