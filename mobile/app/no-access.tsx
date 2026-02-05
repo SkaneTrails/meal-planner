@@ -8,6 +8,8 @@ import { Redirect, useRouter } from 'expo-router';
 import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { GradientBackground } from '@/components';
+import { colors, fontFamily, fontSize, spacing, borderRadius } from '@/lib/theme';
 
 export default function NoAccessScreen() {
   const router = useRouter();
@@ -38,55 +40,105 @@ export default function NoAccessScreen() {
   // Show loading while checking user state
   if (loading || userLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-stone-50">
-        <ActivityIndicator size="large" color="#4A3728" />
-      </View>
+      <GradientBackground animated style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </GradientBackground>
     );
   }
 
   return (
-    <View className="flex-1 bg-stone-50">
+    <GradientBackground animated style={{ flex: 1 }}>
       {/* Main content - centered */}
-      <View className="flex-1 items-center justify-center px-8">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xl }}>
         {/* Icon */}
-        <View className="w-24 h-24 bg-amber-100 rounded-3xl items-center justify-center mb-6 shadow-sm">
-          <Ionicons name="lock-closed" size={48} color="#92400e" />
+        <View style={{
+          width: 96,
+          height: 96,
+          backgroundColor: 'rgba(255, 255, 255, 0.35)',
+          borderRadius: 24,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: spacing.lg,
+        }}>
+          <Ionicons name="lock-closed" size={48} color={colors.text.primary} />
         </View>
 
         {/* Title */}
-        <Text className="text-3xl font-bold text-stone-800 mb-2">
+        <Text style={{
+          fontSize: 32,
+          fontFamily: fontFamily.displayBold,
+          color: colors.text.primary,
+          marginBottom: spacing.sm,
+        }}>
           No Access
         </Text>
-        <Text className="text-stone-500 text-center text-base leading-relaxed mb-4">
+        <Text style={{
+          fontFamily: fontFamily.body,
+          color: colors.text.secondary,
+          textAlign: 'center',
+          fontSize: fontSize.lg,
+          marginBottom: spacing.sm,
+        }}>
           You're signed in as
         </Text>
-        <Text className="text-stone-700 font-semibold text-lg mb-4">
+        <Text style={{
+          fontFamily: fontFamily.bodySemibold,
+          color: colors.text.primary,
+          fontSize: fontSize.lg,
+          marginBottom: spacing.sm,
+        }}>
           {user?.email}
         </Text>
-        <Text className="text-stone-500 text-center text-base leading-relaxed mb-12">
+        <Text style={{
+          fontFamily: fontFamily.body,
+          color: colors.text.secondary,
+          textAlign: 'center',
+          fontSize: fontSize.lg,
+          lineHeight: 26,
+          marginBottom: 48,
+        }}>
           but you haven't been added to a household yet.{'\n\n'}
           Ask a household admin to invite you.
         </Text>
 
-        {/* Sign Out Button */}
+        {/* Sign Out Button - Glass style */}
         <Pressable
           onPress={handleSignOut}
-          className="bg-white border border-stone-200 rounded-2xl px-6 py-4 flex-row items-center justify-center w-full shadow-sm active:bg-stone-50"
-          style={{ elevation: 2 }}
+          style={({ pressed }) => ({
+            backgroundColor: pressed ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.35)',
+            borderRadius: borderRadius.lg,
+            paddingHorizontal: spacing.xl,
+            paddingVertical: spacing.lg,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            maxWidth: 320,
+          })}
         >
-          <Ionicons name="log-out-outline" size={20} color="#4A3728" />
-          <Text className="text-stone-700 font-semibold text-base ml-3">
+          <Ionicons name="log-out-outline" size={20} color={colors.text.primary} />
+          <Text style={{
+            color: colors.text.primary,
+            fontFamily: fontFamily.bodySemibold,
+            fontSize: fontSize.lg,
+            marginLeft: spacing.md,
+          }}>
             Sign Out
           </Text>
         </Pressable>
       </View>
 
       {/* Footer */}
-      <View className="pb-12 px-8">
-        <Text className="text-stone-400 text-xs text-center">
+      <View style={{ paddingBottom: 48, paddingHorizontal: spacing.xl }}>
+        <Text style={{
+          color: 'rgba(255, 255, 255, 0.9)',
+          fontSize: fontSize.sm,
+          fontFamily: fontFamily.body,
+          textAlign: 'center',
+        }}>
           Contact the app administrator if you need help
         </Text>
       </View>
-    </View>
+    </GradientBackground>
   );
 }

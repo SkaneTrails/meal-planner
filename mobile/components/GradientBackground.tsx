@@ -1,14 +1,17 @@
 /**
- * Luxurious animated background component.
- * Floating color orbs with smooth curved movement for premium, alive feel.
- * Creates a subtle lava lamp-like effect.
+ * Background component with two modes:
+ * - Default: Static background image (background.png)
+ * - Animated: Floating color orbs with smooth curved movement (for sign-in/no-access)
  */
 
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Animated, Easing, Dimensions } from 'react-native';
+import { StyleSheet, View, Animated, Easing, Dimensions, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+// Background image for most screens
+const BACKGROUND_IMAGE = require('@/assets/images/background.png');
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
@@ -152,35 +155,36 @@ function FloatingOrb({
   );
 }
 
-export function GradientBackground({ children, style, animated = true }: GradientBackgroundProps) {
-  // For non-animated, use simple gradient
+export function GradientBackground({ children, style, animated = false }: GradientBackgroundProps) {
+  // For non-animated (default), use static background image
   if (!animated) {
     return (
-      <LinearGradient
-        colors={['#D4C4B8', '#D8C0AC', '#DDB89C', '#E2AC88', '#D8A078']}
-        locations={[0, 0.25, 0.5, 0.75, 1]}
+      <ImageBackground
+        source={BACKGROUND_IMAGE}
         style={[styles.container, style]}
+        resizeMode="cover"
       >
         {children}
-      </LinearGradient>
+      </ImageBackground>
     );
   }
 
-  // Orb configurations - different sizes, colors, positions, and timing
+  // Orb configurations - warm coral/terracotta tones matching background.png
+  // Colors: cream top-left, dusty rose middle, rich coral/terracotta bottom-right
   const orbs = [
-    { color: '#E8C8A8', size: SCREEN_WIDTH * 0.8, x: -SCREEN_WIDTH * 0.2, y: -SCREEN_HEIGHT * 0.1, duration: 20000, delay: 0 },
-    { color: '#D4A088', size: SCREEN_WIDTH * 0.7, x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT * 0.6, duration: 25000, delay: 2000 },
-    { color: '#E0B898', size: SCREEN_WIDTH * 0.6, x: SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.3, duration: 18000, delay: 1000 },
-    { color: '#C8A890', size: SCREEN_WIDTH * 0.5, x: SCREEN_WIDTH * 0.5, y: SCREEN_HEIGHT * 0.1, duration: 22000, delay: 3000 },
-    { color: '#DCC0A0', size: SCREEN_WIDTH * 0.55, x: -SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.7, duration: 24000, delay: 1500 },
-    { color: '#E4B8A0', size: SCREEN_WIDTH * 0.45, x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT * 0.4, duration: 19000, delay: 2500 },
+    { color: '#E8D0C0', size: SCREEN_WIDTH * 0.8, x: -SCREEN_WIDTH * 0.2, y: -SCREEN_HEIGHT * 0.1, duration: 20000, delay: 0 },      // Light cream
+    { color: '#D4A080', size: SCREEN_WIDTH * 0.7, x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT * 0.6, duration: 25000, delay: 2000 },     // Warm terracotta
+    { color: '#C8A090', size: SCREEN_WIDTH * 0.6, x: SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.3, duration: 18000, delay: 1000 },     // Dusty rose
+    { color: '#E0B090', size: SCREEN_WIDTH * 0.5, x: SCREEN_WIDTH * 0.5, y: SCREEN_HEIGHT * 0.1, duration: 22000, delay: 3000 },     // Warm peach
+    { color: '#D08060', size: SCREEN_WIDTH * 0.55, x: -SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.7, duration: 24000, delay: 1500 },   // Rich coral
+    { color: '#C89070', size: SCREEN_WIDTH * 0.45, x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT * 0.4, duration: 19000, delay: 2500 },    // Terracotta
   ];
 
   return (
     <View style={[styles.container, style]}>
-      {/* Base gradient */}
+      {/* Base gradient - matching background.png tones */}
       <LinearGradient
-        colors={['#D8C8B8', '#DCC4B0', '#E0C0A8', '#E4BCA0']}
+        colors={['#E8D8C8', '#D8B8A0', '#D0A080', '#C88060']}
         locations={[0, 0.33, 0.66, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
