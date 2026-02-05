@@ -15,7 +15,6 @@ const BACKGROUND_IMAGE = require('@/assets/images/background.png');
 interface GradientBackgroundProps {
   children: React.ReactNode;
   style?: object;
-  variant?: 'default' | 'warm' | 'soft';
 }
 
 export function GradientBackground({ children, style }: GradientBackgroundProps) {

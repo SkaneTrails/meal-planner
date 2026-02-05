@@ -242,7 +242,7 @@ export default function SettingsScreen() {
                     <Ionicons name="checkmark-circle" size={20} color={colors.accent} />
                   )}
                 </Pressable>
-              );})}
+              )})}
             </View>
           </View>
 
