@@ -30,17 +30,40 @@ const queryClient = new QueryClient({
 
 // Persist query cache to AsyncStorage
 const CACHE_KEY = 'meal-planner-query-cache';
+// Only persist smaller queries to avoid quota issues
+const MAX_CACHE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB limit
 
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
   const data = cache
     .filter((query) => query.state.data !== undefined)
+    // Skip large data like full recipe lists - only cache smaller queries
+    .filter((query) => {
+      const key = query.queryKey[0];
+      // Skip recipes list (can be large) and any image data
+      return key !== 'recipes' && key !== 'recipe';
+    })
     .map((query) => ({
       queryKey: query.queryKey,
       data: query.state.data,
       dataUpdatedAt: query.state.dataUpdatedAt,
     }));
-  await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
+  try {
+    const serialized = JSON.stringify(data);
+    // Only persist if under size limit
+    if (serialized.length < MAX_CACHE_SIZE_BYTES) {
+      await AsyncStorage.setItem(CACHE_KEY, serialized);
+    }
+  } catch (error) {
+    // Quota exceeded or other storage error - clear cache and continue
+    console.warn('Failed to persist query cache:', error);
+    try {
+      await AsyncStorage.removeItem(CACHE_KEY);
+    } catch {
+      // Ignore cleanup errors
+    }
+  }
 }
 
 export async function restoreQueryCache(): Promise<void> {
