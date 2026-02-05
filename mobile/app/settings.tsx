@@ -17,6 +17,7 @@ import {
   View,
 } from 'react-native';
 import { GradientBackground } from '@/components';
+import { useAuth } from '@/lib/hooks/use-auth';
 import {
   type AppLanguage,
   LANGUAGES,
@@ -88,9 +89,19 @@ function SectionHeader({
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { user, signOut } = useAuth();
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } =
     useSettings();
   const [newItem, setNewItem] = useState('');
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/sign-in');
+    } catch {
+      Alert.alert('Error', 'Failed to sign out');
+    }
+  };
 
   const handleAddItem = async () => {
     const item = newItem.trim();
@@ -504,6 +515,42 @@ export default function SettingsScreen() {
                 <Text style={{ fontSize: 15 }}>❤️</Text>
               </View>
             </View>
+          </View>
+
+          {/* Account Section */}
+          <View style={{ marginBottom: 28 }}>
+            <SectionHeader
+              icon="person-circle"
+              iconBg="#FEE2E2"
+              iconColor="#DC2626"
+              title="Account"
+              subtitle={user?.email || 'Signed in'}
+            />
+
+            <Pressable
+              onPress={handleSignOut}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? '#FEE2E2' : colors.white,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                ...shadows.sm,
+              })}
+            >
+              <Ionicons name="log-out-outline" size={20} color="#DC2626" />
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '600',
+                  color: '#DC2626',
+                  marginLeft: 8,
+                }}
+              >
+                Sign Out
+              </Text>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -2,6 +2,7 @@
  * Tab layout for main navigation.
  * Modern floating tab bar design.
  * Requires authentication - redirects to sign-in if not authenticated.
+ * Requires household membership - redirects to no-access if not in a household (except superusers).
  */
 
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +13,11 @@ import { useAuth } from '@/lib/hooks/use-auth';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
-  const { data: currentUser } = useCurrentUser({ enabled: !loading && !!user });
+  const {
+    data: currentUser,
+    isLoading: userLoading,
+    isError,
+  } = useCurrentUser({ enabled: !loading && !!user });
 
   // Show loading spinner while checking auth state
   if (loading) {
@@ -33,6 +38,33 @@ export default function TabLayout() {
   // Redirect to sign-in if not authenticated
   if (!user) {
     return <Redirect href="/sign-in" />;
+  }
+
+  // Show loading while fetching user info
+  if (userLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+        }}
+      >
+        <ActivityIndicator size="large" color="#10b981" />
+      </View>
+    );
+  }
+
+  // Redirect to no-access if user doesn't have a household (unless superuser)
+  // Also redirect if there was an error fetching user info (likely 403)
+  if (
+    (currentUser &&
+      !currentUser.household_id &&
+      currentUser.role !== 'superuser') ||
+    isError
+  ) {
+    return <Redirect href="/no-access" />;
   }
 
   // Check if user is superuser (show admin tab)
