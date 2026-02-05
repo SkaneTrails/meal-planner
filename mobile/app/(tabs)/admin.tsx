@@ -14,11 +14,11 @@ import {
   TextInput,
   Modal,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
+import { showAlert, showNotification } from '@/lib/alert';
 import { GradientBackground } from '@/components';
 import { useCurrentUser, useHouseholds, useHouseholdMembers, useCreateHousehold, useAddMember, useRemoveMember } from '@/lib/hooks/use-admin';
 import type { Household, HouseholdMember } from '@/lib/types';
@@ -79,7 +79,7 @@ export default function AdminScreen() {
       setNewHouseholdName('');
       refetchHouseholds();
     } catch (error) {
-      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to create household');
+      showNotification('Error', error instanceof Error ? error.message : 'Failed to create household');
     }
   };
 
@@ -346,12 +346,12 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
       setNewMemberEmail('');
       refetch();
     } catch (error) {
-      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to add member');
+      showNotification('Error', error instanceof Error ? error.message : 'Failed to add member');
     }
   };
 
   const handleRemoveMember = (email: string) => {
-    Alert.alert(
+    showAlert(
       'Remove Member',
       `Are you sure you want to remove ${email} from this household?`,
       [
@@ -364,7 +364,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               await removeMember.mutateAsync({ householdId: household.id, email });
               refetch();
             } catch (error) {
-              Alert.alert('Error', error instanceof Error ? error.message : 'Failed to remove member');
+              showNotification('Error', error instanceof Error ? error.message : 'Failed to remove member');
             }
           },
         },

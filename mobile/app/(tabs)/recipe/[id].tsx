@@ -8,7 +8,6 @@ import {
   Text,
   ScrollView,
   Pressable,
-  Alert,
   Share,
   Linking,
   Modal,
@@ -16,6 +15,7 @@ import {
   TextInput,
   Animated,
 } from 'react-native';
+import { showAlert, showNotification } from '@/lib/alert';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -464,9 +464,9 @@ export default function RecipeDetailScreen() {
         enhanced: isEnhanced,
       });
       setShowEditModal(false);
-      Alert.alert('Saved', 'Recipe details updated');
+      showNotification('Saved', 'Recipe details updated');
     } catch {
-      Alert.alert('Error', 'Failed to save changes');
+      showNotification('Error', 'Failed to save changes');
     } finally {
       setIsSavingEdit(false);
     }
@@ -478,7 +478,7 @@ export default function RecipeDetailScreen() {
     const targetHousehold = households?.find(h => h.id === targetHouseholdId);
     if (!targetHousehold) return;
 
-    Alert.alert(
+    showAlert(
       'Transfer Recipe',
       `Move "${recipe.title}" to ${targetHousehold.name}?`,
       [
@@ -496,10 +496,10 @@ export default function RecipeDetailScreen() {
               setEditHouseholdId(targetHouseholdId);
               setShowEditModal(false);
               hapticSuccess();
-              Alert.alert('Transferred', `Recipe moved to ${targetHousehold.name}`);
+              showNotification('Transferred', `Recipe moved to ${targetHousehold.name}`);
             } catch {
               hapticWarning();
-              Alert.alert('Error', 'Failed to transfer recipe');
+              showNotification('Error', 'Failed to transfer recipe');
             } finally {
               setIsTransferring(false);
             }
@@ -544,7 +544,7 @@ export default function RecipeDetailScreen() {
 
   const handlePickImage = async () => {
     // Ask user for permission and show options
-    Alert.alert(
+    showAlert(
       'Change Recipe Photo',
       'Choose an option',
       [
@@ -553,7 +553,7 @@ export default function RecipeDetailScreen() {
           onPress: async () => {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
-              Alert.alert('Permission needed', 'Camera permission is required to take photos');
+              showNotification('Permission needed', 'Camera permission is required to take photos');
               return;
             }
             const result = await ImagePicker.launchCameraAsync({
@@ -572,7 +572,7 @@ export default function RecipeDetailScreen() {
           onPress: async () => {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
-              Alert.alert('Permission needed', 'Photo library permission is required');
+              showNotification('Permission needed', 'Photo library permission is required');
               return;
             }
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -612,7 +612,7 @@ export default function RecipeDetailScreen() {
         updates: {}, // Empty update just to trigger cache refresh
         enhanced: isEnhanced,
       });
-      Alert.alert('Success', 'Recipe photo uploaded!');
+      showNotification('Success', 'Recipe photo uploaded!');
     } catch (err) {
       // Fallback: save local URI if upload fails
       console.warn('Upload failed, saving local URI:', err);
@@ -622,9 +622,9 @@ export default function RecipeDetailScreen() {
           updates: { image_url: localUri },
           enhanced: isEnhanced,
         });
-        Alert.alert('Saved Locally', 'Photo saved locally (upload to cloud failed)');
+        showNotification('Saved Locally', 'Photo saved locally (upload to cloud failed)');
       } catch {
-        Alert.alert('Error', 'Failed to update photo');
+        showNotification('Error', 'Failed to update photo');
       }
     } finally {
       setIsUpdatingImage(false);
@@ -639,9 +639,9 @@ export default function RecipeDetailScreen() {
         updates: { image_url: url },
         enhanced: isEnhanced,
       });
-      Alert.alert('Success', 'Recipe photo updated!');
+      showNotification('Success', 'Recipe photo updated!');
     } catch {
-      Alert.alert('Error', 'Failed to update photo');
+      showNotification('Error', 'Failed to update photo');
     } finally {
       setIsUpdatingImage(false);
     }
@@ -657,9 +657,9 @@ export default function RecipeDetailScreen() {
         recipeId: id,
       });
       setShowPlanModal(false);
-      Alert.alert('Added!', `${recipe?.title} added to ${mealType} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`);
+      showNotification('Added!', `${recipe?.title} added to ${mealType} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`);
     } catch {
-      Alert.alert('Error', 'Failed to add to meal plan');
+      showNotification('Error', 'Failed to add to meal plan');
     }
   };
 
@@ -672,7 +672,7 @@ export default function RecipeDetailScreen() {
         recipeId: undefined,
       });
     } catch {
-      Alert.alert('Error', 'Failed to clear meal');
+      showNotification('Error', 'Failed to clear meal');
     }
   };
 
@@ -686,7 +686,7 @@ export default function RecipeDetailScreen() {
         enhanced: isEnhanced,
       });
     } catch (err) {
-      Alert.alert('Error', 'Failed to update rating');
+      showNotification('Error', 'Failed to update rating');
     }
   };
 
@@ -695,7 +695,7 @@ export default function RecipeDetailScreen() {
     hapticWarning();
     // If already thumbs down, ask to delete
     if (recipe.rating === 1) {
-      Alert.alert(
+      showAlert(
         'Delete Recipe?',
         `Do you want to delete "${recipe.title}"?`,
         [
@@ -708,7 +708,7 @@ export default function RecipeDetailScreen() {
                 await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
                 router.back();
               } catch (err) {
-                Alert.alert('Error', 'Failed to delete recipe');
+                showNotification('Error', 'Failed to delete recipe');
               }
             },
           },
@@ -716,12 +716,13 @@ export default function RecipeDetailScreen() {
       );
     } else {
       // First thumb down - just mark it
-      Alert.alert(
+      showAlert(
         'Not a favorite?',
         'Do you want to delete this recipe?',
         [
           {
             text: 'No, just mark as not favorite',
+            style: 'cancel',
             onPress: async () => {
               try {
                 await updateRecipe.mutateAsync({
@@ -730,7 +731,7 @@ export default function RecipeDetailScreen() {
                   enhanced: isEnhanced,
                 });
               } catch (err) {
-                Alert.alert('Error', 'Failed to update rating');
+                showNotification('Error', 'Failed to update rating');
               }
             }
           },
@@ -742,7 +743,7 @@ export default function RecipeDetailScreen() {
                 await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
                 router.back();
               } catch (err) {
-                Alert.alert('Error', 'Failed to delete recipe');
+                showNotification('Error', 'Failed to delete recipe');
               }
             },
           },
@@ -752,7 +753,7 @@ export default function RecipeDetailScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
+    showAlert(
       'Delete Recipe',
       `Are you sure you want to delete "${recipe?.title}"?`,
       [
@@ -765,7 +766,7 @@ export default function RecipeDetailScreen() {
               await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
               router.back();
             } catch (err) {
-              Alert.alert('Error', 'Failed to delete recipe');
+              showNotification('Error', 'Failed to delete recipe');
             }
           },
         },
@@ -977,11 +978,11 @@ export default function RecipeDetailScreen() {
             {/* Edit button - only enabled for recipes owned by user's household */}
             {(() => {
               const isOwned = recipe.household_id === currentUser?.household_id;
-              const isLegacy = recipe.household_id === null || recipe.household_id === undefined;
-              const canEdit = isOwned || isLegacy;
+              // Legacy recipes (no household) are read-only - must copy first
+              const canEdit = isOwned;
               return (
                 <Pressable
-                  onPress={canEdit ? openEditModal : () => Alert.alert('Cannot Edit', 'Copy this recipe to your household first to make changes.')}
+                  onPress={canEdit ? openEditModal : () => showNotification('Cannot Edit', 'Copy this recipe to your household first to make changes.')}
                   style={({ pressed }) => ({
                     width: 40,
                     height: 40,
@@ -1321,7 +1322,7 @@ export default function RecipeDetailScreen() {
           {recipe.url && (
             <Pressable
               onPress={() => Linking.openURL(recipe.url).catch(() => {
-                Alert.alert('Error', 'Could not open the recipe URL');
+                showNotification('Error', 'Could not open the recipe URL');
               })}
               style={{
                 flexDirection: 'row',
