@@ -7,7 +7,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 
@@ -17,6 +17,7 @@ export default function TabLayout() {
     data: currentUser,
     isLoading: userLoading,
     isError,
+    refetch,
   } = useCurrentUser({ enabled: !loading && !!user });
 
   // Show loading spinner while checking auth state
@@ -65,9 +66,43 @@ export default function TabLayout() {
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'white',
+          padding: 24,
         }}
       >
-        <ActivityIndicator size="large" color="#EF4444" />
+        <Ionicons name="cloud-offline-outline" size={48} color="#EF4444" />
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '600',
+            color: '#374151',
+            marginTop: 16,
+            textAlign: 'center',
+          }}
+        >
+          Connection Error
+        </Text>
+        <Text
+          style={{
+            fontSize: 14,
+            color: '#6B7280',
+            marginTop: 8,
+            textAlign: 'center',
+          }}
+        >
+          Could not load your account info
+        </Text>
+        <Pressable
+          onPress={() => refetch()}
+          style={{
+            marginTop: 24,
+            backgroundColor: '#10b981',
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: '600' }}>Retry</Text>
+        </Pressable>
       </View>
     );
   }

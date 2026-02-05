@@ -524,7 +524,7 @@ export default function SettingsScreen() {
               iconBg="#FEE2E2"
               iconColor="#DC2626"
               title="Account"
-              subtitle={user?.email || 'Signed in'}
+              subtitle={user?.email || 'Email unavailable'}
             />
 
             <Pressable
