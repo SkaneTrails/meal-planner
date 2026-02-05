@@ -9,7 +9,6 @@ import {
   Text,
   ScrollView,
   Pressable,
-  Alert,
   Switch,
   TextInput,
   ActivityIndicator,
@@ -17,6 +16,7 @@ import {
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
+import { showNotification } from '@/lib/alert';
 import { useHouseholdSettings, useUpdateHouseholdSettings } from '@/lib/hooks/use-admin';
 import { GradientBackground } from '@/components';
 import type { MeatPreference, MincedMeatPreference, DairyPreference, HouseholdSettings } from '@/lib/types';
@@ -188,9 +188,9 @@ export default function HouseholdSettingsScreen() {
     try {
       await updateSettings.mutateAsync({ householdId, settings });
       setHasChanges(false);
-      Alert.alert('Saved', 'Household settings updated successfully');
+      showNotification('Saved', 'Household settings updated successfully');
     } catch {
-      Alert.alert('Error', 'Failed to save settings');
+      showNotification('Error', 'Failed to save settings');
     }
   };
 

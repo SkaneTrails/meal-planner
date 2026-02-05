@@ -9,7 +9,6 @@ import {
   TextInput,
   FlatList,
   Pressable,
-  Alert,
   ScrollView,
   Image,
 } from 'react-native';
@@ -18,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground, RecipeCard } from '@/components';
 import { useRecipes, useSetMeal, useRemoveMeal, useEnhancedMode, useMealPlan } from '@/lib/hooks';
+import { showNotification } from '@/lib/alert';
 import type { MealType, Recipe } from '@/lib/types';
 
 const MEAL_TYPE_LABELS: Record<MealType, string> = {
@@ -156,7 +156,7 @@ export default function SelectRecipeScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert('Error', 'Failed to set meal');
+      showNotification('Error', 'Failed to set meal');
     }
   };
 
@@ -171,7 +171,7 @@ export default function SelectRecipeScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert('Error', 'Failed to set meal');
+      showNotification('Error', 'Failed to set meal');
     }
   };
 
@@ -192,7 +192,7 @@ export default function SelectRecipeScreen() {
       }
       router.back();
     } catch (err) {
-      Alert.alert('Error', 'Failed to copy meal');
+      showNotification('Error', 'Failed to copy meal');
     }
   };
 
@@ -201,7 +201,7 @@ export default function SelectRecipeScreen() {
       await removeMeal.mutateAsync({ date, mealType });
       router.back();
     } catch (err) {
-      Alert.alert('Error', 'Failed to remove meal');
+      showNotification('Error', 'Failed to remove meal');
     }
   };
 

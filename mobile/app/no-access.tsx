@@ -5,7 +5,8 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
-import { ActivityIndicator, Alert, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { GradientBackground } from '@/components';
@@ -23,7 +24,7 @@ export default function NoAccessScreen() {
       await signOut();
       router.replace('/sign-in');
     } catch {
-      Alert.alert('Error', 'Failed to sign out');
+      showNotification('Error', 'Failed to sign out');
     }
   };
 

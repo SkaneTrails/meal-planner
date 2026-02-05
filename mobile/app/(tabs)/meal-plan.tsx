@@ -12,7 +12,6 @@ import {
   Pressable,
   Image,
   Modal,
-  Alert,
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -28,22 +27,17 @@ import { GradientBackground } from '@/components';
 import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
 import type { MealType, Recipe } from '@/lib/types';
+import { showAlert, showNotification } from '@/lib/alert';
 
 // Quick note suggestions
 const NOTE_SUGGESTIONS = ['🏢 Office', '🏠 Home', '🏃 Gym', '🍽️ Dinner out', '✈️ Travel', '🎉 Party'];
 
-// Cross-platform confirm dialog
-const showConfirm = (title: string, message: string, onConfirm: () => void) => {
-  if (Platform.OS === 'web') {
-    if (window.confirm(`${title}\n\n${message}`)) {
-      onConfirm();
-    }
-  } else {
-    Alert.alert(title, message, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: onConfirm },
-    ]);
-  }
+// Cross-platform confirm dialog using centralized alert utility
+const showConfirmDelete = (title: string, message: string, onConfirm: () => void) => {
+  showAlert(title, message, [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Remove', style: 'destructive', onPress: onConfirm },
+  ]);
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
@@ -318,7 +312,7 @@ export default function MealPlanScreen() {
 
   const handleCreateGroceryList = async () => {
     if (selectedMeals.size === 0) {
-      Alert.alert('No meals selected', 'Please select at least one meal to create a grocery list.');
+      showNotification('No meals selected', 'Please select at least one meal to create a grocery list.');
       return;
     }
 
@@ -339,7 +333,7 @@ export default function MealPlanScreen() {
       }, 100);
     } catch (error) {
       console.error('[MealPlan] Error saving:', error);
-      Alert.alert('Error', 'Failed to save selections');
+      showNotification('Error', 'Failed to save selections');
     }
   };
 
@@ -776,7 +770,7 @@ export default function MealPlanScreen() {
                       <Pressable
                         onPress={() => {
                           const dateStr = formatDateLocal(date);
-                          showConfirm(
+                          showConfirmDelete(
                             'Remove meal',
                             `Remove ${title} from ${label.toLowerCase()}?`,
                             () => {

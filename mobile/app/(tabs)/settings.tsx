@@ -10,13 +10,13 @@ import {
   ScrollView,
   TextInput,
   Pressable,
-  Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
+import { showNotification } from '@/lib/alert';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { GradientBackground } from '@/components';
 
@@ -85,7 +85,7 @@ export default function SettingsScreen() {
       await signOut();
       router.replace('/sign-in');
     } catch {
-      Alert.alert('Error', 'Failed to sign out');
+      showNotification('Error', 'Failed to sign out');
     }
   };
 
@@ -97,7 +97,7 @@ export default function SettingsScreen() {
       await addItemAtHome(item);
       setNewItem('');
     } catch {
-      Alert.alert('Error', 'Failed to add item');
+      showNotification('Error', 'Failed to add item');
     }
   };
 
@@ -105,7 +105,7 @@ export default function SettingsScreen() {
     try {
       await removeItemAtHome(item);
     } catch {
-      Alert.alert('Error', 'Failed to remove item');
+      showNotification('Error', 'Failed to remove item');
     }
   };
 
@@ -116,7 +116,7 @@ export default function SettingsScreen() {
     try {
       await addItemAtHome(item);
     } catch {
-      Alert.alert('Error', 'Failed to add item');
+      showNotification('Error', 'Failed to add item');
     }
   };
 
@@ -128,7 +128,7 @@ export default function SettingsScreen() {
     try {
       await setLanguage(language);
     } catch {
-      Alert.alert('Error', 'Failed to change language');
+      showNotification('Error', 'Failed to change language');
     }
   };
 
