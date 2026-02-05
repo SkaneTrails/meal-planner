@@ -1,11 +1,11 @@
 ---
-## name: working-context description: Track active tasks and discovered issues per-branch, defer non-critical fixes without losing them license: MIT
+name: working-context
+description: Track active tasks and discovered issues per-branch, defer non-critical fixes without losing them
+---
 
 # Skill: Working Context Management
 
 This skill defines how to maintain persistent working context across conversations using `.copilot-tasks.md`.
-
----
 
 ## ⚠️ CRITICAL: Always Read the Tasks File
 

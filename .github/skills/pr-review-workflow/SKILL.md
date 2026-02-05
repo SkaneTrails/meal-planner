@@ -1,10 +1,11 @@
 ---
-## name: pr-review-workflow description: Handle PR creation, review comments, feedback, and CI status using GitHub CLI and APIs. license: MIT
+name: pr-review-workflow
+description: Handle PR creation, review comments, feedback, and CI status using GitHub CLI and APIs
+---
 
 # Skill: PR Review Workflow
 
 This skill defines how to handle pull request workflows: creation, review comments, and CI status.
----
 
 ## Activation context
 
