@@ -3,31 +3,20 @@
  * Luxurious design system with elegant typography, soft colors, and premium feel.
  */
 
-import { Platform } from 'react-native';
-
-// Font families - clean modern typography
+// Font families - DM Sans for body, Playfair Display for headings
 export const fontFamily = {
-  // Display/Headings - clean sans-serif
-  display: Platform.select({
-    ios: 'System',
-    android: 'Roboto',
-    web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    default: 'System',
-  }),
-  // Body text - clean, modern sans-serif
-  body: Platform.select({
-    ios: 'System',
-    android: 'Roboto',
-    web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    default: 'System',
-  }),
-  // Accent text - for labels and small caps
-  accent: Platform.select({
-    ios: 'System',
-    android: 'Roboto',
-    web: '-apple-system, BlinkMacSystemFont, sans-serif',
-    default: 'System',
-  }),
+  // Display/Headings - elegant serif (Playfair Display)
+  display: 'PlayfairDisplay_600SemiBold',
+  displayRegular: 'PlayfairDisplay_400Regular',
+  displayMedium: 'PlayfairDisplay_500Medium',
+  displayBold: 'PlayfairDisplay_700Bold',
+  // Body text - modern sans-serif (DM Sans)
+  body: 'DMSans_400Regular',
+  bodyMedium: 'DMSans_500Medium',
+  bodySemibold: 'DMSans_600SemiBold',
+  bodyBold: 'DMSans_700Bold',
+  // Accent text - for labels (DM Sans medium)
+  accent: 'DMSans_500Medium',
 };
 
 // Typography scale - refined for luxury feel

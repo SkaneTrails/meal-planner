@@ -26,6 +26,7 @@ export const LANGUAGES: { code: AppLanguage; label: string; flag: string }[] = [
 interface Settings {
   itemsAtHome: string[]; // List of ingredients always at home (won't appear in grocery list)
   language: AppLanguage; // App language
+  favoriteRecipes: string[]; // List of favorite recipe IDs
 }
 
 interface SettingsContextType {
@@ -35,11 +36,14 @@ interface SettingsContextType {
   removeItemAtHome: (item: string) => Promise<void>;
   isItemAtHome: (item: string) => boolean;
   setLanguage: (language: AppLanguage) => Promise<void>;
+  toggleFavorite: (recipeId: string) => Promise<void>;
+  isFavorite: (recipeId: string) => boolean;
 }
 
 const defaultSettings: Settings = {
   itemsAtHome: [],
   language: 'en',
+  favoriteRecipes: [],
 };
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
@@ -129,6 +133,25 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     [settings, saveSettings],
   );
 
+  const toggleFavorite = useCallback(
+    async (recipeId: string) => {
+      const isFav = settings.favoriteRecipes.includes(recipeId);
+      const newSettings = {
+        ...settings,
+        favoriteRecipes: isFav
+          ? settings.favoriteRecipes.filter((id) => id !== recipeId)
+          : [...settings.favoriteRecipes, recipeId],
+      };
+      await saveSettings(newSettings);
+    },
+    [settings, saveSettings],
+  );
+
+  const isFavorite = useCallback(
+    (recipeId: string) => settings.favoriteRecipes.includes(recipeId),
+    [settings.favoriteRecipes],
+  );
+
   return (
     <SettingsContext.Provider
       value={{
@@ -138,6 +161,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         removeItemAtHome,
         isItemAtHome,
         setLanguage,
+        toggleFavorite,
+        isFavorite,
       }}
     >
       {children}
