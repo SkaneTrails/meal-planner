@@ -310,7 +310,7 @@ The developer can use natural language:
 
 ## Multi-repo work
 
-When working across multiple repositories (e.g., sbpaa-geospatial-routing, sbpaa-ingka-geoview, sbpaa-ingka-geospatial):
+When working across multiple repositories (e.g., planner-meals-dev, planner-hikes-prod):
 
 - Each repo has its own `.copilot-tasks.md`
 
@@ -319,8 +319,8 @@ When working across multiple repositories (e.g., sbpaa-geospatial-routing, sbpaa
 - If developer mentions work affecting another repo, note it with a repo prefix:
 
   ```markdown
-  - [ ] [sbpaa-ingka-geoview] Update C4 diagram after routing changes
-  - [ ] [sbpaa-ingka-geospatial] Add new country to pipeline config
+  - [ ] [planner-meals-dev] Update C4 diagram after routing changes
+  - [ ] [planner-hikes-prod] Add new country to pipeline config
   ```
 
 - These serve as reminders to address when switching to that repo

@@ -15,7 +15,11 @@ ENHANCED_DATABASE = "meal-planner"
 def get_firestore_client(database: str = DEFAULT_DATABASE) -> firestore.Client:  # pragma: no cover
     """Get or create Firestore client singleton for a specific database.
 
-    Supports Firestore emulator via FIRESTORE_EMULATOR_HOST environment variable.
+    Supports multiple credential sources:
+    - Service account impersonation via ADC (recommended for local dev)
+    - GOOGLE_APPLICATION_CREDENTIALS env var pointing to a key file
+    - Cloud Run metadata server (production)
+    - Firestore emulator via FIRESTORE_EMULATOR_HOST
 
     Args:
         database: The database ID to connect to. Use "(default)" for the default database
@@ -23,13 +27,14 @@ def get_firestore_client(database: str = DEFAULT_DATABASE) -> firestore.Client: 
     """
     global _clients  # noqa: PLW0602
     if database not in _clients:
-        # Check for emulator
-        emulator_host = os.getenv("FIRESTORE_EMULATOR_HOST")
-        if emulator_host:
-            # When using emulator, we need to set the project ID
-            project_id = os.getenv("GOOGLE_CLOUD_PROJECT", "meal-planner-local")
+        # Use explicit project ID from environment (required for local dev)
+        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+
+        if project_id:
+            # Explicit project - use with ADC (works with impersonation, key files, etc.)
             _clients[database] = firestore.Client(project=project_id, database=database)
         else:
+            # Fall back to ADC defaults (Cloud Run uses metadata server)
             _clients[database] = firestore.Client(database=database)
     return _clients[database]
 

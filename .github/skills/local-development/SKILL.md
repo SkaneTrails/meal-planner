@@ -43,6 +43,114 @@ echo "Created mobile/.env.development"
 
 ---
 
+## ⚠️ Backend Environment Setup
+
+**Check if `.env` exists in the project root with required variables:**
+
+```bash
+# Check if the file exists
+ls .env
+```
+
+**If missing or incomplete, create/update it:**
+
+```bash
+PROJECT=<project-id-from-user>
+
+cat > .env << EOF
+# GCP project ID for Firestore (REQUIRED - prevents using wrong gcloud default project)
+GOOGLE_CLOUD_PROJECT=$PROJECT
+
+# Gemini API key for recipe enhancement (optional - only for recipe_enhancer.py)
+GOOGLE_API_KEY=$(gcloud secrets versions access latest --secret=gemini-api-key --project=$PROJECT)
+
+# Recipe scraping Cloud Function URL
+SCRAPE_FUNCTION_URL=https://scrape-recipe-vt7bvshx5q-ew.a.run.app
+
+# Skip Firebase authentication for local development
+SKIP_AUTH=true
+EOF
+
+echo "Created .env"
+```
+
+**Important**: `GOOGLE_CLOUD_PROJECT` is required to ensure Firestore connects to the correct project.
+
+---
+
+## ⚠️ GCP Service Account Setup (Required for Firestore Access)
+
+ADC (Application Default Credentials) from `gcloud auth application-default login` uses an OAuth client that may not be authorized for the project's Firestore API (causing `CONSUMER_INVALID` errors). **Service account impersonation is required for local development.**
+
+### Automated Setup (Recommended)
+
+Run the setup script which handles everything:
+
+```powershell
+# PowerShell (Windows)
+.\scripts\setup-local-dev.ps1 -ProjectId <PROJECT_ID>
+```
+
+```bash
+# Bash (macOS/Linux)
+./scripts/setup-local-dev.sh <PROJECT_ID>
+```
+
+The script will:
+1. Run `terraform apply` to create the `local-dev` service account (if it doesn't exist)
+2. Grant your user account permission to impersonate the service account
+3. Configure ADC to use impersonation (no key files on disk!)
+4. Update `.env` with the correct project ID
+
+### Why Impersonation Instead of Key Files?
+
+| Key Files | Impersonation |
+|-----------|---------------|
+| Long-lived credentials on disk | Short-lived tokens (1 hour) |
+| Must rotate manually | Automatic token refresh |
+| Can be accidentally committed | Nothing to commit |
+| Proliferates keys in GCP | No keys created |
+
+### Manual Setup (if script fails)
+
+**1. Apply Terraform** (creates service account):
+```bash
+cd infra/environments/dev
+terraform apply
+```
+
+**2. Grant impersonation permission:**
+```bash
+gcloud iam service-accounts add-iam-policy-binding \
+  local-dev@<PROJECT_ID>.iam.gserviceaccount.com \
+  --member="user:YOUR_EMAIL@example.com" \
+  --role="roles/iam.serviceAccountTokenCreator" \
+  --project=<PROJECT_ID>
+```
+
+**3. Configure ADC with impersonation:**
+```bash
+gcloud auth application-default login \
+  --impersonate-service-account=local-dev@<PROJECT_ID>.iam.gserviceaccount.com
+```
+
+### Service Account Permissions
+
+The `local-dev` service account has:
+- `roles/datastore.user` - Firestore read/write access
+- `roles/storage.objectUser` - GCS bucket access (recipe images)
+- `roles/secretmanager.secretAccessor` - Read secrets
+
+### Refreshing Credentials
+
+Impersonation tokens last 1 hour. If you get auth errors after a while:
+```bash
+gcloud auth application-default login \
+  --impersonate-service-account=local-dev@<PROJECT_ID>.iam.gserviceaccount.com
+```
+
+---
+
 ## ⚠️ IMPORTANT: Running the App for Debugging
 
 **Before starting services, check if they're already running:**
@@ -186,6 +294,19 @@ The `.env.development` file is missing or has incorrect Firebase credentials. Ch
 1. Ensure the API is running on `0.0.0.0` (not `127.0.0.1`)
 2. Use your machine's LAN IP in `EXPO_PUBLIC_API_URL`
 3. Check that both devices are on the same network
+
+### CONSUMER_INVALID error on Firestore API
+
+This error occurs when using ADC from `gcloud auth application-default login`:
+
+```
+google.api_core.exceptions.PermissionDenied: 403 Permission denied on resource project...
+[reason: "CONSUMER_INVALID"]
+```
+
+**Solution**: Use service account impersonation instead of plain ADC. See "GCP Service Account Setup" section above.
+
+The issue is that gcloud's OAuth client ID is not authorized for the project's Firestore API. Service account impersonation bypasses this OAuth client issue.
 
 ### Port already in use
 
