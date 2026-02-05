@@ -39,9 +39,19 @@ export async function persistQueryCache(): Promise<void> {
     .filter((query) => query.state.data !== undefined)
     // Skip large data like full recipe lists - only cache smaller queries
     .filter((query) => {
-      const key = query.queryKey[0];
-      // Skip recipes list (can be large) and any image data
-      return key !== 'recipes';
+      const key = query.queryKey;
+      if (!Array.isArray(key)) {
+        return true;
+      }
+
+      const [resource, type] = key as unknown[];
+
+      // Skip recipes list (can be large) but allow individual recipe details
+      if (resource === 'recipes' && type === 'list') {
+        return false;
+      }
+
+      return true;
     })
     .map((query) => ({
       queryKey: query.queryKey,
@@ -55,6 +65,11 @@ export async function persistQueryCache(): Promise<void> {
     // Only persist if under size limit
     if (byteLength < MAX_CACHE_SIZE_BYTES) {
       await AsyncStorage.setItem(CACHE_KEY, serialized);
+    } else {
+      console.warn('Query cache not persisted: size exceeds limit', {
+        byteLength,
+        maxCacheSizeBytes: MAX_CACHE_SIZE_BYTES,
+      });
     }
   } catch (error) {
     // Quota exceeded or other storage error - clear cache and continue
