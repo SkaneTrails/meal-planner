@@ -23,7 +23,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
+import { showNotification } from '../alert';
 import { setAuthTokenGetter, setOnUnauthorized } from '../api';
 import { auth, isFirebaseConfigured } from '../firebase';
 
@@ -162,7 +163,7 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
         // Use window.alert on web for reliability; include title for consistency
         window.alert(`${title}\n\n${message}`);
       } else {
-        Alert.alert(title, message, [{ text: 'OK' }]);
+        showNotification(title, message);
       }
 
       // Reset after a short delay to allow for retry after re-auth

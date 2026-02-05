@@ -9,7 +9,6 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Switch,
@@ -18,6 +17,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useScrapeRecipe } from '@/lib/hooks';
+import { showAlert, showNotification } from '@/lib/alert';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground } from '@/components';
 import type { Recipe } from '@/lib/types';
@@ -42,7 +42,7 @@ export default function AddRecipeScreen() {
 
   const handleImport = async () => {
     if (!isValidUrl(url)) {
-      Alert.alert('Ogiltig URL', 'Ange en giltig recept-URL');
+      showNotification('Ogiltig URL', 'Ange en giltig recept-URL');
       return;
     }
 
@@ -54,9 +54,10 @@ export default function AddRecipeScreen() {
       if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
         setShowSummaryModal(true);
       } else {
-        Alert.alert('Klart!', `"${recipe.title}" har importerats!`, [
+        showAlert('Klart!', `"${recipe.title}" har importerats!`, [
           {
             text: 'Visa recept',
+            style: 'cancel',
             onPress: () => {
               router.back();
               router.push(`/recipe/${recipe.id}${recipe.enhanced ? '?enhanced=true' : ''}`);
@@ -70,7 +71,7 @@ export default function AddRecipeScreen() {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Kunde inte importera receptet';
-      Alert.alert('Import misslyckades', message);
+      showNotification('Import misslyckades', message);
     }
   };
 

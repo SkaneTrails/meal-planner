@@ -9,13 +9,13 @@ import {
   Text,
   Pressable,
   TextInput,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
+import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
@@ -283,11 +283,11 @@ export default function GroceryScreen() {
         console.log('[Grocery] All data cleared');
       } catch (error) {
         console.error('[Grocery] Error clearing data:', error);
-        Alert.alert('Error', 'Failed to clear list');
+        showNotification('Error', 'Failed to clear list');
       }
     };
 
-    Alert.alert(
+    showAlert(
       'Clear Entire List?',
       'This will remove all items from your grocery list, including meal selections and custom items.',
       [
