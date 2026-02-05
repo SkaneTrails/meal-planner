@@ -209,7 +209,7 @@ export default function SettingsScreen() {
                   sv: 'https://flagcdn.com/w80/se.png',
                   it: 'https://flagcdn.com/w80/it.png',
                 };
-                
+
                 return (
                 <Pressable
                   key={lang.code}
