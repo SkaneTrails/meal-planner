@@ -28,6 +28,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
 - **Never work directly on main** - Always create a feature branch for changes
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
+- **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
 
 ## Keeping Documentation Current
@@ -213,6 +214,7 @@ Skills in `.github/skills/` provide domain-specific instructions:
 | `pr-review-workflow/`      | PR creation, review comments, CI status, GitHub API patterns    |
 | `working-context/`         | Track tasks and discovered issues across conversations          |
 | `copilot-self-improvement/`| Meta-skill for maintaining Copilot config, skills, instructions |
+| `security/`                | OWASP top 10, secrets handling, preventing sensitive data leaks |
 
 ## Development Workflows
 
