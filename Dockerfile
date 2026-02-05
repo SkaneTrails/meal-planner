@@ -10,19 +10,11 @@ COPY --from=ghcr.io/astral-sh/uv@sha256:db9370c2b0b837c74f454bea914343da9f292320
 
 WORKDIR /app
 
-# Create virtual environment and install production dependencies
-RUN uv venv && \
-    uv pip install --no-cache \
-    fastapi \
-    uvicorn[standard] \
-    google-cloud-firestore \
-    google-cloud-storage \
-    firebase-admin \
-    pydantic \
-    python-dotenv \
-    python-multipart \
-    httpx \
-    pillow
+# Copy dependency files
+COPY pyproject.toml uv.lock ./
+
+# Create virtual environment and install from lockfile (production deps only)
+RUN uv sync --frozen --no-dev --no-install-project
 
 # Stage 2: Runtime image
 FROM python:3.14-slim@sha256:1a3c6dbfd2173971abba880c3cc2ec4643690901f6ad6742d0827bae6cefc925 AS runtime
