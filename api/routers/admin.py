@@ -6,14 +6,13 @@ These endpoints require superuser or admin role access.
 import re
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
 from api.models.settings import HouseholdSettingsUpdate  # noqa: TC001 - FastAPI needs at runtime
 from api.storage import household_storage, recipe_storage
-from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -314,10 +313,7 @@ class RecipeTransfer(BaseModel):
 
 @router.post("/recipes/{recipe_id}/transfer")
 async def transfer_recipe(
-    user: Annotated[AuthenticatedUser, Depends(require_auth)],
-    recipe_id: str,
-    transfer: RecipeTransfer,
-    enhanced: Annotated[bool, Query(description="Use AI-enhanced recipes database")] = False,
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str, transfer: RecipeTransfer
 ) -> dict:
     """Transfer a recipe to a different household. Superuser only."""
     _require_superuser(user)
@@ -328,8 +324,7 @@ async def transfer_recipe(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target household not found")
 
     # Transfer the recipe
-    database = ENHANCED_DATABASE if enhanced else DEFAULT_DATABASE
-    recipe = recipe_storage.transfer_recipe_to_household(recipe_id, transfer.target_household_id, database=database)
+    recipe = recipe_storage.transfer_recipe_to_household(recipe_id, transfer.target_household_id)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 

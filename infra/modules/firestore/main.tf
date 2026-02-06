@@ -1,11 +1,9 @@
-# Firestore databases for Meal Planner
-# Two databases:
-# - (default): Original scraped recipes
-# - meal-planner: AI-enhanced recipes
+# Firestore database for Meal Planner
+# Single database: meal-planner (recipes, meal plans, grocery lists)
 #
-# Free tier: 1 GB storage, 50K reads/day, 20K writes/day (shared across all databases)
+# Free tier: 1 GB storage, 50K reads/day, 20K writes/day
 
-# Enhanced recipes database
+# Recipes database
 resource "google_firestore_database" "meal_planner" {
   project     = var.project
   name        = var.database_name

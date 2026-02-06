@@ -12,7 +12,6 @@ import {
   RefreshControl,
   Pressable,
   useWindowDimensions,
-  Switch,
   Modal,
   ScrollView,
   Animated,
@@ -23,7 +22,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
-import { useRecipes, useEnhancedMode } from '@/lib/hooks';
+import { useRecipes } from '@/lib/hooks';
 import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
@@ -181,11 +180,8 @@ export default function RecipesScreen() {
   // Check if any filters are active
   const hasActiveFilters = dietFilter !== null || mealFilter !== null || searchQuery !== '' || showFavoritesOnly;
 
-  // Use global enhanced mode context
-  const { isEnhanced, setIsEnhanced } = useEnhancedMode();
-
-  // Fetch recipes - pass enhanced flag to use correct database
-  const { data: recipes = [], isLoading, refetch } = useRecipes(undefined, isEnhanced);
+  // Fetch recipes
+  const { data: recipes = [], isLoading, refetch } = useRecipes();
 
   // Filter and sort recipes
   const filteredRecipes = useMemo(() => {
@@ -230,43 +226,6 @@ export default function RecipesScreen() {
             color: colors.text.secondary,
             marginTop: 4,
           }}>{recipes.length} recipes in your collection</Text>
-        </View>
-
-        {/* AI Enhanced toggle */}
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: isEnhanced ? '#7A6858' : colors.glass.card,
-          borderRadius: borderRadius.md,
-          paddingHorizontal: 14,
-          paddingVertical: 10,
-          marginBottom: 8,
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <View style={{
-              backgroundColor: isEnhanced ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.3)',
-              borderRadius: borderRadius.sm,
-              padding: 6
-            }}>
-              <Ionicons name="sparkles" size={16} color={isEnhanced ? '#FFD700' : '#8B7355'} />
-            </View>
-            <View style={{ marginLeft: 10, flex: 1 }}>
-              <Text style={{
-                fontSize: fontSize.md,
-                fontWeight: fontWeight.semibold,
-                color: isEnhanced ? colors.white : '#5D4E40',
-              }}>
-                AI Enhanced
-              </Text>
-            </View>
-          </View>
-          <Switch
-            value={isEnhanced}
-            onValueChange={setIsEnhanced}
-            trackColor={{ false: 'rgba(255, 255, 255, 0.3)', true: '#A08060' }}
-            thumbColor={colors.white}
-          />
         </View>
       </View>
 

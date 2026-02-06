@@ -25,7 +25,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
-import { EnhancedModeProvider } from '@/lib/enhanced-mode-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import {
@@ -91,23 +90,21 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <QueryProvider>
-        <EnhancedModeProvider>
-          <SettingsProvider>
-            <GroceryProvider>
-              <StatusBar style="auto" />
-              <Stack screenOptions={{ animation: 'slide_from_right' }}>
-                <Stack.Screen
-                  name="sign-in"
-                  options={{ headerShown: false, animation: 'fade' }}
-                />
-                <Stack.Screen
-                  name="(tabs)"
-                  options={{ headerShown: false, animation: 'fade' }}
-                />
-              </Stack>
-            </GroceryProvider>
-          </SettingsProvider>
-        </EnhancedModeProvider>
+        <SettingsProvider>
+          <GroceryProvider>
+            <StatusBar style="auto" />
+            <Stack screenOptions={{ animation: 'slide_from_right' }}>
+              <Stack.Screen
+                name="sign-in"
+                options={{ headerShown: false, animation: 'fade' }}
+              />
+              <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false, animation: 'fade' }}
+              />
+            </Stack>
+          </GroceryProvider>
+        </SettingsProvider>
       </QueryProvider>
     </AuthProvider>
   );

@@ -60,7 +60,7 @@ export default function AddRecipeScreen() {
             style: 'cancel',
             onPress: () => {
               router.back();
-              router.push(`/recipe/${recipe.id}${recipe.enhanced ? '?enhanced=true' : ''}`);
+              router.push(`/recipe/${recipe.id}`);
             },
           },
           {
@@ -79,7 +79,7 @@ export default function AddRecipeScreen() {
     setShowSummaryModal(false);
     if (importedRecipe) {
       router.back();
-      router.push(`/recipe/${importedRecipe.id}${importedRecipe.enhanced ? '?enhanced=true' : ''}`);
+      router.push(`/recipe/${importedRecipe.id}`);
     }
   };
 

@@ -24,6 +24,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Verify suggestions** - when given review comments or suggestions, verify they are correct against actual code before applying
 - **Compare alternatives** - when the user suggests a different approach, analyze both options and explain the tradeoffs
 - **Troubleshoot step-by-step** - when debugging, suggest one fix at a time and wait for results
+- **Assess test coverage for bugs** - when a bug is reported, assess whether a test should be added to catch it. Explain why existing tests missed it (e.g., mocking strategy, missing coverage) and propose a targeted test if appropriate
 - **Track iterations** - when a command/approach fails, IMMEDIATELY log to Failure Tracking table in `.copilot-tasks.md` BEFORE retrying with a different approach
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
 - **Never work directly on main** - Always create a feature branch for changes
@@ -149,10 +150,11 @@ infra/                   # Terraform infrastructure
 
 See `firestore.instructions.md` for the full recipe document schema. Key points:
 
-- Two databases: `(default)` for original recipes, `meal-planner` for AI-enhanced
+- Single database: `meal-planner` for all recipes, meal plans, and grocery lists
 - All fields at top level (no nested objects)
 - `created_at` required for queries
 - `instructions` must be `list[str]`, not a single string
+- Enhanced recipes have `enhanced=True` and `enhanced_from` pointing to `_original` suffix doc
 
 ### Skills (AI Agent Instructions)
 

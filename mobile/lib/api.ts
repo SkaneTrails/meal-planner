@@ -116,22 +116,15 @@ class ApiClient {
   }
 
   // Recipe endpoints
-  async getRecipes(
-    search?: string,
-    enhanced: boolean = false,
-  ): Promise<Recipe[]> {
+  async getRecipes(search?: string): Promise<Recipe[]> {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
-    if (enhanced) params.set('enhanced', 'true');
     const query = params.toString();
     return this.request<Recipe[]>(`/recipes${query ? `?${query}` : ''}`);
   }
 
-  async getRecipe(id: string, enhanced: boolean = false): Promise<Recipe> {
-    const params = new URLSearchParams();
-    if (enhanced) params.set('enhanced', 'true');
-    const query = params.toString();
-    return this.request<Recipe>(`/recipes/${id}${query ? `?${query}` : ''}`);
+  async getRecipe(id: string): Promise<Recipe> {
+    return this.request<Recipe>(`/recipes/${id}`);
   }
 
   async createRecipe(recipe: RecipeCreate): Promise<Recipe> {
@@ -201,35 +194,21 @@ class ApiClient {
     }
   }
 
-  async updateRecipe(
-    id: string,
-    updates: RecipeUpdate,
-    enhanced: boolean = false,
-  ): Promise<Recipe> {
-    const params = new URLSearchParams();
-    if (enhanced) params.set('enhanced', 'true');
-    const query = params.toString();
-    return this.request<Recipe>(`/recipes/${id}${query ? `?${query}` : ''}`, {
+  async updateRecipe(id: string, updates: RecipeUpdate): Promise<Recipe> {
+    return this.request<Recipe>(`/recipes/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });
   }
 
-  async deleteRecipe(id: string, enhanced: boolean = false): Promise<void> {
-    const params = new URLSearchParams();
-    if (enhanced) params.set('enhanced', 'true');
-    const query = params.toString();
-    return this.request<void>(`/recipes/${id}${query ? `?${query}` : ''}`, {
+  async deleteRecipe(id: string): Promise<void> {
+    return this.request<void>(`/recipes/${id}`, {
       method: 'DELETE',
     });
   }
 
-  async uploadRecipeImage(
-    id: string,
-    imageUri: string,
-    enhanced: boolean = false,
-  ): Promise<Recipe> {
-    const url = `${this.baseUrl}${API_PREFIX}/recipes/${id}/image${enhanced ? '?enhanced=true' : ''}`;
+  async uploadRecipeImage(id: string, imageUri: string): Promise<Recipe> {
+    const url = `${this.baseUrl}${API_PREFIX}/recipes/${id}/image`;
 
     // Create form data for image upload
     const formData = new FormData();
@@ -418,10 +397,9 @@ class ApiClient {
   async transferRecipe(
     recipeId: string,
     targetHouseholdId: string,
-    enhanced: boolean = false,
   ): Promise<{ id: string; title: string; household_id: string; message: string }> {
     return this.request<{ id: string; title: string; household_id: string; message: string }>(
-      `/admin/recipes/${recipeId}/transfer?enhanced=${enhanced}`,
+      `/admin/recipes/${recipeId}/transfer`,
       {
         method: 'POST',
         body: JSON.stringify({ target_household_id: targetHouseholdId }),

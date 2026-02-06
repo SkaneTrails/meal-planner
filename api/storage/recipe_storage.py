@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
-from api.storage.firestore_client import DEFAULT_DATABASE, ENHANCED_DATABASE, RECIPES_COLLECTION, get_firestore_client
+from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
 
 
 def normalize_url(url: str) -> str:
@@ -100,22 +100,19 @@ def find_recipe_by_url(url: str) -> Recipe | None:
     return None
 
 
-def get_all_recipes(
-    *, include_duplicates: bool = False, database: str = DEFAULT_DATABASE, household_id: str | None = None
-) -> list[Recipe]:
+def get_all_recipes(*, include_duplicates: bool = False, household_id: str | None = None) -> list[Recipe]:
     """
     Get all recipes visible to a household.
 
     Args:
         include_duplicates: If False (default), deduplicate by URL.
-        database: The database to read from (default or meal-planner for AI-enhanced).
         household_id: If provided, filter to recipes owned by this household OR shared/legacy recipes.
                       If None, return all recipes (for superusers or backward compatibility).
 
     Returns:
         List of recipes.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     docs = db.collection(RECIPES_COLLECTION).order_by("created_at", direction="DESCENDING").stream()
 
     recipes = []
@@ -159,7 +156,6 @@ def save_recipe(  # noqa: PLR0913
     recipe: RecipeCreate,
     *,
     recipe_id: str | None = None,
-    database: str = DEFAULT_DATABASE,
     enhanced: bool = False,
     enhanced_from: str | None = None,
     enhanced_at: datetime | None = None,
@@ -173,7 +169,6 @@ def save_recipe(  # noqa: PLR0913
     Args:
         recipe: The recipe to save.
         recipe_id: Optional ID to use (for saving enhanced versions with same ID).
-        database: The database to save to (default or meal-planner for AI-enhanced).
         enhanced: Whether this recipe has been AI-enhanced.
         enhanced_from: Original recipe ID if this is an enhanced copy.
         enhanced_at: When the recipe was enhanced.
@@ -184,7 +179,7 @@ def save_recipe(  # noqa: PLR0913
     Returns:
         The saved recipe with its document ID.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     doc_ref = (
         db.collection(RECIPES_COLLECTION).document(recipe_id)
         if recipe_id
@@ -246,22 +241,19 @@ def save_recipe(  # noqa: PLR0913
     )
 
 
-def update_recipe(
-    recipe_id: str, updates: RecipeUpdate, database: str = DEFAULT_DATABASE, *, household_id: str | None = None
-) -> Recipe | None:
+def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | None = None) -> Recipe | None:
     """
     Update an existing recipe in Firestore.
 
     Args:
         recipe_id: The Firestore document ID.
         updates: The fields to update.
-        database: The database to update in (default or meal-planner for AI-enhanced).
         household_id: If provided, verify the recipe belongs to this household before updating.
 
     Returns:
         The updated recipe, or None if not found or not authorized.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
     doc = cast("DocumentSnapshot", doc_ref.get())
@@ -289,21 +281,20 @@ def update_recipe(
     doc_ref.update(update_data)
 
     # Return the updated recipe
-    return get_recipe(recipe_id, database=database)
+    return get_recipe(recipe_id)
 
 
-def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | None:
+def get_recipe(recipe_id: str) -> Recipe | None:
     """
     Get a recipe by ID.
 
     Args:
         recipe_id: The Firestore document ID.
-        database: The database to read from (default or meal-planner for AI-enhanced).
 
     Returns:
         The recipe if found, None otherwise.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     doc = cast("DocumentSnapshot", db.collection(RECIPES_COLLECTION).document(recipe_id).get())
 
     if not doc.exists:
@@ -316,19 +307,18 @@ def get_recipe(recipe_id: str, database: str = DEFAULT_DATABASE) -> Recipe | Non
     return _doc_to_recipe(doc.id, data)
 
 
-def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE, *, household_id: str | None = None) -> bool:
+def delete_recipe(recipe_id: str, *, household_id: str | None = None) -> bool:
     """
     Delete a recipe by ID.
 
     Args:
         recipe_id: The Firestore document ID.
-        database: The database to delete from (default or meal-planner for AI-enhanced).
         household_id: If provided, verify the recipe belongs to this household before deleting.
 
     Returns:
         True if deleted, False if not found or not authorized.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
     doc = cast("DocumentSnapshot", doc_ref.get())
@@ -349,7 +339,7 @@ def delete_recipe(recipe_id: str, database: str = DEFAULT_DATABASE, *, household
     return True
 
 
-def search_recipes(query: str, database: str = DEFAULT_DATABASE, *, household_id: str | None = None) -> list[Recipe]:
+def search_recipes(query: str, *, household_id: str | None = None) -> list[Recipe]:
     """
     Search recipes by title (case-sensitive prefix match).
 
@@ -358,13 +348,12 @@ def search_recipes(query: str, database: str = DEFAULT_DATABASE, *, household_id
 
     Args:
         query: The search query.
-        database: The database to search in.
         household_id: If provided, filter to recipes owned by this household OR shared/legacy.
 
     Returns:
         List of matching recipes.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     docs = (
         db.collection(RECIPES_COLLECTION)
         .where(filter=FieldFilter("title", ">=", query))
@@ -392,14 +381,7 @@ def search_recipes(query: str, database: str = DEFAULT_DATABASE, *, household_id
     return recipes
 
 
-def copy_recipe(
-    recipe_id: str,
-    *,
-    to_household_id: str,
-    copied_by: str,
-    source_database: str = DEFAULT_DATABASE,
-    target_database: str = ENHANCED_DATABASE,
-) -> Recipe | None:
+def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str) -> Recipe | None:
     """
     Create a copy of a recipe for a different household.
 
@@ -411,14 +393,12 @@ def copy_recipe(
         recipe_id: The recipe to copy.
         to_household_id: The household that will own the copy.
         copied_by: Email of the user creating the copy.
-        source_database: The database to read from.
-        target_database: The database to write to (defaults to enhanced).
 
     Returns:
         The new copied recipe, or None if source recipe not found.
     """
     # Get the source recipe
-    source = get_recipe(recipe_id, database=source_database)
+    source = get_recipe(recipe_id)
     if source is None:
         return None
 
@@ -447,7 +427,6 @@ def copy_recipe(
     # Preserve enhancement metadata if copying from an enhanced recipe
     return save_recipe(
         recipe_data,
-        database=target_database,
         household_id=to_household_id,
         created_by=copied_by,
         enhanced=source.enhanced,
@@ -457,9 +436,7 @@ def copy_recipe(
     )
 
 
-def transfer_recipe_to_household(
-    recipe_id: str, to_household_id: str, database: str = DEFAULT_DATABASE
-) -> Recipe | None:
+def transfer_recipe_to_household(recipe_id: str, to_household_id: str) -> Recipe | None:
     """
     Transfer a recipe to a different household.
 
@@ -469,12 +446,11 @@ def transfer_recipe_to_household(
     Args:
         recipe_id: The recipe ID to transfer.
         to_household_id: The target household ID.
-        database: The database where the recipe lives.
 
     Returns:
         The updated recipe, or None if recipe not found.
     """
-    db = get_firestore_client(database)
+    db = get_firestore_client()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
 
     doc = cast("DocumentSnapshot", doc_ref.get())
@@ -484,4 +460,4 @@ def transfer_recipe_to_household(
     # Update household_id
     doc_ref.update({"household_id": to_household_id, "updated_at": datetime.now(tz=UTC)})
 
-    return get_recipe(recipe_id, database=database)
+    return get_recipe(recipe_id)

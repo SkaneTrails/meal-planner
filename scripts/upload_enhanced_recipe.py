@@ -63,9 +63,9 @@ def main() -> None:
 
     # Get original recipe URL if not present
     if "url" not in recipe or not recipe["url"]:
-        # Fetch from original database
-        default_db = firestore.Client()
-        original_doc = default_db.collection("recipes").document(recipe_id).get()
+        # Fetch from database
+        db = firestore.Client(database="meal-planner")
+        original_doc = db.collection("recipes").document(recipe_id).get()
         if original_doc.exists:
             original_data = original_doc.to_dict()
             recipe["url"] = original_data.get("url", "")
@@ -74,7 +74,7 @@ def main() -> None:
                 recipe["servings"] = original_data.get("servings")
             print(f"   Retrieved URL from original: {recipe['url'][:50]}...")
 
-    # Connect to enhanced database
+    # Connect to database
     db = firestore.Client(database="meal-planner")
     doc_ref = db.collection("recipes").document(recipe_id)
 

@@ -16,7 +16,7 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground, RecipeCard } from '@/components';
-import { useRecipes, useSetMeal, useRemoveMeal, useEnhancedMode, useMealPlan } from '@/lib/hooks';
+import { useRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
 import type { MealType, Recipe } from '@/lib/types';
 
@@ -45,9 +45,8 @@ export default function SelectRecipeScreen() {
     mode?: 'library' | 'copy' | 'quick' | 'random';
   }>();
   const router = useRouter();
-  const { isEnhanced } = useEnhancedMode();
 
-  const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
+  const { data: recipes = [] } = useRecipes();
   const { data: mealPlan } = useMealPlan();
   const setMeal = useSetMeal();
   const removeMeal = useRemoveMeal();

@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib/theme';
-import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
+import { useRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
@@ -89,8 +89,7 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { isEnhanced } = useEnhancedMode();
-  const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes(undefined, isEnhanced);
+  const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes();
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
   const { isItemAtHome } = useSettings();

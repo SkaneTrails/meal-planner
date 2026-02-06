@@ -596,13 +596,11 @@ class TestTransferRecipe:
             ) as mock_transfer,
         ):
             response = superuser_client.post(
-                "/admin/recipes/recipe_123/transfer?enhanced=true", json={"target_household_id": "target_household"}
+                "/admin/recipes/recipe_123/transfer", json={"target_household_id": "target_household"}
             )
 
         assert response.status_code == 200
-        # Verify the correct database was passed
-        mock_transfer.assert_called_once()
-        assert mock_transfer.call_args.kwargs.get("database") == "meal-planner"
+        mock_transfer.assert_called_once_with("recipe_123", "target_household")
 
     def test_admin_cannot_transfer(self, admin_client: TestClient) -> None:
         """Admin cannot transfer recipes (superuser only)."""

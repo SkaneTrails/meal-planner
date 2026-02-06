@@ -226,20 +226,6 @@ class TestSaveRecipe:
         assert call_args["diet_label"] == "veggie"
         assert call_args["meal_label"] == "meal"
 
-    def test_saves_to_specified_database(self) -> None:
-        """Should use specified database."""
-        mock_db = MagicMock()
-        mock_doc_ref = MagicMock()
-        mock_doc_ref.id = "doc_id"
-        mock_db.collection.return_value.document.return_value = mock_doc_ref
-
-        recipe = RecipeCreate(title="Test", url="https://example.com")
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db) as mock_get_client:
-            save_recipe(recipe, database="meal-planner")
-
-        mock_get_client.assert_called_once_with("meal-planner")
-
 
 class TestGetRecipe:
     """Tests for get_recipe function."""
@@ -563,32 +549,3 @@ class TestTransferRecipeToHousehold:
 
         assert result is None
         mock_doc_ref.update.assert_not_called()
-
-    def test_uses_specified_database(self) -> None:
-        """Should use the specified database."""
-        from api.storage.recipe_storage import transfer_recipe_to_household
-
-        transferred_recipe = Recipe(
-            id="recipe_id",
-            title="Enhanced Recipe",
-            url="https://example.com",
-            ingredients=[],
-            instructions=[],
-            household_id="new_household",
-            enhanced=True,
-        )
-
-        mock_doc = MagicMock()
-        mock_doc.exists = True
-        mock_doc_ref = MagicMock()
-        mock_doc_ref.get.return_value = mock_doc
-
-        with (
-            patch("api.storage.recipe_storage.get_firestore_client") as mock_client,
-            patch("api.storage.recipe_storage.get_recipe", return_value=transferred_recipe),
-        ):
-            mock_client.return_value.collection.return_value.document.return_value = mock_doc_ref
-
-            transfer_recipe_to_household("recipe_id", "new_household", database="meal-planner")
-
-        mock_client.assert_called_with("meal-planner")

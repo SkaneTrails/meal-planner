@@ -165,10 +165,10 @@ export function useTransferRecipe() {
   return useMutation<
     { id: string; title: string; household_id: string; message: string },
     Error,
-    { recipeId: string; targetHouseholdId: string; enhanced?: boolean }
+    { recipeId: string; targetHouseholdId: string }
   >({
-    mutationFn: ({ recipeId, targetHouseholdId, enhanced }) =>
-      api.transferRecipe(recipeId, targetHouseholdId, enhanced),
+    mutationFn: ({ recipeId, targetHouseholdId }) =>
+      api.transferRecipe(recipeId, targetHouseholdId),
     onSuccess: (_, { recipeId }) => {
       // Invalidate the recipe query to refresh the data
       queryClient.invalidateQueries({ queryKey: ['recipe', recipeId] });
