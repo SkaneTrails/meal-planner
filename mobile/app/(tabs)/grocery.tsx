@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
-import { useMealPlan, useRecipes, useEnhancedMode, useGroceryState } from '@/lib/hooks';
+import { useMealPlan, useRecipes, useGroceryState } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
 import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
@@ -56,20 +56,9 @@ export default function GroceryScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-  useEnhancedMode(); // Keep for potential future use with enhanced recipes
   const { isItemAtHome } = useSettings();
   const { data: mealPlan } = useMealPlan();
-  // Fetch both enhanced and non-enhanced recipes to ensure we find all recipes regardless of which mode was used when planning
-  const { data: enhancedRecipes = [] } = useRecipes(undefined, true);
-  const { data: regularRecipes = [] } = useRecipes(undefined, false);
-
-  // Combine both recipe lists, prefer enhanced if available
-  const recipes = useMemo(() => {
-    const recipeMap = new Map(regularRecipes.map(r => [r.id, r]));
-    // Enhanced recipes override regular ones
-    enhancedRecipes.forEach(r => recipeMap.set(r.id, r));
-    return Array.from(recipeMap.values());
-  }, [enhancedRecipes, regularRecipes]);
+  const { data: recipes = [] } = useRecipes();
 
   // Filter function to hide items that are "at home"
   const filterOutItemsAtHome = useCallback((itemName: string) => {

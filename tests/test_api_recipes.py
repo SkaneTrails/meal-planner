@@ -88,16 +88,6 @@ class TestListRecipes:
         assert response.status_code == 200
         mock_search.assert_called_once()
 
-    def test_enhanced_parameter(self, client: TestClient) -> None:
-        """Should use enhanced database when enhanced=true."""
-        with patch("api.routers.recipes.recipe_storage.get_all_recipes", return_value=[]) as mock_get:
-            response = client.get("/recipes?enhanced=true")
-
-        assert response.status_code == 200
-        mock_get.assert_called_once_with(
-            include_duplicates=False, database="meal-planner", household_id="test_household"
-        )
-
 
 class TestGetRecipe:
     """Tests for GET /recipes/{recipe_id} endpoint."""
@@ -116,13 +106,6 @@ class TestGetRecipe:
             response = client.get("/recipes/nonexistent")
 
         assert response.status_code == 404
-
-    def test_uses_enhanced_database(self, client: TestClient, sample_recipe: Recipe) -> None:
-        """Should use enhanced database when enhanced=true."""
-        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe) as mock_get:
-            client.get("/recipes/test123?enhanced=true")
-
-        mock_get.assert_called_once_with("test123", database="meal-planner")
 
     def test_returns_404_for_other_household_private_recipe(self, client: TestClient) -> None:
         """Should return 404 for a private recipe owned by another household."""

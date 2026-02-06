@@ -4,10 +4,10 @@ Usage:
     # Get the next unprocessed recipe:
     uv run python scripts/recipe_reviewer.py next
 
-    # Get a specific recipe by ID (from source database):
+    # Get a specific recipe by ID:
     uv run python scripts/recipe_reviewer.py get <recipe_id>
 
-    # Get the enhanced version of a recipe (from target database):
+    # Get the enhanced version of a recipe:
     uv run python scripts/recipe_reviewer.py enhanced <recipe_id>
 
     # Delete a bad enhanced recipe and unmark from processed:
@@ -25,7 +25,7 @@ Usage:
     # Show progress:
     uv run python scripts/recipe_reviewer.py status
 
-Note: Reads from (default) database, writes improved recipes to meal-planner database.
+Note: Reads and writes recipes in the meal-planner database.
 """
 
 import json
@@ -39,18 +39,12 @@ PROGRESS_FILE = Path(__file__).parent.parent / "data" / "recipe_review_progress.
 RECIPES_COLLECTION = "recipes"
 
 # Database configuration
-SOURCE_DATABASE = "(default)"  # Read original recipes from here
-TARGET_DATABASE = "meal-planner"  # Write improved recipes here
+DATABASE = "meal-planner"
 
 
-def get_source_db() -> firestore.Client:
-    """Get Firestore client for source (original) recipes."""
-    return firestore.Client(database=SOURCE_DATABASE)
-
-
-def get_target_db() -> firestore.Client:
-    """Get Firestore client for target (improved) recipes."""
-    return firestore.Client(database=TARGET_DATABASE)
+def get_db() -> firestore.Client:
+    """Get Firestore client."""
+    return firestore.Client(database=DATABASE)
 
 
 def load_progress() -> dict:
@@ -68,7 +62,7 @@ def save_progress(progress: dict) -> None:
 
 def get_next_recipe() -> None:
     """Get the next unprocessed recipe and display it."""
-    db = get_source_db()
+    db = get_db()
     progress = load_progress()
     processed_ids = set(progress.get("processed", []) + progress.get("skipped", []))
 
@@ -83,7 +77,7 @@ def get_next_recipe() -> None:
 
 def get_recipe(recipe_id: str) -> None:
     """Get a specific recipe by ID."""
-    db = get_source_db()
+    db = get_db()
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if doc.exists:
         data = doc.to_dict()
@@ -94,23 +88,27 @@ def get_recipe(recipe_id: str) -> None:
 
 
 def get_enhanced_recipe(recipe_id: str) -> None:
-    """Get the enhanced version of a recipe from the target database."""
-    db = get_target_db()
+    """Get the enhanced version of a recipe."""
+    db = get_db()
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if doc.exists:
         data = doc.to_dict()
-        if data is not None:
-            print("\n🎯 ENHANCED VERSION (from meal-planner database)")
+        if data is not None and (data.get("enhanced") or data.get("improved")):
+            print("\n\U0001f3af ENHANCED VERSION")
             display_recipe(doc.id, data)
             if data.get("tips"):
                 print(f"Tips: {data.get('tips')}")
+        elif data is not None:
+            print(f"\u26a0\ufe0f Recipe {recipe_id} exists but is not enhanced")
+        else:
+            print(f"\u274c No enhanced version found: {recipe_id}")
     else:
         print(f"❌ No enhanced version found: {recipe_id}")
 
 
 def delete_enhanced_recipe(recipe_id: str) -> None:
     """Delete a bad enhanced recipe and remove from processed list."""
-    db = get_target_db()
+    db = get_db()
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
     doc = doc_ref.get()
 
@@ -118,9 +116,14 @@ def delete_enhanced_recipe(recipe_id: str) -> None:
         print(f"❌ No enhanced version found: {recipe_id}")
         return
 
-    # Delete from target database
+    data = doc.to_dict()
+    if not data or not (data.get("enhanced") or data.get("improved")):
+        print(f"\u26a0\ufe0f Recipe {recipe_id} is not enhanced. Use --force to delete anyway.")
+        if "--force" not in sys.argv:
+            return
+
     doc_ref.delete()
-    print(f"🗑️ Deleted enhanced recipe from meal-planner database: {recipe_id}")
+    print(f"\U0001f5d1\ufe0f Deleted enhanced recipe: {recipe_id}")
 
     # Remove from processed list
     progress = load_progress()
@@ -188,11 +191,10 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     """
     from datetime import UTC, datetime
 
-    source_db = get_source_db()
-    target_db = get_target_db()
+    db = get_db()
 
     # Check if enhanced version already exists - if so, use it as base
-    target_doc = target_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+    target_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if target_doc.exists:
         target_data = target_doc.to_dict()
         if target_data and target_data.get("improved"):
@@ -200,17 +202,17 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
             base_data = target_data
         else:
             # Exists but not marked as improved - treat as fresh enhancement
-            source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+            source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
             if not source_doc.exists:
-                print(f"❌ Recipe not found in source: {recipe_id}")
+                print(f"❌ Recipe not found: {recipe_id}")
                 return
             base_data = source_doc.to_dict()
     else:
-        # No enhanced version - fetch from source for initial enhancement
-        print("🆕 Creating NEW enhanced recipe (from source database)")
-        source_doc = source_db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
+        # No enhanced version - fetch original document for initial enhancement
+        print("🆕 Creating NEW enhanced recipe from original document")
+        source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
         if not source_doc.exists:
-            print(f"❌ Recipe not found in source: {recipe_id}")
+            print(f"❌ Recipe not found: {recipe_id}")
             return
         base_data = source_doc.to_dict()
 
@@ -228,7 +230,7 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     improved_data["updated_at"] = now
 
     # Save to target database with same ID
-    target_db.collection(RECIPES_COLLECTION).document(recipe_id).set(improved_data)
+    db.collection(RECIPES_COLLECTION).document(recipe_id).set(improved_data)
     print(f"✅ Saved improved recipe to meal-planner database: {recipe_id}")
     print(f"   Updated fields: {list(updates.keys())}")
 
@@ -251,7 +253,7 @@ def upload_from_file(recipe_id: str, file_path: str) -> None:
         print(f"❌ Invalid JSON in {file_path}: {e}")
         return
 
-    target_db = get_target_db()
+    db = get_db()
 
     # Ensure tracking fields
     data["original_id"] = recipe_id
@@ -264,7 +266,7 @@ def upload_from_file(recipe_id: str, file_path: str) -> None:
     data["updated_at"] = now
 
     # Save to target database
-    target_db.collection(RECIPES_COLLECTION).document(recipe_id).set(data)
+    db.collection(RECIPES_COLLECTION).document(recipe_id).set(data)
     print(f"✅ Uploaded {path.name} to meal-planner database: {recipe_id}")
 
     # Mark as processed
@@ -273,26 +275,20 @@ def upload_from_file(recipe_id: str, file_path: str) -> None:
 
 def show_status() -> None:
     """Show review progress."""
-    source_db = get_source_db()
-    target_db = get_target_db()
+    db = get_db()
     progress = load_progress()
 
-    total = sum(1 for _ in source_db.collection(RECIPES_COLLECTION).stream())
+    total = sum(1 for _ in db.collection(RECIPES_COLLECTION).stream())
     processed = len(progress.get("processed", []))
     skipped = len(progress.get("skipped", []))
     remaining = total - processed - skipped
 
-    # Count recipes in target database
-    target_count = sum(1 for _ in target_db.collection(RECIPES_COLLECTION).stream())
-
     print("\n📊 Recipe Review Progress")
-    print(f"   Source database: {SOURCE_DATABASE}")
-    print(f"   Target database: {TARGET_DATABASE}")
+    print(f"   Database: {DATABASE}")
     print(f"   Total recipes:       {total}")
     print(f"   ✅ Processed:        {processed}")
     print(f"   ⏭️ Skipped:          {skipped}")
     print(f"   📝 Remaining:        {remaining}")
-    print(f"   🎯 In target DB:     {target_count}")
     print(f"   Progress:            {((processed + skipped) / total * 100):.1f}%\n")
 
 

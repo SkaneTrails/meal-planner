@@ -3,68 +3,38 @@
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiClientError, api } from '../api';
+import { api } from '../api';
 import type { RecipeCreate, RecipeUpdate } from '../types';
 
 // Query keys
 export const recipeKeys = {
   all: ['recipes'] as const,
   lists: () => [...recipeKeys.all, 'list'] as const,
-  list: (search?: string, enhanced?: boolean) =>
-    [...recipeKeys.lists(), { search, enhanced }] as const,
+  list: (search?: string) =>
+    [...recipeKeys.lists(), { search }] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
-  detail: (id: string, enhanced?: boolean) =>
-    [...recipeKeys.details(), id, { enhanced }] as const,
+  detail: (id: string) =>
+    [...recipeKeys.details(), id] as const,
 };
 
 /**
  * Hook to fetch all recipes.
  */
-export function useRecipes(search?: string, enhanced: boolean = false) {
+export function useRecipes(search?: string) {
   return useQuery({
-    queryKey: recipeKeys.list(search, enhanced),
-    queryFn: () => api.getRecipes(search, enhanced),
+    queryKey: recipeKeys.list(search),
+    queryFn: () => api.getRecipes(search),
   });
 }
 
 /**
  * Hook to fetch a single recipe by ID.
  */
-export function useRecipe(id: string, enhanced: boolean = false) {
+export function useRecipe(id: string) {
   return useQuery({
-    queryKey: recipeKeys.detail(id, enhanced),
-    queryFn: () => api.getRecipe(id, enhanced),
+    queryKey: recipeKeys.detail(id),
+    queryFn: () => api.getRecipe(id),
     enabled: !!id,
-  });
-}
-
-/**
- * Hook to check if an enhanced version of a recipe exists.
- * Returns true if recipe exists in enhanced DB, false otherwise.
- * @param id - Recipe ID
- * @param isAuthReady - Whether auth is ready (prevents premature fetching)
- */
-export function useEnhancedRecipeExists(
-  id: string,
-  isAuthReady: boolean = true,
-) {
-  return useQuery({
-    queryKey: [...recipeKeys.detail(id, true), 'exists'] as const,
-    queryFn: async () => {
-      try {
-        await api.getRecipe(id, true);
-        return true;
-      } catch (error) {
-        // 404 = no enhanced version, other errors = rethrow
-        if (error instanceof ApiClientError && error.status === 404) {
-          return false;
-        }
-        throw error;
-      }
-    },
-    enabled: !!id && isAuthReady,
-    retry: false,
-    staleTime: 30000,
   });
 }
 
@@ -113,18 +83,12 @@ export function useUpdateRecipe() {
     mutationFn: ({
       id,
       updates,
-      enhanced = false,
     }: {
       id: string;
       updates: RecipeUpdate;
-      enhanced?: boolean;
-    }) => api.updateRecipe(id, updates, enhanced),
-    onSuccess: (data, variables) => {
-      // Update the cache with new data - use correct enhanced key
-      queryClient.setQueryData(
-        recipeKeys.detail(data.id, variables.enhanced),
-        data,
-      );
+    }) => api.updateRecipe(id, updates),
+    onSuccess: (data) => {
+      queryClient.setQueryData(recipeKeys.detail(data.id), data);
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
@@ -137,17 +101,10 @@ export function useDeleteRecipe() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      enhanced = false,
-    }: {
-      id: string;
-      enhanced?: boolean;
-    }) => api.deleteRecipe(id, enhanced),
-    onSuccess: (_, variables) => {
-      // Remove from cache - use correct enhanced key
+    mutationFn: (id: string) => api.deleteRecipe(id),
+    onSuccess: (_, id) => {
       queryClient.removeQueries({
-        queryKey: recipeKeys.detail(variables.id, variables.enhanced),
+        queryKey: recipeKeys.detail(id),
       });
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },

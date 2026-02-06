@@ -117,8 +117,8 @@ Nämn i tips: "Blanda kryddorna (ersätter HelloFresh Milda Mahal)"
 
 
 def get_recipe_from_firestore(index: int = 0) -> dict | None:
-    """Fetch a recipe from the default Firestore database."""
-    db = firestore.Client(database="(default)")
+    """Fetch a recipe from the Firestore database."""
+    db = firestore.Client(database="meal-planner")
     recipes_ref = db.collection("recipes")
     docs = list(recipes_ref.limit(index + 1).stream())
 

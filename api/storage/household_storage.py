@@ -36,7 +36,7 @@ class HouseholdMember:
 
 def _get_db() -> firestore.Client:
     """Get Firestore client for meal-planner database."""
-    return get_firestore_client(database="meal-planner")
+    return get_firestore_client()
 
 
 def is_superuser(email: str) -> bool:

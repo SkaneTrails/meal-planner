@@ -6,7 +6,7 @@ variable "project" {
 variable "firestore_database" {
   description = "Firestore database name"
   type        = string
-  default     = "(default)"
+  default     = "meal-planner"
 }
 
 variable "authorized_domains" {

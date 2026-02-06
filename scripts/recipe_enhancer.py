@@ -52,8 +52,8 @@ SYSTEM_PROMPT = load_system_prompt()
 
 
 def get_firestore_client() -> firestore.Client:
-    """Get Firestore client for the default database."""
-    return firestore.Client(database="(default)")
+    """Get Firestore client for the meal-planner database."""
+    return firestore.Client(database="meal-planner")
 
 
 def get_unenhanced_recipes(limit: int | None = None, *, include_enhanced: bool = False) -> list[tuple[str, dict]]:

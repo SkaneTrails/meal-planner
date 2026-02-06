@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { GradientBackground } from '@/components';
-import { useMealPlan, useRecipes, useEnhancedMode, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
+import { useMealPlan, useRecipes, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
 import type { MealType, Recipe } from '@/lib/types';
 import { showAlert, showNotification } from '@/lib/alert';
@@ -193,8 +193,7 @@ export default function MealPlanScreen() {
     isLoading: mealPlanLoading,
     refetch: refetchMealPlan,
   } = useMealPlan();
-  const { isEnhanced } = useEnhancedMode();
-  const { data: recipes = [] } = useRecipes(undefined, isEnhanced);
+  const { data: recipes = [] } = useRecipes();
   const setMeal = useSetMeal();
   const updateNote = useUpdateNote();
   const removeMeal = useRemoveMeal();

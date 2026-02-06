@@ -4,14 +4,9 @@ These conventions apply when working with Firestore data in this project.
 
 ## Database Configuration
 
-The app uses two Firestore databases:
+The app uses a single Firestore database: `meal-planner`.
 
-| Database       | Purpose                  |
-| -------------- | ------------------------ |
-| `(default)`    | Original scraped recipes |
-| `meal-planner` | AI-enhanced recipes      |
-
-Both databases use the same schema. The `?enhanced=true` API parameter switches between them.
+All recipes (original and AI-enhanced) are stored in the same database. Enhanced recipes have `enhanced=True` and `enhanced_from` set to the source recipe's document ID.
 
 ## Recipe Document Schema
 

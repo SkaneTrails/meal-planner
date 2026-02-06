@@ -31,19 +31,18 @@ uv run python scripts/recipe_reviewer.py <command> [args]
 
 | Command                | Description                                                  |
 | ---------------------- | ------------------------------------------------------------ |
-| `next`                 | Fetch the next unprocessed recipe from the source database   |
-| `get <id>`             | Fetch a specific recipe by ID (from source database)         |
-| `enhanced <id>`        | Fetch the enhanced version (from target database)            |
+| `next`                 | Fetch the next unprocessed recipe                            |
+| `get <id>`             | Fetch a specific recipe by ID                                |
+| `enhanced <id>`        | Fetch the enhanced version of a recipe                       |
 | `delete <id>`          | Delete a bad enhanced recipe and unmark from processed       |
-| `update <id> '<json>'` | Apply improvements and save to target database               |
+| `update <id> '<json>'` | Apply improvements and save to database                      |
 | `skip <id>`            | Mark recipe as skipped (no changes needed)                   |
 | `upload <id> <file>`   | Upload enhanced recipe from a JSON file                      |
 | `status`               | Show progress (processed/skipped/remaining counts)           |
 
 **Database configuration:**
 
-- **Source**: `(default)` database - original recipes
-- **Target**: `meal-planner` database - improved recipes
+- **Database**: `meal-planner` - all recipes (original and enhanced)
 - **Progress file**: `data/recipe_review_progress.json`
 
 **Typical workflow for fixing a bad enhanced recipe:**
@@ -68,7 +67,7 @@ uv run python scripts/recipe_reviewer.py update <id> '<json>'
 
 **When modifying an already-enhanced recipe (e.g., adding timeline, fixing an issue):**
 
-1. **ALWAYS fetch the enhanced version first**: `?enhanced=true` or `enhanced <id>` command
+1. **ALWAYS fetch the enhanced version first**: Enhanced recipes have `enhanced: true` in their document
 2. **Verify you have the enhanced data** before editing (check `enhanced: true`, existing `changes_made`)
 3. **Apply changes to the enhanced version**, not the original
 4. **Never overwrite enhanced with original** - this loses all previous improvements

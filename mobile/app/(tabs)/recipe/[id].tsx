@@ -22,7 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { MirroredBackground } from '@/components/MirroredBackground';
-import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists, useCurrentUser } from '@/lib/hooks';
+import { useRecipe, useDeleteRecipe, useUpdateRecipe, useSetMeal, useMealPlan, useCurrentUser } from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
@@ -313,7 +313,6 @@ function InstructionItem({ instruction, index, isCompleted, onToggle, stepNumber
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { isEnhanced: globalEnhanced } = useEnhancedMode();
   const { user, loading: authLoading } = useAuth();
   const isAuthReady = !authLoading && !!user;
 
@@ -325,16 +324,16 @@ export default function RecipeDetailScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const HEADER_HEIGHT = 350;
 
-  // Local override for enhanced mode (null = use global, true/false = override)
-  const [localEnhancedOverride, setLocalEnhancedOverride] = useState<boolean | null>(null);
+  // Toggle to view original (un-enhanced) version of this recipe
+  const [viewingOriginal, setViewingOriginal] = useState(false);
 
-  // Effective enhanced mode: local override takes precedence over global
-  const isEnhanced = localEnhancedOverride !== null ? localEnhancedOverride : globalEnhanced;
+  const { data: enhancedRecipe, isLoading, error } = useRecipe(id);
+  // Fetch original version when toggle is on and this recipe was enhanced from another
+  const originalId = enhancedRecipe?.enhanced_from;
+  const hasOriginal = !!originalId && originalId !== id;
+  const { data: originalRecipe } = useRecipe(viewingOriginal && hasOriginal ? originalId : '');
+  const recipe = viewingOriginal && originalRecipe ? originalRecipe : enhancedRecipe;
 
-  // Check if enhanced version exists (only fetch when auth is ready)
-  const { data: hasEnhancedVersion } = useEnhancedRecipeExists(id, isAuthReady);
-
-  const { data: recipe, isLoading, error } = useRecipe(id, isEnhanced);
   const { data: currentUser } = useCurrentUser({ enabled: isAuthReady });
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
@@ -423,7 +422,6 @@ export default function RecipeDetailScreen() {
           tags: tagsArray,
           visibility: editVisibility,
         },
-        enhanced: isEnhanced,
       });
       setShowEditModal(false);
       showNotification('Saved', 'Recipe details updated');
@@ -453,7 +451,6 @@ export default function RecipeDetailScreen() {
               await transferRecipe.mutateAsync({
                 recipeId: id,
                 targetHouseholdId,
-                enhanced: isEnhanced,
               });
               setEditHouseholdId(targetHouseholdId);
               setShowEditModal(false);
@@ -566,13 +563,12 @@ export default function RecipeDetailScreen() {
     setIsUpdatingImage(true);
     try {
       const { api } = await import('@/lib/api');
-      await api.uploadRecipeImage(id!, localUri, isEnhanced);
+      await api.uploadRecipeImage(id!, localUri);
       // Refetch the recipe to get updated image URL
       // The mutation will invalidate the cache
       await updateRecipe.mutateAsync({
         id: id!,
         updates: {}, // Empty update just to trigger cache refresh
-        enhanced: isEnhanced,
       });
       showNotification('Success', 'Recipe photo uploaded!');
     } catch (err) {
@@ -582,7 +578,6 @@ export default function RecipeDetailScreen() {
         await updateRecipe.mutateAsync({
           id: id!,
           updates: { image_url: localUri },
-          enhanced: isEnhanced,
         });
         showNotification('Saved Locally', 'Photo saved locally (upload to cloud failed)');
       } catch {
@@ -599,7 +594,6 @@ export default function RecipeDetailScreen() {
       await updateRecipe.mutateAsync({
         id: id!,
         updates: { image_url: url },
-        enhanced: isEnhanced,
       });
       showNotification('Success', 'Recipe photo updated!');
     } catch {
@@ -661,7 +655,6 @@ export default function RecipeDetailScreen() {
       await updateRecipe.mutateAsync({
         id,
         updates: { rating: newRating },
-        enhanced: isEnhanced,
       });
     } catch (err) {
       showNotification('Error', 'Failed to update rating');
@@ -697,7 +690,7 @@ export default function RecipeDetailScreen() {
             style: 'destructive',
             onPress: async () => {
               try {
-                await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
+                await deleteRecipe.mutateAsync(id);
                 router.back();
               } catch (err) {
                 showNotification('Error', 'Failed to delete recipe');
@@ -720,7 +713,6 @@ export default function RecipeDetailScreen() {
                 await updateRecipe.mutateAsync({
                   id,
                   updates: { rating: 1 },
-                  enhanced: isEnhanced,
                 });
               } catch (err) {
                 showNotification('Error', 'Failed to update rating');
@@ -732,7 +724,7 @@ export default function RecipeDetailScreen() {
             style: 'destructive',
             onPress: async () => {
               try {
-                await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
+                await deleteRecipe.mutateAsync(id);
                 router.back();
               } catch (err) {
                 showNotification('Error', 'Failed to delete recipe');
@@ -755,7 +747,7 @@ export default function RecipeDetailScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteRecipe.mutateAsync({ id, enhanced: isEnhanced });
+              await deleteRecipe.mutateAsync(id);
               router.back();
             } catch (err) {
               showNotification('Error', 'Failed to delete recipe');
@@ -1052,10 +1044,10 @@ export default function RecipeDetailScreen() {
               <Ionicons name="share" size={20} color={colors.text.inverse} />
             </Pressable>
 
-            {/* Enhanced/Original toggle - only show if enhanced version exists */}
-            {hasEnhancedVersion && (
+            {/* Enhanced/Original toggle - only show if recipe has a different original version */}
+            {hasOriginal && (
               <Pressable
-                onPress={() => setLocalEnhancedOverride(prev => prev === null ? !globalEnhanced : !prev)}
+                onPress={() => setViewingOriginal(prev => !prev)}
                 style={({ pressed }) => ({
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -1063,23 +1055,23 @@ export default function RecipeDetailScreen() {
                   paddingHorizontal: spacing.md,
                   paddingVertical: spacing.sm,
                   borderRadius: 20,
-                  backgroundColor: isEnhanced
+                  backgroundColor: !viewingOriginal
                     ? (pressed ? '#1E4D42' : '#2D6A5A')
                     : (pressed ? colors.bgDark : colors.bgMid),
                 })}
               >
                 <Ionicons
-                  name={isEnhanced ? 'sparkles' : 'document-text'}
+                  name={!viewingOriginal ? 'sparkles' : 'document-text'}
                   size={16}
-                  color={isEnhanced ? colors.white : colors.text.inverse}
+                  color={!viewingOriginal ? colors.white : colors.text.inverse}
                 />
                 <Text style={{
                   marginLeft: spacing.xs,
                   fontSize: fontSize.base,
                   fontFamily: fontFamily.bodySemibold,
-                  color: isEnhanced ? colors.white : colors.text.inverse,
+                  color: !viewingOriginal ? colors.white : colors.text.inverse,
                 }}>
-                  {isEnhanced ? 'AI Enhanced' : 'Original'}
+                  {!viewingOriginal ? 'AI Enhanced' : 'Original'}
                 </Text>
               </Pressable>
             )}
@@ -1315,7 +1307,7 @@ export default function RecipeDetailScreen() {
           </View>
 
           {/* Tips (only for enhanced recipes) */}
-          {isEnhanced && recipe.tips && (
+          {recipe.enhanced && recipe.tips && (
             <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
                 <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
@@ -1334,7 +1326,7 @@ export default function RecipeDetailScreen() {
           )}
 
           {/* Changes made (only for enhanced recipes, collapsible - closed glass section) */}
-          {isEnhanced && recipe.changes_made && recipe.changes_made.length > 0 && (
+          {recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0 && (
             <View style={{ marginBottom: spacing.xl, backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: borderRadius.lg, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
               <Pressable
                 onPress={() => setShowAiChanges(!showAiChanges)}

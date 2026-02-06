@@ -13,8 +13,7 @@ region = "europe-west1"
 # Options: eur3 (Europe), nam5 (US), etc.
 firestore_location = "eur3"
 
-# Firestore database name for enhanced recipes
-# The (default) database is assumed to exist; this creates the secondary database
+# Firestore database name
 firestore_database_name = "meal-planner"
 
 # Recipe enhancement with Gemini AI
