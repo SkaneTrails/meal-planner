@@ -5,11 +5,17 @@
 #
 # Prerequisites:
 #   - gcloud CLI authenticated
-#   - Access to the REDACTED_PROJECT_ID project secrets
+#   - GOOGLE_CLOUD_PROJECT env var set, or pass -ProjectId
 
 param(
-    [string]$ProjectId = "REDACTED_PROJECT_ID"
+    [Parameter(Mandatory=$true)]
+    [string]$ProjectId = $env:GOOGLE_CLOUD_PROJECT
 )
+
+if (-not $ProjectId) {
+    Write-Host "❌ ProjectId is required. Set GOOGLE_CLOUD_PROJECT env var or pass -ProjectId" -ForegroundColor Red
+    exit 1
+}
 
 $ErrorActionPreference = "Stop"
 
@@ -41,7 +47,7 @@ $secrets = @{
 }
 
 # Derived values (not in Secret Manager)
-$firebaseProjectId = "REDACTED_PROJECT_ID"
+$firebaseProjectId = $ProjectId
 
 Write-Host ""
 Write-Host "📝 Creating .env file..." -ForegroundColor Cyan

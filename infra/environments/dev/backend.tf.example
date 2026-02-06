@@ -1,0 +1,28 @@
+# Backend configuration for Terraform state
+#
+# Copy this file to backend.tf and replace placeholders with your values.
+
+resource "google_storage_bucket" "tfstate" {
+  name     = "<your-tfstate-bucket-name>"
+  location = "EU"
+  project  = "<your-gcp-project-id>"
+
+  force_destroy               = false
+  public_access_prevention    = "enforced"
+  uniform_bucket_level_access = true
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+terraform {
+  backend "gcs" {
+    bucket = "<your-tfstate-bucket-name>"
+    prefix = "meal-planner/terraform/state"
+  }
+}

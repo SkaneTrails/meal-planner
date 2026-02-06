@@ -62,6 +62,12 @@ scripts/deploy-api.sh
 mobile/scripts/deploy-web.ps1
 mobile/scripts/deploy-web.sh
 
+# Firebase project config (contains project ID)
+mobile/.firebaserc
+
+# Terraform backend config (contains project ID and bucket name)
+infra/environments/*/backend.tf
+
 # Terraform user access files (contain personal emails)
 infra/**/access/users.txt
 infra/**/access/superusers.txt
