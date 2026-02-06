@@ -1,6 +1,9 @@
 """Tests for recipe model."""
 
-from api.models.recipe import DietLabel, MealLabel, Recipe
+import pytest
+from pydantic import ValidationError
+
+from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeUpdate
 
 
 class TestRecipe:
@@ -74,3 +77,33 @@ class TestRecipe:
         recipe = Recipe(id="test8", title="Simple Recipe", url="https://example.com")
         assert recipe.diet_label is None
         assert recipe.meal_label is None
+
+
+class TestRecipeUpdateRating:
+    """Tests for RecipeUpdate rating validation."""
+
+    def test_rating_none_clears(self) -> None:
+        """Setting rating to None should clear it."""
+        update = RecipeUpdate(rating=None)
+        assert update.rating is None
+
+    def test_rating_valid_values(self) -> None:
+        """Valid ratings 1-5 should be accepted."""
+        for value in (1, 2, 3, 4, 5):
+            update = RecipeUpdate(rating=value)
+            assert update.rating == value
+
+    def test_rating_zero_rejected(self) -> None:
+        """Rating of 0 should be rejected."""
+        with pytest.raises(ValidationError, match="Rating must be between 1 and 5"):
+            RecipeUpdate(rating=0)
+
+    def test_rating_six_rejected(self) -> None:
+        """Rating of 6 should be rejected."""
+        with pytest.raises(ValidationError, match="Rating must be between 1 and 5"):
+            RecipeUpdate(rating=6)
+
+    def test_rating_negative_rejected(self) -> None:
+        """Negative ratings should be rejected."""
+        with pytest.raises(ValidationError, match="Rating must be between 1 and 5"):
+            RecipeUpdate(rating=-1)

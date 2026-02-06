@@ -192,7 +192,7 @@ export default function GroceryScreen() {
 
       // Format source with servings info
       const sourceLabel = multiplier !== 1
-        ? `${recipe.title} (${requestedServings}👤)`
+        ? `${recipe.title} (×${requestedServings})`
         : recipe.title;
 
       recipe.ingredients.forEach((ingredient) => {
@@ -488,7 +488,7 @@ export default function GroceryScreen() {
             borderRadius: borderRadius.md,
             padding: spacing.md,
           }}>
-            <Text style={{ fontSize: 12, fontWeight: '600', color: '#5D4E40', marginBottom: 8 }}>Add custom item</Text>
+            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40', marginBottom: 8 }}>Add custom item</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <TextInput
                 style={{
@@ -517,7 +517,7 @@ export default function GroceryScreen() {
                   borderRadius: borderRadius.sm,
                 }}
               >
-                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.white }}>Add</Text>
+                <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>Add</Text>
               </Pressable>
             </View>
           </View>
@@ -533,7 +533,7 @@ export default function GroceryScreen() {
         />
       ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <Text style={{ color: '#5D4E40', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+          <Text style={{ color: '#5D4E40', fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
             Your list is empty
           </Text>
           <Text style={{ color: 'rgba(93, 78, 64, 0.7)', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>

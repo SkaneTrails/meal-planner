@@ -42,20 +42,28 @@ def _get_db() -> firestore.Client:
 def is_superuser(email: str) -> bool:
     """Check if user is a superuser (has global access)."""
     db = _get_db()
-    doc = db.collection(SUPERUSERS_COLLECTION).document(email).get()
+    # Normalize email to lowercase for consistent document ID lookup
+    normalized_email = email.lower()
+    doc = db.collection(SUPERUSERS_COLLECTION).document(normalized_email).get()
     return doc.exists
 
 
 def add_superuser(email: str) -> None:
     """Grant superuser access to a user."""
     db = _get_db()
-    db.collection(SUPERUSERS_COLLECTION).document(email).set({"email": email, "created_at": datetime.now(UTC)})
+    # Normalize email to lowercase for consistent document ID
+    normalized_email = email.lower()
+    db.collection(SUPERUSERS_COLLECTION).document(normalized_email).set(
+        {"email": normalized_email, "created_at": datetime.now(UTC)}
+    )
 
 
 def remove_superuser(email: str) -> None:
     """Revoke superuser access from a user."""
     db = _get_db()
-    db.collection(SUPERUSERS_COLLECTION).document(email).delete()
+    # Normalize email to lowercase for consistent document ID
+    normalized_email = email.lower()
+    db.collection(SUPERUSERS_COLLECTION).document(normalized_email).delete()
 
 
 def get_user_membership(email: str) -> HouseholdMember | None:
@@ -65,7 +73,9 @@ def get_user_membership(email: str) -> HouseholdMember | None:
     Returns None if user is not a member of any household.
     """
     db = _get_db()
-    doc = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(email).get()
+    # Normalize email to lowercase for consistent document ID lookup
+    normalized_email = email.lower()
+    doc = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized_email).get()
 
     if not doc.exists:
         return None
@@ -119,12 +129,14 @@ def add_member(
     """
     Add a user to a household.
 
-    Uses email as document ID for O(1) lookup.
+    Uses email (lowercased) as document ID for O(1) lookup.
     """
     db = _get_db()
     now = datetime.now(UTC)
+    # Normalize email to lowercase for consistent document ID
+    normalized_email = email.lower()
 
-    db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(email).set(
+    db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized_email).set(
         {
             "household_id": household_id,
             "role": role,
@@ -142,7 +154,9 @@ def remove_member(email: str) -> bool:
     Returns True if member existed and was removed.
     """
     db = _get_db()
-    doc_ref = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(email)
+    # Normalize email to lowercase for consistent document ID
+    normalized_email = email.lower()
+    doc_ref = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized_email)
 
     if not doc_ref.get().exists:
         return False
