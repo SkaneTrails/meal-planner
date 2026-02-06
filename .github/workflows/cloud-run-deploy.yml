@@ -58,6 +58,4 @@ jobs:
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image "${{ env.IMAGE }}" \
             --region ${{ env.REGION }} \
-            --platform managed \
-            --allow-unauthenticated \
-            --set-env-vars "GCP_PROJECT_ID=${{ env.GCP_PROJECT_ID }}"
+            --platform managed
