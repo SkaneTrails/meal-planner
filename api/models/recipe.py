@@ -125,7 +125,6 @@ class Recipe(RecipeBase):
     id: str = Field(..., description="Firestore document ID")
     # AI enhancement fields
     enhanced: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
-    enhanced_from: str | None = Field(default=None, description="Original recipe ID if this is an enhanced copy")
     enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
 
