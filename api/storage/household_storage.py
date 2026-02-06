@@ -53,7 +53,9 @@ def add_superuser(email: str) -> None:
     db = _get_db()
     # Normalize email to lowercase for consistent document ID
     normalized_email = email.lower()
-    db.collection(SUPERUSERS_COLLECTION).document(normalized_email).set({"email": normalized_email, "created_at": datetime.now(UTC)})
+    db.collection(SUPERUSERS_COLLECTION).document(normalized_email).set(
+        {"email": normalized_email, "created_at": datetime.now(UTC)}
+    )
 
 
 def remove_superuser(email: str) -> None:

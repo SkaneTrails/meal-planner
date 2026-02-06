@@ -159,7 +159,7 @@ export function GradientBackground({ children, style, animated = false }: Gradie
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
-  
+
   // For non-animated (default), use static background image
   if (!animated) {
     // Always use the background image, stretched to fit the screen
