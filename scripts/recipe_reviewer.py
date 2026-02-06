@@ -88,16 +88,20 @@ def get_recipe(recipe_id: str) -> None:
 
 
 def get_enhanced_recipe(recipe_id: str) -> None:
-    """Get the enhanced version of a recipe from the target database."""
+    """Get the enhanced version of a recipe."""
     db = get_db()
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if doc.exists:
         data = doc.to_dict()
-        if data is not None:
-            print("\n🎯 ENHANCED VERSION (from meal-planner database)")
+        if data is not None and (data.get("enhanced") or data.get("improved")):
+            print("\n\U0001f3af ENHANCED VERSION")
             display_recipe(doc.id, data)
             if data.get("tips"):
                 print(f"Tips: {data.get('tips')}")
+        elif data is not None:
+            print(f"\u26a0\ufe0f Recipe {recipe_id} exists but is not enhanced")
+        else:
+            print(f"\u274c No enhanced version found: {recipe_id}")
     else:
         print(f"❌ No enhanced version found: {recipe_id}")
 
@@ -112,9 +116,14 @@ def delete_enhanced_recipe(recipe_id: str) -> None:
         print(f"❌ No enhanced version found: {recipe_id}")
         return
 
-    # Delete from target database
+    data = doc.to_dict()
+    if not data or not (data.get("enhanced") or data.get("improved")):
+        print(f"\u26a0\ufe0f Recipe {recipe_id} is not enhanced. Use --force to delete anyway.")
+        if "--force" not in sys.argv:
+            return
+
     doc_ref.delete()
-    print(f"🗑️ Deleted enhanced recipe from meal-planner database: {recipe_id}")
+    print(f"\U0001f5d1\ufe0f Deleted enhanced recipe: {recipe_id}")
 
     # Remove from processed list
     progress = load_progress()

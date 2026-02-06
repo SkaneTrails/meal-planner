@@ -330,7 +330,8 @@ export default function RecipeDetailScreen() {
   const { data: enhancedRecipe, isLoading, error } = useRecipe(id);
   // Fetch original version when toggle is on and this recipe was enhanced from another
   const originalId = enhancedRecipe?.enhanced_from;
-  const { data: originalRecipe } = useRecipe(viewingOriginal && originalId ? originalId : '');
+  const hasOriginal = !!originalId && originalId !== id;
+  const { data: originalRecipe } = useRecipe(viewingOriginal && hasOriginal ? originalId : '');
   const recipe = viewingOriginal && originalRecipe ? originalRecipe : enhancedRecipe;
 
   const { data: currentUser } = useCurrentUser({ enabled: isAuthReady });
@@ -1043,8 +1044,8 @@ export default function RecipeDetailScreen() {
               <Ionicons name="share" size={20} color={colors.text.inverse} />
             </Pressable>
 
-            {/* Enhanced/Original toggle - only show if recipe has an original version */}
-            {enhancedRecipe?.enhanced_from && (
+            {/* Enhanced/Original toggle - only show if recipe has a different original version */}
+            {hasOriginal && (
               <Pressable
                 onPress={() => setViewingOriginal(prev => !prev)}
                 style={({ pressed }) => ({

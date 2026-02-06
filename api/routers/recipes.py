@@ -577,7 +577,7 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             enhanced_recipe,
             recipe_id=target_recipe.id,
             enhanced=True,
-            enhanced_from=recipe_id,
+            enhanced_from=recipe_id if target_recipe.id != recipe_id else None,
             enhanced_at=datetime.now(tz=UTC),
             changes_made=enhanced_data.get("changes_made"),
             household_id=household_id,
