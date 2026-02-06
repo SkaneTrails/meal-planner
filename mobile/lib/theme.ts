@@ -3,13 +3,13 @@
  * Luxurious design system with elegant typography, soft colors, and premium feel.
  */
 
-// Font families - DM Sans for body, Playfair Display for headings
+// Font families - DM Sans for everything (unified font)
 export const fontFamily = {
-  // Display/Headings - elegant serif (Playfair Display)
-  display: 'PlayfairDisplay_600SemiBold',
-  displayRegular: 'PlayfairDisplay_400Regular',
-  displayMedium: 'PlayfairDisplay_500Medium',
-  displayBold: 'PlayfairDisplay_700Bold',
+  // Display/Headings - DM Sans Bold for consistency
+  display: 'DMSans_600SemiBold',
+  displayRegular: 'DMSans_400Regular',
+  displayMedium: 'DMSans_500Medium',
+  displayBold: 'DMSans_700Bold',
   // Body text - modern sans-serif (DM Sans)
   body: 'DMSans_400Regular',
   bodyMedium: 'DMSans_500Medium',
@@ -288,4 +288,92 @@ export const inputStyle = {
   paddingVertical: spacing.md,
   fontSize: fontSize.lg,
   color: colors.text.primary,
+} as const;
+
+// ============================================
+// TYPOGRAPHY PRESETS
+// Use these for consistent font rendering across platforms
+// On iOS/Android, fontWeight alone doesn't work - must use specific font family
+// ============================================
+
+export const typography = {
+  // Display/Headers - Playfair Display
+  displayLarge: {
+    fontFamily: fontFamily.displayBold,
+    fontSize: fontSize['6xl'],
+    letterSpacing: letterSpacing.tighter,
+  },
+  displayMedium: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize['4xl'],
+    letterSpacing: letterSpacing.tight,
+  },
+  displaySmall: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize['3xl'],
+    letterSpacing: letterSpacing.normal,
+  },
+  
+  // Headings - DM Sans Bold/Semibold
+  headingLarge: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: fontSize['3xl'],
+    letterSpacing: letterSpacing.normal,
+  },
+  headingMedium: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: fontSize['2xl'],
+    letterSpacing: letterSpacing.normal,
+  },
+  headingSmall: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: fontSize.xl,
+    letterSpacing: letterSpacing.normal,
+  },
+  
+  // Body text - DM Sans
+  bodyLarge: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.lg,
+  },
+  bodyMedium: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.md,
+  },
+  bodySmall: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.base,
+  },
+  
+  // Labels/Buttons - DM Sans Semibold/Medium
+  labelLarge: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: fontSize.lg,
+  },
+  labelMedium: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: fontSize.md,
+  },
+  labelSmall: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: fontSize.sm,
+  },
+  
+  // Captions - DM Sans Medium
+  caption: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.base,
+  },
+  captionSmall: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+  },
+  
+  // Uppercase labels
+  overline: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: fontSize.xs,
+    letterSpacing: letterSpacing.wider,
+    textTransform: 'uppercase' as const,
+  },
 } as const;

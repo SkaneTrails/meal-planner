@@ -21,11 +21,12 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { shadows, borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { MirroredBackground } from '@/components/MirroredBackground';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useEnhancedMode, useSetMeal, useMealPlan, useEnhancedRecipeExists, useCurrentUser } from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
-import { BouncingLoader } from '@/components';
+import { BouncingLoader, GradientBackground } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
 
@@ -130,13 +131,13 @@ function ThumbRating({ rating, onThumbUp, onThumbDown, size = 28 }: ThumbRatingP
         style={({ pressed }) => ({
           padding: spacing.sm,
           borderRadius: 20,
-          backgroundColor: isThumbDown ? colors.errorBg : pressed ? colors.bgMid : 'transparent',
+          backgroundColor: isThumbDown ? 'rgba(239, 83, 80, 0.3)' : pressed ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
         })}
       >
         <Ionicons
           name={isThumbDown ? 'thumbs-down' : 'thumbs-down-outline'}
           size={size}
-          color={isThumbDown ? colors.error : colors.gray[400]}
+          color={colors.white}
         />
       </Pressable>
       <Pressable
@@ -144,13 +145,13 @@ function ThumbRating({ rating, onThumbUp, onThumbDown, size = 28 }: ThumbRatingP
         style={({ pressed }) => ({
           padding: spacing.sm,
           borderRadius: 20,
-          backgroundColor: isThumbUp ? colors.successBg : pressed ? colors.bgMid : 'transparent',
+          backgroundColor: isThumbUp ? 'rgba(76, 175, 80, 0.3)' : pressed ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
         })}
       >
         <Ionicons
           name={isThumbUp ? 'thumbs-up' : 'thumbs-up-outline'}
           size={size}
-          color={isThumbUp ? colors.success : colors.gray[400]}
+          color={colors.white}
         />
       </Pressable>
     </View>
@@ -163,113 +164,39 @@ interface InstructionItemProps {
   index: number;
   isCompleted: boolean;
   onToggle: () => void;
+  stepNumber?: number; // Computed sequential number for timeline+step items
 }
 
-function InstructionItem({ instruction, index, isCompleted, onToggle }: InstructionItemProps) {
-  const { type, content, time, step_number } = instruction;
+function InstructionItem({ instruction, index, isCompleted, onToggle, stepNumber }: InstructionItemProps) {
+  const { type, content, time } = instruction;
 
-  // Timeline entry - special styling with clock icon
-  if (type === 'timeline') {
-    return (
-      <Pressable
-        onPress={onToggle}
-        style={({ pressed }) => ({
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          paddingVertical: spacing.md,
-          backgroundColor: isCompleted ? colors.successBg : (pressed ? '#EDE9FE' : '#F3E8FF'),  // Purple tint for timeline
-          borderRadius: borderRadius.md,
-          paddingHorizontal: spacing.md,
-          marginBottom: spacing.xs,
-          borderLeftWidth: 3,
-          borderLeftColor: isCompleted ? colors.success : '#7C3AED',  // Purple accent
-          opacity: isCompleted ? 0.7 : 1,
-        })}
-      >
-        <View style={{
-          width: 32,
-          height: 32,
-          borderRadius: 16,
-          backgroundColor: isCompleted ? colors.success : '#7C3AED',  // Purple for timeline
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: spacing.md,
-          marginTop: 2,
-        }}>
-          {isCompleted ? (
-            <Ionicons name="checkmark" size={18} color={colors.white} />
-          ) : (
-            <Ionicons name="time-outline" size={18} color={colors.white} />
-          )}
-        </View>
-        <View style={{ flex: 1 }}>
-          {time !== null && time !== undefined ? (
-            <Text style={{
-              fontSize: fontSize.base,
-              fontFamily: fontFamily.bodySemibold,
-              color: isCompleted ? '#166534' : '#7C3AED',
-              marginBottom: spacing.xs,
-              textDecorationLine: isCompleted ? 'line-through' : 'none',
-            }}>
-              ⏱️ {time} min
-            </Text>
-          ) : (
-            <Text style={{
-              fontSize: fontSize.base,
-              fontFamily: fontFamily.bodySemibold,
-              color: isCompleted ? '#166534' : '#7C3AED',
-              marginBottom: spacing.xs,
-              textDecorationLine: isCompleted ? 'line-through' : 'none',
-            }}>
-              📝 Översikt
-            </Text>
-          )}
-          <Text style={{
-            fontSize: fontSize.xl,
-            fontFamily: fontFamily.body,
-            color: isCompleted ? '#166534' : colors.text.inverse,
-            lineHeight: 24,
-            textDecorationLine: isCompleted ? 'line-through' : 'none',
-          }}>
-            {content}
-          </Text>
-        </View>
-      </Pressable>
-    );
-  }
-
-  // Inline tip - light bulb styling
+  // Inline tip - compact indented terracotta callout (not numbered)
   if (type === 'tip') {
     return (
       <View style={{
+        marginLeft: 44,
         flexDirection: 'row',
         alignItems: 'flex-start',
-        paddingVertical: spacing.md,
+        paddingVertical: spacing.sm,
         paddingHorizontal: spacing.md,
-        backgroundColor: colors.warningBg,  // Amber/yellow tint
-        borderRadius: borderRadius.md,
-        marginBottom: spacing.xs,
-        borderLeftWidth: 3,
-        borderLeftColor: colors.warning,  // Amber accent
+        backgroundColor: 'rgba(255, 255, 255, 0.55)',
+        borderRadius: borderRadius.sm,
+        marginBottom: spacing.sm,
+        borderLeftWidth: 2,
+        borderLeftColor: '#C4704B',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2,
       }}>
-        <View style={{
-          width: 28,
-          height: 28,
-          borderRadius: 14,
-          backgroundColor: colors.warning,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: spacing.md,
-          marginTop: 2,
-        }}>
-          <Text style={{ fontSize: fontSize.lg }}>💡</Text>
-        </View>
+        <Ionicons name="bulb-outline" size={15} color="#C4704B" style={{ marginRight: spacing.sm, marginTop: 2 }} />
         <Text style={{
           flex: 1,
-          fontSize: fontSize.lg,
+          fontSize: fontSize.md,
           fontFamily: fontFamily.body,
-          color: '#92400E',
-          lineHeight: 22,
+          color: '#5D4037',
+          lineHeight: 20,
           fontStyle: 'italic',
         }}>
           {content}
@@ -278,30 +205,36 @@ function InstructionItem({ instruction, index, isCompleted, onToggle }: Instruct
     );
   }
 
-  // Section heading
+  // Section heading - visual divider (not numbered)
   if (type === 'heading') {
     return (
       <View style={{
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.xs,
-        marginTop: index > 0 ? spacing.lg : 0,
-        marginBottom: spacing.sm,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.bgDark,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: index > 0 ? spacing.xl : spacing.sm,
+        marginBottom: spacing.md,
+        paddingVertical: spacing.sm,
       }}>
+        <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(139, 115, 85, 0.2)' }} />
         <Text style={{
           fontSize: fontSize['2xl'],
           fontFamily: fontFamily.displayBold,
-          color: colors.text.inverse,
+          color: '#5D4037',
           letterSpacing: letterSpacing.normal,
+          paddingHorizontal: spacing.md,
         }}>
           {content}
         </Text>
+        <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(139, 115, 85, 0.2)' }} />
       </View>
     );
   }
 
-  // Regular step (default)
+  // Unified step (both 'timeline' and 'step' types)
+  // Timeline entries have a time value, regular steps don't
+  const hasTime = type === 'timeline' && time !== null && time !== undefined;
+  const displayNumber = stepNumber ?? 1;
+
   return (
     <Pressable
       onPress={onToggle}
@@ -309,20 +242,25 @@ function InstructionItem({ instruction, index, isCompleted, onToggle }: Instruct
         flexDirection: 'row',
         alignItems: 'flex-start',
         paddingVertical: spacing.md,
+        paddingHorizontal: spacing.md,
         backgroundColor: isCompleted
           ? colors.successBg
-          : ((step_number ?? 1) % 2 === 0 ? colors.gray[50] : (pressed ? colors.bgMid : 'transparent')),
+          : (pressed ? 'rgba(255, 255, 255, 0.65)' : 'rgba(255, 255, 255, 0.5)'),
         borderRadius: borderRadius.md,
-        paddingHorizontal: spacing.md,
-        marginBottom: spacing.xs,
+        marginBottom: spacing.sm,
         opacity: isCompleted ? 0.7 : 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2,
       })}
     >
       <View style={{
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: isCompleted ? colors.success : colors.primary,
+        backgroundColor: isCompleted ? colors.success : '#5D4037',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
@@ -331,19 +269,43 @@ function InstructionItem({ instruction, index, isCompleted, onToggle }: Instruct
         {isCompleted ? (
           <Ionicons name="checkmark" size={18} color={colors.white} />
         ) : (
-          <Text style={{ color: colors.white, fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold }}>{step_number}</Text>
+          <Text style={{ color: colors.white, fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold }}>{displayNumber}</Text>
         )}
       </View>
-      <Text style={{
-        flex: 1,
-        fontSize: fontSize.xl,
-        fontFamily: fontFamily.body,
-        color: isCompleted ? '#166534' : colors.text.inverse,
-        lineHeight: 24,
-        textDecorationLine: isCompleted ? 'line-through' : 'none',
-      }}>
-        {content}
-      </Text>
+      <View style={{ flex: 1 }}>
+        {/* Time pill - only for timeline entries with time */}
+        {hasTime && (
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: '#2D6A5A',
+            paddingHorizontal: 10,
+            paddingVertical: 3,
+            borderRadius: 10,
+            alignSelf: 'flex-start',
+            marginBottom: spacing.xs,
+          }}>
+            <Ionicons name="time-outline" size={11} color={colors.white} />
+            <Text style={{
+              fontSize: fontSize.sm,
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.white,
+              marginLeft: 4,
+            }}>
+              {time} min
+            </Text>
+          </View>
+        )}
+        <Text style={{
+          fontSize: fontSize.xl,
+          fontFamily: fontFamily.body,
+          color: isCompleted ? '#166534' : '#5D4037',
+          lineHeight: 22,
+          textDecorationLine: isCompleted ? 'line-through' : 'none',
+        }}>
+          {content}
+        </Text>
+      </View>
     </Pressable>
   );
 }
@@ -361,7 +323,7 @@ export default function RecipeDetailScreen() {
 
   // Parallax scroll animation
   const scrollY = useRef(new Animated.Value(0)).current;
-  const HEADER_HEIGHT = 280;
+  const HEADER_HEIGHT = 350;
 
   // Local override for enhanced mode (null = use global, true/false = override)
   const [localEnhancedOverride, setLocalEnhancedOverride] = useState<boolean | null>(null);
@@ -677,12 +639,22 @@ export default function RecipeDetailScreen() {
   };
 
   const handleThumbUp = async () => {
-    if (!id) return;
+    if (!id || !recipe) return;
+    
+    // Check ownership - only allow rating own recipes
+    const isOwned = recipe.household_id === currentUser?.household_id;
+    if (!isOwned) {
+      showNotification('Cannot Rate', 'Copy this recipe to your household first to rate it.');
+      return;
+    }
+    
     hapticSuccess();
     try {
+      // Toggle: if already thumbs up, clear rating; otherwise set to 5
+      const newRating = recipe.rating === 5 ? null : 5;
       await updateRecipe.mutateAsync({
         id,
-        updates: { rating: 5 },
+        updates: { rating: newRating },
         enhanced: isEnhanced,
       });
     } catch (err) {
@@ -692,6 +664,14 @@ export default function RecipeDetailScreen() {
 
   const handleThumbDown = () => {
     if (!id || !recipe) return;
+    
+    // Check ownership - only allow rating own recipes
+    const isOwned = recipe.household_id === currentUser?.household_id;
+    if (!isOwned) {
+      showNotification('Cannot Rate', 'Copy this recipe to your household first to rate it.');
+      return;
+    }
+    
     hapticWarning();
     // If already thumbs down, ask to delete
     if (recipe.rating === 1) {
@@ -790,53 +770,52 @@ export default function RecipeDetailScreen() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bgLight }}>
+      <GradientBackground style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={{
-          width: 80,
-          height: 80,
-          borderRadius: 40,
-          backgroundColor: colors.bgDark,
+          width: 96,
+          height: 96,
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          borderRadius: 24,
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: spacing.lg,
         }}>
           <BouncingLoader size={14} />
         </View>
-        <Text style={{ color: colors.text.inverse, fontSize: fontSize['2xl'], fontFamily: fontFamily.bodyMedium }}>Loading recipe...</Text>
-      </View>
+        <Text style={{ color: colors.text.primary, fontSize: fontSize['2xl'], fontFamily: fontFamily.displayBold }}>Loading recipe...</Text>
+      </GradientBackground>
     );
   }
 
   if (error || !recipe) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bgLight, padding: spacing.xl }}>
+      <GradientBackground style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl }}>
         <View style={{
-          width: 80,
-          height: 80,
-          borderRadius: 40,
-          backgroundColor: colors.bgDark,
+          width: 96,
+          height: 96,
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          borderRadius: 24,
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: spacing.xl,
         }}>
-          <Ionicons name="alert-circle-outline" size={40} color={colors.text.inverse} />
+          <Ionicons name="alert-circle-outline" size={48} color={colors.text.primary} />
         </View>
-        <Text style={{ color: colors.text.inverse, fontSize: fontSize['2xl'], fontFamily: fontFamily.bodySemibold }}>Recipe not found</Text>
-        <Text style={{ color: colors.gray[500], fontSize: fontSize.lg, fontFamily: fontFamily.body, marginTop: spacing.sm, textAlign: 'center' }}>This recipe may have been deleted or moved</Text>
+        <Text style={{ color: colors.text.primary, fontSize: 32, fontFamily: fontFamily.displayBold, marginBottom: spacing.sm }}>Recipe not found</Text>
+        <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, fontFamily: fontFamily.body, marginTop: spacing.sm, textAlign: 'center' }}>This recipe may have been deleted or moved</Text>
         <Pressable
           onPress={() => router.back()}
-          style={{
+          style={({ pressed }) => ({
             marginTop: spacing.xl,
             paddingHorizontal: 28,
-            paddingVertical: spacing.md,
-            backgroundColor: colors.primary,
-            borderRadius: borderRadius.sm,
-            ...shadows.md,
-          }}
+            paddingVertical: spacing.lg,
+            backgroundColor: pressed ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.5)',
+            borderRadius: borderRadius.lg,
+          })}
         >
-          <Text style={{ color: colors.white, fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold }}>Go Back</Text>
+          <Text style={{ color: colors.text.primary, fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold }}>Go Back</Text>
         </Pressable>
-      </View>
+      </GradientBackground>
     );
   }
 
@@ -846,39 +825,65 @@ export default function RecipeDetailScreen() {
     recipe.cook_time;
 
   return (
-    <>
+    <GradientBackground style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: recipe.title,
+          title: '',
           headerShown: true,
-          headerStyle: { backgroundColor: colors.bgLight },
-          headerTintColor: colors.text.inverse,
-          headerBackTitle: 'Back',
+          headerStyle: { backgroundColor: 'transparent' },
+          headerTransparent: true,
+          headerTintColor: colors.white,
+          headerBackTitle: '',
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}
-              style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.sm, marginLeft: -4 }}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: spacing.sm,
+              }}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.text.inverse} />
+              <Ionicons name="chevron-back" size={24} color={colors.white} />
             </Pressable>
           ),
           headerRight: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
               <Pressable
                 onPress={() => {
                   hapticLight();
                   if (id) toggleFavorite(id);
                 }}
-                style={{ padding: spacing.sm }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
                 <Ionicons
                   name={isRecipeFavorite ? 'heart' : 'heart-outline'}
-                  size={24}
-                  color={isRecipeFavorite ? colors.coral : colors.text.inverse}
+                  size={22}
+                  color={isRecipeFavorite ? colors.coral : colors.white}
                 />
               </Pressable>
-              <Pressable onPress={handleDelete} style={{ padding: spacing.sm }}>
-                <Ionicons name="trash-outline" size={24} color={colors.text.inverse} />
+              <Pressable
+                onPress={handleDelete}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Ionicons name="trash-outline" size={22} color={colors.white} />
               </Pressable>
             </View>
           ),
@@ -886,7 +891,7 @@ export default function RecipeDetailScreen() {
       />
 
       <Animated.ScrollView
-        style={{ flex: 1, backgroundColor: colors.bgLight }}
+        style={{ flex: 1 }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true }
@@ -933,13 +938,12 @@ export default function RecipeDetailScreen() {
               position: 'absolute',
               bottom: 48,
               right: spacing.lg,
-              backgroundColor: pressed ? colors.primaryDark : colors.primary,
+              backgroundColor: pressed ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.3)',
               borderRadius: borderRadius.xl,
               width: 48,
               height: 48,
               alignItems: 'center',
               justifyContent: 'center',
-              ...shadows.lg,
             })}
           >
             {isUpdatingImage ? (
@@ -950,19 +954,31 @@ export default function RecipeDetailScreen() {
           </Pressable>
         </Animated.View>
 
-        {/* Content */}
-        <View style={{
-          padding: spacing.xl,
-          marginTop: -32,
-          backgroundColor: colors.white,
-          borderTopLeftRadius: 28,
-          borderTopRightRadius: 28,
-          ...shadows.xl,
-          minHeight: 500,
-        }}>
+        {/* Content with background image */}
+        <MirroredBackground
+          source={require('@/assets/images/background2.png')}
+          tileCount={4}
+          style={{
+            marginTop: -48,
+            borderTopLeftRadius: 32,
+            borderTopRightRadius: 32,
+            flex: 1,
+            width: '100%',
+            minWidth: '100%',
+          }}
+          borderTopLeftRadius={32}
+          borderTopRightRadius={32}
+        >
+          <View style={{
+            padding: spacing.xl,
+            paddingBottom: 120,
+            maxWidth: 720,
+            alignSelf: 'center',
+            width: '100%',
+          }}>
           {/* Title and rating */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.text.inverse, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md }}>
+            <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md }}>
               {recipe.title}
             </Text>
             <ThumbRating
@@ -987,13 +1003,13 @@ export default function RecipeDetailScreen() {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: pressed ? colors.bgDark : colors.bgMid,
+                    backgroundColor: pressed ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.7)',
                     alignItems: 'center',
                     justifyContent: 'center',
                     opacity: canEdit ? 1 : 0.5,
                   })}
                 >
-                  <Ionicons name="create-outline" size={20} color={colors.text.inverse} />
+                  <Ionicons name="create" size={20} color={colors.text.inverse} />
                 </Pressable>
               );
             })()}
@@ -1003,12 +1019,12 @@ export default function RecipeDetailScreen() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: pressed ? colors.bgDark : colors.bgMid,
+                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.7)',
                 alignItems: 'center',
                 justifyContent: 'center',
               })}
             >
-              <Ionicons name="calendar-outline" size={20} color={colors.text.inverse} />
+              <Ionicons name="calendar" size={20} color={colors.text.inverse} />
             </Pressable>
             <Pressable
               onPress={handleShare}
@@ -1016,12 +1032,12 @@ export default function RecipeDetailScreen() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: pressed ? colors.bgDark : colors.bgMid,
+                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.7)',
                 alignItems: 'center',
                 justifyContent: 'center',
               })}
             >
-              <Ionicons name="share-outline" size={20} color={colors.text.inverse} />
+              <Ionicons name="share" size={20} color={colors.text.inverse} />
             </Pressable>
 
             {/* Enhanced/Original toggle - only show if enhanced version exists */}
@@ -1036,20 +1052,20 @@ export default function RecipeDetailScreen() {
                   paddingVertical: spacing.sm,
                   borderRadius: 20,
                   backgroundColor: isEnhanced
-                    ? (pressed ? '#C4B5FD' : '#DDD6FE')
+                    ? (pressed ? '#1E4D42' : '#2D6A5A')
                     : (pressed ? colors.bgDark : colors.bgMid),
                 })}
               >
                 <Ionicons
-                  name={isEnhanced ? 'sparkles' : 'document-text-outline'}
+                  name={isEnhanced ? 'sparkles' : 'document-text'}
                   size={16}
-                  color={isEnhanced ? '#7C3AED' : colors.text.inverse}
+                  color={isEnhanced ? colors.white : colors.text.inverse}
                 />
                 <Text style={{
                   marginLeft: spacing.xs,
                   fontSize: fontSize.base,
                   fontFamily: fontFamily.bodySemibold,
-                  color: isEnhanced ? '#7C3AED' : colors.text.inverse,
+                  color: isEnhanced ? colors.white : colors.text.inverse,
                 }}>
                   {isEnhanced ? 'AI Enhanced' : 'Original'}
                 </Text>
@@ -1087,43 +1103,48 @@ export default function RecipeDetailScreen() {
           <View style={{
             flexDirection: 'row',
             marginTop: spacing.lg,
-            backgroundColor: colors.bgMid,
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
             borderRadius: borderRadius.lg,
             paddingVertical: spacing.md,
             paddingHorizontal: spacing.sm,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.06,
+            shadowRadius: 6,
+            elevation: 2,
           }}>
             {recipe.prep_time && (
               <View style={{ flex: 1, alignItems: 'center' }}>
-                <Ionicons name="timer-outline" size={18} color={colors.text.inverse} />
-                <Text style={{ fontSize: fontSize.sm, color: colors.gray[500], marginTop: spacing.xs }}>Prep</Text>
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: colors.text.inverse }}>
+                <Ionicons name="timer" size={18} color="#5D4037" />
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Prep</Text>
+                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {recipe.prep_time}m
                 </Text>
               </View>
             )}
             {recipe.cook_time && (
-              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: recipe.prep_time ? 1 : 0, borderLeftColor: colors.bgDark }}>
-                <Ionicons name="flame-outline" size={18} color={colors.text.inverse} />
-                <Text style={{ fontSize: fontSize.sm, color: colors.gray[500], marginTop: spacing.xs }}>Cook</Text>
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: colors.text.inverse }}>
+              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: recipe.prep_time ? 1 : 0, borderLeftColor: 'rgba(139, 115, 85, 0.15)' }}>
+                <Ionicons name="flame" size={18} color="#5D4037" />
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Cook</Text>
+                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {recipe.cook_time}m
                 </Text>
               </View>
             )}
             {totalTime && (
-              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time) ? 1 : 0, borderLeftColor: colors.bgDark }}>
-                <Ionicons name="time-outline" size={18} color={colors.text.inverse} />
-                <Text style={{ fontSize: fontSize.sm, color: colors.gray[500], marginTop: spacing.xs }}>Total</Text>
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: colors.text.inverse }}>
+              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time) ? 1 : 0, borderLeftColor: 'rgba(139, 115, 85, 0.15)' }}>
+                <Ionicons name="time" size={18} color="#5D4037" />
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Total</Text>
+                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {totalTime}m
                 </Text>
               </View>
             )}
             {recipe.servings && (
-              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time || totalTime) ? 1 : 0, borderLeftColor: colors.bgDark }}>
-                <Ionicons name="people-outline" size={18} color={colors.text.inverse} />
-                <Text style={{ fontSize: fontSize.sm, color: colors.gray[500], marginTop: spacing.xs }}>Serves</Text>
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: colors.text.inverse }}>
+              <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time || totalTime) ? 1 : 0, borderLeftColor: 'rgba(139, 115, 85, 0.15)' }}>
+                <Ionicons name="people" size={18} color="#5D4037" />
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Serves</Text>
+                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {recipe.servings}
                 </Text>
               </View>
@@ -1136,9 +1157,9 @@ export default function RecipeDetailScreen() {
               {recipe.tags.map((tag) => (
                 <View
                   key={tag}
-                  style={{ backgroundColor: colors.primary, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.lg }}
+                  style={{ backgroundColor: 'rgba(93, 64, 55, 0.65)', paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.lg }}
                 >
-                  <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.bodyMedium, color: colors.white }}>#{tag}</Text>
+                  <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.bodySemibold, color: colors.white }}>#{tag}</Text>
                 </View>
               ))}
             </View>
@@ -1147,17 +1168,17 @@ export default function RecipeDetailScreen() {
           {/* Ingredients */}
           <View style={{ marginTop: spacing.xl }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
-              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.bgDark, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
-                <Ionicons name="list" size={18} color={colors.text.inverse} />
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
+                <Ionicons name="list" size={18} color="#5D4037" />
               </View>
-              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
+              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
                 Ingredients
               </Text>
             </View>
             {recipe.ingredients.length === 0 ? (
               <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>No ingredients listed</Text>
             ) : (
-              <View style={{ backgroundColor: colors.gray[50], borderRadius: borderRadius.lg, padding: spacing.lg }}>
+              <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
                 {recipe.ingredients.map((ingredient, index) => (
                   <View
                     key={index}
@@ -1166,7 +1187,7 @@ export default function RecipeDetailScreen() {
                       alignItems: 'flex-start',
                       paddingVertical: spacing.sm,
                       borderBottomWidth: index < recipe.ingredients.length - 1 ? 1 : 0,
-                      borderBottomColor: colors.bgDark,
+                      borderBottomColor: 'rgba(139, 115, 85, 0.15)',
                     }}
                   >
                     <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginTop: 7, marginRight: spacing.md }} />
@@ -1182,10 +1203,10 @@ export default function RecipeDetailScreen() {
           {/* Instructions */}
           <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
-              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.bgDark, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
-                <Ionicons name="book" size={18} color={colors.text.inverse} />
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
+                <Ionicons name="book" size={18} color="#5D4037" />
               </View>
-              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
+              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
                 Instructions
               </Text>
               {completedSteps.size > 0 && recipe.instructions.length > 0 && (
@@ -1197,16 +1218,37 @@ export default function RecipeDetailScreen() {
             {recipe.instructions.length === 0 ? (
               <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>No instructions listed</Text>
             ) : recipe.structured_instructions ? (
-              // Use structured instructions if available (parsed by API)
-              recipe.structured_instructions.map((instruction, index) => (
-                <InstructionItem
-                  key={index}
-                  instruction={instruction}
-                  index={index}
-                  isCompleted={completedSteps.has(index)}
-                  onToggle={() => toggleStep(index)}
-                />
-              ))
+              // Structured instructions with visual timeline
+              <View style={{ position: 'relative' }}>
+                {/* Vertical timeline line */}
+                <View style={{
+                  position: 'absolute',
+                  left: 27,
+                  top: 24,
+                  bottom: 24,
+                  width: 2,
+                  backgroundColor: 'rgba(45, 106, 90, 0.15)',
+                  borderRadius: 1,
+                }} />
+                {(() => {
+                  let stepCounter = 0;
+                  return recipe.structured_instructions.map((instruction, index) => {
+                    // Only count timeline and step types as numbered steps
+                    const isNumbered = instruction.type === 'timeline' || instruction.type === 'step';
+                    if (isNumbered) stepCounter++;
+                    return (
+                      <InstructionItem
+                        key={index}
+                        instruction={instruction}
+                        index={index}
+                        isCompleted={completedSteps.has(index)}
+                        onToggle={() => toggleStep(index)}
+                        stepNumber={isNumbered ? stepCounter : undefined}
+                      />
+                    );
+                  });
+                })()}
+              </View>
             ) : (
               // Fallback: render plain string instructions
               recipe.instructions.map((instruction, index) => {
@@ -1264,14 +1306,14 @@ export default function RecipeDetailScreen() {
           {isEnhanced && recipe.tips && (
             <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
-                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#DDD6FE', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
-                  <Ionicons name="bulb" size={18} color="#7C3AED" />
+                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
+                  <Ionicons name="bulb-outline" size={18} color="#5D4037" />
                 </View>
-                <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
+                <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
                   Tips
                 </Text>
               </View>
-              <View style={{ backgroundColor: '#F5F3FF', borderRadius: borderRadius.lg, padding: spacing.lg, borderLeftWidth: 4, borderLeftColor: '#7C3AED' }}>
+              <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: borderRadius.lg, padding: spacing.lg, borderLeftWidth: 4, borderLeftColor: '#C4704B', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
                 <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.text.inverse, lineHeight: 24 }}>
                   {recipe.tips}
                 </Text>
@@ -1279,36 +1321,36 @@ export default function RecipeDetailScreen() {
             </View>
           )}
 
-          {/* Changes made (only for enhanced recipes, collapsible - default hidden) */}
+          {/* Changes made (only for enhanced recipes, collapsible - closed glass section) */}
           {isEnhanced && recipe.changes_made && recipe.changes_made.length > 0 && (
-            <View style={{ marginBottom: spacing.xl }}>
+            <View style={{ marginBottom: spacing.xl, backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: borderRadius.lg, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
               <Pressable
                 onPress={() => setShowAiChanges(!showAiChanges)}
                 style={({ pressed }) => ({
                   flexDirection: 'row',
                   alignItems: 'center',
-                  marginBottom: showAiChanges ? spacing.md : 0,
+                  padding: spacing.lg,
                   opacity: pressed ? 0.7 : 1,
                 })}
               >
-                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#DDD6FE', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
-                  <Ionicons name="sparkles" size={18} color="#7C3AED" />
+                <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
+                  <Ionicons name="sparkles" size={18} color="#2D6A5A" />
                 </View>
-                <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse, letterSpacing: letterSpacing.normal, flex: 1 }}>
+                <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: '#5D4037', letterSpacing: letterSpacing.normal, flex: 1 }}>
                   AI-förbättringar
                 </Text>
                 <Ionicons
                   name={showAiChanges ? 'chevron-up' : 'chevron-down'}
                   size={20}
-                  color="#7C3AED"
+                  color="#5D4037"
                 />
               </Pressable>
               {showAiChanges && (
-                <View style={{ backgroundColor: '#F5F3FF', borderRadius: borderRadius.lg, padding: spacing.lg }}>
+                <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, borderTopWidth: 1, borderTopColor: 'rgba(139, 115, 85, 0.15)', paddingTop: spacing.md }}>
                   {recipe.changes_made.map((change, index) => (
                     <View key={index} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: index < recipe.changes_made!.length - 1 ? spacing.sm : 0 }}>
-                      <Ionicons name="checkmark-circle" size={18} color="#7C3AED" style={{ marginRight: spacing.sm, marginTop: 2 }} />
-                      <Text style={{ flex: 1, fontSize: fontSize.lg, fontFamily: fontFamily.body, color: colors.text.inverse, lineHeight: 20 }}>
+                      <Ionicons name="checkmark-circle" size={18} color="#2D6A5A" style={{ marginRight: spacing.sm, marginTop: 2 }} />
+                      <Text style={{ flex: 1, fontSize: fontSize.lg, fontFamily: fontFamily.body, color: '#5D4037', lineHeight: 20 }}>
                         {change}
                       </Text>
                     </View>
@@ -1334,7 +1376,7 @@ export default function RecipeDetailScreen() {
                 borderRadius: borderRadius.md,
               }}
             >
-              <Ionicons name="link-outline" size={18} color={colors.text.inverse} />
+              <Ionicons name="link" size={18} color={colors.text.inverse} />
               <Text style={{ color: colors.text.inverse, marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
                 View original recipe
               </Text>
@@ -1350,7 +1392,7 @@ export default function RecipeDetailScreen() {
               justifyContent: 'center',
               paddingVertical: spacing.md,
               marginTop: spacing.md,
-              marginBottom: spacing.xl,
+              marginBottom: 100, // Extra padding for bottom tab bar
               backgroundColor: pressed ? colors.primaryDark : colors.primary,
               borderRadius: borderRadius.sm,
               ...shadows.md,
@@ -1361,7 +1403,8 @@ export default function RecipeDetailScreen() {
               Add to Meal Plan
             </Text>
           </Pressable>
-        </View>
+          </View>
+        </MirroredBackground>
       </Animated.ScrollView>
 
       {/* Plan Modal */}
@@ -1950,6 +1993,6 @@ export default function RecipeDetailScreen() {
           </View>
         </View>
       </Modal>
-    </>
+    </GradientBackground>
   );
 }
