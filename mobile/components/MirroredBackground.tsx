@@ -5,15 +5,17 @@
  */
 
 import React from 'react';
-import { View, Image, StyleSheet, type ViewStyle, type ImageSourcePropType } from 'react-native';
+import { View, Image, StyleSheet, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 
 interface MirroredBackgroundProps {
   /** The image to tile */
   source: ImageSourcePropType;
   /** How many tiles to stack (default: 4 for long pages) */
   tileCount?: number;
+  /** Aspect ratio of the source image (width/height). Default: 672/1450 for background2.png */
+  imageAspectRatio?: number;
   /** Style for the outer container */
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   /** Style applied to the top-left/right corners of the first tile */
   borderTopLeftRadius?: number;
   borderTopRightRadius?: number;
@@ -24,6 +26,7 @@ interface MirroredBackgroundProps {
 export function MirroredBackground({
   source,
   tileCount = 4,
+  imageAspectRatio = 672 / 1450,
   style,
   borderTopLeftRadius = 0,
   borderTopRightRadius = 0,
@@ -40,7 +43,7 @@ export function MirroredBackground({
             key={i}
             source={source}
             style={[
-              styles.tile,
+              { width: '100%' as const, aspectRatio: imageAspectRatio },
               i % 2 === 1 && styles.flipped,
               i === 0 && {
                 borderTopLeftRadius,
@@ -61,14 +64,6 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     overflow: 'hidden',
-  },
-  tile: {
-    width: '100%',
-    // Each tile is ~aspect ratio of the source image.
-    // We use aspectRatio so the image doesn't distort.
-    // 672x1300 background.png → ~0.517 aspect ratio
-    // This will be overridden by the actual image dimensions.
-    aspectRatio: 672 / 1300,
   },
   flipped: {
     transform: [{ scaleY: -1 }],
