@@ -36,6 +36,14 @@ External documentation links for topics where training data may be outdated.
 | Ruff               | https://docs.astral.sh/ruff/               | Python linter/formatter     | 2026-02-05    |
 | recipe-scrapers    | https://github.com/hhursev/recipe-scrapers | Recipe extraction library   | 2026-02-05    |
 
+## ICA API (Swedish Grocery Chain)
+
+| Topic                 | Link                                                | Description                         | Last verified |
+| --------------------- | --------------------------------------------------- | ----------------------------------- | ------------- |
+| ICA API Discussion    | https://github.com/svendahlstrand/ica-api/issues/26 | Community discussion on ICA API     | 2026-02-06    |
+| ica_shopping (Python) | https://github.com/mellamomax/ica_shopping          | Python client for ICA shopping list | 2026-02-06    |
+| ha-ica-todo           | https://github.com/LazyTarget/ha-ica-todo           | Home Assistant ICA integration      | 2026-02-06    |
+
 ---
 
 ## Adding References
