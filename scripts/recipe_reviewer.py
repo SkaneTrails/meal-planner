@@ -79,10 +79,10 @@ def get_recipe(recipe_id: str) -> None:
     """Get a specific recipe by ID."""
     db = get_db()
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-    if doc.exists:
-        data = doc.to_dict()
+    if doc.exists:  # type: ignore[union-attr]
+        data = doc.to_dict()  # type: ignore[union-attr]
         if data is not None:
-            display_recipe(doc.id, data)
+            display_recipe(doc.id, data)  # type: ignore[union-attr]
     else:
         print(f"❌ Recipe not found: {recipe_id}")
 
@@ -91,11 +91,11 @@ def get_enhanced_recipe(recipe_id: str) -> None:
     """Get the enhanced version of a recipe."""
     db = get_db()
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-    if doc.exists:
-        data = doc.to_dict()
+    if doc.exists:  # type: ignore[union-attr]
+        data = doc.to_dict()  # type: ignore[union-attr]
         if data is not None and (data.get("enhanced") or data.get("improved")):
             print("\n\U0001f3af ENHANCED VERSION")
-            display_recipe(doc.id, data)
+            display_recipe(doc.id, data)  # type: ignore[union-attr]
             if data.get("tips"):
                 print(f"Tips: {data.get('tips')}")
         elif data is not None:
@@ -112,11 +112,11 @@ def delete_enhanced_recipe(recipe_id: str) -> None:
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
     doc = doc_ref.get()
 
-    if not doc.exists:
+    if not doc.exists:  # type: ignore[union-attr]
         print(f"❌ No enhanced version found: {recipe_id}")
         return
 
-    data = doc.to_dict()
+    data = doc.to_dict()  # type: ignore[union-attr]
     if not data or not (data.get("enhanced") or data.get("improved")):
         print(f"\u26a0\ufe0f Recipe {recipe_id} is not enhanced. Use --force to delete anyway.")
         if "--force" not in sys.argv:
@@ -195,26 +195,26 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
 
     # Check if enhanced version already exists - if so, use it as base
     target_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-    if target_doc.exists:
-        target_data = target_doc.to_dict()
+    if target_doc.exists:  # type: ignore[union-attr]
+        target_data = target_doc.to_dict()  # type: ignore[union-attr]
         if target_data and target_data.get("improved"):
             print("📝 Updating EXISTING enhanced recipe (from meal-planner database)")
             base_data = target_data
         else:
             # Exists but not marked as improved - treat as fresh enhancement
             source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-            if not source_doc.exists:
+            if not source_doc.exists:  # type: ignore[union-attr]
                 print(f"❌ Recipe not found: {recipe_id}")
                 return
-            base_data = source_doc.to_dict()
+            base_data = source_doc.to_dict()  # type: ignore[union-attr]
     else:
         # No enhanced version - fetch original document for initial enhancement
         print("🆕 Creating NEW enhanced recipe from original document")
         source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-        if not source_doc.exists:
+        if not source_doc.exists:  # type: ignore[union-attr]
             print(f"❌ Recipe not found: {recipe_id}")
             return
-        base_data = source_doc.to_dict()
+        base_data = source_doc.to_dict()  # type: ignore[union-attr]
 
     if base_data is None:
         print(f"❌ Recipe data is empty: {recipe_id}")

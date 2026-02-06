@@ -20,11 +20,16 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/recipes", tags=["recipes"], dependencies=[Depends(require_auth)])
 
-# URL for the scrape Cloud Function (local or production)
-SCRAPE_FUNCTION_URL = os.getenv("SCRAPE_FUNCTION_URL", "http://localhost:8001")
 
-# Google Cloud Storage bucket for recipe images
-GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "meal-planner-recipe-images")
+def _get_scrape_url() -> str:
+    """Get scrape Cloud Function URL (read on first use, not import time)."""
+    return os.environ["SCRAPE_FUNCTION_URL"]
+
+
+def _get_gcs_bucket() -> str:
+    """Get GCS bucket name (read on first use, not import time)."""
+    return os.environ["GCS_BUCKET_NAME"]
+
 
 # Maximum file size for image uploads (10 MB)
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
@@ -161,7 +166,7 @@ async def scrape_recipe(
     # Call the scrape function
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(SCRAPE_FUNCTION_URL, json={"url": url})
+            response = await client.post(_get_scrape_url(), json={"url": url})
 
             if response.status_code == _HTTP_422:
                 raise HTTPException(status_code=_HTTP_422, detail=f"Failed to scrape recipe from {url}")
@@ -266,7 +271,7 @@ async def parse_recipe(  # pragma: no cover
     # Call the scrape function with HTML
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(SCRAPE_FUNCTION_URL, json={"url": url, "html": html})
+            response = await client.post(_get_scrape_url(), json={"url": url, "html": html})
 
             if response.status_code == _HTTP_422:
                 raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
@@ -430,11 +435,10 @@ async def upload_recipe_image(  # pragma: no cover
     # Upload to GCS
     try:  # pragma: no cover
         storage_client = storage.Client()
-        bucket = storage_client.bucket(GCS_BUCKET_NAME)
+        bucket = storage_client.bucket(_get_gcs_bucket())
         blob = bucket.blob(filename)
         blob.upload_from_string(thumbnail_data, content_type=thumbnail_content_type)
-        blob.make_public()
-        image_url = blob.public_url
+        image_url = f"https://storage.googleapis.com/{_get_gcs_bucket()}/{filename}"
         logger.info("Uploaded recipe image to GCS: %s", image_url)
 
     except Exception as e:  # pragma: no cover

@@ -69,8 +69,14 @@ GOOGLE_CLOUD_PROJECT=$PROJECT
 # Gemini API key for recipe enhancement (optional - only for recipe_enhancer.py)
 GOOGLE_API_KEY=$(gcloud secrets versions access latest --secret=gemini-api-key --project=$PROJECT)
 
-# Recipe scraping Cloud Function URL
+# Recipe scraping Cloud Function URL (REQUIRED)
 SCRAPE_FUNCTION_URL=https://scrape-recipe-vt7bvshx5q-ew.a.run.app
+
+# Google Cloud Storage bucket for recipe images (REQUIRED)
+GCS_BUCKET_NAME=${PROJECT}-recipe-images
+
+# CORS allowed origins for local development (REQUIRED)
+ALLOWED_ORIGINS=http://localhost:8081,http://localhost:8085,http://localhost:19006,http://localhost:3000
 
 # Skip Firebase authentication for local development
 SKIP_AUTH=true

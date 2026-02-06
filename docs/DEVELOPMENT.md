@@ -68,7 +68,9 @@ The FastAPI backend requires the following environment variables:
 | -------------------------------- | -------- | ------------------------------------------------------------ |
 | `GOOGLE_CLOUD_PROJECT`           | Yes      | GCP project ID for Firestore                                 |
 | `GOOGLE_APPLICATION_CREDENTIALS` | No       | Path to service account JSON (not needed with impersonation) |
-| `SCRAPE_FUNCTION_URL`            | No       | URL of scrape function (default: `http://localhost:8001`)    |
+| `SCRAPE_FUNCTION_URL`            | Yes      | URL of scrape Cloud Function                                 |
+| `GCS_BUCKET_NAME`                | Yes      | GCS bucket name for recipe images                            |
+| `ALLOWED_ORIGINS`                | Yes      | Comma-separated CORS origins                                 |
 | `SKIP_AUTH`                      | No       | Set to `true` to skip Firebase auth (local dev)              |
 | `SKIP_ALLOWLIST`                 | No       | Set to `true` to skip user allowlist check                   |
 
