@@ -5,7 +5,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field, field_validator
+
+MIN_RATING = 1
+MAX_RATING = 5
+_ERR_RATING_RANGE = "Rating must be between 1 and 5"
 
 
 class DietLabel(str, Enum):
@@ -178,8 +182,16 @@ class RecipeUpdate(BaseModel):
     tips: str | None = None
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
-    rating: int | None = Field(default=None, ge=1, le=5)
+    rating: int | None = Field(default=None, description="Recipe rating: null to clear, 1-5 to set")
     visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
+
+    @field_validator("rating")
+    @classmethod
+    def validate_rating(cls, v: int | None) -> int | None:
+        """Allow None to clear rating, or validate 1-5 range."""
+        if v is not None and (v < MIN_RATING or v > MAX_RATING):
+            raise ValueError(_ERR_RATING_RANGE)
+        return v
 
 
 class RecipeScrapeRequest(BaseModel):

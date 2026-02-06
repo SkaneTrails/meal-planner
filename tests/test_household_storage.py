@@ -13,6 +13,7 @@ from api.storage.household_storage import (
     Household,
     HouseholdMember,
     add_member,
+    add_superuser,
     create_household,
     get_household,
     get_user_membership,
@@ -20,6 +21,7 @@ from api.storage.household_storage import (
     list_all_households,
     list_household_members,
     remove_member,
+    remove_superuser,
     update_household,
 )
 
@@ -306,3 +308,54 @@ class TestDataclasses:
         assert member.display_name is None
         assert member.joined_at is None
         assert member.invited_by is None
+
+
+class TestEmailNormalization:
+    """Tests that all storage functions normalize emails to lowercase."""
+
+    def test_is_superuser_normalizes_email(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        is_superuser("Admin@Example.COM")
+
+        mock_db.collection.return_value.document.assert_called_with("admin@example.com")
+
+    def test_add_superuser_normalizes_email(self, mock_db) -> None:
+        add_superuser("Admin@Example.COM")
+
+        mock_db.collection.return_value.document.assert_called_with("admin@example.com")
+
+    def test_remove_superuser_normalizes_email(self, mock_db) -> None:
+        remove_superuser("Admin@Example.COM")
+
+        mock_db.collection.return_value.document.assert_called_with("admin@example.com")
+
+    def test_get_user_membership_normalizes_email(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        get_user_membership("User@Example.COM")
+
+        mock_db.collection.return_value.document.assert_called_with("user@example.com")
+
+    def test_add_member_normalizes_email(self, mock_db) -> None:
+        mock_doc_ref = MagicMock()
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        add_member(household_id="h1", email="User@Example.COM")
+
+        mock_db.collection.return_value.document.assert_called_with("user@example.com")
+
+    def test_remove_member_normalizes_email(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        remove_member("User@Example.COM")
+
+        mock_db.collection.return_value.document.assert_called_with("user@example.com")
