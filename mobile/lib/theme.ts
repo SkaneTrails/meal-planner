@@ -297,7 +297,7 @@ export const inputStyle = {
 // ============================================
 
 export const typography = {
-  // Display/Headers - DM Sans (display weights)
+  // Display/Headers - DM Sans
   displayLarge: {
     fontFamily: fontFamily.displayBold,
     fontSize: fontSize['6xl'],
@@ -313,7 +313,7 @@ export const typography = {
     fontSize: fontSize['3xl'],
     letterSpacing: letterSpacing.normal,
   },
-  
+
   // Headings - DM Sans Bold/Semibold
   headingLarge: {
     fontFamily: fontFamily.bodyBold,
@@ -330,7 +330,7 @@ export const typography = {
     fontSize: fontSize.xl,
     letterSpacing: letterSpacing.normal,
   },
-  
+
   // Body text - DM Sans
   bodyLarge: {
     fontFamily: fontFamily.body,
@@ -344,7 +344,7 @@ export const typography = {
     fontFamily: fontFamily.body,
     fontSize: fontSize.base,
   },
-  
+
   // Labels/Buttons - DM Sans Semibold/Medium
   labelLarge: {
     fontFamily: fontFamily.bodySemibold,
@@ -358,7 +358,7 @@ export const typography = {
     fontFamily: fontFamily.bodySemibold,
     fontSize: fontSize.sm,
   },
-  
+
   // Captions - DM Sans Medium
   caption: {
     fontFamily: fontFamily.bodyMedium,
@@ -368,7 +368,7 @@ export const typography = {
     fontFamily: fontFamily.bodyMedium,
     fontSize: fontSize.sm,
   },
-  
+
   // Uppercase labels
   overline: {
     fontFamily: fontFamily.bodySemibold,

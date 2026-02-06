@@ -640,14 +640,20 @@ export default function RecipeDetailScreen() {
 
   const handleThumbUp = async () => {
     if (!id || !recipe) return;
-    
+
+    // Ensure current user is loaded before checking ownership
+    if (!currentUser) {
+      showNotification('Please Wait', 'Loading your account information. Try again in a moment.');
+      return;
+    }
+
     // Check ownership - only allow rating own recipes
-    const isOwned = recipe.household_id === currentUser?.household_id;
+    const isOwned = recipe.household_id === currentUser.household_id;
     if (!isOwned) {
       showNotification('Cannot Rate', 'Copy this recipe to your household first to rate it.');
       return;
     }
-    
+
     hapticSuccess();
     try {
       // Toggle: if already thumbs up, clear rating; otherwise set to 5
@@ -664,14 +670,20 @@ export default function RecipeDetailScreen() {
 
   const handleThumbDown = () => {
     if (!id || !recipe) return;
-    
+
+    // Ensure current user is loaded before checking ownership
+    if (!currentUser) {
+      showNotification('Please Wait', 'Loading your account information. Try again in a moment.');
+      return;
+    }
+
     // Check ownership - only allow rating own recipes
-    const isOwned = recipe.household_id === currentUser?.household_id;
+    const isOwned = recipe.household_id === currentUser.household_id;
     if (!isOwned) {
       showNotification('Cannot Rate', 'Copy this recipe to your household first to rate it.');
       return;
     }
-    
+
     hapticWarning();
     // If already thumbs down, ask to delete
     if (recipe.rating === 1) {
@@ -993,9 +1005,9 @@ export default function RecipeDetailScreen() {
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, alignItems: 'center' }}>
             {/* Edit button - only enabled for recipes owned by user's household */}
             {(() => {
-              const isOwned = recipe.household_id === currentUser?.household_id;
-              // Legacy recipes (no household) are read-only - must copy first
-              const canEdit = isOwned;
+              const isOwned = currentUser ? recipe.household_id === currentUser.household_id : undefined;
+              // While currentUser is loading, disable the button without showing 'not owned' state
+              const canEdit = isOwned === true;
               return (
                 <Pressable
                   onPress={canEdit ? openEditModal : () => showNotification('Cannot Edit', 'Copy this recipe to your household first to make changes.')}
