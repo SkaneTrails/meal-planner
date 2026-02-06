@@ -143,7 +143,13 @@ module "cloud_run" {
   service_name       = "meal-planner-api"
   image_url          = "${module.artifact_registry.repository_url}/api:latest"
   firestore_database = var.firestore_database_name
-  allowed_origins    = var.cloud_run_allowed_origins
+  allowed_origins    = join(",", [
+    module.firebase.hosting_url,
+    "https://${var.project}.firebaseapp.com",
+    "http://localhost:8081",
+    "http://localhost:19006",
+    "http://localhost:3000",
+  ])
   gcs_bucket_name    = module.storage.bucket_name
 
   # Allow public access - Firebase Auth is validated in application code
