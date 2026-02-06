@@ -25,12 +25,6 @@ variable "firebase_authorized_domains" {
   default     = []
 }
 
-variable "cloud_run_allowed_origins" {
-  description = "Comma-separated list of allowed CORS origins for Cloud Run API"
-  type        = string
-  default     = ""
-}
-
 # OAuth secrets - created by scripts/create-oauth-client.ps1 or .sh
 # Set to true after running the script
 variable "oauth_secrets_exist" {
