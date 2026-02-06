@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Animated, Easing, Dimensions, ImageBackground } from 'react-native';
+import { StyleSheet, View, Animated, Easing, Dimensions, ImageBackground, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -156,14 +156,32 @@ function FloatingOrb({
 }
 
 export function GradientBackground({ children, style, animated = false }: GradientBackgroundProps) {
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  
+  // Determine if we're on a large screen (PC/tablet/web)
+  const isLargeScreen = windowWidth > 768 || Platform.OS === 'web';
+  const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+  
   // For non-animated (default), use static background image
   if (!animated) {
+    // Always use the background image, stretched to fit the screen
     return (
       <ImageBackground
         source={BACKGROUND_IMAGE}
-        style={[styles.container, style]}
-        resizeMode="cover"
+        style={[styles.container, style, { width: windowWidth, height: windowHeight }]}
+        resizeMode="stretch"
       >
+        {/* Slight darkening overlay for mobile to make colors richer */}
+        {isMobile && (
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: 'rgba(0, 0, 0, 0.03)',
+              },
+            ]}
+          />
+        )}
         {children}
       </ImageBackground>
     );

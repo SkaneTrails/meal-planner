@@ -75,9 +75,10 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
   // Card width for readable titles with time info
   const minCardWidth = 180;
   const horizontalPadding = 12; // Symmetric padding on both sides
+  const cardGap = 10; // Gap between cards
   const availableWidth = width - (horizontalPadding * 2);
   const numColumns = Math.max(2, Math.floor(availableWidth / minCardWidth));
-  const cardWidth = (availableWidth - (numColumns - 1) * 6) / numColumns;
+  const cardWidth = (availableWidth - (numColumns - 1) * cardGap) / numColumns;
 
   // Show skeleton when loading and no recipes yet
   if (isLoading && recipes.length === 0) {
@@ -96,11 +97,11 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={{ width: cardWidth, padding: 3 }}>
+        <View style={{ width: cardWidth, padding: cardGap / 2 }}>
           <RecipeCard
             recipe={item}
             onPress={() => onRecipePress(item.id)}
-            cardSize={cardWidth - 6}
+            cardSize={cardWidth - cardGap}
           />
         </View>
       )}
@@ -121,7 +122,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
           }}>
             <Ionicons name={searchQuery || dietFilter || mealFilter ? "search" : "book-outline"} size={36} color={colors.white} />
           </View>
-          <Text style={{ color: colors.text.inverse, fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+          <Text style={{ color: colors.text.inverse, fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
             {searchQuery || dietFilter || mealFilter
               ? 'No matches found'
               : 'Your recipe book is empty'}
@@ -143,7 +144,7 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
                 ...shadows.lg,
               }}
             >
-              <Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>Add Your First Recipe</Text>
+              <Text style={{ color: colors.white, fontSize: 15, fontFamily: fontFamily.bodySemibold }}>Add Your First Recipe</Text>
             </Pressable>
           )}
         </View>
@@ -340,7 +341,7 @@ export default function RecipesScreen() {
               }}
               style={{ marginLeft: 12 }}
             >
-              <Text style={{ fontSize: 15, color: colors.text.inverse, fontWeight: '500' }}>Cancel</Text>
+              <Text style={{ fontSize: 15, color: colors.text.inverse, fontFamily: fontFamily.bodyMedium }}>Cancel</Text>
             </Pressable>
           )}
         </View>

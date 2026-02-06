@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field, field_validator
 
 
 class DietLabel(str, Enum):
@@ -178,8 +178,16 @@ class RecipeUpdate(BaseModel):
     tips: str | None = None
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
-    rating: int | None = Field(default=None, ge=1, le=5)
+    rating: int | None = Field(default=None, description="Recipe rating: null to clear, 1-5 to set")
     visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
+
+    @field_validator("rating")
+    @classmethod
+    def validate_rating(cls, v: int | None) -> int | None:
+        """Allow None to clear rating, or validate 1-5 range."""
+        if v is not None and (v < 1 or v > 5):
+            raise ValueError("Rating must be between 1 and 5")
+        return v
 
 
 class RecipeScrapeRequest(BaseModel):

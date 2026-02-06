@@ -14,12 +14,12 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { colors, shadows } from '@/lib/theme';
 
-// Custom tab bar background with solid cream/peach background
+// Custom tab bar background with subtle glass effect
 function TabBarBackground() {
   if (Platform.OS === 'ios') {
     return (
       <BlurView
-        intensity={80}
+        intensity={40}
         tint="light"
         style={{
           position: 'absolute',
@@ -27,14 +27,14 @@ function TabBarBackground() {
           left: 0,
           right: 0,
           bottom: 0,
-          borderRadius: 24,
+          borderRadius: 16,
           overflow: 'hidden',
-          backgroundColor: 'rgba(253, 246, 240, 0.95)',
+          backgroundColor: 'rgba(255, 255, 255, 0.25)',
         }}
       />
     );
   }
-  // Fallback for Android/web - solid cream background
+  // Fallback for Android/web - subtle semi-transparent
   return (
     <View
       style={{
@@ -43,10 +43,10 @@ function TabBarBackground() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#FDF6F0',
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: 'rgba(139, 115, 85, 0.15)',
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        borderRadius: 16,
+        borderWidth: 0.5,
+        borderColor: 'rgba(139, 115, 85, 0.08)',
       }}
     />
   );
@@ -90,10 +90,10 @@ export default function TabLayout() {
     );
   }
 
-  // If API returns error (likely 403 - user not in any household), redirect to sign-in
-  // Users without household access will be manually added to households
+  // If API returns error (likely 403 - user not in any household), redirect to no-access
+  // The no-access screen shows the user's email and a sign-out option
   if (isError) {
-    return <Redirect href="/sign-in" />;
+    return <Redirect href="/no-access" />;
   }
 
   // Check if user is superuser (show admin tab)
@@ -108,19 +108,20 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 20,
-          left: 20,
-          right: 20,
+          bottom: 16,
+          left: 32,
+          right: 32,
           backgroundColor: 'transparent',
           borderTopWidth: 0,
-          borderRadius: 24,
-          height: 56,
+          borderRadius: 16,
+          height: 44,
           paddingBottom: 0,
           paddingTop: 0,
-          ...shadows.md,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarItemStyle: {
-          paddingVertical: 8,
+          paddingVertical: 4,
         },
         headerShown: false,
       }}
@@ -131,13 +132,7 @@ export default function TabLayout() {
           title: 'Home',
           tabBarAccessibilityLabel: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              padding: 6,
-              borderRadius: 12,
-              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
-            }}>
-              <Ionicons name={focused ? "home" : "home-outline"} size={20} color={color} />
-            </View>
+            <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : color} />
           ),
         }}
       />
@@ -147,13 +142,7 @@ export default function TabLayout() {
           title: 'Recipes',
           tabBarAccessibilityLabel: 'Recipes',
           tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              padding: 6,
-              borderRadius: 12,
-              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
-            }}>
-              <Ionicons name={focused ? "book" : "book-outline"} size={20} color={color} />
-            </View>
+            <Ionicons name={focused ? "book" : "book-outline"} size={20} color={color} />
           ),
         }}
       />
@@ -163,13 +152,7 @@ export default function TabLayout() {
           title: 'Meal Plan',
           tabBarAccessibilityLabel: 'Meal Plan',
           tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              padding: 6,
-              borderRadius: 12,
-              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
-            }}>
-              <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={color} />
-            </View>
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={color} />
           ),
         }}
       />
@@ -179,13 +162,7 @@ export default function TabLayout() {
           title: 'Grocery',
           tabBarAccessibilityLabel: 'Grocery List',
           tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              padding: 6,
-              borderRadius: 12,
-              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
-            }}>
-              <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={color} />
-            </View>
+            <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={color} />
           ),
         }}
       />
@@ -195,13 +172,7 @@ export default function TabLayout() {
           title: 'Settings',
           tabBarAccessibilityLabel: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              padding: 6,
-              borderRadius: 12,
-              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
-            }}>
-              <Ionicons name={focused ? "settings" : "settings-outline"} size={20} color={color} />
-            </View>
+            <Ionicons name={focused ? "settings" : "settings-outline"} size={20} color={color} />
           ),
         }}
       />
@@ -211,13 +182,7 @@ export default function TabLayout() {
           title: 'Admin',
           tabBarAccessibilityLabel: 'Admin',
           tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              padding: 6,
-              borderRadius: 12,
-              backgroundColor: focused ? 'rgba(139, 115, 85, 0.15)' : 'transparent',
-            }}>
-              <Ionicons name={focused ? "shield-checkmark" : "shield-checkmark-outline"} size={20} color={color} />
-            </View>
+            <Ionicons name={focused ? "shield-checkmark" : "shield-checkmark-outline"} size={20} color={color} />
           ),
           // Only show admin tab for superusers
           href: isSuperuser ? '/admin' : null,
