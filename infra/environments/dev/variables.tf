@@ -57,5 +57,4 @@ variable "github_repository" {
 variable "recipe_images_bucket_name" {
   description = "GCS bucket name for recipe images (must be globally unique)"
   type        = string
-  default     = "meal-planner-recipe-images"
 }

@@ -1,4 +1,4 @@
-"""FastAPI application entry point."""  # pragma: no cover
+"""FastAPI application entry point."""
 
 import os
 
@@ -19,11 +19,8 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# CORS configuration
-# Production origins must be set via ALLOWED_ORIGINS env var
-ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS", "http://localhost:8081,http://localhost:8085,http://localhost:19006,http://localhost:3000"
-).split(",")
+# CORS configuration — must be set via ALLOWED_ORIGINS env var or .env
+ALLOWED_ORIGINS = os.environ["ALLOWED_ORIGINS"].split(",")
 
 app.add_middleware(
     CORSMiddleware,  # type: ignore[arg-type]  # Starlette stubs issue

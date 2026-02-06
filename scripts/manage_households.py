@@ -64,7 +64,7 @@ def show_household(household_id: str) -> None:
     if household is None:
         print(f"✗ Household '{household_id}' not found.")
         sys.exit(1)
-
+    assert household is not None  # noqa: S101 - type narrowing after sys.exit
     print(f"\nHousehold: {household.name}")
     print(f"  ID: {household.id}")
     print(f"  Created by: {household.created_by}")
@@ -83,7 +83,7 @@ def list_members(household_id: str) -> None:
     if household is None:
         print(f"✗ Household '{household_id}' not found.")
         sys.exit(1)
-
+    assert household is not None  # noqa: S101 - type narrowing after sys.exit
     members = household_storage.list_household_members(household_id)
 
     if not members:
@@ -106,7 +106,7 @@ def add_member(household_id: str, email: str, role: str = "member", display_name
     if household is None:
         print(f"✗ Household '{household_id}' not found.")
         sys.exit(1)
-
+    assert household is not None  # noqa: S101 - type narrowing after sys.exit
     # Check if already a member
     existing = household_storage.get_user_membership(email)
     if existing:
@@ -130,7 +130,7 @@ def remove_member(email: str) -> None:
     if membership is None:
         print(f"✗ {email} is not a member of any household.")
         sys.exit(1)
-
+    assert membership is not None  # noqa: S101 - type narrowing after sys.exit
     household_storage.remove_member(email)
     print(f"✓ Removed {email} from household '{membership.household_id}'")
 

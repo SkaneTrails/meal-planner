@@ -106,10 +106,10 @@ def get_recipe(recipe_id: str) -> dict | None:
     db = get_firestore_client()
     doc = db.collection("recipes").document(recipe_id).get()  # type: ignore[union-attr]
 
-    if doc.exists:
-        data = doc.to_dict()
+    if doc.exists:  # type: ignore[union-attr]
+        data = doc.to_dict()  # type: ignore[union-attr]
         if data is not None:
-            data["id"] = doc.id
+            data["id"] = doc.id  # type: ignore[union-attr]
             return data
     return None
 
