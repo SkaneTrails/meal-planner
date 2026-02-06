@@ -66,13 +66,14 @@ def main() -> None:
         # Fetch from database
         db = firestore.Client(database="meal-planner")
         original_doc = db.collection("recipes").document(recipe_id).get()
-        if original_doc.exists:
-            original_data = original_doc.to_dict()
-            recipe["url"] = original_data.get("url", "")
-            recipe["image_url"] = original_data.get("image_url")
-            if not recipe.get("servings"):
-                recipe["servings"] = original_data.get("servings")
-            print(f"   Retrieved URL from existing recipe: {recipe['url'][:50]}...")
+        if original_doc.exists:  # type: ignore[union-attr]
+            original_data = original_doc.to_dict()  # type: ignore[union-attr]
+            if original_data is not None:
+                recipe["url"] = original_data.get("url", "")
+                recipe["image_url"] = original_data.get("image_url")
+                if not recipe.get("servings"):
+                    recipe["servings"] = original_data.get("servings")
+                print(f"   Retrieved URL from existing recipe: {recipe['url'][:50]}...")
 
     # Connect to database
     db = firestore.Client(database="meal-planner")

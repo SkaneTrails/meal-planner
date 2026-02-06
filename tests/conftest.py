@@ -1,8 +1,22 @@
 """Pytest configuration and fixtures."""
 
-import pytest
+import os
 
-from api.models.recipe import Recipe
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Set test defaults for env vars required by the app.
+# In CI (no .env file), these ensure the app can be imported.
+# Locally, load_dotenv() above will have already set these from .env.
+os.environ.setdefault("ALLOWED_ORIGINS", "http://localhost:8081")
+os.environ.setdefault("SCRAPE_FUNCTION_URL", "http://localhost:8001")
+os.environ.setdefault("GCS_BUCKET_NAME", "test-bucket")
+os.environ.setdefault("GOOGLE_CLOUD_PROJECT", "test-project")
+
+import pytest  # noqa: E402
+
+from api.models.recipe import Recipe  # noqa: E402
 
 
 @pytest.fixture

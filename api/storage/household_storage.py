@@ -45,7 +45,7 @@ def is_superuser(email: str) -> bool:
     # Normalize email to lowercase for consistent document ID lookup
     normalized_email = email.lower()
     doc = db.collection(SUPERUSERS_COLLECTION).document(normalized_email).get()
-    return doc.exists
+    return doc.exists  # type: ignore[union-attr]
 
 
 def add_superuser(email: str) -> None:
@@ -77,10 +77,12 @@ def get_user_membership(email: str) -> HouseholdMember | None:
     normalized_email = email.lower()
     doc = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized_email).get()
 
-    if not doc.exists:
+    if not doc.exists:  # type: ignore[union-attr]
         return None
 
-    data = doc.to_dict()
+    data = doc.to_dict()  # type: ignore[union-attr]
+    if data is None:
+        return None
     return HouseholdMember(
         email=email,
         household_id=data.get("household_id", ""),
@@ -96,10 +98,12 @@ def get_household(household_id: str) -> Household | None:
     db = _get_db()
     doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
 
-    if not doc.exists:
+    if not doc.exists:  # type: ignore[union-attr]
         return None
 
-    data = doc.to_dict()
+    data = doc.to_dict()  # type: ignore[union-attr]
+    if data is None:
+        return None
     return Household(
         id=household_id,
         name=data.get("name", ""),
@@ -158,7 +162,7 @@ def remove_member(email: str) -> bool:
     normalized_email = email.lower()
     doc_ref = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized_email)
 
-    if not doc_ref.get().exists:
+    if not doc_ref.get().exists:  # type: ignore[union-attr]
         return False
 
     doc_ref.delete()
@@ -234,7 +238,7 @@ def update_household(household_id: str, name: str) -> bool:
     db = _get_db()
     doc_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
 
-    if not doc_ref.get().exists:
+    if not doc_ref.get().exists:  # type: ignore[union-attr]
         return False
 
     doc_ref.update({"name": name})
@@ -251,7 +255,7 @@ def delete_household(household_id: str) -> bool:
     db = _get_db()
     doc_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
 
-    if not doc_ref.get().exists:
+    if not doc_ref.get().exists:  # type: ignore[union-attr]
         return False
 
     doc_ref.delete()
@@ -269,7 +273,7 @@ def get_household_settings(household_id: str) -> dict | None:
 
     # First check household exists
     household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
-    if not household_doc.exists:
+    if not household_doc.exists:  # type: ignore[union-attr]
         return None
 
     # Get settings from subcollection
@@ -277,10 +281,10 @@ def get_household_settings(household_id: str) -> dict | None:
         db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config").get()
     )
 
-    if not settings_doc.exists:
+    if not settings_doc.exists:  # type: ignore[union-attr]
         return {}  # Household exists but no settings yet
 
-    return settings_doc.to_dict() or {}
+    return settings_doc.to_dict() or {}  # type: ignore[union-attr]
 
 
 def update_household_settings(household_id: str, settings: dict) -> bool:
@@ -293,7 +297,7 @@ def update_household_settings(household_id: str, settings: dict) -> bool:
 
     # First check household exists
     household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
-    if not household_doc.exists:
+    if not household_doc.exists:  # type: ignore[union-attr]
         return False
 
     # Update settings in subcollection (merge to preserve existing fields)
