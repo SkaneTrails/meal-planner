@@ -297,7 +297,7 @@ export const inputStyle = {
 // ============================================
 
 export const typography = {
-  // Display/Headers - Playfair Display
+  // Display/Headers - DM Sans (display weights)
   displayLarge: {
     fontFamily: fontFamily.displayBold,
     fontSize: fontSize['6xl'],

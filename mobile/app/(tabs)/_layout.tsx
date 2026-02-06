@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
-import { colors, shadows } from '@/lib/theme';
+import { colors } from '@/lib/theme';
 
 // Custom tab bar background with subtle glass effect
 function TabBarBackground() {

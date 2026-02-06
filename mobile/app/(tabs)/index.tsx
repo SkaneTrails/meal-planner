@@ -9,7 +9,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily, typography } from '@/lib/theme';
+import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib/theme';
 import { useRecipes, useMealPlan, useEnhancedMode, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground, HomeScreenSkeleton } from '@/components';

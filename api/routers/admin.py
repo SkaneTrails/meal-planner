@@ -242,20 +242,24 @@ async def remove_member(
     """Remove a member from a household. Superuser or household admin."""
     _require_admin_or_superuser(user, household_id)
 
+    # Normalize email at the API boundary for consistent comparisons and storage lookups
+    normalized_email = email.lower()
+    user_email = user.email.lower()
+
     # Verify household exists
     if household_storage.get_household(household_id) is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 
     # Verify member exists and belongs to this household
-    membership = household_storage.get_user_membership(email)
+    membership = household_storage.get_user_membership(normalized_email)
     if membership is None or membership.household_id != household_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found in this household")
 
     # Prevent removing yourself (must use a different mechanism for leaving)
-    if email == user.email:
+    if normalized_email == user_email:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot remove yourself from the household")
 
-    household_storage.remove_member(email)
+    household_storage.remove_member(normalized_email)
 
 
 @router.get("/me")

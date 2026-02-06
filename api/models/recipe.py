@@ -7,6 +7,10 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field, field_validator
 
+MIN_RATING = 1
+MAX_RATING = 5
+_ERR_RATING_RANGE = "Rating must be between 1 and 5"
+
 
 class DietLabel(str, Enum):
     """Diet type labels for recipes."""
@@ -185,8 +189,8 @@ class RecipeUpdate(BaseModel):
     @classmethod
     def validate_rating(cls, v: int | None) -> int | None:
         """Allow None to clear rating, or validate 1-5 range."""
-        if v is not None and (v < 1 or v > 5):
-            raise ValueError("Rating must be between 1 and 5")
+        if v is not None and (v < MIN_RATING or v > MAX_RATING):
+            raise ValueError(_ERR_RATING_RANGE)
         return v
 
 

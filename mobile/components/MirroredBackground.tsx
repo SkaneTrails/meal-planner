@@ -64,10 +64,9 @@ const styles = StyleSheet.create({
   },
   tile: {
     width: '100%',
-    // Each tile is ~aspect ratio of the source image.
-    // We use aspectRatio so the image doesn't distort.
+    // Tiles are stretched to fill width; aspectRatio controls
+    // the height of each tile relative to its width.
     // 672x1300 background.png → ~0.517 aspect ratio
-    // This will be overridden by the actual image dimensions.
     aspectRatio: 672 / 1300,
   },
   flipped: {

@@ -157,9 +157,7 @@ function FloatingOrb({
 
 export function GradientBackground({ children, style, animated = false }: GradientBackgroundProps) {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-  
-  // Determine if we're on a large screen (PC/tablet/web)
-  const isLargeScreen = windowWidth > 768 || Platform.OS === 'web';
+
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
   
   // For non-animated (default), use static background image
