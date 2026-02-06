@@ -6,11 +6,11 @@
 #
 # Prerequisites:
 #   - gcloud CLI authenticated
-#   - Access to the REDACTED_PROJECT_ID project secrets
+#   - GOOGLE_CLOUD_PROJECT env var set
 
 set -e
 
-PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-REDACTED_PROJECT_ID}"
+PROJECT_ID="${GOOGLE_CLOUD_PROJECT:?Set GOOGLE_CLOUD_PROJECT env var}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/../.env"
 
@@ -36,7 +36,7 @@ EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(get_secret "github_EXPO_PUBLIC_FIREBA
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(get_secret "meal-planner_oauth_client_id")
 
 # Derived values (not in Secret Manager)
-FIREBASE_PROJECT_ID="REDACTED_PROJECT_ID"
+FIREBASE_PROJECT_ID="$PROJECT_ID"
 
 # Default API URL to localhost if not set
 if [ -z "$EXPO_PUBLIC_API_URL" ]; then
