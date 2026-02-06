@@ -154,7 +154,7 @@ See `firestore.instructions.md` for the full recipe document schema. Key points:
 - All fields at top level (no nested objects)
 - `created_at` required for queries
 - `instructions` must be `list[str]`, not a single string
-- Enhanced recipes have `enhanced=True` and `enhanced_from` pointing to `_original` suffix doc
+- Enhanced recipes have `enhanced=True` and `enhanced_from` set to the source recipe's document ID
 
 ### Skills (AI Agent Instructions)
 

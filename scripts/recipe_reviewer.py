@@ -4,10 +4,10 @@ Usage:
     # Get the next unprocessed recipe:
     uv run python scripts/recipe_reviewer.py next
 
-    # Get a specific recipe by ID (from source database):
+    # Get a specific recipe by ID:
     uv run python scripts/recipe_reviewer.py get <recipe_id>
 
-    # Get the enhanced version of a recipe (from target database):
+    # Get the enhanced version of a recipe:
     uv run python scripts/recipe_reviewer.py enhanced <recipe_id>
 
     # Delete a bad enhanced recipe and unmark from processed:
@@ -195,15 +195,15 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
             # Exists but not marked as improved - treat as fresh enhancement
             source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
             if not source_doc.exists:
-                print(f"❌ Recipe not found in source: {recipe_id}")
+                print(f"❌ Recipe not found: {recipe_id}")
                 return
             base_data = source_doc.to_dict()
     else:
-        # No enhanced version - fetch from source for initial enhancement
-        print("🆕 Creating NEW enhanced recipe (from source database)")
+        # No enhanced version - fetch original document for initial enhancement
+        print("🆕 Creating NEW enhanced recipe from original document")
         source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
         if not source_doc.exists:
-            print(f"❌ Recipe not found in source: {recipe_id}")
+            print(f"❌ Recipe not found: {recipe_id}")
             return
         base_data = source_doc.to_dict()
 

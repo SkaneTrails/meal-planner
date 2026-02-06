@@ -6,7 +6,7 @@ These conventions apply when working with Firestore data in this project.
 
 The app uses a single Firestore database: `meal-planner`.
 
-All recipes (original and AI-enhanced) are stored in the same database. Enhanced recipes have `enhanced=True` and `enhanced_from` pointing to the `_original` suffix document.
+All recipes (original and AI-enhanced) are stored in the same database. Enhanced recipes have `enhanced=True` and `enhanced_from` set to the source recipe's document ID.
 
 ## Recipe Document Schema
 

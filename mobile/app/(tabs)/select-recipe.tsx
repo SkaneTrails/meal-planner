@@ -2,7 +2,7 @@
  * Select Recipe modal - Choose a recipe for a meal slot.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer, fontFamily } from '@/lib/theme';
 import { GradientBackground, RecipeCard } from '@/components';
 import { useRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
@@ -58,6 +58,13 @@ export default function SelectRecipeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState('');
   const [randomSeed, setRandomSeed] = useState(0); // Used to trigger new random selection
+
+  // Update activeTab when mode param changes (e.g., navigating from different buttons)
+  useEffect(() => {
+    if (mode) {
+      setActiveTab(mode);
+    }
+  }, [mode]);
 
   const filteredRecipes = useMemo(() => {
     if (searchQuery === '') return recipes;
@@ -235,7 +242,7 @@ export default function SelectRecipeScreen() {
               >
                 <Text style={{
                   fontSize: fontSize.sm,
-                  fontWeight: '600',
+                  fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'library' ? colors.white : colors.text.inverse
                 }}>
                   📚 Library
@@ -254,7 +261,7 @@ export default function SelectRecipeScreen() {
               >
                 <Text style={{
                   fontSize: fontSize.sm,
-                  fontWeight: '600',
+                  fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'random' ? colors.white : colors.text.inverse
                 }}>
                   🎲 Random
@@ -273,7 +280,7 @@ export default function SelectRecipeScreen() {
               >
                 <Text style={{
                   fontSize: fontSize.sm,
-                  fontWeight: '600',
+                  fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'quick' ? colors.white : colors.text.inverse
                 }}>
                   ✏️ Quick
@@ -292,7 +299,7 @@ export default function SelectRecipeScreen() {
               >
                 <Text style={{
                   fontSize: fontSize.sm,
-                  fontWeight: '600',
+                  fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'copy' ? colors.white : colors.text.inverse
                 }}>
                   📋 Copy

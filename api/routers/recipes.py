@@ -446,7 +446,9 @@ async def upload_recipe_image(  # pragma: no cover
     # Update recipe with new image URL
     from api.models.recipe import RecipeUpdate as RecipeUpdateModel
 
-    updated_recipe = recipe_storage.update_recipe(recipe_id, RecipeUpdateModel(image_url=image_url))
+    updated_recipe = recipe_storage.update_recipe(
+        recipe_id, RecipeUpdateModel(image_url=image_url), household_id=household_id
+    )
 
     if updated_recipe is None:  # pragma: no cover
         raise HTTPException(

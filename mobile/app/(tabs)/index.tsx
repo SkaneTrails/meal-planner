@@ -368,7 +368,7 @@ export default function HomeScreen() {
             <Text style={{
               color: recipeUrl.trim() ? colors.white : '#8B7355',
               fontSize: fontSize.sm,
-              fontWeight: '600',
+              fontFamily: fontFamily.bodySemibold,
             }}>Import</Text>
           </Pressable>
           <Pressable
@@ -479,7 +479,7 @@ export default function HomeScreen() {
               <Ionicons name="shuffle" size={12} color="#8B7355" />
               <Text style={{
                 color: '#5D4E40',
-                fontWeight: '500',
+                fontFamily: fontFamily.bodyMedium,
                 fontSize: fontSize.xs,
                 marginLeft: 4,
               }}>Shuffle</Text>
@@ -516,7 +516,7 @@ export default function HomeScreen() {
             >
               <Text style={{
                 fontSize: fontSize.xl,
-                fontWeight: '600',
+                fontFamily: fontFamily.bodySemibold,
                 color: colors.white,
                 letterSpacing: letterSpacing.tight,
               }} numberOfLines={2}>
@@ -530,7 +530,7 @@ export default function HomeScreen() {
                     paddingVertical: 3,
                     borderRadius: borderRadius.full,
                   }}>
-                    <Text style={{ fontSize: fontSize.xs, fontWeight: '500', color: colors.white }}>
+                    <Text style={{ fontSize: fontSize.xs, fontFamily: fontFamily.bodyMedium, color: colors.white }}>
                       {inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1)}
                     </Text>
                   </View>
@@ -546,7 +546,7 @@ export default function HomeScreen() {
                     paddingVertical: 3,
                     borderRadius: borderRadius.full,
                   }}>
-                    <Text style={{ fontSize: fontSize.xs, fontWeight: '500', color: colors.white }}>
+                    <Text style={{ fontSize: fontSize.xs, fontFamily: fontFamily.bodyMedium, color: colors.white }}>
                       {inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}
                     </Text>
                   </View>

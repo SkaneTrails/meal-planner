@@ -423,6 +423,32 @@ class TestRemoveMember:
         assert response.status_code == 404
         assert "not found in this household" in response.json()["detail"]
 
+    def test_email_normalized_for_removal(
+        self, superuser_client: TestClient, sample_household: Household, sample_membership: HouseholdMember
+    ) -> None:
+        """Email path param should be normalized to lowercase for storage lookup."""
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value=sample_household),
+            patch("api.routers.admin.household_storage.get_user_membership", return_value=sample_membership),
+            patch("api.routers.admin.household_storage.remove_member") as mock_remove,
+        ):
+            response = superuser_client.delete("/admin/households/test_household/members/Member@Example.COM")
+
+        assert response.status_code == 204
+        mock_remove.assert_called_once_with("member@example.com")
+
+    def test_cannot_remove_self_mixed_case(self, superuser_client: TestClient, sample_household: Household) -> None:
+        """Self-removal guard should work even with mixed-case email."""
+        self_membership = HouseholdMember(email="test@example.com", household_id="test_household", role="superuser")
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value=sample_household),
+            patch("api.routers.admin.household_storage.get_user_membership", return_value=self_membership),
+        ):
+            response = superuser_client.delete("/admin/households/test_household/members/Test@Example.COM")
+
+        assert response.status_code == 400
+        assert "Cannot remove yourself" in response.json()["detail"]
+
 
 class TestGetCurrentUser:
     """Tests for GET /admin/me endpoint."""

@@ -11,7 +11,15 @@ import { GradientBackground } from '../components';
 import { fontFamily, fontSize, colors, spacing, borderRadius } from '../lib/theme';
 
 export default function SignInScreen() {
-  const { user, loading, error, signIn } = useAuth();
+  const { user, loading, error, signIn, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch {
+      // Ignore sign-out errors on sign-in screen
+    }
+  };
 
   // If already signed in, redirect to home
   if (user) {
@@ -22,6 +30,20 @@ export default function SignInScreen() {
     return (
       <GradientBackground animated style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={colors.primary} />
+        <Pressable
+          onPress={handleSignOut}
+          style={({ pressed }) => ({
+            position: 'absolute',
+            bottom: 48,
+            paddingHorizontal: spacing.lg,
+            paddingVertical: spacing.sm,
+            opacity: pressed ? 0.7 : 1,
+          })}
+        >
+          <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textDecorationLine: 'underline' }}>
+            Sign out
+          </Text>
+        </Pressable>
       </GradientBackground>
     );
   }
@@ -88,10 +110,23 @@ export default function SignInScreen() {
       </View>
 
       {/* Footer */}
-      <View style={{ paddingBottom: 48, paddingHorizontal: spacing.xl }}>
+      <View style={{ paddingBottom: 48, paddingHorizontal: spacing.xl, alignItems: 'center', gap: spacing.md }}>
         <Text style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textAlign: 'center' }}>
           Sign in to sync your recipes across devices
         </Text>
+        <Pressable
+            onPress={handleSignOut}
+            style={({ pressed }) => ({
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.sm,
+              borderRadius: borderRadius.md,
+              opacity: pressed ? 0.7 : 1,
+            })}
+          >
+            <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textDecorationLine: 'underline' }}>
+              Sign out
+            </Text>
+          </Pressable>
       </View>
     </GradientBackground>
   );

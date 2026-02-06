@@ -72,7 +72,7 @@ def main() -> None:
             recipe["image_url"] = original_data.get("image_url")
             if not recipe.get("servings"):
                 recipe["servings"] = original_data.get("servings")
-            print(f"   Retrieved URL from original: {recipe['url'][:50]}...")
+            print(f"   Retrieved URL from existing recipe: {recipe['url'][:50]}...")
 
     # Connect to database
     db = firestore.Client(database="meal-planner")
