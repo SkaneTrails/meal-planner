@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { showNotification } from '@/lib/alert';
+import { useTranslation } from '@/lib/i18n';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { GradientBackground } from '@/components';
@@ -15,6 +16,7 @@ import { colors, fontFamily, fontSize, spacing, borderRadius } from '@/lib/theme
 export default function NoAccessScreen() {
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
+  const { t } = useTranslation();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser({
     enabled: !loading && !!user,
   });
@@ -24,7 +26,7 @@ export default function NoAccessScreen() {
       await signOut();
       router.replace('/sign-in');
     } catch {
-      showNotification('Error', 'Failed to sign out');
+      showNotification(t('common.error'), t('noAccess.failedToSignOut'));
     }
   };
 
@@ -71,7 +73,7 @@ export default function NoAccessScreen() {
           color: colors.text.primary,
           marginBottom: spacing.sm,
         }}>
-          No Access
+          {t('noAccess.title')}
         </Text>
         <Text style={{
           fontFamily: fontFamily.body,
@@ -80,7 +82,7 @@ export default function NoAccessScreen() {
           fontSize: fontSize.lg,
           marginBottom: spacing.sm,
         }}>
-          You're signed in as
+          {t('noAccess.signedInAs')}
         </Text>
         <Text style={{
           fontFamily: fontFamily.bodySemibold,
@@ -98,8 +100,8 @@ export default function NoAccessScreen() {
           lineHeight: 26,
           marginBottom: 48,
         }}>
-          but you haven't been added to a household yet.{'\n\n'}
-          Ask a household admin to invite you.
+          {t('noAccess.notInHousehold')}{'\n\n'}
+          {t('noAccess.askAdmin')}
         </Text>
 
         {/* Sign Out Button - Glass style */}
@@ -124,7 +126,7 @@ export default function NoAccessScreen() {
             fontSize: fontSize.lg,
             marginLeft: spacing.md,
           }}>
-            Sign Out
+            {t('noAccess.signOutButton')}
           </Text>
         </Pressable>
       </View>
@@ -137,7 +139,7 @@ export default function NoAccessScreen() {
           fontFamily: fontFamily.body,
           textAlign: 'center',
         }}>
-          Contact the app administrator if you need help
+          {t('noAccess.contactAdmin')}
         </Text>
       </View>
     </GradientBackground>

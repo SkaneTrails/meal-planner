@@ -203,6 +203,8 @@ const it: Translations = {
     cannotEditMessage: 'Copia prima questa ricetta nel tuo nucleo familiare per modificarla.',
     couldNotOpenUrl: 'Impossibile aprire l\'URL della ricetta',
     shareMessage: 'Dai un\'occhiata a questa ricetta: {{title}}\n\n{{url}}',
+    copyToHousehold: 'Copia nel tuo nucleo familiare',
+    share: 'Condividi',
   },
 
   mealPlan: {
@@ -225,6 +227,12 @@ const it: Translations = {
     failedToSaveNote: 'Impossibile salvare la nota. Riprova.',
     failedToSaveSelections: 'Impossibile salvare le selezioni',
     removeMealConfirm: 'Rimuovi',
+    removeMealTitle: 'Rimuovere {{title}} da {{meal}}?',
+    notePlaceholder: 'Aggiungi una nota...',
+    thisWeek: 'Questa settimana',
+    nextWeek: 'Prossima settimana',
+    createGroceryList: 'Crea lista della spesa ({{count}} pasti)',
+    addNote: '+ nota',
     dayLabels: {
       office: '🏢 Ufficio',
       home: '🏠 Casa',
@@ -255,6 +263,8 @@ const it: Translations = {
       addToPlan: 'Aggiungi al piano',
       noRecipes: 'Nessuna ricetta {{mealType}} ancora',
       addRecipesHint: 'Aggiungi ricette con il tipo "{{mealType}}" per usare la selezione casuale',
+      servings: '{{count}} porzioni',
+      time: '{{count}} min',
     },
     copy: {
       title: 'Copia un pasto dal tuo piano esistente:',
@@ -269,7 +279,11 @@ const it: Translations = {
       addRecipeButton: 'Aggiungi una ricetta',
     },
     clearMeal: 'Cancella questo pasto',
+    failedToSetMeal: 'Impossibile impostare il pasto',
+    failedToRemoveMeal: 'Impossibile rimuovere il pasto',
     failedToCopyMeal: 'Impossibile copiare il pasto',
+    searchPlaceholder: 'Cerca ricette...',
+    quickPlaceholder: 'es. Avanzi, Mangiare fuori, Pasta...',
     mealTypeLabels: {
       breakfast: 'Colazione',
       lunch: 'Pranzo',
@@ -308,6 +322,9 @@ const it: Translations = {
     sortItems: 'Ordina articoli',
     reorderHintWeb: 'Trascina per riordinare',
     reorderHintMobile: 'Tieni premuto e trascina per riordinare',
+    addItemLabel: 'Aggiungi articolo',
+    addItemExamplePlaceholder: 'es. Latte, 2 litri',
+    goToMealPlan: 'Vai al Menu settimanale e tocca "Crea lista" per generare la lista della spesa dai pasti pianificati.',
   },
 
   settings: {
@@ -340,6 +357,7 @@ const it: Translations = {
     failedToSignOut: 'Impossibile disconnettersi',
     failedToAddItem: 'Impossibile aggiungere articolo',
     failedToRemoveItem: 'Impossibile rimuovere articolo',
+    failedToChangeLanguage: 'Impossibile cambiare lingua',
   },
 
   admin: {
@@ -431,14 +449,18 @@ const it: Translations = {
       title: 'Preferenze dietetiche',
       subtitle: 'Configura come le ricette devono essere adattate',
       seafood: 'Pesce e frutti di mare',
-      seafoodDesc: 'Nessuna sostituzione necessaria',
+      seafoodDesc: 'Il nucleo familiare mangia pesce e frutti di mare',
       meatDishes: 'Piatti di carne',
+      meatRegular: 'Tutti mangiano carne',
+      meatRegularDesc: 'Nessuna sostituzione necessaria',
       splitMeatVeg: 'Porzioni divise',
       splitMeatVegDesc: '50% carne, 50% vegetariano',
       meatNone: 'Vegetariano',
-      meatRegular: 'Regolare',
+      meatNoneDesc: 'Usa alternative per tutto',
       chickenAlt: 'Alternativa al pollo (es. Quorn)',
+      chickenAltPlaceholder: 'es. Quorn',
       meatAlt: 'Altra alternativa alla carne (es. Oumph)',
+      meatAltPlaceholder: 'es. Oumph',
       mincedMeat: 'Carne macinata',
       mincedRegular: 'Macinata regolare',
       mincedRegularDesc: 'Manzo, maiale, ecc.',

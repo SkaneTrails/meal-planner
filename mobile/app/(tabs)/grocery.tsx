@@ -17,6 +17,7 @@ import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fon
 import { useMealPlan, useRecipes, useGroceryState } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
+import { useTranslation } from '@/lib/i18n';
 import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
@@ -56,6 +57,7 @@ export default function GroceryScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
+  const { t } = useTranslation();
   const { isItemAtHome } = useSettings();
   const { data: mealPlan } = useMealPlan();
   const { data: recipes = [] } = useRecipes();
@@ -272,16 +274,16 @@ export default function GroceryScreen() {
         console.log('[Grocery] All data cleared');
       } catch (error) {
         console.error('[Grocery] Error clearing data:', error);
-        showNotification('Error', 'Failed to clear list');
+        showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
     };
 
     showAlert(
-      'Clear Entire List?',
-      'This will remove all items from your grocery list, including meal selections and custom items.',
+      t('grocery.clearEntireList'),
+      t('grocery.clearEntireListMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Clear', style: 'destructive', onPress: doClear },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
       ]
     );
   };
@@ -333,7 +335,7 @@ export default function GroceryScreen() {
                 fontFamily: fontFamily.display,
                 color: colors.text.primary,
                 letterSpacing: letterSpacing.tight,
-              }}>Grocery List</Text>
+              }}>{t('grocery.title')}</Text>
             </View>
           </View>
           <GroceryListSkeleton />
@@ -354,7 +356,7 @@ export default function GroceryScreen() {
               fontFamily: fontFamily.display,
               color: colors.text.primary,
               letterSpacing: letterSpacing.tight,
-            }}>Grocery List</Text>
+            }}>{t('grocery.title')}</Text>
           </View>
         </View>
       </View>
@@ -370,7 +372,7 @@ export default function GroceryScreen() {
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontSize: fontSize.sm, color: '#8B7355' }}>This week's shopping</Text>
+              <Text style={{ fontSize: fontSize.sm, color: '#8B7355' }}>{t('grocery.thisWeeksShopping')}</Text>
               <Text style={{
                 fontSize: fontSize.xl,
                 fontWeight: fontWeight.bold,
@@ -378,8 +380,8 @@ export default function GroceryScreen() {
                 marginTop: 2,
               }}>
                 {itemsToBuy === 0
-                  ? 'No items yet'
-                  : `${checkedItemsToBuy} of ${itemsToBuy} items`}
+                  ? t('grocery.noItemsYet')
+                  : t('grocery.itemsProgress', { checked: checkedItemsToBuy, total: itemsToBuy })}
               </Text>
             </View>
 
@@ -463,7 +465,7 @@ export default function GroceryScreen() {
             >
               <Ionicons name="home-outline" size={14} color="#3D7A3D" />
               <Text style={{ fontSize: 12, color: '#2D5A2D', flex: 1, fontWeight: '500' }}>
-                {hiddenAtHomeCount} item{hiddenAtHomeCount > 1 ? 's' : ''} hidden (at home)
+                {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
               </Text>
               <Ionicons name="chevron-forward" size={14} color="#3D7A3D" />
             </Pressable>
@@ -477,7 +479,7 @@ export default function GroceryScreen() {
             borderRadius: borderRadius.md,
             padding: spacing.md,
           }}>
-            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40', marginBottom: 8 }}>Add custom item</Text>
+            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40', marginBottom: 8 }}>{t('grocery.addItemLabel')}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <TextInput
                 style={{
@@ -489,7 +491,7 @@ export default function GroceryScreen() {
                   fontSize: 14,
                   color: '#5D4E40',
                 }}
-                placeholder="e.g. Milk, 2 liters"
+                placeholder={t('grocery.addItemExamplePlaceholder')}
                 placeholderTextColor="#A09080"
                 value={newItemText}
                 onChangeText={setNewItemText}
@@ -506,7 +508,7 @@ export default function GroceryScreen() {
                   borderRadius: borderRadius.sm,
                 }}
               >
-                <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>Add</Text>
+                <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('grocery.addButton')}</Text>
               </Pressable>
             </View>
           </View>
@@ -523,10 +525,10 @@ export default function GroceryScreen() {
       ) : (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ color: '#5D4E40', fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
-            Your list is empty
+            {t('grocery.emptyList')}
           </Text>
           <Text style={{ color: 'rgba(93, 78, 64, 0.7)', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
-            Go to Weekly Menu and tap "Create List" to generate your grocery list from planned meals
+            {t('grocery.goToMealPlan')}
           </Text>
         </View>
       )}

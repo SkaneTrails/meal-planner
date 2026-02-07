@@ -28,16 +28,21 @@ import { useMealPlan, useRecipes, useSetMeal, useUpdateNote, useRemoveMeal } fro
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
 import type { MealType, Recipe } from '@/lib/types';
 import { showAlert, showNotification } from '@/lib/alert';
-
-// Quick note suggestions
-const NOTE_SUGGESTIONS = ['🏢 Office', '🏠 Home', '🏃 Gym', '🍽️ Dinner out', '✈️ Travel', '🎉 Party'];
+import { useTranslation } from '@/lib/i18n';
 
 // Cross-platform confirm dialog using centralized alert utility
-const showConfirmDelete = (title: string, message: string, onConfirm: () => void) => {
+const showConfirmDelete = (title: string, message: string, onConfirm: () => void, cancelText: string = 'Cancel', removeText: string = 'Remove') => {
   showAlert(title, message, [
-    { text: 'Cancel', style: 'cancel' },
-    { text: 'Remove', style: 'destructive', onPress: onConfirm },
+    { text: cancelText, style: 'cancel' },
+    { text: removeText, style: 'destructive', onPress: onConfirm },
   ]);
+};
+
+// BCP-47 locale mapping for date formatting
+const LOCALE_MAP: Record<string, string> = {
+  en: 'en-US',
+  sv: 'sv-SE',
+  it: 'it-IT',
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
@@ -69,30 +74,43 @@ function getWeekDates(weekOffset: number = 0): Date[] {
   return dates;
 }
 
-function formatWeekRange(dates: Date[]): string {
+function formatWeekRange(dates: Date[], locale: string): string {
   const first = dates[0];
   const last = dates[6];
-  return `${first.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} - ${last.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`;
+  const bcp47 = LOCALE_MAP[locale] || 'en-US';
+  return `${first.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' })} - ${last.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' })}`;
 }
 
-function formatDayHeader(date: Date): string {
+function formatDayHeader(date: Date, locale: string, todayLabel: string): string {
   const today = new Date();
   const isToday = date.toDateString() === today.toDateString();
-  const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-  const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const bcp47 = LOCALE_MAP[locale] || 'en-US';
+  const dayName = date.toLocaleDateString(bcp47, { weekday: 'long' });
+  const monthDay = date.toLocaleDateString(bcp47, { month: 'short', day: 'numeric' });
 
-  if (isToday) return `Today · ${monthDay}`;
+  if (isToday) return `${todayLabel} · ${monthDay}`;
   return `${dayName} · ${monthDay}`;
 }
 
-// Meal type config
-const MEAL_TYPES: { type: MealType; label: string }[] = [
-  { type: 'lunch', label: 'Lunch' },
-  { type: 'dinner', label: 'Dinner' },
-];
-
 export default function MealPlanScreen() {
   const router = useRouter();
+  const { t, language } = useTranslation();
+
+  // Moved inside component so labels use translated strings
+  const MEAL_TYPES: { type: MealType; label: string }[] = useMemo(() => [
+    { type: 'lunch', label: t('labels.mealTime.lunch') },
+    { type: 'dinner', label: t('labels.mealTime.dinner') },
+  ], [t]);
+
+  const NOTE_SUGGESTIONS = useMemo(() => [
+    t('mealPlan.dayLabels.office'),
+    t('mealPlan.dayLabels.home'),
+    t('mealPlan.dayLabels.gym'),
+    t('mealPlan.dayLabels.dinnerOut'),
+    t('mealPlan.dayLabels.travel'),
+    t('mealPlan.dayLabels.party'),
+  ], [t]);
+
   const [weekOffset, setWeekOffset] = useState(0);
   const [showGroceryModal, setShowGroceryModal] = useState(false);
   const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
@@ -268,7 +286,7 @@ export default function MealPlanScreen() {
         { date: editingNoteDate, note: noteText.trim() },
         {
           onError: () => {
-            showNotification('Error', 'Failed to save note. Please try again.');
+            showNotification(t('common.error'), t('mealPlan.failedToSaveNote'));
           },
         }
       );
@@ -368,7 +386,7 @@ export default function MealPlanScreen() {
 
   const handleCreateGroceryList = async () => {
     if (selectedMeals.size === 0) {
-      showNotification('No meals selected', 'Please select at least one meal to create a grocery list.');
+      showNotification(t('mealPlan.noMealsSelected'), t('mealPlan.noMealsSelectedMessage'));
       return;
     }
 
@@ -389,7 +407,7 @@ export default function MealPlanScreen() {
       }, 100);
     } catch (error) {
       console.error('[MealPlan] Error saving:', error);
-      showNotification('Error', 'Failed to save selections');
+      showNotification(t('common.error'), t('mealPlan.failedToSaveSelections'));
     }
   };
 
@@ -405,13 +423,13 @@ export default function MealPlanScreen() {
                 fontFamily: fontFamily.display,
                 color: colors.text.primary,
                 letterSpacing: letterSpacing.tight,
-              }}>Weekly Menu</Text>
+              }}>{t('mealPlan.title')}</Text>
               <Text style={{
                 fontSize: fontSize.lg,
                 fontFamily: fontFamily.body,
                 color: colors.text.secondary,
                 marginTop: 4,
-              }}>Plan your meals ahead</Text>
+              }}>{t('mealPlan.subtitle')}</Text>
             </View>
             <Pressable
               onPress={() => {
@@ -433,7 +451,7 @@ export default function MealPlanScreen() {
                 fontSize: fontSize.md,
                 fontWeight: fontWeight.semibold,
                 color: colors.white,
-              }}>Create List</Text>
+              }}>{t('mealPlan.createList')}</Text>
             </Pressable>
           </View>
         </View>
@@ -471,7 +489,7 @@ export default function MealPlanScreen() {
                 fontWeight: fontWeight.bold,
                 color: '#5D4E40',
               }}>
-                {formatWeekRange(weekDates)}
+                {formatWeekRange(weekDates, language)}
               </Text>
               {weekOffset !== 0 && (
                 <Pressable onPress={() => {
@@ -483,7 +501,7 @@ export default function MealPlanScreen() {
                     color: colors.accent,
                     marginTop: 4,
                     fontWeight: fontWeight.medium,
-                  }}>Back to today</Text>
+                  }}>{t('mealPlan.jumpToToday')}</Text>
                 </Pressable>
               )}
             </View>
@@ -539,7 +557,7 @@ export default function MealPlanScreen() {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                           {isToday && (
                             <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
-                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodyBold, color: colors.white }}>TODAY</Text>
+                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodyBold, color: colors.white }}>{t('mealPlan.today')}</Text>
                             </View>
                           )}
                           <Text style={{
@@ -548,7 +566,7 @@ export default function MealPlanScreen() {
                             color: isToday ? colors.text.primary : colors.text.secondary,
                             letterSpacing: -0.2,
                           }}>
-                            {formatDayHeader(date)}
+                            {formatDayHeader(date, language, t('mealPlan.today'))}
                           </Text>
                         </View>
 
@@ -576,7 +594,7 @@ export default function MealPlanScreen() {
                                 borderRadius: 12,
                               }}>
                                 <Ionicons name="add" size={12} color={colors.text.secondary} />
-                                <Text style={{ fontSize: 12, color: colors.text.secondary, marginLeft: 2 }}>note</Text>
+                                <Text style={{ fontSize: 12, color: colors.text.secondary, marginLeft: 2 }}>{t('mealPlan.addNote')}</Text>
                               </View>
                             )}
                           </Pressable>
@@ -597,7 +615,7 @@ export default function MealPlanScreen() {
                             <TextInput
                               value={noteText}
                               onChangeText={setNoteText}
-                              placeholder="Add a note..."
+                              placeholder={t('mealPlan.notePlaceholder')}
                               style={{
                                 flex: 1,
                                 fontSize: 14,
@@ -607,10 +625,10 @@ export default function MealPlanScreen() {
                               autoFocus
                             />
                             <Pressable onPress={handleSaveNote}>
-                              <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: '#4A3728' }}>Save</Text>
+                              <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: '#4A3728' }}>{t('mealPlan.notesSave')}</Text>
                             </Pressable>
                             <Pressable onPress={() => { setEditingNoteDate(null); setNoteText(''); }}>
-                              <Text style={{ fontSize: 14, color: '#9ca3af' }}>Cancel</Text>
+                              <Text style={{ fontSize: 14, color: '#9ca3af' }}>{t('mealPlan.notesCancel')}</Text>
                             </Pressable>
                           </View>
                           <ScrollView
@@ -700,7 +718,7 @@ export default function MealPlanScreen() {
                               }}
                             >
                               <Ionicons name="book-outline" size={14} color="#5D4E40" />
-                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>Library</Text>
+                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>{t('mealPlan.library')}</Text>
                             </Pressable>
                             <Pressable
                               onPress={() => handleMealPress(date, type, 'random')}
@@ -717,7 +735,7 @@ export default function MealPlanScreen() {
                               }}
                             >
                               <Ionicons name="dice-outline" size={14} color="#5D4E40" />
-                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>Random</Text>
+                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>{t('mealPlan.random')}</Text>
                             </Pressable>
                           </View>
                           <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -736,7 +754,7 @@ export default function MealPlanScreen() {
                               }}
                             >
                               <Ionicons name="copy-outline" size={14} color="#FFFFFF" />
-                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>Copy</Text>
+                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>{t('mealPlan.copy')}</Text>
                             </Pressable>
                             <Pressable
                               onPress={() => handleMealPress(date, type, 'quick')}
@@ -753,7 +771,7 @@ export default function MealPlanScreen() {
                               }}
                             >
                               <Ionicons name="create-outline" size={14} color="#FFFFFF" />
-                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>Quick</Text>
+                              <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>{t('mealPlan.quick')}</Text>
                             </Pressable>
                           </View>
                         </View>
@@ -851,18 +869,20 @@ export default function MealPlanScreen() {
                         onPress={() => {
                           const dateStr = formatDateLocal(date);
                           showConfirmDelete(
-                            'Remove meal',
-                            `Remove ${title} from ${label.toLowerCase()}?`,
+                            t('common.remove'),
+                            t('mealPlan.removeMealTitle', { title: title || '', meal: label.toLowerCase() }),
                             () => {
                               removeMeal.mutate(
                                 { date: dateStr, mealType: type },
                                 {
                                   onError: () => {
-                                    showNotification('Error', 'Failed to remove meal. Please try again.');
+                                    showNotification(t('common.error'), t('mealPlan.failedToRemoveMeal'));
                                   },
                                 }
                               );
-                            }
+                            },
+                            t('common.cancel'),
+                            t('mealPlan.removeMealConfirm'),
                           );
                         }}
                         style={{
@@ -916,7 +936,7 @@ export default function MealPlanScreen() {
             >
               <Ionicons name="today" size={18} color={colors.white} />
               <Text style={{ marginLeft: 8, fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>
-                Jump to Today
+                {t('mealPlan.jumpToToday')}
               </Text>
             </Pressable>
           </Animated.View>
@@ -934,13 +954,13 @@ export default function MealPlanScreen() {
               {/* Modal header */}
               <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 20, fontFamily: fontFamily.bodyBold, color: '#4A3728' }}>Select Meals</Text>
+                  <Text style={{ fontSize: 20, fontFamily: fontFamily.bodyBold, color: '#4A3728' }}>{t('mealPlan.selectMeals')}</Text>
                   <Pressable onPress={() => setShowGroceryModal(false)}>
                     <Ionicons name="close" size={24} color="#4A3728" />
                   </Pressable>
                 </View>
                 <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
-                  Choose which meals to include in your grocery list
+                  {t('mealPlan.selectMealsSubtitle')}
                 </Text>
               </View>
 
@@ -957,7 +977,7 @@ export default function MealPlanScreen() {
                   return (
                     <View key={date.toISOString()} style={{ marginBottom: 16 }}>
                       <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: '#4A3728', marginBottom: 8 }}>
-                        {formatDayHeader(date)}
+                        {formatDayHeader(date, language, t('mealPlan.today'))}
                       </Text>
                       {MEAL_TYPES.map(({ type, label }) => {
                         const meal = getMealForSlot(date, type);
@@ -1078,7 +1098,7 @@ export default function MealPlanScreen() {
                   disabled={selectedMeals.size === 0}
                 >
                   <Text style={{ fontSize: 16, fontFamily: fontFamily.bodySemibold, color: '#fff' }}>
-                    Create Grocery List ({selectedMeals.size} meals)
+                    {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
                   </Text>
                 </Pressable>
               </View>

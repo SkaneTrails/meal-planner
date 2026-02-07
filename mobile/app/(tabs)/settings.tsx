@@ -17,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
+import { useTranslation } from '@/lib/i18n';
 import { showNotification } from '@/lib/alert';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
@@ -81,6 +82,7 @@ export default function SettingsScreen() {
   const { user, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
+  const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 
   const handleSignOut = async () => {
@@ -88,7 +90,7 @@ export default function SettingsScreen() {
       await signOut();
       router.replace('/sign-in');
     } catch {
-      showNotification('Error', 'Failed to sign out');
+      showNotification(t('common.error'), t('settings.failedToSignOut'));
     }
   };
 
@@ -100,7 +102,7 @@ export default function SettingsScreen() {
       await addItemAtHome(item);
       setNewItem('');
     } catch {
-      showNotification('Error', 'Failed to add item');
+      showNotification(t('common.error'), t('settings.failedToAddItem'));
     }
   };
 
@@ -108,7 +110,7 @@ export default function SettingsScreen() {
     try {
       await removeItemAtHome(item);
     } catch {
-      showNotification('Error', 'Failed to remove item');
+      showNotification(t('common.error'), t('settings.failedToRemoveItem'));
     }
   };
 
@@ -119,7 +121,7 @@ export default function SettingsScreen() {
     try {
       await addItemAtHome(item);
     } catch {
-      showNotification('Error', 'Failed to add item');
+      showNotification(t('common.error'), t('settings.failedToAddItem'));
     }
   };
 
@@ -131,7 +133,7 @@ export default function SettingsScreen() {
     try {
       await setLanguage(language);
     } catch {
-      showNotification('Error', 'Failed to change language');
+      showNotification(t('common.error'), t('settings.failedToChangeLanguage'));
     }
   };
 
@@ -151,20 +153,20 @@ export default function SettingsScreen() {
               fontFamily: fontFamily.display,
               color: colors.text.primary,
               letterSpacing: -0.5,
-            }}>Settings</Text>
+            }}>{t('settings.title')}</Text>
             <Text style={{
               fontSize: fontSize.lg,
               fontFamily: fontFamily.body,
               color: colors.text.secondary,
               marginTop: 4,
-            }}>Customize your experience</Text>
+            }}>{t('settings.subtitle')}</Text>
           </View>
 
           {/* Account Section - Show who's logged in first */}
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="person-circle"
-              title="Account"
+              title={t('settings.account')}
               subtitle={user?.email || 'Email unavailable'}
             />
 
@@ -222,7 +224,7 @@ export default function SettingsScreen() {
                   marginLeft: spacing.sm,
                 }}
               >
-                Sign Out
+                {t('settings.signOut')}
               </Text>
             </Pressable>
           </View>
@@ -231,8 +233,8 @@ export default function SettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="people"
-              title="Household"
-              subtitle="Dietary preferences, equipment & more"
+              title={t('settings.householdInfo')}
+              subtitle={t('settings.householdSettingsDesc')}
             />
 
             <Pressable
@@ -254,14 +256,14 @@ export default function SettingsScreen() {
             >
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
-                  Household Settings
+                  {t('settings.householdSettings')}
                 </Text>
                 <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
                   {userLoading
-                    ? 'Loading household info...'
+                    ? t('settings.loadingHousehold')
                     : currentUser?.household_id
-                      ? 'Configure dietary preferences, kitchen equipment, and household size'
-                      : 'You are not part of a household yet'}
+                      ? t('settings.householdSettingsDesc')
+                      : t('settings.noHousehold')}
                 </Text>
               </View>
               {userLoading ? (
@@ -276,8 +278,8 @@ export default function SettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="language"
-              title="Language"
-              subtitle="Choose your preferred language"
+              title={t('settings.language')}
+              subtitle={t('settings.languageDesc')}
             />
 
             <View style={{
@@ -334,8 +336,8 @@ export default function SettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="home"
-              title="Items at Home"
-              subtitle="These won't appear in your grocery list"
+              title={t('settings.itemsAtHome')}
+              subtitle={t('settings.itemsAtHomeDesc')}
             />
 
             {/* Current items - show first */}
@@ -348,7 +350,7 @@ export default function SettingsScreen() {
                 ...shadows.sm,
               }}>
                 <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.sm }}>
-                  Your items ({settings.itemsAtHome.length})
+                  {t('settings.yourItems', { count: settings.itemsAtHome.length })}
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {settings.itemsAtHome.map((item) => (
@@ -392,7 +394,7 @@ export default function SettingsScreen() {
                   fontSize: fontSize.md,
                   color: colors.text.dark,
                 }}
-                placeholder="Add an item (e.g., salt, olive oil)"
+                placeholder={t('settings.addItemPlaceholder')}
                 placeholderTextColor={colors.text.dark + '60'}
                 value={newItem}
                 onChangeText={setNewItem}
@@ -426,7 +428,7 @@ export default function SettingsScreen() {
                 ...shadows.sm,
               }}>
                 <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.sm }}>
-                  Suggestions
+                  {t('settings.suggestions')}
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {suggestedNotAdded.map((item) => (
@@ -478,10 +480,10 @@ export default function SettingsScreen() {
                   <Ionicons name="basket-outline" size={24} color={colors.text.dark} />
                 </View>
                 <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.text.dark, marginBottom: 2 }}>
-                  No items yet
+                  {t('settings.noItemsYet')}
                 </Text>
                 <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', textAlign: 'center' }}>
-                  Add items you always have at home
+                  {t('settings.addItemsHint')}
                 </Text>
               </View>
             )}
@@ -492,8 +494,8 @@ export default function SettingsScreen() {
             <View style={{ marginBottom: spacing['2xl'] }}>
               <SectionHeader
                 icon="shield-checkmark"
-                title="Admin"
-                subtitle="Manage households and members"
+                title={t('settings.adminSection')}
+                subtitle={t('settings.adminSectionDesc')}
               />
 
               <Pressable
@@ -509,10 +511,10 @@ export default function SettingsScreen() {
               >
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
-                    Admin Dashboard
+                    {t('settings.adminDashboard')}
                   </Text>
                   <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
-                    Manage all households, members, and system settings
+                    {t('settings.adminDashboardDesc')}
                   </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
@@ -524,8 +526,8 @@ export default function SettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="information-circle"
-              title="About"
-              subtitle="App information"
+              title={t('settings.about')}
+              subtitle={t('settings.aboutDesc')}
             />
 
             <View style={{
@@ -535,11 +537,11 @@ export default function SettingsScreen() {
               ...shadows.sm,
             }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
-                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>Version</Text>
+                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>{t('settings.version')}</Text>
                 <Text style={{ fontSize: fontSize.md, color: colors.text.dark, fontWeight: fontWeight.medium }}>1.0.0</Text>
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>Made with</Text>
+                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>{t('settings.madeWith')}</Text>
                 <Text style={{ fontSize: fontSize.md }}>❤️</Text>
               </View>
             </View>
