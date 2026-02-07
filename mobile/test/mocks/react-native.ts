@@ -6,11 +6,6 @@
 
 import React from 'react';
 
-// Strip props that DOM doesn't understand
-function stripNativeProps({ style, ...rest }: any) {
-  return rest;
-}
-
 // Simple component factory — renders a div with the RN component name as data attribute
 function mockComponent(name: string) {
   return React.forwardRef(({ children, testID, style, ...props }: any, ref: any) =>
