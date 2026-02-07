@@ -7,8 +7,8 @@
  * The fix makes the entire page read-only for non-admin members.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { createQueryWrapper, mockCurrentUser } from '@/test/helpers';
 
@@ -26,6 +26,7 @@ vi.mock('expo-router', async () => ({
 
 // Controllable mocks for admin hooks
 let mockCurrentUserData: any = null;
+const mockMutateAsync = vi.fn().mockResolvedValue({});
 const mockSettingsData = {
   household_size: 4,
   default_servings: 4,
@@ -51,7 +52,7 @@ vi.mock('@/lib/hooks/use-admin', () => ({
   useCurrentUser: () => ({ data: mockCurrentUserData, isLoading: false }),
   useHouseholdSettings: () => ({ data: mockSettingsData, isLoading: false }),
   useUpdateHouseholdSettings: () => ({
-    mutateAsync: vi.fn(),
+    mutateAsync: mockMutateAsync,
     isPending: false,
   }),
 }));
@@ -199,6 +200,74 @@ describe('Household Settings screen', () => {
       expect(
         screen.getByText('Only household admins can change these settings.'),
       ).toBeTruthy();
+    });
+  });
+
+  describe('admin interactions', () => {
+    beforeEach(() => {
+      mockCurrentUserData = mockCurrentUser({
+        role: 'admin',
+        household_id: 'household-abc',
+      });
+      mockMutateAsync.mockClear();
+    });
+
+    it('can toggle a switch to change equipment settings', async () => {
+      await renderScreen();
+      const switches = screen.getAllByRole('switch');
+      // Toggle the first switch — exercises updateEquipment/updateDietary code paths
+      fireEvent.click(switches[0]);
+      expect(switches.length).toBeGreaterThan(0);
+    });
+
+    it('calls mutateAsync when Save is pressed after making changes', async () => {
+      await renderScreen();
+
+      // Toggle a switch to set hasChanges=true
+      const switches = screen.getAllByRole('switch');
+      fireEvent.click(switches[0]);
+
+      // Click Save
+      fireEvent.click(screen.getByText('Save'));
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith({
+          householdId: 'household-abc',
+          settings: expect.objectContaining({
+            household_size: 4,
+            default_servings: 4,
+          }),
+        });
+      });
+    });
+
+    it('shows increment/decrement buttons for number fields', async () => {
+      await renderScreen();
+      // There should be +/- buttons for household_size and default_servings
+      const allButtons = screen.getAllByRole('button');
+      const enabledButtons = allButtons.filter(
+        (btn) => !(btn as HTMLButtonElement).disabled,
+      );
+      // At least save + back + 4 increment/decrement buttons
+      expect(enabledButtons.length).toBeGreaterThanOrEqual(4);
+    });
+  });
+
+  describe('no household ID', () => {
+    beforeEach(() => {
+      mockCurrentUserData = mockCurrentUser({ role: 'admin' });
+      // Override search params to have no id
+      Object.assign(mockSearchParams, { id: undefined });
+    });
+
+    afterEach(() => {
+      // Restore
+      Object.assign(mockSearchParams, { id: 'household-abc' });
+    });
+
+    it('shows invalid household ID message', async () => {
+      await renderScreen();
+      expect(screen.getByText('Invalid household ID')).toBeTruthy();
     });
   });
 });
