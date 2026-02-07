@@ -30,13 +30,13 @@ export default function AddRecipeScreen() {
   const router = useRouter();
   const { url: urlParam, manual: manualParam } = useLocalSearchParams<{ url?: string; manual?: string }>();
   const isManualMode = manualParam === 'true';
-  
+
   // URL import state
   const [url, setUrl] = useState(urlParam || '');
   const [enhanceWithAI, setEnhanceWithAI] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);
-  
+
   // Manual form state
   const [title, setTitle] = useState('');
   const [ingredients, setIngredients] = useState('');
@@ -48,7 +48,7 @@ export default function AddRecipeScreen() {
   const [cookTime, setCookTime] = useState('');
   const [dietLabel, setDietLabel] = useState<DietLabel | null>(null);
   const [mealLabel, setMealLabel] = useState<MealLabel | null>(null);
-  
+
   const scrapeRecipe = useScrapeRecipe();
   const createRecipe = useCreateRecipe();
   const { t } = useTranslation();
@@ -125,7 +125,7 @@ export default function AddRecipeScreen() {
           showNotification(t('common.error'), t('recipeDetail.imageUploadFailed'));
         }
       }
-      
+
       showAlert(t('addRecipe.done'), t('addRecipe.recipeCreated', { title: recipe.title }), [
         {
           text: t('addRecipe.viewRecipe'),
@@ -402,7 +402,7 @@ export default function AddRecipeScreen() {
               <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
                 {t('addRecipe.imageOptional')}
               </Text>
-              
+
               {/* Image Preview */}
               {(selectedImage || imageUrl) && (
                 <View style={{ marginBottom: spacing.md, position: 'relative' }}>
@@ -434,7 +434,7 @@ export default function AddRecipeScreen() {
                   </Pressable>
                 </View>
               )}
-              
+
               {/* Pick Image Button */}
               <Pressable
                 onPress={handlePickImage}

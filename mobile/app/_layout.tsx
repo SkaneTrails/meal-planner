@@ -93,8 +93,8 @@ export default function RootLayout() {
         <SettingsProvider>
           <GroceryProvider>
             <StatusBar style="dark" />
-            <Stack 
-              screenOptions={{ 
+            <Stack
+              screenOptions={{
                 animation: 'slide_from_right',
                 contentStyle: { backgroundColor: '#E8D8C8' }, // Match background.png base color
               }}

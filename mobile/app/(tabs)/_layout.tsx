@@ -135,7 +135,14 @@ export default function TabLayout() {
           title: t('tabs.home'),
           tabBarAccessibilityLabel: t('tabs.home'),
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View style={{
+              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}>
+              <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            </View>
           ),
         }}
       />
@@ -145,7 +152,14 @@ export default function TabLayout() {
           title: t('tabs.recipes'),
           tabBarAccessibilityLabel: t('tabs.recipes'),
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "book" : "book-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View style={{
+              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}>
+              <Ionicons name={focused ? "book" : "book-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            </View>
           ),
         }}
       />
@@ -155,7 +169,14 @@ export default function TabLayout() {
           title: t('tabs.mealPlan'),
           tabBarAccessibilityLabel: t('tabs.mealPlan'),
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View style={{
+              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}>
+              <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            </View>
           ),
         }}
       />
@@ -165,7 +186,14 @@ export default function TabLayout() {
           title: t('tabs.grocery'),
           tabBarAccessibilityLabel: t('tabs.grocery'),
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View style={{
+              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+            }}>
+              <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            </View>
           ),
         }}
       />
