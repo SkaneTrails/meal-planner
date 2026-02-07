@@ -22,13 +22,12 @@ This skill activates when:
 
 After every `git push` to a PR branch, do ALL of the following **in order**:
 
-### Step 1: Request Copilot review
+### Step 1: Copilot review (automated)
 
-```bash
-gh pr edit <PR> --add-reviewer copilot
-```
+Copilot review is triggered automatically by the `copilot-review.yml` GitHub Actions workflow
+on PR open and `ready_for_review`. There is no reliable CLI command to request it manually.
 
-This must happen on EVERY push, not just the first. It triggers a fresh review of the new changes.
+See [Section 8](#8-copilot-review-automation) for details.
 
 ### Step 2: Fetch and present review comments
 
@@ -403,15 +402,18 @@ After addressing comments and fixing CI issues:
 
 ## 8. Creating PRs
 
-### Always request Copilot review
+### Copilot review automation
 
-Every PR must request review from `copilot`:
+Copilot review is requested automatically via GitHub Actions (`.github/workflows/copilot-review.yml`).
+There is **no reliable CLI command** to request Copilot review:
 
-```powershell
-gh pr create --title "..." --body-file tmp_pr_body.md --reviewer copilot
-```
+- `gh pr create --reviewer copilot` → fails with "'copilot' not found", aborts PR creation
+- `gh pr edit <PR> --add-reviewer copilot` → unreliable, sometimes works but not guaranteed
 
-Or add after creation: `gh pr edit <PR> --add-reviewer copilot`
+The workflow uses the [gh-copilot-review](https://github.com/ChrisCarini/gh-copilot-review) extension
+and triggers on `opened`, `ready_for_review`, and `reopened` events.
+
+> **Requires** a fine-grained PAT secret (`GH_TOKEN_COPILOT_REVIEW`) with `Pull requests: Read and write` permission.
 
 ### Multi-line bodies (PowerShell)
 
@@ -422,7 +424,7 @@ NEVER pass backtick-containing text via `--body` in PowerShell — backticks are
 ```powershell
 # 1. Write body to temp file (use create_file tool)
 # 2. Create PR with --body-file
-gh pr create --title "feat: ..." --body-file tmp_pr_body.md --reviewer copilot
+gh pr create --title "feat: ..." --body-file tmp_pr_body.md
 # 3. Delete temp file
 Remove-Item tmp_pr_body.md
 ```
