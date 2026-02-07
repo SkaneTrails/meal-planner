@@ -20,7 +20,17 @@ This skill activates when:
 
 ## 1. Post-push workflow
 
-After successfully pushing changes to a PR branch, **automatically fetch and present review comments**. Do not ask whether to check - assume there are comments and check them.
+After every `git push` to a PR branch, do ALL of the following **in order**:
+
+### Step 1: Request Copilot review
+
+```bash
+gh pr edit <PR> --add-reviewer copilot
+```
+
+This must happen on EVERY push, not just the first. It triggers a fresh review of the new changes.
+
+### Step 2: Fetch and present review comments
 
 **Always run BOTH of these commands:**
 
