@@ -1,6 +1,7 @@
 """Recipe storage service using Firestore."""
 
 import contextlib
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import cast
 from urllib.parse import urlparse
@@ -9,6 +10,18 @@ from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
+
+
+@dataclass
+class EnhancementMetadata:
+    """Metadata for AI-enhanced recipes.
+
+    Groups enhancement-related fields to reduce parameter count on save_recipe.
+    """
+
+    enhanced: bool = False
+    enhanced_at: datetime | None = None
+    changes_made: list[str] = field(default_factory=list)
 
 
 def normalize_url(url: str) -> str:
@@ -146,31 +159,27 @@ def get_all_recipes(*, include_duplicates: bool = False, household_id: str | Non
     return unique_recipes
 
 
-def save_recipe(  # noqa: PLR0913
+def save_recipe(
     recipe: RecipeCreate,
     *,
     recipe_id: str | None = None,
-    enhanced: bool = False,
-    enhanced_at: datetime | None = None,
-    changes_made: list[str] | None = None,
+    enhancement: EnhancementMetadata | None = None,
     household_id: str | None = None,
     created_by: str | None = None,
 ) -> Recipe:
-    """
-    Save a new recipe to Firestore.
+    """Save a new recipe to Firestore.
 
     Args:
         recipe: The recipe to save.
         recipe_id: Optional ID to use (for saving enhanced versions with same ID).
-        enhanced: Whether this recipe has been AI-enhanced.
-        enhanced_at: When the recipe was enhanced.
-        changes_made: List of changes made by AI enhancement.
+        enhancement: Optional AI enhancement metadata.
         household_id: The household that owns this recipe.
         created_by: Email of the user who created the recipe.
 
     Returns:
         The saved recipe with its document ID.
     """
+    meta = enhancement or EnhancementMetadata()
     db = get_firestore_client()
     doc_ref = (
         db.collection(RECIPES_COLLECTION).document(recipe_id)
@@ -204,12 +213,12 @@ def save_recipe(  # noqa: PLR0913
     }
 
     # Add enhancement fields if present
-    if enhanced:
-        data["enhanced"] = enhanced
-    if enhanced_at:
-        data["enhanced_at"] = enhanced_at
-    if changes_made:
-        data["changes_made"] = changes_made
+    if meta.enhanced:
+        data["enhanced"] = meta.enhanced
+    if meta.enhanced_at:
+        data["enhanced_at"] = meta.enhanced_at
+    if meta.changes_made:
+        data["changes_made"] = meta.changes_made
 
     doc_ref.set(data)
 
@@ -220,9 +229,9 @@ def save_recipe(  # noqa: PLR0913
 
     return Recipe(
         id=doc_ref.id,
-        enhanced=enhanced,
-        enhanced_at=enhanced_at,
-        changes_made=changes_made,
+        enhanced=meta.enhanced,
+        enhanced_at=meta.enhanced_at,
+        changes_made=meta.changes_made or None,
         household_id=household_id,
         visibility=visibility_value,  # type: ignore[arg-type]
         created_by=created_by,
@@ -261,11 +270,11 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
 
     # Only update fields that are set
     update_data = {"updated_at": datetime.now(tz=UTC)}
-    for field, value in updates.model_dump(exclude_unset=True).items():
-        if field in ("diet_label", "meal_label") and value is not None:
-            update_data[field] = value.value if hasattr(value, "value") else value
+    for field_name, value in updates.model_dump(exclude_unset=True).items():
+        if field_name in ("diet_label", "meal_label") and value is not None:
+            update_data[field_name] = value.value if hasattr(value, "value") else value
         else:
-            update_data[field] = value
+            update_data[field_name] = value
 
     doc_ref.update(update_data)
 
@@ -418,9 +427,9 @@ def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str) -> Reci
         recipe_data,
         household_id=to_household_id,
         created_by=copied_by,
-        enhanced=source.enhanced,
-        enhanced_at=source.enhanced_at,
-        changes_made=source.changes_made,
+        enhancement=EnhancementMetadata(
+            enhanced=source.enhanced, enhanced_at=source.enhanced_at, changes_made=source.changes_made or []
+        ),
     )
 
 

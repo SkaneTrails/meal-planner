@@ -237,6 +237,9 @@ class TestScrapeRecipe:
 
     def test_enhance_parameter_enhances_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should enhance recipe when enhance=true."""
+        # Pre-import to avoid google.genai Pydantic conflict with mocked httpx.AsyncClient
+        import api.services.recipe_enhancer  # noqa: F401
+
         scraped_data = {
             "title": "Scraped Recipe",
             "url": "https://example.com/new",

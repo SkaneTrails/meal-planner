@@ -3,88 +3,26 @@
 These endpoints require superuser or admin role access.
 """
 
-import re
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
+from api.models.admin import (
+    CurrentUserResponse,
+    HouseholdCreate,
+    HouseholdResponse,
+    HouseholdUpdate,
+    MemberAdd,
+    MemberResponse,
+    RecipeTransfer,
+    TransferResponse,
+)
 from api.models.settings import HouseholdSettingsUpdate  # noqa: TC001 - FastAPI needs at runtime
 from api.storage import household_storage, recipe_storage
 
 router = APIRouter(prefix="/admin", tags=["admin"])
-
-# Regex for valid household names: letters, numbers, spaces, hyphens, apostrophes
-# Excludes underscores and non-space whitespace (tabs, newlines)
-# \p{L} = Unicode letters, \p{N} = Unicode numbers (Python re doesn't support \p, use character classes)
-VALID_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9\u00C0-\u017F \-']+$")
-MAX_NAME_LENGTH = 100
-
-# Validation error messages
-_ERR_NAME_EMPTY = "Name cannot be empty"
-_ERR_NAME_TOO_LONG = "Name cannot exceed 100 characters"
-_ERR_NAME_INVALID_CHARS = "Name can only contain letters, numbers, spaces, hyphens, and apostrophes"
-
-
-def _validate_household_name(name: str) -> str:
-    """Validate and normalize a household name."""
-    name = name.strip()
-    if not name:
-        raise ValueError(_ERR_NAME_EMPTY)
-    if len(name) > MAX_NAME_LENGTH:
-        raise ValueError(_ERR_NAME_TOO_LONG)
-    if not VALID_NAME_PATTERN.match(name):
-        raise ValueError(_ERR_NAME_INVALID_CHARS)
-    return name
-
-
-class HouseholdCreate(BaseModel):
-    """Request to create a new household."""
-
-    name: str = Field(..., min_length=1, max_length=100, description="Household display name")
-
-    @field_validator("name")
-    @classmethod
-    def validate_name(cls, v: str) -> str:
-        return _validate_household_name(v)
-
-
-class HouseholdUpdate(BaseModel):
-    """Request to update a household."""
-
-    name: str = Field(..., min_length=1, max_length=100, description="New household name")
-
-    @field_validator("name")
-    @classmethod
-    def validate_name(cls, v: str) -> str:
-        return _validate_household_name(v)
-
-
-class HouseholdResponse(BaseModel):
-    """Response containing household details."""
-
-    id: str
-    name: str
-    created_by: str
-
-
-class MemberAdd(BaseModel):
-    """Request to add a member to a household."""
-
-    email: EmailStr = Field(..., description="Email of the user to add")
-    role: str = Field(default="member", description="Role: admin or member")
-    display_name: str | None = Field(None, description="Display name for the member")
-
-
-class MemberResponse(BaseModel):
-    """Response containing member details."""
-
-    email: str
-    household_id: str
-    role: str
-    display_name: str | None
 
 
 def _require_superuser(user: AuthenticatedUser) -> None:
@@ -262,16 +200,17 @@ async def remove_member(
 
 
 @router.get("/me")
-async def get_current_user(user: Annotated[AuthenticatedUser, Depends(require_auth)]) -> dict:
+async def get_current_user(user: Annotated[AuthenticatedUser, Depends(require_auth)]) -> CurrentUserResponse:
     """Get the current authenticated user's info including household membership."""
-    result = {"uid": user.uid, "email": user.email, "role": user.role, "household_id": user.household_id}
-
+    household_name = None
     if user.household_id:
         household = household_storage.get_household(user.household_id)
         if household:
-            result["household_name"] = household.name
+            household_name = household.name
 
-    return result
+    return CurrentUserResponse(
+        uid=user.uid, email=user.email, role=user.role, household_id=user.household_id, household_name=household_name
+    )
 
 
 # --- Settings Endpoints ---
@@ -309,32 +248,24 @@ async def update_household_settings(
 # --- Recipe Management Endpoints ---
 
 
-class RecipeTransfer(BaseModel):
-    """Request to transfer a recipe to a different household."""
-
-    target_household_id: str = Field(..., description="The household ID to transfer the recipe to")
-
-
 @router.post("/recipes/{recipe_id}/transfer")
 async def transfer_recipe(
     user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str, transfer: RecipeTransfer
-) -> dict:
+) -> TransferResponse:
     """Transfer a recipe to a different household. Superuser only."""
     _require_superuser(user)
 
-    # Verify target household exists
     target_household = household_storage.get_household(transfer.target_household_id)
     if target_household is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target household not found")
 
-    # Transfer the recipe
     recipe = recipe_storage.transfer_recipe_to_household(recipe_id, transfer.target_household_id)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    return {
-        "id": recipe.id,
-        "title": recipe.title,
-        "household_id": recipe.household_id,
-        "message": f"Recipe transferred to {target_household.name}",
-    }
+    return TransferResponse(
+        id=recipe.id,
+        title=recipe.title,
+        household_id=recipe.household_id,
+        message=f"Recipe transferred to {target_household.name}",
+    )

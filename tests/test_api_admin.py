@@ -473,7 +473,7 @@ class TestGetCurrentUser:
         assert response.status_code == 200
         data = response.json()
         assert data["email"] == "test@example.com"
-        assert "household_name" not in data
+        assert data["household_name"] is None
 
 
 class TestGetHouseholdSettings:
