@@ -113,6 +113,7 @@ export default function MealPlanScreen() {
 
   const [weekOffset, setWeekOffset] = useState(0);
   const [showGroceryModal, setShowGroceryModal] = useState(false);
+  const [groceryWeekOffset, setGroceryWeekOffset] = useState(0); // Separate week offset for grocery modal
   const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
   const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [showJumpButton, setShowJumpButton] = useState(false);
@@ -123,6 +124,7 @@ export default function MealPlanScreen() {
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
+  const groceryWeekDates = useMemo(() => getWeekDates(groceryWeekOffset), [groceryWeekOffset]);
 
   // Find today's index in the week
   const todayIndex = useMemo(() => {
@@ -423,6 +425,9 @@ export default function MealPlanScreen() {
                 fontFamily: fontFamily.display,
                 color: colors.text.primary,
                 letterSpacing: letterSpacing.tight,
+                textShadowColor: 'rgba(0, 0, 0, 0.15)',
+                textShadowOffset: { width: 0, height: 1 },
+                textShadowRadius: 2,
               }}>{t('mealPlan.title')}</Text>
               <Text style={{
                 fontSize: fontSize.lg,
@@ -434,6 +439,7 @@ export default function MealPlanScreen() {
             <Pressable
               onPress={() => {
                 hapticLight();
+                setGroceryWeekOffset(weekOffset); // Start at the current meal plan week
                 setShowGroceryModal(true);
               }}
               style={({ pressed }) => ({
@@ -792,9 +798,9 @@ export default function MealPlanScreen() {
                         marginBottom: spacing.sm,
                       }}
                     >
-                      {/* Tappable area for recipe details */}
+                      {/* Tappable area - opens recipe detail if recipe exists, otherwise opens library */}
                       <Pressable
-                        onPress={() => handleMealPress(date, type, 'library')}
+                        onPress={() => meal?.recipe ? router.push(`/recipe/${meal.recipe.id}`) : handleMealPress(date, type, 'library')}
                         style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
                       >
                         {/* Image */}
@@ -847,23 +853,7 @@ export default function MealPlanScreen() {
                           <Ionicons name="create-outline" size={16} color="#5D4E40" />
                         </Pressable>
                       )}
-                      {/* View button - opens recipe detail */}
-                      {meal?.recipe && (
-                        <Pressable
-                          onPress={() => router.push(`/recipe/${meal.recipe!.id}`)}
-                          style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: 14,
-                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginLeft: 8,
-                          }}
-                        >
-                          <Ionicons name="eye" size={16} color="#5D4E40" />
-                        </Pressable>
-                      )}
+                      {/* Note: View button removed - clicking the meal card now opens the recipe directly */}
                       {/* Remove button */}
                       <Pressable
                         onPress={() => {
@@ -962,11 +952,57 @@ export default function MealPlanScreen() {
                 <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
                   {t('mealPlan.selectMealsSubtitle')}
                 </Text>
+
+                {/* Week selector */}
+                <View style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 12,
+                  gap: 8,
+                }}>
+                  <Pressable
+                    onPress={() => setGroceryWeekOffset(prev => prev - 1)}
+                    style={({ pressed }) => ({
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: pressed ? '#E8D5C4' : 'rgba(255, 255, 255, 0.8)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    })}
+                  >
+                    <Ionicons name="chevron-back" size={18} color="#4A3728" />
+                  </Pressable>
+                  <View style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    borderRadius: 12,
+                  }}>
+                    <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#4A3728', textAlign: 'center' }}>
+                      {formatWeekRange(groceryWeekDates, language)}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setGroceryWeekOffset(prev => prev + 1)}
+                    style={({ pressed }) => ({
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: pressed ? '#E8D5C4' : 'rgba(255, 255, 255, 0.8)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    })}
+                  >
+                    <Ionicons name="chevron-forward" size={18} color="#4A3728" />
+                  </Pressable>
+                </View>
               </View>
 
               {/* Meal list */}
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
-                {weekDates.map((date) => {
+                {groceryWeekDates.map((date) => {
                   const hasAnyMeal = MEAL_TYPES.some((mt) => {
                     const meal = getMealForSlot(date, mt.type);
                     return meal?.recipe || meal?.customText;

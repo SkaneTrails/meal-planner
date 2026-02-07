@@ -93,7 +93,10 @@ const en = {
 
   // ── Home screen ───────────────────────────────────────────────────
   home: {
-    greeting: 'Good morning',
+    greeting: 'Good morning',  // Default fallback
+    greetingMorning: 'Good morning',
+    greetingAfternoon: 'Good afternoon',
+    greetingEvening: 'Good evening',
     subtitle: 'What shall we cook today?',
     stats: {
       recipes: 'Recipes',
@@ -133,6 +136,7 @@ const en = {
     sortBy: 'Sort by',
     diet: 'Diet',
     mealType: 'Meal',
+    mealTypeCount: '{{count}} types',
     sort: 'Sort',
     noMatchesFound: 'No matches found',
     emptyLibrary: 'Your recipe book is empty',
@@ -427,10 +431,27 @@ const en = {
     invalidUrlMessage: 'Please enter a valid recipe URL',
     done: 'Done!',
     recipeImported: '"{{title}}" has been imported!',
+    recipeCreated: '"{{title}}" has been created!',
     viewRecipe: 'View Recipe',
     addMore: 'Add More',
     importFailed: 'Import failed',
     importFailedDefault: 'Could not import the recipe',
+    createFailed: 'Creation failed',
+    createFailedDefault: 'Could not create the recipe',
+    // Manual form
+    manualTitle: 'Create Recipe',
+    manualDescription: 'Fill in the details to create a new recipe manually.',
+    recipeTitle: 'Recipe Title',
+    titlePlaceholder: 'e.g., Pasta Carbonara',
+    titleRequired: 'Please enter a recipe title',
+    ingredients: 'Ingredients',
+    ingredientsPlaceholder: 'One ingredient per line\ne.g., 200g pasta\n4 eggs',
+    instructions: 'Instructions',
+    instructionsPlaceholder: 'One step per line\ne.g., Boil water\nCook pasta for 10 minutes',
+    imageOptional: 'Image (optional)',
+    addImage: 'Add Image',
+    creating: 'Creating...',
+    createButton: 'Create Recipe',
     enhanced: {
       title: 'Recipe Enhanced!',
       changesLabel: 'AI Improvements:',
@@ -462,6 +483,7 @@ const en = {
   // ── Household settings screen ─────────────────────────────────────
   householdSettings: {
     title: 'Household Settings',
+    subtitle: 'Manage your household preferences',
     readOnly: 'Only admins can change settings',
     general: {
       title: 'General',

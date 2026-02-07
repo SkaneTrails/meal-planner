@@ -38,7 +38,7 @@ export default function AdminScreen() {
   // Check if user is superuser
   if (userLoading) {
     return (
-      <GradientBackground>
+      <GradientBackground muted>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
@@ -48,7 +48,7 @@ export default function AdminScreen() {
 
   if (!currentUser || currentUser.role !== 'superuser') {
     return (
-      <GradientBackground>
+      <GradientBackground muted>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl }}>
           <Ionicons name="lock-closed" size={64} color={colors.text.muted} />
           <Text style={{
@@ -87,7 +87,7 @@ export default function AdminScreen() {
   };
 
   return (
-    <GradientBackground>
+    <GradientBackground muted>
       <View style={{ flex: 1 }}>
         {/* Header */}
         <View style={{
@@ -397,7 +397,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <GradientBackground>
+      <GradientBackground muted>
         <View style={{
           flex: 1,
         }}>

@@ -44,11 +44,11 @@ interface RecipeGridProps {
   onAddRecipe: () => void;
   searchQuery: string;
   dietFilter: DietLabel | null;
-  mealFilter: MealLabel | null;
+  mealFilters: MealLabel[];
   t: TFunction;
 }
 
-function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilter, t }: RecipeGridProps) {
+function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilters, t }: RecipeGridProps) {
   const { width } = useWindowDimensions();
 
   // Calculate number of columns based on screen width
@@ -100,19 +100,19 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
             justifyContent: 'center',
             marginBottom: 20,
           }}>
-            <Ionicons name={searchQuery || dietFilter || mealFilter ? "search" : "book-outline"} size={36} color={colors.white} />
+            <Ionicons name={searchQuery || dietFilter || mealFilters.length > 0 ? "search" : "book-outline"} size={36} color={colors.white} />
           </View>
           <Text style={{ color: colors.text.inverse, fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
-            {searchQuery || dietFilter || mealFilter
+            {searchQuery || dietFilter || mealFilters.length > 0
               ? t('recipes.noMatchesFound')
               : t('recipes.emptyLibrary')}
           </Text>
           <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
-            {searchQuery || dietFilter || mealFilter
+            {searchQuery || dietFilter || mealFilters.length > 0
               ? t('recipes.tryAdjusting')
               : t('recipes.startBuilding')}
           </Text>
-          {!searchQuery && !dietFilter && !mealFilter && (
+          {!searchQuery && !dietFilter && mealFilters.length === 0 && (
             <Pressable
               onPress={onAddRecipe}
               style={{
@@ -138,24 +138,23 @@ export default function RecipesScreen() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
-  const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
+  const [mealFilters, setMealFilters] = useState<MealLabel[]>([]); // Multi-select meal types
   const [sortBy, setSortBy] = useState('newest');
   const [showAllRecipes, setShowAllRecipes] = useState(true);
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);  // Collapsed by default
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // Get favorites from settings
   const { isFavorite, settings } = useSettings();
 
   const DIET_OPTIONS: { value: DietLabel | null; label: string }[] = [
-    { value: null, label: t('labels.diet.all') },
+    { value: null, label: t('labels.diet.all') },  // When selected shows 'All', but dropdown button shows 'Diet' when null
     { value: 'veggie', label: t('labels.diet.veggie') },
     { value: 'fish', label: t('labels.diet.fish') },
     { value: 'meat', label: t('labels.diet.meat') },
   ];
 
-  const MEAL_OPTIONS: { value: MealLabel | null; label: string }[] = [
-    { value: null, label: t('labels.meal.all') },
+  const MEAL_OPTIONS: { value: MealLabel; label: string }[] = [
     { value: 'breakfast', label: t('labels.meal.breakfast') },
     { value: 'starter', label: t('labels.meal.starter') },
     { value: 'salad', label: t('labels.meal.salad') },
@@ -184,7 +183,7 @@ export default function RecipesScreen() {
         // Called when screen loses focus - reset filters and search
         setSearchQuery('');
         setDietFilter(null);
-        setMealFilter(null);
+        setMealFilters([]);
         setShowFavoritesOnly(false);
       };
     }, [])
@@ -197,7 +196,7 @@ export default function RecipesScreen() {
   };
 
   // Check if any filters are active
-  const hasActiveFilters = dietFilter !== null || mealFilter !== null || searchQuery !== '' || showFavoritesOnly;
+  const hasActiveFilters = dietFilter !== null || mealFilters.length > 0 || searchQuery !== '' || showFavoritesOnly;
 
   // Fetch recipes
   const { data: recipes = [], isLoading, refetch } = useRecipes();
@@ -212,7 +211,7 @@ export default function RecipesScreen() {
           tag.toLowerCase().includes(searchQuery.toLowerCase())
         );
       const matchesDiet = !dietFilter || recipe.diet_label === dietFilter;
-      const matchesMeal = !mealFilter || recipe.meal_label === mealFilter;
+      const matchesMeal = mealFilters.length === 0 || (recipe.meal_label && mealFilters.includes(recipe.meal_label));
       const matchesFavorites = !showFavoritesOnly || isFavorite(recipe.id);
       return matchesSearch && matchesDiet && matchesMeal && matchesFavorites;
     });
@@ -225,7 +224,7 @@ export default function RecipesScreen() {
     }
 
     return result;
-  }, [recipes, searchQuery, dietFilter, mealFilter, sortBy, showFavoritesOnly, isFavorite]);
+  }, [recipes, searchQuery, dietFilter, mealFilters, sortBy, showFavoritesOnly, isFavorite]);
 
   return (
     <GradientBackground>
@@ -238,6 +237,9 @@ export default function RecipesScreen() {
             fontFamily: fontFamily.display,
             color: colors.text.primary,
             letterSpacing: letterSpacing.tight,
+            textShadowColor: 'rgba(0, 0, 0, 0.15)',
+            textShadowOffset: { width: 0, height: 1 },
+            textShadowRadius: 2,
           }}>{t('recipes.title')}</Text>
           <Text style={{
             fontSize: fontSize.lg,
@@ -369,18 +371,18 @@ export default function RecipesScreen() {
                 }}
               >
                 <Text style={{ fontSize: 12, fontWeight: '500', color: dietFilter ? '#2D5A3D' : '#5D4E40' }}>
-                  {DIET_OPTIONS.find(o => o.value === dietFilter)?.label || t('recipes.diet')}
+                  {dietFilter ? DIET_OPTIONS.find(o => o.value === dietFilter)?.label : t('recipes.diet')}
                 </Text>
                 <Ionicons name="chevron-down" size={12} color="#8B7355" />
               </Pressable>
             </View>
 
-            {/* Meal type filter */}
+            {/* Meal type filter - multi-select */}
             <View style={{ flex: 1 }}>
               <Pressable
                 onPress={() => setShowMealPicker(true)}
                 style={{
-                  backgroundColor: mealFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
+                  backgroundColor: mealFilters.length > 0 ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
                   borderRadius: borderRadius.sm,
                   paddingHorizontal: 10,
                   paddingVertical: 8,
@@ -389,8 +391,12 @@ export default function RecipesScreen() {
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: '500', color: mealFilter ? '#2D5A3D' : '#5D4E40' }}>
-                  {MEAL_OPTIONS.find(o => o.value === mealFilter)?.label || t('recipes.mealType')}
+                <Text style={{ fontSize: 12, fontWeight: '500', color: mealFilters.length > 0 ? '#2D5A3D' : '#5D4E40' }}>
+                  {mealFilters.length === 0 
+                    ? t('recipes.mealType') 
+                    : mealFilters.length === 1 
+                      ? MEAL_OPTIONS.find(o => o.value === mealFilters[0])?.label 
+                      : t('recipes.mealTypeCount', { count: mealFilters.length })}
                 </Text>
                 <Ionicons name="chevron-down" size={12} color="#8B7355" />
               </Pressable>
@@ -429,7 +435,7 @@ export default function RecipesScreen() {
         onAddRecipe={() => router.push('/add-recipe')}
         searchQuery={searchQuery}
         dietFilter={dietFilter}
-        mealFilter={mealFilter}
+        mealFilters={mealFilters}
         t={t}
       />
 
@@ -491,7 +497,7 @@ export default function RecipesScreen() {
         </Pressable>
       </Modal>
 
-      {/* Meal Type Filter Picker Modal */}
+      {/* Meal Type Filter Picker Modal - Multi-select */}
       <Modal
         visible={showMealPicker}
         transparent
@@ -502,50 +508,80 @@ export default function RecipesScreen() {
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
           onPress={() => setShowMealPicker(false)}
         >
-          <View style={{
-            backgroundColor: '#F5EDE5',
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingBottom: 40,
-          }}>
+          <Pressable 
+            style={{
+              backgroundColor: '#F5EDE5',
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              paddingBottom: 40,
+            }}
+            onPress={(e) => e.stopPropagation()}
+          >
             <View style={{ alignItems: 'center', paddingVertical: 12 }}>
               <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
             </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
-              {t('recipes.filterByMealType')}
-            </Text>
-            {MEAL_OPTIONS.map((option) => (
-              <Pressable
-                key={option.label}
-                onPress={() => {
-                  hapticSelection();
-                  setMealFilter(option.value);
-                  setShowMealPicker(false);
-                }}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingVertical: 16,
-                  paddingHorizontal: 20,
-                  backgroundColor: mealFilter === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
-                  borderRadius: 12,
-                  marginHorizontal: 8,
-                }}
-              >
-                <Text style={{
-                  fontSize: 16,
-                  color: '#5D4E40',
-                  fontWeight: mealFilter === option.value ? '600' : '400',
-                }}>
-                  {option.label}
-                </Text>
-                {mealFilter === option.value && (
-                  <Ionicons name="checkmark" size={20} color="#7A6858" />
-                )}
-              </Pressable>
-            ))}
-          </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 12 }}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40' }}>
+                {t('recipes.filterByMealType')}
+              </Text>
+              {mealFilters.length > 0 && (
+                <Pressable onPress={() => { hapticSelection(); setMealFilters([]); }}>
+                  <Text style={{ fontSize: 14, color: '#7A6858', fontWeight: '600' }}>{t('common.clear')}</Text>
+                </Pressable>
+              )}
+            </View>
+            {MEAL_OPTIONS.map((option) => {
+              const isSelected = mealFilters.includes(option.value);
+              return (
+                <Pressable
+                  key={option.label}
+                  onPress={() => {
+                    hapticSelection();
+                    setMealFilters(prev => 
+                      isSelected 
+                        ? prev.filter(v => v !== option.value) 
+                        : [...prev, option.value]
+                    );
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingVertical: 16,
+                    paddingHorizontal: 20,
+                    backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
+                    borderRadius: 12,
+                    marginHorizontal: 8,
+                  }}
+                >
+                  <Text style={{
+                    fontSize: 16,
+                    color: '#5D4E40',
+                    fontWeight: isSelected ? '600' : '400',
+                  }}>
+                    {option.label}
+                  </Text>
+                  {isSelected && (
+                    <Ionicons name="checkmark" size={20} color="#7A6858" />
+                  )}
+                </Pressable>
+              );
+            })}
+            {/* Done button */}
+            <Pressable
+              onPress={() => setShowMealPicker(false)}
+              style={{
+                backgroundColor: '#7A6858',
+                marginHorizontal: 20,
+                marginTop: 16,
+                paddingVertical: 14,
+                borderRadius: 12,
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff' }}>{t('common.done')}</Text>
+            </Pressable>
+          </Pressable>
         </Pressable>
       </Modal>
 

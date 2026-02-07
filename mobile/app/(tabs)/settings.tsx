@@ -144,7 +144,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <GradientBackground>
+    <GradientBackground muted>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -159,6 +159,9 @@ export default function SettingsScreen() {
               fontFamily: fontFamily.display,
               color: colors.text.primary,
               letterSpacing: -0.5,
+              textShadowColor: 'rgba(0, 0, 0, 0.15)',
+              textShadowOffset: { width: 0, height: 1 },
+              textShadowRadius: 2,
             }}>{t('settings.title')}</Text>
             <Text style={{
               fontSize: fontSize.lg,

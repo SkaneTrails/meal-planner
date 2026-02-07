@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily, letterSpacing } from '@/lib/theme';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { useCurrentUser, useHouseholdSettings, useUpdateHouseholdSettings } from '@/lib/hooks/use-admin';
@@ -41,13 +41,13 @@ function SectionHeader({ icon, title, subtitle }: {
         justifyContent: 'center',
         marginRight: spacing.md,
       }}>
-        <Ionicons name={icon} size={20} color={colors.text.inverse} />
+        <Ionicons name={icon} size={20} color="#5D4E40" />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.text.inverse }}>
+        <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.white }}>
           {title}
         </Text>
-        <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginTop: 2 }}>
+        <Text style={{ fontSize: fontSize.sm, color: colors.white + '80', marginTop: 2 }}>
           {subtitle}
         </Text>
       </View>
@@ -236,7 +236,7 @@ export default function HouseholdSettingsScreen() {
 
   if (!householdId) {
     return (
-      <GradientBackground>
+      <GradientBackground muted>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text>{t('householdSettings.invalidHouseholdId')}</Text>
         </View>
@@ -245,46 +245,70 @@ export default function HouseholdSettingsScreen() {
   }
 
   return (
-    <GradientBackground>
+    <GradientBackground muted>
       <Stack.Screen
         options={{
-          title: t('householdSettings.title'),
-          headerStyle: { backgroundColor: colors.primary },
-          headerTintColor: '#fff',
-          headerLeft: () => (
-            <Pressable
-              onPress={() => router.back()}
-              style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -4 }}
-            >
-              <Ionicons name="chevron-back" size={24} color="white" />
-              <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>{t('common.back')}</Text>
-            </Pressable>
-          ),
-          headerRight: () => canEdit ? (
-            <Pressable
-              onPress={handleSave}
-              disabled={!hasChanges || updateSettings.isPending}
-              style={{ padding: 8, opacity: hasChanges ? 1 : 0.5 }}
-            >
-              {updateSettings.isPending ? (
-                <ActivityIndicator color="white" size="small" />
-              ) : (
-                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>{t('common.save')}</Text>
-              )}
-            </Pressable>
-          ) : null,
+          headerShown: false,  // Hide the default header - we'll create a custom one
         }}
       />
 
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color={colors.accent} />
         </View>
       ) : (
-        <>
+        <View style={{ flex: 1 }}>
+        {/* Custom header matching app theme */}
+        <View style={{ paddingHorizontal: spacing.lg, paddingTop: 44, paddingBottom: spacing.md }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Pressable
+              onPress={() => router.back()}
+              style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -8 }}
+            >
+              <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
+              <Text style={{ color: colors.text.primary, fontSize: 17, marginLeft: 2 }}>{t('common.back')}</Text>
+            </Pressable>
+            {canEdit && hasChanges && (
+              <Pressable
+                onPress={handleSave}
+                disabled={updateSettings.isPending}
+                style={({ pressed }) => ({
+                  backgroundColor: pressed ? colors.accentDark : colors.accent,
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.md,
+                  opacity: updateSettings.isPending ? 0.6 : 1,
+                })}
+              >
+                {updateSettings.isPending ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>{t('common.save')}</Text>
+                )}
+              </Pressable>
+            )}
+          </View>
+          <View style={{ marginTop: spacing.md }}>
+            <Text style={{
+              fontSize: fontSize['4xl'],
+              fontFamily: fontFamily.display,
+              color: colors.text.primary,
+              letterSpacing: letterSpacing.tight,
+              textShadowColor: 'rgba(0, 0, 0, 0.15)',
+              textShadowOffset: { width: 0, height: 1 },
+              textShadowRadius: 2,
+            }}>{t('householdSettings.title')}</Text>
+            <Text style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.body,
+              color: colors.text.secondary,
+              marginTop: 4,
+            }}>{t('householdSettings.subtitle')}</Text>
+          </View>
+        </View>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }}
+          contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, paddingBottom: 120 }}
         >
           {/* Read-only banner for non-admin members */}
           {!canEdit && (
@@ -704,7 +728,7 @@ export default function HouseholdSettingsScreen() {
             </Pressable>
           </View>
         )}
-        </>
+        </View>
       )}
     </GradientBackground>
   );

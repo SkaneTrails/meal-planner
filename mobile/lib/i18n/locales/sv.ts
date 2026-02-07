@@ -89,7 +89,10 @@ const sv: Translations = {
   },
 
   home: {
-    greeting: 'God morgon',
+    greeting: 'God morgon',  // Default fallback
+    greetingMorning: 'God morgon',
+    greetingAfternoon: 'God eftermiddag',
+    greetingEvening: 'God kväll',
     subtitle: 'Vad ska vi laga idag?',
     stats: {
       recipes: 'Recept',
@@ -128,6 +131,7 @@ const sv: Translations = {
     sortBy: 'Sortera efter',
     diet: 'Kost',
     mealType: 'Måltid',
+    mealTypeCount: '{{count}} typer',
     sort: 'Sortera',
     noMatchesFound: 'Inga träffar',
     emptyLibrary: 'Din receptbok är tom',
@@ -413,10 +417,27 @@ const sv: Translations = {
     invalidUrlMessage: 'Ange en giltig recept-URL',
     done: 'Klart!',
     recipeImported: '"{{title}}" har importerats!',
+    recipeCreated: '"{{title}}" har skapats!',
     viewRecipe: 'Visa recept',
     addMore: 'Lägg till fler',
     importFailed: 'Import misslyckades',
     importFailedDefault: 'Kunde inte importera receptet',
+    createFailed: 'Skapande misslyckades',
+    createFailedDefault: 'Kunde inte skapa receptet',
+    // Manual form
+    manualTitle: 'Skapa recept',
+    manualDescription: 'Fyll i detaljerna för att skapa ett nytt recept manuellt.',
+    recipeTitle: 'Recepttitel',
+    titlePlaceholder: 't.ex. Pasta Carbonara',
+    titleRequired: 'Ange en recepttitel',
+    ingredients: 'Ingredienser',
+    ingredientsPlaceholder: 'En ingrediens per rad\nt.ex. 200g pasta\n4 ägg',
+    instructions: 'Instruktioner',
+    instructionsPlaceholder: 'Ett steg per rad\nt.ex. Koka vatten\nKoka pasta i 10 minuter',
+    imageOptional: 'Bild (valfritt)',
+    addImage: 'Lägg till bild',
+    creating: 'Skapar...',
+    createButton: 'Skapa recept',
     enhanced: {
       title: 'Recept förbättrat!',
       changesLabel: 'AI-förbättringar:',
@@ -445,6 +466,7 @@ const sv: Translations = {
 
   householdSettings: {
     title: 'Hushållsinställningar',
+    subtitle: 'Hantera hushållets preferenser',
     readOnly: 'Bara admins kan ändra inställningar',
     general: {
       title: 'Allmänt',

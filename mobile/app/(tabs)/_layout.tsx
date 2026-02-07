@@ -134,8 +134,8 @@ export default function TabLayout() {
         options={{
           title: t('tabs.home'),
           tabBarAccessibilityLabel: t('tabs.home'),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : color} />
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
           ),
         }}
       />
@@ -144,8 +144,8 @@ export default function TabLayout() {
         options={{
           title: t('tabs.recipes'),
           tabBarAccessibilityLabel: t('tabs.recipes'),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "book" : "book-outline"} size={20} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name={focused ? "book" : "book-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
           ),
         }}
       />
@@ -154,8 +154,8 @@ export default function TabLayout() {
         options={{
           title: t('tabs.mealPlan'),
           tabBarAccessibilityLabel: t('tabs.mealPlan'),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
           ),
         }}
       />
@@ -164,8 +164,8 @@ export default function TabLayout() {
         options={{
           title: t('tabs.grocery'),
           tabBarAccessibilityLabel: t('tabs.grocery'),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
           ),
         }}
       />

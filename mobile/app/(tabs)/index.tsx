@@ -88,6 +88,14 @@ function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, r
   return null;
 }
 
+// Get time-based greeting key
+function getGreetingKey(): 'greetingMorning' | 'greetingAfternoon' | 'greetingEvening' {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return 'greetingMorning';
+  if (hour >= 12 && hour < 18) return 'greetingAfternoon';
+  return 'greetingEvening';
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes();
@@ -98,6 +106,8 @@ export default function HomeScreen() {
   const [recipeUrl, setRecipeUrl] = useState('');
   // Use Math.random() to randomize the initial seed on each app launch
   const [inspirationIndex, setInspirationIndex] = useState(() => Math.floor(Math.random() * 10000));
+  // Get time-based greeting (re-calculate on component mount)
+  const greetingKey = useMemo(() => getGreetingKey(), []);
 
   const isLoading = recipesLoading || mealPlanLoading;
 
@@ -213,8 +223,11 @@ export default function HomeScreen() {
               color: colors.text.primary,
               letterSpacing: letterSpacing.tight,
               marginBottom: 4,
+              textShadowColor: 'rgba(0, 0, 0, 0.15)',
+              textShadowOffset: { width: 0, height: 1 },
+              textShadowRadius: 2,
             }}>
-              {t('home.greeting')}
+              {t(`home.${greetingKey}` as const)}
             </Text>
             <Text style={{
               fontSize: fontSize.lg,
@@ -395,7 +408,7 @@ export default function HomeScreen() {
             }}>{t('home.addRecipe.importButton')}</Text>
           </Pressable>
           <Pressable
-            onPress={() => router.push('/add-recipe')}
+            onPress={() => router.push({ pathname: '/add-recipe', params: { manual: 'true' } })}
             style={({ pressed }) => ({
               backgroundColor: pressed ? 'rgba(139, 115, 85, 0.2)' : 'rgba(139, 115, 85, 0.1)',
               borderRadius: borderRadius.sm,

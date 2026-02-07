@@ -65,6 +65,7 @@ export default function SelectRecipeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState(initialText || '');
   const [randomSeed, setRandomSeed] = useState(0); // Used to trigger new random selection
+  const [copyWeekOffset, setCopyWeekOffset] = useState(0); // Week offset for copy tab
 
   // Update activeTab when mode param changes (e.g., navigating from different buttons)
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function SelectRecipeScreen() {
     const targetDay = targetDate.getDay();
     const daysSinceMonday = (targetDay + 6) % 7;
     const monday = new Date(targetDate);
-    monday.setDate(targetDate.getDate() - daysSinceMonday);
+    monday.setDate(targetDate.getDate() - daysSinceMonday + copyWeekOffset * 7);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
 
@@ -134,8 +135,8 @@ export default function SelectRecipeScreen() {
       return `${year}-${month}-${day}`;
     };
 
-    return { start: formatDate(monday), end: formatDate(sunday) };
-  }, [date]);
+    return { start: formatDate(monday), end: formatDate(sunday), mondayDate: monday, sundayDate: sunday };
+  }, [date, copyWeekOffset]);
 
   // Get existing meals from meal plan that can be copied (from the week being modified)
   const existingMeals = useMemo(() => {
@@ -180,7 +181,8 @@ export default function SelectRecipeScreen() {
         mealType,
         recipeId,
       });
-      router.back();
+      // Navigate back to meal plan after selecting a recipe
+      router.replace('/(tabs)/meal-plan');
     } catch (err) {
       showNotification(t('common.error'), t('selectRecipe.failedToSetMeal'));
     }
@@ -218,7 +220,8 @@ export default function SelectRecipeScreen() {
           customText: customTextValue,
         });
       }
-      router.back();
+      // Navigate back to meal plan after copying
+      router.replace('/(tabs)/meal-plan');
     } catch (err) {
       showNotification(t('common.error'), t('selectRecipe.failedToCopyMeal'));
     }
@@ -642,9 +645,55 @@ export default function SelectRecipeScreen() {
         ) : (
           /* Copy from existing meals */
           <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}>
-            <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginBottom: spacing.lg }}>
+            <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginBottom: spacing.md }}>
               {t('selectRecipe.copy.title')}
             </Text>
+
+            {/* Week selector */}
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: spacing.lg,
+              gap: spacing.sm,
+            }}>
+              <Pressable
+                onPress={() => setCopyWeekOffset(prev => prev - 1)}
+                style={({ pressed }) => ({
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                })}
+              >
+                <Ionicons name="chevron-back" size={20} color={colors.text.inverse} />
+              </Pressable>
+              <View style={{
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.sm,
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.sm,
+              }}>
+                <Text style={{ fontSize: fontSize.md, fontFamily: fontFamily.bodySemibold, color: colors.text.inverse, textAlign: 'center' }}>
+                  {targetWeekDates.mondayDate.toLocaleDateString(bcp47, { month: 'short', day: 'numeric' })} - {targetWeekDates.sundayDate.toLocaleDateString(bcp47, { month: 'short', day: 'numeric' })}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setCopyWeekOffset(prev => prev + 1)}
+                style={({ pressed }) => ({
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                })}
+              >
+                <Ionicons name="chevron-forward" size={20} color={colors.text.inverse} />
+              </Pressable>
+            </View>
 
             {existingMeals.length === 0 ? (
               <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'], paddingHorizontal: spacing['3xl'] }}>

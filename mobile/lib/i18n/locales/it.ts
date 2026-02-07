@@ -89,7 +89,10 @@ const it: Translations = {
   },
 
   home: {
-    greeting: 'Buongiorno',
+    greeting: 'Buongiorno',  // Default fallback
+    greetingMorning: 'Buongiorno',
+    greetingAfternoon: 'Buon pomeriggio',
+    greetingEvening: 'Buona sera',
     subtitle: 'Cosa cuciniamo oggi?',
     stats: {
       recipes: 'Ricette',
@@ -128,6 +131,7 @@ const it: Translations = {
     sortBy: 'Ordina per',
     diet: 'Dieta',
     mealType: 'Pasto',
+    mealTypeCount: '{{count}} tipi',
     sort: 'Ordina',
     noMatchesFound: 'Nessun risultato',
     emptyLibrary: 'Il tuo ricettario è vuoto',
@@ -413,10 +417,26 @@ const it: Translations = {
     invalidUrlMessage: 'Inserisci un URL di ricetta valido',
     done: 'Fatto!',
     recipeImported: '"{{title}}" è stata importata!',
+    recipeCreated: '"{{title}}" è stata creata!',
     viewRecipe: 'Vedi ricetta',
     addMore: 'Aggiungi altre',
     importFailed: 'Importazione fallita',
     importFailedDefault: 'Impossibile importare la ricetta',
+    createFailed: 'Creazione fallita',
+    createFailedDefault: 'Impossibile creare la ricetta',
+    // Manual form
+    manualTitle: 'Crea ricetta',
+    manualDescription: 'Compila i dettagli per creare una nuova ricetta manualmente.',
+    recipeTitle: 'Titolo ricetta',
+    titlePlaceholder: 'es. Pasta Carbonara',
+    titleRequired: 'Inserisci un titolo per la ricetta',
+    ingredients: 'Ingredienti',
+    ingredientsPlaceholder: 'Un ingrediente per riga\nes. 200g pasta\n4 uova',
+    instructions: 'Istruzioni',
+    instructionsPlaceholder: 'Un passaggio per riga\nes. Porta a ebollizione l\'acqua\nCuoci la pasta per 10 minuti',
+    imageUrlOptional: 'URL immagine (opzionale)',
+    creating: 'Creazione...',
+    createButton: 'Crea ricetta',
     enhanced: {
       title: 'Ricetta migliorata!',
       changesLabel: 'Miglioramenti AI:',
@@ -445,6 +465,7 @@ const it: Translations = {
 
   householdSettings: {
     title: 'Impostazioni nucleo familiare',
+    subtitle: 'Gestisci le preferenze del tuo nucleo familiare',
     readOnly: 'Solo gli admin possono modificare le impostazioni',
     general: {
       title: 'Generale',
