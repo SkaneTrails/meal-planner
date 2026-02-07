@@ -40,6 +40,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
 - **Never work directly on main** - Always create a feature branch for changes
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
+- **After pulling from main** - check `git diff HEAD@{1} --name-only` for changes to `.github/copilot-instructions.md`, `.github/skills/**`, `*.instructions.md`, `.github/agents/**`, or `.copilot-tasks.md`. If any changed, re-read them before continuing work — they may contain updated instructions, new skills, or task state changes from another session
 - **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
 - **Use existing scripts first** - before writing inline Python or ad-hoc commands, check `scripts/` and skill documentation for existing tools that do what you need (e.g., `recipe_reviewer.py` for Firestore recipe operations)
