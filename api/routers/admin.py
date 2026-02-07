@@ -199,7 +199,7 @@ async def remove_member(
     household_storage.remove_member(normalized_email)
 
 
-@router.get("/me")
+@router.get("/me", response_model_exclude_none=True)
 async def get_current_user(user: Annotated[AuthenticatedUser, Depends(require_auth)]) -> CurrentUserResponse:
     """Get the current authenticated user's info including household membership."""
     household_name = None

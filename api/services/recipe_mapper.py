@@ -6,7 +6,7 @@ to RecipeCreate models, eliminating duplicate mapping blocks in router endpoints
 
 from typing import Any
 
-from api.models.recipe import RecipeCreate
+from api.models.recipe import Recipe, RecipeCreate
 
 
 def build_recipe_create_from_scraped(scraped_data: dict[str, Any]) -> RecipeCreate:
@@ -31,7 +31,7 @@ def build_recipe_create_from_scraped(scraped_data: dict[str, Any]) -> RecipeCrea
     )
 
 
-def build_recipe_create_from_enhanced(enhanced_data: dict[str, Any], fallback: RecipeCreate | Any) -> RecipeCreate:
+def build_recipe_create_from_enhanced(enhanced_data: dict[str, Any], fallback: Recipe | RecipeCreate) -> RecipeCreate:
     """Build a RecipeCreate from AI-enhanced recipe data.
 
     Falls back to the original recipe values for any missing fields.

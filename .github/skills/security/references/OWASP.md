@@ -29,6 +29,20 @@ async def get_recipe(recipe_id: str, user: User = Depends(get_current_user)):
     return recipe
 ```
 
+**Multi-tenant isolation pattern:**
+```python
+# WRONG - load by ID without tenant check (e.g., grocery list loading recipes from meal plan)
+for recipe_id in meal_plan_recipe_ids:
+    recipe = recipe_storage.get_recipe(recipe_id)  # No household check!
+    process(recipe)
+
+# CORRECT - verify each loaded record belongs to the household
+for recipe_id in meal_plan_recipe_ids:
+    recipe = recipe_storage.get_recipe(recipe_id)
+    if recipe and (recipe.household_id == household_id or recipe.visibility == "shared" or recipe.household_id is None):
+        process(recipe)
+```
+
 ### A02: Cryptographic Failures
 
 **Challenge when:**
@@ -77,11 +91,28 @@ if field not in ALLOWED_FIELDS:
 - Missing CSRF protection on state-changing operations
 - Unlimited file upload sizes
 - No input length limits
+- Dev-mode auth bypasses can leak to production
 
 **This project should have:**
 - Rate limiting on login attempts (Firebase handles this)
-- Request size limits on API
+- Rate limiting on API endpoints (especially scrape/enhance - expensive operations)
+- Request size limits on API (especially `/parse` HTML body, image uploads)
 - Validation on all user inputs
+- Guarantee that `SKIP_AUTH` / `SKIP_ALLOWLIST` are never set in Cloud Run environment
+
+**Dev-mode bypass anti-pattern:**
+```python
+# RISKY - env var controls auth bypass
+if os.getenv("SKIP_AUTH", "").lower() == "true":
+    return dev_user
+
+# SAFER - also verify not in production
+if os.getenv("SKIP_AUTH", "").lower() == "true":
+    if os.getenv("K_SERVICE"):  # Cloud Run sets this
+        logger.critical("SKIP_AUTH enabled in Cloud Run!")
+        raise RuntimeError("Auth bypass not allowed in production")
+    return dev_user
+```
 
 ### A05: Security Misconfiguration
 
