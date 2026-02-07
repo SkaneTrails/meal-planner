@@ -24,6 +24,8 @@ vi.mock('expo-router', async () => ({
 let mockCurrentUserData: any = null;
 vi.mock('@/lib/hooks/use-admin', () => ({
   useCurrentUser: () => ({ data: mockCurrentUserData, isLoading: false }),
+  useUpdateHouseholdSettings: () => ({ mutateAsync: vi.fn() }),
+  useHouseholdSettings: () => ({ data: null }),
 }));
 
 describe('Settings screen', () => {

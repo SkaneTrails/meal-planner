@@ -17,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily } from '@/lib/theme';
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
+import { useUpdateHouseholdLanguage } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
 import { showNotification } from '@/lib/alert';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -82,6 +83,7 @@ export default function SettingsScreen() {
   const { user, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
+  const updateHouseholdLanguage = useUpdateHouseholdLanguage(currentUser?.household_id);
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 
@@ -132,6 +134,8 @@ export default function SettingsScreen() {
   const handleLanguageChange = async (language: AppLanguage) => {
     try {
       await setLanguage(language);
+      // Write back to Firestore so other household members get the change
+      updateHouseholdLanguage(language).catch(() => {});
     } catch {
       showNotification(t('common.error'), t('settings.failedToChangeLanguage'));
     }
