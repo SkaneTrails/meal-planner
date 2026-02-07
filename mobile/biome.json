@@ -6,7 +6,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!!**/dist", "!!**/.expo"]
+    "includes": [
+      "**",
+      "!!**/dist",
+      "!!**/.expo",
+      "!!**/__tests__/**",
+      "!!**/test/**"
+    ]
   },
   "formatter": {
     "enabled": true,
