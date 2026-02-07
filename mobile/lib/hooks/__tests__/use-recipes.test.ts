@@ -4,14 +4,14 @@
  * Real logic tested:
  * - useRecipe: enabled guard (doesn't fetch when id is undefined)
  * - useRecipes: basic fetch behavior
- * - useUpdateRecipe: updates query cache on success (setQueryData)
+ * - useUpdateRecipe: calls updateRecipe mutation
  * - useDeleteRecipe: removes queries from cache on success
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { createQueryWrapper, createTestQueryClient } from '@/test/helpers';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
 vi.mock('@/lib/api', () => ({
@@ -75,7 +75,7 @@ describe('useRecipe', () => {
   });
 
   it('does NOT fetch when id is undefined', async () => {
-    const { result } = renderHook(() => useRecipe(undefined), {
+    const { result } = renderHook(() => useRecipe(undefined as unknown as string), {
       wrapper: createQueryWrapper(),
     });
 

@@ -24,12 +24,12 @@ vi.mock('expo-router', async () => ({
   },
 }));
 
-// Mock GoogleLogo component
+// Mock GoogleLogo component — prevents react-native-svg from loading in jsdom
 vi.mock('@/components/GoogleLogo', () => ({
   GoogleLogo: () => React.createElement('div', { 'data-testid': 'google-logo' }),
 }));
 
-// Controllable auth mock
+// Controllable auth mock — Vitest resolves @/ alias to the same path as ../
 let mockAuthState: any = {};
 vi.mock('@/lib/hooks/use-auth', () => ({
   useAuth: () => mockAuthState,

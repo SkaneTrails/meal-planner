@@ -6,7 +6,7 @@
  * - Redirects to /(tabs) when user has a household
  * - Redirects to /(tabs) when user is a superuser (even without household)
  * - Shows user email and "no household" message for members without access
- * - Sign-out button calls signOut and navigates to /sign-in
+ * - Sign-out button calls signOut
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
