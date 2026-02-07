@@ -833,7 +833,7 @@ export default function RecipeDetailScreen() {
           headerBackTitle: '',
           headerLeft: () => (
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => router.replace('/(tabs)/recipes')}
               style={{
                 width: 40,
                 height: 40,

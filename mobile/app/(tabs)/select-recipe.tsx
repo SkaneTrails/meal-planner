@@ -39,10 +39,11 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
 type TabType = 'library' | 'copy' | 'random' | 'quick';
 
 export default function SelectRecipeScreen() {
-  const { date, mealType, mode } = useLocalSearchParams<{
+  const { date, mealType, mode, initialText } = useLocalSearchParams<{
     date: string;
     mealType: MealType;
     mode?: 'library' | 'copy' | 'quick' | 'random';
+    initialText?: string;
   }>();
   const router = useRouter();
 
@@ -56,7 +57,7 @@ export default function SelectRecipeScreen() {
     mode === 'copy' ? 'copy' : mode === 'random' ? 'random' : mode === 'quick' ? 'quick' : 'library'
   );
   const [searchQuery, setSearchQuery] = useState('');
-  const [customText, setCustomText] = useState('');
+  const [customText, setCustomText] = useState(initialText || '');
   const [randomSeed, setRandomSeed] = useState(0); // Used to trigger new random selection
 
   // Update activeTab when mode param changes (e.g., navigating from different buttons)
@@ -64,7 +65,18 @@ export default function SelectRecipeScreen() {
     if (mode) {
       setActiveTab(mode);
     }
-  }, [mode]);
+    // Reset custom text when mode changes (except if initialText is provided)
+    if (mode !== 'quick' || !initialText) {
+      setCustomText('');
+    }
+  }, [mode, initialText]);
+
+  // Pre-fill custom text when initialText is provided (editing existing custom meal)
+  useEffect(() => {
+    if (initialText) {
+      setCustomText(initialText);
+    }
+  }, [initialText]);
 
   const filteredRecipes = useMemo(() => {
     if (searchQuery === '') return recipes;
@@ -98,13 +110,14 @@ export default function SelectRecipeScreen() {
     setRandomSeed(prev => prev + 1);
   };
 
-  // Get current week date range
-  const currentWeekDates = useMemo(() => {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const daysSinceMonday = (currentDay + 6) % 7;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysSinceMonday);
+  // Get target week date range based on the date being modified (not current week)
+  const targetWeekDates = useMemo(() => {
+    // Parse the date param to get the week being modified
+    const targetDate = new Date(date + 'T00:00:00');
+    const targetDay = targetDate.getDay();
+    const daysSinceMonday = (targetDay + 6) % 7;
+    const monday = new Date(targetDate);
+    monday.setDate(targetDate.getDate() - daysSinceMonday);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
 
@@ -116,9 +129,9 @@ export default function SelectRecipeScreen() {
     };
 
     return { start: formatDate(monday), end: formatDate(sunday) };
-  }, []);
+  }, [date]);
 
-  // Get existing meals from meal plan that can be copied (current week only)
+  // Get existing meals from meal plan that can be copied (from the week being modified)
   const existingMeals = useMemo(() => {
     if (!mealPlan?.meals) return [];
 
@@ -130,8 +143,8 @@ export default function SelectRecipeScreen() {
       // Don't show the current slot we're trying to fill
       if (key === `${date}_${mealType}`) return;
 
-      // Only show meals from current week
-      if (dateStr < currentWeekDates.start || dateStr > currentWeekDates.end) return;
+      // Only show meals from the week being modified
+      if (dateStr < targetWeekDates.start || dateStr > targetWeekDates.end) return;
 
       if (value.startsWith('custom:')) {
         meals.push({ key, date: dateStr, mealType: type, customText: value.slice(7) });
@@ -145,7 +158,7 @@ export default function SelectRecipeScreen() {
 
     // Sort by date ascending (start of week first)
     return meals.sort((a, b) => a.date.localeCompare(b.date));
-  }, [mealPlan, recipes, date, mealType, currentWeekDates]);
+  }, [mealPlan, recipes, date, mealType, targetWeekDates]);
 
   const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
     weekday: 'long',
@@ -175,7 +188,9 @@ export default function SelectRecipeScreen() {
         mealType,
         customText: customText.trim(),
       });
-      router.back();
+      // Clear the text and navigate back to meal plan
+      setCustomText('');
+      router.replace('/(tabs)/meal-plan');
     } catch (err) {
       showNotification('Error', 'Failed to set meal');
     }

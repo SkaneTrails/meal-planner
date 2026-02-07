@@ -24,6 +24,7 @@ import { useCurrentUser, useHouseholds, useHouseholdMembers, useCreateHousehold,
 import type { Household, HouseholdMember } from '@/lib/types';
 
 export default function AdminScreen() {
+  const router = useRouter();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { data: households, isLoading: householdsLoading, refetch: refetchHouseholds } = useHouseholds();
   const createHousehold = useCreateHousehold();
@@ -91,22 +92,42 @@ export default function AdminScreen() {
           paddingHorizontal: 24,
           paddingTop: 60,
           paddingBottom: spacing.md,
+          flexDirection: 'row',
+          alignItems: 'center',
         }}>
-          <Text style={{
-            fontSize: fontSize['4xl'],
-            fontWeight: '600',
-            color: colors.text.primary,
-            letterSpacing: -0.5,
-          }}>
-            Admin
-          </Text>
-          <Text style={{
-            fontSize: fontSize.lg,
-            color: colors.text.secondary,
-            marginTop: 4,
-          }}>
-            Manage households and members
-          </Text>
+          <Pressable
+            onPress={() => router.back()}
+            style={({ pressed }) => ({
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: pressed ? 0.7 : 1,
+              marginRight: spacing.md,
+              ...shadows.sm,
+            })}
+          >
+            <Ionicons name="chevron-back" size={22} color="white" />
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={{
+              fontSize: fontSize['4xl'],
+              fontWeight: '600',
+              color: colors.text.primary,
+              letterSpacing: -0.5,
+            }}>
+              Admin
+            </Text>
+            <Text style={{
+              fontSize: fontSize.lg,
+              color: colors.text.secondary,
+              marginTop: 4,
+            }}>
+              Manage households and members
+            </Text>
+          </View>
         </View>
 
         {/* Current User Info */}
@@ -320,7 +341,6 @@ interface HouseholdDetailModalProps {
 }
 
 function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps) {
-  const router = useRouter();
   const { data: members, isLoading, refetch } = useHouseholdMembers(household.id);
   const addMember = useAddMember();
   const removeMember = useRemoveMember();
@@ -328,11 +348,6 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>('member');
-
-  const handleOpenSettings = () => {
-    onClose(); // Close modal first
-    router.push(`/household-settings?id=${household.id}`);
-  };
 
   const handleAddMember = async () => {
     if (!newMemberEmail.trim()) return;
@@ -379,43 +394,43 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={{
-        flex: 1,
-        backgroundColor: colors.bgLight,
-      }}>
-        {/* Header */}
+      <GradientBackground>
         <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: spacing.lg,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border,
+          flex: 1,
         }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.inverse }}>
-              {household.name}
-            </Text>
-            <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
-              Created by: {household.created_by}
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          {/* Header */}
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: spacing.lg,
+            paddingTop: spacing.xl,
+            paddingBottom: spacing.md,
+          }}>
             <Pressable
-              onPress={handleOpenSettings}
+              onPress={onClose}
               style={({ pressed }) => ({
-                padding: spacing.sm,
-                borderRadius: borderRadius.md,
-                backgroundColor: pressed ? colors.bgDark : 'transparent',
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: pressed ? 0.7 : 1,
+                marginRight: spacing.md,
+                ...shadows.sm,
               })}
             >
-              <Ionicons name="settings-outline" size={24} color={colors.primary} />
+              <Ionicons name="chevron-back" size={22} color="white" />
             </Pressable>
-            <Pressable onPress={onClose}>
-              <Ionicons name="close" size={28} color={colors.text.muted} />
-            </Pressable>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.inverse }}>
+                {household.name}
+              </Text>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+                Created by: {household.created_by}
+              </Text>
+            </View>
           </View>
-        </View>
 
         {/* Members */}
         <View style={{ flex: 1, padding: spacing.lg }}>
@@ -551,7 +566,8 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             </Pressable>
           </View>
         )}
-      </View>
+        </View>
+      </GradientBackground>
     </Modal>
   );
 }
