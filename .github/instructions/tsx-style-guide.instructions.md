@@ -70,6 +70,15 @@ export const RecipeCard = ({ recipe }: RecipeCardProps) => {
 };
 ```
 
+**Exception:** Expo Router screen files require `export default function` for file-based routing:
+
+```tsx
+// Expo Router screens — default function export required
+export default function RecipeDetailScreen() {
+  // screen logic
+}
+```
+
 ### Component Structure Order
 
 1. Type definitions (props interface)
@@ -141,7 +150,7 @@ import { formatDate } from "@/lib/utils/dateFormatter";
 
 ### Modern Type Syntax
 
-- Use `list[]` not `Array<list>`
+- Use `T[]` not `Array<T>` (e.g., `Recipe[]` not `Array<Recipe>`)
 - Use `Record<string, value>` for object maps
 - Use union types: `'pending' | 'success' | 'error'`
 
@@ -294,6 +303,33 @@ setRecipe({ ...recipe, title: newTitle });
 // Bad
 ingredients.push(newIngredient); // mutation
 recipe.title = newTitle; // mutation
+```
+
+## Styling
+
+### Use StyleSheet.create()
+
+- Extract styles to `StyleSheet.create()` at the bottom of the file
+- Never use inline style objects for more than 2 properties
+- Share common styles via a theme file or shared stylesheet
+- Exception: dynamic styles that depend on props/state can use inline style arrays
+
+```tsx
+// Good — styles extracted
+<View style={styles.container}>
+  <Text style={styles.title}>{recipe.title}</Text>
+</View>
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  title: { fontSize: 18, fontWeight: "bold" },
+});
+
+// Good — dynamic + static combined
+<View style={[styles.card, { opacity: isActive ? 1 : 0.5 }]} />
+
+// Bad — large inline objects
+<View style={{ flex: 1, padding: 16, backgroundColor: "#fff", borderRadius: 8 }}>
 ```
 
 ## Testing Requirements
