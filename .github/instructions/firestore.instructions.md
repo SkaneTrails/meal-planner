@@ -1,3 +1,8 @@
+---
+applyTo: "**/*.py"
+description: "Firestore schema conventions for meal planner"
+---
+
 # Firestore Instructions
 
 These conventions apply when working with Firestore data in this project.
