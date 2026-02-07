@@ -42,7 +42,7 @@ export default function AddRecipeScreen() {
 
   const handleImport = async () => {
     if (!isValidUrl(url)) {
-      showNotification('Ogiltig URL', 'Ange en giltig recept-URL');
+      showNotification('Invalid URL', 'Please enter a valid recipe URL');
       return;
     }
 
@@ -54,9 +54,9 @@ export default function AddRecipeScreen() {
       if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
         setShowSummaryModal(true);
       } else {
-        showAlert('Klart!', `"${recipe.title}" har importerats!`, [
+        showAlert('Done!', `"${recipe.title}" has been imported!`, [
           {
-            text: 'Visa recept',
+            text: 'View Recipe',
             style: 'cancel',
             onPress: () => {
               router.back();
@@ -64,14 +64,14 @@ export default function AddRecipeScreen() {
             },
           },
           {
-            text: 'Lägg till fler',
+            text: 'Add More',
             onPress: () => setUrl(''),
           },
         ]);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Kunde inte importera receptet';
-      showNotification('Import misslyckades', message);
+      const message = err instanceof Error ? err.message : 'Could not import the recipe';
+      showNotification('Import failed', message);
     }
   };
 
@@ -114,19 +114,19 @@ export default function AddRecipeScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
               <Ionicons name="information-circle" size={22} color={colors.white} />
               <Text style={{ marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontWeight: '600', color: colors.white, letterSpacing: letterSpacing.normal }}>
-                Importera från URL
+                Import from URL
               </Text>
             </View>
             <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, lineHeight: 22 }}>
-              Klistra in en recept-URL från valfri matlagningssajt. Vi extraherar
-              automatiskt titel, ingredienser, instruktioner och mer.
+              Paste a recipe URL from any cooking site. We will automatically
+              extract the title, ingredients, instructions, and more.
             </Text>
           </View>
 
           {/* URL input */}
           <View style={{ marginBottom: spacing.lg }}>
             <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm, letterSpacing: letterSpacing.normal }}>
-              Recept-URL
+              Recipe URL
             </Text>
             <View style={{
               flexDirection: 'row',
@@ -182,10 +182,10 @@ export default function AddRecipeScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
-                  Förbättra med AI
+                  Enhance with AI
                 </Text>
                 <Text style={{ fontSize: fontSize.md, color: colors.gray[600], marginTop: spacing.xs }}>
-                  Optimera mått, tider och instruktioner
+                  Optimize measurements, times, and instructions
                 </Text>
               </View>
             </View>
@@ -217,14 +217,14 @@ export default function AddRecipeScreen() {
               <>
                 <Ionicons name="hourglass-outline" size={20} color={colors.white} />
                 <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
-                  {enhanceWithAI ? 'Importerar och förbättrar...' : 'Importerar...'}
+                  {enhanceWithAI ? 'Importing and enhancing...' : 'Importing...'}
                 </Text>
               </>
             ) : (
               <>
                 <Ionicons name="download-outline" size={20} color={colors.white} />
                 <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
-                  Importera recept
+                  Import Recipe
                 </Text>
               </>
             )}
@@ -233,7 +233,7 @@ export default function AddRecipeScreen() {
           {/* Supported sites */}
           <View style={{ marginTop: spacing['3xl'] }}>
             <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.gray[600], marginBottom: spacing.md, letterSpacing: letterSpacing.wide, textTransform: 'uppercase' }}>
-              Stödda sajter (400+)
+              Supported sites (400+)
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
               {[
@@ -245,7 +245,7 @@ export default function AddRecipeScreen() {
                 'Serious Eats',
                 'NYT Cooking',
                 'Tasty',
-                'och många fler...',
+                'and many more...',
               ].map((site) => (
                 <View
                   key={site}
@@ -296,7 +296,7 @@ export default function AddRecipeScreen() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
-                    Recept förbättrat!
+                    Recipe Enhanced!
                   </Text>
                   <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }} numberOfLines={1}>
                     {importedRecipe?.title}
@@ -307,7 +307,7 @@ export default function AddRecipeScreen() {
               {/* Changes list */}
               <ScrollView style={{ maxHeight: 300, marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.md }}>
-                  AI-förbättringar:
+                  AI Improvements:
                 </Text>
                 {importedRecipe?.changes_made?.map((change, index) => (
                   <View
@@ -343,7 +343,7 @@ export default function AddRecipeScreen() {
                   })}
                 >
                   <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
-                    Lägg till fler
+                    Add More
                   </Text>
                 </Pressable>
                 <Pressable
@@ -359,7 +359,7 @@ export default function AddRecipeScreen() {
                   })}
                 >
                   <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
-                    Visa recept
+                    View Recipe
                   </Text>
                 </Pressable>
               </View>
