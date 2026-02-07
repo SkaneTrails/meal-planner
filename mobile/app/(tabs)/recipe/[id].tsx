@@ -324,15 +324,8 @@ export default function RecipeDetailScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const HEADER_HEIGHT = 350;
 
-  // Toggle to view original (un-enhanced) version of this recipe
-  const [viewingOriginal, setViewingOriginal] = useState(false);
-
   const { data: enhancedRecipe, isLoading, error } = useRecipe(id);
-  // Fetch original version when toggle is on and this recipe was enhanced from another
-  const originalId = enhancedRecipe?.enhanced_from;
-  const hasOriginal = !!originalId && originalId !== id;
-  const { data: originalRecipe } = useRecipe(viewingOriginal && hasOriginal ? originalId : '');
-  const recipe = viewingOriginal && originalRecipe ? originalRecipe : enhancedRecipe;
+  const recipe = enhancedRecipe;
 
   const { data: currentUser } = useCurrentUser({ enabled: isAuthReady });
   const deleteRecipe = useDeleteRecipe();
@@ -1043,38 +1036,6 @@ export default function RecipeDetailScreen() {
             >
               <Ionicons name="share" size={20} color={colors.text.inverse} />
             </Pressable>
-
-            {/* Enhanced/Original toggle - only show if recipe has a different original version */}
-            {hasOriginal && (
-              <Pressable
-                onPress={() => setViewingOriginal(prev => !prev)}
-                style={({ pressed }) => ({
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginLeft: 'auto',
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  borderRadius: 20,
-                  backgroundColor: !viewingOriginal
-                    ? (pressed ? '#1E4D42' : '#2D6A5A')
-                    : (pressed ? colors.bgDark : colors.bgMid),
-                })}
-              >
-                <Ionicons
-                  name={!viewingOriginal ? 'sparkles' : 'document-text'}
-                  size={16}
-                  color={!viewingOriginal ? colors.white : colors.text.inverse}
-                />
-                <Text style={{
-                  marginLeft: spacing.xs,
-                  fontSize: fontSize.base,
-                  fontFamily: fontFamily.bodySemibold,
-                  color: !viewingOriginal ? colors.white : colors.text.inverse,
-                }}>
-                  {!viewingOriginal ? 'AI Enhanced' : 'Original'}
-                </Text>
-              </Pressable>
-            )}
           </View>
 
           {/* Meta info (labels) */}
