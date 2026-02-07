@@ -100,19 +100,19 @@ class TestFormatRecipeText:
 
         result = _format_recipe_text(recipe)
 
-        assert "Titel: Test Recipe" in result
+        assert "Title: Test Recipe" in result
         assert "- 1 cup flour" in result
         assert "- 2 eggs" in result
         assert "Mix ingredients" in result
         assert "Bake at 180C" in result
 
     def test_handles_missing_title(self) -> None:
-        """Should use 'Okänd' for missing title."""
+        """Should use 'Unknown' for missing title."""
         recipe = {"ingredients": [], "instructions": []}
 
         result = _format_recipe_text(recipe)
 
-        assert "Titel: Okänd" in result
+        assert "Title: Unknown" in result
 
     def test_handles_string_instructions(self) -> None:
         """Should handle instructions as a single string."""

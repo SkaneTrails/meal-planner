@@ -47,7 +47,7 @@ def load_user_prompts() -> str:
     """Load user-specific prompt files (dietary, equipment)."""
     prompts_dir = get_prompts_dir() / "user"
 
-    files = ["dietary.md", "equipment.md"]
+    files = ["language.md", "dietary.md", "equipment.md"]
 
     parts = []
     for filename in files:
