@@ -102,6 +102,7 @@ export default function MealPlanScreen() {
   const [noteText, setNoteText] = useState('');
   const scrollViewRef = useRef<ScrollView>(null);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
+  const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
   const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
 
@@ -162,7 +163,7 @@ export default function MealPlanScreen() {
     }
   }, [todayIndex, weekOffset]);
 
-  // Swipe gesture for week navigation
+  // Swipe gesture for week navigation with smooth animation
   // Note: PanResponder only captures gestures when conditions are met,
   // allowing ScrollView's vertical scrolling to work normally.
   const swipeThreshold = 50; // Minimum horizontal distance to trigger week change
@@ -175,18 +176,58 @@ export default function MealPlanScreen() {
       const hasMinimumMovement = Math.abs(gestureState.dx) > 10;
       return isHorizontalSwipe && hasMinimumMovement;
     },
+    onPanResponderMove: (_, gestureState) => {
+      // Provide visual feedback during swipe (reduced movement for subtle effect)
+      swipeTranslateX.setValue(gestureState.dx * 0.3);
+    },
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dx > swipeThreshold) {
         // Swipe right -> go to previous week
         hapticLight();
-        setWeekOffset((prev) => prev - 1);
+        // Animate out to the right, then change week
+        Animated.timing(swipeTranslateX, {
+          toValue: 100,
+          duration: 150,
+          useNativeDriver: true,
+        }).start(() => {
+          setWeekOffset((prev) => prev - 1);
+          swipeTranslateX.setValue(-100);
+          Animated.spring(swipeTranslateX, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 12,
+          }).start();
+        });
       } else if (gestureState.dx < -swipeThreshold) {
         // Swipe left -> go to next week
         hapticLight();
-        setWeekOffset((prev) => prev + 1);
+        // Animate out to the left, then change week
+        Animated.timing(swipeTranslateX, {
+          toValue: -100,
+          duration: 150,
+          useNativeDriver: true,
+        }).start(() => {
+          setWeekOffset((prev) => prev + 1);
+          swipeTranslateX.setValue(100);
+          Animated.spring(swipeTranslateX, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 12,
+          }).start();
+        });
+      } else {
+        // Spring back to center if swipe wasn't far enough
+        Animated.spring(swipeTranslateX, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 100,
+          friction: 12,
+        }).start();
       }
     },
-  }), []);
+  }), [swipeTranslateX]);
 
   const {
     data: mealPlan,
@@ -449,21 +490,22 @@ export default function MealPlanScreen() {
 
         {/* Meal list with swipe gesture for week navigation */}
         <View style={{ flex: 1 }} {...panResponder.panHandlers}>
-          <ScrollView
-            ref={scrollViewRef}
-            style={{ flex: 1 }}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={mealPlanLoading}
-                onRefresh={() => refetchMealPlan()}
-                tintColor={colors.accent}
-              />
-            }
-          >
+          <Animated.View style={{ flex: 1, transform: [{ translateX: swipeTranslateX }] }}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={mealPlanLoading}
+                  onRefresh={() => refetchMealPlan()}
+                  tintColor={colors.accent}
+                />
+              }
+            >
           {weekDates.map((date) => {
             const isToday = date.toDateString() === new Date().toDateString();
 
@@ -619,7 +661,7 @@ export default function MealPlanScreen() {
                           }}>
                             <Ionicons name="add" size={18} color={colors.white} />
                           </View>
-                          <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.text.secondary }}>
+                          <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>
                             {label}
                           </Text>
                         </View>
@@ -742,12 +784,35 @@ export default function MealPlanScreen() {
                           }}>
                             {title}
                           </Text>
-                          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: colors.text.secondary, marginTop: 2 }}>
+                          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: '#5D4E40', marginTop: 2 }}>
                             {label}
                           </Text>
                         </View>
                       </Pressable>
 
+                      {/* Edit button - for custom text meals only */}
+                      {meal?.customText && !meal?.recipe && (
+                        <Pressable
+                          onPress={() => {
+                            const dateStr = formatDateLocal(date);
+                            router.push({
+                              pathname: '/select-recipe',
+                              params: { date: dateStr, mealType: type, mode: 'quick', initialText: meal.customText },
+                            });
+                          }}
+                          style={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: 14,
+                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginLeft: 8,
+                          }}
+                        >
+                          <Ionicons name="create-outline" size={16} color="#5D4E40" />
+                        </Pressable>
+                      )}
                       {/* View button - opens recipe detail */}
                       {meal?.recipe && (
                         <Pressable
@@ -781,13 +846,13 @@ export default function MealPlanScreen() {
                           width: 28,
                           height: 28,
                           borderRadius: 14,
-                          backgroundColor: 'rgba(139, 115, 85, 0.2)',
+                          backgroundColor: 'rgba(93, 78, 64, 0.3)',
                           alignItems: 'center',
                           justifyContent: 'center',
                           marginLeft: 8,
                         }}
                       >
-                        <Ionicons name="close" size={18} color="#8B7355" />
+                        <Ionicons name="close" size={18} color="#5D4E40" />
                       </Pressable>
                     </View>
                   );
@@ -795,7 +860,8 @@ export default function MealPlanScreen() {
               </View>
             );
           })}
-          </ScrollView>
+            </ScrollView>
+          </Animated.View>
         </View>
 
         {/* Floating Jump to Today button */}
