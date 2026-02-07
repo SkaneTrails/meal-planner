@@ -491,5 +491,16 @@ const en = {
   },
 } as const;
 
-export type Translations = typeof en;
+/**
+ * Recursively widen all string-literal leaf values to `string` so that
+ * non-English locale files can assign their own translations while still
+ * being structurally checked against the English key tree.
+ */
+type WidenStrings<T> =
+  T extends string ? string
+  : T extends Array<infer U> ? Array<WidenStrings<U>>
+  : T extends object ? { [K in keyof T]: WidenStrings<T[K]> }
+  : T;
+
+export type Translations = WidenStrings<typeof en>;
 export default en;
