@@ -143,15 +143,32 @@ To enable real authentication:
 
 ### Running Tests
 
+#### API (pytest)
+
 ```bash
 # All tests
 uv run pytest
 
 # With coverage
-uv run pytest --cov=app --cov-report=html
+uv run pytest --cov=api --cov-report=term-missing
 
 # Specific file
 uv run pytest tests/test_main.py -v
+```
+
+#### Mobile (Vitest)
+
+```bash
+cd mobile
+
+# All tests
+pnpm test
+
+# With coverage
+pnpm test:coverage
+
+# Specific file
+pnpm test -- lib/hooks/__tests__/use-recipes.test.ts
 ```
 
 ### Linting
@@ -231,18 +248,16 @@ api/                     # FastAPI REST backend
 ├── services/            # Business logic
 └── storage/             # Firestore persistence
 
-app/                     # Streamlit web app (legacy)
-├── main.py              # Streamlit app entry point
-├── icons.py             # Icon constants
-├── models/              # Data models (dataclasses)
-├── services/            # Business logic
-└── storage/             # Firestore persistence
-
 mobile/                  # React Native mobile app
 ├── app/                 # Expo Router screens
-│   └── (tabs)/          # Tab navigation screens
+│   ├── (tabs)/          # Tab navigation screens
+│   └── __tests__/       # Screen tests (auth, navigation)
 ├── components/          # Reusable UI components
 ├── lib/                 # Utilities, hooks, API client
+│   ├── hooks/           # React Query hooks
+│   │   └── __tests__/   # Hook tests
+│   └── __tests__/       # Context/utility tests
+├── test/                # Test setup, helpers, RN mocks
 └── package.json
 
 functions/               # Google Cloud Functions
@@ -257,7 +272,7 @@ scripts/                 # CLI tools
 ├── run-dev.sh           # Start all dev services
 └── run-function.sh      # Run Cloud Function locally
 
-tests/                   # Test files
+tests/                   # API test files (pytest)
 ├── conftest.py          # Shared fixtures
 └── test_*.py
 
@@ -268,7 +283,10 @@ docs/                    # Documentation
 ├── skills/              # AI agent instructions
 │   ├── recipe-improvement/
 │   ├── pr-review-workflow/
-│   └── working-context/
+│   ├── working-context/
+│   ├── copilot-self-improvement/
+│   ├── local-development/
+│   └── security/
 └── copilot-instructions.md
 
 pyproject.toml           # Python project config
