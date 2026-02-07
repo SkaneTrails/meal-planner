@@ -376,7 +376,7 @@ export default function RecipeDetailScreen() {
 
   // Household data for superuser transfer feature
   const isSuperuser = currentUser?.role === 'superuser';
-  const { data: households } = useHouseholds();
+  const { data: households } = useHouseholds({ enabled: isSuperuser });
   const transferRecipe = useTransferRecipe();
 
   // Initialize edit form when opening modal
