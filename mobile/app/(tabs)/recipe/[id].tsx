@@ -34,32 +34,32 @@ import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisib
 // Blurhash placeholder for loading state
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
-// All diet label options
-const DIET_OPTIONS: { value: DietLabel | null; label: string; emoji: string }[] = [
-  { value: null, label: 'None', emoji: '➖' },
-  { value: 'veggie', label: 'Vegetarian', emoji: '🥬' },
-  { value: 'fish', label: 'Seafood', emoji: '🐟' },
-  { value: 'meat', label: 'Meat', emoji: '🥩' },
+// All diet label options (labels resolved via t() at render time)
+const DIET_OPTIONS: { value: DietLabel | null; labelKey: string; emoji: string }[] = [
+  { value: null, labelKey: 'labels.diet.none', emoji: '➖' },
+  { value: 'veggie', labelKey: 'labels.diet.veggie', emoji: '🥬' },
+  { value: 'fish', labelKey: 'labels.diet.fish', emoji: '🐟' },
+  { value: 'meat', labelKey: 'labels.diet.meat', emoji: '🥩' },
 ];
 
-// Visibility options
-const VISIBILITY_OPTIONS: { value: RecipeVisibility; label: string; emoji: string; description: string }[] = [
-  { value: 'household', label: 'Private', emoji: '🔒', description: 'Only your household' },
-  { value: 'shared', label: 'Shared', emoji: '🌍', description: 'Visible to everyone' },
+// Visibility options (labels resolved via t() at render time)
+const VISIBILITY_OPTIONS: { value: RecipeVisibility; labelKey: string; emoji: string; descKey: string }[] = [
+  { value: 'household', labelKey: 'labels.visibility.private', emoji: '🔒', descKey: 'labels.visibility.privateDesc' },
+  { value: 'shared', labelKey: 'labels.visibility.shared', emoji: '🌍', descKey: 'labels.visibility.sharedDesc' },
 ];
 
-// All meal label options
-const MEAL_OPTIONS: { value: MealLabel | null; label: string }[] = [
-  { value: null, label: 'None' },
-  { value: 'breakfast', label: 'Breakfast' },
-  { value: 'starter', label: 'Starter' },
-  { value: 'salad', label: 'Salad' },
-  { value: 'meal', label: 'Main Course' },
-  { value: 'dessert', label: 'Dessert' },
-  { value: 'drink', label: 'Drink' },
-  { value: 'sauce', label: 'Sauce' },
-  { value: 'pickle', label: 'Pickle' },
-  { value: 'grill', label: 'Grill' },
+// All meal label options (labels resolved via t() at render time)
+const MEAL_OPTIONS: { value: MealLabel | null; labelKey: string }[] = [
+  { value: null, labelKey: 'labels.meal.none' },
+  { value: 'breakfast', labelKey: 'labels.meal.breakfast' },
+  { value: 'starter', labelKey: 'labels.meal.starter' },
+  { value: 'salad', labelKey: 'labels.meal.salad' },
+  { value: 'meal', labelKey: 'labels.meal.mainCourse' },
+  { value: 'dessert', labelKey: 'labels.meal.dessert' },
+  { value: 'drink', labelKey: 'labels.meal.drink' },
+  { value: 'sauce', labelKey: 'labels.meal.sauce' },
+  { value: 'pickle', labelKey: 'labels.meal.pickle' },
+  { value: 'grill', labelKey: 'labels.meal.grill' },
 ];
 
 // Helper to format date for meal key
@@ -87,27 +87,15 @@ function getWeekDates(weekOffset: number = 0): Date[] {
   return dates;
 }
 
-const MEAL_TYPES: { type: MealType; label: string }[] = [
-  { type: 'lunch', label: 'Lunch' },
-  { type: 'dinner', label: 'Dinner' },
+const MEAL_TYPES: { type: MealType; labelKey: string }[] = [
+  { type: 'lunch', labelKey: 'labels.mealTime.lunch' },
+  { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
 ];
 
-const DIET_LABELS: Record<DietLabel, { emoji: string; label: string; color: string; bgColor: string }> = {
-  veggie: { emoji: '🥬', label: 'Vegetarian', color: '#166534', bgColor: '#DCFCE7' },  // pastel green
-  fish: { emoji: '🐟', label: 'Seafood', color: '#1E40AF', bgColor: '#DBEAFE' },       // pastel blue
-  meat: { emoji: '🥩', label: 'Meat', color: '#991B1B', bgColor: '#FEE2E2' },          // pastel red/pink
-};
-
-const MEAL_LABELS: Record<MealLabel, string> = {
-  breakfast: 'Breakfast',
-  starter: 'Starter',
-  salad: 'Salad',
-  meal: 'Main Course',
-  dessert: 'Dessert',
-  drink: 'Drink',
-  sauce: 'Sauce',
-  pickle: 'Pickle',
-  grill: 'Grill',
+const DIET_LABELS: Record<DietLabel, { emoji: string; color: string; bgColor: string }> = {
+  veggie: { emoji: '🥬', color: '#166534', bgColor: '#DCFCE7' },
+  fish: { emoji: '🐟', color: '#1E40AF', bgColor: '#DBEAFE' },
+  meat: { emoji: '🥩', color: '#991B1B', bgColor: '#FEE2E2' },
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800';
@@ -1444,10 +1432,10 @@ export default function RecipeDetailScreen() {
                       </Text>
                     </View>
                     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                      {MEAL_TYPES.map(({ type, label }) => {
+                      {MEAL_TYPES.map(({ type, labelKey }) => {
                         const existingMeal = getMealForSlot(date, type);
                         const isTaken = !!existingMeal;
-                        const translatedLabel = t(`labels.mealTime.${type}` as 'labels.mealTime.lunch');
+                        const translatedLabel = t(labelKey);
 
                         return (
                           <View key={type} style={{ flex: 1, flexDirection: 'row', gap: spacing.xs }}>
@@ -1562,12 +1550,12 @@ export default function RecipeDetailScreen() {
                   {t('recipe.dietType')}
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-                  {DIET_OPTIONS.map(({ value, label, emoji }) => {
+                  {DIET_OPTIONS.map(({ value, labelKey, emoji }) => {
                     const isSelected = editDietLabel === value;
-                    const translatedLabel = value ? t(`labels.diet.${value}` as 'labels.diet.veggie') : t('labels.diet.none');
+                    const translatedLabel = t(labelKey);
                     return (
                       <Pressable
-                        key={label}
+                        key={labelKey}
                         onPress={() => setEditDietLabel(value)}
                         style={({ pressed }) => ({
                           flexDirection: 'row',
@@ -1596,12 +1584,12 @@ export default function RecipeDetailScreen() {
                   {t('recipe.mealTypeLabel')}
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-                  {MEAL_OPTIONS.map(({ value, label }) => {
+                  {MEAL_OPTIONS.map(({ value, labelKey }) => {
                     const isSelected = editMealLabel === value;
-                    const translatedLabel = value ? t(`labels.meal.${value}` as 'labels.meal.meal') : t('labels.meal.none');
+                    const translatedLabel = t(labelKey);
                     return (
                       <Pressable
-                        key={label}
+                        key={labelKey}
                         onPress={() => setEditMealLabel(value)}
                         style={({ pressed }) => ({
                           backgroundColor: isSelected ? colors.primary : pressed ? colors.bgMid : colors.gray[50],
@@ -1627,10 +1615,10 @@ export default function RecipeDetailScreen() {
                   {t('recipe.visibilityLabel')}
                 </Text>
                 <View style={{ flexDirection: 'row', gap: spacing.md }}>
-                  {VISIBILITY_OPTIONS.map(({ value, label, emoji, description }) => {
+                  {VISIBILITY_OPTIONS.map(({ value, labelKey, emoji, descKey }) => {
                     const isSelected = editVisibility === value;
-                    const translatedLabel = value === 'household' ? t('labels.visibility.private') : t('labels.visibility.shared');
-                    const translatedDesc = value === 'household' ? t('labels.visibility.privateDesc') : t('labels.visibility.sharedDesc');
+                    const translatedLabel = t(labelKey);
+                    const translatedDesc = t(descKey);
                     return (
                       <Pressable
                         key={value}
