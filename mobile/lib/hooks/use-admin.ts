@@ -42,11 +42,12 @@ export function useCurrentUser(options?: { enabled?: boolean }) {
 /**
  * Get all households (superuser only).
  */
-export function useHouseholds() {
+export function useHouseholds(options?: { enabled?: boolean }) {
   return useQuery<Household[]>({
     queryKey: adminKeys.households(),
     queryFn: () => api.getHouseholds(),
     retry: false,
+    enabled: options?.enabled ?? true,
   });
 }
 
