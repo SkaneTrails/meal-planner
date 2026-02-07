@@ -1,3 +1,7 @@
+---
+applyTo: "**/*.tf"
+---
+
 # Terraform Instructions
 
 These conventions apply when editing `.tf` files in this project.
