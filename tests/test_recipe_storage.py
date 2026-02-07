@@ -115,7 +115,6 @@ class TestDocToRecipe:
         data = {
             "title": "Enhanced Recipe",
             "enhanced": True,
-            "enhanced_from": "orig123",
             "tips": "Use fresh herbs",
             "changes_made": ["Added spices", "Fixed timing"],
         }
@@ -123,7 +122,6 @@ class TestDocToRecipe:
         result = _doc_to_recipe("doc123", data)
 
         assert result.enhanced is True
-        assert result.enhanced_from == "orig123"
         assert result.tips == "Use fresh herbs"
         assert result.changes_made == ["Added spices", "Fixed timing"]
 
@@ -175,22 +173,16 @@ class TestSaveRecipe:
 
         with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
             result = save_recipe(
-                recipe,
-                recipe_id="enhanced_id",
-                enhanced=True,
-                enhanced_from="original_123",
-                changes_made=["Added spices", "Fixed instructions"],
+                recipe, recipe_id="enhanced_id", enhanced=True, changes_made=["Added spices", "Fixed instructions"]
             )
 
         # Check the data passed to set()
         call_args = mock_doc_ref.set.call_args[0][0]
         assert call_args["enhanced"] is True
-        assert call_args["enhanced_from"] == "original_123"
         assert call_args["changes_made"] == ["Added spices", "Fixed instructions"]
 
         # Check returned recipe
         assert result.enhanced is True
-        assert result.enhanced_from == "original_123"
         assert result.changes_made == ["Added spices", "Fixed instructions"]
 
     def test_does_not_include_false_enhanced(self) -> None:

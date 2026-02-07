@@ -32,11 +32,6 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         with contextlib.suppress(ValueError):
             meal_label = MealLabel(data["meal_label"])
 
-    # Handle enhancement fields (support both old and new field names)
-    enhanced = data.get("enhanced", data.get("improved", False))
-    enhanced_from = data.get("enhanced_from", data.get("original_id"))
-    enhanced_at = data.get("enhanced_at")
-
     return Recipe(
         id=doc_id,
         title=data.get("title", ""),
@@ -54,10 +49,9 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         diet_label=diet_label,
         meal_label=meal_label,
         rating=data.get("rating"),
-        # AI enhancement fields (new names)
-        enhanced=enhanced,
-        enhanced_from=enhanced_from,
-        enhanced_at=enhanced_at,
+        # AI enhancement fields
+        enhanced=data.get("enhanced", False),
+        enhanced_at=data.get("enhanced_at"),
         tips=data.get("tips"),
         changes_made=data.get("changes_made"),
         # Household fields
@@ -157,7 +151,6 @@ def save_recipe(  # noqa: PLR0913
     *,
     recipe_id: str | None = None,
     enhanced: bool = False,
-    enhanced_from: str | None = None,
     enhanced_at: datetime | None = None,
     changes_made: list[str] | None = None,
     household_id: str | None = None,
@@ -170,7 +163,6 @@ def save_recipe(  # noqa: PLR0913
         recipe: The recipe to save.
         recipe_id: Optional ID to use (for saving enhanced versions with same ID).
         enhanced: Whether this recipe has been AI-enhanced.
-        enhanced_from: Original recipe ID if this is an enhanced copy.
         enhanced_at: When the recipe was enhanced.
         changes_made: List of changes made by AI enhancement.
         household_id: The household that owns this recipe.
@@ -214,8 +206,6 @@ def save_recipe(  # noqa: PLR0913
     # Add enhancement fields if present
     if enhanced:
         data["enhanced"] = enhanced
-    if enhanced_from:
-        data["enhanced_from"] = enhanced_from
     if enhanced_at:
         data["enhanced_at"] = enhanced_at
     if changes_made:
@@ -231,7 +221,6 @@ def save_recipe(  # noqa: PLR0913
     return Recipe(
         id=doc_ref.id,
         enhanced=enhanced,
-        enhanced_from=enhanced_from,
         enhanced_at=enhanced_at,
         changes_made=changes_made,
         household_id=household_id,
@@ -430,7 +419,6 @@ def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str) -> Reci
         household_id=to_household_id,
         created_by=copied_by,
         enhanced=source.enhanced,
-        enhanced_from=source.enhanced_from,
         enhanced_at=source.enhanced_at,
         changes_made=source.changes_made,
     )

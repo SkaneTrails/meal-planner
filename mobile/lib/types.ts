@@ -52,7 +52,6 @@ export interface Recipe {
   created_by?: string | null; // Email of user who created the recipe
   // AI enhancement fields
   enhanced?: boolean; // True if AI-enhanced
-  enhanced_from?: string; // ID of recipe this was enhanced from
   enhanced_at?: string; // ISO timestamp of enhancement
   tips?: string;
   changes_made?: string[];
