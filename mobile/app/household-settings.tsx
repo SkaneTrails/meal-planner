@@ -17,28 +17,12 @@ import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { showNotification } from '@/lib/alert';
+import { useTranslation } from '@/lib/i18n';
 import { useCurrentUser, useHouseholdSettings, useUpdateHouseholdSettings } from '@/lib/hooks/use-admin';
 import { GradientBackground } from '@/components';
 import type { MeatPreference, MincedMeatPreference, DairyPreference, HouseholdSettings } from '@/lib/types';
 
-// Options for dropdowns
-const MEAT_OPTIONS: { value: MeatPreference; label: string; description: string }[] = [
-  { value: 'all', label: 'Everyone eats meat', description: 'No substitutions needed' },
-  { value: 'split', label: 'Split portions', description: '50% meat, 50% vegetarian' },
-  { value: 'none', label: 'Vegetarian', description: 'Use alternatives for all' },
-];
 
-const MINCED_MEAT_OPTIONS: { value: MincedMeatPreference; label: string; description: string }[] = [
-  { value: 'meat', label: 'Regular mince', description: 'Beef, pork, etc.' },
-  { value: 'soy', label: 'Soy mince', description: 'Always use soy-based' },
-  { value: 'split', label: 'Split portions', description: '50% meat, 50% soy' },
-];
-
-const DAIRY_OPTIONS: { value: DairyPreference; label: string; description: string }[] = [
-  { value: 'regular', label: 'Regular dairy', description: 'No restrictions' },
-  { value: 'lactose_free', label: 'Lactose-free', description: 'Prefer lactose-free alternatives' },
-  { value: 'dairy_free', label: 'Dairy-free', description: 'No dairy products' },
-];
 
 // Section header component
 function SectionHeader({ icon, title, subtitle }: {
@@ -170,6 +154,26 @@ export default function HouseholdSettingsScreen() {
   const { data: remoteSettings, isLoading } = useHouseholdSettings(householdId ?? null);
   const updateSettings = useUpdateHouseholdSettings();
   const { data: currentUser } = useCurrentUser();
+  const { t } = useTranslation();
+
+  // Options for dropdowns (inside component for i18n)
+  const MEAT_OPTIONS: { value: MeatPreference; label: string; description: string }[] = [
+    { value: 'all', label: t('householdSettings.dietary.meatRegular'), description: t('householdSettings.dietary.meatRegularDesc') },
+    { value: 'split', label: t('householdSettings.dietary.splitMeatVeg'), description: t('householdSettings.dietary.splitMeatVegDesc') },
+    { value: 'none', label: t('householdSettings.dietary.meatNone'), description: t('householdSettings.dietary.meatNoneDesc') },
+  ];
+
+  const MINCED_MEAT_OPTIONS: { value: MincedMeatPreference; label: string; description: string }[] = [
+    { value: 'meat', label: t('householdSettings.dietary.mincedRegular'), description: t('householdSettings.dietary.mincedRegularDesc') },
+    { value: 'soy', label: t('householdSettings.dietary.mincedSoy'), description: t('householdSettings.dietary.mincedSoyDesc') },
+    { value: 'split', label: t('householdSettings.dietary.mincedSplit'), description: t('householdSettings.dietary.mincedSplitDesc') },
+  ];
+
+  const DAIRY_OPTIONS: { value: DairyPreference; label: string; description: string }[] = [
+    { value: 'regular', label: t('householdSettings.dietary.dairyRegular'), description: t('householdSettings.dietary.dairyRegularDesc') },
+    { value: 'lactose_free', label: t('householdSettings.dietary.dairyLactoseFree'), description: t('householdSettings.dietary.dairyLactoseFreeDesc') },
+    { value: 'dairy_free', label: t('householdSettings.dietary.dairyFree'), description: t('householdSettings.dietary.dairyFreeDesc') },
+  ];
 
   // Only admins and superusers can edit settings
   const canEdit = currentUser?.role === 'superuser' ||
@@ -197,9 +201,9 @@ export default function HouseholdSettingsScreen() {
     try {
       await updateSettings.mutateAsync({ householdId, settings });
       setHasChanges(false);
-      showNotification('Saved', 'Household settings updated successfully');
+      showNotification(t('householdSettings.saved'), t('householdSettings.savedMessage'));
     } catch {
-      showNotification('Error', 'Failed to save settings');
+      showNotification(t('common.error'), t('householdSettings.failedToSave'));
     }
   };
 
@@ -234,7 +238,7 @@ export default function HouseholdSettingsScreen() {
     return (
       <GradientBackground>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Invalid household ID</Text>
+          <Text>{t('householdSettings.invalidHouseholdId')}</Text>
         </View>
       </GradientBackground>
     );
@@ -244,7 +248,7 @@ export default function HouseholdSettingsScreen() {
     <GradientBackground>
       <Stack.Screen
         options={{
-          title: 'Household Settings',
+          title: t('householdSettings.title'),
           headerStyle: { backgroundColor: colors.primary },
           headerTintColor: '#fff',
           headerLeft: () => (
@@ -253,7 +257,7 @@ export default function HouseholdSettingsScreen() {
               style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -4 }}
             >
               <Ionicons name="chevron-back" size={24} color="white" />
-              <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>Back</Text>
+              <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>{t('common.back')}</Text>
             </Pressable>
           ),
           headerRight: () => canEdit ? (
@@ -265,7 +269,7 @@ export default function HouseholdSettingsScreen() {
               {updateSettings.isPending ? (
                 <ActivityIndicator color="white" size="small" />
               ) : (
-                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Save</Text>
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>{t('common.save')}</Text>
               )}
             </Pressable>
           ) : null,
@@ -299,7 +303,7 @@ export default function HouseholdSettingsScreen() {
                 fontSize: fontSize.sm,
                 flex: 1,
               }}>
-                Only household admins can change these settings.
+                {t('householdSettings.readOnly')}
               </Text>
             </View>
           )}
@@ -308,8 +312,8 @@ export default function HouseholdSettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="home"
-              title="General"
-              subtitle="Basic household information"
+              title={t('householdSettings.general.title')}
+              subtitle={t('householdSettings.general.subtitle')}
             />
 
             <View style={{
@@ -320,7 +324,7 @@ export default function HouseholdSettingsScreen() {
             }}>
               <View style={{ marginBottom: spacing.lg }}>
                 <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginBottom: spacing.xs }}>
-                  Household Size
+                  {t('householdSettings.general.householdSize')}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Pressable
@@ -367,7 +371,7 @@ export default function HouseholdSettingsScreen() {
 
               <View>
                 <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginBottom: spacing.xs }}>
-                  Default Servings
+                  {t('householdSettings.general.defaultServings')}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Pressable
@@ -418,8 +422,8 @@ export default function HouseholdSettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="nutrition"
-              title="Dietary Preferences"
-              subtitle="Configure how recipes should be adapted"
+              title={t('householdSettings.dietary.title')}
+              subtitle={t('householdSettings.dietary.subtitle')}
             />
 
             <View style={{
@@ -436,10 +440,10 @@ export default function HouseholdSettingsScreen() {
               }}>
                 <View>
                   <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.inverse }}>
-                    Seafood
+                    {t('householdSettings.dietary.seafood')}
                   </Text>
                   <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
-                    Household eats fish and shellfish
+                    {t('householdSettings.dietary.seafoodDesc')}
                   </Text>
                 </View>
                 <Switch
@@ -458,7 +462,7 @@ export default function HouseholdSettingsScreen() {
               marginBottom: spacing.sm,
               textTransform: 'uppercase',
             }}>
-              Meat Dishes
+              {t('householdSettings.dietary.meatDishes')}
             </Text>
             <View style={{ marginBottom: spacing.lg }}>
               <RadioGroup
@@ -477,13 +481,13 @@ export default function HouseholdSettingsScreen() {
                 marginBottom: spacing.lg,
               }}>
                 <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginBottom: spacing.sm }}>
-                  Chicken Alternative (e.g., Quorn)
+                  {t('householdSettings.dietary.chickenAlt')}
                 </Text>
                 <TextInput
                   value={settings.dietary.chicken_alternative ?? ''}
                   onChangeText={(value) => updateDietary('chicken_alternative', value || null)}
                   editable={canEdit}
-                  placeholder="e.g., Quorn"
+                  placeholder={t('householdSettings.dietary.chickenAltPlaceholder')}
                   style={{
                     backgroundColor: colors.white,
                     borderRadius: borderRadius.md,
@@ -495,13 +499,13 @@ export default function HouseholdSettingsScreen() {
                   }}
                 />
                 <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginTop: spacing.md, marginBottom: spacing.sm }}>
-                  Other Meat Alternative (e.g., Oumph)
+                  {t('householdSettings.dietary.meatAlt')}
                 </Text>
                 <TextInput
                   value={settings.dietary.meat_alternative ?? ''}
                   onChangeText={(value) => updateDietary('meat_alternative', value || null)}
                   editable={canEdit}
-                  placeholder="e.g., Oumph"
+                  placeholder={t('householdSettings.dietary.meatAltPlaceholder')}
                   style={{
                     backgroundColor: colors.white,
                     borderRadius: borderRadius.md,
@@ -522,7 +526,7 @@ export default function HouseholdSettingsScreen() {
               marginBottom: spacing.sm,
               textTransform: 'uppercase',
             }}>
-              Minced Meat
+              {t('householdSettings.dietary.mincedMeat')}
             </Text>
             <View style={{ marginBottom: spacing.lg }}>
               <RadioGroup
@@ -540,7 +544,7 @@ export default function HouseholdSettingsScreen() {
               marginBottom: spacing.sm,
               textTransform: 'uppercase',
             }}>
-              Dairy
+              {t('householdSettings.dietary.dairy')}
             </Text>
             <RadioGroup
               options={DAIRY_OPTIONS}
@@ -554,8 +558,8 @@ export default function HouseholdSettingsScreen() {
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
               icon="hardware-chip"
-              title="Kitchen Equipment"
-              subtitle="Available appliances for recipe optimization"
+              title={t('householdSettings.equipment.title')}
+              subtitle={t('householdSettings.equipment.subtitle')}
             />
 
             <View style={{
@@ -572,10 +576,10 @@ export default function HouseholdSettingsScreen() {
               }}>
                 <View>
                   <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.inverse }}>
-                    Airfryer
+                    {t('householdSettings.equipment.airfryer')}
                   </Text>
                   <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
-                    Enable airfryer instructions
+                    {t('householdSettings.equipment.airfryerDesc')}
                   </Text>
                 </View>
                 <Switch
@@ -594,13 +598,13 @@ export default function HouseholdSettingsScreen() {
                   marginBottom: spacing.lg,
                 }}>
                   <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginBottom: spacing.sm }}>
-                    Model (optional)
+                    {t('householdSettings.equipment.model')}
                   </Text>
                   <TextInput
                     value={settings.equipment.airfryer_model ?? ''}
                     onChangeText={(value) => updateEquipment('airfryer_model', value || null)}
                     editable={canEdit}
-                    placeholder="e.g., Xiaomi Smart Air Fryer"
+                    placeholder={t('householdSettings.equipment.modelPlaceholder')}
                     style={{
                       backgroundColor: colors.white,
                       borderRadius: borderRadius.md,
@@ -622,10 +626,10 @@ export default function HouseholdSettingsScreen() {
               }}>
                 <View>
                   <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.inverse }}>
-                    Convection Oven
+                    {t('householdSettings.equipment.convectionOven')}
                   </Text>
                   <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
-                    Oven has hot air/fan mode
+                    {t('householdSettings.equipment.convectionDesc')}
                   </Text>
                 </View>
                 <Switch
@@ -643,10 +647,10 @@ export default function HouseholdSettingsScreen() {
               }}>
                 <View>
                   <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.inverse }}>
-                    Grill Function
+                    {t('householdSettings.equipment.grillFunction')}
                   </Text>
                   <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
-                    Oven has broil/grill element
+                    {t('householdSettings.equipment.grillDesc')}
                   </Text>
                 </View>
                 <Switch
@@ -693,7 +697,7 @@ export default function HouseholdSettingsScreen() {
                 <>
                   <Ionicons name="checkmark" size={20} color="white" />
                   <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
-                    Save Changes
+                    {t('householdSettings.saveChanges')}
                   </Text>
                 </>
               )}

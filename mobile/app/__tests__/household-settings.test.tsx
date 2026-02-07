@@ -83,7 +83,7 @@ describe('Household Settings screen', () => {
     it('shows read-only banner', async () => {
       await renderScreen();
       expect(
-        screen.getByText('Only household admins can change these settings.'),
+        screen.getByText('Only admins can change settings'),
       ).toBeTruthy();
     });
 
@@ -198,7 +198,7 @@ describe('Household Settings screen', () => {
     it('shows read-only banner (admin of a different household)', async () => {
       await renderScreen();
       expect(
-        screen.getByText('Only household admins can change these settings.'),
+        screen.getByText('Only admins can change settings'),
       ).toBeTruthy();
     });
   });

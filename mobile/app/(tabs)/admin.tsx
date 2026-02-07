@@ -19,12 +19,14 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { showAlert, showNotification } from '@/lib/alert';
+import { useTranslation } from '@/lib/i18n';
 import { GradientBackground } from '@/components';
 import { useCurrentUser, useHouseholds, useHouseholdMembers, useCreateHousehold, useAddMember, useRemoveMember } from '@/lib/hooks/use-admin';
 import type { Household, HouseholdMember } from '@/lib/types';
 
 export default function AdminScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { data: households, isLoading: householdsLoading, refetch: refetchHouseholds } = useHouseholds();
   const createHousehold = useCreateHousehold();
@@ -56,7 +58,7 @@ export default function AdminScreen() {
             marginTop: spacing.lg,
             textAlign: 'center',
           }}>
-            Admin Access Required
+            {t('admin.accessRequired')}
           </Text>
           <Text style={{
             fontSize: fontSize.lg,
@@ -64,7 +66,7 @@ export default function AdminScreen() {
             marginTop: spacing.sm,
             textAlign: 'center',
           }}>
-            You need superuser permissions to access this area.
+            {t('admin.accessRequiredMessage')}
           </Text>
         </View>
       </GradientBackground>
@@ -80,7 +82,7 @@ export default function AdminScreen() {
       setNewHouseholdName('');
       refetchHouseholds();
     } catch (error) {
-      showNotification('Error', error instanceof Error ? error.message : 'Failed to create household');
+      showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToCreateHousehold'));
     }
   };
 
@@ -118,14 +120,14 @@ export default function AdminScreen() {
               color: colors.text.primary,
               letterSpacing: -0.5,
             }}>
-              Admin
+              {t('tabs.admin')}
             </Text>
             <Text style={{
               fontSize: fontSize.lg,
               color: colors.text.secondary,
               marginTop: 4,
             }}>
-              Manage households and members
+              {t('admin.subtitle')}
             </Text>
           </View>
         </View>
@@ -139,7 +141,7 @@ export default function AdminScreen() {
           borderRadius: borderRadius.lg,
           ...shadows.sm,
         }}>
-          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '99' }}>Logged in as</Text>
+          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '99' }}>{t('admin.loggedInAs')}</Text>
           <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.inverse }}>
             {currentUser.email}
           </Text>
@@ -171,7 +173,7 @@ export default function AdminScreen() {
               fontWeight: fontWeight.semibold,
               color: colors.text.inverse,
             }}>
-              Households
+              {t('admin.households')}
             </Text>
             <Pressable
               onPress={() => setShowCreateModal(true)}
@@ -186,7 +188,7 @@ export default function AdminScreen() {
             >
               <Ionicons name="add" size={18} color="white" />
               <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
-                New
+                {t('admin.newButton')}
               </Text>
             </Pressable>
           </View>
@@ -212,7 +214,7 @@ export default function AdminScreen() {
               <View style={{ alignItems: 'center', padding: spacing.xl }}>
                 <Ionicons name="home-outline" size={48} color={colors.text.muted} />
                 <Text style={{ color: colors.text.muted, marginTop: spacing.md }}>
-                  No households yet
+                  {t('admin.noHouseholds')}
                 </Text>
               </View>
             }
@@ -233,7 +235,7 @@ export default function AdminScreen() {
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.inverse }}>
-                Create Household
+                {t('admin.createHousehold.button')}
               </Text>
               <Pressable onPress={() => setShowCreateModal(false)}>
                 <Ionicons name="close" size={28} color={colors.text.muted} />
@@ -242,12 +244,12 @@ export default function AdminScreen() {
 
             <View style={{ marginTop: spacing.xl }}>
               <Text style={{ fontSize: fontSize.md, color: colors.text.inverse, marginBottom: spacing.sm }}>
-                Household Name
+                {t('admin.createHousehold.nameLabel')}
               </Text>
               <TextInput
                 value={newHouseholdName}
                 onChangeText={setNewHouseholdName}
-                placeholder="e.g., Smith Family"
+                placeholder={t('admin.createHousehold.namePlaceholder')}
                 placeholderTextColor={colors.text.inverse + '60'}
                 style={{
                   backgroundColor: colors.white,
@@ -276,7 +278,7 @@ export default function AdminScreen() {
                 <ActivityIndicator color="white" />
               ) : (
                 <Text style={{ color: 'white', fontSize: fontSize.lg, fontWeight: fontWeight.semibold }}>
-                  Create Household
+                  {t('admin.createHousehold.button')}
                 </Text>
               )}
             </Pressable>
@@ -341,6 +343,7 @@ interface HouseholdDetailModalProps {
 }
 
 function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps) {
+  const { t } = useTranslation();
   const { data: members, isLoading, refetch } = useHouseholdMembers(household.id);
   const addMember = useAddMember();
   const removeMember = useRemoveMember();
@@ -361,25 +364,25 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
       setNewMemberEmail('');
       refetch();
     } catch (error) {
-      showNotification('Error', error instanceof Error ? error.message : 'Failed to add member');
+      showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToAddMember'));
     }
   };
 
   const handleRemoveMember = (email: string) => {
     showAlert(
-      'Remove Member',
-      `Are you sure you want to remove ${email} from this household?`,
+      t('admin.removeMember'),
+      t('admin.removeMemberConfirm', { name: email, household: household.name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Remove',
+          text: t('common.remove'),
           style: 'destructive',
           onPress: async () => {
             try {
               await removeMember.mutateAsync({ householdId: household.id, email });
               refetch();
             } catch (error) {
-              showNotification('Error', error instanceof Error ? error.message : 'Failed to remove member');
+              showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToRemoveMember'));
             }
           },
         },
@@ -427,7 +430,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
                 {household.name}
               </Text>
               <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
-                Created by: {household.created_by}
+                {t('admin.createdBy', { email: household.created_by })}
               </Text>
             </View>
           </View>
@@ -441,7 +444,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             marginBottom: spacing.md,
           }}>
             <Text style={{ fontSize: fontSize.xl, fontWeight: fontWeight.semibold, color: colors.text.inverse }}>
-              Members
+              {t('admin.members')}
             </Text>
             <Pressable
               onPress={() => setShowAddMember(true)}
@@ -456,7 +459,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             >
               <Ionicons name="person-add" size={16} color="white" />
               <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
-                Add
+                {t('admin.addMemberButton')}
               </Text>
             </Pressable>
           </View>
@@ -475,7 +478,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               )}
               ListEmptyComponent={
                 <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                  <Text style={{ color: colors.text.muted }}>No members yet</Text>
+                  <Text style={{ color: colors.text.muted }}>{t('admin.noMembers')}</Text>
                 </View>
               }
             />
@@ -497,7 +500,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
               <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.text.inverse }}>
-                Add Member
+                {t('admin.addMember.title')}
               </Text>
               <Pressable onPress={() => setShowAddMember(false)}>
                 <Ionicons name="close" size={24} color={colors.text.muted} />
@@ -507,7 +510,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             <TextInput
               value={newMemberEmail}
               onChangeText={setNewMemberEmail}
-              placeholder="Email address"
+              placeholder={t('admin.addMember.emailPlaceholder')}
               placeholderTextColor={colors.text.inverse + '60'}
               keyboardType="email-address"
               autoCapitalize="none"
@@ -560,7 +563,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
                 <ActivityIndicator color="white" />
               ) : (
                 <Text style={{ color: 'white', fontSize: fontSize.md, fontWeight: fontWeight.semibold }}>
-                  Add Member
+                  {t('admin.addMember.button')}
                 </Text>
               )}
             </Pressable>

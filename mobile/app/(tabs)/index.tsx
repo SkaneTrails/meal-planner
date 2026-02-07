@@ -14,6 +14,7 @@ import { useRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 import type { Recipe, GroceryItem } from '@/lib/types';
 
 // Local fallback image for inspiration section
@@ -93,6 +94,7 @@ export default function HomeScreen() {
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
   const { isItemAtHome } = useSettings();
+  const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
   // Use Math.random() to randomize the initial seed on each app launch
   const [inspirationIndex, setInspirationIndex] = useState(() => Math.floor(Math.random() * 10000));
@@ -212,7 +214,7 @@ export default function HomeScreen() {
               letterSpacing: letterSpacing.tight,
               marginBottom: 4,
             }}>
-              Good morning
+              {t('home.greeting')}
             </Text>
             <Text style={{
               fontSize: fontSize.lg,
@@ -220,7 +222,7 @@ export default function HomeScreen() {
               color: colors.text.secondary,
               letterSpacing: letterSpacing.normal,
             }}>
-              What shall we cook today?
+              {t('home.subtitle')}
             </Text>
           </View>
           {/* Settings button */}
@@ -274,7 +276,7 @@ export default function HomeScreen() {
             color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
-          }}>Recipes</Text>
+          }}>{t('home.stats.recipes')}</Text>
         </Pressable>
 
         {/* Planned Meals */}
@@ -303,7 +305,7 @@ export default function HomeScreen() {
             color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
-          }}>Planned</Text>
+          }}>{t('home.stats.planned')}</Text>
         </Pressable>
 
         {/* Grocery List */}
@@ -332,7 +334,7 @@ export default function HomeScreen() {
             color: '#8B7355',
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
-          }}>To Buy</Text>
+          }}>{t('home.stats.toBuy')}</Text>
         </Pressable>
       </View>
 
@@ -345,7 +347,7 @@ export default function HomeScreen() {
           marginBottom: 8,
           letterSpacing: letterSpacing.normal,
         }}>
-          Add Recipe
+          {t('home.addRecipe.title')}
         </Text>
         <View style={{
           backgroundColor: colors.glass.card,
@@ -363,7 +365,7 @@ export default function HomeScreen() {
               fontSize: fontSize.md,
               color: '#5D4E40',
             }}
-            placeholder="Paste recipe URL..."
+            placeholder={t('home.addRecipe.placeholder')}
             placeholderTextColor="#A89585"
             value={recipeUrl}
             onChangeText={setRecipeUrl}
@@ -390,7 +392,7 @@ export default function HomeScreen() {
               color: recipeUrl.trim() ? colors.white : '#8B7355',
               fontSize: fontSize.sm,
               fontFamily: fontFamily.bodySemibold,
-            }}>Import</Text>
+            }}>{t('home.addRecipe.importButton')}</Text>
           </Pressable>
           <Pressable
             onPress={() => router.push('/add-recipe')}
@@ -416,7 +418,7 @@ export default function HomeScreen() {
           marginBottom: 8,
           letterSpacing: letterSpacing.normal,
         }}>
-          Next Up
+          {t('home.nextUp.title')}
         </Text>
 
         <Pressable
@@ -456,15 +458,15 @@ export default function HomeScreen() {
               letterSpacing: letterSpacing.wide,
             }}>
               {nextMeal
-                ? `${nextMeal.isTomorrow ? "Tomorrow" : "Today"} · ${nextMeal.mealType.charAt(0).toUpperCase() + nextMeal.mealType.slice(1)}`
-                : 'No meal planned'}
+                ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}` as any)}`
+                : t('home.nextUp.noMealPlanned')}
             </Text>
             <Text style={{
               fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               color: '#5D4E40',
             }} numberOfLines={1}>
-              {nextMeal?.title || 'Plan your next meal'}
+              {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#8B7355" />
@@ -481,7 +483,7 @@ export default function HomeScreen() {
               color: colors.white,
               letterSpacing: letterSpacing.normal,
             }}>
-              Inspiration
+              {t('home.inspiration.title')}
             </Text>
             <Pressable
               onPress={() => {
@@ -503,7 +505,7 @@ export default function HomeScreen() {
                 fontFamily: fontFamily.bodyMedium,
                 fontSize: fontSize.xs,
                 marginLeft: 4,
-              }}>Shuffle</Text>
+              }}>{t('home.inspiration.shuffle')}</Text>
             </Pressable>
           </View>
 
@@ -552,7 +554,7 @@ export default function HomeScreen() {
                     borderRadius: borderRadius.full,
                   }}>
                     <Text style={{ fontSize: fontSize.xs, fontFamily: fontFamily.bodyMedium, color: colors.white }}>
-                      {inspirationRecipe.meal_label.charAt(0).toUpperCase() + inspirationRecipe.meal_label.slice(1)}
+                      {t(`labels.meal.${inspirationRecipe.meal_label}` as any)}
                     </Text>
                   </View>
                 )}
@@ -568,7 +570,7 @@ export default function HomeScreen() {
                     borderRadius: borderRadius.full,
                   }}>
                     <Text style={{ fontSize: fontSize.xs, fontFamily: fontFamily.bodyMedium, color: colors.white }}>
-                      {inspirationRecipe.diet_label.charAt(0).toUpperCase() + inspirationRecipe.diet_label.slice(1)}
+                      {t(`labels.diet.${inspirationRecipe.diet_label}` as any)}
                     </Text>
                   </View>
                 )}
@@ -586,7 +588,7 @@ export default function HomeScreen() {
             marginBottom: 8,
             letterSpacing: letterSpacing.tight,
           }}>
-            Get Started
+            {t('home.getStarted.title')}
           </Text>
 
           <Pressable
@@ -623,14 +625,14 @@ export default function HomeScreen() {
                 color: colors.white,
                 letterSpacing: letterSpacing.tight,
               }} numberOfLines={2}>
-                Add your first recipe
+                {t('home.getStarted.addFirstRecipe')}
               </Text>
               <Text style={{
                 fontSize: fontSize.sm,
                 color: 'rgba(255, 255, 255, 0.8)',
                 marginTop: 4,
               }}>
-                Paste a URL above to import
+                {t('home.getStarted.pasteUrl')}
               </Text>
             </LinearGradient>
           </Pressable>

@@ -210,6 +210,8 @@ const en = {
     cannotEditMessage: 'Copy this recipe to your household first to make changes.',
     couldNotOpenUrl: 'Could not open the recipe URL',
     shareMessage: 'Check out this recipe: {{title}}\n\n{{url}}',
+    copyToHousehold: 'Copy to your household',
+    share: 'Share',
   },
 
   // ── Meal plan screen ──────────────────────────────────────────────
@@ -233,6 +235,12 @@ const en = {
     failedToSaveNote: 'Failed to save note. Please try again.',
     failedToSaveSelections: 'Failed to save selections',
     removeMealConfirm: 'Remove',
+    removeMealTitle: 'Remove {{title}} from {{meal}}?',
+    notePlaceholder: 'Add a note...',
+    thisWeek: 'This Week',
+    nextWeek: 'Next Week',
+    createGroceryList: 'Create Grocery List ({{count}} meals)',
+    addNote: '+ note',
     // Day labels (icons)
     dayLabels: {
       office: '🏢 Office',
@@ -265,6 +273,8 @@ const en = {
       addToPlan: 'Add to Plan',
       noRecipes: 'No {{mealType}} recipes yet',
       addRecipesHint: 'Add some recipes with the "{{mealType}}" meal type to use random selection',
+      servings: '{{count}} servings',
+      time: '{{count}} min',
     },
     copy: {
       title: 'Copy a meal from your existing plan:',
@@ -279,7 +289,11 @@ const en = {
       addRecipeButton: 'Add a Recipe',
     },
     clearMeal: 'Clear This Meal',
+    failedToSetMeal: 'Failed to set meal',
+    failedToRemoveMeal: 'Failed to remove meal',
     failedToCopyMeal: 'Failed to copy meal',
+    searchPlaceholder: 'Search recipes...',
+    quickPlaceholder: 'e.g., Leftovers, Eating out, Pasta...',
     mealTypeLabels: {
       breakfast: 'Breakfast',
       lunch: 'Lunch',
@@ -319,6 +333,9 @@ const en = {
     sortItems: 'Sort items',
     reorderHintWeb: 'Drag to reorder items',
     reorderHintMobile: 'Hold and drag to reorder items',
+    addItemLabel: 'Add Item',
+    addItemExamplePlaceholder: 'e.g. Milk, 2 liters',
+    goToMealPlan: 'Go to Weekly Menu and tap "Create List" to generate your shopping list from planned meals.',
   },
 
   // ── Settings screen ───────────────────────────────────────────────
@@ -352,6 +369,7 @@ const en = {
     failedToSignOut: 'Failed to sign out',
     failedToAddItem: 'Failed to add item',
     failedToRemoveItem: 'Failed to remove item',
+    failedToChangeLanguage: 'Failed to change language',
   },
 
   // ── Admin screen ──────────────────────────────────────────────────
@@ -448,14 +466,18 @@ const en = {
       title: 'Dietary Preferences',
       subtitle: 'Configure how recipes should be adapted',
       seafood: 'Seafood',
-      seafoodDesc: 'No substitutions needed',
+      seafoodDesc: 'Household eats fish and shellfish',
       meatDishes: 'Meat Dishes',
+      meatRegular: 'Everyone eats meat',
+      meatRegularDesc: 'No substitutions needed',
       splitMeatVeg: 'Split portions',
       splitMeatVegDesc: '50% meat, 50% vegetarian',
       meatNone: 'Vegetarian',
-      meatRegular: 'Regular',
+      meatNoneDesc: 'Use alternatives for all',
       chickenAlt: 'Chicken Alternative (e.g., Quorn)',
+      chickenAltPlaceholder: 'e.g., Quorn',
       meatAlt: 'Other Meat Alternative (e.g., Oumph)',
+      meatAltPlaceholder: 'e.g., Oumph',
       mincedMeat: 'Minced Meat',
       mincedRegular: 'Regular mince',
       mincedRegularDesc: 'Beef, pork, etc.',

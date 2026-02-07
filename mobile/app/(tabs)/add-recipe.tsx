@@ -18,6 +18,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useScrapeRecipe } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
+import { useTranslation } from '@/lib/i18n';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground } from '@/components';
 import type { Recipe } from '@/lib/types';
@@ -30,6 +31,7 @@ export default function AddRecipeScreen() {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);
   const scrapeRecipe = useScrapeRecipe();
+  const { t } = useTranslation();
 
   const isValidUrl = (text: string) => {
     try {
@@ -42,7 +44,7 @@ export default function AddRecipeScreen() {
 
   const handleImport = async () => {
     if (!isValidUrl(url)) {
-      showNotification('Invalid URL', 'Please enter a valid recipe URL');
+      showNotification(t('addRecipe.invalidUrl'), t('addRecipe.invalidUrlMessage'));
       return;
     }
 
@@ -54,9 +56,9 @@ export default function AddRecipeScreen() {
       if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
         setShowSummaryModal(true);
       } else {
-        showAlert('Done!', `"${recipe.title}" has been imported!`, [
+        showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
           {
-            text: 'View Recipe',
+            text: t('addRecipe.viewRecipe'),
             style: 'cancel',
             onPress: () => {
               router.back();
@@ -64,14 +66,14 @@ export default function AddRecipeScreen() {
             },
           },
           {
-            text: 'Add More',
+            text: t('addRecipe.addMore'),
             onPress: () => setUrl(''),
           },
         ]);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Could not import the recipe';
-      showNotification('Import failed', message);
+      const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
+      showNotification(t('addRecipe.importFailed'), message);
     }
   };
 
@@ -114,19 +116,18 @@ export default function AddRecipeScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
               <Ionicons name="information-circle" size={22} color={colors.white} />
               <Text style={{ marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontWeight: '600', color: colors.white, letterSpacing: letterSpacing.normal }}>
-                Import from URL
+                {t('addRecipe.title')}
               </Text>
             </View>
             <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, lineHeight: 22 }}>
-              Paste a recipe URL from any cooking site. We will automatically
-              extract the title, ingredients, instructions, and more.
+              {t('addRecipe.description')}
             </Text>
           </View>
 
           {/* URL input */}
           <View style={{ marginBottom: spacing.lg }}>
             <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm, letterSpacing: letterSpacing.normal }}>
-              Recipe URL
+              {t('addRecipe.urlLabel')}
             </Text>
             <View style={{
               flexDirection: 'row',
@@ -182,10 +183,10 @@ export default function AddRecipeScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
-                  Enhance with AI
+                  {t('addRecipe.enhanceWithAI')}
                 </Text>
                 <Text style={{ fontSize: fontSize.md, color: colors.gray[600], marginTop: spacing.xs }}>
-                  Optimize measurements, times, and instructions
+                  {t('addRecipe.enhanceDescription')}
                 </Text>
               </View>
             </View>
@@ -217,14 +218,14 @@ export default function AddRecipeScreen() {
               <>
                 <Ionicons name="hourglass-outline" size={20} color={colors.white} />
                 <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
-                  {enhanceWithAI ? 'Importing and enhancing...' : 'Importing...'}
+                  {enhanceWithAI ? t('addRecipe.importingEnhancing') : t('addRecipe.importing')}
                 </Text>
               </>
             ) : (
               <>
                 <Ionicons name="download-outline" size={20} color={colors.white} />
                 <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
-                  Import Recipe
+                  {t('addRecipe.importButton')}
                 </Text>
               </>
             )}
@@ -233,7 +234,7 @@ export default function AddRecipeScreen() {
           {/* Supported sites */}
           <View style={{ marginTop: spacing['3xl'] }}>
             <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.gray[600], marginBottom: spacing.md, letterSpacing: letterSpacing.wide, textTransform: 'uppercase' }}>
-              Supported sites (400+)
+              {t('addRecipe.supportedSites')}
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
               {[
@@ -245,7 +246,7 @@ export default function AddRecipeScreen() {
                 'Serious Eats',
                 'NYT Cooking',
                 'Tasty',
-                'and many more...',
+                t('addRecipe.andMore'),
               ].map((site) => (
                 <View
                   key={site}
@@ -296,7 +297,7 @@ export default function AddRecipeScreen() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
-                    Recipe Enhanced!
+                    {t('addRecipe.enhanced.title')}
                   </Text>
                   <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }} numberOfLines={1}>
                     {importedRecipe?.title}
@@ -307,7 +308,7 @@ export default function AddRecipeScreen() {
               {/* Changes list */}
               <ScrollView style={{ maxHeight: 300, marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.md }}>
-                  AI Improvements:
+                  {t('addRecipe.enhanced.changesLabel')}
                 </Text>
                 {importedRecipe?.changes_made?.map((change, index) => (
                   <View
@@ -343,7 +344,7 @@ export default function AddRecipeScreen() {
                   })}
                 >
                   <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
-                    Add More
+                    {t('addRecipe.enhanced.addMore')}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -359,7 +360,7 @@ export default function AddRecipeScreen() {
                   })}
                 >
                   <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
-                    View Recipe
+                    {t('addRecipe.enhanced.viewRecipe')}
                   </Text>
                 </Pressable>
               </View>
