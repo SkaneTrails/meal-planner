@@ -255,7 +255,14 @@ export default function MealPlanScreen() {
 
   const handleSaveNote = () => {
     if (editingNoteDate) {
-      updateNote.mutate({ date: editingNoteDate, note: noteText.trim() });
+      updateNote.mutate(
+        { date: editingNoteDate, note: noteText.trim() },
+        {
+          onError: () => {
+            showNotification('Error', 'Failed to save note. Please try again.');
+          },
+        }
+      );
       setEditingNoteDate(null);
       setNoteText('');
     }
@@ -838,7 +845,14 @@ export default function MealPlanScreen() {
                             'Remove meal',
                             `Remove ${title} from ${label.toLowerCase()}?`,
                             () => {
-                              removeMeal.mutate({ date: dateStr, mealType: type });
+                              removeMeal.mutate(
+                                { date: dateStr, mealType: type },
+                                {
+                                  onError: () => {
+                                    showNotification('Error', 'Failed to remove meal. Please try again.');
+                                  },
+                                }
+                              );
                             }
                           );
                         }}

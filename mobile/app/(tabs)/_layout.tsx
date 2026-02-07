@@ -96,9 +96,6 @@ export default function TabLayout() {
     return <Redirect href="/no-access" />;
   }
 
-  // Check if user is superuser (show admin tab)
-  const isSuperuser = currentUser?.role === 'superuser';
-
   return (
     <Tabs
       screenOptions={{
@@ -170,22 +167,14 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarAccessibilityLabel: 'Settings',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "settings" : "settings-outline"} size={20} color={color} />
-          ),
+          href: null, // Hide from tab bar - accessed via home screen gear icon
         }}
       />
       <Tabs.Screen
         name="admin"
         options={{
           title: 'Admin',
-          tabBarAccessibilityLabel: 'Admin',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "shield-checkmark" : "shield-checkmark-outline"} size={20} color={color} />
-          ),
-          // Only show admin tab for superusers
-          href: isSuperuser ? '/admin' : null,
+          href: null, // Hide from tab bar - accessed via Settings page
         }}
       />
       {/* Hidden screens that still show tab bar */}

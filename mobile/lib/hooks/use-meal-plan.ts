@@ -66,6 +66,10 @@ export function useUpdateNote() {
     onSuccess: (data) => {
       queryClient.setQueryData(mealPlanKeys.detail(), data);
     },
+    onError: () => {
+      // Refetch to ensure UI is in sync with server on error
+      queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
+    },
   });
 }
 
@@ -107,6 +111,10 @@ export function useSetMeal() {
     onSuccess: (data) => {
       queryClient.setQueryData(mealPlanKeys.detail(), data);
     },
+    onError: () => {
+      // Refetch to ensure UI is in sync with server on error
+      queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
+    },
   });
 }
 
@@ -122,6 +130,10 @@ export function useRemoveMeal() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(mealPlanKeys.detail(), data);
+    },
+    onError: () => {
+      // Refetch to ensure UI is in sync with server on error
+      queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });
 }

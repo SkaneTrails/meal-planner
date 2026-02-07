@@ -10,6 +10,7 @@ import {
   ScrollView,
   TextInput,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -78,7 +79,7 @@ function SectionHeader({
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
   const [newItem, setNewItem] = useState('');
 
@@ -159,6 +160,73 @@ export default function SettingsScreen() {
             }}>Customize your experience</Text>
           </View>
 
+          {/* Account Section - Show who's logged in first */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <SectionHeader
+              icon="person-circle"
+              title="Account"
+              subtitle={user?.email || 'Email unavailable'}
+            />
+
+            {/* User info card */}
+            <View style={{
+              backgroundColor: colors.glass.card,
+              borderRadius: borderRadius.md,
+              padding: spacing.lg,
+              marginBottom: spacing.md,
+              ...shadows.sm,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: colors.bgDark,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: spacing.md,
+                }}>
+                  <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text.dark }}>
+                    {user?.email?.[0]?.toUpperCase() || '?'}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+                    {user?.displayName || user?.email?.split('@')[0] || 'User'}
+                  </Text>
+                  <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 2 }}>
+                    {user?.email}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <Pressable
+              onPress={handleSignOut}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? '#FEE2E2' : colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                ...shadows.sm,
+              })}
+            >
+              <Ionicons name="log-out-outline" size={20} color="#DC2626" />
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontWeight: fontWeight.semibold,
+                  color: '#DC2626',
+                  marginLeft: spacing.sm,
+                }}
+              >
+                Sign Out
+              </Text>
+            </Pressable>
+          </View>
+
           {/* Household Settings Section */}
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
@@ -173,14 +241,14 @@ export default function SettingsScreen() {
                   router.push(`/household-settings?id=${currentUser.household_id}`);
                 }
               }}
-              disabled={!currentUser?.household_id}
+              disabled={userLoading || !currentUser?.household_id}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: pressed ? colors.bgDark : colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
-                opacity: currentUser?.household_id ? 1 : 0.5,
+                opacity: userLoading ? 0.6 : currentUser?.household_id ? 1 : 0.5,
                 ...shadows.sm,
               })}
             >
@@ -189,10 +257,18 @@ export default function SettingsScreen() {
                   Household Settings
                 </Text>
                 <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
-                  Configure dietary preferences, kitchen equipment, and household size
+                  {userLoading
+                    ? 'Loading household info...'
+                    : currentUser?.household_id
+                      ? 'Configure dietary preferences, kitchen equipment, and household size'
+                      : 'You are not part of a household yet'}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+              {userLoading ? (
+                <ActivityIndicator size="small" color={colors.text.dark + '80'} />
+              ) : (
+                <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+              )}
             </Pressable>
           </View>
 
@@ -411,6 +487,39 @@ export default function SettingsScreen() {
             )}
           </View>
 
+          {/* Admin Section - Superuser only */}
+          {currentUser?.role === 'superuser' && (
+            <View style={{ marginBottom: spacing['2xl'] }}>
+              <SectionHeader
+                icon="shield-checkmark"
+                title="Admin"
+                subtitle="Manage households and members"
+              />
+
+              <Pressable
+                onPress={() => router.push('/admin')}
+                style={({ pressed }) => ({
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: pressed ? colors.bgDark : colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.lg,
+                  ...shadows.sm,
+                })}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+                    Admin Dashboard
+                  </Text>
+                  <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
+                    Manage all households, members, and system settings
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+              </Pressable>
+            </View>
+          )}
+
           {/* About Section */}
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
@@ -434,40 +543,6 @@ export default function SettingsScreen() {
                 <Text style={{ fontSize: fontSize.md }}>❤️</Text>
               </View>
             </View>
-          </View>
-
-          {/* Account Section */}
-          <View style={{ marginBottom: spacing['2xl'] }}>
-            <SectionHeader
-              icon="person-circle"
-              title="Account"
-              subtitle={user?.email || 'Email unavailable'}
-            />
-
-            <Pressable
-              onPress={handleSignOut}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? '#FEE2E2' : colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.lg,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                ...shadows.sm,
-              })}
-            >
-              <Ionicons name="log-out-outline" size={20} color="#DC2626" />
-              <Text
-                style={{
-                  fontSize: fontSize.md,
-                  fontWeight: fontWeight.semibold,
-                  color: '#DC2626',
-                  marginLeft: spacing.sm,
-                }}
-              >
-                Sign Out
-              </Text>
-            </Pressable>
           </View>
         </ScrollView>
       </View>

@@ -201,26 +201,47 @@ export default function HomeScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-      {/* Elegant header with greeting */}
+      {/* Elegant header with greeting and settings */}
       <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 16 }}>
-        <View>
-          <Text style={{
-            fontSize: fontSize['4xl'],
-            fontFamily: fontFamily.display,
-            color: colors.text.primary,
-            letterSpacing: letterSpacing.tight,
-            marginBottom: 4,
-          }}>
-            Good morning
-          </Text>
-          <Text style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.body,
-            color: colors.text.secondary,
-            letterSpacing: letterSpacing.normal,
-          }}>
-            What shall we cook today?
-          </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{
+              fontSize: fontSize['4xl'],
+              fontFamily: fontFamily.display,
+              color: colors.text.primary,
+              letterSpacing: letterSpacing.tight,
+              marginBottom: 4,
+            }}>
+              Good morning
+            </Text>
+            <Text style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.body,
+              color: colors.text.secondary,
+              letterSpacing: letterSpacing.normal,
+            }}>
+              What shall we cook today?
+            </Text>
+          </View>
+          {/* Settings button */}
+          <Pressable
+            onPress={() => {
+              hapticLight();
+              router.push('/settings');
+            }}
+            style={({ pressed }) => ({
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: colors.glass.card,
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: pressed ? 0.7 : 1,
+              ...shadows.sm,
+            })}
+          >
+            <Ionicons name="settings-outline" size={22} color="#5D4E40" />
+          </Pressable>
         </View>
       </View>
 
