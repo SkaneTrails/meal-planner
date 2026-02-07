@@ -107,6 +107,7 @@ mobile/                  # React Native mobile app
 │   ├── api.ts           # REST API client
 │   ├── hooks/           # React Query hooks
 │   └── types.ts         # TypeScript types
+├── test/                # Test setup, helpers, RN mocks
 └── package.json
 
 functions/scrape_recipe/ # Cloud Function for recipe scraping
@@ -146,7 +147,7 @@ infra/                   # Terraform infrastructure
 | Component | Key Packages |
 | --------- | ------------ |
 | API (`api/`) | fastapi, uvicorn, pydantic, google-cloud-firestore, google-cloud-storage, google-genai, recipe-scrapers, pillow |
-| Mobile (`mobile/`) | expo, expo-router, @tanstack/react-query, nativewind |
+| Mobile (`mobile/`) | expo, expo-router, @tanstack/react-query, nativewind, vitest, @testing-library/react |
 | Functions (`functions/`) | functions-framework, recipe-scrapers |
 
 ### Data Flow
