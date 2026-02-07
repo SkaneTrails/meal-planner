@@ -405,13 +405,18 @@ After addressing comments and fixing CI issues:
 
 ### Always request Copilot review
 
-Every PR must request review from `copilot`:
+Every PR must request review from `copilot`. However, `--reviewer copilot` at creation time
+fails with "'copilot' not found" and **aborts the entire PR creation**. Use two steps:
 
 ```powershell
-gh pr create --title "..." --body-file tmp_pr_body.md --reviewer copilot
+# Step 1: Create PR without --reviewer
+gh pr create --title "..." --body-file tmp_pr_body.md
+
+# Step 2: Add Copilot reviewer after creation
+gh pr edit <PR_NUMBER> --add-reviewer copilot
 ```
 
-Or add after creation: `gh pr edit <PR> --add-reviewer copilot`
+> ⚠️ **Never** use `gh pr create --reviewer copilot` — it aborts PR creation entirely.
 
 ### Multi-line bodies (PowerShell)
 
@@ -422,9 +427,11 @@ NEVER pass backtick-containing text via `--body` in PowerShell — backticks are
 ```powershell
 # 1. Write body to temp file (use create_file tool)
 # 2. Create PR with --body-file
-gh pr create --title "feat: ..." --body-file tmp_pr_body.md --reviewer copilot
+gh pr create --title "feat: ..." --body-file tmp_pr_body.md
 # 3. Delete temp file
 Remove-Item tmp_pr_body.md
+# 4. Add Copilot reviewer
+gh pr edit <PR_NUMBER> --add-reviewer copilot
 ```
 
 ---
