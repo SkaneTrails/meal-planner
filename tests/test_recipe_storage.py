@@ -126,6 +126,20 @@ class TestDocToRecipe:
         assert result.tips == "Use fresh herbs"
         assert result.changes_made == ["Added spices", "Fixed timing"]
 
+    def test_coerces_invalid_visibility_to_household(self) -> None:
+        """Should default to 'household' when visibility is null or invalid."""
+        for bad_value in [None, "", "invalid", "public", 123]:
+            data = {"title": "Recipe", "visibility": bad_value}
+            result = _doc_to_recipe("doc123", data)
+            assert result.visibility == "household", f"Failed for visibility={bad_value!r}"
+
+    def test_preserves_valid_visibility(self) -> None:
+        """Should preserve valid visibility values."""
+        for valid_value in ["household", "shared"]:
+            data = {"title": "Recipe", "visibility": valid_value}
+            result = _doc_to_recipe("doc123", data)
+            assert result.visibility == valid_value
+
 
 class TestSaveRecipe:
     """Tests for save_recipe function."""

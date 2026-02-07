@@ -42,6 +42,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
 - **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
+- **PowerShell backtick escaping** - NEVER use backticks in `gh pr create --body` or similar CLI args. PowerShell interprets `` ` `` as escape characters, causing Unicode parse errors. Instead: write the body to a temp file, then use `--body-file tmp_pr_body.md`, then delete the file
 
 ## Keeping Documentation Current
 

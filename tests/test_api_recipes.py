@@ -37,6 +37,24 @@ def client() -> TestClient:
 
 
 @pytest.fixture
+def superuser_client() -> TestClient:
+    """Create test client with mocked auth (superuser with household)."""
+    from api.auth.firebase import require_auth
+
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            uid="super_user", email="admin@example.com", household_id="super_household", role="superuser"
+        )
+
+    app.dependency_overrides[require_auth] = mock_auth
+
+    with TestClient(app) as c:
+        yield c
+
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
 def sample_recipe() -> Recipe:
     """Create a sample recipe for testing."""
     return Recipe(
@@ -45,6 +63,7 @@ def sample_recipe() -> Recipe:
         url="https://example.com/carbonara",
         ingredients=["pasta", "eggs", "cheese"],
         instructions=["Cook pasta", "Mix eggs", "Combine"],
+        household_id="test_household",
     )
 
 
@@ -87,6 +106,13 @@ class TestListRecipes:
 
         assert response.status_code == 200
         mock_search.assert_called_once()
+
+    def test_superuser_sees_all_recipes(self, superuser_client: TestClient) -> None:
+        """Superuser should get all recipes without household filtering."""
+        with patch("api.routers.recipes.recipe_storage.get_all_recipes", return_value=[]) as mock_get:
+            superuser_client.get("/recipes")
+
+        mock_get.assert_called_once_with(include_duplicates=False, household_id=None)
 
 
 class TestGetRecipe:
@@ -139,21 +165,21 @@ class TestGetRecipe:
         assert response.status_code == 200
         assert response.json()["title"] == "Shared Recipe"
 
-    def test_returns_recipe_for_legacy_without_household(self, client: TestClient) -> None:
-        """Should return a legacy recipe (no household_id)."""
-        legacy_recipe = Recipe(
-            id="legacy123",
-            title="Legacy Recipe",
-            url="https://example.com/legacy",
-            household_id=None,  # Legacy/unassigned
+    def test_superuser_can_view_any_recipe(self, superuser_client: TestClient) -> None:
+        """Superuser should see any recipe regardless of household."""
+        private_recipe = Recipe(
+            id="private123",
+            title="Private Recipe",
+            url="https://example.com/private",
+            household_id="other_household",
             visibility="household",
         )
 
-        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=legacy_recipe):
-            response = client.get("/recipes/legacy123")
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=private_recipe):
+            response = superuser_client.get("/recipes/private123")
 
         assert response.status_code == 200
-        assert response.json()["title"] == "Legacy Recipe"
+        assert response.json()["title"] == "Private Recipe"
 
 
 class TestCreateRecipe:
@@ -400,7 +426,7 @@ class TestCopyRecipe:
             id="shared123",
             title="Shared Recipe",
             url="https://example.com/shared",
-            household_id=None,  # Legacy/shared
+            household_id="other_household",
             visibility="shared",
         )
         copied_recipe = Recipe(
