@@ -8,7 +8,7 @@
 3. Skim Failure Tracking table for patterns relevant to current topic
 4. Acknowledge what you found before proceeding
 
-This file persists across conversations. Ignoring it loses track of work.
+This file is gitignored (local-only, never committed). Ignoring it loses track of work.
 
 **On failure:** Log to Failure Tracking table in `.copilot-tasks.md`; when count reaches 3, promote to permanent documentation.
 
@@ -17,7 +17,7 @@ This file persists across conversations. Ignoring it loses track of work.
 | | `.copilot-tasks.md` | `manage_todo_list` tool |
 |---|---|---|
 | **Purpose** | Persistent project backlog across conversations | Ephemeral progress tracker within a single session |
-| **Lifetime** | Permanent — committed to repo | Gone when conversation ends |
+| **Lifetime** | Permanent — local file (gitignored) | Gone when conversation ends |
 | **Content** | Open issues, deferred work, failure tracking | Steps for the current task only |
 | **When to update** | Branch changes, tasks complete, issues discovered | Breaking down multi-step work in progress |
 
