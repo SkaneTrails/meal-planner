@@ -38,8 +38,14 @@ export function useLanguageSync(householdId: string | null | undefined) {
 
     // Only sync if local language differs from Firestore
     if (settings.language !== remoteLanguage) {
-      hasSynced.current = true;
-      setLanguage(remoteLanguage);
+      (async () => {
+        try {
+          await setLanguage(remoteLanguage);
+          hasSynced.current = true;
+        } catch {
+          // Allow retry on next render if AsyncStorage write fails
+        }
+      })();
     } else {
       hasSynced.current = true;
     }

@@ -135,7 +135,9 @@ export default function SettingsScreen() {
     try {
       await setLanguage(language);
       // Write back to Firestore so other household members get the change
-      updateHouseholdLanguage(language).catch(() => {});
+      updateHouseholdLanguage(language).catch(() =>
+        console.warn('Failed to sync language to household settings')
+      );
     } catch {
       showNotification(t('common.error'), t('settings.failedToChangeLanguage'));
     }

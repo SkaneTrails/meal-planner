@@ -37,8 +37,8 @@ const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 // All diet label options (labels resolved via t() at render time)
 const DIET_OPTIONS: { value: DietLabel | null; labelKey: string; emoji: string }[] = [
   { value: null, labelKey: 'labels.diet.none', emoji: '➖' },
-  { value: 'veggie', labelKey: 'labels.diet.vegetarian', emoji: '🥬' },
-  { value: 'fish', labelKey: 'labels.diet.seafood', emoji: '🐟' },
+  { value: 'veggie', labelKey: 'labels.diet.veggie', emoji: '🥬' },
+  { value: 'fish', labelKey: 'labels.diet.fish', emoji: '🐟' },
   { value: 'meat', labelKey: 'labels.diet.meat', emoji: '🥩' },
 ];
 
