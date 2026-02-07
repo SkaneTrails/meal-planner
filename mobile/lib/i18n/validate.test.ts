@@ -5,6 +5,8 @@
  * don't become excessively longer than their English originals.
  *
  * Run via:  pnpm i18n:check   (or as part of pnpm test)
+ *
+ * @vitest-environment node
  */
 
 import { describe, it, expect } from 'vitest';
