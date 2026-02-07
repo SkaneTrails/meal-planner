@@ -6,12 +6,14 @@
 import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '../lib/hooks/use-auth';
+import { useTranslation } from '../lib/i18n';
 import { GoogleLogo } from '../components/GoogleLogo';
 import { GradientBackground } from '../components';
 import { fontFamily, fontSize, colors, spacing, borderRadius } from '../lib/theme';
 
 export default function SignInScreen() {
   const { user, loading, error, signIn, signOut } = useAuth();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     try {
@@ -41,7 +43,7 @@ export default function SignInScreen() {
           })}
         >
           <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textDecorationLine: 'underline' }}>
-            Sign out
+            {t('signIn.signOut')}
           </Text>
         </Pressable>
       </GradientBackground>
@@ -60,7 +62,7 @@ export default function SignInScreen() {
           letterSpacing: -1,
           marginBottom: spacing.sm,
         }}>
-          Aroma
+          {t('signIn.appName')}
         </Text>
         <Text style={{
           fontFamily: fontFamily.body,
@@ -70,7 +72,7 @@ export default function SignInScreen() {
           letterSpacing: 1,
           marginBottom: 64,
         }}>
-          Cook with intention.
+          {t('signIn.tagline')}
         </Text>
 
         {/* Error Message */}
@@ -104,7 +106,7 @@ export default function SignInScreen() {
         >
           <GoogleLogo size={20} />
           <Text style={{ color: colors.text.inverse, fontFamily: fontFamily.bodySemibold, fontSize: fontSize.lg, marginLeft: spacing.md }}>
-            Continue with Google
+            {t('signIn.continueWithGoogle')}
           </Text>
         </Pressable>
       </View>
@@ -112,7 +114,7 @@ export default function SignInScreen() {
       {/* Footer */}
       <View style={{ paddingBottom: 48, paddingHorizontal: spacing.xl, alignItems: 'center', gap: spacing.md }}>
         <Text style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textAlign: 'center' }}>
-          Sign in to sync your recipes across devices
+          {t('signIn.syncMessage')}
         </Text>
         <Pressable
             onPress={handleSignOut}
@@ -124,7 +126,7 @@ export default function SignInScreen() {
             })}
           >
             <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textDecorationLine: 'underline' }}>
-              Sign out
+              {t('signIn.signOut')}
             </Text>
           </Pressable>
       </View>

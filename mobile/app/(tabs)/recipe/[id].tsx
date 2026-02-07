@@ -26,6 +26,7 @@ import { useRecipe, useDeleteRecipe, useUpdateRecipe, useSetMeal, useMealPlan, u
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
+import { useTranslation } from '@/lib/i18n';
 import { BouncingLoader, GradientBackground } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
@@ -315,6 +316,7 @@ export default function RecipeDetailScreen() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const isAuthReady = !authLoading && !!user;
+  const { t } = useTranslation();
 
   // Favorites
   const { isFavorite, toggleFavorite } = useSettings();
@@ -417,9 +419,9 @@ export default function RecipeDetailScreen() {
         },
       });
       setShowEditModal(false);
-      showNotification('Saved', 'Recipe details updated');
+      showNotification(t('recipe.saved'), t('recipe.recipeUpdated'));
     } catch {
-      showNotification('Error', 'Failed to save changes');
+      showNotification(t('common.error'), t('recipe.failedToSave'));
     } finally {
       setIsSavingEdit(false);
     }
@@ -432,12 +434,12 @@ export default function RecipeDetailScreen() {
     if (!targetHousehold) return;
 
     showAlert(
-      'Transfer Recipe',
-      `Move "${recipe.title}" to ${targetHousehold.name}?`,
+      t('recipe.transferRecipe'),
+      t('recipe.transferConfirm', { title: recipe.title, household: targetHousehold.name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Transfer',
+          text: t('recipe.transfer'),
           onPress: async () => {
             setIsTransferring(true);
             try {
@@ -448,10 +450,10 @@ export default function RecipeDetailScreen() {
               setEditHouseholdId(targetHouseholdId);
               setShowEditModal(false);
               hapticSuccess();
-              showNotification('Transferred', `Recipe moved to ${targetHousehold.name}`);
+              showNotification(t('recipe.transferred'), t('recipe.transferredTo', { household: targetHousehold.name }));
             } catch {
               hapticWarning();
-              showNotification('Error', 'Failed to transfer recipe');
+              showNotification(t('common.error'), t('recipe.failedToTransfer'));
             } finally {
               setIsTransferring(false);
             }
@@ -497,15 +499,15 @@ export default function RecipeDetailScreen() {
   const handlePickImage = async () => {
     // Ask user for permission and show options
     showAlert(
-      'Change Recipe Photo',
-      'Choose an option',
+      t('recipe.changePhoto'),
+      t('recipe.chooseOption'),
       [
         {
-          text: 'Take Photo',
+          text: t('recipe.takePhoto'),
           onPress: async () => {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
-              showNotification('Permission needed', 'Camera permission is required to take photos');
+              showNotification(t('recipe.permissionNeeded'), t('recipe.cameraPermission'));
               return;
             }
             const result = await ImagePicker.launchCameraAsync({
@@ -520,11 +522,11 @@ export default function RecipeDetailScreen() {
           },
         },
         {
-          text: 'Choose from Library',
+          text: t('recipe.chooseFromLibrary'),
           onPress: async () => {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
-              showNotification('Permission needed', 'Photo library permission is required');
+              showNotification(t('recipe.permissionNeeded'), t('recipe.libraryPermission'));
               return;
             }
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -539,14 +541,14 @@ export default function RecipeDetailScreen() {
           },
         },
         {
-          text: 'Enter URL',
+          text: t('recipe.enterUrl'),
           onPress: () => {
             // Use cross-platform modal instead of iOS-only Alert.prompt
             setImageUrlInput(recipe?.image_url || '');
             setShowUrlModal(true);
           },
         },
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
       ]
     );
   };
@@ -563,7 +565,7 @@ export default function RecipeDetailScreen() {
         id: id!,
         updates: {}, // Empty update just to trigger cache refresh
       });
-      showNotification('Success', 'Recipe photo uploaded!');
+      showNotification(t('common.success'), t('recipe.photoUploaded'));
     } catch (err) {
       // Fallback: save local URI if upload fails
       console.warn('Upload failed, saving local URI:', err);
@@ -572,9 +574,9 @@ export default function RecipeDetailScreen() {
           id: id!,
           updates: { image_url: localUri },
         });
-        showNotification('Saved Locally', 'Photo saved locally (upload to cloud failed)');
+        showNotification(t('recipe.savedLocally'), t('recipe.savedLocallyMessage'));
       } catch {
-        showNotification('Error', 'Failed to update photo');
+        showNotification(t('common.error'), t('recipe.failedToUpdatePhoto'));
       }
     } finally {
       setIsUpdatingImage(false);
@@ -588,9 +590,9 @@ export default function RecipeDetailScreen() {
         id: id!,
         updates: { image_url: url },
       });
-      showNotification('Success', 'Recipe photo updated!');
+      showNotification(t('common.success'), t('recipe.photoUpdated'));
     } catch {
-      showNotification('Error', 'Failed to update photo');
+      showNotification(t('common.error'), t('recipe.failedToUpdatePhoto'));
     } finally {
       setIsUpdatingImage(false);
     }
@@ -606,9 +608,10 @@ export default function RecipeDetailScreen() {
         recipeId: id,
       });
       setShowPlanModal(false);
-      showNotification('Added!', `${recipe?.title} added to ${mealType} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`);
+      const localizedMealType = t(`selectRecipe.mealTypeLabels.${mealType}`);
+      showNotification(t('recipe.addedToMealPlan'), t('recipe.addedToMealPlanMessage', { title: recipe?.title ?? '', mealType: localizedMealType, date: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) }));
     } catch {
-      showNotification('Error', 'Failed to add to meal plan');
+      showNotification(t('common.error'), t('recipe.failedToAddToMealPlan'));
     }
   };
 
@@ -621,7 +624,7 @@ export default function RecipeDetailScreen() {
         recipeId: undefined,
       });
     } catch {
-      showNotification('Error', 'Failed to clear meal');
+      showNotification(t('common.error'), t('recipe.failedToClearMeal'));
     }
   };
 
@@ -630,14 +633,14 @@ export default function RecipeDetailScreen() {
 
     // Ensure current user is loaded before checking ownership
     if (!currentUser) {
-      showNotification('Please Wait', 'Loading your account information. Try again in a moment.');
+      showNotification(t('recipe.pleaseWait'), t('recipe.loadingAccount'));
       return;
     }
 
     // Check ownership - only allow rating own recipes
     const isOwned = recipe.household_id === currentUser.household_id;
     if (!isOwned) {
-      showNotification('Cannot Rate', 'Copy this recipe to your household first to rate it.');
+      showNotification(t('recipe.cannotRate'), t('recipe.cannotRateMessage'));
       return;
     }
 
@@ -650,7 +653,7 @@ export default function RecipeDetailScreen() {
         updates: { rating: newRating },
       });
     } catch (err) {
-      showNotification('Error', 'Failed to update rating');
+      showNotification(t('common.error'), t('recipe.failedToUpdateRating'));
     }
   };
 
@@ -659,14 +662,14 @@ export default function RecipeDetailScreen() {
 
     // Ensure current user is loaded before checking ownership
     if (!currentUser) {
-      showNotification('Please Wait', 'Loading your account information. Try again in a moment.');
+      showNotification(t('recipe.pleaseWait'), t('recipe.loadingAccount'));
       return;
     }
 
     // Check ownership - only allow rating own recipes
     const isOwned = recipe.household_id === currentUser.household_id;
     if (!isOwned) {
-      showNotification('Cannot Rate', 'Copy this recipe to your household first to rate it.');
+      showNotification(t('recipe.cannotRate'), t('recipe.cannotRateMessage'));
       return;
     }
 
@@ -674,19 +677,19 @@ export default function RecipeDetailScreen() {
     // If already thumbs down, ask to delete
     if (recipe.rating === 1) {
       showAlert(
-        'Delete Recipe?',
-        `Do you want to delete "${recipe.title}"?`,
+        t('recipe.deleteRecipe'),
+        t('recipe.deleteConfirm', { title: recipe.title }),
         [
-          { text: 'No, keep it', style: 'cancel' },
+          { text: t('recipe.keepIt'), style: 'cancel' },
           {
-            text: 'Yes, delete',
+            text: t('recipe.yesDelete'),
             style: 'destructive',
             onPress: async () => {
               try {
                 await deleteRecipe.mutateAsync(id);
                 router.back();
               } catch (err) {
-                showNotification('Error', 'Failed to delete recipe');
+                showNotification(t('common.error'), t('recipe.failedToDelete'));
               }
             },
           },
@@ -695,11 +698,11 @@ export default function RecipeDetailScreen() {
     } else {
       // First thumb down - just mark it
       showAlert(
-        'Not a favorite?',
-        'Do you want to delete this recipe?',
+        t('recipe.notFavorite'),
+        t('recipe.notFavoriteMessage'),
         [
           {
-            text: 'No, just mark as not favorite',
+            text: t('recipe.justMarkNotFavorite'),
             style: 'cancel',
             onPress: async () => {
               try {
@@ -708,19 +711,19 @@ export default function RecipeDetailScreen() {
                   updates: { rating: 1 },
                 });
               } catch (err) {
-                showNotification('Error', 'Failed to update rating');
+                showNotification(t('common.error'), t('recipe.failedToUpdateRating'));
               }
             }
           },
           {
-            text: 'Yes, delete',
+            text: t('recipe.yesDelete'),
             style: 'destructive',
             onPress: async () => {
               try {
                 await deleteRecipe.mutateAsync(id);
                 router.back();
               } catch (err) {
-                showNotification('Error', 'Failed to delete recipe');
+                showNotification(t('common.error'), t('recipe.failedToDelete'));
               }
             },
           },
@@ -731,19 +734,19 @@ export default function RecipeDetailScreen() {
 
   const handleDelete = () => {
     showAlert(
-      'Delete Recipe',
-      `Are you sure you want to delete "${recipe?.title}"?`,
+      t('recipe.deleteRecipe'),
+      t('recipe.deleteConfirm', { title: recipe?.title ?? '' }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await deleteRecipe.mutateAsync(id);
               router.back();
             } catch (err) {
-              showNotification('Error', 'Failed to delete recipe');
+              showNotification(t('common.error'), t('recipe.failedToDelete'));
             }
           },
         },
@@ -757,7 +760,7 @@ export default function RecipeDetailScreen() {
     try {
       await Share.share({
         title: recipe.title,
-        message: `Check out this recipe: ${recipe.title}\n\n${recipe.url || ''}`,
+        message: t('recipe.shareMessage', { title: recipe.title, url: recipe.url || '' }),
         url: recipe.url,
       });
     } catch (err) {
@@ -779,7 +782,7 @@ export default function RecipeDetailScreen() {
         }}>
           <BouncingLoader size={14} />
         </View>
-        <Text style={{ color: colors.text.primary, fontSize: fontSize['2xl'], fontFamily: fontFamily.displayBold }}>Loading recipe...</Text>
+        <Text style={{ color: colors.text.primary, fontSize: fontSize['2xl'], fontFamily: fontFamily.displayBold }}>{t('recipe.loading')}</Text>
       </GradientBackground>
     );
   }
@@ -798,8 +801,8 @@ export default function RecipeDetailScreen() {
         }}>
           <Ionicons name="alert-circle-outline" size={48} color={colors.text.primary} />
         </View>
-        <Text style={{ color: colors.text.primary, fontSize: 32, fontFamily: fontFamily.displayBold, marginBottom: spacing.sm }}>Recipe not found</Text>
-        <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, fontFamily: fontFamily.body, marginTop: spacing.sm, textAlign: 'center' }}>This recipe may have been deleted or moved</Text>
+        <Text style={{ color: colors.text.primary, fontSize: 32, fontFamily: fontFamily.displayBold, marginBottom: spacing.sm }}>{t('recipe.notFound')}</Text>
+        <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, fontFamily: fontFamily.body, marginTop: spacing.sm, textAlign: 'center' }}>{t('recipe.notFoundMessage')}</Text>
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => ({
@@ -810,7 +813,7 @@ export default function RecipeDetailScreen() {
             borderRadius: borderRadius.lg,
           })}
         >
-          <Text style={{ color: colors.text.primary, fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold }}>Go Back</Text>
+          <Text style={{ color: colors.text.primary, fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold }}>{t('common.goBack')}</Text>
         </Pressable>
       </GradientBackground>
     );
@@ -995,7 +998,7 @@ export default function RecipeDetailScreen() {
               const canEdit = isOwned === true;
               return (
                 <Pressable
-                  onPress={canEdit ? openEditModal : () => showNotification('Cannot Edit', 'Copy this recipe to your household first to make changes.')}
+                  onPress={canEdit ? openEditModal : () => showNotification(t('recipe.cannotEdit'), t('recipe.cannotEditMessage'))}
                   style={({ pressed }) => ({
                     width: 40,
                     height: 40,
@@ -1051,14 +1054,14 @@ export default function RecipeDetailScreen() {
               }}>
                 <Text style={{ marginRight: spacing.xs, fontSize: fontSize.lg }}>{DIET_LABELS[recipe.diet_label].emoji}</Text>
                 <Text style={{ fontSize: fontSize.md, fontFamily: fontFamily.bodySemibold, color: DIET_LABELS[recipe.diet_label].color }}>
-                  {DIET_LABELS[recipe.diet_label].label}
+                  {t(`labels.diet.${recipe.diet_label}` as 'labels.diet.veggie')}
                 </Text>
               </View>
             )}
             {recipe.meal_label && (
               <View style={{ backgroundColor: colors.bgDark, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: 20 }}>
                 <Text style={{ fontSize: fontSize.md, fontFamily: fontFamily.bodySemibold, color: colors.text.inverse }}>
-                  {MEAL_LABELS[recipe.meal_label]}
+                  {t(`labels.meal.${recipe.meal_label}` as 'labels.meal.meal')}
                 </Text>
               </View>
             )}
@@ -1081,7 +1084,7 @@ export default function RecipeDetailScreen() {
             {recipe.prep_time && (
               <View style={{ flex: 1, alignItems: 'center' }}>
                 <Ionicons name="timer" size={18} color="#5D4037" />
-                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Prep</Text>
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>{t('labels.time.prep')}</Text>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {recipe.prep_time}m
                 </Text>
@@ -1090,7 +1093,7 @@ export default function RecipeDetailScreen() {
             {recipe.cook_time && (
               <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: recipe.prep_time ? 1 : 0, borderLeftColor: 'rgba(139, 115, 85, 0.15)' }}>
                 <Ionicons name="flame" size={18} color="#5D4037" />
-                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Cook</Text>
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>{t('labels.time.cook')}</Text>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {recipe.cook_time}m
                 </Text>
@@ -1099,7 +1102,7 @@ export default function RecipeDetailScreen() {
             {totalTime && (
               <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time) ? 1 : 0, borderLeftColor: 'rgba(139, 115, 85, 0.15)' }}>
                 <Ionicons name="time" size={18} color="#5D4037" />
-                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Total</Text>
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>{t('labels.time.total')}</Text>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {totalTime}m
                 </Text>
@@ -1108,7 +1111,7 @@ export default function RecipeDetailScreen() {
             {recipe.servings && (
               <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: (recipe.prep_time || recipe.cook_time || totalTime) ? 1 : 0, borderLeftColor: 'rgba(139, 115, 85, 0.15)' }}>
                 <Ionicons name="people" size={18} color="#5D4037" />
-                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>Serves</Text>
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: spacing.xs }}>{t('labels.time.serves')}</Text>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyBold, color: '#5D4037' }}>
                   {recipe.servings}
                 </Text>
@@ -1137,11 +1140,11 @@ export default function RecipeDetailScreen() {
                 <Ionicons name="list" size={18} color="#5D4037" />
               </View>
               <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
-                Ingredients
+                {t('recipe.ingredients')}
               </Text>
             </View>
             {recipe.ingredients.length === 0 ? (
-              <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>No ingredients listed</Text>
+              <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>{t('recipe.noIngredients')}</Text>
             ) : (
               <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
                 {recipe.ingredients.map((ingredient, index) => (
@@ -1172,16 +1175,16 @@ export default function RecipeDetailScreen() {
                 <Ionicons name="book" size={18} color="#5D4037" />
               </View>
               <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
-                Instructions
+                {t('recipe.instructions')}
               </Text>
               {completedSteps.size > 0 && recipe.instructions.length > 0 && (
                 <Text style={{ marginLeft: 'auto', fontSize: fontSize.md, color: colors.success, fontFamily: fontFamily.bodyMedium }}>
-                  {completedSteps.size}/{recipe.instructions.length} done
+                  {t('recipe.stepsDone', { completed: completedSteps.size, total: recipe.instructions.length })}
                 </Text>
               )}
             </View>
             {recipe.instructions.length === 0 ? (
-              <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>No instructions listed</Text>
+              <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>{t('recipe.noInstructions')}</Text>
             ) : recipe.structured_instructions ? (
               // Structured instructions with visual timeline
               <View style={{ position: 'relative' }}>
@@ -1275,7 +1278,7 @@ export default function RecipeDetailScreen() {
                   <Ionicons name="bulb-outline" size={18} color="#5D4037" />
                 </View>
                 <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
-                  Tips
+                  {t('recipe.tips')}
                 </Text>
               </View>
               <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', borderRadius: borderRadius.lg, padding: spacing.lg, borderLeftWidth: 4, borderLeftColor: '#C4704B', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
@@ -1302,7 +1305,7 @@ export default function RecipeDetailScreen() {
                   <Ionicons name="sparkles" size={18} color="#2D6A5A" />
                 </View>
                 <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: '#5D4037', letterSpacing: letterSpacing.normal, flex: 1 }}>
-                  AI Improvements
+                  {t('recipe.aiImprovements')}
                 </Text>
                 <Ionicons
                   name={showAiChanges ? 'chevron-up' : 'chevron-down'}
@@ -1329,7 +1332,7 @@ export default function RecipeDetailScreen() {
           {recipe.url && (
             <Pressable
               onPress={() => Linking.openURL(recipe.url).catch(() => {
-                showNotification('Error', 'Could not open the recipe URL');
+                showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
               })}
               style={{
                 flexDirection: 'row',
@@ -1343,7 +1346,7 @@ export default function RecipeDetailScreen() {
             >
               <Ionicons name="link" size={18} color={colors.text.inverse} />
               <Text style={{ color: colors.text.inverse, marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
-                View original recipe
+                {t('recipe.viewOriginal')}
               </Text>
             </Pressable>
           )}
@@ -1365,7 +1368,7 @@ export default function RecipeDetailScreen() {
           >
             <Ionicons name="calendar" size={20} color={colors.white} />
             <Text style={{ color: colors.white, marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontFamily: fontFamily.bodySemibold }}>
-              Add to Meal Plan
+              {t('recipe.addToMealPlan')}
             </Text>
           </Pressable>
           </View>
@@ -1390,7 +1393,7 @@ export default function RecipeDetailScreen() {
           }}>
             {/* Header */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing.xl, marginBottom: spacing.lg }}>
-              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse }}>Add to Meal Plan</Text>
+              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse }}>{t('recipe.addToMealPlan')}</Text>
               <Pressable onPress={() => setShowPlanModal(false)} style={{ padding: spacing.sm }}>
                 <Ionicons name="close" size={24} color={colors.gray[500]} />
               </Pressable>
@@ -1406,7 +1409,7 @@ export default function RecipeDetailScreen() {
                 <Ionicons name="chevron-back" size={24} color={colors.text.inverse} />
               </Pressable>
               <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: colors.text.inverse }}>
-                {weekOffset === 0 ? 'This Week' : 'Next Week'}
+                {weekOffset === 0 ? t('recipe.thisWeek') : t('recipe.nextWeek')}
               </Text>
               <Pressable
                 onPress={() => setWeekOffset(1)}
@@ -1418,22 +1421,22 @@ export default function RecipeDetailScreen() {
             </View>
 
             <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.gray[500], paddingHorizontal: spacing.xl, marginBottom: spacing.lg }}>
-              Select a day and meal for "{recipe.title}"
+              {t('recipe.selectDayPrompt', { title: recipe.title })}
             </Text>
 
             <ScrollView style={{ paddingHorizontal: spacing.xl }}>
               {weekDates.map((date) => {
                 const isToday = date.toDateString() === new Date().toDateString();
                 const isPast = isPastDate(date);
-                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
+                const monthDay = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 
                 return (
                   <View key={date.toISOString()} style={{ marginBottom: spacing.lg, opacity: isPast ? 0.4 : 1 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
                       {isToday && (
                         <View style={{ backgroundColor: colors.primary, paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: borderRadius.sm, marginRight: spacing.sm }}>
-                          <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.bodyBold, color: colors.white }}>TODAY</Text>
+                          <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.bodyBold, color: colors.white }}>{t('recipe.today')}</Text>
                         </View>
                       )}
                       <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: isToday ? colors.text.inverse : colors.gray[500] }}>
@@ -1444,6 +1447,7 @@ export default function RecipeDetailScreen() {
                       {MEAL_TYPES.map(({ type, label }) => {
                         const existingMeal = getMealForSlot(date, type);
                         const isTaken = !!existingMeal;
+                        const translatedLabel = t(`labels.mealTime.${type}` as 'labels.mealTime.lunch');
 
                         return (
                           <View key={type} style={{ flex: 1, flexDirection: 'row', gap: spacing.xs }}>
@@ -1469,7 +1473,7 @@ export default function RecipeDetailScreen() {
                             >
                               <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
                                 {isTaken && <Ionicons name="checkmark-circle" size={16} color={colors.text.inverse} />}
-                                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.text.inverse }}>{label}</Text>
+                                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.text.inverse }}>{translatedLabel}</Text>
                               </View>
                             </Pressable>
                             {isTaken && !isPast && (
@@ -1523,13 +1527,13 @@ export default function RecipeDetailScreen() {
           }}>
             {/* Header */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing.xl, marginBottom: spacing.xl }}>
-              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse }}>Edit Recipe</Text>
+              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse }}>{t('recipe.editRecipe')}</Text>
               <View style={{ flexDirection: 'row', gap: spacing.sm }}>
                 <Pressable
                   onPress={() => setShowEditModal(false)}
                   style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}
                 >
-                  <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.gray[500] }}>Cancel</Text>
+                  <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.gray[500] }}>{t('common.cancel')}</Text>
                 </Pressable>
                 <Pressable
                   onPress={handleSaveEdit}
@@ -1545,7 +1549,7 @@ export default function RecipeDetailScreen() {
                   {isSavingEdit ? (
                     <ActivityIndicator size="small" color={colors.white} />
                   ) : (
-                    <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: colors.white }}>Save</Text>
+                    <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('common.save')}</Text>
                   )}
                 </Pressable>
               </View>
@@ -1555,11 +1559,12 @@ export default function RecipeDetailScreen() {
               {/* Diet Type */}
               <View style={{ marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
-                  Diet Type
+                  {t('recipe.dietType')}
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
                   {DIET_OPTIONS.map(({ value, label, emoji }) => {
                     const isSelected = editDietLabel === value;
+                    const translatedLabel = value ? t(`labels.diet.${value}` as 'labels.diet.veggie') : t('labels.diet.none');
                     return (
                       <Pressable
                         key={label}
@@ -1577,7 +1582,7 @@ export default function RecipeDetailScreen() {
                       >
                         <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
                         <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: isSelected ? colors.white : colors.text.inverse }}>
-                          {label}
+                          {translatedLabel}
                         </Text>
                       </Pressable>
                     );
@@ -1588,11 +1593,12 @@ export default function RecipeDetailScreen() {
               {/* Meal Type */}
               <View style={{ marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
-                  Meal Type
+                  {t('recipe.mealTypeLabel')}
                 </Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
                   {MEAL_OPTIONS.map(({ value, label }) => {
                     const isSelected = editMealLabel === value;
+                    const translatedLabel = value ? t(`labels.meal.${value}` as 'labels.meal.meal') : t('labels.meal.none');
                     return (
                       <Pressable
                         key={label}
@@ -1607,7 +1613,7 @@ export default function RecipeDetailScreen() {
                         })}
                       >
                         <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: isSelected ? colors.white : colors.text.inverse }}>
-                          {label}
+                          {translatedLabel}
                         </Text>
                       </Pressable>
                     );
@@ -1618,11 +1624,13 @@ export default function RecipeDetailScreen() {
               {/* Visibility */}
               <View style={{ marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
-                  Visibility
+                  {t('recipe.visibilityLabel')}
                 </Text>
                 <View style={{ flexDirection: 'row', gap: spacing.md }}>
                   {VISIBILITY_OPTIONS.map(({ value, label, emoji, description }) => {
                     const isSelected = editVisibility === value;
+                    const translatedLabel = value === 'household' ? t('labels.visibility.private') : t('labels.visibility.shared');
+                    const translatedDesc = value === 'household' ? t('labels.visibility.privateDesc') : t('labels.visibility.sharedDesc');
                     return (
                       <Pressable
                         key={value}
@@ -1640,10 +1648,10 @@ export default function RecipeDetailScreen() {
                       >
                         <Text style={{ fontSize: fontSize['3xl'], marginBottom: spacing.xs }}>{emoji}</Text>
                         <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: isSelected ? colors.white : colors.text.inverse }}>
-                          {label}
+                          {translatedLabel}
                         </Text>
                         <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.body, color: isSelected ? colors.bgDark : colors.gray[400], marginTop: 2 }}>
-                          {description}
+                          {translatedDesc}
                         </Text>
                       </Pressable>
                     );
@@ -1655,10 +1663,10 @@ export default function RecipeDetailScreen() {
               {isSuperuser && households && households.length > 0 && (
                 <View style={{ marginBottom: spacing.xl }}>
                   <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
-                    Household
+                    {t('recipe.household')}
                   </Text>
                   <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.md }}>
-                    Transfer this recipe to a different household
+                    {t('recipe.transferDescription')}
                   </Text>
                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
                     {households.map((household) => {
@@ -1703,7 +1711,7 @@ export default function RecipeDetailScreen() {
                       }}>
                         <Ionicons name="help-circle-outline" size={16} color={colors.gray[500]} style={{ marginRight: spacing.xs }} />
                         <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: colors.gray[500] }}>
-                          Unassigned
+                          {t('recipe.unassigned')}
                         </Text>
                       </View>
                     )}
@@ -1712,7 +1720,7 @@ export default function RecipeDetailScreen() {
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: spacing.sm }}>
                       <ActivityIndicator size="small" color={colors.primary} />
                       <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.body, color: colors.gray[400], marginLeft: spacing.xs }}>
-                        Transferring...
+                        {t('recipe.transferring')}
                       </Text>
                     </View>
                   )}
@@ -1722,11 +1730,11 @@ export default function RecipeDetailScreen() {
               {/* Time & Servings */}
               <View style={{ marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
-                  Time & Servings
+                  {t('recipe.timeAndServings')}
                 </Text>
                 <View style={{ flexDirection: 'row', gap: spacing.md }}>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>Prep (min)</Text>
+                    <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>{t('labels.time.prepMin')}</Text>
                     <TextInput
                       value={editPrepTime}
                       onChangeText={setEditPrepTime}
@@ -1748,7 +1756,7 @@ export default function RecipeDetailScreen() {
                     />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>Cook (min)</Text>
+                    <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>{t('labels.time.cookMin')}</Text>
                     <TextInput
                       value={editCookTime}
                       onChangeText={setEditCookTime}
@@ -1770,7 +1778,7 @@ export default function RecipeDetailScreen() {
                     />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>Servings</Text>
+                    <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>{t('labels.time.servings')}</Text>
                     <TextInput
                       value={editServings}
                       onChangeText={setEditServings}
@@ -1797,7 +1805,7 @@ export default function RecipeDetailScreen() {
               {/* Tags */}
               <View style={{ marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
-                  Tags
+                  {t('recipe.tags')}
                 </Text>
 
                 {/* Add new tag input */}
@@ -1805,7 +1813,7 @@ export default function RecipeDetailScreen() {
                   <TextInput
                     value={newTag}
                     onChangeText={setNewTag}
-                    placeholder="Add a tag..."
+                    placeholder={t('recipe.addTag')}
                     placeholderTextColor={colors.gray[400]}
                     autoCapitalize="none"
                     onSubmitEditing={handleAddTag}
@@ -1881,7 +1889,7 @@ export default function RecipeDetailScreen() {
 
                 {!editTags && (
                   <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.body, color: colors.gray[400], fontStyle: 'italic' }}>
-                    No tags yet. Add some to organize your recipes!
+                    {t('recipe.noTags')}
                   </Text>
                 )}
               </View>
@@ -1902,10 +1910,10 @@ export default function RecipeDetailScreen() {
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: spacing.xl }}>
           <View style={{ backgroundColor: colors.white, borderRadius: borderRadius.lg, padding: spacing.xl, width: '100%', maxWidth: 400 }}>
             <Text style={{ fontSize: fontSize['2xl'], fontFamily: fontFamily.bodySemibold, color: colors.text.inverse, marginBottom: spacing.sm }}>
-              Image URL
+              {t('recipe.imageUrl')}
             </Text>
             <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.body, color: colors.gray[500], marginBottom: spacing.lg }}>
-              Enter the URL of the image
+              {t('recipe.imageUrlPrompt')}
             </Text>
             <TextInput
               value={imageUrlInput}
@@ -1936,7 +1944,7 @@ export default function RecipeDetailScreen() {
                   backgroundColor: pressed ? colors.gray[100] : 'transparent',
                 })}
               >
-                <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium, color: colors.gray[500] }}>Cancel</Text>
+                <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium, color: colors.gray[500] }}>{t('common.cancel')}</Text>
               </Pressable>
               <Pressable
                 onPress={async () => {
@@ -1952,7 +1960,7 @@ export default function RecipeDetailScreen() {
                   backgroundColor: pressed ? colors.primaryDark : colors.primary,
                 })}
               >
-                <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium, color: colors.white }}>Save</Text>
+                <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium, color: colors.white }}>{t('common.save')}</Text>
               </Pressable>
             </View>
           </View>

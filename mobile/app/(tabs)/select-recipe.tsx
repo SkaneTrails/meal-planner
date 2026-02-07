@@ -18,14 +18,8 @@ import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconCo
 import { GradientBackground, RecipeCard } from '@/components';
 import { useRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
+import { useTranslation } from '@/lib/i18n';
 import type { MealType, Recipe } from '@/lib/types';
-
-const MEAL_TYPE_LABELS: Record<MealType, string> = {
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  snack: 'Snack',
-};
 
 // Map meal types to meal_label values for filtering
 // For random shuffle in meal plan, only use 'meal' and 'grill' for lunch/dinner
@@ -35,6 +29,9 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   dinner: ['meal', 'grill'],
   snack: ['dessert', 'drink'],
 };
+
+// BCP-47 locale mapping for date formatting
+const LOCALE_MAP: Record<string, string> = { en: 'en-US', sv: 'sv-SE', it: 'it-IT' };
 
 type TabType = 'library' | 'copy' | 'random' | 'quick';
 
@@ -51,6 +48,15 @@ export default function SelectRecipeScreen() {
   const { data: mealPlan } = useMealPlan();
   const setMeal = useSetMeal();
   const removeMeal = useRemoveMeal();
+  const { t, language } = useTranslation();
+
+  // Moved inside component so labels use translated strings
+  const MEAL_TYPE_LABELS: Record<MealType, string> = useMemo(() => ({
+    breakfast: t('selectRecipe.mealTypeLabels.breakfast'),
+    lunch: t('selectRecipe.mealTypeLabels.lunch'),
+    dinner: t('selectRecipe.mealTypeLabels.dinner'),
+    snack: t('selectRecipe.mealTypeLabels.snack'),
+  }), [t]);
 
   // Initialize tab based on mode param, default to library
   const [activeTab, setActiveTab] = useState<TabType>(
@@ -160,7 +166,8 @@ export default function SelectRecipeScreen() {
     return meals.sort((a, b) => a.date.localeCompare(b.date));
   }, [mealPlan, recipes, date, mealType, targetWeekDates]);
 
-  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+  const bcp47 = LOCALE_MAP[language] || 'en-US';
+  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString(bcp47, {
     weekday: 'long',
     month: 'short',
     day: 'numeric',
@@ -175,7 +182,7 @@ export default function SelectRecipeScreen() {
       });
       router.back();
     } catch (err) {
-      showNotification('Error', 'Failed to set meal');
+      showNotification(t('common.error'), t('selectRecipe.failedToSetMeal'));
     }
   };
 
@@ -192,7 +199,7 @@ export default function SelectRecipeScreen() {
       setCustomText('');
       router.replace('/(tabs)/meal-plan');
     } catch (err) {
-      showNotification('Error', 'Failed to set meal');
+      showNotification(t('common.error'), t('selectRecipe.failedToSetMeal'));
     }
   };
 
@@ -213,7 +220,7 @@ export default function SelectRecipeScreen() {
       }
       router.back();
     } catch (err) {
-      showNotification('Error', 'Failed to copy meal');
+      showNotification(t('common.error'), t('selectRecipe.failedToCopyMeal'));
     }
   };
 
@@ -222,13 +229,13 @@ export default function SelectRecipeScreen() {
       await removeMeal.mutateAsync({ date, mealType });
       router.back();
     } catch (err) {
-      showNotification('Error', 'Failed to remove meal');
+      showNotification(t('common.error'), t('selectRecipe.failedToRemoveMeal'));
     }
   };
 
   const formatMealDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
   return (
@@ -260,7 +267,7 @@ export default function SelectRecipeScreen() {
                   fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'library' ? colors.white : colors.text.inverse
                 }}>
-                  📚 Library
+                  {t('selectRecipe.tabs.library')}
                 </Text>
               </Pressable>
               <Pressable
@@ -279,7 +286,7 @@ export default function SelectRecipeScreen() {
                   fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'random' ? colors.white : colors.text.inverse
                 }}>
-                  🎲 Random
+                  {t('selectRecipe.tabs.random')}
                 </Text>
               </Pressable>
               <Pressable
@@ -298,7 +305,7 @@ export default function SelectRecipeScreen() {
                   fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'quick' ? colors.white : colors.text.inverse
                 }}>
-                  ✏️ Quick
+                  {t('selectRecipe.tabs.quick')}
                 </Text>
               </Pressable>
               <Pressable
@@ -317,7 +324,7 @@ export default function SelectRecipeScreen() {
                   fontFamily: fontFamily.bodySemibold,
                   color: activeTab === 'copy' ? colors.white : colors.text.inverse
                 }}>
-                  📋 Copy
+                  {t('selectRecipe.tabs.copy')}
                 </Text>
               </Pressable>
             </View>
@@ -346,10 +353,10 @@ export default function SelectRecipeScreen() {
                   <Ionicons name="create-outline" size={28} color={colors.text.inverse} />
                 </View>
                 <Text style={{ fontSize: fontSize['3xl'], fontWeight: '600', color: colors.text.inverse, letterSpacing: letterSpacing.normal }}>
-                  Quick Meal
+                  {t('selectRecipe.quick.title')}
                 </Text>
                 <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }}>
-                  What are you having?
+                  {t('selectRecipe.quick.placeholder')}
                 </Text>
               </View>
 
@@ -363,7 +370,7 @@ export default function SelectRecipeScreen() {
                   color: colors.text.inverse,
                   marginBottom: spacing.lg,
                 }}
-                placeholder="e.g., Leftovers, Eating out, Pasta..."
+                placeholder={t('selectRecipe.quickPlaceholder')}
                 placeholderTextColor={colors.gray[500]}
                 value={customText}
                 onChangeText={setCustomText}
@@ -385,7 +392,7 @@ export default function SelectRecipeScreen() {
                 })}
               >
                 <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: customText.trim() ? colors.white : colors.gray[500] }}>
-                  Add Meal
+                  {t('selectRecipe.quick.addButton')}
                 </Text>
               </Pressable>
             </View>
@@ -398,7 +405,7 @@ export default function SelectRecipeScreen() {
                 <Ionicons name="search" size={20} color={colors.gray[500]} />
                 <TextInput
                   style={{ flex: 1, marginLeft: spacing.sm, fontSize: fontSize.lg, color: colors.text.inverse }}
-                  placeholder="Search recipes..."
+                  placeholder={t('selectRecipe.searchPlaceholder')}
                   placeholderTextColor={colors.gray[500]}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
@@ -437,10 +444,10 @@ export default function SelectRecipeScreen() {
                     <Ionicons name={searchQuery ? "search" : "book-outline"} size={36} color={colors.text.inverse} />
                   </View>
                   <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                    {searchQuery ? 'No matches found' : 'No recipes yet'}
+                    {searchQuery ? t('selectRecipe.empty.noMatches') : t('selectRecipe.empty.noRecipes')}
                   </Text>
                   <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
-                    {searchQuery ? 'Try a different search term' : 'Add some recipes first to plan your meals'}
+                    {searchQuery ? t('selectRecipe.empty.tryDifferent') : t('selectRecipe.empty.addRecipesFirst')}
                   </Text>
                   <Pressable
                     onPress={() => {
@@ -457,7 +464,7 @@ export default function SelectRecipeScreen() {
                       transform: [{ scale: pressed ? 0.98 : 1 }],
                     })}
                   >
-                    <Text style={{ color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>Add a Recipe</Text>
+                    <Text style={{ color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>{t('selectRecipe.empty.addRecipeButton')}</Text>
                   </Pressable>
                 </View>
               }
@@ -482,10 +489,10 @@ export default function SelectRecipeScreen() {
                     <Ionicons name="dice" size={32} color={colors.text.inverse} />
                   </View>
                   <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                    How about this?
+                    {t('selectRecipe.random.howAbout')}
                   </Text>
                   <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }}>
-                    {mealTypeRecipes.length} recipes match {MEAL_TYPE_LABELS[mealType].toLowerCase()}
+                    {t('selectRecipe.random.matchCount', { count: mealTypeRecipes.length })} {MEAL_TYPE_LABELS[mealType].toLowerCase()}
                   </Text>
                 </View>
 
@@ -519,7 +526,7 @@ export default function SelectRecipeScreen() {
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
                             <Ionicons name="time-outline" size={16} color={colors.gray[500]} />
                             <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
-                              {randomRecipe.total_time} min
+                              {t('selectRecipe.random.time', { count: randomRecipe.total_time })}
                             </Text>
                           </View>
                         )}
@@ -527,7 +534,7 @@ export default function SelectRecipeScreen() {
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
                             <Ionicons name="people-outline" size={16} color={colors.gray[500]} />
                             <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
-                              {randomRecipe.servings} servings
+                              {t('selectRecipe.random.servings', { count: randomRecipe.servings })}
                             </Text>
                           </View>
                         )}
@@ -545,8 +552,8 @@ export default function SelectRecipeScreen() {
                               color: randomRecipe.diet_label === 'veggie' ? colors.diet.veggie.text :
                                      randomRecipe.diet_label === 'fish' ? colors.diet.fish.text : colors.diet.meat.text,
                             }}>
-                              {randomRecipe.diet_label === 'veggie' ? '🥬 Veggie' :
-                               randomRecipe.diet_label === 'fish' ? '🐟 Fish' : '🥩 Meat'}
+                              {randomRecipe.diet_label === 'veggie' ? `🥬 ${t('labels.diet.veggie')}` :
+                               randomRecipe.diet_label === 'fish' ? `🐟 ${t('labels.diet.fish')}` : `🥩 ${t('labels.diet.meat')}`}
                             </Text>
                           </View>
                         )}
@@ -556,7 +563,7 @@ export default function SelectRecipeScreen() {
                       {randomRecipe.ingredients && randomRecipe.ingredients.length > 0 && (
                         <View>
                           <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.gray[600], marginBottom: spacing.xs }}>
-                            Ingredients ({randomRecipe.ingredients.length})
+                            {t('selectRecipe.random.ingredientsCount', { count: randomRecipe.ingredients.length })}
                           </Text>
                           <Text style={{ fontSize: fontSize.base, color: colors.gray[500], lineHeight: 18 }} numberOfLines={2}>
                             {randomRecipe.ingredients.slice(0, 5).join(' • ')}
@@ -585,7 +592,7 @@ export default function SelectRecipeScreen() {
                   >
                     <Ionicons name="shuffle" size={20} color={colors.text.inverse} />
                     <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
-                      Shuffle
+                      {t('selectRecipe.random.shuffle')}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -604,7 +611,7 @@ export default function SelectRecipeScreen() {
                   >
                     <Ionicons name="checkmark-circle" size={20} color={colors.white} />
                     <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
-                      Add to Plan
+                      {t('selectRecipe.random.addToPlan')}
                     </Text>
                   </Pressable>
                 </View>
@@ -624,10 +631,10 @@ export default function SelectRecipeScreen() {
                   <Ionicons name="dice-outline" size={36} color={colors.text.inverse} />
                 </View>
                 <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                  No {MEAL_TYPE_LABELS[mealType].toLowerCase()} recipes
+                  {t('selectRecipe.random.noRecipes', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
                 </Text>
                 <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
-                  Add some recipes with the "{MEAL_TYPE_LABELS[mealType].toLowerCase()}" meal type to use random selection
+                  {t('selectRecipe.random.addRecipesHint', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
                 </Text>
               </View>
             )}
@@ -636,7 +643,7 @@ export default function SelectRecipeScreen() {
           /* Copy from existing meals */
           <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}>
             <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginBottom: spacing.lg }}>
-              Copy a meal from your existing plan:
+              {t('selectRecipe.copy.title')}
             </Text>
 
             {existingMeals.length === 0 ? (
@@ -653,10 +660,10 @@ export default function SelectRecipeScreen() {
                   <Ionicons name="calendar-outline" size={36} color={colors.text.inverse} />
                 </View>
                 <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                  No meals to copy
+                  {t('selectRecipe.copy.noMeals')}
                 </Text>
                 <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
-                  Plan some meals first, then you can copy them to other days
+                  {t('selectRecipe.copy.planFirst')}
                 </Text>
               </View>
             ) : (
@@ -679,7 +686,7 @@ export default function SelectRecipeScreen() {
                       {meal.recipe?.title || meal.customText}
                     </Text>
                     <Text style={{ fontSize: fontSize.md, color: colors.gray[600], marginTop: spacing.xs }}>
-                      {formatMealDate(meal.date)} · {meal.mealType.charAt(0).toUpperCase() + meal.mealType.slice(1)}
+                      {formatMealDate(meal.date)} · {MEAL_TYPE_LABELS[meal.mealType as MealType] || meal.mealType}
                     </Text>
                   </View>
                   <View style={{
@@ -715,7 +722,7 @@ export default function SelectRecipeScreen() {
             >
               <Ionicons name="trash-outline" size={18} color={colors.text.inverse} />
               <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
-                Clear This Meal
+                {t('selectRecipe.clearMeal')}
               </Text>
             </Pressable>
           </View>

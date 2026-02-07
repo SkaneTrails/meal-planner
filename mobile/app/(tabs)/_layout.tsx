@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useTranslation } from '@/lib/i18n';
 import { colors } from '@/lib/theme';
 
 // Custom tab bar background with subtle glass effect
@@ -54,6 +55,7 @@ function TabBarBackground() {
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
   const {
     data: currentUser,
     isLoading: userLoading,
@@ -126,8 +128,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarAccessibilityLabel: 'Home',
+          title: t('tabs.home'),
+          tabBarAccessibilityLabel: t('tabs.home'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : color} />
           ),
@@ -136,8 +138,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="recipes"
         options={{
-          title: 'Recipes',
-          tabBarAccessibilityLabel: 'Recipes',
+          title: t('tabs.recipes'),
+          tabBarAccessibilityLabel: t('tabs.recipes'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "book" : "book-outline"} size={20} color={color} />
           ),
@@ -146,8 +148,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="meal-plan"
         options={{
-          title: 'Meal Plan',
-          tabBarAccessibilityLabel: 'Meal Plan',
+          title: t('tabs.mealPlan'),
+          tabBarAccessibilityLabel: t('tabs.mealPlan'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={color} />
           ),
@@ -156,8 +158,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="grocery"
         options={{
-          title: 'Grocery',
-          tabBarAccessibilityLabel: 'Grocery List',
+          title: t('tabs.grocery'),
+          tabBarAccessibilityLabel: t('tabs.grocery'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={color} />
           ),
@@ -166,14 +168,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t('tabs.settings'),
           href: null, // Hide from tab bar - accessed via home screen gear icon
         }}
       />
       <Tabs.Screen
         name="admin"
         options={{
-          title: 'Admin',
+          title: t('tabs.admin'),
           href: null, // Hide from tab bar - accessed via Settings page
         }}
       />
@@ -182,21 +184,21 @@ export default function TabLayout() {
         name="recipe/[id]"
         options={{
           href: null, // Hide from tab bar
-          title: 'Recipe',
+          title: t('tabs.recipe'),
         }}
       />
       <Tabs.Screen
         name="add-recipe"
         options={{
           href: null, // Hide from tab bar
-          title: 'Add Recipe',
+          title: t('tabs.addRecipe'),
         }}
       />
       <Tabs.Screen
         name="select-recipe"
         options={{
           href: null, // Hide from tab bar
-          title: 'Select Recipe',
+          title: t('tabs.selectRecipe'),
         }}
       />
     </Tabs>

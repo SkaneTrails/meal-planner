@@ -3,6 +3,7 @@ import path from 'path';
 
 export default defineConfig({
   test: {
+    pool: 'threads',
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     include: ['**/__tests__/**/*.test.{ts,tsx}', '**/*.test.{ts,tsx}'],
