@@ -63,19 +63,59 @@ uv run python scripts/recipe_reviewer.py update <id> '<json>'
 
 ---
 
-## CRITICAL: Modify Enhanced Recipes Correctly
+## CRITICAL: Enhancement Data Safety
 
-**When modifying an already-enhanced recipe (e.g., adding timeline, fixing an issue):**
+### Document structure
 
-1. **ALWAYS fetch the enhanced version first**: Enhanced recipes have `enhanced: true` in their document
-2. **Verify you have the enhanced data** before editing (check `enhanced: true`, existing `changes_made`)
-3. **Apply changes to the enhanced version**, not the original
-4. **Never overwrite enhanced with original** - this loses all previous improvements
+Enhanced recipes store **both versions in the same Firestore document**:
 
-**Common mistakes that destroy enhanced recipes:**
+- **Top-level fields** = enhanced version (what the app displays)
+- **`original` nested field** = snapshot of the scraped data (for "view original" toggle)
+- **`enhanced: true`** = flag indicating this recipe has been enhanced
+
+```
+┌─────────────────────────────────────────────────┐
+│ Recipe Document (S74yNqQ0aqV1TghZqHJx)          │
+├─────────────────────────────────────────────────┤
+│ title: "Enhanced Title"          ← app shows    │
+│ ingredients: [enhanced list]     ← app shows    │
+│ instructions: [enhanced list]    ← app shows    │
+│ enhanced: true                                  │
+│ enhanced_at: 2026-02-07T...                     │
+│ changes_made: ["change 1", ...]                 │
+│                                                 │
+│ original: {                      ← view toggle  │
+│   title: "Scraped Title"                        │
+│   ingredients: [scraped list]                   │
+│   instructions: [scraped list]                  │
+│   servings: 4                                   │
+│   ...                                           │
+│ }                                               │
+└─────────────────────────────────────────────────┘
+```
+
+### Rules
+
+1. **NEVER use `.set()`** on an existing recipe — it destroys all fields not in the payload. Always use `.update()` to merge.
+2. **The `original` snapshot is immutable** — set once on first enhancement, never modified after.
+3. **Always fetch before modifying** — `recipe_reviewer.py get <id>` to see current state.
+4. **The `update` command handles snapshotting automatically** — on first enhancement it creates the `original` snapshot; on re-enhancement it preserves the existing one.
+
+### Enhancement flow
+
+```
+Scrape → save original to document → user requests enhancement →
+  snapshot original into `original` field →
+  write enhanced data to top-level fields →
+  set enhanced=true, enhanced_at, changes_made
+```
+
+### Common mistakes that destroy data
 
 | ❌ Wrong | ✅ Correct |
 | -------- | --------- |
+| `doc_ref.set(enhanced_data)` | `doc_ref.update(enhanced_data)` |
+| Write inline Python with `.set()` | Use `recipe_reviewer.py update` |
 | Fetch original, add timeline, upload | Fetch enhanced, add timeline, upload |
 | Scale original to 4P and call it "enhanced" | Apply real cooking improvements (techniques, timing, tips) |
 | Assume you know what's there | Always read current state before modifying |

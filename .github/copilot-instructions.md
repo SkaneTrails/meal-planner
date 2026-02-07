@@ -42,6 +42,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
 - **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
+- **Use existing scripts first** - before writing inline Python or ad-hoc commands, check `scripts/` and skill documentation for existing tools that do what you need (e.g., `recipe_reviewer.py` for Firestore recipe operations)
 - **PowerShell backtick escaping** - NEVER use backticks in `gh pr create --body` or similar CLI args. PowerShell interprets `` ` `` as escape characters, causing Unicode parse errors. Instead: write the body to a temp file, then use `--body-file tmp_pr_body.md`, then delete the file
 
 ## Keeping Documentation Current
@@ -164,10 +165,11 @@ infra/                   # Terraform infrastructure
 See `firestore.instructions.md` for the full recipe document schema. Key points:
 
 - Single database: `meal-planner` for all recipes, meal plans, and grocery lists
-- All fields at top level (no nested objects)
+- All fields at top level (one exception: `original` nested snapshot for enhanced recipes)
 - `created_at` required for queries
 - `instructions` must be `list[str]`, not a single string
-- Enhanced recipes have `enhanced=True` and `enhanced_from` set to the source recipe's document ID
+- Enhanced recipes have `enhanced=True` and original data preserved in `original` nested field
+- Enhancement scripts MUST use `.update()` (merge), NEVER `.set()` (overwrite)
 
 ### Skills (AI Agent Instructions)
 
