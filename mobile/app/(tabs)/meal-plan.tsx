@@ -227,6 +227,15 @@ export default function MealPlanScreen() {
         }).start();
       }
     },
+    onPanResponderTerminate: () => {
+      // If gesture is interrupted (e.g., parent takes responder), spring back to center
+      Animated.spring(swipeTranslateX, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 100,
+        friction: 12,
+      }).start();
+    },
   }), [swipeTranslateX]);
 
   const {
