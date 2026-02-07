@@ -17,7 +17,7 @@ import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { showNotification } from '@/lib/alert';
-import { useHouseholdSettings, useUpdateHouseholdSettings } from '@/lib/hooks/use-admin';
+import { useCurrentUser, useHouseholdSettings, useUpdateHouseholdSettings } from '@/lib/hooks/use-admin';
 import { GradientBackground } from '@/components';
 import type { MeatPreference, MincedMeatPreference, DairyPreference, HouseholdSettings } from '@/lib/types';
 
@@ -75,11 +75,13 @@ function SectionHeader({ icon, title, subtitle }: {
 function RadioGroup<T extends string>({
   options,
   value,
-  onChange
+  onChange,
+  disabled = false,
 }: {
   options: { value: T; label: string; description: string }[];
   value: T;
   onChange: (value: T) => void;
+  disabled?: boolean;
 }) {
   return (
     <View style={{ gap: spacing.sm }}>
@@ -89,6 +91,7 @@ function RadioGroup<T extends string>({
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
+            disabled={disabled}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
@@ -97,6 +100,7 @@ function RadioGroup<T extends string>({
               borderRadius: borderRadius.md,
               borderWidth: 1,
               borderColor: isSelected ? colors.primary : colors.border,
+              opacity: disabled ? 0.5 : 1,
             })}
           >
             <View style={{
@@ -165,6 +169,11 @@ export default function HouseholdSettingsScreen() {
 
   const { data: remoteSettings, isLoading } = useHouseholdSettings(householdId ?? null);
   const updateSettings = useUpdateHouseholdSettings();
+  const { data: currentUser } = useCurrentUser();
+
+  // Only admins and superusers can edit settings
+  const canEdit = currentUser?.role === 'superuser' ||
+    (currentUser?.role === 'admin' && currentUser?.household_id === householdId);
 
   // Local state for editing
   const [settings, setSettings] = useState<HouseholdSettings>(DEFAULT_SETTINGS);
@@ -247,7 +256,7 @@ export default function HouseholdSettingsScreen() {
               <Text style={{ color: '#fff', fontSize: 17, marginLeft: 2 }}>Back</Text>
             </Pressable>
           ),
-          headerRight: () => (
+          headerRight: () => canEdit ? (
             <Pressable
               onPress={handleSave}
               disabled={!hasChanges || updateSettings.isPending}
@@ -259,7 +268,7 @@ export default function HouseholdSettingsScreen() {
                 <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Save</Text>
               )}
             </Pressable>
-          ),
+          ) : null,
         }}
       />
 
@@ -273,6 +282,28 @@ export default function HouseholdSettingsScreen() {
           style={{ flex: 1 }}
           contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }}
         >
+          {/* Read-only banner for non-admin members */}
+          {!canEdit && (
+            <View style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: 12,
+              padding: spacing.md,
+              marginBottom: spacing.lg,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.sm,
+            }}>
+              <Ionicons name="lock-closed" size={16} color={colors.text.secondary} />
+              <Text style={{
+                color: colors.text.secondary,
+                fontSize: fontSize.sm,
+                flex: 1,
+              }}>
+                Only household admins can change these settings.
+              </Text>
+            </View>
+          )}
+
           {/* General Settings */}
           <View style={{ marginBottom: spacing['2xl'] }}>
             <SectionHeader
@@ -294,6 +325,7 @@ export default function HouseholdSettingsScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Pressable
                     onPress={() => settings.household_size > 1 && updateField('household_size', settings.household_size - 1)}
+                    disabled={!canEdit}
                     style={({ pressed }) => ({
                       width: 40,
                       height: 40,
@@ -301,6 +333,7 @@ export default function HouseholdSettingsScreen() {
                       backgroundColor: pressed ? colors.bgDark : colors.bgLight,
                       alignItems: 'center',
                       justifyContent: 'center',
+                      opacity: canEdit ? 1 : 0.4,
                     })}
                   >
                     <Ionicons name="remove" size={20} color={colors.text.inverse} />
@@ -316,6 +349,7 @@ export default function HouseholdSettingsScreen() {
                   </Text>
                   <Pressable
                     onPress={() => updateField('household_size', settings.household_size + 1)}
+                    disabled={!canEdit}
                     style={({ pressed }) => ({
                       width: 40,
                       height: 40,
@@ -323,6 +357,7 @@ export default function HouseholdSettingsScreen() {
                       backgroundColor: pressed ? colors.bgDark : colors.bgLight,
                       alignItems: 'center',
                       justifyContent: 'center',
+                      opacity: canEdit ? 1 : 0.4,
                     })}
                   >
                     <Ionicons name="add" size={20} color={colors.text.inverse} />
@@ -337,6 +372,7 @@ export default function HouseholdSettingsScreen() {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Pressable
                     onPress={() => settings.default_servings > 1 && updateField('default_servings', settings.default_servings - 1)}
+                    disabled={!canEdit}
                     style={({ pressed }) => ({
                       width: 40,
                       height: 40,
@@ -344,6 +380,7 @@ export default function HouseholdSettingsScreen() {
                       backgroundColor: pressed ? colors.bgDark : colors.bgLight,
                       alignItems: 'center',
                       justifyContent: 'center',
+                      opacity: canEdit ? 1 : 0.4,
                     })}
                   >
                     <Ionicons name="remove" size={20} color={colors.text.inverse} />
@@ -359,6 +396,7 @@ export default function HouseholdSettingsScreen() {
                   </Text>
                   <Pressable
                     onPress={() => updateField('default_servings', settings.default_servings + 1)}
+                    disabled={!canEdit}
                     style={({ pressed }) => ({
                       width: 40,
                       height: 40,
@@ -366,6 +404,7 @@ export default function HouseholdSettingsScreen() {
                       backgroundColor: pressed ? colors.bgDark : colors.bgLight,
                       alignItems: 'center',
                       justifyContent: 'center',
+                      opacity: canEdit ? 1 : 0.4,
                     })}
                   >
                     <Ionicons name="add" size={20} color={colors.text.inverse} />
@@ -406,6 +445,7 @@ export default function HouseholdSettingsScreen() {
                 <Switch
                   value={settings.dietary.seafood_ok}
                   onValueChange={(value) => updateDietary('seafood_ok', value)}
+                  disabled={!canEdit}
                   trackColor={{ false: colors.border, true: colors.primary }}
                 />
               </View>
@@ -425,6 +465,7 @@ export default function HouseholdSettingsScreen() {
                 options={MEAT_OPTIONS}
                 value={settings.dietary.meat}
                 onChange={(value) => updateDietary('meat', value)}
+                disabled={!canEdit}
               />
             </View>
 
@@ -441,6 +482,7 @@ export default function HouseholdSettingsScreen() {
                 <TextInput
                   value={settings.dietary.chicken_alternative ?? ''}
                   onChangeText={(value) => updateDietary('chicken_alternative', value || null)}
+                  editable={canEdit}
                   placeholder="e.g., Quorn"
                   style={{
                     backgroundColor: colors.white,
@@ -458,6 +500,7 @@ export default function HouseholdSettingsScreen() {
                 <TextInput
                   value={settings.dietary.meat_alternative ?? ''}
                   onChangeText={(value) => updateDietary('meat_alternative', value || null)}
+                  editable={canEdit}
                   placeholder="e.g., Oumph"
                   style={{
                     backgroundColor: colors.white,
@@ -486,6 +529,7 @@ export default function HouseholdSettingsScreen() {
                 options={MINCED_MEAT_OPTIONS}
                 value={settings.dietary.minced_meat}
                 onChange={(value) => updateDietary('minced_meat', value)}
+                disabled={!canEdit}
               />
             </View>
 
@@ -502,6 +546,7 @@ export default function HouseholdSettingsScreen() {
               options={DAIRY_OPTIONS}
               value={settings.dietary.dairy}
               onChange={(value) => updateDietary('dairy', value)}
+              disabled={!canEdit}
             />
           </View>
 
@@ -536,6 +581,7 @@ export default function HouseholdSettingsScreen() {
                 <Switch
                   value={settings.equipment.airfryer}
                   onValueChange={(value) => updateEquipment('airfryer', value)}
+                  disabled={!canEdit}
                   trackColor={{ false: colors.border, true: colors.primary }}
                 />
               </View>
@@ -553,6 +599,7 @@ export default function HouseholdSettingsScreen() {
                   <TextInput
                     value={settings.equipment.airfryer_model ?? ''}
                     onChangeText={(value) => updateEquipment('airfryer_model', value || null)}
+                    editable={canEdit}
                     placeholder="e.g., Xiaomi Smart Air Fryer"
                     style={{
                       backgroundColor: colors.white,
@@ -584,6 +631,7 @@ export default function HouseholdSettingsScreen() {
                 <Switch
                   value={settings.equipment.convection_oven}
                   onValueChange={(value) => updateEquipment('convection_oven', value)}
+                  disabled={!canEdit}
                   trackColor={{ false: colors.border, true: colors.primary }}
                 />
               </View>
@@ -604,6 +652,7 @@ export default function HouseholdSettingsScreen() {
                 <Switch
                   value={settings.equipment.grill_function}
                   onValueChange={(value) => updateEquipment('grill_function', value)}
+                  disabled={!canEdit}
                   trackColor={{ false: colors.border, true: colors.primary }}
                 />
               </View>
@@ -612,7 +661,7 @@ export default function HouseholdSettingsScreen() {
         </ScrollView>
 
         {/* Persistent bottom save bar */}
-        {hasChanges && (
+        {canEdit && hasChanges && (
           <View style={{
             position: 'absolute',
             bottom: 0,
