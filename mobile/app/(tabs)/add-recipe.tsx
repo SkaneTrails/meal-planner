@@ -1,5 +1,5 @@
 /**
- * Add Recipe modal - Import recipe from URL.
+ * Add Recipe modal - Import recipe from URL or create manually.
  */
 
 import React, { useState } from 'react';
@@ -13,24 +13,44 @@ import {
   Platform,
   Switch,
   Modal,
+  Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useScrapeRecipe } from '@/lib/hooks';
+import * as ImagePicker from 'expo-image-picker';
+import { useScrapeRecipe, useCreateRecipe } from '@/lib/hooks';
+import { api } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground } from '@/components';
-import type { Recipe } from '@/lib/types';
+import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
 export default function AddRecipeScreen() {
   const router = useRouter();
-  const { url: urlParam } = useLocalSearchParams<{ url?: string }>();
+  const { url: urlParam, manual: manualParam } = useLocalSearchParams<{ url?: string; manual?: string }>();
+  const isManualMode = manualParam === 'true';
+
+  // URL import state
   const [url, setUrl] = useState(urlParam || '');
   const [enhanceWithAI, setEnhanceWithAI] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);
+
+  // Manual form state
+  const [title, setTitle] = useState('');
+  const [ingredients, setIngredients] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [servings, setServings] = useState('');
+  const [prepTime, setPrepTime] = useState('');
+  const [cookTime, setCookTime] = useState('');
+  const [dietLabel, setDietLabel] = useState<DietLabel | null>(null);
+  const [mealLabel, setMealLabel] = useState<MealLabel | null>(null);
+
   const scrapeRecipe = useScrapeRecipe();
+  const createRecipe = useCreateRecipe();
   const { t } = useTranslation();
 
   const isValidUrl = (text: string) => {
@@ -77,6 +97,119 @@ export default function AddRecipeScreen() {
     }
   };
 
+  const handleCreateManual = async () => {
+    if (!title.trim()) {
+      showNotification(t('common.error'), t('addRecipe.titleRequired'));
+      return;
+    }
+
+    // Validate servings is at least 1 if provided
+    const parsedServings = servings ? parseInt(servings, 10) : null;
+    if (parsedServings !== null && (isNaN(parsedServings) || parsedServings < 1)) {
+      showNotification(t('common.error'), t('addRecipe.servingsInvalid'));
+      return;
+    }
+
+    try {
+      const recipe = await createRecipe.mutateAsync({
+        title: title.trim(),
+        url: '', // Manual recipes have no URL
+        ingredients: ingredients.split('\n').map(i => i.trim()).filter(Boolean),
+        instructions: instructions.split('\n').map(i => i.trim()).filter(Boolean),
+        image_url: imageUrl.trim() || null,
+        servings: parsedServings,
+        prep_time: prepTime ? parseInt(prepTime, 10) : null,
+        cook_time: cookTime ? parseInt(cookTime, 10) : null,
+        diet_label: dietLabel,
+        meal_label: mealLabel,
+      });
+
+      // Upload selected local image if present
+      if (selectedImage) {
+        try {
+          await api.uploadRecipeImage(recipe.id, selectedImage);
+        } catch {
+          showNotification(t('common.error'), t('recipeDetail.imageUploadFailed'));
+        }
+      }
+
+      showAlert(t('addRecipe.done'), t('addRecipe.recipeCreated', { title: recipe.title }), [
+        {
+          text: t('addRecipe.viewRecipe'),
+          style: 'cancel',
+          onPress: () => {
+            router.back();
+            router.push(`/recipe/${recipe.id}`);
+          },
+        },
+        {
+          text: t('addRecipe.addMore'),
+          onPress: () => {
+            setTitle('');
+            setIngredients('');
+            setInstructions('');
+            setImageUrl('');
+            setSelectedImage(null);
+            setServings('');
+            setPrepTime('');
+            setCookTime('');
+            setDietLabel(null);
+            setMealLabel(null);
+          },
+        },
+      ]);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('addRecipe.createFailedDefault');
+      showNotification(t('addRecipe.createFailed'), message);
+    }
+  };
+
+  const handlePickImage = () => {
+    showAlert(t('recipeDetail.changeImage'), t('recipeDetail.chooseSource'), [
+      {
+        text: t('recipeDetail.takePhoto'),
+        onPress: async () => {
+          const { status } = await ImagePicker.requestCameraPermissionsAsync();
+          if (status !== 'granted') {
+            showNotification(t('common.error'), t('recipeDetail.cameraPermissionRequired'));
+            return;
+          }
+          const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+          });
+          if (!result.canceled && result.assets[0]) {
+            setSelectedImage(result.assets[0].uri);
+            setImageUrl(''); // Clear URL if local image selected
+          }
+        },
+      },
+      {
+        text: t('recipeDetail.chooseFromLibrary'),
+        onPress: async () => {
+          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (status !== 'granted') {
+            showNotification(t('common.error'), t('recipeDetail.galleryPermissionRequired'));
+            return;
+          }
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+          });
+          if (!result.canceled && result.assets[0]) {
+            setSelectedImage(result.assets[0].uri);
+            setImageUrl(''); // Clear URL if local image selected
+          }
+        },
+      },
+      { text: t('common.cancel'), style: 'cancel' },
+    ]);
+  };
+
   const handleViewRecipe = () => {
     setShowSummaryModal(false);
     if (importedRecipe) {
@@ -91,7 +224,283 @@ export default function AddRecipeScreen() {
     setUrl('');
   };
 
-  const isPending = scrapeRecipe.isPending;
+  const isPending = scrapeRecipe.isPending || createRecipe.isPending;
+
+  // Manual mode UI
+  if (isManualMode) {
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <GradientBackground style={{ flex: 1 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header */}
+            <View style={{
+              backgroundColor: colors.primary,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              marginBottom: spacing['2xl'],
+              ...shadows.md,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
+                <Ionicons name="create" size={22} color={colors.white} />
+                <Text style={{ marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontWeight: '600', color: colors.white, letterSpacing: letterSpacing.normal }}>
+                  {t('addRecipe.manualTitle')}
+                </Text>
+              </View>
+              <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, lineHeight: 22 }}>
+                {t('addRecipe.manualDescription')}
+              </Text>
+            </View>
+
+            {/* Title */}
+            <View style={{ marginBottom: spacing.lg }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
+                {t('addRecipe.recipeTitle')} *
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.md,
+                  fontSize: fontSize.lg,
+                  color: colors.text.inverse,
+                  ...shadows.sm,
+                }}
+                placeholder={t('addRecipe.titlePlaceholder')}
+                placeholderTextColor={colors.gray[500]}
+                value={title}
+                onChangeText={setTitle}
+                editable={!isPending}
+              />
+            </View>
+
+            {/* Ingredients */}
+            <View style={{ marginBottom: spacing.lg }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
+                {t('addRecipe.ingredients')}
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.md,
+                  fontSize: fontSize.lg,
+                  color: colors.text.inverse,
+                  minHeight: 100,
+                  textAlignVertical: 'top',
+                  ...shadows.sm,
+                }}
+                placeholder={t('addRecipe.ingredientsPlaceholder')}
+                placeholderTextColor={colors.gray[500]}
+                value={ingredients}
+                onChangeText={setIngredients}
+                multiline
+                editable={!isPending}
+              />
+            </View>
+
+            {/* Instructions */}
+            <View style={{ marginBottom: spacing.lg }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
+                {t('addRecipe.instructions')}
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.md,
+                  fontSize: fontSize.lg,
+                  color: colors.text.inverse,
+                  minHeight: 120,
+                  textAlignVertical: 'top',
+                  ...shadows.sm,
+                }}
+                placeholder={t('addRecipe.instructionsPlaceholder')}
+                placeholderTextColor={colors.gray[500]}
+                value={instructions}
+                onChangeText={setInstructions}
+                multiline
+                editable={!isPending}
+              />
+            </View>
+
+            {/* Time & Servings Row */}
+            <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.xs }}>
+                  {t('labels.time.servings')}
+                </Text>
+                <TextInput
+                  style={{
+                    backgroundColor: colors.glass.card,
+                    borderRadius: borderRadius.md,
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    fontSize: fontSize.md,
+                    color: colors.text.inverse,
+                    ...shadows.sm,
+                  }}
+                  placeholder="4"
+                  placeholderTextColor={colors.gray[500]}
+                  value={servings}
+                  onChangeText={setServings}
+                  keyboardType="numeric"
+                  editable={!isPending}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.xs }}>
+                  {t('labels.time.prepMin')}
+                </Text>
+                <TextInput
+                  style={{
+                    backgroundColor: colors.glass.card,
+                    borderRadius: borderRadius.md,
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    fontSize: fontSize.md,
+                    color: colors.text.inverse,
+                    ...shadows.sm,
+                  }}
+                  placeholder="15"
+                  placeholderTextColor={colors.gray[500]}
+                  value={prepTime}
+                  onChangeText={setPrepTime}
+                  keyboardType="numeric"
+                  editable={!isPending}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.xs }}>
+                  {t('labels.time.cookMin')}
+                </Text>
+                <TextInput
+                  style={{
+                    backgroundColor: colors.glass.card,
+                    borderRadius: borderRadius.md,
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    fontSize: fontSize.md,
+                    color: colors.text.inverse,
+                    ...shadows.sm,
+                  }}
+                  placeholder="30"
+                  placeholderTextColor={colors.gray[500]}
+                  value={cookTime}
+                  onChangeText={setCookTime}
+                  keyboardType="numeric"
+                  editable={!isPending}
+                />
+              </View>
+            </View>
+
+            {/* Image */}
+            <View style={{ marginBottom: spacing.lg }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.sm }}>
+                {t('addRecipe.imageOptional')}
+              </Text>
+
+              {/* Image Preview */}
+              {(selectedImage || imageUrl) && (
+                <View style={{ marginBottom: spacing.md, position: 'relative' }}>
+                  <Image
+                    source={{ uri: selectedImage || imageUrl }}
+                    style={{
+                      width: '100%',
+                      height: 200,
+                      borderRadius: borderRadius.md,
+                      backgroundColor: colors.gray[200],
+                    }}
+                    resizeMode="cover"
+                  />
+                  <Pressable
+                    onPress={() => {
+                      setSelectedImage(null);
+                      setImageUrl('');
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: spacing.sm,
+                      right: spacing.sm,
+                      backgroundColor: 'rgba(0,0,0,0.6)',
+                      borderRadius: borderRadius.full,
+                      padding: spacing.xs,
+                    }}
+                  >
+                    <Ionicons name="close" size={20} color={colors.white} />
+                  </Pressable>
+                </View>
+              )}
+
+              {/* Pick Image Button */}
+              <Pressable
+                onPress={handlePickImage}
+                disabled={isPending}
+                style={({ pressed }) => ({
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  paddingVertical: spacing.md,
+                  paddingHorizontal: spacing.lg,
+                  opacity: pressed ? 0.8 : 1,
+                  ...shadows.sm,
+                })}
+              >
+                <Ionicons name="camera" size={20} color={colors.text.inverse} />
+                <Text style={{ marginLeft: spacing.sm, color: colors.text.inverse, fontSize: fontSize.md, fontWeight: '500' }}>
+                  {selectedImage || imageUrl ? t('recipeDetail.changeImage') : t('addRecipe.addImage')}
+                </Text>
+              </Pressable>
+            </View>
+
+            {/* Create button */}
+            <Pressable
+              onPress={handleCreateManual}
+              disabled={!title.trim() || isPending}
+              style={({ pressed }) => ({
+                paddingVertical: spacing.md,
+                borderRadius: borderRadius.md,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: title.trim() && !isPending ? colors.primary : colors.gray[300],
+                opacity: pressed ? 0.9 : 1,
+                ...shadows.md,
+              })}
+            >
+              {isPending ? (
+                <>
+                  <Ionicons name="hourglass-outline" size={20} color={colors.white} />
+                  <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
+                    {t('addRecipe.creating')}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="checkmark-circle-outline" size={20} color={colors.white} />
+                  <Text style={{ marginLeft: spacing.sm, color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>
+                    {t('addRecipe.createButton')}
+                  </Text>
+                </>
+              )}
+            </Pressable>
+          </ScrollView>
+        </GradientBackground>
+      </KeyboardAvoidingView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView

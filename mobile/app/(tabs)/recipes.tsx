@@ -14,8 +14,6 @@ import {
   useWindowDimensions,
   Modal,
   ScrollView,
-  Animated,
-  LayoutAnimation,
   Platform,
   UIManager,
 } from 'react-native';
@@ -23,14 +21,14 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useRecipes } from '@/lib/hooks';
-import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
+import { AnimatedPressable, RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import type { TFunction } from '@/lib/i18n';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
-// Enable LayoutAnimation on Android
+// Enable LayoutAnimation on Android (kept for future use)
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -44,11 +42,11 @@ interface RecipeGridProps {
   onAddRecipe: () => void;
   searchQuery: string;
   dietFilter: DietLabel | null;
-  mealFilter: MealLabel | null;
+  mealFilters: MealLabel[];
   t: TFunction;
 }
 
-function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilter, t }: RecipeGridProps) {
+function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilters, t }: RecipeGridProps) {
   const { width } = useWindowDimensions();
 
   // Calculate number of columns based on screen width
@@ -100,19 +98,19 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
             justifyContent: 'center',
             marginBottom: 20,
           }}>
-            <Ionicons name={searchQuery || dietFilter || mealFilter ? "search" : "book-outline"} size={36} color={colors.white} />
+            <Ionicons name={searchQuery || dietFilter || mealFilters.length > 0 ? "search" : "book-outline"} size={36} color={colors.white} />
           </View>
           <Text style={{ color: colors.text.inverse, fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
-            {searchQuery || dietFilter || mealFilter
+            {searchQuery || dietFilter || mealFilters.length > 0
               ? t('recipes.noMatchesFound')
               : t('recipes.emptyLibrary')}
           </Text>
           <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
-            {searchQuery || dietFilter || mealFilter
+            {searchQuery || dietFilter || mealFilters.length > 0
               ? t('recipes.tryAdjusting')
               : t('recipes.startBuilding')}
           </Text>
-          {!searchQuery && !dietFilter && !mealFilter && (
+          {!searchQuery && !dietFilter && mealFilters.length === 0 && (
             <Pressable
               onPress={onAddRecipe}
               style={{
@@ -138,30 +136,13 @@ export default function RecipesScreen() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
-  const [mealFilter, setMealFilter] = useState<MealLabel | null>(null);
+  const [mealFilters, setMealFilters] = useState<MealLabel[]>([]); // Multi-select meal types
   const [sortBy, setSortBy] = useState('newest');
   const [showAllRecipes, setShowAllRecipes] = useState(true);
-  const [filtersExpanded, setFiltersExpanded] = useState(true);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // Get favorites from settings
-  const { isFavorite, settings } = useSettings();
-
-  const DIET_OPTIONS: { value: DietLabel | null; label: string }[] = [
-    { value: null, label: t('labels.diet.all') },
-    { value: 'veggie', label: t('labels.diet.veggie') },
-    { value: 'fish', label: t('labels.diet.fish') },
-    { value: 'meat', label: t('labels.diet.meat') },
-  ];
-
-  const MEAL_OPTIONS: { value: MealLabel | null; label: string }[] = [
-    { value: null, label: t('labels.meal.all') },
-    { value: 'breakfast', label: t('labels.meal.breakfast') },
-    { value: 'starter', label: t('labels.meal.starter') },
-    { value: 'salad', label: t('labels.meal.salad') },
-    { value: 'meal', label: t('labels.meal.meal') },
-    { value: 'dessert', label: t('labels.meal.dessert') },
-  ];
+  const { isFavorite } = useSettings();
 
   const SORT_OPTIONS = [
     { value: 'newest', label: t('labels.sort.newest') },
@@ -170,8 +151,6 @@ export default function RecipesScreen() {
   ];
 
   // Modal states for filter pickers
-  const [showDietPicker, setShowDietPicker] = useState(false);
-  const [showMealPicker, setShowMealPicker] = useState(false);
   const [showSortPicker, setShowSortPicker] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
@@ -184,20 +163,11 @@ export default function RecipesScreen() {
         // Called when screen loses focus - reset filters and search
         setSearchQuery('');
         setDietFilter(null);
-        setMealFilter(null);
+        setMealFilters([]);
         setShowFavoritesOnly(false);
       };
     }, [])
   );
-
-  // Toggle filters with animation
-  const toggleFilters = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setFiltersExpanded(!filtersExpanded);
-  };
-
-  // Check if any filters are active
-  const hasActiveFilters = dietFilter !== null || mealFilter !== null || searchQuery !== '' || showFavoritesOnly;
 
   // Fetch recipes
   const { data: recipes = [], isLoading, refetch } = useRecipes();
@@ -212,7 +182,7 @@ export default function RecipesScreen() {
           tag.toLowerCase().includes(searchQuery.toLowerCase())
         );
       const matchesDiet = !dietFilter || recipe.diet_label === dietFilter;
-      const matchesMeal = !mealFilter || recipe.meal_label === mealFilter;
+      const matchesMeal = mealFilters.length === 0 || (recipe.meal_label && mealFilters.includes(recipe.meal_label));
       const matchesFavorites = !showFavoritesOnly || isFavorite(recipe.id);
       return matchesSearch && matchesDiet && matchesMeal && matchesFavorites;
     });
@@ -225,7 +195,7 @@ export default function RecipesScreen() {
     }
 
     return result;
-  }, [recipes, searchQuery, dietFilter, mealFilter, sortBy, showFavoritesOnly, isFavorite]);
+  }, [recipes, searchQuery, dietFilter, mealFilters, sortBy, showFavoritesOnly, isFavorite]);
 
   return (
     <GradientBackground>
@@ -238,6 +208,9 @@ export default function RecipesScreen() {
             fontFamily: fontFamily.display,
             color: colors.text.primary,
             letterSpacing: letterSpacing.tight,
+            textShadowColor: 'rgba(0, 0, 0, 0.15)',
+            textShadowOffset: { width: 0, height: 1 },
+            textShadowRadius: 2,
           }}>{t('recipes.title')}</Text>
           <Text style={{
             fontSize: fontSize.lg,
@@ -248,67 +221,37 @@ export default function RecipesScreen() {
         </View>
       </View>
 
-      {/* Search and filters */}
-      <View style={{ paddingHorizontal: 16, paddingBottom: 4 }}>
-        {/* Search bar with filter toggle and cancel button */}
+      {/* Search bar */}
+      <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginBottom: 6,
+          backgroundColor: colors.glass.card,
+          borderRadius: borderRadius.md,
+          paddingHorizontal: 12,
+          paddingVertical: 10,
         }}>
-          <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.md,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-          }}>
-            <Ionicons name="search" size={16} color="#8B7355" />
-            <TextInput
-              ref={searchInputRef}
-              style={{
-                flex: 1,
-                fontSize: fontSize.md,
-                color: '#5D4E40',
-                marginLeft: 8,
-              }}
-              placeholder={t('recipes.searchPlaceholder')}
-              placeholderTextColor="#8B7355"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-            />
-            {searchQuery !== '' && (
-              <Pressable onPress={() => setSearchQuery('')} style={{ padding: 2 }}>
-                <Ionicons name="close-circle" size={16} color={colors.text.muted} />
-              </Pressable>
-            )}
-            <Pressable
-              onPress={() => {
-                if (!isSearchFocused) {
-                  hapticLight();
-                  toggleFilters();
-                }
-              }}
-              disabled={isSearchFocused}
-              style={{
-                marginLeft: 6,
-                padding: 4,
-                backgroundColor: hasActiveFilters ? '#E8F5E8' : '#F3F4F6',
-                borderRadius: 6,
-                opacity: isSearchFocused ? 0.4 : 1,
-              }}
-            >
-              <Ionicons
-                name={filtersExpanded ? "options" : "options-outline"}
-                size={16}
-                color={hasActiveFilters ? '#2D5A3D' : '#6B7280'}
-              />
+          <Ionicons name="search" size={18} color="#8B7355" />
+          <TextInput
+            ref={searchInputRef}
+            style={{
+              flex: 1,
+              fontSize: fontSize.md,
+              color: '#5D4E40',
+              marginLeft: 10,
+            }}
+            placeholder={t('recipes.searchPlaceholder')}
+            placeholderTextColor="#8B7355"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+          />
+          {searchQuery !== '' && (
+            <Pressable onPress={() => setSearchQuery('')} style={{ padding: 4 }}>
+              <Ionicons name="close-circle" size={18} color={colors.text.muted} />
             </Pressable>
-          </View>
+          )}
           {isSearchFocused && (
             <Pressable
               onPress={() => {
@@ -316,108 +259,206 @@ export default function RecipesScreen() {
                 searchInputRef.current?.blur();
                 setSearchQuery('');
               }}
-              style={{ marginLeft: 12 }}
+              style={{ marginLeft: 8 }}
             >
-              <Text style={{ fontSize: 15, color: colors.text.inverse, fontFamily: fontFamily.bodyMedium }}>{t('common.cancel')}</Text>
+              <Text style={{ fontSize: 15, color: '#7A6858', fontFamily: fontFamily.bodyMedium }}>{t('common.cancel')}</Text>
             </Pressable>
           )}
         </View>
+      </View>
 
-        {/* Collapsible filter dropdowns row */}
-        {filtersExpanded && (
-          <View style={{ flexDirection: 'row', gap: 6 }}>
-            {/* Favorites filter */}
-            <Pressable
-              onPress={() => {
-                hapticLight();
-                setShowFavoritesOnly(!showFavoritesOnly);
-              }}
-              style={{
-                backgroundColor: showFavoritesOnly ? 'rgba(220, 38, 38, 0.85)' : colors.glass.card,
-                borderRadius: borderRadius.sm,
-                paddingHorizontal: 10,
-                paddingVertical: 8,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              <Ionicons
-                name={showFavoritesOnly ? 'heart' : 'heart-outline'}
-                size={14}
-                color={showFavoritesOnly ? colors.white : '#5D4E40'}
-              />
-              {showFavoritesOnly && (
-                <Text style={{ fontSize: 12, fontWeight: '500', color: colors.white }}>
-                  {settings.favoriteRecipes.length}
-                </Text>
-              )}
-            </Pressable>
+      {/* Horizontal filter chips */}
+      <View style={{ paddingVertical: 8 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+        >
+          {/* All chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            setDietFilter(null);
+            setShowFavoritesOnly(false);
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 7,
+            borderRadius: 16,
+            backgroundColor: !dietFilter && !showFavoritesOnly ? '#5D4E40' : 'transparent',
+            borderWidth: 1.5,
+            borderColor: !dietFilter && !showFavoritesOnly ? '#5D4E40' : '#8B7355',
+          }}
+        >
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: !dietFilter && !showFavoritesOnly ? colors.white : '#5D4E40',
+          }}>
+            {t('labels.diet.all')}
+          </Text>
+        </AnimatedPressable>
 
-            {/* Diet filter */}
-            <View style={{ flex: 1 }}>
-              <Pressable
-                onPress={() => setShowDietPicker(true)}
-                style={{
-                  backgroundColor: dietFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
-                  borderRadius: borderRadius.sm,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text style={{ fontSize: 12, fontWeight: '500', color: dietFilter ? '#2D5A3D' : '#5D4E40' }}>
-                  {DIET_OPTIONS.find(o => o.value === dietFilter)?.label || t('recipes.diet')}
-                </Text>
-                <Ionicons name="chevron-down" size={12} color="#8B7355" />
-              </Pressable>
-            </View>
+        {/* Veggie chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            setDietFilter(dietFilter === 'veggie' ? null : 'veggie');
+            setShowFavoritesOnly(false);
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 7,
+            borderRadius: 16,
+            backgroundColor: dietFilter === 'veggie' ? '#4A8C5C' : 'transparent',
+            borderWidth: 1.5,
+            borderColor: dietFilter === 'veggie' ? '#4A8C5C' : '#8B7355',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Text style={{ fontSize: 14 }}>🌱</Text>
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: dietFilter === 'veggie' ? colors.white : '#5D4E40',
+          }}>
+            {t('labels.diet.veggie')}
+          </Text>
+        </AnimatedPressable>
 
-            {/* Meal type filter */}
-            <View style={{ flex: 1 }}>
-              <Pressable
-                onPress={() => setShowMealPicker(true)}
-                style={{
-                  backgroundColor: mealFilter ? 'rgba(200, 230, 200, 0.8)' : colors.glass.card,
-                  borderRadius: borderRadius.sm,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text style={{ fontSize: 12, fontWeight: '500', color: mealFilter ? '#2D5A3D' : '#5D4E40' }}>
-                  {MEAL_OPTIONS.find(o => o.value === mealFilter)?.label || t('recipes.mealType')}
-                </Text>
-                <Ionicons name="chevron-down" size={12} color="#8B7355" />
-              </Pressable>
-            </View>
+        {/* Fish chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            setDietFilter(dietFilter === 'fish' ? null : 'fish');
+            setShowFavoritesOnly(false);
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 7,
+            borderRadius: 16,
+            backgroundColor: dietFilter === 'fish' ? '#2D7AB8' : 'transparent',
+            borderWidth: 1.5,
+            borderColor: dietFilter === 'fish' ? '#2D7AB8' : '#8B7355',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Text style={{ fontSize: 14 }}>🐟</Text>
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: dietFilter === 'fish' ? colors.white : '#5D4E40',
+          }}>
+            {t('labels.diet.fish')}
+          </Text>
+        </AnimatedPressable>
 
-            {/* Sort */}
-            <View style={{ flex: 1 }}>
-              <Pressable
-                onPress={() => setShowSortPicker(true)}
-                style={{
-                  backgroundColor: colors.glass.card,
-                  borderRadius: borderRadius.sm,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text style={{ fontSize: 12, fontWeight: '500', color: '#5D4E40' }}>
-                  {SORT_OPTIONS.find(o => o.value === sortBy)?.label || t('recipes.sort')}
-                </Text>
-                <Ionicons name="chevron-down" size={12} color="#8B7355" />
-              </Pressable>
-            </View>
-          </View>
-        )}
+        {/* Meat chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            setDietFilter(dietFilter === 'meat' ? null : 'meat');
+            setShowFavoritesOnly(false);
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 7,
+            borderRadius: 16,
+            backgroundColor: dietFilter === 'meat' ? '#B85C38' : 'transparent',
+            borderWidth: 1.5,
+            borderColor: dietFilter === 'meat' ? '#B85C38' : '#8B7355',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Text style={{ fontSize: 14 }}>🍗</Text>
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: dietFilter === 'meat' ? colors.white : '#5D4E40',
+          }}>
+            {t('labels.diet.meat')}
+          </Text>
+        </AnimatedPressable>
+
+        {/* Favorites chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            setShowFavoritesOnly(!showFavoritesOnly);
+            if (!showFavoritesOnly) setDietFilter(null);
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 7,
+            borderRadius: 16,
+            backgroundColor: showFavoritesOnly ? '#C75050' : 'transparent',
+            borderWidth: 1.5,
+            borderColor: showFavoritesOnly ? '#C75050' : '#8B7355',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Ionicons
+            name={showFavoritesOnly ? 'heart' : 'heart-outline'}
+            size={16}
+            color={showFavoritesOnly ? colors.white : '#C75050'}
+          />
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: showFavoritesOnly ? colors.white : '#5D4E40',
+          }}>
+            {t('recipes.favorites')}
+          </Text>
+        </AnimatedPressable>
+
+        {/* Sort chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            setShowSortPicker(true);
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 7,
+            borderRadius: 16,
+            backgroundColor: 'transparent',
+            borderWidth: 1.5,
+            borderColor: '#8B7355',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Ionicons name="funnel-outline" size={14} color="#5D4E40" />
+          <Text style={{
+            fontSize: 14,
+            fontWeight: '600',
+            color: '#5D4E40',
+          }}>
+            {SORT_OPTIONS.find(o => o.value === sortBy)?.label}
+          </Text>
+        </AnimatedPressable>
+        </ScrollView>
       </View>
 
       {/* Recipe Grid */}
@@ -429,125 +470,9 @@ export default function RecipesScreen() {
         onAddRecipe={() => router.push('/add-recipe')}
         searchQuery={searchQuery}
         dietFilter={dietFilter}
-        mealFilter={mealFilter}
+        mealFilters={mealFilters}
         t={t}
       />
-
-      {/* Diet Filter Picker Modal */}
-      <Modal
-        visible={showDietPicker}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowDietPicker(false)}
-      >
-        <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
-          onPress={() => setShowDietPicker(false)}
-        >
-          <View style={{
-            backgroundColor: '#F5EDE5',
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingBottom: 40,
-          }}>
-            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
-            </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
-              {t('recipes.filterByDiet')}
-            </Text>
-            {DIET_OPTIONS.map((option) => (
-              <Pressable
-                key={option.label}
-                onPress={() => {
-                  hapticSelection();
-                  setDietFilter(option.value);
-                  setShowDietPicker(false);
-                }}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingVertical: 16,
-                  paddingHorizontal: 20,
-                  backgroundColor: dietFilter === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
-                  borderRadius: 12,
-                  marginHorizontal: 8,
-                }}
-              >
-                <Text style={{
-                  fontSize: 16,
-                  color: '#5D4E40',
-                  fontWeight: dietFilter === option.value ? '600' : '400',
-                }}>
-                  {option.label}
-                </Text>
-                {dietFilter === option.value && (
-                  <Ionicons name="checkmark" size={20} color="#7A6858" />
-                )}
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
-
-      {/* Meal Type Filter Picker Modal */}
-      <Modal
-        visible={showMealPicker}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowMealPicker(false)}
-      >
-        <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
-          onPress={() => setShowMealPicker(false)}
-        >
-          <View style={{
-            backgroundColor: '#F5EDE5',
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingBottom: 40,
-          }}>
-            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
-            </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
-              {t('recipes.filterByMealType')}
-            </Text>
-            {MEAL_OPTIONS.map((option) => (
-              <Pressable
-                key={option.label}
-                onPress={() => {
-                  hapticSelection();
-                  setMealFilter(option.value);
-                  setShowMealPicker(false);
-                }}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingVertical: 16,
-                  paddingHorizontal: 20,
-                  backgroundColor: mealFilter === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
-                  borderRadius: 12,
-                  marginHorizontal: 8,
-                }}
-              >
-                <Text style={{
-                  fontSize: 16,
-                  color: '#5D4E40',
-                  fontWeight: mealFilter === option.value ? '600' : '400',
-                }}>
-                  {option.label}
-                </Text>
-                {mealFilter === option.value && (
-                  <Ionicons name="checkmark" size={20} color="#7A6858" />
-                )}
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
 
       {/* Sort Picker Modal */}
       <Modal

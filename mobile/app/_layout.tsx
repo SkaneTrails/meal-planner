@@ -92,8 +92,13 @@ export default function RootLayout() {
       <QueryProvider>
         <SettingsProvider>
           <GroceryProvider>
-            <StatusBar style="auto" />
-            <Stack screenOptions={{ animation: 'slide_from_right' }}>
+            <StatusBar style="dark" />
+            <Stack
+              screenOptions={{
+                animation: 'slide_from_right',
+                contentStyle: { backgroundColor: '#E8D8C8' }, // Match background.png base color
+              }}
+            >
               <Stack.Screen
                 name="sign-in"
                 options={{ headerShown: false, animation: 'fade' }}

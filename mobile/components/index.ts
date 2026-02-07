@@ -2,6 +2,7 @@
  * Export all components.
  */
 
+export { AnimatedPressable } from './AnimatedPressable';
 export { BouncingLoader } from './BouncingLoader';
 export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow, GroceryListView } from './GroceryListView';

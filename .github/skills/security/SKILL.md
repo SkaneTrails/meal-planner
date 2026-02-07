@@ -326,6 +326,58 @@ git log -p --all -S "secret-value" --source
 - Validate deep links to prevent open redirects
 - Be cautious with WebViews - they can bypass security
 
+#### AsyncStorage Security
+
+AsyncStorage is **unencrypted** on both iOS and Android. Never store:
+- Authentication tokens (use Firebase Auth's built-in token management)
+- Passwords or secrets
+- Sensitive user data
+
+Acceptable uses:
+- User preferences (language, favorites)
+- UI state (checked items, collapsed sections)
+- Cache keys that reference server-side data
+
+If you must store sensitive data locally, use:
+- `expo-secure-store` for credentials (Keychain on iOS, Keystore on Android)
+- React Native encrypted storage libraries
+
+#### URL Validation (Linking.openURL)
+
+When opening user-provided URLs, validate scheme:
+
+```tsx
+// WRONG - opens any URL including javascript:, file://, etc.
+Linking.openURL(userUrl);
+
+// CORRECT - validate scheme first
+const openSafeUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      throw new Error('Invalid URL scheme');
+    }
+    Linking.openURL(url);
+  } catch {
+    showNotification('Error', 'Invalid URL');
+  }
+};
+```
+
+#### Deep Link Validation
+
+When handling deep links (e.g., `mealplanner://recipe/123`):
+- Validate route parameters against expected patterns
+- Don't trust path segments for navigation without validation
+- Sanitize IDs before using in API calls
+
+#### Console Logging in Production
+
+Remove or disable console.log in production builds:
+- Logs may contain sensitive data (URLs, request details)
+- Logs are visible in device logs on Android
+- Use environment-based logging levels
+
 ### Terraform
 
 - Never commit `.tfvars` with real values

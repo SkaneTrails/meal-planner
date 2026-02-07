@@ -12,6 +12,7 @@ const sv: Translations = {
     delete: 'Ta bort',
     remove: 'Ta bort',
     add: 'Lägg till',
+    or: 'eller',
     error: 'Fel',
     success: 'Klart',
     loading: 'Laddar...',
@@ -89,7 +90,10 @@ const sv: Translations = {
   },
 
   home: {
-    greeting: 'God morgon',
+    greeting: 'God morgon',  // Default fallback
+    greetingMorning: 'God morgon',
+    greetingAfternoon: 'God eftermiddag',
+    greetingEvening: 'God kväll',
     subtitle: 'Vad ska vi laga idag?',
     stats: {
       recipes: 'Recept',
@@ -100,6 +104,8 @@ const sv: Translations = {
       title: 'Lägg till recept',
       placeholder: 'Klistra in recept-URL...',
       importButton: 'Importera',
+      manualEntry: 'Skapa manuellt',
+      manualEntryDesc: 'Skriv ditt eget recept från början',
     },
     nextUp: {
       title: 'Nästa måltid',
@@ -128,7 +134,9 @@ const sv: Translations = {
     sortBy: 'Sortera efter',
     diet: 'Kost',
     mealType: 'Måltid',
+    mealTypeCount: '{{count}} typer',
     sort: 'Sortera',
+    favorites: 'Favoriter',
     noMatchesFound: 'Inga träffar',
     emptyLibrary: 'Din receptbok är tom',
     tryAdjusting: 'Prova att ändra din sökning eller dina filter',
@@ -413,10 +421,28 @@ const sv: Translations = {
     invalidUrlMessage: 'Ange en giltig recept-URL',
     done: 'Klart!',
     recipeImported: '"{{title}}" har importerats!',
+    recipeCreated: '"{{title}}" har skapats!',
     viewRecipe: 'Visa recept',
     addMore: 'Lägg till fler',
     importFailed: 'Import misslyckades',
     importFailedDefault: 'Kunde inte importera receptet',
+    createFailed: 'Skapande misslyckades',
+    createFailedDefault: 'Kunde inte skapa receptet',
+    // Manual form
+    manualTitle: 'Skapa recept',
+    manualDescription: 'Fyll i detaljerna för att skapa ett nytt recept manuellt.',
+    recipeTitle: 'Recepttitel',
+    titlePlaceholder: 't.ex. Pasta Carbonara',
+    titleRequired: 'Ange en recepttitel',
+    servingsInvalid: 'Portioner måste vara minst 1',
+    ingredients: 'Ingredienser',
+    ingredientsPlaceholder: 'En ingrediens per rad\nt.ex. 200g pasta\n4 ägg',
+    instructions: 'Instruktioner',
+    instructionsPlaceholder: 'Ett steg per rad\nt.ex. Koka vatten\nKoka pasta i 10 minuter',
+    imageOptional: 'Bild (valfritt)',
+    addImage: 'Lägg till bild',
+    creating: 'Skapar...',
+    createButton: 'Skapa recept',
     enhanced: {
       title: 'Recept förbättrat!',
       changesLabel: 'AI-förbättringar:',
@@ -445,6 +471,7 @@ const sv: Translations = {
 
   householdSettings: {
     title: 'Hushållsinställningar',
+    subtitle: 'Hantera hushållets preferenser',
     readOnly: 'Bara admins kan ändra inställningar',
     general: {
       title: 'Allmänt',

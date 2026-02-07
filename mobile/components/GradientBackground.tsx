@@ -17,6 +17,7 @@ interface GradientBackgroundProps {
   children: React.ReactNode;
   style?: object;
   animated?: boolean;
+  muted?: boolean; // Adds a desaturating overlay for a B&W-ish effect
 }
 
 // Floating orb component
@@ -155,7 +156,7 @@ function FloatingOrb({
   );
 }
 
-export function GradientBackground({ children, style, animated = false }: GradientBackgroundProps) {
+export function GradientBackground({ children, style, animated = false, muted = false }: GradientBackgroundProps) {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -170,12 +171,23 @@ export function GradientBackground({ children, style, animated = false }: Gradie
         resizeMode="stretch"
       >
         {/* Slight darkening overlay for mobile to make colors richer */}
-        {isMobile && (
+        {isMobile && !muted && (
           <View
             style={[
               StyleSheet.absoluteFill,
               {
                 backgroundColor: 'rgba(0, 0, 0, 0.03)',
+              },
+            ]}
+          />
+        )}
+        {/* Muted/desaturating overlay for settings-like pages */}
+        {muted && (
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: 'rgba(128, 128, 128, 0.45)',
               },
             ]}
           />

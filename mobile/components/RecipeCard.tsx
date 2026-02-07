@@ -1,14 +1,15 @@
 /**
  * Recipe card component for displaying a recipe in a grid or list.
- * Luxurious card design with refined shadows and smooth animations.
+ * Premium card design with white background, tall images, and smooth animations.
  * Uses expo-image for progressive loading and caching.
  */
 
 import React from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, borderRadius, fontSize, fontWeight, letterSpacing } from '@/lib/theme';
+import { colors, borderRadius, fontSize, fontWeight, letterSpacing, shadows } from '@/lib/theme';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import { hapticLight } from '@/lib/haptics';
@@ -145,10 +146,10 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFav
     );
   }
 
-  // Grid card layout - streaming app style with large image and text below
-  // Image takes most of the card with generous rounded corners
-  const imageHeight = cardSize ? cardSize * 0.72 : 140;
-  const cardHeight = cardSize ? cardSize * 1.0 : 180;
+  // Grid card layout - premium white card with tall image and content below
+  // 4:5 aspect ratio image with gradient overlay
+  const imageHeight = cardSize ? cardSize * 1.1 : 180; // Taller 4:5ish ratio
+  const cardHeight = cardSize ? cardSize * 1.5 : 260;
 
   return (
     <Pressable
@@ -160,79 +161,89 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFav
         style={{
           width: cardSize,
           height: cardHeight,
+          backgroundColor: colors.white,
+          borderRadius: 22,
+          overflow: 'hidden',
           transform: [{ scale: scaleAnim }],
+          ...shadows.md,
         }}
       >
-        {/* Image card with glass effect */}
-        <View style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: 20,
-          overflow: 'hidden',
-          position: 'relative',
-        }}>
+        {/* Image with gradient overlay */}
+        <View style={{ position: 'relative' }}>
           <Image
             source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
-            style={{ width: '100%', height: imageHeight, borderRadius: 20 }}
+            style={{ width: '100%', height: imageHeight }}
             contentFit="cover"
             placeholder={PLACEHOLDER_BLURHASH}
             transition={300}
           />
 
-          {/* Diet label badge - bottom left overlaid on image */}
-          {recipe.diet_label && (
-            <View style={{
+          {/* Subtle bottom gradient for depth */}
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.15)']}
+            style={{
               position: 'absolute',
-              bottom: 8,
-              left: 8,
-              backgroundColor: recipe.diet_label === 'veggie'
-                ? 'rgba(46, 125, 50, 0.85)'
-                : recipe.diet_label === 'fish'
-                  ? 'rgba(21, 101, 192, 0.85)'
-                  : 'rgba(198, 40, 40, 0.85)',
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-              borderRadius: borderRadius.full,
-            }}>
-              <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.white }}>
-                {t(DIET_LABEL_KEYS[recipe.diet_label])}
-              </Text>
-            </View>
-          )}
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 60,
+            }}
+          />
 
-          {/* Favorite heart icon - top right */}
+          {/* Favorite heart icon - top right, subtle */}
           {showFavorite && (
             <Pressable
               onPress={handleToggleFavorite}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={{
                 position: 'absolute',
-                top: 8,
-                right: 8,
-                backgroundColor: isRecipeFavorite ? 'rgba(220, 38, 38, 0.9)' : 'rgba(255, 255, 255, 0.85)',
-                paddingHorizontal: 8,
-                paddingVertical: 6,
-                borderRadius: 12,
+                top: 10,
+                right: 10,
+                backgroundColor: isRecipeFavorite ? 'rgba(220, 38, 38, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                ...shadows.sm,
               }}
             >
               <Ionicons
                 name={isRecipeFavorite ? 'heart' : 'heart-outline'}
-                size={14}
-                color={isRecipeFavorite ? colors.white : '#5D4E40'}
+                size={16}
+                color={isRecipeFavorite ? colors.white : '#8B7355'}
               />
             </Pressable>
           )}
         </View>
 
-        {/* Title below card */}
-        <View style={{ paddingTop: 5, paddingHorizontal: 2 }}>
+        {/* Content below image */}
+        <View style={{ padding: 12, flex: 1, justifyContent: 'space-between' }}>
+          {/* Title - 2 lines max */}
           <Text style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
-            color: colors.white,
-            lineHeight: 18,
+            color: '#3D3228',
+            lineHeight: 20,
           }} numberOfLines={2}>
             {recipe.title}
           </Text>
+
+          {/* Time info */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            {totalTime && (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="time-outline" size={14} color="#8B7355" />
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginLeft: 4 }}>{totalTime} min</Text>
+              </View>
+            )}
+            {recipe.servings && (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="people-outline" size={14} color="#8B7355" />
+                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginLeft: 4 }}>{recipe.servings}</Text>
+              </View>
+            )}
+          </View>
         </View>
       </Animated.View>
     </Pressable>

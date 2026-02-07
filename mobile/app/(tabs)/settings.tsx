@@ -12,6 +12,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
+import { AnimatedPressable, GradientBackground } from '@/components';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,7 +23,6 @@ import { useTranslation } from '@/lib/i18n';
 import { showNotification } from '@/lib/alert';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
-import { GradientBackground } from '@/components';
 
 // Common items that people often have at home
 const SUGGESTED_ITEMS = [
@@ -144,7 +144,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <GradientBackground>
+    <GradientBackground muted>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -159,6 +159,9 @@ export default function SettingsScreen() {
               fontFamily: fontFamily.display,
               color: colors.text.primary,
               letterSpacing: -0.5,
+              textShadowColor: 'rgba(0, 0, 0, 0.15)',
+              textShadowOffset: { width: 0, height: 1 },
+              textShadowRadius: 2,
             }}>{t('settings.title')}</Text>
             <Text style={{
               fontSize: fontSize.lg,
@@ -209,17 +212,19 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-            <Pressable
+            <AnimatedPressable
               onPress={handleSignOut}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? '#FEE2E2' : colors.glass.card,
+              hoverScale={1.02}
+              pressScale={0.97}
+              style={{
+                backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
                 ...shadows.sm,
-              })}
+              }}
             >
               <Ionicons name="log-out-outline" size={20} color="#DC2626" />
               <Text
@@ -232,7 +237,7 @@ export default function SettingsScreen() {
               >
                 {t('settings.signOut')}
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           </View>
 
           {/* Household Settings Section */}
@@ -243,22 +248,25 @@ export default function SettingsScreen() {
               subtitle={t('settings.householdSettingsDesc')}
             />
 
-            <Pressable
+            <AnimatedPressable
               onPress={() => {
                 if (currentUser?.household_id) {
                   router.push(`/household-settings?id=${currentUser.household_id}`);
                 }
               }}
               disabled={userLoading || !currentUser?.household_id}
-              style={({ pressed }) => ({
+              hoverScale={1.02}
+              pressScale={0.97}
+              disableAnimation={userLoading || !currentUser?.household_id}
+              style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: pressed ? colors.bgDark : colors.glass.card,
+                backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
                 opacity: userLoading ? 0.6 : currentUser?.household_id ? 1 : 0.5,
                 ...shadows.sm,
-              })}
+              }}
             >
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
@@ -277,7 +285,7 @@ export default function SettingsScreen() {
               ) : (
                 <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
               )}
-            </Pressable>
+            </AnimatedPressable>
           </View>
 
           {/* Language Section */}
@@ -504,16 +512,18 @@ export default function SettingsScreen() {
                 subtitle={t('settings.adminSectionDesc')}
               />
 
-              <Pressable
+              <AnimatedPressable
                 onPress={() => router.push('/admin')}
-                style={({ pressed }) => ({
+                hoverScale={1.02}
+                pressScale={0.97}
+                style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: pressed ? colors.bgDark : colors.glass.card,
+                  backgroundColor: colors.glass.card,
                   borderRadius: borderRadius.md,
                   padding: spacing.lg,
                   ...shadows.sm,
-                })}
+                }}
               >
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
@@ -524,7 +534,7 @@ export default function SettingsScreen() {
                   </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
-              </Pressable>
+              </AnimatedPressable>
             </View>
           )}
 
