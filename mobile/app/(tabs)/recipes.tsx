@@ -3,7 +3,7 @@
  * Layout matches Streamlit app design.
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import {
   UIManager,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useRecipes } from '@/lib/hooks';
@@ -171,6 +172,20 @@ export default function RecipesScreen() {
   const [showSortPicker, setShowSortPicker] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
+
+  // Clear filters and search when leaving the screen
+  useFocusEffect(
+    useCallback(() => {
+      // Called when screen gains focus - nothing to do
+      return () => {
+        // Called when screen loses focus - reset filters and search
+        setSearchQuery('');
+        setDietFilter(null);
+        setMealFilter(null);
+        setShowFavoritesOnly(false);
+      };
+    }, [])
+  );
 
   // Toggle filters with animation
   const toggleFilters = () => {
