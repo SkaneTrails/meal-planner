@@ -69,8 +69,7 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         changes_made=data.get("changes_made"),
         # Household fields
         household_id=data.get("household_id"),
-        # Legacy recipes (no household_id) default to shared visibility
-        visibility=data.get("visibility", "shared" if data.get("household_id") is None else "household"),
+        visibility=raw_vis if (raw_vis := data.get("visibility")) in ("household", "shared") else "household",
         created_by=data.get("created_by"),
     )
 
@@ -113,8 +112,8 @@ def get_all_recipes(*, include_duplicates: bool = False, household_id: str | Non
 
     Args:
         include_duplicates: If False (default), deduplicate by URL.
-        household_id: If provided, filter to recipes owned by this household OR shared/legacy recipes.
-                      If None, return all recipes (for superusers or backward compatibility).
+        household_id: If provided, filter to recipes owned by this household OR shared recipes.
+                      If None, return all recipes (for superusers).
 
     Returns:
         List of recipes.
@@ -129,16 +128,10 @@ def get_all_recipes(*, include_duplicates: bool = False, household_id: str | Non
 
         # Apply household filtering if specified
         if household_id is not None:
-            # Include recipe if:
-            # 1. It belongs to this household, OR
-            # 2. It has visibility="shared", OR
-            # 3. It's a legacy recipe (no household_id) - treat as shared
-            recipe_household = recipe.household_id
-            is_owned = recipe_household == household_id
+            is_owned = recipe.household_id == household_id
             is_shared = recipe.visibility == "shared"
-            is_legacy = recipe_household is None
 
-            if not (is_owned or is_shared or is_legacy):
+            if not (is_owned or is_shared):
                 continue
 
         recipes.append(recipe)
@@ -261,7 +254,6 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
     data = doc.to_dict()
 
     # Verify household ownership if specified
-    # Legacy/shared recipes (household_id=None) are read-only - must copy first
     if household_id is not None:
         recipe_household = data.get("household_id") if data else None
         # Only allow update if recipe is owned by this household
@@ -326,7 +318,6 @@ def delete_recipe(recipe_id: str, *, household_id: str | None = None) -> bool:
     data = doc.to_dict()
 
     # Verify household ownership if specified
-    # Legacy/shared recipes (household_id=None) are read-only - cannot be deleted
     if household_id is not None and data:
         recipe_household = data.get("household_id")
         # Only allow delete if recipe is owned by this household
@@ -346,7 +337,8 @@ def search_recipes(query: str, *, household_id: str | None = None) -> list[Recip
 
     Args:
         query: The search query.
-        household_id: If provided, filter to recipes owned by this household OR shared/legacy.
+        household_id: If provided, filter to recipes owned by this household OR shared recipes.
+                      If None, return all matching recipes (for superusers).
 
     Returns:
         List of matching recipes.
@@ -366,12 +358,10 @@ def search_recipes(query: str, *, household_id: str | None = None) -> list[Recip
 
         # Apply household filtering if specified
         if household_id is not None:
-            recipe_household = recipe.household_id
-            is_owned = recipe_household == household_id
+            is_owned = recipe.household_id == household_id
             is_shared = recipe.visibility == "shared"
-            is_legacy = recipe_household is None
 
-            if not (is_owned or is_shared or is_legacy):
+            if not (is_owned or is_shared):
                 continue
 
         recipes.append(recipe)

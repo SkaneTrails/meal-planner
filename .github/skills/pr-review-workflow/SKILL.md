@@ -20,7 +20,17 @@ This skill activates when:
 
 ## 1. Post-push workflow
 
-After successfully pushing changes to a PR branch, **automatically fetch and present review comments**. Do not ask whether to check - assume there are comments and check them.
+After every `git push` to a PR branch, do ALL of the following **in order**:
+
+### Step 1: Request Copilot review
+
+```bash
+gh pr edit <PR> --add-reviewer copilot
+```
+
+This must happen on EVERY push, not just the first. It triggers a fresh review of the new changes.
+
+### Step 2: Fetch and present review comments
 
 **Always run BOTH of these commands:**
 
@@ -391,31 +401,31 @@ After addressing comments and fixing CI issues:
 
 ---
 
-## 8. Creating PRs with multi-line bodies
+## 8. Creating PRs
 
-When creating PRs with `gh pr create`, avoid passing complex body text directly via `--body` as quotes and special characters cause shell parsing errors.
+### Always request Copilot review
 
-**Robust solution - pipe to stdin (PowerShell):**
+Every PR must request review from `copilot`:
 
-````powershell
-@"
-## Summary
-Description with "quotes" and special characters.
+```powershell
+gh pr create --title "..." --body-file tmp_pr_body.md --reviewer copilot
+```
 
-The `--body-file -` flag reads the body from stdin, avoiding all quoting issues. This works reliably with:
+Or add after creation: `gh pr edit <PR> --add-reviewer copilot`
 
-- Multi-line content
-- Quotes and special characters
-- Markdown formatting
-- URLs and links
+### Multi-line bodies (PowerShell)
 
-**Alternative - open in editor:**
+NEVER pass backtick-containing text via `--body` in PowerShell — backticks are parsed as escape characters causing Unicode parse errors.
 
-```bash
-gh pr create --editor
-````
+**Required approach — write to temp file:**
 
-This opens the system editor for title and body input.
+```powershell
+# 1. Write body to temp file (use create_file tool)
+# 2. Create PR with --body-file
+gh pr create --title "feat: ..." --body-file tmp_pr_body.md --reviewer copilot
+# 3. Delete temp file
+Remove-Item tmp_pr_body.md
+```
 
 ---
 
