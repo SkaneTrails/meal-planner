@@ -434,6 +434,7 @@ const it: Translations = {
     recipeTitle: 'Titolo ricetta',
     titlePlaceholder: 'es. Pasta Carbonara',
     titleRequired: 'Inserisci un titolo per la ricetta',
+    servingsInvalid: 'Le porzioni devono essere almeno 1',
     ingredients: 'Ingredienti',
     ingredientsPlaceholder: 'Un ingrediente per riga\nes. 200g pasta\n4 uova',
     instructions: 'Istruzioni',

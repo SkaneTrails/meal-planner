@@ -22,7 +22,7 @@ import { useScrapeRecipe, useCreateRecipe } from '@/lib/hooks';
 import { api } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
-import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer, fontFamily } from '@/lib/theme';
+import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground } from '@/components';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
@@ -103,6 +103,13 @@ export default function AddRecipeScreen() {
       return;
     }
 
+    // Validate servings is at least 1 if provided
+    const parsedServings = servings ? parseInt(servings, 10) : null;
+    if (parsedServings !== null && (isNaN(parsedServings) || parsedServings < 1)) {
+      showNotification(t('common.error'), t('addRecipe.servingsInvalid'));
+      return;
+    }
+
     try {
       const recipe = await createRecipe.mutateAsync({
         title: title.trim(),
@@ -110,7 +117,7 @@ export default function AddRecipeScreen() {
         ingredients: ingredients.split('\n').map(i => i.trim()).filter(Boolean),
         instructions: instructions.split('\n').map(i => i.trim()).filter(Boolean),
         image_url: imageUrl.trim() || null,
-        servings: servings ? parseInt(servings, 10) : null,
+        servings: parsedServings,
         prep_time: prepTime ? parseInt(prepTime, 10) : null,
         cook_time: cookTime ? parseInt(cookTime, 10) : null,
         diet_label: dietLabel,
@@ -168,7 +175,7 @@ export default function AddRecipeScreen() {
             return;
           }
           const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: 'images',
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -188,7 +195,7 @@ export default function AddRecipeScreen() {
             return;
           }
           const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,

@@ -947,6 +947,28 @@ export default function RecipeDetailScreen() {
               />
             </View>
           </LinearGradient>
+
+          {/* Camera button to change recipe photo */}
+          <Pressable
+            onPress={handlePickImage}
+            style={({ pressed }) => ({
+              position: 'absolute',
+              top: 60,
+              right: spacing.lg,
+              backgroundColor: pressed ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.3)',
+              borderRadius: borderRadius.xl,
+              width: 44,
+              height: 44,
+              alignItems: 'center',
+              justifyContent: 'center',
+            })}
+          >
+            {isUpdatingImage ? (
+              <ActivityIndicator size="small" color={colors.white} />
+            ) : (
+              <Ionicons name="camera" size={20} color={colors.white} />
+            )}
+          </Pressable>
         </Animated.View>
 
         {/* Content with background image */}

@@ -11,6 +11,7 @@ import {
   ViewStyle,
   StyleProp,
   Platform,
+  StyleSheet,
 } from 'react-native';
 
 interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
@@ -111,20 +112,24 @@ export function AnimatedPressable({
   // Extract flex-related styles that need to be on the Pressable wrapper
   // These properties affect how the component participates in parent flex layout
   const extractFlexStyle = (styleObj: StyleProp<ViewStyle>): ViewStyle => {
-    if (!styleObj || typeof styleObj !== 'object' || Array.isArray(styleObj)) {
+    // Flatten style arrays to handle style={[...styles]} properly
+    const flattened = StyleSheet.flatten(styleObj);
+    if (!flattened || typeof flattened !== 'object') {
       return {};
     }
-    const { flex, flexGrow, flexShrink, flexBasis, alignSelf, width, height, minWidth, minHeight, maxWidth, maxHeight, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical } = styleObj as ViewStyle;
+    const { flex, flexGrow, flexShrink, flexBasis, alignSelf, width, height, minWidth, minHeight, maxWidth, maxHeight, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical } = flattened as ViewStyle;
     return { flex, flexGrow, flexShrink, flexBasis, alignSelf, width, height, minWidth, minHeight, maxWidth, maxHeight, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical };
   };
 
   // Remove flex-related styles from inner view to avoid conflict
   const removeFlexStyle = (styleObj: StyleProp<ViewStyle>): ViewStyle => {
-    if (!styleObj || typeof styleObj !== 'object' || Array.isArray(styleObj)) {
-      return styleObj as ViewStyle;
+    // Flatten style arrays to handle style={[...styles]} properly
+    const flattened = StyleSheet.flatten(styleObj);
+    if (!flattened || typeof flattened !== 'object') {
+      return flattened as ViewStyle;
     }
     // Keep width/height on inner view for proper sizing, only remove flex participation props
-    const { flex, flexGrow, flexShrink, flexBasis, alignSelf, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical, ...rest } = styleObj as ViewStyle;
+    const { flex, flexGrow, flexShrink, flexBasis, alignSelf, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical, ...rest } = flattened as ViewStyle;
     return rest as ViewStyle;
   };
 

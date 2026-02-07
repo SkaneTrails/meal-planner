@@ -434,6 +434,7 @@ const sv: Translations = {
     recipeTitle: 'Recepttitel',
     titlePlaceholder: 't.ex. Pasta Carbonara',
     titleRequired: 'Ange en recepttitel',
+    servingsInvalid: 'Portioner måste vara minst 1',
     ingredients: 'Ingredienser',
     ingredientsPlaceholder: 'En ingrediens per rad\nt.ex. 200g pasta\n4 ägg',
     instructions: 'Instruktioner',

@@ -142,22 +142,7 @@ export default function RecipesScreen() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // Get favorites from settings
-  const { isFavorite, settings } = useSettings();
-
-  const DIET_OPTIONS: { value: DietLabel | null; label: string }[] = [
-    { value: null, label: t('labels.diet.all') },  // When selected shows 'All', but dropdown button shows 'Diet' when null
-    { value: 'veggie', label: t('labels.diet.veggie') },
-    { value: 'fish', label: t('labels.diet.fish') },
-    { value: 'meat', label: t('labels.diet.meat') },
-  ];
-
-  const MEAL_OPTIONS: { value: MealLabel; label: string }[] = [
-    { value: 'breakfast', label: t('labels.meal.breakfast') },
-    { value: 'starter', label: t('labels.meal.starter') },
-    { value: 'salad', label: t('labels.meal.salad') },
-    { value: 'meal', label: t('labels.meal.meal') },
-    { value: 'dessert', label: t('labels.meal.dessert') },
-  ];
+  const { isFavorite } = useSettings();
 
   const SORT_OPTIONS = [
     { value: 'newest', label: t('labels.sort.newest') },
@@ -183,9 +168,6 @@ export default function RecipesScreen() {
       };
     }, [])
   );
-
-  // Check if any filters are active
-  const hasActiveFilters = dietFilter !== null || mealFilters.length > 0 || searchQuery !== '' || showFavoritesOnly;
 
   // Fetch recipes
   const { data: recipes = [], isLoading, refetch } = useRecipes();

@@ -18,7 +18,7 @@ import { useMealPlan, useRecipes, useGroceryState } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
-import { AnimatedPressable, GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
+import { AnimatedPressable, GroceryListView, GradientBackground, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
