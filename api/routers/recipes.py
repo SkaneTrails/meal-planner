@@ -76,12 +76,12 @@ async def list_recipes(
     *,
     include_duplicates: Annotated[bool, Query(description="Include duplicate URLs")] = False,
 ) -> list[Recipe]:
-    """Get all recipes visible to the user's household.
+    """Get all recipes visible to the user.
 
-    Returns recipes owned by the household, shared recipes, and legacy recipes (no household).
+    Superusers see all recipes. Regular users see their household's recipes and shared recipes.
     """
-    # Filter by household if user has one, otherwise show all (for superusers without household)
-    household_id = user.household_id
+    # Superusers see everything; regular users are scoped to their household
+    household_id = None if user.role == "superuser" else user.household_id
     if search:
         return recipe_storage.search_recipes(search, household_id=household_id)
     return recipe_storage.get_all_recipes(include_duplicates=include_duplicates, household_id=household_id)
@@ -91,19 +91,17 @@ async def list_recipes(
 async def get_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
     """Get a single recipe by ID.
 
-    Users can view recipes they own, shared recipes, or legacy recipes.
+    Superusers can view any recipe. Regular users can view owned or shared recipes.
     """
     recipe = recipe_storage.get_recipe(recipe_id)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    # Check visibility: owned, shared, or legacy
-    household_id = user.household_id
-    if household_id is not None:
-        is_owned = recipe.household_id == household_id
+    # Superusers can see everything
+    if user.role != "superuser" and user.household_id is not None:
+        is_owned = recipe.household_id == user.household_id
         is_shared = recipe.visibility == "shared"
-        is_legacy = recipe.household_id is None
-        if not (is_owned or is_shared or is_legacy):
+        if not (is_owned or is_shared):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     return recipe
