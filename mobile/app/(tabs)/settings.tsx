@@ -18,6 +18,7 @@ import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamil
 import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
 import { showNotification } from '@/lib/alert';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { GradientBackground } from '@/components';
 
 // Common items that people often have at home
@@ -77,6 +78,7 @@ function SectionHeader({
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { data: currentUser } = useCurrentUser();
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
   const [newItem, setNewItem] = useState('');
 
@@ -166,13 +168,19 @@ export default function SettingsScreen() {
             />
 
             <Pressable
-              onPress={() => router.push('/household-settings')}
+              onPress={() => {
+                if (currentUser?.household_id) {
+                  router.push(`/household-settings?id=${currentUser.household_id}`);
+                }
+              }}
+              disabled={!currentUser?.household_id}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: pressed ? colors.bgDark : colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
+                opacity: currentUser?.household_id ? 1 : 0.5,
                 ...shadows.sm,
               })}
             >
