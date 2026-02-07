@@ -27,6 +27,7 @@ import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
+import type { TFunction } from '@/lib/i18n';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 // Enable LayoutAnimation on Android
@@ -44,7 +45,7 @@ interface RecipeGridProps {
   searchQuery: string;
   dietFilter: DietLabel | null;
   mealFilter: MealLabel | null;
-  t: (key: string, params?: Record<string, string | number>) => string;
+  t: TFunction;
 }
 
 function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe, searchQuery, dietFilter, mealFilter, t }: RecipeGridProps) {

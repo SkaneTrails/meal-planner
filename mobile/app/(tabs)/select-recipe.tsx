@@ -30,6 +30,9 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   snack: ['dessert', 'drink'],
 };
 
+// BCP-47 locale mapping for date formatting
+const LOCALE_MAP: Record<string, string> = { en: 'en-US', sv: 'sv-SE', it: 'it-IT' };
+
 type TabType = 'library' | 'copy' | 'random' | 'quick';
 
 export default function SelectRecipeScreen() {
@@ -46,8 +49,6 @@ export default function SelectRecipeScreen() {
   const setMeal = useSetMeal();
   const removeMeal = useRemoveMeal();
   const { t, language } = useTranslation();
-
-  const LOCALE_MAP: Record<string, string> = { en: 'en-US', sv: 'sv-SE', it: 'it-IT' };
 
   // Moved inside component so labels use translated strings
   const MEAL_TYPE_LABELS: Record<MealType, string> = useMemo(() => ({

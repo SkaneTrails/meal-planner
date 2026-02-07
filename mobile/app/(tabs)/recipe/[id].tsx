@@ -608,7 +608,8 @@ export default function RecipeDetailScreen() {
         recipeId: id,
       });
       setShowPlanModal(false);
-      showNotification(t('recipe.addedToMealPlan'), t('recipe.addedToMealPlanMessage', { title: recipe?.title ?? '', mealType, date: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) }));
+      const localizedMealType = t(`selectRecipe.mealTypeLabels.${mealType}`);
+      showNotification(t('recipe.addedToMealPlan'), t('recipe.addedToMealPlanMessage', { title: recipe?.title ?? '', mealType: localizedMealType, date: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) }));
     } catch {
       showNotification(t('common.error'), t('recipe.failedToAddToMealPlan'));
     }

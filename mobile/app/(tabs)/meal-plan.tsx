@@ -31,7 +31,7 @@ import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 
 // Cross-platform confirm dialog using centralized alert utility
-const showConfirmDelete = (title: string, message: string, onConfirm: () => void, cancelText: string = 'Cancel', removeText: string = 'Remove') => {
+const showConfirmDelete = (title: string, message: string, onConfirm: () => void, cancelText: string, removeText: string) => {
   showAlert(title, message, [
     { text: cancelText, style: 'cancel' },
     { text: removeText, style: 'destructive', onPress: onConfirm },
