@@ -1302,7 +1302,7 @@ export default function RecipeDetailScreen() {
                   <Ionicons name="sparkles" size={18} color="#2D6A5A" />
                 </View>
                 <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: '#5D4037', letterSpacing: letterSpacing.normal, flex: 1 }}>
-                  AI-förbättringar
+                  AI Improvements
                 </Text>
                 <Ionicons
                   name={showAiChanges ? 'chevron-up' : 'chevron-down'}
