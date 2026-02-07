@@ -20,6 +20,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { useRecipe, useDeleteRecipe, useUpdateRecipe, useSetMeal, useMealPlan, useCurrentUser } from '@/lib/hooks';
@@ -27,7 +28,7 @@ import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
-import { BouncingLoader, GradientBackground } from '@/components';
+import { AnimatedPressable, BouncingLoader, GradientBackground } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
 
@@ -919,27 +920,33 @@ export default function RecipeDetailScreen() {
             placeholder={PLACEHOLDER_BLURHASH}
             transition={400}
           />
-          {/* Camera button floating on right side */}
-          <Pressable
-            onPress={handlePickImage}
-            style={({ pressed }) => ({
+
+          {/* Gradient overlay with title and thumbs at bottom of image */}
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.7)']}
+            style={{
               position: 'absolute',
-              bottom: 48,
-              right: spacing.lg,
-              backgroundColor: pressed ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.3)',
-              borderRadius: borderRadius.xl,
-              width: 48,
-              height: 48,
-              alignItems: 'center',
-              justifyContent: 'center',
-            })}
+              left: 0,
+              right: 0,
+              bottom: 0,
+              paddingTop: 100,
+              paddingBottom: 48,
+              paddingHorizontal: spacing.xl,
+            }}
           >
-            {isUpdatingImage ? (
-              <ActivityIndicator size="small" color={colors.white} />
-            ) : (
-              <Ionicons name="camera" size={22} color={colors.white} />
-            )}
-          </Pressable>
+            {/* Title and rating */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md, textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
+                {recipe.title}
+              </Text>
+              <ThumbRating
+                rating={recipe.rating}
+                onThumbUp={handleThumbUp}
+                onThumbDown={handleThumbDown}
+                size={24}
+              />
+            </View>
+          </LinearGradient>
         </Animated.View>
 
         {/* Content with background image */}
@@ -947,86 +954,81 @@ export default function RecipeDetailScreen() {
           source={require('@/assets/images/background2.png')}
           tileCount={4}
           style={{
-            marginTop: -48,
             borderTopLeftRadius: 32,
             borderTopRightRadius: 32,
             flex: 1,
             width: '100%',
             minWidth: '100%',
+            marginTop: -32,
           }}
           borderTopLeftRadius={32}
           borderTopRightRadius={32}
         >
           <View style={{
             padding: spacing.xl,
-            paddingBottom: 120,
+            paddingBottom: 140,
             maxWidth: 720,
             alignSelf: 'center',
             width: '100%',
           }}>
-          {/* Title and rating */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md }}>
-              {recipe.title}
-            </Text>
-            <ThumbRating
-              rating={recipe.rating}
-              onThumbUp={handleThumbUp}
-              onThumbDown={handleThumbDown}
-              size={24}
-            />
-          </View>
 
           {/* Action buttons row */}
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
             {/* Edit button - only enabled for recipes owned by user's household */}
             {(() => {
               const isOwned = currentUser ? recipe.household_id === currentUser.household_id : undefined;
               // While currentUser is loading, disable the button without showing 'not owned' state
               const canEdit = isOwned === true;
               return (
-                <Pressable
+                <AnimatedPressable
                   onPress={canEdit ? openEditModal : () => showNotification(t('recipe.cannotEdit'), t('recipe.cannotEditMessage'))}
-                  style={({ pressed }) => ({
+                  hoverScale={1.1}
+                  pressScale={0.9}
+                  disableAnimation={!canEdit}
+                  style={{
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: pressed ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.7)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
                     alignItems: 'center',
                     justifyContent: 'center',
                     opacity: canEdit ? 1 : 0.5,
-                  })}
+                  }}
                 >
                   <Ionicons name="create" size={20} color={colors.text.inverse} />
-                </Pressable>
+                </AnimatedPressable>
               );
             })()}
-            <Pressable
+            <AnimatedPressable
               onPress={() => setShowPlanModal(true)}
-              style={({ pressed }) => ({
+              hoverScale={1.1}
+              pressScale={0.9}
+              style={{
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.7)',
+                backgroundColor: 'rgba(255, 255, 255, 0.7)',
                 alignItems: 'center',
                 justifyContent: 'center',
-              })}
+              }}
             >
               <Ionicons name="calendar" size={20} color={colors.text.inverse} />
-            </Pressable>
-            <Pressable
+            </AnimatedPressable>
+            <AnimatedPressable
               onPress={handleShare}
-              style={({ pressed }) => ({
+              hoverScale={1.1}
+              pressScale={0.9}
+              style={{
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.7)',
+                backgroundColor: 'rgba(255, 255, 255, 0.7)',
                 alignItems: 'center',
                 justifyContent: 'center',
-              })}
+              }}
             >
               <Ionicons name="share" size={20} color={colors.text.inverse} />
-            </Pressable>
+            </AnimatedPressable>
           </View>
 
           {/* Meta info (labels) */}

@@ -21,7 +21,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useRecipes } from '@/lib/hooks';
-import { RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
+import { AnimatedPressable, RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
@@ -293,12 +293,14 @@ export default function RecipesScreen() {
           contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
         >
           {/* All chip */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setDietFilter(null);
             setShowFavoritesOnly(false);
           }}
+          hoverScale={1.05}
+          pressScale={0.95}
           style={{
             paddingHorizontal: 14,
             paddingVertical: 7,
@@ -315,15 +317,17 @@ export default function RecipesScreen() {
           }}>
             {t('labels.diet.all')}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Veggie chip */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setDietFilter(dietFilter === 'veggie' ? null : 'veggie');
             setShowFavoritesOnly(false);
           }}
+          hoverScale={1.05}
+          pressScale={0.95}
           style={{
             paddingHorizontal: 14,
             paddingVertical: 7,
@@ -344,15 +348,17 @@ export default function RecipesScreen() {
           }}>
             {t('labels.diet.veggie')}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Fish chip */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setDietFilter(dietFilter === 'fish' ? null : 'fish');
             setShowFavoritesOnly(false);
           }}
+          hoverScale={1.05}
+          pressScale={0.95}
           style={{
             paddingHorizontal: 14,
             paddingVertical: 7,
@@ -373,15 +379,17 @@ export default function RecipesScreen() {
           }}>
             {t('labels.diet.fish')}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Meat chip */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setDietFilter(dietFilter === 'meat' ? null : 'meat');
             setShowFavoritesOnly(false);
           }}
+          hoverScale={1.05}
+          pressScale={0.95}
           style={{
             paddingHorizontal: 14,
             paddingVertical: 7,
@@ -402,15 +410,17 @@ export default function RecipesScreen() {
           }}>
             {t('labels.diet.meat')}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Favorites chip */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setShowFavoritesOnly(!showFavoritesOnly);
             if (!showFavoritesOnly) setDietFilter(null);
           }}
+          hoverScale={1.05}
+          pressScale={0.95}
           style={{
             paddingHorizontal: 14,
             paddingVertical: 7,
@@ -435,14 +445,16 @@ export default function RecipesScreen() {
           }}>
             {t('recipes.favorites')}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Sort chip */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setShowSortPicker(true);
           }}
+          hoverScale={1.05}
+          pressScale={0.95}
           style={{
             paddingHorizontal: 14,
             paddingVertical: 7,
@@ -463,7 +475,7 @@ export default function RecipesScreen() {
           }}>
             {SORT_OPTIONS.find(o => o.value === sortBy)?.label}
           </Text>
-        </Pressable>
+        </AnimatedPressable>
         </ScrollView>
       </View>
 
@@ -537,6 +549,7 @@ export default function RecipesScreen() {
           </View>
         </Pressable>
       </Modal>
+      </View>
     </GradientBackground>
   );
 }

@@ -15,12 +15,12 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
+import { AnimatedPressable, GradientBackground } from '@/components';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
-import { GradientBackground } from '@/components';
 import { useCurrentUser, useHouseholds, useHouseholdMembers, useCreateHousehold, useAddMember, useRemoveMember } from '@/lib/hooks/use-admin';
 import type { Household, HouseholdMember } from '@/lib/types';
 
@@ -97,22 +97,23 @@ export default function AdminScreen() {
           flexDirection: 'row',
           alignItems: 'center',
         }}>
-          <Pressable
+          <AnimatedPressable
             onPress={() => router.back()}
-            style={({ pressed }) => ({
+            hoverScale={1.1}
+            pressScale={0.9}
+            style={{
               width: 40,
               height: 40,
               borderRadius: 20,
               backgroundColor: 'rgba(255, 255, 255, 0.3)',
               alignItems: 'center',
               justifyContent: 'center',
-              opacity: pressed ? 0.7 : 1,
               marginRight: spacing.md,
               ...shadows.sm,
-            })}
+            }}
           >
             <Ionicons name="chevron-back" size={22} color="white" />
-          </Pressable>
+          </AnimatedPressable>
           <View style={{ flex: 1 }}>
             <Text style={{
               fontSize: fontSize['4xl'],
@@ -175,22 +176,24 @@ export default function AdminScreen() {
             }}>
               {t('admin.households')}
             </Text>
-            <Pressable
+            <AnimatedPressable
               onPress={() => setShowCreateModal(true)}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? colors.primaryDark : colors.primary,
+              hoverScale={1.05}
+              pressScale={0.95}
+              style={{
+                backgroundColor: colors.primary,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
                 borderRadius: borderRadius.lg,
                 flexDirection: 'row',
                 alignItems: 'center',
-              })}
+              }}
             >
               <Ionicons name="add" size={18} color="white" />
               <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
                 {t('admin.newButton')}
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           </View>
 
           <FlatList
@@ -263,16 +266,19 @@ export default function AdminScreen() {
               />
             </View>
 
-            <Pressable
+            <AnimatedPressable
               onPress={handleCreateHousehold}
               disabled={!newHouseholdName.trim() || createHousehold.isPending}
-              style={({ pressed }) => ({
-                backgroundColor: !newHouseholdName.trim() ? colors.text.muted : (pressed ? colors.primaryDark : colors.primary),
+              hoverScale={1.02}
+              pressScale={0.97}
+              disableAnimation={!newHouseholdName.trim() || createHousehold.isPending}
+              style={{
+                backgroundColor: !newHouseholdName.trim() ? colors.text.muted : colors.primary,
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 marginTop: spacing.xl,
                 alignItems: 'center',
-              })}
+              }}
             >
               {createHousehold.isPending ? (
                 <ActivityIndicator color="white" />
@@ -281,7 +287,7 @@ export default function AdminScreen() {
                   {t('admin.createHousehold.button')}
                 </Text>
               )}
-            </Pressable>
+            </AnimatedPressable>
           </View>
         </Modal>
 
@@ -409,22 +415,23 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             paddingTop: spacing.xl,
             paddingBottom: spacing.md,
           }}>
-            <Pressable
+            <AnimatedPressable
               onPress={onClose}
-              style={({ pressed }) => ({
+              hoverScale={1.1}
+              pressScale={0.9}
+              style={{
                 width: 40,
                 height: 40,
                 borderRadius: 20,
                 backgroundColor: 'rgba(255, 255, 255, 0.3)',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: pressed ? 0.7 : 1,
                 marginRight: spacing.md,
                 ...shadows.sm,
-              })}
+              }}
             >
               <Ionicons name="chevron-back" size={22} color="white" />
-            </Pressable>
+            </AnimatedPressable>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.inverse }}>
                 {household.name}
@@ -446,22 +453,24 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
             <Text style={{ fontSize: fontSize.xl, fontWeight: fontWeight.semibold, color: colors.text.inverse }}>
               {t('admin.members')}
             </Text>
-            <Pressable
+            <AnimatedPressable
               onPress={() => setShowAddMember(true)}
-              style={({ pressed }) => ({
-                backgroundColor: pressed ? colors.primaryDark : colors.primary,
+              hoverScale={1.05}
+              pressScale={0.95}
+              style={{
+                backgroundColor: colors.primary,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
                 borderRadius: borderRadius.lg,
                 flexDirection: 'row',
                 alignItems: 'center',
-              })}
+              }}
             >
               <Ionicons name="person-add" size={16} color="white" />
               <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
                 {t('admin.addMemberButton')}
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           </View>
 
           {isLoading ? (
@@ -548,15 +557,18 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
               ))}
             </View>
 
-            <Pressable
+            <AnimatedPressable
               onPress={handleAddMember}
               disabled={!newMemberEmail.trim() || addMember.isPending}
-              style={({ pressed }) => ({
-                backgroundColor: !newMemberEmail.trim() ? colors.text.muted : (pressed ? colors.primaryDark : colors.primary),
+              hoverScale={1.02}
+              pressScale={0.97}
+              disableAnimation={!newMemberEmail.trim() || addMember.isPending}
+              style={{
+                backgroundColor: !newMemberEmail.trim() ? colors.text.muted : colors.primary,
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 alignItems: 'center',
-              })}
+              }}
             >
               {addMember.isPending ? (
                 <ActivityIndicator color="white" />
@@ -565,7 +577,7 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
                   {t('admin.addMember.button')}
                 </Text>
               )}
-            </Pressable>
+            </AnimatedPressable>
           </View>
         )}
         </View>
@@ -625,15 +637,16 @@ function MemberCard({ member, onRemove }: MemberCardProps) {
           </Text>
         </View>
       </View>
-      <Pressable
+      <AnimatedPressable
         onPress={onRemove}
-        style={({ pressed }) => ({
+        hoverScale={1.1}
+        pressScale={0.9}
+        style={{
           padding: spacing.sm,
-          opacity: pressed ? 0.5 : 1,
-        })}
+        }}
       >
         <Ionicons name="trash-outline" size={20} color={colors.error} />
-      </Pressable>
+      </AnimatedPressable>
     </View>
   );
 }

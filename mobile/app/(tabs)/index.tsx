@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib/theme';
 import { useRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
-import { GradientBackground, HomeScreenSkeleton } from '@/components';
+import { AnimatedPressable, GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import type { Recipe, GroceryItem } from '@/lib/types';
@@ -240,40 +240,42 @@ export default function HomeScreen() {
             </Text>
           </View>
           {/* Settings button */}
-          <Pressable
+          <AnimatedPressable
             onPress={() => {
               hapticLight();
               router.push('/settings');
             }}
-            style={({ pressed }) => ({
+            hoverScale={1.08}
+            pressScale={0.95}
+            style={{
               width: 40,
               height: 40,
               borderRadius: 20,
               backgroundColor: colors.glass.card,
               alignItems: 'center',
               justifyContent: 'center',
-              opacity: pressed ? 0.7 : 1,
               ...shadows.sm,
-            })}
+            }}
           >
             <Ionicons name="settings-outline" size={22} color="#5D4E40" />
-          </Pressable>
+          </AnimatedPressable>
         </View>
       </View>
 
       {/* Stats cards - glass effect 3-column layout */}
       <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
         {/* Recipe Library */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => router.push('/recipes')}
-          style={({ pressed }) => ({
+          hoverScale={1.03}
+          pressScale={0.97}
+          style={{
             flex: 1,
             backgroundColor: colors.glass.card,
             borderRadius: borderRadius.md,
             padding: 12,
             ...shadows.sm,
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-          })}
+          }}
         >
           <Ionicons name="book-outline" size={18} color="#8B7355" style={{ marginBottom: 8 }} />
           <Text style={{
@@ -291,19 +293,20 @@ export default function HomeScreen() {
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
           }}>{t('home.stats.recipes')}</Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Planned Meals */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => router.push('/meal-plan')}
-          style={({ pressed }) => ({
+          hoverScale={1.03}
+          pressScale={0.97}
+          style={{
             flex: 1,
             backgroundColor: colors.glass.card,
             borderRadius: borderRadius.md,
             padding: 12,
             ...shadows.sm,
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-          })}
+          }}
         >
           <Ionicons name="calendar-outline" size={18} color="#8B7355" style={{ marginBottom: 8 }} />
           <Text style={{
@@ -321,19 +324,20 @@ export default function HomeScreen() {
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
           }}>{t('home.stats.planned')}</Text>
-        </Pressable>
+        </AnimatedPressable>
 
         {/* Grocery List */}
-        <Pressable
+        <AnimatedPressable
           onPress={() => router.push('/grocery')}
-          style={({ pressed }) => ({
+          hoverScale={1.03}
+          pressScale={0.97}
+          style={{
             flex: 1,
             backgroundColor: colors.glass.card,
             borderRadius: borderRadius.md,
             padding: 12,
             ...shadows.sm,
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-          })}
+          }}
         >
           <Ionicons name="cart-outline" size={18} color="#8B7355" style={{ marginBottom: 8 }} />
           <Text style={{
@@ -351,18 +355,20 @@ export default function HomeScreen() {
             letterSpacing: letterSpacing.wide,
             textTransform: 'uppercase',
           }}>{t('home.stats.toBuy')}</Text>
-        </Pressable>
+        </AnimatedPressable>
       </View>
 
       {/* Add Recipe - Single CTA Button */}
       <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
-        <Pressable
+        <AnimatedPressable
           onPress={() => {
             hapticLight();
             setShowAddModal(true);
           }}
-          style={({ pressed }) => ({
-            backgroundColor: pressed ? '#6A5848' : '#7A6858',
+          hoverScale={1.02}
+          pressScale={0.97}
+          style={{
+            backgroundColor: '#7A6858',
             borderRadius: borderRadius.md,
             paddingVertical: 14,
             paddingHorizontal: 20,
@@ -370,7 +376,7 @@ export default function HomeScreen() {
             alignItems: 'center',
             justifyContent: 'center',
             ...shadows.md,
-          })}
+          }}
         >
           <Ionicons name="add-circle-outline" size={20} color={colors.white} style={{ marginRight: 8 }} />
           <Text style={{
@@ -378,7 +384,7 @@ export default function HomeScreen() {
             fontSize: fontSize.md,
             fontFamily: fontFamily.bodySemibold,
           }}>{t('home.addRecipe.title')}</Text>
-        </Pressable>
+        </AnimatedPressable>
       </View>
 
       {/* Next Meal - elegant card */}
@@ -393,16 +399,17 @@ export default function HomeScreen() {
           {t('home.nextUp.title')}
         </Text>
 
-        <Pressable
+        <AnimatedPressable
           onPress={() => nextMeal?.recipeId ? router.push(`/recipe/${nextMeal.recipeId}`) : router.push('/meal-plan')}
-          style={({ pressed }) => ({
+          hoverScale={1.01}
+          pressScale={0.99}
+          style={{
             backgroundColor: colors.glass.card,
             borderRadius: borderRadius.md,
             padding: 12,
             flexDirection: 'row',
             alignItems: 'center',
-            transform: [{ scale: pressed ? 0.99 : 1 }],
-          })}
+          }}
         >
           {nextMeal?.imageUrl ? (
             <Image
@@ -447,7 +454,7 @@ export default function HomeScreen() {
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#8B7355" />
-        </Pressable>
+        </AnimatedPressable>
       </View>
 
       {/* Inspiration section - beautiful card */}
@@ -462,19 +469,21 @@ export default function HomeScreen() {
             }}>
               {t('home.inspiration.title')}
             </Text>
-            <Pressable
+            <AnimatedPressable
               onPress={() => {
                 hapticLight();
                 shuffleInspiration();
               }}
-              style={({ pressed }) => ({
+              hoverScale={1.05}
+              pressScale={0.95}
+              style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.3)',
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
                 paddingHorizontal: 10,
                 paddingVertical: 6,
                 borderRadius: borderRadius.full,
-              })}
+              }}
             >
               <Ionicons name="shuffle" size={12} color="#8B7355" />
               <Text style={{
@@ -483,17 +492,18 @@ export default function HomeScreen() {
                 fontSize: fontSize.xs,
                 marginLeft: 4,
               }}>{t('home.inspiration.shuffle')}</Text>
-            </Pressable>
+            </AnimatedPressable>
           </View>
 
-          <Pressable
+          <AnimatedPressable
             onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
-            style={({ pressed }) => ({
+            hoverScale={1.01}
+            pressScale={0.99}
+            style={{
               backgroundColor: colors.glass.card,
               borderRadius: borderRadius.md,
               overflow: 'hidden',
-              transform: [{ scale: pressed ? 0.99 : 1 }],
-            })}
+            }}
           >
             <Image
               source={inspirationRecipe.image_url ? { uri: inspirationRecipe.image_url } : HOMEPAGE_HERO}
@@ -557,7 +567,7 @@ export default function HomeScreen() {
                 )}
               </View>
             </LinearGradient>
-          </Pressable>
+          </AnimatedPressable>
         </View>
       ) : (
         /* Fallback: Get Started section with hero image when no recipes */
@@ -572,14 +582,15 @@ export default function HomeScreen() {
             {t('home.getStarted.title')}
           </Text>
 
-          <Pressable
+          <AnimatedPressable
             onPress={() => router.push('/recipes')}
-            style={({ pressed }) => ({
+            hoverScale={1.01}
+            pressScale={0.99}
+            style={{
               backgroundColor: colors.glass.card,
               borderRadius: borderRadius.md,
               overflow: 'hidden',
-              transform: [{ scale: pressed ? 0.99 : 1 }],
-            })}
+            }}
           >
             <Image
               source={HOMEPAGE_HERO}
@@ -616,7 +627,7 @@ export default function HomeScreen() {
                 {t('home.getStarted.pasteUrl')}
               </Text>
             </LinearGradient>
-          </Pressable>
+          </AnimatedPressable>
         </View>
       )}
 
