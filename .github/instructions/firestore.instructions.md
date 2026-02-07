@@ -11,11 +11,13 @@ These conventions apply when working with Firestore data in this project.
 
 The app uses a single Firestore database: `meal-planner`.
 
-All recipes (original and AI-enhanced) are stored in the same database. Enhanced recipes have `enhanced=True` and `enhanced_from` set to the source recipe's document ID.
+All recipes (original and AI-enhanced) are stored in the same document. Enhanced recipes have `enhanced=True` and the original scraped data preserved in a nested `original` field.
 
 ## Recipe Document Schema
 
-All fields must be at the **top level** (no nested objects). The `created_at` field is **required** for queries.
+All fields must be at the **top level** (no nested objects), with one documented exception: the `original` snapshot for enhanced recipes.
+
+The `created_at` field is **required** for queries.
 
 ```python
 {
@@ -47,12 +49,33 @@ All fields must be at the **top level** (no nested objects). The `created_at` fi
 
     # AI enhancement fields
     "enhanced": bool,                # True if AI-enhanced
-    "enhanced_from": str | None,     # Recipe ID this was enhanced from
     "enhanced_at": datetime | None,  # When enhancement was performed
     "changes_made": list[str],       # Summary of AI changes
-    "tips": str | None,              # Cooking tips from AI
+
+    # Original scraped data (nested exception — set once on first enhancement)
+    "original": {                    # Only present on enhanced recipes
+        "title": str,
+        "ingredients": list[str],
+        "instructions": list[str],
+        "servings": int | None,
+        "prep_time": int | None,
+        "cook_time": int | None,
+        "total_time": int | None,
+        "image_url": str | None,
+    } | None,
 }
 ```
+
+## Enhancement Data Flow
+
+When a recipe is enhanced, the document structure changes:
+
+1. **Before enhancement**: Top-level fields contain the scraped original data
+2. **On enhancement**: Original data is snapshotted into `original` nested field, enhanced data replaces top-level fields
+3. **App display**: Always reads top-level fields (enhanced version if available)
+4. **"View original" toggle**: Reads from `original` nested field
+
+**CRITICAL**: Enhancement scripts MUST use Firestore `.update()` (merge), NEVER `.set()` (overwrite). See `scripts/recipe_reviewer.py` for the reference implementation.
 
 ## Common Schema Mistakes (DO NOT DO)
 
@@ -61,3 +84,5 @@ All fields must be at the **top level** (no nested objects). The `created_at` fi
 | `instructions: "Step 1. Do X. Step 2. Do Y."` | `instructions: ["Step 1. Do X", "Step 2..."]` |
 | `metadata: { cuisine: "Italian" }`            | `cuisine: "Italian"` (top-level)              |
 | Missing `created_at`                          | Always include `created_at: datetime.now()`   |
+| `.set(data)` on enhancement                   | `.update(data)` to preserve existing fields   |
+| `enhanced_from: str` (separate doc ID)        | `original: { ... }` (nested in same doc)      |
