@@ -136,8 +136,14 @@ describe('Household Settings screen', () => {
       ).toBeNull();
     });
 
-    it('shows Save button in header', async () => {
+    it('shows Save button after making changes', async () => {
       await renderScreen();
+      // Save button only appears when there are changes
+      expect(screen.queryByText('Save')).toBeNull();
+      // Make a change
+      const switches = screen.getAllByRole('switch');
+      fireEvent.click(switches[0]);
+      // Now Save should appear
       expect(screen.getByText('Save')).toBeTruthy();
     });
 
@@ -173,8 +179,14 @@ describe('Household Settings screen', () => {
       ).toBeNull();
     });
 
-    it('shows Save button even for non-own household', async () => {
+    it('shows Save button after making changes (even for non-own household)', async () => {
       await renderScreen();
+      // Save button only appears when there are changes
+      expect(screen.queryByText('Save')).toBeNull();
+      // Make a change
+      const switches = screen.getAllByRole('switch');
+      fireEvent.click(switches[0]);
+      // Now Save should appear
       expect(screen.getByText('Save')).toBeTruthy();
     });
 

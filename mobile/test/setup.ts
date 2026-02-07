@@ -42,6 +42,10 @@ vi.mock('expo-linear-gradient', () => ({
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
+  AnimatedPressable: ({ children, onPress, ...props }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, ...props }, children);
+  },
 }));
 
 // Mock @/lib/alert
@@ -64,6 +68,7 @@ vi.mock('@/lib/theme', () => ({
   fontSize: { xs: 10, sm: 12, md: 14, lg: 16, xl: 20, '2xl': 24 },
   fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },
   fontFamily: { body: 'System', heading: 'System' },
+  letterSpacing: { tighter: -0.8, tight: -0.5, normal: -0.2, wide: 0.8, wider: 1.2 },
   borderRadius: { sm: 4, md: 8, lg: 12, xl: 16 },
   shadows: { sm: {}, md: {}, lg: {} },
 }));

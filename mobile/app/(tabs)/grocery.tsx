@@ -18,7 +18,7 @@ import { useMealPlan, useRecipes, useGroceryState } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
-import { GroceryListView, GradientBackground, BouncingLoader, GroceryListSkeleton } from '@/components';
+import { AnimatedPressable, GroceryListView, GradientBackground, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -387,8 +387,10 @@ export default function GroceryScreen() {
 
             <View style={{ flexDirection: 'row', gap: spacing.xs }}>
               {/* Add Item button */}
-              <Pressable
+              <AnimatedPressable
                 onPress={() => setShowAddItem(!showAddItem)}
+                hoverScale={1.08}
+                pressScale={0.95}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -399,12 +401,14 @@ export default function GroceryScreen() {
                 }}
               >
                 <Ionicons name={showAddItem ? 'close' : 'add'} size={16} color={showAddItem ? colors.white : '#5D4E40'} />
-              </Pressable>
+              </AnimatedPressable>
 
               {/* Clear All button */}
               {totalItems > 0 && (
-                <Pressable
+                <AnimatedPressable
                   onPress={handleClearAll}
+                  hoverScale={1.08}
+                  pressScale={0.95}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -415,13 +419,15 @@ export default function GroceryScreen() {
                   }}
                 >
                   <Ionicons name="trash-outline" size={16} color="#5D4E40" />
-                </Pressable>
+                </AnimatedPressable>
               )}
 
               {/* Reset checked button */}
               {checkedCount > 0 && (
-                <Pressable
+                <AnimatedPressable
                   onPress={handleClearChecked}
+                  hoverScale={1.08}
+                  pressScale={0.95}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -432,7 +438,7 @@ export default function GroceryScreen() {
                   }}
                 >
                   <Ionicons name="refresh" size={16} color="#5D4E40" />
-                </Pressable>
+                </AnimatedPressable>
               )}
             </View>
           </View>
@@ -450,8 +456,10 @@ export default function GroceryScreen() {
 
           {/* Items at home indicator */}
           {hiddenAtHomeCount > 0 && (
-            <Pressable
+            <AnimatedPressable
               onPress={() => router.push('/settings')}
+              hoverScale={1.02}
+              pressScale={0.98}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -468,7 +476,7 @@ export default function GroceryScreen() {
                 {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
               </Text>
               <Ionicons name="chevron-forward" size={14} color="#3D7A3D" />
-            </Pressable>
+            </AnimatedPressable>
           )}
         </View>
 
@@ -498,9 +506,12 @@ export default function GroceryScreen() {
                 onSubmitEditing={handleAddItem}
                 autoFocus
               />
-              <Pressable
+              <AnimatedPressable
                 onPress={handleAddItem}
                 disabled={!newItemText.trim()}
+                hoverScale={1.05}
+                pressScale={0.95}
+                disableAnimation={!newItemText.trim()}
                 style={{
                   backgroundColor: newItemText.trim() ? '#7A6858' : 'rgba(200, 190, 180, 0.5)',
                   paddingHorizontal: 16,
@@ -509,7 +520,7 @@ export default function GroceryScreen() {
                 }}
               >
                 <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('grocery.addButton')}</Text>
-              </Pressable>
+              </AnimatedPressable>
             </View>
           </View>
         )}
