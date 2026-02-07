@@ -438,7 +438,8 @@ const it: Translations = {
     ingredientsPlaceholder: 'Un ingrediente per riga\nes. 200g pasta\n4 uova',
     instructions: 'Istruzioni',
     instructionsPlaceholder: 'Un passaggio per riga\nes. Porta a ebollizione l\'acqua\nCuoci la pasta per 10 minuti',
-    imageUrlOptional: 'URL immagine (opzionale)',
+    imageOptional: 'Immagine (opzionale)',
+    addImage: 'Aggiungi immagine',
     creating: 'Creazione...',
     createButton: 'Crea ricetta',
     enhanced: {
