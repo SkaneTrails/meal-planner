@@ -46,8 +46,15 @@ const it: Translations = {
       none: 'Nessuno',
     },
     mealTime: {
+      breakfast: 'Colazione',
       lunch: 'Pranzo',
       dinner: 'Cena',
+      snack: 'Spuntino',
+    },
+    role: {
+      member: 'Membro',
+      admin: 'Admin',
+      superuser: 'Superutente',
     },
     sort: {
       newest: 'Più recente',

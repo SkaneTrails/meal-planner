@@ -152,8 +152,8 @@ export default function AdminScreen() {
               paddingVertical: 2,
               borderRadius: borderRadius.full,
             }}>
-              <Text style={{ fontSize: fontSize.xs, color: colors.success, fontWeight: fontWeight.medium }}>
-                {currentUser.role.toUpperCase()}
+              <Text style={{ fontSize: fontSize.xs, color: colors.success, fontWeight: fontWeight.medium, textTransform: 'uppercase' }}>
+                {t(`labels.role.${currentUser.role}` as 'labels.role.member')}
               </Text>
             </View>
           </View>
@@ -541,9 +541,8 @@ function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps)
                   <Text style={{
                     color: newMemberRole === role ? 'white' : colors.text.inverse,
                     fontWeight: fontWeight.medium,
-                    textTransform: 'capitalize',
                   }}>
-                    {role}
+                    {t(`labels.role.${role}` as 'labels.role.member')}
                   </Text>
                 </Pressable>
               ))}
@@ -581,6 +580,7 @@ interface MemberCardProps {
 }
 
 function MemberCard({ member, onRemove }: MemberCardProps) {
+  const { t } = useTranslation();
   const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
@@ -621,7 +621,7 @@ function MemberCard({ member, onRemove }: MemberCardProps) {
             fontWeight: fontWeight.medium,
             textTransform: 'uppercase',
           }}>
-            {member.role}
+            {t(`labels.role.${member.role}` as 'labels.role.member')}
           </Text>
         </View>
       </View>

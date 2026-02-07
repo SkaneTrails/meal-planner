@@ -48,8 +48,15 @@ const en = {
       none: 'None',
     },
     mealTime: {
+      breakfast: 'Breakfast',
       lunch: 'Lunch',
       dinner: 'Dinner',
+      snack: 'Snack',
+    },
+    role: {
+      member: 'Member',
+      admin: 'Admin',
+      superuser: 'Superuser',
     },
     sort: {
       newest: 'Newest',

@@ -10,6 +10,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, borderRadius, fontSize, fontWeight, letterSpacing } from '@/lib/theme';
 import { useSettings } from '@/lib/settings-context';
+import { useTranslation } from '@/lib/i18n';
 import { hapticLight } from '@/lib/haptics';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
 
@@ -24,26 +25,35 @@ interface RecipeCardProps {
   showFavorite?: boolean; // Whether to show favorite heart icon
 }
 
-const DIET_LABELS: Record<DietLabel, { label: string; color: string; bgColor: string }> = {
-  veggie: { label: 'Veggie', color: colors.diet.veggie.text, bgColor: colors.diet.veggie.bg },
-  fish: { label: 'Fish', color: colors.diet.fish.text, bgColor: colors.diet.fish.bg },
-  meat: { label: 'Meat', color: colors.diet.meat.text, bgColor: colors.diet.meat.bg },
+const DIET_COLORS: Record<DietLabel, { text: string; bg: string }> = {
+  veggie: { text: colors.diet.veggie.text, bg: colors.diet.veggie.bg },
+  fish: { text: colors.diet.fish.text, bg: colors.diet.fish.bg },
+  meat: { text: colors.diet.meat.text, bg: colors.diet.meat.bg },
 };
 
-const MEAL_LABELS: Record<MealLabel, string> = {
-  breakfast: 'Breakfast',
-  starter: 'Starter',  salad: 'Salad',  meal: 'Meal',
-  dessert: 'Dessert',
-  drink: 'Drink',
-  sauce: 'Sauce',
-  pickle: 'Pickle',
-  grill: 'Grill',
+const DIET_LABEL_KEYS: Record<DietLabel, string> = {
+  veggie: 'labels.diet.veggie',
+  fish: 'labels.diet.fish',
+  meat: 'labels.diet.meat',
+};
+
+const MEAL_LABEL_KEYS: Record<MealLabel, string> = {
+  breakfast: 'labels.meal.breakfast',
+  starter: 'labels.meal.starter',
+  salad: 'labels.meal.salad',
+  meal: 'labels.meal.meal',
+  dessert: 'labels.meal.dessert',
+  drink: 'labels.meal.drink',
+  sauce: 'labels.meal.sauce',
+  pickle: 'labels.meal.pickle',
+  grill: 'labels.meal.grill',
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
 
 export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFavorite = true }: RecipeCardProps) {
   const { isFavorite, toggleFavorite } = useSettings();
+  const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
 
   const totalTime = recipe.total_time ||
@@ -112,13 +122,13 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFav
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 }}>
               {recipe.diet_label && (
                 <View style={{
-                  backgroundColor: DIET_LABELS[recipe.diet_label].bgColor,
+                  backgroundColor: DIET_COLORS[recipe.diet_label].bg,
                   paddingHorizontal: 8,
                   paddingVertical: 4,
                   borderRadius: borderRadius.full,
                 }}>
-                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: DIET_LABELS[recipe.diet_label].color }}>
-                    {DIET_LABELS[recipe.diet_label].label}
+                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: DIET_COLORS[recipe.diet_label].text }}>
+                    {t(DIET_LABEL_KEYS[recipe.diet_label])}
                   </Text>
                 </View>
               )}
@@ -196,7 +206,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFav
               borderRadius: borderRadius.full,
             }}>
               <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.white }}>
-                {DIET_LABELS[recipe.diet_label].label}
+                {t(DIET_LABEL_KEYS[recipe.diet_label])}
               </Text>
             </View>
           )}
