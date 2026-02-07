@@ -1,5 +1,13 @@
 """Helper script for LLM-assisted recipe review and improvement.
 
+Enhancement preserves original data in the same Firestore document:
+- Top-level fields = enhanced version (what the app displays)
+- original = nested snapshot of scraped data (for "view original" toggle)
+- enhanced/enhanced_at/changes_made = enhancement metadata
+
+CRITICAL: update/upload NEVER use .set() — they use .update() to merge
+fields without overwriting the rest of the document.
+
 Usage:
     # Get the next unprocessed recipe:
     uv run python scripts/recipe_reviewer.py next
@@ -16,10 +24,10 @@ Usage:
     # Mark a recipe as processed (without changes):
     uv run python scripts/recipe_reviewer.py skip <recipe_id>
 
-    # Update a recipe field:
+    # Enhance a recipe (preserves original in nested field):
     uv run python scripts/recipe_reviewer.py update <recipe_id> <json_updates>
 
-    # Upload from a local JSON file:
+    # Upload enhancement from a local JSON file:
     uv run python scripts/recipe_reviewer.py upload <recipe_id> <file_path>
 
     # Show progress:
@@ -93,11 +101,19 @@ def get_enhanced_recipe(recipe_id: str) -> None:
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
     if doc.exists:  # type: ignore[union-attr]
         data = doc.to_dict()  # type: ignore[union-attr]
-        if data is not None and (data.get("enhanced") or data.get("improved")):
+        if data is not None and data.get("enhanced"):
             print("\n\U0001f3af ENHANCED VERSION")
             display_recipe(doc.id, data)  # type: ignore[union-attr]
-            if data.get("tips"):
-                print(f"Tips: {data.get('tips')}")
+            if data.get("changes_made"):
+                print("\n--- CHANGES MADE ---")
+                for change in data["changes_made"]:
+                    print(f"  • {change}")
+            if data.get("original"):
+                orig = data["original"]
+                print(
+                    f"\n📋 Original preserved: {len(orig.get('ingredients', []))} ingredients, "
+                    f"{len(orig.get('instructions', []))} steps"
+                )
         elif data is not None:
             print(f"\u26a0\ufe0f Recipe {recipe_id} exists but is not enhanced")
         else:
@@ -117,7 +133,7 @@ def delete_enhanced_recipe(recipe_id: str) -> None:
         return
 
     data = doc.to_dict()  # type: ignore[union-attr]
-    if not data or not (data.get("enhanced") or data.get("improved")):
+    if not data or not data.get("enhanced"):
         print(f"\u26a0\ufe0f Recipe {recipe_id} is not enhanced. Use --force to delete anyway.")
         if "--force" not in sys.argv:
             return
@@ -182,66 +198,92 @@ def mark_skipped(recipe_id: str) -> None:
     print(f"⏭️ Marked as skipped: {recipe_id}")
 
 
-def update_recipe(recipe_id: str, updates: dict) -> None:
-    """Update/create a recipe in the target database with improvements.
+# Fields to snapshot from the original before enhancing
+ORIGINAL_SNAPSHOT_FIELDS = [
+    "title",
+    "ingredients",
+    "instructions",
+    "servings",
+    "prep_time",
+    "cook_time",
+    "total_time",
+    "image_url",
+]
 
-    If an enhanced version already exists in the target database, updates are
-    merged with that version (not the original). This preserves existing
-    enhancements like 4P ingredients while allowing incremental changes.
+
+def update_recipe(recipe_id: str, updates: dict) -> None:
+    """Enhance a recipe in-place, preserving the original data.
+
+    Enhancement structure (same document):
+    - Top-level fields = enhanced version (what the app displays)
+    - original = nested snapshot of scraped data (for "view original" toggle)
+    - enhanced = True, enhanced_at, changes_made = enhancement metadata
+
+    CRITICAL: Never overwrites the document. Uses Firestore .update() to merge
+    fields into the existing document. The original snapshot is set once on first
+    enhancement and never modified after.
     """
     from datetime import UTC, datetime
 
+    from google.cloud.firestore_v1 import DELETE_FIELD
+
     db = get_db()
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+    doc = doc_ref.get()  # type: ignore[union-attr]
 
-    # Check if enhanced version already exists - if so, use it as base
-    target_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-    if target_doc.exists:  # type: ignore[union-attr]
-        target_data = target_doc.to_dict()  # type: ignore[union-attr]
-        if target_data and target_data.get("improved"):
-            print("📝 Updating EXISTING enhanced recipe (from meal-planner database)")
-            base_data = target_data
-        else:
-            # Exists but not marked as improved - treat as fresh enhancement
-            source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-            if not source_doc.exists:  # type: ignore[union-attr]
-                print(f"❌ Recipe not found: {recipe_id}")
-                return
-            base_data = source_doc.to_dict()  # type: ignore[union-attr]
-    else:
-        # No enhanced version - fetch original document for initial enhancement
-        print("🆕 Creating NEW enhanced recipe from original document")
-        source_doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()  # type: ignore[union-attr]
-        if not source_doc.exists:  # type: ignore[union-attr]
-            print(f"❌ Recipe not found: {recipe_id}")
-            return
-        base_data = source_doc.to_dict()  # type: ignore[union-attr]
+    if not doc.exists:  # type: ignore[union-attr]
+        print(f"❌ Recipe not found: {recipe_id}")
+        return
 
-    if base_data is None:
+    current_data = doc.to_dict()  # type: ignore[union-attr]
+    if current_data is None:
         print(f"❌ Recipe data is empty: {recipe_id}")
         return
 
     now = datetime.now(tz=UTC)
-    improved_data = {**base_data, **updates}
-    improved_data["original_id"] = recipe_id  # Track source recipe ID
-    improved_data["improved"] = True
-    # Ensure timestamps exist (required for Firestore order_by queries)
-    if "created_at" not in improved_data:
-        improved_data["created_at"] = now
-    improved_data["updated_at"] = now
+    update_payload: dict = {}
 
-    # Save to target database with same ID
-    db.collection(RECIPES_COLLECTION).document(recipe_id).set(improved_data)
-    print(f"✅ Saved improved recipe to meal-planner database: {recipe_id}")
+    # First enhancement: snapshot original before overwriting top-level fields
+    if not current_data.get("enhanced") and "original" not in current_data:
+        print("🆕 First enhancement — snapshotting original data")
+        original_snapshot = {}
+        for field in ORIGINAL_SNAPSHOT_FIELDS:
+            if field in current_data:
+                original_snapshot[field] = current_data[field]
+        update_payload["original"] = original_snapshot
+    else:
+        print("📝 Updating existing enhanced recipe")
+
+    # Apply enhanced fields at top level
+    update_payload.update(updates)
+
+    # Set enhancement metadata
+    update_payload["enhanced"] = True
+    update_payload["enhanced_at"] = now
+    update_payload["updated_at"] = now
+
+    # Clean up legacy fields from old enhancement system
+    for legacy_field in ("improved", "original_id", "enhanced_from"):
+        if legacy_field in current_data:
+            update_payload[legacy_field] = DELETE_FIELD
+
+    # Merge into existing document (never overwrites unrelated fields)
+    doc_ref.update(update_payload)
+    print(f"✅ Enhanced recipe: {recipe_id}")
     print(f"   Updated fields: {list(updates.keys())}")
+    if "original" in update_payload:
+        print(f"   Original snapshot: {len(update_payload['original'])} fields preserved")
 
     # Mark as processed
     mark_processed(recipe_id)
 
 
 def upload_from_file(recipe_id: str, file_path: str) -> None:
-    """Upload an enhanced recipe from a local JSON file to the target database."""
-    from datetime import UTC, datetime
+    """Upload an enhanced recipe from a JSON file, preserving the original.
 
+    Uses the same snapshot-and-update pattern as update_recipe:
+    original data is preserved in the `original` nested field.
+    """
     path = Path(file_path)
     if not path.exists():
         print(f"❌ File not found: {file_path}")
@@ -253,24 +295,12 @@ def upload_from_file(recipe_id: str, file_path: str) -> None:
         print(f"❌ Invalid JSON in {file_path}: {e}")
         return
 
-    db = get_db()
+    # Remove legacy fields if present in the JSON file
+    for legacy_field in ("improved", "original_id", "enhanced_from"):
+        data.pop(legacy_field, None)
 
-    # Ensure tracking fields
-    data["original_id"] = recipe_id
-    data["improved"] = True
-
-    # Ensure timestamps (required for Firestore order_by queries)
-    now = datetime.now(tz=UTC)
-    if "created_at" not in data or data["created_at"] is None:
-        data["created_at"] = now
-    data["updated_at"] = now
-
-    # Save to target database
-    db.collection(RECIPES_COLLECTION).document(recipe_id).set(data)
-    print(f"✅ Uploaded {path.name} to meal-planner database: {recipe_id}")
-
-    # Mark as processed
-    mark_processed(recipe_id)
+    # Delegate to update_recipe which handles snapshotting and merging
+    update_recipe(recipe_id, data)
 
 
 def show_status() -> None:
