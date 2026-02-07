@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useLanguageSync } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
 import { colors } from '@/lib/theme';
 
@@ -61,6 +62,9 @@ export default function TabLayout() {
     isLoading: userLoading,
     isError,
   } = useCurrentUser({ enabled: !loading && !!user });
+
+  // Sync language from Firestore household settings on first load
+  useLanguageSync(currentUser?.household_id);
 
   // Show loading spinner while checking auth state
   if (loading) {

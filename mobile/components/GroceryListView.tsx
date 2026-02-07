@@ -13,6 +13,7 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { hapticSelection } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 import type { GroceryItem, GroceryCategory, GroceryList } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -23,15 +24,15 @@ interface GroceryItemRowProps {
   showReorder?: boolean;
 }
 
-const CATEGORY_LABELS: Record<GroceryCategory, string> = {
-  produce: '🥬 Produce',
-  meat_seafood: '🥩 Meat & Seafood',
-  dairy: '🧀 Dairy',
-  bakery: '🍞 Bakery',
-  pantry: '🥫 Pantry',
-  frozen: '🧊 Frozen',
-  beverages: '🥤 Beverages',
-  other: 'Other',
+const CATEGORY_LABEL_KEYS: Record<GroceryCategory, string> = {
+  produce: 'grocery.categories.produce',
+  meat_seafood: 'grocery.categories.meatSeafood',
+  dairy: 'grocery.categories.dairy',
+  bakery: 'grocery.categories.bakery',
+  pantry: 'grocery.categories.pantry',
+  frozen: 'grocery.categories.frozen',
+  beverages: 'grocery.categories.beverages',
+  other: 'grocery.categories.other',
 };
 
 function formatQuantity(item: GroceryItem): string {
@@ -156,6 +157,7 @@ interface GroceryListViewProps {
 }
 
 export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onReorder }: GroceryListViewProps) {
+  const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
   // Track checked state locally to enable moving items to bottom
@@ -269,7 +271,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   const sections = Object.entries(itemsByCategory)
     .filter(([_, items]) => items.length > 0)
     .map(([category, items]) => ({
-      title: CATEGORY_LABELS[category as GroceryCategory],
+      title: t(CATEGORY_LABEL_KEYS[category as GroceryCategory]),
       data: [...items].sort((a, b) => {
         const aChecked = checkedItems.has(a.name);
         const bChecked = checkedItems.has(b.name);
@@ -293,10 +295,10 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
           <Ionicons name="cart-outline" size={40} color="#5D4E40" />
         </View>
         <Text style={{ color: '#5D4E40', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
-          No items yet
+          {t('grocery.noItemsYet')}
         </Text>
         <Text style={{ color: 'rgba(93, 78, 64, 0.7)', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
-          Add meals to your plan to generate a shopping list
+          {t('grocery.emptyFromMealPlan')}
         </Text>
       </View>
     );
@@ -329,7 +331,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
             fontWeight: '600',
             color: reorderMode ? '#5D4E40' : '#5D4E40'
           }}>
-            {reorderMode ? 'Done sorting' : 'Sort items'}
+            {reorderMode ? t('grocery.doneSorting') : t('grocery.sortItems')}
           </Text>
         </Pressable>
       </View>
@@ -344,8 +346,8 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
             fontStyle: 'italic',
           }}>
             {Platform.OS === 'web'
-              ? 'Click and drag ☰ to reorder items'
-              : 'Hold and drag ☰ to reorder items'}
+              ? t('grocery.reorderHintWeb')
+              : t('grocery.reorderHintMobile')}
           </Text>
           <DraggableFlatList
             data={orderedItems}

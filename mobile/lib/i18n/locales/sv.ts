@@ -46,8 +46,15 @@ const sv: Translations = {
       none: 'Ingen',
     },
     mealTime: {
+      breakfast: 'Frukost',
       lunch: 'Lunch',
       dinner: 'Middag',
+      snack: 'Mellanmål',
+    },
+    role: {
+      member: 'Medlem',
+      admin: 'Admin',
+      superuser: 'Superadmin',
     },
     sort: {
       newest: 'Nyast',

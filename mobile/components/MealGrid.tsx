@@ -6,6 +6,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from '@/lib/i18n';
 import type { MealType, Recipe } from '@/lib/types';
 
 function formatDateLocal(date: Date): string {
@@ -31,11 +32,11 @@ const MEAL_TYPE_ICONS: Record<MealType, keyof typeof Ionicons.glyphMap> = {
   snack: 'cafe-outline',
 };
 
-const MEAL_TYPE_LABELS: Record<MealType, string> = {
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  snack: 'Snack',
+const MEAL_TYPE_LABEL_KEYS: Record<MealType, string> = {
+  breakfast: 'labels.mealTime.breakfast',
+  lunch: 'labels.mealTime.lunch',
+  dinner: 'labels.mealTime.dinner',
+  snack: 'labels.mealTime.snack',
 };
 
 export function MealCell({
@@ -46,6 +47,7 @@ export function MealCell({
   onPress,
   onLongPress,
 }: MealCellProps) {
+  const { t } = useTranslation();
   const hasContent = recipe || customText;
   const displayText = recipe?.title || customText;
 
@@ -69,7 +71,7 @@ export function MealCell({
         <Text
           style={{ fontSize: 12, marginLeft: 4, color: hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)' }}
         >
-          {MEAL_TYPE_LABELS[mealType]}
+          {t(MEAL_TYPE_LABEL_KEYS[mealType])}
         </Text>
       </View>
 
