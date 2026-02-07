@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.recipe_storage import (
+    EnhancementMetadata,
     _doc_to_recipe,
     delete_recipe,
     find_recipe_by_url,
@@ -173,7 +174,9 @@ class TestSaveRecipe:
 
         with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
             result = save_recipe(
-                recipe, recipe_id="enhanced_id", enhanced=True, changes_made=["Added spices", "Fixed instructions"]
+                recipe,
+                recipe_id="enhanced_id",
+                enhancement=EnhancementMetadata(enhanced=True, changes_made=["Added spices", "Fixed instructions"]),
             )
 
         # Check the data passed to set()
@@ -195,7 +198,7 @@ class TestSaveRecipe:
         recipe = RecipeCreate(title="Test", url="https://example.com")
 
         with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            save_recipe(recipe, enhanced=False)
+            save_recipe(recipe, enhancement=EnhancementMetadata(enhanced=False))
 
         call_args = mock_doc_ref.set.call_args[0][0]
         assert "enhanced" not in call_args

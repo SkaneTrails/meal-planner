@@ -1,6 +1,5 @@
 """Recipe API endpoints."""
 
-import io
 import logging
 import os
 import uuid
@@ -9,12 +8,14 @@ from typing import Annotated
 import httpx
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from google.cloud import storage
-from PIL import Image
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
 from api.models.recipe import Recipe, RecipeCreate, RecipeParseRequest, RecipeScrapeRequest, RecipeUpdate
+from api.services.image_service import create_thumbnail
+from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
+from api.storage.recipe_storage import EnhancementMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -31,53 +32,9 @@ def _get_gcs_bucket() -> str:
     return os.environ["GCS_BUCKET_NAME"]
 
 
-# Maximum file size for image uploads (10 MB)
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
-# Thumbnail settings - optimized for recipe cards
-THUMBNAIL_MAX_WIDTH = 800
-THUMBNAIL_MAX_HEIGHT = 600
-THUMBNAIL_QUALITY = 85  # JPEG quality (1-100)
-
-# HTTP status code for unprocessable content (renamed in HTTP spec)
-_HTTP_422 = 422  # Used to avoid deprecated HTTP_422_UNPROCESSABLE_ENTITY constant
-
-
-def _create_thumbnail(image_data: bytes) -> tuple[bytes, str]:
-    """
-    Create a thumbnail from image data.
-
-    Returns tuple of (thumbnail_bytes, content_type).
-    Always outputs JPEG for smaller file size.
-    """
-    img = Image.open(io.BytesIO(image_data))
-
-    # Convert to RGB if necessary (handles PNG with transparency, etc.)
-    if img.mode in ("RGBA", "P", "LA"):
-        # Create white background for transparent images
-        background = Image.new("RGB", img.size, (255, 255, 255))
-        if img.mode == "P":
-            img = img.convert("RGBA")
-        background.paste(img, mask=img.split()[-1] if img.mode in ("RGBA", "LA") else None)
-        img = background
-    elif img.mode != "RGB":
-        img = img.convert("RGB")
-
-    # Calculate new size maintaining aspect ratio
-    width, height = img.size
-    ratio = min(THUMBNAIL_MAX_WIDTH / width, THUMBNAIL_MAX_HEIGHT / height)
-
-    if ratio < 1:  # Only resize if image is larger than max dimensions
-        new_width = int(width * ratio)
-        new_height = int(height * ratio)
-        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-
-    # Save as JPEG
-    output = io.BytesIO()
-    img.save(output, format="JPEG", quality=THUMBNAIL_QUALITY, optimize=True)
-    output.seek(0)
-
-    return output.getvalue(), "image/jpeg"
+_HTTP_422 = 422
 
 
 def _require_household(user: AuthenticatedUser) -> str:
@@ -87,6 +44,29 @@ def _require_household(user: AuthenticatedUser) -> str:
             status_code=status.HTTP_403_FORBIDDEN, detail="You must be a member of a household to create/edit recipes"
         )
     return user.household_id
+
+
+def _try_enhance(saved_recipe: Recipe, *, household_id: str, created_by: str) -> Recipe:  # pragma: no cover
+    """Attempt AI enhancement on a saved recipe, returning original on failure."""
+    from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance, is_enhancement_enabled
+
+    if not is_enhancement_enabled():
+        return saved_recipe
+
+    try:
+        enhanced_data = do_enhance(saved_recipe.model_dump())
+        enhanced_create = build_recipe_create_from_enhanced(enhanced_data, saved_recipe)
+
+        return recipe_storage.save_recipe(
+            enhanced_create,
+            recipe_id=saved_recipe.id,
+            enhancement=EnhancementMetadata(enhanced=True, changes_made=enhanced_data.get("changes_made", [])),
+            household_id=household_id,
+            created_by=created_by,
+        )
+    except EnhancementError as e:
+        logger.warning("Enhancement failed for recipe_id=%s: %s", saved_recipe.id, e)
+        return saved_recipe
 
 
 @router.get("")
@@ -184,59 +164,11 @@ async def scrape_recipe(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Scraping service unavailable: {e!s}"
         ) from e
 
-    # Create recipe from scraped data
-    recipe_create = RecipeCreate(
-        title=scraped_data["title"],
-        url=scraped_data["url"],
-        ingredients=scraped_data.get("ingredients", []),
-        instructions=scraped_data.get("instructions", []),
-        image_url=scraped_data.get("image_url"),
-        servings=scraped_data.get("servings"),
-        prep_time=scraped_data.get("prep_time"),
-        cook_time=scraped_data.get("cook_time"),
-        total_time=scraped_data.get("total_time"),
-    )
-
+    recipe_create = build_recipe_create_from_scraped(scraped_data)
     saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
 
-    # If enhancement requested, enhance the recipe
     if enhance:  # pragma: no cover
-        from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance, is_enhancement_enabled
-
-        if is_enhancement_enabled():
-            try:
-                enhanced_data = do_enhance(saved_recipe.model_dump())
-
-                # Save enhanced version to enhanced database with same ID
-                enhanced_create = RecipeCreate(
-                    title=enhanced_data.get("title", saved_recipe.title),
-                    url=enhanced_data.get("url", saved_recipe.url),
-                    ingredients=enhanced_data.get("ingredients", saved_recipe.ingredients),
-                    instructions=enhanced_data.get("instructions", saved_recipe.instructions),
-                    image_url=enhanced_data.get("image_url", saved_recipe.image_url),
-                    servings=enhanced_data.get("servings", saved_recipe.servings),
-                    prep_time=enhanced_data.get("prep_time", saved_recipe.prep_time),
-                    cook_time=enhanced_data.get("cook_time", saved_recipe.cook_time),
-                    total_time=enhanced_data.get("total_time", saved_recipe.total_time),
-                    cuisine=enhanced_data.get("cuisine"),
-                    category=enhanced_data.get("category"),
-                    tags=enhanced_data.get("tags", []),
-                    tips=enhanced_data.get("tips"),
-                )
-
-                # Save enhanced version with same ID
-                return recipe_storage.save_recipe(
-                    enhanced_create,
-                    recipe_id=saved_recipe.id,
-                    enhanced=True,
-                    changes_made=enhanced_data.get("changes_made", []),
-                    household_id=household_id,
-                    created_by=user.email,
-                )
-
-            except EnhancementError as e:
-                # Log but don't fail - return the unenhanced recipe
-                logger.warning("Enhancement failed for recipe_id=%s: %s", saved_recipe.id, e)
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
 
     return saved_recipe
 
@@ -288,59 +220,11 @@ async def parse_recipe(  # pragma: no cover
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Parsing service unavailable: {e!s}"
         ) from e
 
-    # Create recipe from parsed data
-    recipe_create = RecipeCreate(
-        title=scraped_data["title"],
-        url=scraped_data["url"],
-        ingredients=scraped_data.get("ingredients", []),
-        instructions=scraped_data.get("instructions", []),
-        image_url=scraped_data.get("image_url"),
-        servings=scraped_data.get("servings"),
-        prep_time=scraped_data.get("prep_time"),
-        cook_time=scraped_data.get("cook_time"),
-        total_time=scraped_data.get("total_time"),
-    )
-
+    recipe_create = build_recipe_create_from_scraped(scraped_data)
     saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
 
-    # If enhancement requested, enhance the recipe
     if enhance:  # pragma: no cover
-        from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance, is_enhancement_enabled
-
-        if is_enhancement_enabled():
-            try:
-                enhanced_data = do_enhance(saved_recipe.model_dump())
-
-                # Save enhanced version to enhanced database with same ID
-                enhanced_create = RecipeCreate(
-                    title=enhanced_data.get("title", saved_recipe.title),
-                    url=enhanced_data.get("url", saved_recipe.url),
-                    ingredients=enhanced_data.get("ingredients", saved_recipe.ingredients),
-                    instructions=enhanced_data.get("instructions", saved_recipe.instructions),
-                    image_url=enhanced_data.get("image_url", saved_recipe.image_url),
-                    servings=enhanced_data.get("servings", saved_recipe.servings),
-                    prep_time=enhanced_data.get("prep_time", saved_recipe.prep_time),
-                    cook_time=enhanced_data.get("cook_time", saved_recipe.cook_time),
-                    total_time=enhanced_data.get("total_time", saved_recipe.total_time),
-                    cuisine=enhanced_data.get("cuisine"),
-                    category=enhanced_data.get("category"),
-                    tags=enhanced_data.get("tags", []),
-                    tips=enhanced_data.get("tips"),
-                )
-
-                # Save enhanced version with same ID
-                return recipe_storage.save_recipe(
-                    enhanced_create,
-                    recipe_id=saved_recipe.id,
-                    enhanced=True,
-                    changes_made=enhanced_data.get("changes_made", []),
-                    household_id=household_id,
-                    created_by=user.email,
-                )
-
-            except EnhancementError as e:
-                # Log but don't fail - return the unenhanced recipe
-                logger.warning("Enhancement failed for recipe_id=%s: %s", saved_recipe.id, e)
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
 
     return saved_recipe
 
@@ -416,7 +300,7 @@ async def upload_recipe_image(  # pragma: no cover
 
     # Create thumbnail (always JPEG)
     try:
-        thumbnail_data, thumbnail_content_type = _create_thumbnail(content)
+        thumbnail_data, thumbnail_content_type = create_thumbnail(content)
         logger.info(
             "Created thumbnail for recipe %s: %d bytes -> %d bytes", recipe_id, len(content), len(thumbnail_data)
         )
@@ -445,11 +329,8 @@ async def upload_recipe_image(  # pragma: no cover
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload image. Please try again."
         ) from e
 
-    # Update recipe with new image URL
-    from api.models.recipe import RecipeUpdate as RecipeUpdateModel
-
     updated_recipe = recipe_storage.update_recipe(
-        recipe_id, RecipeUpdateModel(image_url=image_url), household_id=household_id
+        recipe_id, RecipeUpdate(image_url=image_url), household_id=household_id
     )
 
     if updated_recipe is None:  # pragma: no cover
@@ -551,36 +432,16 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             )
         target_recipe = copied
 
-    # Enhance the recipe
     try:  # pragma: no cover
         enhanced_data = do_enhance(target_recipe.model_dump())
+        enhanced_recipe = build_recipe_create_from_enhanced(enhanced_data, target_recipe)
 
-        # Save to enhanced database
-        from api.models.recipe import RecipeCreate
-
-        enhanced_recipe = RecipeCreate(
-            title=enhanced_data.get("title", target_recipe.title),
-            url=enhanced_data.get("url", target_recipe.url),
-            ingredients=enhanced_data.get("ingredients", target_recipe.ingredients),
-            instructions=enhanced_data.get("instructions", target_recipe.instructions),
-            image_url=enhanced_data.get("image_url", target_recipe.image_url),
-            servings=enhanced_data.get("servings", target_recipe.servings),
-            prep_time=enhanced_data.get("prep_time", target_recipe.prep_time),
-            cook_time=enhanced_data.get("cook_time", target_recipe.cook_time),
-            total_time=enhanced_data.get("total_time", target_recipe.total_time),
-            cuisine=enhanced_data.get("cuisine"),
-            category=enhanced_data.get("category"),
-            tags=enhanced_data.get("tags", []),
-            tips=enhanced_data.get("tips"),
-        )
-
-        # Save with target recipe ID, with enhancement metadata
         return recipe_storage.save_recipe(
             enhanced_recipe,
             recipe_id=target_recipe.id,
-            enhanced=True,
-            enhanced_at=datetime.now(tz=UTC),
-            changes_made=enhanced_data.get("changes_made"),
+            enhancement=EnhancementMetadata(
+                enhanced=True, enhanced_at=datetime.now(tz=UTC), changes_made=enhanced_data.get("changes_made") or []
+            ),
             household_id=household_id,
             created_by=user.email,
         )

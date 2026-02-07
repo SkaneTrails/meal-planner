@@ -9,7 +9,8 @@ from fastapi.testclient import TestClient
 
 from api.auth.models import AuthenticatedUser
 from api.models.grocery_list import GroceryCategory
-from api.routers.grocery import CATEGORY_KEYWORDS, router
+from api.routers.grocery import router
+from api.services.grocery_categories import CATEGORY_KEYWORDS
 
 # Create a test app without auth for unit testing
 app = FastAPI()
@@ -176,20 +177,20 @@ class TestDetectCategory:
 
     def test_detect_produce(self) -> None:
         """Should detect produce category."""
-        from api.routers.grocery import detect_category
+        from api.services.grocery_categories import detect_category
 
         assert detect_category("carrots") == GroceryCategory.PRODUCE
         assert detect_category("fresh tomatoes") == GroceryCategory.PRODUCE
 
     def test_detect_dairy(self) -> None:
         """Should detect dairy category."""
-        from api.routers.grocery import detect_category
+        from api.services.grocery_categories import detect_category
 
         assert detect_category("milk") == GroceryCategory.DAIRY
         assert detect_category("cheddar cheese") == GroceryCategory.DAIRY
 
     def test_detect_other(self) -> None:
         """Should default to OTHER for unknown items."""
-        from api.routers.grocery import detect_category
+        from api.services.grocery_categories import detect_category
 
         assert detect_category("mystery item xyz") == GroceryCategory.OTHER

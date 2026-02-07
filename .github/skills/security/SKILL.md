@@ -191,14 +191,17 @@ For detailed OWASP Top 10 and LLM Top 10 checklists with code patterns, see [ref
 
 **Quick reference - common risks in this project:**
 
-| Risk | This Project's Mitigation |
-|------|--------------------------|
-| A01: Broken Access Control | `household_id` checks on all recipe endpoints |
-| A02: Cryptographic Failures | Firebase Auth handles passwords |
-| A03: Injection | Pydantic validation, Firestore parameterized queries |
-| A10: SSRF | Recipe URL scraping - validate schemes |
-| LLM01: Prompt Injection | Structured prompts from `config/prompts/` |
-| LLM06: Sensitive Info | Never send PII to Gemini |
+| Risk | This Project's Mitigation | Gaps |
+|------|--------------------------|------|
+| A01: Broken Access Control | `household_id` checks on recipe endpoints | Grocery endpoint skips recipe visibility check |
+| A02: Cryptographic Failures | Firebase Auth handles passwords | N/A |
+| A03: Injection | Pydantic validation, Firestore parameterized queries | `update_recipe` allows arbitrary field names |
+| A04: Insecure Design | Feature flags, input validation | No rate limiting on API; no `SKIP_AUTH` production guard |
+| A05: Security Misconfiguration | CORS via env var | No security headers middleware |
+| A09: Logging & Monitoring | Logger on auth failures | No security event audit trail |
+| A10: SSRF | Recipe URL scraping - validate schemes + IP blocklist | Cloud Function CORS is `*` |
+| LLM01: Prompt Injection | Structured prompts from `config/prompts/` | No input sanitization before Gemini |
+| LLM06: Sensitive Info | Never send PII to Gemini | `created_by` email could leak via `model_dump()` |
 
 ---
 
@@ -293,6 +296,29 @@ git log -p --all -S "secret-value" --source
 - Use `Depends()` for auth on all routes
 - Enable CORS only for needed origins
 - Use Pydantic for all input validation
+- Add security headers via middleware (`X-Content-Type-Options`, `X-Frame-Options`)
+- Set request body size limits on endpoints accepting large payloads (HTML, images)
+- Never trust `SKIP_AUTH` / `SKIP_ALLOWLIST` env vars in production — verify they are absent from Cloud Run config
+
+### Multi-Tenant Data Isolation
+
+**Critical for this project.** Every data access path must enforce household isolation:
+
+- **Storage layer**: All read/write operations must accept `household_id` and filter accordingly
+- **Router layer**: Extract `household_id` from authenticated user, pass to storage
+- **Cross-tenant references**: When loading related data (e.g., recipe IDs from meal plans for grocery lists), verify the loaded records belong to the same household
+- **Superuser bypass**: Must be explicit and auditable — never silently skip tenant checks
+
+**Challenge when:**
+- A query loads data by document ID without verifying `household_id`
+- Meal plan references recipe IDs that could belong to another household
+- Batch operations skip per-record ownership checks
+
+### Cloud Function Security
+
+- Prefer authenticated invocation (`allUsers` invoker only when necessary)
+- When using public access, the function must validate the request origin or caller
+- CORS on Cloud Functions should restrict origins (not `*`) in production
 
 ### React Native/Expo
 
