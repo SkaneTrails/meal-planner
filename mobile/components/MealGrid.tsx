@@ -47,6 +47,7 @@ export function MealCell({
   onPress,
   onLongPress,
 }: MealCellProps) {
+  const { t } = useTranslation();
   const hasContent = recipe || customText;
   const displayText = recipe?.title || customText;
 

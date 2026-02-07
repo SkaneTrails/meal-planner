@@ -92,22 +92,10 @@ const MEAL_TYPES: { type: MealType; labelKey: string }[] = [
   { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
 ];
 
-const DIET_LABELS: Record<DietLabel, { emoji: string; labelKey: string; color: string; bgColor: string }> = {
-  veggie: { emoji: '🥬', labelKey: 'labels.diet.vegetarian', color: '#166534', bgColor: '#DCFCE7' },
-  fish: { emoji: '🐟', labelKey: 'labels.diet.seafood', color: '#1E40AF', bgColor: '#DBEAFE' },
-  meat: { emoji: '🥩', labelKey: 'labels.diet.meat', color: '#991B1B', bgColor: '#FEE2E2' },
-};
-
-const MEAL_LABEL_KEYS: Record<MealLabel, string> = {
-  breakfast: 'labels.meal.breakfast',
-  starter: 'labels.meal.starter',
-  salad: 'labels.meal.salad',
-  meal: 'labels.meal.mainCourse',
-  dessert: 'labels.meal.dessert',
-  drink: 'labels.meal.drink',
-  sauce: 'labels.meal.sauce',
-  pickle: 'labels.meal.pickle',
-  grill: 'labels.meal.grill',
+const DIET_LABELS: Record<DietLabel, { emoji: string; color: string; bgColor: string }> = {
+  veggie: { emoji: '🥬', color: '#166534', bgColor: '#DCFCE7' },
+  fish: { emoji: '🐟', color: '#1E40AF', bgColor: '#DBEAFE' },
+  meat: { emoji: '🥩', color: '#991B1B', bgColor: '#FEE2E2' },
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800';

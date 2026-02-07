@@ -271,7 +271,7 @@ export function GroceryListView({ groceryList, onItemToggle, filterOutItems, onR
   const sections = Object.entries(itemsByCategory)
     .filter(([_, items]) => items.length > 0)
     .map(([category, items]) => ({
-      title: CATEGORY_LABEL_KEYS[category as GroceryCategory],
+      title: t(CATEGORY_LABEL_KEYS[category as GroceryCategory]),
       data: [...items].sort((a, b) => {
         const aChecked = checkedItems.has(a.name);
         const bChecked = checkedItems.has(b.name);

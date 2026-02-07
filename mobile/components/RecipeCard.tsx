@@ -12,7 +12,7 @@ import { colors, borderRadius, fontSize, fontWeight, letterSpacing } from '@/lib
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import { hapticLight } from '@/lib/haptics';
-import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
+import type { Recipe, DietLabel } from '@/lib/types';
 
 // Blurhash placeholder for loading state (soft cream color)
 const PLACEHOLDER_BLURHASH = 'L5PZfS~q.8-;_3t7xuIU00og?bD%';
@@ -35,18 +35,6 @@ const DIET_LABEL_KEYS: Record<DietLabel, string> = {
   veggie: 'labels.diet.veggie',
   fish: 'labels.diet.fish',
   meat: 'labels.diet.meat',
-};
-
-const MEAL_LABEL_KEYS: Record<MealLabel, string> = {
-  breakfast: 'labels.meal.breakfast',
-  starter: 'labels.meal.starter',
-  salad: 'labels.meal.salad',
-  meal: 'labels.meal.meal',
-  dessert: 'labels.meal.dessert',
-  drink: 'labels.meal.drink',
-  sauce: 'labels.meal.sauce',
-  pickle: 'labels.meal.pickle',
-  grill: 'labels.meal.grill',
 };
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
