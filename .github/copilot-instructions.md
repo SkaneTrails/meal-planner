@@ -12,6 +12,17 @@ This file persists across conversations. Ignoring it loses track of work.
 
 **On failure:** Log to Failure Tracking table in `.copilot-tasks.md`; when count reaches 3, promote to permanent documentation.
 
+### ⚠️ Two Todo Systems — Do NOT Confuse Them
+
+| | `.copilot-tasks.md` | `manage_todo_list` tool |
+|---|---|---|
+| **Purpose** | Persistent project backlog across conversations | Ephemeral progress tracker within a single session |
+| **Lifetime** | Permanent — committed to repo | Gone when conversation ends |
+| **Content** | Open issues, deferred work, failure tracking | Steps for the current task only |
+| **When to update** | Branch changes, tasks complete, issues discovered | Breaking down multi-step work in progress |
+
+**Never** use `manage_todo_list` as a substitute for updating `.copilot-tasks.md`. They serve completely different purposes.
+
 ---
 
 ## Important: Collaboration Guidelines
@@ -182,7 +193,7 @@ For local development setup, environment configuration, and troubleshooting, see
 - **Package manager**: UV (Astral's fast Python package manager)
 - **Linter/Formatter**: Ruff (configured in `pyproject.toml`)
 - **Pre-commit hooks**: `.pre-commit-config.yaml`
-- **Testing**: pytest with coverage
+- **Testing**: pytest (API), Vitest (mobile)
 - **Conventional commits**: `feat:`, `fix:`, `chore:`, `ci:`, `docs:`, `refactor:`, `test:`
 
 ## Code Style
@@ -196,16 +207,23 @@ See `pyproject.toml` for tool configurations.
 - **Dataclasses**: Use dataclasses for models with `@dataclass` decorator
 - **Type hints**: Use modern Python type hints (`list[str]` not `List[str]`)
 
-## Test-Driven Development (TDD)
+## Test Requirements
 
-> **🚨 All API code changes MUST have corresponding tests.**
+> **🚨 All API and mobile auth/hook changes MUST have corresponding tests.**
 
+### API (pytest)
 - New API endpoints → `tests/test_api_*.py`
 - New service functions → `tests/test_*.py`
-- Bug fixes → Write a failing test first, then fix
+- Bug fixes → Include a test that covers the fixed behavior
 - Run: `uv run pytest --cov=api --cov-report=term-missing`
 
-**Exceptions:** Mobile/frontend, Terraform, config files.
+### Mobile (Vitest)
+- Hook logic (conditional fetching, enabled guards) → `mobile/lib/hooks/__tests__/*.test.ts`
+- Auth/role-based behavior (permissions, navigation guards) → `mobile/app/__tests__/*.test.tsx`
+- Test utilities: `mobile/test/helpers.ts` (query wrapper, mock user factory)
+- Run: `cd mobile && pnpm test`
+
+**Exceptions:** Terraform, config files, pure UI styling.
 
 ## Key Patterns & Conventions
 

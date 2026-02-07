@@ -8,6 +8,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:web": "mkdir -p public/fonts && cp node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf public/fonts/ && npx expo export --platform web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "format": "biome format --write"
@@ -55,8 +58,13 @@
   "devDependencies": {
     "@babel/core": "^7.25.0",
     "@biomejs/biome": "^2.3.14",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "~19.2.0",
-    "typescript": "~5.9.2"
+    "@vitest/coverage-v8": "^4.0.18",
+    "jsdom": "^28.0.0",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.18"
   },
   "private": true
 }
