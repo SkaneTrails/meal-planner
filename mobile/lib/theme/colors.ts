@@ -1,0 +1,90 @@
+/**
+ * Color palette - luxurious design system with elegant warm tones.
+ */
+
+export const lightColors = {
+  // Primary - Elegant dark charcoal
+  primary: '#2D2D2D',
+  primaryDark: '#1A1A1A',
+  primaryLight: '#404040',
+
+  // Background gradients - warm peach/brown tones
+  bgLight: '#FDF6F0',
+  bgMid: '#F5E1D0',
+  bgDark: '#E8CDB5',
+  bgWarm: '#FFEEE0',
+
+  // Accent colors - Coral/Peach for luxury feel
+  accent: '#E8A87C',
+  accentDark: '#D4956A',
+  accentLight: '#FFD4B8',
+  coral: '#FF8A65',
+  coralSoft: '#FFAB91',
+  gold: '#C9A962',
+  goldLight: '#E8D5A3',
+
+  // Category colors (luxurious pastels)
+  category: {
+    recipes: { bg: '#FFF0E5', text: '#8B5A3C' },
+    planned: { bg: '#E8F5E9', text: '#2E7D32' },
+    grocery: { bg: '#F3E5F5', text: '#7B1FA2' },
+    add: { bg: '#FFF3E0', text: '#E65100' },
+  },
+
+  // Diet label colors (refined pastels)
+  diet: {
+    veggie: { bg: '#E8F5E9', text: '#2E7D32' },
+    fish: { bg: '#E3F2FD', text: '#1565C0' },
+    meat: { bg: '#FFEBEE', text: '#C62828' },
+  },
+
+  // Neutrals - refined gray scale with warmth
+  white: '#FFFFFF',
+  offWhite: '#FAFAFA',
+  text: {
+    primary: '#FFFFFF',
+    secondary: 'rgba(255, 255, 255, 0.8)',
+    muted: 'rgba(255, 255, 255, 0.6)',
+    light: 'rgba(255, 255, 255, 0.4)',
+    inverse: '#2D2D2D',
+    dark: '#2D2D2D',
+  },
+  border: 'rgba(255, 255, 255, 0.2)',
+  borderLight: 'rgba(255, 255, 255, 0.1)',
+
+  // Refined gray scale
+  gray: {
+    50: '#FAFAFA',
+    100: '#F5F5F5',
+    200: '#EEEEEE',
+    300: '#E0E0E0',
+    400: '#BDBDBD',
+    500: '#9E9E9E',
+    600: '#757575',
+    700: '#616161',
+    800: '#424242',
+    900: '#212121',
+  },
+
+  // Semantic (refined)
+  success: '#4CAF50',
+  successBg: '#E8F5E9',
+  warning: '#FF9800',
+  warningBg: '#FFF3E0',
+  error: '#EF5350',
+  errorBg: '#FFEBEE',
+  info: '#42A5F5',
+  infoBg: '#E3F2FD',
+
+  // Glass/Blur effects - for transparent cards on warm background
+  glass: {
+    light: 'rgba(255, 255, 255, 0.7)',
+    medium: 'rgba(255, 255, 255, 0.55)',
+    dark: 'rgba(255, 255, 255, 0.4)',
+    card: 'rgba(255, 255, 255, 0.6)',
+    border: 'transparent',
+  },
+} as const;
+
+// Export colors (light theme only)
+export const colors = lightColors;
