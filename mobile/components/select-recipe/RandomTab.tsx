@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing } from '@/lib/theme';
 import { EmptyState } from '@/components/EmptyState';
-import type { useSelectRecipeState } from './useSelectRecipeState';
+import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 

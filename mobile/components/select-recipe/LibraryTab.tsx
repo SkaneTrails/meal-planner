@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize } from '@/lib/theme';
 import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
-import type { useSelectRecipeState } from './useSelectRecipeState';
+import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 

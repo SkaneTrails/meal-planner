@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, fontSize, fontFamily, letterSpacing } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
-import type { useHomeScreenData } from './useHomeScreenData';
+import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
