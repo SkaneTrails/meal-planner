@@ -28,5 +28,5 @@ export const inputStyle = {
   paddingHorizontal: spacing.lg,
   paddingVertical: spacing.md,
   fontSize: fontSize.lg,
-  color: colors.text.primary,
+  color: colors.text.inverse,
 } as const;

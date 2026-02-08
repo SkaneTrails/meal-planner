@@ -1,5 +1,5 @@
 /**
- * Grocery list with category grouping, checked sorting, and drag-and-drop reordering.
+ * Grocery list with checked sorting and drag-and-drop reordering.
  */
 
 import React, { useState, useCallback } from 'react';
@@ -12,19 +12,8 @@ import DraggableFlatList, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { hapticSelection } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
-import type { GroceryItem, GroceryCategory, GroceryList } from '@/lib/types';
+import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
-
-const CATEGORY_LABEL_KEYS: Record<GroceryCategory, string> = {
-  produce: 'grocery.categories.produce',
-  meat_seafood: 'grocery.categories.meatSeafood',
-  dairy: 'grocery.categories.dairy',
-  bakery: 'grocery.categories.bakery',
-  pantry: 'grocery.categories.pantry',
-  frozen: 'grocery.categories.frozen',
-  beverages: 'grocery.categories.beverages',
-  other: 'grocery.categories.other',
-};
 
 interface GroceryListViewProps {
   groceryList: GroceryList;
@@ -40,20 +29,6 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
     () => new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
   );
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
-
-  const toggleCategory = (category: string) => {
-    hapticSelection();
-    setCollapsedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(category)) {
-        next.delete(category);
-      } else {
-        next.add(category);
-      }
-      return next;
-    });
-  };
 
   const filteredItems = filterOutItems
     ? groceryList.items.filter((item) => !filterOutItems(item.name))
@@ -117,35 +92,6 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
     ),
     [handleItemToggle, checkedItems],
   );
-
-  const itemsByCategory: Record<GroceryCategory, GroceryItem[]> = {
-    produce: [],
-    meat_seafood: [],
-    dairy: [],
-    bakery: [],
-    pantry: [],
-    frozen: [],
-    beverages: [],
-    other: [],
-  };
-
-  if (!reorderMode) {
-    for (const item of displayItems) {
-      itemsByCategory[item.category].push(item);
-    }
-  }
-
-  const sections = Object.entries(itemsByCategory)
-    .filter(([_, items]) => items.length > 0)
-    .map(([category, items]) => ({
-      title: t(CATEGORY_LABEL_KEYS[category as GroceryCategory]),
-      data: [...items].sort((a, b) => {
-        const aChecked = checkedItems.has(a.name);
-        const bChecked = checkedItems.has(b.name);
-        if (aChecked === bChecked) return 0;
-        return aChecked ? 1 : -1;
-      }),
-    }));
 
   if (displayItems.length === 0) {
     return (
