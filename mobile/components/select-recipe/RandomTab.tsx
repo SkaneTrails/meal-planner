@@ -114,8 +114,8 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
       overflow: 'hidden', ...shadows.md, transform: [{ scale: pressed ? 0.99 : 1 }],
     })}
   >
-    {recipe.image_url && (
-      <Image source={{ uri: recipe.image_url }} style={{ width: '100%', height: 180 }} resizeMode="cover" />
+    {(recipe.thumbnail_url || recipe.image_url) && (
+      <Image source={{ uri: recipe.thumbnail_url || recipe.image_url }} style={{ width: '100%', height: 180 }} resizeMode="cover" />
     )}
     <View style={{ padding: spacing.lg }}>
       <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, marginBottom: spacing.sm, letterSpacing: letterSpacing.normal }}>

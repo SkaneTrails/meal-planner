@@ -9,9 +9,10 @@ from PIL import Image
 
 from api.services.image_downloader import (
     MAX_DOWNLOAD_BYTES,
+    ImageResult,
     _download_image,
     _process_image,
-    _upload_to_gcs,
+    _upload_both_to_gcs,
     download_and_upload_image,
     is_gcs_url,
 )
@@ -19,7 +20,8 @@ from api.services.image_downloader import (
 BUCKET = "test-bucket"
 RECIPE_ID = "recipe_abc123"
 EXTERNAL_URL = "https://example.com/photo.jpg"
-GCS_URL = f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/thumb.jpg"
+GCS_HERO_URL = f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/hero.jpg"
+GCS_THUMB_URL = f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/thumb.jpg"
 
 
 def _make_jpeg_bytes(width: int = 100, height: int = 80) -> bytes:
@@ -129,18 +131,34 @@ class TestDownloadImage:
 
 
 class TestProcessImage:
-    """Tests for _process_image."""
+    """Tests for _process_image (produces hero + thumbnail)."""
 
-    def test_creates_thumbnail(self) -> None:
-        """Should return JPEG thumbnail bytes."""
+    def test_creates_both_sizes(self) -> None:
+        """Should return hero and thumbnail bytes."""
         image_data = _make_jpeg_bytes(1200, 900)
         result = _process_image(image_data, RECIPE_ID)
 
         assert result is not None
-        img = Image.open(io.BytesIO(result))
-        assert img.format == "JPEG"
-        assert img.width <= 800
-        assert img.height <= 600
+        hero_data, thumb_data = result
+
+        hero_img = Image.open(io.BytesIO(hero_data))
+        assert hero_img.format == "JPEG"
+        assert hero_img.width <= 800
+        assert hero_img.height <= 600
+
+        thumb_img = Image.open(io.BytesIO(thumb_data))
+        assert thumb_img.format == "JPEG"
+        assert thumb_img.width <= 400
+        assert thumb_img.height <= 300
+
+    def test_hero_larger_than_thumbnail(self) -> None:
+        """Hero should be larger than thumbnail for the same source."""
+        image_data = _make_jpeg_bytes(1600, 1200)
+        result = _process_image(image_data, RECIPE_ID)
+
+        assert result is not None
+        hero_data, thumb_data = result
+        assert len(hero_data) > len(thumb_data)
 
     def test_returns_none_for_invalid_data(self) -> None:
         """Should return None for non-image bytes."""
@@ -148,7 +166,7 @@ class TestProcessImage:
         assert result is None
 
     def test_handles_png_with_transparency(self) -> None:
-        """Should convert RGBA PNG to RGB JPEG."""
+        """Should convert RGBA PNG to RGB JPEG for both sizes."""
         img = Image.new("RGBA", (200, 150), (255, 0, 0, 128))
         buf = io.BytesIO()
         img.save(buf, format="PNG")
@@ -157,16 +175,18 @@ class TestProcessImage:
         result = _process_image(png_bytes, RECIPE_ID)
         assert result is not None
 
-        output_img = Image.open(io.BytesIO(result))
-        assert output_img.mode == "RGB"
+        hero_data, thumb_data = result
+        assert Image.open(io.BytesIO(hero_data)).mode == "RGB"
+        assert Image.open(io.BytesIO(thumb_data)).mode == "RGB"
 
 
-class TestUploadToGcs:
-    """Tests for _upload_to_gcs."""
+class TestUploadBothToGcs:
+    """Tests for _upload_both_to_gcs."""
 
-    def test_uploads_and_returns_url(self) -> None:
-        """Should upload to GCS and return public URL."""
-        thumbnail_data = _make_jpeg_bytes()
+    def test_uploads_both_and_returns_result(self) -> None:
+        """Should upload hero + thumbnail and return ImageResult."""
+        hero_data = _make_jpeg_bytes(800, 600)
+        thumb_data = _make_jpeg_bytes(400, 300)
 
         with patch("api.services.image_downloader.storage.Client") as mock_storage:
             mock_blob = MagicMock()
@@ -174,17 +194,20 @@ class TestUploadToGcs:
             mock_bucket.blob.return_value = mock_blob
             mock_storage.return_value.bucket.return_value = mock_bucket
 
-            result = _upload_to_gcs(thumbnail_data, RECIPE_ID, BUCKET)
+            result = _upload_both_to_gcs(hero_data, thumb_data, RECIPE_ID, BUCKET)
 
         assert result is not None
-        assert result.startswith(f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/")
-        assert result.endswith(".jpg")
-        mock_blob.upload_from_string.assert_called_once_with(thumbnail_data, content_type="image/jpeg")
+        assert isinstance(result, ImageResult)
+        assert result.hero_url.startswith(f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/")
+        assert "_hero.jpg" in result.hero_url
+        assert result.thumbnail_url.startswith(f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/")
+        assert "_thumb.jpg" in result.thumbnail_url
+        assert mock_blob.upload_from_string.call_count == 2
 
     def test_returns_none_on_upload_failure(self) -> None:
         """Should return None when GCS upload fails."""
         with patch("api.services.image_downloader.storage.Client", side_effect=Exception("GCS down")):
-            result = _upload_to_gcs(b"data", RECIPE_ID, BUCKET)
+            result = _upload_both_to_gcs(b"hero", b"thumb", RECIPE_ID, BUCKET)
 
         assert result is None
 
@@ -194,30 +217,32 @@ class TestDownloadAndUploadImage:
 
     @pytest.mark.asyncio
     async def test_full_pipeline(self) -> None:
-        """Should download, process, and upload, returning GCS URL."""
+        """Should download, process both sizes, and upload, returning ImageResult."""
         image_bytes = _make_jpeg_bytes()
+        expected = ImageResult(hero_url=GCS_HERO_URL, thumbnail_url=GCS_THUMB_URL)
 
         with (
             patch("api.services.image_downloader._download_image", new_callable=AsyncMock) as mock_dl,
             patch("api.services.image_downloader._process_image") as mock_proc,
-            patch("api.services.image_downloader._upload_to_gcs") as mock_up,
+            patch("api.services.image_downloader._upload_both_to_gcs") as mock_up,
         ):
             mock_dl.return_value = image_bytes
-            mock_proc.return_value = b"thumb"
-            mock_up.return_value = GCS_URL
+            mock_proc.return_value = (b"hero", b"thumb")
+            mock_up.return_value = expected
 
             result = await download_and_upload_image(EXTERNAL_URL, RECIPE_ID, BUCKET)
 
-        assert result == GCS_URL
+        assert result == expected
         mock_dl.assert_awaited_once_with(EXTERNAL_URL)
         mock_proc.assert_called_once_with(image_bytes, RECIPE_ID)
-        mock_up.assert_called_once_with(b"thumb", RECIPE_ID, BUCKET)
+        mock_up.assert_called_once_with(b"hero", b"thumb", RECIPE_ID, BUCKET)
 
     @pytest.mark.asyncio
-    async def test_skips_gcs_url(self) -> None:
-        """Should return the same URL if it already points to our bucket."""
-        result = await download_and_upload_image(GCS_URL, RECIPE_ID, BUCKET)
-        assert result == GCS_URL
+    async def test_returns_none_for_gcs_url(self) -> None:
+        """Should return None if URL already points to our bucket (no re-processing)."""
+        gcs_url = f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/existing.jpg"
+        result = await download_and_upload_image(gcs_url, RECIPE_ID, BUCKET)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_returns_none_on_download_failure(self) -> None:
@@ -249,10 +274,10 @@ class TestDownloadAndUploadImage:
         with (
             patch("api.services.image_downloader._download_image", new_callable=AsyncMock) as mock_dl,
             patch("api.services.image_downloader._process_image") as mock_proc,
-            patch("api.services.image_downloader._upload_to_gcs") as mock_up,
+            patch("api.services.image_downloader._upload_both_to_gcs") as mock_up,
         ):
             mock_dl.return_value = b"data"
-            mock_proc.return_value = b"thumb"
+            mock_proc.return_value = (b"hero", b"thumb")
             mock_up.return_value = None
 
             result = await download_and_upload_image(EXTERNAL_URL, RECIPE_ID, BUCKET)

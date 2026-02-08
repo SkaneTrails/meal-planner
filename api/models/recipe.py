@@ -98,6 +98,7 @@ class RecipeBase(BaseModel):
     ingredients: list[str] = Field(default_factory=list)
     instructions: list[str] = Field(default_factory=list)
     image_url: str | None = None
+    thumbnail_url: str | None = Field(default=None, description="Thumbnail image URL (400x300) for cards/lists")
     servings: int | None = Field(default=None, ge=1)
     prep_time: int | None = Field(default=None, ge=0, description="Prep time in minutes")
     cook_time: int | None = Field(default=None, ge=0, description="Cook time in minutes")
@@ -174,6 +175,7 @@ class RecipeUpdate(BaseModel):
     ingredients: list[str] | None = None
     instructions: list[str] | None = None
     image_url: str | None = None
+    thumbnail_url: str | None = None
     servings: int | None = Field(default=None, ge=1)
     prep_time: int | None = Field(default=None, ge=0)
     cook_time: int | None = Field(default=None, ge=0)

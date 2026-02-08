@@ -92,7 +92,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           transform: [{ scale: scaleAnim }],
         }}>
           <Image
-            source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
+            source={{ uri: recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: 56, height: 56, borderRadius: borderRadius.sm }}
             contentFit="cover"
             placeholder={PLACEHOLDER_BLURHASH}
@@ -168,7 +168,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
         {/* Image with gradient overlay */}
         <View style={{ position: 'relative' }}>
           <Image
-            source={{ uri: recipe.image_url || PLACEHOLDER_IMAGE }}
+            source={{ uri: recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: '100%', height: imageHeight }}
             contentFit="cover"
             placeholder={PLACEHOLDER_BLURHASH}
