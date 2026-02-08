@@ -1,64 +1,64 @@
 # User Configuration - Dietary Preferences
 
-## Hushållet
+## Household
 
-- **Antal personer**: 2
-- **Konfiguration**: En äter kött, en är vegetarian
-- **Serveringsstil**: Behöver ofta servera både kött och vegetariskt vid samma måltid
+- **People**: 2
+- **Setup**: One eats meat, one is vegetarian
+- **Serving style**: Often need to serve both meat and vegetarian at the same meal
 
-## Fisk och skaldjur
+## Fish and seafood
 
-- Båda äter fisk och skaldjur
-- Inga ändringar för fisk/skaldjursrecept
+- Both eat fish and seafood
+- No changes needed for fish/seafood recipes
 
-## Proteinsubstitution
+## Protein substitution
 
-### Kyckling
+### Chicken
 
-- **Uppdelning**: 50% kyckling + 50% Quorn
-- **Alternativ**: Quorn filéer, strimlor eller bitar (matcha formen!)
-- **Viktigt**: Matcha proteinformen - "Strimlad kycklingbröstfilé" → Quorn filéstrimlor
+- **Split**: 50% chicken + 50% Quorn
+- **Alternative**: Quorn fillets, strips, or pieces (match the form!)
+- **Important**: Match the protein form — "Sliced chicken breast" → Quorn fillet strips
 
-### Annat kött (nöt, fläsk, lamm)
+### Other meat (beef, pork, lamb)
 
-- **Uppdelning**: 50% originalkött + 50% Oumph
-- **Alternativ**: Oumph The Chunk, Pulled, eller Kebab beroende på rätten
+- **Split**: 50% original meat + 50% Oumph
+- **Alternative**: Oumph The Chunk, Pulled, or Kebab depending on the dish
 
-### Färs (alla typer)
+### Mince (all types)
 
-- **Regel**: 100% sojafärs för alla (ingen uppdelning)
-- **Justering**: Mindre fett → lägg till 1-2 msk olja vid stekning
-- **Tips**: Lägg till lite soja eller buljong för umami
+- **Rule**: 100% soy mince for everyone (no split)
+- **Adjustment**: Less fat → add 1-2 msk oil when frying
+- **Tip**: Add a splash of soy sauce or bouillon for umami
 
-## Mejeri
+## Dairy
 
-Använd laktosfria alternativ för:
+Use lactose-free alternatives for:
 
-- Mjölk
-- Grädde
+- Milk
+- Cream
 - Crème fraîche
-- Färskost
-- Kesella
+- Cream cheese
+- Kesella/Kvarg
 
-### UNDANTAG - ändra INTE till laktosfri:
+### EXCEPTIONS — do NOT change to lactose-free:
 
-- **Smör** (mycket låg laktoshalt)
-- **Parmesan, Grana Padano, lagrad ost** (naturligt låg laktoshalt)
+- **Butter** (very low lactose content)
+- **Parmesan, Grana Padano, aged cheese** (naturally low lactose)
 - **Ricotta, mozzarella**
-- **Kokosmjölk, kokosgrädde** (redan mjölkfria!)
+- **Coconut milk, coconut cream** (already dairy-free!)
 
-## Fett
+## Fats
 
-**GRANSKA ALLTID** vilken olja/fett som används och om det matchar tillagningsmetoden.
+**ALWAYS REVIEW** which oil/fat is used and whether it matches the cooking method.
 
-### Smör
+### Butter
 
-- **Smör → margarin** för vanlig stekning där smörsmak inte spelar roll
-- **Behåll smör** för: brynt smör, smörsåser, örtsmör, bakning, finishing
+- **Butter → margarine** for regular frying where butter flavor doesn't matter
+- **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing
 
-### Olja
+### Oil
 
-- **Olivolja → matolja/rapsolja** för stekning vid hög värme (searing, wok, stekpanna)
-- **Behåll olivolja** för: dressingar, finishing, medelhavsrätter, låg-/medelvärme
+- **Olive oil → neutral oil/rapeseed oil** for high-heat cooking (searing, wok, frying pan)
+- **Keep olive oil** for: dressings, finishing, Mediterranean dishes, low/medium heat
 
-**Varför:** Extra virgin olivolja har låg rökpunkt (~190°C) och passar inte för högvärmestekning. Rapsolja/matolja tål högre temperaturer.
+**Why:** Extra virgin olive oil has a low smoke point (~190°C) and is not suitable for high-heat frying. Rapeseed oil/neutral oil tolerates higher temperatures.

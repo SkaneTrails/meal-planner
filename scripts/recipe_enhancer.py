@@ -124,18 +124,18 @@ def enhance_recipe(recipe: dict) -> dict | None:
     client = genai.Client(api_key=api_key)
 
     recipe_text = f"""
-Förbättra detta recept enligt reglerna:
+Enhance this recipe according to the rules:
 
-**Titel**: {recipe.get("title", "Okänd")}
+**Title**: {recipe.get("title", "Unknown")}
 
-**Ingredienser**:
+**Ingredients**:
 {chr(10).join(f"- {ing}" for ing in recipe.get("ingredients", []))}
 
-**Instruktioner**:
-{recipe.get("instructions", "Inga instruktioner")}
+**Instructions**:
+{recipe.get("instructions", "No instructions")}
 
-**Tips** (om finns):
-{recipe.get("tips", "Inga tips")}
+**Tips** (if any):
+{recipe.get("tips", "No tips")}
 """
 
     try:

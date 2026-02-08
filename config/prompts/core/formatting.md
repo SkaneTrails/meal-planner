@@ -1,210 +1,254 @@
 # Recipe Enhancement - Formatting Rules
 
-## Bråktal
+## Fractions
 
-- Använd ½, ⅓, ¼, ¾ - ALDRIG "0.5", "0.33", "0.25"
-- Skriv "½ msk" inte "0.5 msk"
+- Use ½, ⅓, ¼, ¾ — NEVER "0.5", "0.33", "0.25"
+- Write "½ tbsp" not "0.5 tbsp"
 
-## Svenska mått - KRITISKT
+## Swedish measurements — CRITICAL
 
-**ALDRIG använd ¼ tsk eller 1/4 tsk - använd krm istället!**
+**NEVER use ¼ tsk or 1/4 tsk — use krm instead!**
 
-| ❌ FEL         | ✅ RÄTT        |
+| ❌ WRONG       | ✅ CORRECT     |
 | -------------- | -------------- |
 | ¼ tsk salt     | 1 krm salt     |
-| 1/4 tsk peppar | 1 krm peppar   |
-| ¼ tsk gurkmeja | 1 krm gurkmeja |
+| 1/4 tsk pepper | 1 krm pepper   |
+| ¼ tsk turmeric | 1 krm turmeric |
 
-**½ tsk är OK** - bara bråktal mindre än ½ ska ersättas med krm.
+**½ tsk is OK** — only fractions smaller than ½ should be replaced with krm.
 
-- **krm** (~1 ml) för små mängder - ALDRIG "1/4 tsk" eller "¼ tsk"
-- **tsk** (5 ml) för mellanstora mängder
-- **msk** (15 ml) för större mängder
+- **krm** (~1 ml) for small amounts — NEVER "1/4 tsk" or "¼ tsk"
+- **tsk** (5 ml) for medium amounts
+- **msk** (15 ml) for larger amounts
 
-## Praktiska mått - Avrunda till mätbara enheter
+## Practical measurements — round to measurable units
 
-Använd ALDRIG bråkdels-milliliter. Avrunda till närmaste praktiska mått:
+NEVER use fractional milliliters. Round to the nearest practical measure:
 
-| Opraktiskt | → Praktiskt                       |
-| ---------- | --------------------------------- |
-| 12,5 ml    | 1 msk (15 ml) eller 2 tsk (10 ml) |
-| 37,5 ml    | 2½ msk eller 3 msk                |
-| 7,5 ml     | 1½ tsk ✓ eller 2 tsk              |
+| Impractical | → Practical                    |
+| ----------- | ------------------------------ |
+| 12.5 ml     | 1 msk (15 ml) or 2 tsk (10 ml) |
+| 37.5 ml     | 2½ msk or 3 msk                |
+| 7.5 ml      | 1½ tsk ✓ or 2 tsk              |
 
-**Föredra alltid:** krm < tsk < msk framför ml för små mängder.
+**Always prefer:** krm < tsk < msk over ml for small amounts.
 
-## Volym med vikt
+## Volume with weight
 
-För icke-kryddor i volymmått, inkludera vikt inom parentes.
+For non-spice ingredients in volume measures, include weight in parentheses.
 
-**Undantag:**
+**Exceptions:**
 
-- Kryddor (krm, tsk, msk) - ingen vikt behövs
-- Vätskor (vatten, mjölk, buljong) - 1 liter ≈ 1 kg
+- Spices (krm, tsk, msk) — no weight needed
+- Liquids (water, milk, broth) — 1 liter ≈ 1 kg
 
-**Exempel:**
+**Examples:**
 
-- "2 dl Ris (160 g)"
-- "3 dl Havregryn (90 g)"
-- "1 dl Mjöl (60 g)"
-- "2 dl Linser (180 g)"
-- "1½ dl Socker (150 g)"
+- "2 dl Rice (160 g)"
+- "3 dl Rolled oats (90 g)"
+- "1 dl Flour (60 g)"
+- "2 dl Lentils (180 g)"
+- "1½ dl Sugar (150 g)"
 
-Detta hjälper vid portionsjustering och precisionsmatlagning.
+This helps with portion adjustment and precision cooking.
 
-## Vaga ingredienser - konkretisera alltid
+## Vague ingredients — always make concrete
 
-- "Citrusfrukt" → "Citron" (eller "Lime" om asiatiskt recept)
-- "Bladpersilja" → "Persilja"
-- "1 st Mynta & koriander" → "1 kruka Mynta" + "1 kruka Koriander" (separata ingredienser)
-- "Lök" → "Gul lök" eller "Rödlök" beroende på recept
-- "En nypa peppar" → "2 krm Svartpeppar" (använd krm, aldrig "nypa")
+- "Citrus fruit" → "Lemon" (or "Lime" for Asian recipes)
+- "Flat-leaf parsley" → "Parsley"
+- "1 pc Mint & coriander" → "1 pot Mint" + "1 pot Coriander" (separate ingredients)
+- "Onion" → "Yellow onion" or "Red onion" depending on recipe
+- "A pinch of pepper" → "2 krm Black pepper" (use krm, never "pinch")
 
-## HelloFresh portionsmarkörer - Använd ALLTID 4-portions mängder
+## HelloFresh portion markers — ALWAYS use 4-portion amounts
 
-HelloFresh-recept innehåller ofta portionsmarkörer:
+HelloFresh recipes often contain portion markers:
 
-- `[X | Y]` format: Första värdet är 2P, andra är 4P
-- `[X, 2P]` format: Värdet gäller för 2 portioner
+- `[X | Y]` format: First value is 2P, second is 4P
+- `[X, 2P]` format: Value is for 2 portions
 
-**Extrahera ALLTID och använd 4-PORTIONS (4P) värdet:**
+**ALWAYS extract and use the 4-PORTION (4P) value:**
 
-| Original                | → Konvertera till |
+| Original                | → Convert to      |
 | ----------------------- | ----------------- |
-| `vatten [3 dl \| 6 dl]` | 6 dl vatten       |
+| `water [3 dl \| 6 dl]`  | 6 dl water        |
 | `salt [½ tsk \| 1 tsk]` | 1 tsk salt        |
-| `[1/2 paket, 2P]`       | 1 paket (hela)    |
-| `lime [1/2 st, 2P]`     | 1 st lime         |
+| `[1/2 package, 2P]`     | 1 package (whole) |
+| `lime [1/2 pc, 2P]`     | 1 pc lime         |
 | `[1 msk \| 2 msk]`      | 2 msk             |
 
-**Ta bort alla portionsmarkörer från slutresultatet.**
+**Remove all portion markers from the final result.**
 
-## Paket och förpackningar - ALDRIG vaga enheter
+## Packages and containers — NEVER use vague units
 
-Ersätt ALLTID "paket", "förpackning", "burk" med faktiska mått:
+ALWAYS replace "package", "container", "can" with actual measurements:
 
-- "1 paket Krossade tomater" → "400 g Krossade tomater"
-- "1 paket Pasta" → "400 g Pasta" (eller faktisk vikt)
-- "1 paket Matlagningsgrädde" → "2 dl Matlagningsgrädde"
-- "1 burk Kokosmjölk" → "400 ml Kokosmjölk"
-- "1 förpackning Tofu" → "300 g Tofu"
+- "1 package Crushed tomatoes" → "400 g Crushed tomatoes"
+- "1 package Pasta" → "400 g Pasta" (or actual weight)
+- "1 package Cooking cream" → "2 dl Cooking cream"
+- "1 can Coconut milk" → "400 ml Coconut milk"
+- "1 package Tofu" → "300 g Tofu"
 
-Om exakt mängd är okänd, använd standard:
+If exact amount is unknown, use standard sizes:
 
-- Pasta: 400 g (2 portioner)
-- Krossade tomater: 400 g
-- Grädde/crème fraîche: 2 dl
-- Kokosmjölk: 400 ml
-- Ris: 150-200 g (2 portioner)
+- Pasta: 400 g (2 servings)
+- Crushed tomatoes: 400 g
+- Cream/crème fraîche: 2 dl
+- Coconut milk: 400 ml
+- Rice: 150-200 g (2 servings)
 
-## Ingrediensordning
+## Ingredient ordering
 
-Organisera ingredienser i denna ordning:
+Organize ingredients in this order:
 
-1. **Kyckling, Quorn, fisk, skaldjur** (huvudingredienser)
-2. **Grönsaker & rotfrukter**
-3. **Kolhydrater** (pasta, ris, potatis, bröd)
-4. **Mejeri** (yoghurt, grädde, ost)
-5. **Oljor & fetter**
-6. **Kryddor & smaksättare** (ALLTID SIST)
+1. **Chicken, Quorn, fish, seafood** (main ingredients)
+2. **Vegetables & root vegetables**
+3. **Carbohydrates** (pasta, rice, potatoes, bread)
+4. **Dairy** (yogurt, cream, cheese)
+5. **Oils & fats**
+6. **Spices & seasonings** (ALWAYS LAST)
 
-### Kryddor sist
+### Spices last
 
-Alla kryddor grupperas i slutet av ingredienslistan:
+All spices are grouped at the end of the ingredient list:
 
-- Torkade kryddor
-- Färska örter
-- Salt, peppar
-- Buljong
+- Dried spices
+- Fresh herbs
+- Salt, pepper
+- Broth/bouillon
 
-## Ingrediensduplicering - KRITISKT
+## Ingredient duplication — CRITICAL
 
-**SLUTA ALDRIG SAMMAN INGREDIENSER TILL EN RAD.**
-**SLUTA ALDRIG SAMMAN BEFINTLIGA SEPARATA RADER.**
+**NEVER COMBINE INGREDIENTS INTO ONE LINE.**
+**NEVER MERGE EXISTING SEPARATE LINES.**
 
-Om receptet redan har separata rader för samma ingrediens (t.ex. "20 g Ost (för gratängen)" och "50 g Ost (för topping)"), BEHÅLL DEM SEPARATA. Slå ALDRIG ihop dem.
+If the recipe already has separate lines for the same ingredient (e.g., "20 g Cheese (for gratin)" and "50 g Cheese (for topping)"), KEEP THEM SEPARATE. NEVER merge them.
 
-Om salt, olja, smör, ost eller någon annan ingrediens används flera gånger i receptet, LISTA VARJE ANVÄNDNING SEPARAT:
+If salt, oil, butter, cheese, or any other ingredient is used multiple times in the recipe, LIST EACH USE SEPARATELY:
 
-✅ RÄTT:
+✅ CORRECT:
 
-- ½ tsk Salt (till pastavattnet)
-- ½ tsk Salt (till kycklingen)
-- Salt (avslutning, efter smak)
-- 1 msk Rapsolja (till stekning)
-- 1 msk Olivolja (till servering)
-- 20 g Ost (för gratängen)
-- 50 g Ost (för topping)
+- ½ tsk Salt (for pasta water)
+- ½ tsk Salt (for the chicken)
+- Salt (finishing, to taste)
+- 1 msk Rapeseed oil (for frying)
+- 1 msk Olive oil (for serving)
+- 20 g Cheese (for gratin)
+- 50 g Cheese (for topping)
 
-❌ FEL - slår ihop till en rad:
+❌ WRONG — combining into one line:
 
 - 1 tsk Salt
-- 2 msk Olja
-- 70 g Ost
+- 2 msk Oil
+- 70 g Cheese
 
-VARFÖR: Varje tillsats har ett specifikt syfte. Att behålla dem separata gör receptet reproducerbart.
+WHY: Each addition has a specific purpose. Keeping them separate makes the recipe reproducible.
 
-## Instruktionsformat
+### Quantity conservation — CRITICAL
 
-### För enkla recept
+When splitting an ingredient into multiple uses, the **total quantity MUST equal the original**.
 
-Skriv instruktioner som löpande text med tydliga steg.
+| Original   | ✅ CORRECT split                                   | ❌ WRONG (quantity lost)                           |
+| ---------- | -------------------------------------------------- | -------------------------------------------------- |
+| 2 msk oil  | 1 msk oil (for frying) + 1 msk oil (for mushrooms) | ½ msk oil (frying) + ½ msk oil (mushrooms) = 1 msk |
+| 1 tsk salt | ½ tsk salt (stew) + ½ tsk salt (mash)              | Salt (stew) + Salt (mash) — no amounts             |
 
-### För komplexa recept (parallell tillagning, flera komponenter)
+NEVER reduce the total when splitting. If unsure, keep the ingredient on a single line.
 
-Använd TIDSLINJE-format för att koordinera:
+## Instruction format
+
+### For simple recipes
+
+Write instructions as clear numbered steps.
+
+### For complex recipes (parallel cooking, multiple components)
+
+Use TIMELINE format to coordinate:
 
 ```
-⏱️ 0 min: [Förberedelse - vad som startas först]
-⏱️ 5 min: [Nästa steg]
-⏱️ 15 min: [Parallella aktiviteter]
+⏱️ 0 min: [Preparation — what starts first]
+⏱️ 5 min: [Next step]
+⏱️ 15 min: [Parallel activities]
 ...
-⏱️ X min: Servera!
+⏱️ X min: Serve!
 ```
 
-**VIKTIGT:** Varje tidslinjesteg ska vara ett **separat element** i instructions-arrayen:
+### Every step must contain an action — CRITICAL
+
+**NEVER create steps that are just headers or labels.**
+
+❌ WRONG — empty header step:
 
 ```json
-"instructions": [
-  "⏱️ 0 min: Sätt ugnen på 175°C. Förbered grönsakerna...",
-  "Blanda grönsakerna med olja. Ställ in i ugnen.",
-  "⏱️ 5 min: Marinera kycklingen...",
-  "⏱️ 10 min: Lägg kycklingen i airfryern...",
-  "⏱️ 35 min: Servera!"
+[
+  "⏱️ 15 min: Fry the mushrooms.",
+  "Heat oil in a pan. Fry the mushrooms until golden."
 ]
 ```
 
-❌ FEL: Alla steg i en enda sträng med newlines
-✅ RÄTT: Varje steg som separat array-element
+✅ CORRECT — header merged with action:
 
-Använd tidslinje när:
+```json
+[
+  "⏱️ 15 min: Heat oil in a pan. Fry the mushrooms until golden, about 3-4 minutes."
+]
+```
 
-- Ugn + airfryer används samtidigt
-- Kyckling och Quorn tillagas separat
-- Flera komponenter som måste koordineras
-- Total tillagningstid > 20 min
+Every element in the instructions array MUST contain actionable cooking directions. A timeline marker alone is not a step.
 
-### Inline-tips med 💡
-
-Actionable tips (alternativ, extra smak, teknikförslag) ska vara **separata element** i instructions-arrayen, placerade direkt efter steget de hör till:
+**IMPORTANT:** Each timeline step must be a **separate element** in the instructions array:
 
 ```json
 "instructions": [
-  "Skala pumpan och skär i bitar. Ringla över olja.",
-  "💡 ALTERNATIV: Använd hokkaidopumpa - skalet är ätbart.",
-  "⏱️ 5 min: Ställ in i ugnen..."
+  "⏱️ 0 min: Preheat the oven to 175°C. Prepare the vegetables...",
+  "Toss vegetables with oil. Place in oven.",
+  "⏱️ 5 min: Marinate the chicken...",
+  "⏱️ 10 min: Place the chicken in the air fryer...",
+  "⏱️ 35 min: Serve!"
+]
+```
+
+❌ WRONG: All steps in a single string with newlines
+✅ CORRECT: Each step as a separate array element
+
+Use timeline when:
+
+- Oven + air fryer are used simultaneously
+- Chicken and Quorn are cooked separately
+- Multiple components that need coordination
+- Total cooking time > 20 min
+
+### Inline tips with 💡
+
+Actionable tips (alternatives, extra flavor, technique suggestions) should be **separate elements** in the instructions array, placed directly after the step they belong to:
+
+```json
+"instructions": [
+  "Peel the pumpkin and cut into pieces. Drizzle with oil.",
+  "💡 ALTERNATIVE: Use Hokkaido pumpkin — the skin is edible.",
+  "⏱️ 5 min: Place in oven..."
 ]
 ```
 
 **Format:**
 
-- `💡 ALTERNATIV: ...` för ingrediensbyten
-- `💡 EXTRA: ...` för smakförhöjning
-- `💡 TIPS: ...` för teknik
+- `💡 ALTERNATIVE: ...` for ingredient swaps
+- `💡 EXTRA: ...` for flavor enhancement
+- `💡 TIP: ...` for technique
 
-**VIKTIGT:**
+**IMPORTANT:**
 
-- ❌ FEL: `"Skala pumpan... 💡 ALTERNATIV: Använd hokkaido..."` (inbäddat i steg)
-- ✅ RÄTT: Tip på egen rad, efter steget det hör till
+- ❌ WRONG: `"Peel the pumpkin... 💡 ALTERNATIVE: Use Hokkaido..."` (embedded in step)
+- ✅ CORRECT: Tip on its own line, after the step it belongs to
 
-**Varför separat?** Appen renderar tips med distinkt styling (grön bakgrund), vilket bara fungerar när elementet börjar med 💡.
+**Why separate?** The app renders tips with distinct styling (green background), which only works when the element starts with 💡.
+
+### Cooking technique — high heat for searing
+
+When searing, browning, or caramelizing (mushrooms, meat, onions for color):
+
+- **Always specify HIGH heat** — medium heat won't achieve a proper Maillard reaction
+- Mushrooms: "High heat, 3-4 minutes, until golden" — NOT "medium-high heat"
+- Searing meat: "High heat, 2 minutes per side" — NOT "medium heat"
+
+The exception is sweating/softening vegetables (onions for base, garlic) — those use medium heat.
