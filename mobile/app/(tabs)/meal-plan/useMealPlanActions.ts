@@ -2,8 +2,8 @@ import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Animated, PanResponder, type ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useMealPlan, useRecipes, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
-import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
+import { useMealPlan, useRecipes, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
+import { hapticLight } from '@/lib/haptics';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
@@ -55,7 +55,6 @@ export const useMealPlanActions = () => {
     refetch: refetchMealPlan,
   } = useMealPlan();
   const { data: recipes = [] } = useRecipes();
-  const setMeal = useSetMeal();
   const updateNote = useUpdateNote();
   const removeMeal = useRemoveMeal();
 

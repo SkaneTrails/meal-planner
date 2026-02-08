@@ -1,0 +1,296 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { createQueryWrapper } from '@/test/helpers';
+import type { Recipe } from '@/lib/types';
+
+// PanResponder is not available in jsdom — mock the react-native module partially
+vi.mock('react-native', async () => {
+  const actual = await vi.importActual<typeof import('react-native')>('react-native');
+  return {
+    ...actual,
+    PanResponder: {
+      create: vi.fn(() => ({ panHandlers: {} })),
+    },
+  };
+});
+
+const mockMutate = vi.fn();
+const mockRemoveMutate = vi.fn();
+const mockRefetch = vi.fn();
+const mockRouterPush = vi.fn();
+
+const mockMealPlan = {
+  meals: {
+    '2026-01-05_lunch': 'recipe-1',
+    '2026-01-05_dinner': 'custom:Pasta night',
+    '2026-01-06_lunch': 'unknown-id',
+  },
+  notes: {
+    '2026-01-05': 'Office Gym',
+  },
+};
+
+const mockRecipes: Recipe[] = [
+  {
+    id: 'recipe-1',
+    title: 'Chicken Curry',
+    ingredients: ['chicken', 'curry paste'],
+    instructions: ['Cook chicken', 'Add curry'],
+    tags: [],
+    servings: 4,
+    visibility: 'household',
+    household_id: 'h1',
+    created_at: '2026-01-01',
+    thumb_up_count: 0,
+    thumb_down_count: 0,
+  } as Recipe,
+];
+
+vi.mock('@/lib/hooks', () => ({
+  useMealPlan: vi.fn(() => ({
+    data: mockMealPlan,
+    isLoading: false,
+    refetch: mockRefetch,
+  })),
+  useRecipes: vi.fn(() => ({ data: mockRecipes })),
+  useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
+  useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
+}));
+
+vi.mock('expo-router', () => ({
+  useRouter: vi.fn(() => ({ push: mockRouterPush, back: vi.fn() })),
+}));
+
+vi.mock('@/lib/i18n', () => ({
+  useTranslation: () => ({ t: (key: string) => key, language: 'en' }),
+}));
+
+vi.mock('@/lib/alert', () => ({
+  showAlert: vi.fn(),
+  showNotification: vi.fn(),
+}));
+
+vi.mock('@/lib/haptics', () => ({
+  hapticLight: vi.fn(),
+  hapticSuccess: vi.fn(),
+  hapticSelection: vi.fn(),
+}));
+
+vi.mock('@react-native-async-storage/async-storage', () => ({
+  default: {
+    setItem: vi.fn().mockResolvedValue(undefined),
+    getItem: vi.fn().mockResolvedValue(null),
+  },
+}));
+
+vi.mock('@/lib/utils/dateFormatter', () => ({
+  formatDateLocal: (d: Date) => d.toISOString().split('T')[0],
+  getWeekDatesArray: () => [
+    new Date('2026-01-05'),
+    new Date('2026-01-06'),
+    new Date('2026-01-07'),
+    new Date('2026-01-08'),
+    new Date('2026-01-09'),
+    new Date('2026-01-10'),
+    new Date('2026-01-11'),
+  ],
+  formatWeekRange: () => 'Jan 5–11',
+  formatDayHeader: (_d: Date) => 'Monday',
+}));
+
+import { showNotification } from '@/lib/alert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMealPlanActions } from '../useMealPlanActions';
+
+describe('useMealPlanActions', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const renderActions = () =>
+    renderHook(() => useMealPlanActions(), { wrapper: createQueryWrapper() });
+
+  describe('getMealForSlot', () => {
+    it('returns recipe when meal value is a known recipe ID', () => {
+      const { result } = renderActions();
+      const slot = result.current.getMealForSlot(new Date('2026-01-05'), 'lunch');
+      expect(slot).toEqual({ recipe: expect.objectContaining({ id: 'recipe-1', title: 'Chicken Curry' }) });
+    });
+
+    it('returns customText when meal value starts with "custom:"', () => {
+      const { result } = renderActions();
+      const slot = result.current.getMealForSlot(new Date('2026-01-05'), 'dinner');
+      expect(slot).toEqual({ customText: 'Pasta night' });
+    });
+
+    it('returns customText with the raw value when recipe ID is unknown', () => {
+      const { result } = renderActions();
+      const slot = result.current.getMealForSlot(new Date('2026-01-06'), 'lunch');
+      expect(slot).toEqual({ customText: 'unknown-id' });
+    });
+
+    it('returns null when no meal is set for the slot', () => {
+      const { result } = renderActions();
+      const slot = result.current.getMealForSlot(new Date('2026-01-07'), 'lunch');
+      expect(slot).toBeNull();
+    });
+  });
+
+  describe('getNoteForDate', () => {
+    it('returns the note for a date with a note', () => {
+      const { result } = renderActions();
+      expect(result.current.getNoteForDate(new Date('2026-01-05'))).toBe('Office Gym');
+    });
+
+    it('returns null for a date without a note', () => {
+      const { result } = renderActions();
+      expect(result.current.getNoteForDate(new Date('2026-01-07'))).toBeNull();
+    });
+  });
+
+  describe('grocery selection', () => {
+    it('toggles meal selection on and sets default servings', () => {
+      const { result } = renderActions();
+      const date = new Date('2026-01-05');
+
+      act(() => result.current.handleToggleMeal(date, 'lunch', 4));
+
+      expect(result.current.selectedMeals.has('2026-01-05_lunch')).toBe(true);
+      expect(result.current.mealServings['2026-01-05_lunch']).toBe(4);
+    });
+
+    it('defaults to 2 servings when recipe has no servings', () => {
+      const { result } = renderActions();
+      const date = new Date('2026-01-05');
+
+      act(() => result.current.handleToggleMeal(date, 'dinner'));
+
+      expect(result.current.selectedMeals.has('2026-01-05_dinner')).toBe(true);
+      expect(result.current.mealServings['2026-01-05_dinner']).toBe(2);
+    });
+
+    it('toggles meal selection off and clears servings', () => {
+      const { result } = renderActions();
+      const date = new Date('2026-01-05');
+
+      act(() => result.current.handleToggleMeal(date, 'lunch', 4));
+      act(() => result.current.handleToggleMeal(date, 'lunch'));
+
+      expect(result.current.selectedMeals.has('2026-01-05_lunch')).toBe(false);
+      expect(result.current.mealServings['2026-01-05_lunch']).toBeUndefined();
+    });
+
+    it('changes servings within bounds (1–12)', () => {
+      const { result } = renderActions();
+      const date = new Date('2026-01-05');
+
+      act(() => result.current.handleToggleMeal(date, 'lunch', 4));
+      act(() => result.current.handleChangeServings('2026-01-05_lunch', 3));
+      expect(result.current.mealServings['2026-01-05_lunch']).toBe(7);
+
+      act(() => result.current.handleChangeServings('2026-01-05_lunch', 10));
+      expect(result.current.mealServings['2026-01-05_lunch']).toBe(12);
+
+      act(() => result.current.handleChangeServings('2026-01-05_lunch', -20));
+      expect(result.current.mealServings['2026-01-05_lunch']).toBe(1);
+    });
+  });
+
+  describe('handleCreateGroceryList', () => {
+    it('shows notification when no meals are selected', async () => {
+      const { result } = renderActions();
+      await act(() => result.current.handleCreateGroceryList());
+      expect(showNotification).toHaveBeenCalledWith('mealPlan.noMealsSelected', 'mealPlan.noMealsSelectedMessage');
+    });
+
+    it('saves to AsyncStorage and navigates when meals are selected', async () => {
+      const { result } = renderActions();
+
+      act(() => result.current.handleToggleMeal(new Date('2026-01-05'), 'lunch', 4));
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        'grocery_selected_meals',
+        JSON.stringify(['2026-01-05_lunch']),
+      );
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        'grocery_meal_servings',
+        JSON.stringify({ '2026-01-05_lunch': 4 }),
+      );
+      expect(result.current.showGroceryModal).toBe(false);
+    });
+  });
+
+  describe('handleMealPress', () => {
+    it('navigates to select-recipe with correct params', () => {
+      const { result } = renderActions();
+      act(() => result.current.handleMealPress(new Date('2026-01-05'), 'lunch', 'random'));
+      expect(mockRouterPush).toHaveBeenCalledWith({
+        pathname: '/select-recipe',
+        params: { date: '2026-01-05', mealType: 'lunch', mode: 'random' },
+      });
+    });
+
+    it('defaults mode to library', () => {
+      const { result } = renderActions();
+      act(() => result.current.handleMealPress(new Date('2026-01-05'), 'dinner'));
+      expect(mockRouterPush).toHaveBeenCalledWith({
+        pathname: '/select-recipe',
+        params: { date: '2026-01-05', mealType: 'dinner', mode: 'library' },
+      });
+    });
+  });
+
+  describe('note editing', () => {
+    it('populates noteText when starting to edit a date with existing note', () => {
+      const { result } = renderActions();
+      act(() => result.current.handleStartEditNote(new Date('2026-01-05')));
+      expect(result.current.editingNoteDate).toBe('2026-01-05');
+      expect(result.current.noteText).toBe('Office Gym');
+    });
+
+    it('clears state when cancelling edit', () => {
+      const { result } = renderActions();
+      act(() => result.current.handleStartEditNote(new Date('2026-01-05')));
+      act(() => result.current.handleCancelEditNote());
+      expect(result.current.editingNoteDate).toBeNull();
+      expect(result.current.noteText).toBe('');
+    });
+
+    it('calls updateNote.mutate and clears state on save', () => {
+      const { result } = renderActions();
+      act(() => result.current.handleStartEditNote(new Date('2026-01-05')));
+      act(() => result.current.setNoteText('Updated note'));
+      act(() => result.current.handleSaveNote());
+
+      expect(mockMutate).toHaveBeenCalledWith(
+        { date: '2026-01-05', note: 'Updated note' },
+        expect.objectContaining({ onError: expect.any(Function) }),
+      );
+      expect(result.current.editingNoteDate).toBeNull();
+    });
+
+    it('toggles tags in noteText', () => {
+      const { result } = renderActions();
+      act(() => result.current.handleStartEditNote(new Date('2026-01-07')));
+
+      act(() => result.current.handleAddTag('Office'));
+      expect(result.current.noteText).toBe('Office');
+
+      act(() => result.current.handleAddTag('Gym'));
+      expect(result.current.noteText).toBe('Office Gym');
+
+      act(() => result.current.handleAddTag('Office'));
+      expect(result.current.noteText).toBe('Gym');
+    });
+  });
+
+  describe('MEAL_TYPES', () => {
+    it('provides lunch and dinner options', () => {
+      const { result } = renderActions();
+      expect(result.current.MEAL_TYPES).toHaveLength(2);
+      expect(result.current.MEAL_TYPES[0].type).toBe('lunch');
+      expect(result.current.MEAL_TYPES[1].type).toBe('dinner');
+    });
+  });
+});

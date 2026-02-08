@@ -12,7 +12,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize, fontWeight, fontFamily, letterSpacing } from '@/lib/theme';
 import { AnimatedPressable, GradientBackground } from '@/components';
-import { hapticLight } from '@/lib/haptics';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { useMealPlanActions } from './meal-plan/useMealPlanActions';
 import { WeekSelector } from './meal-plan/WeekSelector';
@@ -26,10 +25,10 @@ export default function MealPlanScreen() {
     t, language,
     MEAL_TYPES, NOTE_SUGGESTIONS,
     mealPlanLoading,
-    weekDates, groceryWeekDates, todayIndex,
+    weekDates, groceryWeekDates,
     weekOffset, setWeekOffset,
     showGroceryModal, setShowGroceryModal,
-    groceryWeekOffset, setGroceryWeekOffset,
+    setGroceryWeekOffset,
     selectedMeals, mealServings,
     showJumpButton, editingNoteDate, noteText, setNoteText,
     scrollViewRef, jumpButtonOpacity, swipeTranslateX, panResponder,
