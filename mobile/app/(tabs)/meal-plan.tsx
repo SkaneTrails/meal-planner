@@ -13,12 +13,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize, fontWeight, fontFamily, letterSpacing } from '@/lib/theme';
 import { AnimatedPressable, GradientBackground } from '@/components';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
-import { useMealPlanActions } from './meal-plan/useMealPlanActions';
-import { WeekSelector } from './meal-plan/WeekSelector';
-import { DayHeader } from './meal-plan/DayHeader';
-import { EmptyMealSlot } from './meal-plan/EmptyMealSlot';
-import { FilledMealSlot } from './meal-plan/FilledMealSlot';
-import { GrocerySelectionModal } from './meal-plan/GrocerySelectionModal';
+import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
+import { WeekSelector } from '@/components/meal-plan/WeekSelector';
+import { DayHeader } from '@/components/meal-plan/DayHeader';
+import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
+import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
+import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 
 export default function MealPlanScreen() {
   const {

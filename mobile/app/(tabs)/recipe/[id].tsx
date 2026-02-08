@@ -19,12 +19,12 @@ import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import { BouncingLoader, GradientBackground } from '@/components';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import type { MealType } from '@/lib/types';
-import { RecipeHero } from './RecipeHero';
-import { RecipeContent } from './RecipeContent';
-import { PlanMealModal } from './PlanMealModal';
-import { EditRecipeModal } from './EditRecipeModal';
-import { ImageUrlModal } from './ImageUrlModal';
-import { useRecipeActions } from './useRecipeActions';
+import { RecipeHero } from '@/components/recipe-detail/RecipeHero';
+import { RecipeContent } from '@/components/recipe-detail/RecipeContent';
+import { PlanMealModal } from '@/components/recipe-detail/PlanMealModal';
+import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
+import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
+import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

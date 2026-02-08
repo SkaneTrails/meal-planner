@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
-import type { useSelectRecipeState } from './useSelectRecipeState';
+import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 

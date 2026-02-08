@@ -12,7 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing } from '@/lib/theme';
 import { GradientBackground } from '@/components';
-import type { useAddRecipeActions } from './useAddRecipeActions';
+import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 
 type Actions = ReturnType<typeof useAddRecipeActions>;
 

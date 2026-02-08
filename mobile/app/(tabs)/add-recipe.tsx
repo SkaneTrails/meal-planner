@@ -12,9 +12,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
 import { GradientBackground } from '@/components';
-import { useAddRecipeActions } from './add-recipe/useAddRecipeActions';
-import { ManualRecipeForm } from './add-recipe/ManualRecipeForm';
-import { EnhancementSummaryModal } from './add-recipe/EnhancementSummaryModal';
+import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
+import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
+import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 
 const SUPPORTED_SITES = [
   'AllRecipes', 'BBC Good Food', 'Bon Appétit', 'Epicurious',
