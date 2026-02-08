@@ -233,9 +233,20 @@ export const RecipeContent = ({
     {/* Source link */}
     {recipe.url && (
       <Pressable
-        onPress={() => Linking.openURL(recipe.url).catch(() => {
-          showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
-        })}
+        onPress={() => {
+          try {
+            const parsed = new URL(recipe.url);
+            if (!['http:', 'https:'].includes(parsed.protocol)) {
+              showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
+              return;
+            }
+            Linking.openURL(recipe.url).catch(() => {
+              showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
+            });
+          } catch {
+            showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
+          }
+        }}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
