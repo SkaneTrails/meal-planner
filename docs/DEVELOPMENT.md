@@ -173,8 +173,9 @@ pnpm test -- lib/hooks/__tests__/use-recipes.test.ts
 
 > **⚠️ Windows:** Vitest's default `threads` pool causes worker initialization
 > timeouts on Windows due to Node.js `worker_threads` limitations with jsdom.
-> The `vitest.config.ts` auto-detects Windows and uses `forks` pool instead.
-> If you still see timeouts, run manually with: `npx vitest run --pool forks`
+> The `vitest.config.ts` auto-detects Windows and uses `forks` pool instead,
+> with `maxWorkers` capped at 50% of available parallelism to prevent resource
+> exhaustion when spawning many forked processes.
 
 ### Linting
 
