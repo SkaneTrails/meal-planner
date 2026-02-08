@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, fontFamily, fontSize } from '@/lib/theme';
+import { borderRadius, colors, spacing, fontFamily, fontSize } from '@/lib/theme';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { useRecipe, useMealPlan } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
@@ -119,7 +119,7 @@ export default function RecipeDetailScreen() {
             paddingHorizontal: 28,
             paddingVertical: spacing.lg,
             backgroundColor: pressed ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.5)',
-            borderRadius: 12,
+            borderRadius: borderRadius.sm,
           })}
         >
           <Text style={{ color: colors.text.primary, fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold }}>{t('common.goBack')}</Text>

@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Pressable, Animated, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Animated, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text } from 'react-native';
 import { colors, spacing, fontFamily, fontSize, letterSpacing, borderRadius } from '@/lib/theme';
 import { ThumbRating } from './ThumbRating';
 import { PLACEHOLDER_BLURHASH, PLACEHOLDER_IMAGE } from './recipe-detail-constants';

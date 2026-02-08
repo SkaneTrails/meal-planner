@@ -15,7 +15,11 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
 
   const handleAddTag = () => {
     const tag = newTag.trim().toLowerCase().replace(/^#/, '');
-    if (tag && !editTags.toLowerCase().includes(tag)) {
+    const existingTags = editTags
+      .split(',')
+      .map(t => t.trim().toLowerCase().replace(/^#/, ''))
+      .filter(Boolean);
+    if (tag && !existingTags.includes(tag)) {
       setEditTags(editTags ? `${editTags}, ${tag}` : tag);
     }
     setNewTag('');

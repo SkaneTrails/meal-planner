@@ -44,8 +44,7 @@ export const EditRecipeModal = ({
   const [editServings, setEditServings] = useState(recipe.servings?.toString() || '');
   const [editTags, setEditTags] = useState(recipe.tags.join(', '));
   const [editVisibility, setEditVisibility] = useState<RecipeVisibility>(recipe.visibility || 'household');
-  const [editHouseholdId, setEditHouseholdId] = useState<string | null>(recipe.household_id || null);
-  const [isTransferring, setIsTransferring] = useState(false);
+  const editHouseholdId = recipe.household_id || null;
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   const handleSave = async () => {
@@ -65,14 +64,8 @@ export const EditRecipeModal = ({
     }
   };
 
-  const handleTransfer = async (targetHouseholdId: string) => {
-    setIsTransferring(true);
-    try {
-      await onTransferRecipe(targetHouseholdId);
-      setEditHouseholdId(targetHouseholdId);
-    } finally {
-      setIsTransferring(false);
-    }
+  const handleTransfer = (targetHouseholdId: string) => {
+    onTransferRecipe(targetHouseholdId);
   };
 
   return (
@@ -218,7 +211,7 @@ export const EditRecipeModal = ({
         <HouseholdTransfer
           households={households}
           editHouseholdId={editHouseholdId}
-          isTransferring={isTransferring}
+          isTransferring={false}
           t={t}
           onTransfer={handleTransfer}
         />

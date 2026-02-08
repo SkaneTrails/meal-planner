@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, TextInput, Modal } from 'react-native';
 import { borderRadius, colors, spacing, fontFamily, fontSize } from '@/lib/theme';
 import type { TFunction } from '@/lib/i18n';
@@ -19,6 +19,12 @@ export const ImageUrlModal = ({
   onSave,
 }: ImageUrlModalProps) => {
   const [imageUrlInput, setImageUrlInput] = useState(initialUrl);
+
+  useEffect(() => {
+    if (visible) {
+      setImageUrlInput(initialUrl);
+    }
+  }, [visible, initialUrl]);
 
   return (
     <Modal

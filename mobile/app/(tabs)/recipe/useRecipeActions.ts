@@ -44,6 +44,7 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   const canEdit = isOwned === true;
 
   const saveImage = async (localUri: string) => {
+    if (!id) return;
     setIsUpdatingImage(true);
     try {
       const { api } = await import('@/lib/api');
@@ -73,6 +74,7 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   );
 
   const saveImageUrl = async (url: string) => {
+    if (!id) return;
     setIsUpdatingImage(true);
     try {
       await updateRecipe.mutateAsync({ id: id!, updates: { image_url: url } });

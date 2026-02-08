@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
 
