@@ -197,7 +197,7 @@ For local development setup, environment configuration, and troubleshooting, see
 - **Package manager**: UV (Astral's fast Python package manager)
 - **Linter/Formatter**: Ruff (configured in `pyproject.toml`)
 - **Pre-commit hooks**: `.pre-commit-config.yaml`
-- **Testing**: pytest (API), Vitest (mobile)
+- **Testing**: pytest (API), Vitest (mobile — `forks` pool on Windows, auto-configured in `vitest.config.ts`)
 - **Conventional commits**: `feat:`, `fix:`, `chore:`, `ci:`, `docs:`, `refactor:`, `test:`
 
 ## Code Style

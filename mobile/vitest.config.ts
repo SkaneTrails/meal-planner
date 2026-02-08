@@ -3,7 +3,10 @@ import path from 'path';
 
 export default defineConfig({
   test: {
-    pool: 'threads',
+    // Windows requires 'forks' pool — 'threads' causes worker initialization
+    // timeouts due to Node.js worker_threads limitations on Windows.
+    // See docs/DEVELOPMENT.md for details.
+    pool: process.platform === 'win32' ? 'forks' : 'threads',
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     include: ['**/__tests__/**/*.test.{ts,tsx}', '**/*.test.{ts,tsx}'],
