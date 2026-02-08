@@ -10,7 +10,8 @@ from api.auth.models import AuthenticatedUser
 from api.models.grocery_list import GroceryItem, GroceryList, QuantitySource
 from api.services.grocery_categories import detect_category
 from api.services.ingredient_parser import parse_ingredient
-from api.storage import meal_plan_storage, recipe_storage
+from api.storage import meal_plan_storage
+from api.storage.recipe_queries import get_recipes_by_ids
 
 router = APIRouter(prefix="/grocery", tags=["grocery"])
 
@@ -72,8 +73,11 @@ async def generate_grocery_list(
     # Load recipes and collect ingredients
     grocery_list = GroceryList()
 
+    # Batch-fetch all recipes at once instead of N individual reads
+    recipes_by_id = get_recipes_by_ids(recipe_ids)
+
     for recipe_id in recipe_ids:
-        recipe = recipe_storage.get_recipe(recipe_id)
+        recipe = recipes_by_id.get(recipe_id)
         if recipe is None:
             continue
 
