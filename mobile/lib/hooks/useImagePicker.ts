@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import { showAlert, showNotification } from '@/lib/alert';
+import { showAlert, showNotification, type AlertButton } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 
 interface ImagePickerOptions {
@@ -23,7 +23,7 @@ const useImagePicker = (
   const aspect = options?.aspect ?? [4, 3];
 
   const pickImage = () => {
-    const buttons = [
+    const buttons: AlertButton[] = [
       {
         text: t('recipe.takePhoto'),
         onPress: async () => {
@@ -71,7 +71,7 @@ const useImagePicker = (
       });
     }
 
-    buttons.push({ text: t('common.cancel'), style: 'cancel' } as typeof buttons[0]);
+    buttons.push({ text: t('common.cancel'), style: 'cancel' });
 
     showAlert(t('recipe.changePhoto'), t('recipe.chooseOption'), buttons);
   };

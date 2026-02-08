@@ -8,7 +8,6 @@ import {
   formatDayHeader,
   isPastDate,
   toBcp47,
-  LOCALE_MAP,
 } from '../dateFormatter';
 
 describe('formatDateLocal', () => {

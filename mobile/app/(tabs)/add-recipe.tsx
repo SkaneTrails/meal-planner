@@ -17,8 +17,7 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useScrapeRecipe, useCreateRecipe } from '@/lib/hooks';
-import { useImagePicker } from '@/lib/hooks/useImagePicker';
+import { useScrapeRecipe, useCreateRecipe, useImagePicker } from '@/lib/hooks';
 import { api } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';

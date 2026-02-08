@@ -1,5 +1,5 @@
 import { Text, Pressable, type ViewStyle, type TextStyle } from 'react-native';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface FilterChipProps {
   label: string;

@@ -8,3 +8,4 @@ export * from './use-grocery';
 export * from './use-language-sync';
 export * from './use-meal-plan';
 export * from './use-recipes';
+export * from './useImagePicker';
