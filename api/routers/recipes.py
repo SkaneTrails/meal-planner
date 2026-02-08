@@ -21,6 +21,7 @@ from api.models.recipe import (
     RecipeScrapeRequest,
     RecipeUpdate,
 )
+from api.services.image_downloader import download_and_upload_image
 from api.services.image_service import create_thumbnail
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
@@ -77,6 +78,28 @@ def _try_enhance(saved_recipe: Recipe, *, household_id: str, created_by: str) ->
     except EnhancementError as e:
         logger.warning("Enhancement failed for recipe_id=%s: %s", saved_recipe.id, e)
         return saved_recipe
+
+
+async def _ingest_recipe_image(recipe: Recipe, *, household_id: str) -> Recipe:
+    """Download external image, upload to GCS, and update the recipe.
+
+    If the recipe has no image_url or it already points to our bucket,
+    returns the recipe unchanged. Failures are logged but never block
+    recipe creation.
+    """
+    if not recipe.image_url:
+        return recipe
+
+    bucket_name = _get_gcs_bucket()
+    gcs_url = await download_and_upload_image(recipe.image_url, recipe.id, bucket_name)
+
+    if gcs_url and gcs_url != recipe.image_url:
+        updated = recipe_storage.update_recipe(recipe.id, RecipeUpdate(image_url=gcs_url), household_id=household_id)
+        if updated:
+            return updated
+        logger.warning("Failed to update image_url for recipe %s", recipe.id)
+
+    return recipe
 
 
 @router.get("")
@@ -184,6 +207,7 @@ async def scrape_recipe(
 
     recipe_create = build_recipe_create_from_scraped(scraped_data)
     saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
+    saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
         saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
@@ -240,6 +264,7 @@ async def parse_recipe(  # pragma: no cover
 
     recipe_create = build_recipe_create_from_scraped(scraped_data)
     saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
+    saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
         saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)

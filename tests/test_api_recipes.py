@@ -287,6 +287,100 @@ class TestScrapeRecipe:
 
         assert response.status_code == 201
 
+    def test_ingests_external_image_to_gcs(self, client: TestClient) -> None:
+        """Should download external image and replace image_url with GCS URL."""
+        scraped_data = {
+            "title": "Scraped Recipe",
+            "url": "https://example.com/new",
+            "ingredients": ["flour"],
+            "instructions": ["Mix"],
+            "image_url": "https://example.com/photo.jpg",
+        }
+
+        saved_with_external = Recipe(
+            id="img_test",
+            title="Scraped Recipe",
+            url="https://example.com/new",
+            image_url="https://example.com/photo.jpg",
+            household_id="test_household",
+        )
+        updated_with_gcs = Recipe(
+            id="img_test",
+            title="Scraped Recipe",
+            url="https://example.com/new",
+            image_url="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
+            household_id="test_household",
+        )
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = scraped_data
+        mock_response.raise_for_status = MagicMock()
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved_with_external),
+            patch(
+                "api.routers.recipes.download_and_upload_image",
+                new_callable=AsyncMock,
+                return_value="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
+            ),
+            patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated_with_gcs),
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://example.com/new"})
+
+        assert response.status_code == 201
+        data = response.json()
+        assert "storage.googleapis.com" in data["image_url"]
+
+    def test_scrape_succeeds_when_image_ingestion_fails(self, client: TestClient) -> None:
+        """Should still save recipe even if image download fails."""
+        scraped_data = {
+            "title": "Scraped Recipe",
+            "url": "https://example.com/new",
+            "ingredients": ["flour"],
+            "instructions": ["Mix"],
+            "image_url": "https://example.com/broken-image.jpg",
+        }
+
+        saved_recipe = Recipe(
+            id="img_fail",
+            title="Scraped Recipe",
+            url="https://example.com/new",
+            image_url="https://example.com/broken-image.jpg",
+            household_id="test_household",
+        )
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = scraped_data
+        mock_response.raise_for_status = MagicMock()
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved_recipe),
+            patch("api.routers.recipes.download_and_upload_image", new_callable=AsyncMock, return_value=None),
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://example.com/new"})
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data["image_url"] == "https://example.com/broken-image.jpg"
+
     def test_returns_422_on_scrape_failure(self, client: TestClient) -> None:
         """Should return 422 when scraping fails."""
         mock_response = MagicMock()
