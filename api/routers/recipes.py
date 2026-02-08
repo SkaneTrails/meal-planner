@@ -22,7 +22,7 @@ from api.models.recipe import (
     RecipeUpdate,
 )
 from api.services.image_downloader import download_and_upload_image
-from api.services.image_service import create_thumbnail
+from api.services.image_service import create_hero, create_thumbnail
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
 from api.storage.recipe_queries import get_recipes_paginated
@@ -81,7 +81,7 @@ def _try_enhance(saved_recipe: Recipe, *, household_id: str, created_by: str) ->
 
 
 async def _ingest_recipe_image(recipe: Recipe, *, household_id: str) -> Recipe:
-    """Download external image, upload to GCS, and update the recipe.
+    """Download external image, upload hero + thumbnail to GCS, and update the recipe.
 
     If the recipe has no image_url or it already points to our bucket,
     returns the recipe unchanged. Failures are logged but never block
@@ -91,13 +91,17 @@ async def _ingest_recipe_image(recipe: Recipe, *, household_id: str) -> Recipe:
         return recipe
 
     bucket_name = _get_gcs_bucket()
-    gcs_url = await download_and_upload_image(recipe.image_url, recipe.id, bucket_name)
+    result = await download_and_upload_image(recipe.image_url, recipe.id, bucket_name)
 
-    if gcs_url and gcs_url != recipe.image_url:
-        updated = recipe_storage.update_recipe(recipe.id, RecipeUpdate(image_url=gcs_url), household_id=household_id)
+    if result is not None:
+        updated = recipe_storage.update_recipe(
+            recipe.id,
+            RecipeUpdate(image_url=result.hero_url, thumbnail_url=result.thumbnail_url),
+            household_id=household_id,
+        )
         if updated:
             return updated
-        logger.warning("Failed to update image_url for recipe %s", recipe.id)
+        logger.warning("Failed to update image URLs for recipe %s", recipe.id)
 
     return recipe
 
@@ -301,12 +305,15 @@ async def upload_recipe_image(  # pragma: no cover
     recipe_id: str,
     file: Annotated[UploadFile, File(description="Image file to upload")],
 ) -> Recipe:
-    """Upload an image for a recipe and update the recipe's image_url.
+    """Upload an image for a recipe and update the recipe's image_url and thumbnail_url.
 
     Users can only upload images for recipes they own (same household).
 
-    The image is automatically resized to a thumbnail (max 800x600) and
-    converted to JPEG for optimal storage and loading performance.
+    The image is automatically resized to two sizes:
+    - Hero (max 800x600) for the recipe detail screen
+    - Thumbnail (max 400x300) for cards and lists
+
+    Both are converted to JPEG for optimal storage and loading performance.
     """
     household_id = _require_household(user)
 
@@ -338,39 +345,52 @@ async def upload_recipe_image(  # pragma: no cover
             detail=f"Image too large. Maximum size is {MAX_IMAGE_SIZE_BYTES // (1024 * 1024)} MB.",
         )
 
-    # Create thumbnail (always JPEG)
+    # Create hero and thumbnail (always JPEG)
     try:
-        thumbnail_data, thumbnail_content_type = create_thumbnail(content)
+        hero_data, hero_content_type = create_hero(content)
+        thumbnail_data, _ = create_thumbnail(content)
         logger.info(
-            "Created thumbnail for recipe %s: %d bytes -> %d bytes", recipe_id, len(content), len(thumbnail_data)
+            "Created images for recipe %s: %d bytes -> hero %d bytes, thumb %d bytes",
+            recipe_id,
+            len(content),
+            len(hero_data),
+            len(thumbnail_data),
         )
     except Exception as e:
-        logger.exception("Failed to create thumbnail for recipe_id=%s", recipe_id)
+        logger.exception("Failed to create images for recipe_id=%s", recipe_id)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Failed to process image. Please ensure it's a valid image file.",
         ) from e
 
-    # Generate unique filename (always .jpg since we convert to JPEG)
-    filename = f"recipes/{recipe_id}/{uuid.uuid4()}.jpg"
+    # Generate unique filenames (always .jpg since we convert to JPEG)
+    image_id = uuid.uuid4()
+    hero_filename = f"recipes/{recipe_id}/{image_id}_hero.jpg"
+    thumb_filename = f"recipes/{recipe_id}/{image_id}_thumb.jpg"
 
-    # Upload to GCS
+    # Upload both sizes to GCS
     try:  # pragma: no cover
         storage_client = storage.Client()
         bucket = storage_client.bucket(_get_gcs_bucket())
-        blob = bucket.blob(filename)
-        blob.upload_from_string(thumbnail_data, content_type=thumbnail_content_type)
-        image_url = f"https://storage.googleapis.com/{_get_gcs_bucket()}/{filename}"
-        logger.info("Uploaded recipe image to GCS: %s", image_url)
+
+        hero_blob = bucket.blob(hero_filename)
+        hero_blob.upload_from_string(hero_data, content_type=hero_content_type)
+
+        thumb_blob = bucket.blob(thumb_filename)
+        thumb_blob.upload_from_string(thumbnail_data, content_type="image/jpeg")
+
+        image_url = f"https://storage.googleapis.com/{_get_gcs_bucket()}/{hero_filename}"
+        thumbnail_url = f"https://storage.googleapis.com/{_get_gcs_bucket()}/{thumb_filename}"
+        logger.info("Uploaded recipe images to GCS: hero=%s, thumb=%s", image_url, thumbnail_url)
 
     except Exception as e:  # pragma: no cover
-        logger.exception("Failed to upload recipe image for recipe_id=%s", recipe_id)
+        logger.exception("Failed to upload recipe images for recipe_id=%s", recipe_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload image. Please try again."
         ) from e
 
     updated_recipe = recipe_storage.update_recipe(
-        recipe_id, RecipeUpdate(image_url=image_url), household_id=household_id
+        recipe_id, RecipeUpdate(image_url=image_url, thumbnail_url=thumbnail_url), household_id=household_id
     )
 
     if updated_recipe is None:  # pragma: no cover

@@ -288,7 +288,8 @@ class TestScrapeRecipe:
             id="img_test",
             title="Scraped Recipe",
             url="https://example.com/new",
-            image_url="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
+            image_url="https://storage.googleapis.com/test-bucket/recipes/img_test/hero.jpg",
+            thumbnail_url="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
             household_id="test_household",
         )
 
@@ -304,7 +305,10 @@ class TestScrapeRecipe:
             patch(
                 "api.routers.recipes.download_and_upload_image",
                 new_callable=AsyncMock,
-                return_value="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
+                return_value=MagicMock(
+                    hero_url="https://storage.googleapis.com/test-bucket/recipes/img_test/hero.jpg",
+                    thumbnail_url="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
+                ),
             ),
             patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated_with_gcs),
         ):
@@ -319,6 +323,7 @@ class TestScrapeRecipe:
         assert response.status_code == 201
         data = response.json()
         assert "storage.googleapis.com" in data["image_url"]
+        assert "storage.googleapis.com" in data["thumbnail_url"]
 
     def test_scrape_succeeds_when_image_ingestion_fails(self, client: TestClient) -> None:
         """Should still save recipe even if image download fails."""

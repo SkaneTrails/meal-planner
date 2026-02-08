@@ -1,8 +1,8 @@
 """One-time migration: download external recipe images to GCS bucket.
 
 Finds all recipes with image_url pointing outside our GCS bucket,
-downloads each image, creates a thumbnail, uploads to GCS, and updates
-the Firestore document.
+downloads each image, creates hero + thumbnail, uploads both to GCS,
+and updates the Firestore document with both URLs.
 
 Usage:
     # Dry run — shows what would be migrated:
@@ -61,20 +61,22 @@ def get_external_image_recipes(db: firestore.Client, bucket_name: str, limit: in
 
 
 async def migrate_image(db: firestore.Client, recipe: dict, bucket_name: str) -> bool:
-    """Download, process, and upload a single recipe image.
+    """Download, process, and upload a single recipe image (hero + thumbnail).
 
     Returns True on success, False on failure.
     """
     recipe_id = recipe["id"]
     image_url = recipe["image_url"]
 
-    gcs_url = await download_and_upload_image(image_url, recipe_id, bucket_name)
-    if gcs_url is None:
+    result = await download_and_upload_image(image_url, recipe_id, bucket_name)
+    if result is None:
         logger.warning("FAILED: %s (%s) — could not download/process image", recipe_id, recipe["title"])
         return False
 
-    db.collection(RECIPES_COLLECTION).document(recipe_id).update({"image_url": gcs_url})
-    logger.info("OK: %s (%s) → %s", recipe_id, recipe["title"], gcs_url)
+    db.collection(RECIPES_COLLECTION).document(recipe_id).update(
+        {"image_url": result.hero_url, "thumbnail_url": result.thumbnail_url}
+    )
+    logger.info("OK: %s (%s) → hero=%s, thumb=%s", recipe_id, recipe["title"], result.hero_url, result.thumbnail_url)
     return True
 
 

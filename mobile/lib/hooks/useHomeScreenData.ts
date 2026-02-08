@@ -33,7 +33,7 @@ const getNextMeal = (
       }
       const recipe = recipes.find(r => r.id === value);
       if (recipe) {
-        return { title: recipe.title, imageUrl: recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id };
+        return { title: recipe.title, imageUrl: recipe.thumbnail_url || recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id };
       }
     }
   }
@@ -50,7 +50,7 @@ const getNextMeal = (
       }
       const recipe = recipes.find(r => r.id === value);
       if (recipe) {
-        return { title: recipe.title, imageUrl: recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id, isTomorrow: true };
+        return { title: recipe.title, imageUrl: recipe.thumbnail_url || recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id, isTomorrow: true };
       }
     }
   }

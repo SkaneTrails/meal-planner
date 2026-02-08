@@ -36,6 +36,7 @@ export interface Recipe {
   instructions: string[];
   structured_instructions?: StructuredInstruction[]; // Parsed instructions with types
   image_url: string | null;
+  thumbnail_url: string | null;
   servings: number | null;
   prep_time: number | null;
   cook_time: number | null;
@@ -63,6 +64,7 @@ export interface RecipeCreate {
   ingredients?: string[];
   instructions?: string[];
   image_url?: string | null;
+  thumbnail_url?: string | null;
   servings?: number | null;
   prep_time?: number | null;
   cook_time?: number | null;
@@ -81,6 +83,7 @@ export interface RecipeUpdate {
   ingredients?: string[];
   instructions?: string[];
   image_url?: string | null;
+  thumbnail_url?: string | null;
   servings?: number | null;
   prep_time?: number | null;
   cook_time?: number | null;
