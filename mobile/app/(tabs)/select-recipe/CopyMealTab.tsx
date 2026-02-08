@@ -14,7 +14,7 @@ interface CopyMealTabProps {
 
 export const CopyMealTab = ({ state }: CopyMealTabProps) => {
   const {
-    t, bcp47, copyWeekOffset, setCopyWeekOffset, targetWeekDates,
+    t, bcp47, setCopyWeekOffset, targetWeekDates,
     existingMeals, handleCopyMeal, formatMealDate, MEAL_TYPE_LABELS,
   } = state;
 

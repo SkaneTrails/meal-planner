@@ -69,11 +69,11 @@ export const useSelectRecipeState = () => {
     });
   }, [recipes, mealType]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: randomSeed is intentionally used only as a dependency to retrigger this memo
   const randomRecipe = useMemo(() => {
     if (mealTypeRecipes.length === 0) return null;
     const index = Math.floor(Math.random() * mealTypeRecipes.length);
     return mealTypeRecipes[index];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mealTypeRecipes, randomSeed]);
 
   const shuffleRandom = useCallback(() => {

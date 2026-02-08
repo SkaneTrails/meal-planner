@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
+import { View, TextInput, FlatList, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize } from '@/lib/theme';
 import { RecipeCard } from '@/components';
