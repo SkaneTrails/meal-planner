@@ -83,7 +83,7 @@ class TestListRecipes:
 
     def test_returns_empty_list(self, client: TestClient) -> None:
         """Should return empty paginated response when no recipes."""
-        with patch("api.routers.recipes.recipe_storage.get_recipes_paginated", return_value=([], None)):
+        with patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)):
             response = client.get("/recipes")
 
         assert response.status_code == 200
@@ -94,7 +94,7 @@ class TestListRecipes:
 
     def test_returns_recipes(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return paginated list of recipes."""
-        with patch("api.routers.recipes.recipe_storage.get_recipes_paginated", return_value=([sample_recipe], None)):
+        with patch("api.routers.recipes.get_recipes_paginated", return_value=([sample_recipe], None)):
             response = client.get("/recipes")
 
         assert response.status_code == 200
@@ -105,9 +105,7 @@ class TestListRecipes:
 
     def test_returns_next_cursor_when_more_pages(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should include next_cursor when more pages exist."""
-        with patch(
-            "api.routers.recipes.recipe_storage.get_recipes_paginated", return_value=([sample_recipe], "next_id")
-        ):
+        with patch("api.routers.recipes.get_recipes_paginated", return_value=([sample_recipe], "next_id")):
             response = client.get("/recipes")
 
         data = response.json()
@@ -116,7 +114,7 @@ class TestListRecipes:
 
     def test_passes_pagination_params(self, client: TestClient) -> None:
         """Should pass limit and cursor to storage layer."""
-        with patch("api.routers.recipes.recipe_storage.get_recipes_paginated", return_value=([], None)) as mock_get:
+        with patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get:
             client.get("/recipes?limit=10&cursor=abc123")
 
         mock_get.assert_called_once_with(
@@ -136,7 +134,7 @@ class TestListRecipes:
 
     def test_superuser_sees_all_recipes(self, superuser_client: TestClient) -> None:
         """Superuser should get all recipes without household filtering."""
-        with patch("api.routers.recipes.recipe_storage.get_recipes_paginated", return_value=([], None)) as mock_get:
+        with patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get:
             superuser_client.get("/recipes")
 
         mock_get.assert_called_once_with(household_id=None, limit=50, cursor=None, include_duplicates=False)

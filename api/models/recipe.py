@@ -123,6 +123,9 @@ class Recipe(RecipeBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: str = Field(..., description="Firestore document ID")
+    # Timestamp fields
+    created_at: datetime | None = Field(default=None, description="When the recipe was created")
+    updated_at: datetime | None = Field(default=None, description="When the recipe was last updated")
     # AI enhancement fields
     enhanced: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
     enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")

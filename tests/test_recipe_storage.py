@@ -1,19 +1,21 @@
-"""Tests for api/storage/recipe_storage.py."""
+"""Tests for api/storage/recipe_storage.py and api/storage/recipe_queries.py."""
 
 from unittest.mock import MagicMock, patch
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
-from api.storage.recipe_storage import (
-    EnhancementMetadata,
+from api.storage.recipe_queries import (
     _build_household_query,
     _deduplicate_recipes,
+    get_all_recipes,
+    get_recipes_by_ids,
+    get_recipes_paginated,
+)
+from api.storage.recipe_storage import (
+    EnhancementMetadata,
     _doc_to_recipe,
     delete_recipe,
     find_recipe_by_url,
-    get_all_recipes,
     get_recipe,
-    get_recipes_by_ids,
-    get_recipes_paginated,
     normalize_url,
     save_recipe,
     search_recipes,
@@ -372,9 +374,12 @@ class TestGetAllRecipes:
         mock_doc2.id = "doc2"
         mock_doc2.to_dict.return_value = {"title": "Recipe 2", "url": "https://example.com/2"}
 
-        mock_db.collection.return_value.order_by.return_value.stream.return_value = [mock_doc1, mock_doc2]
+        mock_db.collection.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
+            mock_doc1,
+            mock_doc2,
+        ]
 
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
             result = get_all_recipes()
 
         assert len(result) == 2
@@ -390,9 +395,12 @@ class TestGetAllRecipes:
         mock_doc2.id = "doc2"
         mock_doc2.to_dict.return_value = {"title": "Recipe 1 Duplicate", "url": "https://example.com/recipe/"}
 
-        mock_db.collection.return_value.order_by.return_value.stream.return_value = [mock_doc1, mock_doc2]
+        mock_db.collection.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
+            mock_doc1,
+            mock_doc2,
+        ]
 
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
             result = get_all_recipes()
 
         # Should only have one recipe due to URL deduplication
@@ -408,9 +416,12 @@ class TestGetAllRecipes:
         mock_doc2.id = "doc2"
         mock_doc2.to_dict.return_value = {"title": "Recipe 1 Duplicate", "url": "https://example.com/recipe/"}
 
-        mock_db.collection.return_value.order_by.return_value.stream.return_value = [mock_doc1, mock_doc2]
+        mock_db.collection.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
+            mock_doc1,
+            mock_doc2,
+        ]
 
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
             result = get_all_recipes(include_duplicates=True)
 
         assert len(result) == 2
@@ -584,7 +595,7 @@ class TestGetRecipesByIds:
         mock_doc2.id = "recipe2"
         mock_doc2.to_dict.return_value = {"title": "Soup", "url": "", "ingredients": [], "instructions": []}
 
-        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_client.return_value.get_all.return_value = [mock_doc1, mock_doc2]
 
             result = get_recipes_by_ids({"recipe1", "recipe2"})
@@ -603,7 +614,7 @@ class TestGetRecipesByIds:
         mock_doc2 = MagicMock()
         mock_doc2.exists = False
 
-        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_client.return_value.get_all.return_value = [mock_doc1, mock_doc2]
 
             result = get_recipes_by_ids({"recipe1", "missing"})
@@ -691,7 +702,7 @@ class TestGetRecipesPaginated:
         """Should return recipes up to limit with no cursor."""
         docs = [self._make_mock_doc(f"r{i}", f"Recipe {i}") for i in range(3)]
 
-        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
             mock_query.order_by.return_value = mock_query
             mock_query.limit.return_value = mock_query
@@ -707,7 +718,7 @@ class TestGetRecipesPaginated:
         """Should return next_cursor when more results exist."""
         docs = [self._make_mock_doc(f"r{i}", f"Recipe {i}") for i in range(4)]
 
-        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
             mock_query.order_by.return_value = mock_query
             mock_query.limit.return_value = mock_query
@@ -725,7 +736,7 @@ class TestGetRecipesPaginated:
         cursor_doc = MagicMock()
         cursor_doc.exists = True
 
-        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
             mock_query.order_by.return_value = mock_query
             mock_query.start_after.return_value = mock_query
@@ -747,7 +758,7 @@ class TestGetRecipesPaginated:
         cursor_doc = MagicMock()
         cursor_doc.exists = False
 
-        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
             mock_query.order_by.return_value = mock_query
             mock_query.limit.return_value = mock_query
@@ -760,3 +771,114 @@ class TestGetRecipesPaginated:
             recipes, _ = get_recipes_paginated(household_id=None, limit=10, cursor="invalid")
 
         assert len(recipes) == 1
+
+    def _make_mock_doc_with_created_at(self, doc_id: str, title: str, created_at: str, url: str = "") -> MagicMock:
+        """Create a mock doc with created_at for household sorting tests."""
+        doc = MagicMock()
+        doc.id = doc_id
+        doc.exists = True
+        doc.to_dict.return_value = {
+            "title": title,
+            "url": url or f"https://example.com/{doc_id}",
+            "ingredients": [],
+            "instructions": [],
+            "created_at": created_at,
+        }
+        return doc
+
+    def test_household_merges_and_sorts_two_queries(self) -> None:
+        """Household user gets 2 queries (owned + shared), results merged and sorted."""
+        owned_docs = [
+            self._make_mock_doc_with_created_at("o1", "Owned 1", "2025-01-03"),
+            self._make_mock_doc_with_created_at("o2", "Owned 2", "2025-01-01"),
+        ]
+        shared_docs = [self._make_mock_doc_with_created_at("s1", "Shared 1", "2025-01-02")]
+
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
+            owned_query = MagicMock()
+            owned_query.order_by.return_value = owned_query
+            owned_query.limit.return_value = owned_query
+            owned_query.stream.return_value = iter(owned_docs)
+
+            shared_query = MagicMock()
+            shared_query.order_by.return_value = shared_query
+            shared_query.limit.return_value = shared_query
+            shared_query.stream.return_value = iter(shared_docs)
+
+            mock_collection = mock_client.return_value.collection.return_value
+            mock_collection.where.return_value.order_by.return_value.order_by.return_value = owned_query
+            # Second call to .where() returns the shared query
+            mock_collection.where.side_effect = [
+                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=owned_query)))),
+                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=shared_query)))),
+            ]
+
+            recipes, next_cursor = get_recipes_paginated(household_id="hh1", limit=10)
+
+        assert len(recipes) == 3
+        assert next_cursor is None
+        assert recipes[0].id == "o1"
+        assert recipes[1].id == "s1"
+        assert recipes[2].id == "o2"
+
+    def test_household_deduplicates_shared_and_owned(self) -> None:
+        """Household user: recipes with same URL from owned and shared are deduplicated."""
+        owned_docs = [
+            self._make_mock_doc_with_created_at("o1", "My Pasta", "2025-01-02", url="https://example.com/pasta")
+        ]
+        shared_docs = [
+            self._make_mock_doc_with_created_at("s1", "Shared Pasta", "2025-01-01", url="https://example.com/pasta")
+        ]
+
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
+            owned_query = MagicMock()
+            owned_query.order_by.return_value = owned_query
+            owned_query.limit.return_value = owned_query
+            owned_query.stream.return_value = iter(owned_docs)
+
+            shared_query = MagicMock()
+            shared_query.order_by.return_value = shared_query
+            shared_query.limit.return_value = shared_query
+            shared_query.stream.return_value = iter(shared_docs)
+
+            mock_collection = mock_client.return_value.collection.return_value
+            mock_collection.where.side_effect = [
+                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=owned_query)))),
+                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=shared_query)))),
+            ]
+
+            recipes, next_cursor = get_recipes_paginated(household_id="hh1", limit=10)
+
+        assert len(recipes) == 1
+        assert recipes[0].id == "o1"
+        assert next_cursor is None
+
+    def test_household_pagination_has_more(self) -> None:
+        """Household user: correctly reports has_more with merged queries."""
+        owned_docs = [
+            self._make_mock_doc_with_created_at("o1", "Owned 1", "2025-01-03"),
+            self._make_mock_doc_with_created_at("o2", "Owned 2", "2025-01-01"),
+        ]
+        shared_docs = [self._make_mock_doc_with_created_at("s1", "Shared 1", "2025-01-02")]
+
+        with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
+            owned_query = MagicMock()
+            owned_query.order_by.return_value = owned_query
+            owned_query.limit.return_value = owned_query
+            owned_query.stream.return_value = iter(owned_docs)
+
+            shared_query = MagicMock()
+            shared_query.order_by.return_value = shared_query
+            shared_query.limit.return_value = shared_query
+            shared_query.stream.return_value = iter(shared_docs)
+
+            mock_collection = mock_client.return_value.collection.return_value
+            mock_collection.where.side_effect = [
+                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=owned_query)))),
+                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=shared_query)))),
+            ]
+
+            recipes, next_cursor = get_recipes_paginated(household_id="hh1", limit=2)
+
+        assert len(recipes) == 2
+        assert next_cursor is not None
