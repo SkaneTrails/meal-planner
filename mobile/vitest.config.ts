@@ -1,12 +1,20 @@
 import { defineConfig } from 'vitest/config';
+import os from 'os';
 import path from 'path';
+
+const isWindows = process.platform === 'win32';
 
 export default defineConfig({
   test: {
     // Windows requires 'forks' pool — 'threads' causes worker initialization
     // timeouts due to Node.js worker_threads limitations on Windows.
+    // Forks are heavier than threads, so limit concurrency to avoid
+    // resource exhaustion ("Timeout waiting for worker to respond").
     // See docs/DEVELOPMENT.md for details.
-    pool: process.platform === 'win32' ? 'forks' : 'threads',
+    pool: isWindows ? 'forks' : 'threads',
+    maxWorkers: isWindows
+      ? Math.max(1, Math.floor(os.availableParallelism() / 2))
+      : undefined,
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     include: ['**/__tests__/**/*.test.{ts,tsx}', '**/*.test.{ts,tsx}'],
