@@ -72,8 +72,11 @@ async def generate_grocery_list(
     # Load recipes and collect ingredients
     grocery_list = GroceryList()
 
+    # Batch-fetch all recipes at once instead of N individual reads
+    recipes_by_id = recipe_storage.get_recipes_by_ids(recipe_ids)
+
     for recipe_id in recipe_ids:
-        recipe = recipe_storage.get_recipe(recipe_id)
+        recipe = recipes_by_id.get(recipe_id)
         if recipe is None:
             continue
 

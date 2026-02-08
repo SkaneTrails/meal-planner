@@ -42,10 +42,14 @@ const mockApi = vi.mocked(api);
 describe('useRecipes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.getRecipes.mockResolvedValue([
-      { id: '1', title: 'Pasta' },
-      { id: '2', title: 'Soup' },
-    ]);
+    mockApi.getRecipes.mockResolvedValue({
+      items: [
+        { id: '1', title: 'Pasta' },
+        { id: '2', title: 'Soup' },
+      ],
+      next_cursor: null,
+      has_more: false,
+    });
   });
 
   it('fetches the recipe list', async () => {

@@ -1,15 +1,22 @@
 """Recipe storage service using Firestore."""
 
+from __future__ import annotations
+
 import contextlib
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import cast
+from typing import TYPE_CHECKING, cast
 from urllib.parse import urlparse
 
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
+if TYPE_CHECKING:
+    from google.cloud.firestore_v1.client import Client as FirestoreClient
+
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
+
+FIRESTORE_IN_LIMIT = 30
 
 
 @dataclass
@@ -106,50 +113,166 @@ def find_recipe_by_url(url: str) -> Recipe | None:
     return None
 
 
-def get_all_recipes(*, include_duplicates: bool = False, household_id: str | None = None) -> list[Recipe]:
-    """
-    Get all recipes visible to a household.
+def get_recipes_by_ids(recipe_ids: set[str]) -> dict[str, Recipe]:
+    """Batch-fetch multiple recipes by their IDs using Firestore get_all().
 
     Args:
-        include_duplicates: If False (default), deduplicate by URL.
-        household_id: If provided, filter to recipes owned by this household OR shared recipes.
-                      If None, return all recipes (for superusers).
+        recipe_ids: Set of Firestore document IDs to fetch.
 
     Returns:
-        List of recipes.
+        Dict mapping recipe ID to Recipe for documents that exist.
     """
+    if not recipe_ids:
+        return {}
+
     db = get_firestore_client()
-    docs = db.collection(RECIPES_COLLECTION).order_by("created_at", direction="DESCENDING").stream()
+    doc_refs = [db.collection(RECIPES_COLLECTION).document(rid) for rid in recipe_ids]
+    snapshots = db.get_all(doc_refs)
 
-    recipes = []
-    for doc in docs:
-        data = doc.to_dict()
-        recipe = _doc_to_recipe(doc.id, data)
+    recipes: dict[str, Recipe] = {}
+    for doc in snapshots:
+        if doc.exists:
+            data = doc.to_dict()
+            if data is not None:
+                recipes[doc.id] = _doc_to_recipe(doc.id, data)
 
-        # Apply household filtering if specified
-        if household_id is not None:
-            is_owned = recipe.household_id == household_id
-            is_shared = recipe.visibility == "shared"
+    return recipes
 
-            if not (is_owned or is_shared):
-                continue
 
-        recipes.append(recipe)
+def _build_household_query(db: FirestoreClient, household_id: str | None) -> list:
+    """Build Firestore queries for recipes visible to a household.
 
-    if include_duplicates:
-        return recipes
+    For regular users, we need two queries: owned recipes + shared recipes.
+    Firestore doesn't support OR filters across different fields, so we
+    run two queries and merge results.
 
-    # Deduplicate by normalized URL (keep first occurrence, which is most recent)
+    Args:
+        db: Firestore client instance.
+        household_id: If provided, scope to this household. None = all recipes (superuser).
+
+    Returns:
+        List of Firestore query objects to execute.
+    """
+    collection = db.collection(RECIPES_COLLECTION)
+
+    if household_id is None:
+        return [collection.order_by("created_at", direction="DESCENDING")]
+
+    owned_query = collection.where(filter=FieldFilter("household_id", "==", household_id)).order_by(
+        "created_at", direction="DESCENDING"
+    )
+    shared_query = collection.where(filter=FieldFilter("visibility", "==", "shared")).order_by(
+        "created_at", direction="DESCENDING"
+    )
+    return [owned_query, shared_query]
+
+
+def _deduplicate_recipes(recipes: list[Recipe]) -> list[Recipe]:
+    """Deduplicate recipes by normalized URL, keeping the most recent."""
     seen_urls: set[str] = set()
-    unique_recipes = []
-
+    unique: list[Recipe] = []
     for recipe in recipes:
         normalized = normalize_url(recipe.url) if recipe.url else f"__no_url_{recipe.id}"
         if normalized not in seen_urls:
             seen_urls.add(normalized)
-            unique_recipes.append(recipe)
+            unique.append(recipe)
+    return unique
 
-    return unique_recipes
+
+def get_all_recipes(*, include_duplicates: bool = False, household_id: str | None = None) -> list[Recipe]:
+    """Get all recipes visible to a household.
+
+    Uses Firestore server-side filtering when household_id is provided,
+    avoiding full collection scans.
+
+    Args:
+        include_duplicates: If False (default), deduplicate by URL.
+        household_id: If provided, filter to owned + shared recipes server-side.
+                      If None, return all recipes (for superusers).
+
+    Returns:
+        List of recipes, newest first.
+    """
+    db = get_firestore_client()
+    queries = _build_household_query(db, household_id)
+
+    seen_ids: set[str] = set()
+    recipes: list[Recipe] = []
+
+    for query in queries:
+        for doc in query.stream():
+            if doc.id in seen_ids:
+                continue
+            seen_ids.add(doc.id)
+            data = doc.to_dict()
+            recipes.append(_doc_to_recipe(doc.id, data))
+
+    # Re-sort after merging multiple queries
+    if len(queries) > 1:
+        recipes.sort(key=lambda r: r.created_at or "", reverse=True)
+
+    if include_duplicates:
+        return recipes
+
+    return _deduplicate_recipes(recipes)
+
+
+def get_recipes_paginated(
+    *, household_id: str | None = None, limit: int = 50, cursor: str | None = None, include_duplicates: bool = False
+) -> tuple[list[Recipe], str | None]:
+    """Get a paginated page of recipes visible to a household.
+
+    Uses cursor-based pagination (recipe ID as cursor). Fetches limit+1
+    documents to determine if more pages exist.
+
+    Args:
+        household_id: If provided, filter to owned + shared recipes.
+        limit: Maximum number of recipes to return per page.
+        cursor: Recipe ID from which to start (exclusive). None for first page.
+        include_duplicates: If False, deduplicate by URL.
+
+    Returns:
+        Tuple of (recipes, next_cursor). next_cursor is None if no more pages.
+    """
+    db = get_firestore_client()
+    queries = _build_household_query(db, household_id)
+
+    # If cursor is provided, fetch the cursor document to use as start_after
+    cursor_doc = None
+    if cursor:
+        cursor_doc = db.collection(RECIPES_COLLECTION).document(cursor).get()
+        if not cursor_doc.exists:
+            cursor_doc = None
+
+    seen_ids: set[str] = set()
+    all_recipes: list[Recipe] = []
+
+    for query in queries:
+        q = query
+        if cursor_doc is not None:
+            q = q.start_after(cursor_doc)
+        # Fetch extra to detect next page
+        for doc in q.limit(limit + 1).stream():
+            if doc.id in seen_ids:
+                continue
+            seen_ids.add(doc.id)
+            data = doc.to_dict()
+            all_recipes.append(_doc_to_recipe(doc.id, data))
+
+    # Re-sort after merging multiple queries
+    if len(queries) > 1:
+        all_recipes.sort(key=lambda r: r.created_at or "", reverse=True)
+
+    if not include_duplicates:
+        all_recipes = _deduplicate_recipes(all_recipes)
+
+    # Determine if there are more pages
+    if len(all_recipes) > limit:
+        page = all_recipes[:limit]
+        next_cursor = page[-1].id
+        return page, next_cursor
+
+    return all_recipes, None
 
 
 def save_recipe(

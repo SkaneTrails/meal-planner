@@ -11,7 +11,16 @@ from google.cloud import storage
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
-from api.models.recipe import Recipe, RecipeCreate, RecipeParseRequest, RecipeScrapeRequest, RecipeUpdate
+from api.models.recipe import (
+    DEFAULT_PAGE_LIMIT,
+    MAX_PAGE_LIMIT,
+    PaginatedRecipeList,
+    Recipe,
+    RecipeCreate,
+    RecipeParseRequest,
+    RecipeScrapeRequest,
+    RecipeUpdate,
+)
 from api.services.image_service import create_thumbnail
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
@@ -75,16 +84,23 @@ async def list_recipes(
     search: Annotated[str | None, Query(description="Search recipes by title")] = None,
     *,
     include_duplicates: Annotated[bool, Query(description="Include duplicate URLs")] = False,
-) -> list[Recipe]:
-    """Get all recipes visible to the user.
+    limit: Annotated[int, Query(ge=1, le=MAX_PAGE_LIMIT, description="Max recipes per page")] = DEFAULT_PAGE_LIMIT,
+    cursor: Annotated[str | None, Query(description="Cursor (recipe ID) for next page")] = None,
+) -> PaginatedRecipeList:
+    """Get recipes visible to the user, with cursor-based pagination.
 
     Superusers see all recipes. Regular users see their household's recipes and shared recipes.
     """
-    # Superusers see everything; regular users are scoped to their household
     household_id = None if user.role == "superuser" else user.household_id
+
     if search:
-        return recipe_storage.search_recipes(search, household_id=household_id)
-    return recipe_storage.get_all_recipes(include_duplicates=include_duplicates, household_id=household_id)
+        recipes = recipe_storage.search_recipes(search, household_id=household_id)
+        return PaginatedRecipeList(items=recipes, next_cursor=None, has_more=False)
+
+    recipes, next_cursor = recipe_storage.get_recipes_paginated(
+        household_id=household_id, limit=limit, cursor=cursor, include_duplicates=include_duplicates
+    )
+    return PaginatedRecipeList(items=recipes, next_cursor=next_cursor, has_more=next_cursor is not None)
 
 
 @router.get("/{recipe_id}")

@@ -193,6 +193,18 @@ class RecipeUpdate(BaseModel):
         return v
 
 
+DEFAULT_PAGE_LIMIT = 50
+MAX_PAGE_LIMIT = 200
+
+
+class PaginatedRecipeList(BaseModel):
+    """Paginated list of recipes with cursor for next page."""
+
+    items: list[Recipe]
+    next_cursor: str | None = Field(default=None, description="Cursor for the next page (recipe ID), null if last page")
+    has_more: bool = Field(default=False, description="Whether more results exist beyond this page")
+
+
 class RecipeScrapeRequest(BaseModel):
     """Request body for recipe scraping."""
 

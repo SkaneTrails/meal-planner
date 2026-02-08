@@ -5,11 +5,15 @@ from unittest.mock import MagicMock, patch
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.recipe_storage import (
     EnhancementMetadata,
+    _build_household_query,
+    _deduplicate_recipes,
     _doc_to_recipe,
     delete_recipe,
     find_recipe_by_url,
     get_all_recipes,
     get_recipe,
+    get_recipes_by_ids,
+    get_recipes_paginated,
     normalize_url,
     save_recipe,
     search_recipes,
@@ -558,3 +562,201 @@ class TestTransferRecipeToHousehold:
 
         assert result is None
         mock_doc_ref.update.assert_not_called()
+
+
+class TestGetRecipesByIds:
+    """Tests for get_recipes_by_ids batch fetch."""
+
+    def test_returns_empty_dict_for_empty_input(self) -> None:
+        """Should return empty dict when no IDs provided."""
+        result = get_recipes_by_ids(set())
+        assert result == {}
+
+    def test_fetches_multiple_recipes(self) -> None:
+        """Should batch-fetch multiple recipes and return dict keyed by ID."""
+        mock_doc1 = MagicMock()
+        mock_doc1.exists = True
+        mock_doc1.id = "recipe1"
+        mock_doc1.to_dict.return_value = {"title": "Pasta", "url": "", "ingredients": [], "instructions": []}
+
+        mock_doc2 = MagicMock()
+        mock_doc2.exists = True
+        mock_doc2.id = "recipe2"
+        mock_doc2.to_dict.return_value = {"title": "Soup", "url": "", "ingredients": [], "instructions": []}
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.get_all.return_value = [mock_doc1, mock_doc2]
+
+            result = get_recipes_by_ids({"recipe1", "recipe2"})
+
+        assert len(result) == 2
+        assert result["recipe1"].title == "Pasta"
+        assert result["recipe2"].title == "Soup"
+
+    def test_skips_nonexistent_documents(self) -> None:
+        """Should skip documents that don't exist."""
+        mock_doc1 = MagicMock()
+        mock_doc1.exists = True
+        mock_doc1.id = "recipe1"
+        mock_doc1.to_dict.return_value = {"title": "Pasta", "url": "", "ingredients": [], "instructions": []}
+
+        mock_doc2 = MagicMock()
+        mock_doc2.exists = False
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.get_all.return_value = [mock_doc1, mock_doc2]
+
+            result = get_recipes_by_ids({"recipe1", "missing"})
+
+        assert len(result) == 1
+        assert "recipe1" in result
+
+
+class TestDeduplicateRecipes:
+    """Tests for _deduplicate_recipes helper."""
+
+    def test_removes_duplicates_by_url(self) -> None:
+        """Should keep first (most recent) recipe for each URL."""
+        recipes = [
+            Recipe(id="1", title="New Pasta", url="https://example.com/pasta", ingredients=[], instructions=[]),
+            Recipe(id="2", title="Old Pasta", url="https://example.com/pasta/", ingredients=[], instructions=[]),
+        ]
+
+        result = _deduplicate_recipes(recipes)
+
+        assert len(result) == 1
+        assert result[0].id == "1"
+
+    def test_keeps_recipes_without_url(self) -> None:
+        """Should treat recipes without URLs as unique."""
+        recipes = [
+            Recipe(id="1", title="Recipe A", url="", ingredients=[], instructions=[]),
+            Recipe(id="2", title="Recipe B", url="", ingredients=[], instructions=[]),
+        ]
+
+        result = _deduplicate_recipes(recipes)
+
+        assert len(result) == 2
+
+    def test_preserves_order(self) -> None:
+        """Should preserve order of unique recipes."""
+        recipes = [
+            Recipe(id="1", title="A", url="https://a.com", ingredients=[], instructions=[]),
+            Recipe(id="2", title="B", url="https://b.com", ingredients=[], instructions=[]),
+            Recipe(id="3", title="C", url="https://c.com", ingredients=[], instructions=[]),
+        ]
+
+        result = _deduplicate_recipes(recipes)
+
+        assert [r.id for r in result] == ["1", "2", "3"]
+
+
+class TestBuildHouseholdQuery:
+    """Tests for _build_household_query helper."""
+
+    def test_superuser_gets_single_query(self) -> None:
+        """Superuser (household_id=None) should get a single unfiltered query."""
+        mock_db = MagicMock()
+
+        queries = _build_household_query(mock_db, household_id=None)
+
+        assert len(queries) == 1
+
+    def test_household_user_gets_two_queries(self) -> None:
+        """Regular user should get two queries (owned + shared)."""
+        mock_db = MagicMock()
+
+        queries = _build_household_query(mock_db, household_id="household123")
+
+        assert len(queries) == 2
+
+
+class TestGetRecipesPaginated:
+    """Tests for get_recipes_paginated cursor-based pagination."""
+
+    def _make_mock_doc(self, doc_id: str, title: str) -> MagicMock:
+        """Create a mock Firestore document snapshot."""
+        doc = MagicMock()
+        doc.id = doc_id
+        doc.exists = True
+        doc.to_dict.return_value = {
+            "title": title,
+            "url": f"https://example.com/{doc_id}",
+            "ingredients": [],
+            "instructions": [],
+        }
+        return doc
+
+    def test_returns_first_page(self) -> None:
+        """Should return recipes up to limit with no cursor."""
+        docs = [self._make_mock_doc(f"r{i}", f"Recipe {i}") for i in range(3)]
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_query = MagicMock()
+            mock_query.order_by.return_value = mock_query
+            mock_query.limit.return_value = mock_query
+            mock_query.stream.return_value = iter(docs)
+            mock_client.return_value.collection.return_value = mock_query
+
+            recipes, next_cursor = get_recipes_paginated(household_id=None, limit=10)
+
+        assert len(recipes) == 3
+        assert next_cursor is None
+
+    def test_returns_cursor_when_more_pages(self) -> None:
+        """Should return next_cursor when more results exist."""
+        docs = [self._make_mock_doc(f"r{i}", f"Recipe {i}") for i in range(4)]
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_query = MagicMock()
+            mock_query.order_by.return_value = mock_query
+            mock_query.limit.return_value = mock_query
+            mock_query.stream.return_value = iter(docs)
+            mock_client.return_value.collection.return_value = mock_query
+
+            recipes, next_cursor = get_recipes_paginated(household_id=None, limit=3)
+
+        assert len(recipes) == 3
+        assert next_cursor == "r2"
+
+    def test_uses_cursor_for_start_after(self) -> None:
+        """Should use cursor document for start_after when cursor provided."""
+        docs = [self._make_mock_doc("r3", "Recipe 3")]
+        cursor_doc = MagicMock()
+        cursor_doc.exists = True
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_query = MagicMock()
+            mock_query.order_by.return_value = mock_query
+            mock_query.start_after.return_value = mock_query
+            mock_query.limit.return_value = mock_query
+            mock_query.stream.return_value = iter(docs)
+
+            mock_collection = mock_client.return_value.collection.return_value
+            mock_collection.order_by.return_value = mock_query
+            mock_collection.document.return_value.get.return_value = cursor_doc
+
+            recipes, _next_cursor = get_recipes_paginated(household_id=None, limit=10, cursor="r2")
+
+        assert len(recipes) == 1
+        mock_query.start_after.assert_called_once_with(cursor_doc)
+
+    def test_invalid_cursor_ignored(self) -> None:
+        """Should ignore cursor if document doesn't exist."""
+        docs = [self._make_mock_doc("r1", "Recipe 1")]
+        cursor_doc = MagicMock()
+        cursor_doc.exists = False
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_query = MagicMock()
+            mock_query.order_by.return_value = mock_query
+            mock_query.limit.return_value = mock_query
+            mock_query.stream.return_value = iter(docs)
+
+            mock_collection = mock_client.return_value.collection.return_value
+            mock_collection.order_by.return_value = mock_query
+            mock_collection.document.return_value.get.return_value = cursor_doc
+
+            recipes, _ = get_recipes_paginated(household_id=None, limit=10, cursor="invalid")
+
+        assert len(recipes) == 1
