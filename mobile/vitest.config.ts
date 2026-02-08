@@ -1,5 +1,4 @@
 import { defineConfig } from 'vitest/config';
-import os from 'os';
 import path from 'path';
 
 const isWindows = process.platform === 'win32';
@@ -8,13 +7,11 @@ export default defineConfig({
   test: {
     // Windows requires 'forks' pool — 'threads' causes worker initialization
     // timeouts due to Node.js worker_threads limitations on Windows.
-    // Forks are heavier than threads, so limit concurrency to avoid
-    // resource exhaustion ("Timeout waiting for worker to respond").
+    // Forks with jsdom are heavy (~200MB each), so cap at 4 to avoid
+    // "Timeout waiting for worker to respond" errors.
     // See docs/DEVELOPMENT.md for details.
     pool: isWindows ? 'forks' : 'threads',
-    maxWorkers: isWindows
-      ? Math.max(1, Math.floor(os.availableParallelism() / 2))
-      : undefined,
+    maxWorkers: isWindows ? 4 : undefined,
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
     include: ['**/__tests__/**/*.test.{ts,tsx}', '**/*.test.{ts,tsx}'],

@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { GroceryItemRow, GroceryListView } from '../GroceryListView';
+import { GroceryItemRow } from '../GroceryItemRow';
+import { GroceryListView } from '../GroceryListView';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 
 vi.mock('react-native-draggable-flatlist', () => ({
