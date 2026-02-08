@@ -31,12 +31,11 @@ export const recipeApi = {
   },
 
   scrapeRecipe: async (url: string, enhance: boolean = false): Promise<Recipe> => {
-    const parsed = new URL(url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      throw new ApiClientError('Only http and https URLs are supported', 400);
-    }
-
     try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new ApiClientError('Only http and https URLs are supported', 400);
+      }
       const htmlResponse = await fetch(url, {
         headers: {
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -65,6 +64,9 @@ export const recipeApi = {
     } catch (error) {
       if (error instanceof ApiClientError) {
         throw error;
+      }
+      if (error instanceof TypeError) {
+        throw new ApiClientError('Invalid URL', 400);
       }
       const request: RecipeScrapeRequest = { url };
       const params = new URLSearchParams();
