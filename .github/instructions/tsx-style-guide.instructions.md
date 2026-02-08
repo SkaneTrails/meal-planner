@@ -265,11 +265,32 @@ const shouldShowButton = isAuthenticated && !isSubmitting && isValid;
 
 ## Code Quality
 
+### Before Writing New Code
+
+1. **Check `components/` for existing shared components** before creating inline UI (e.g., `FilterChip`, `EmptyState`, `AnimatedPressable`)
+2. **Check `lib/hooks/` for existing hooks** before writing inline logic (e.g., `useImagePicker`, `useTranslation`)
+3. **Check `lib/utils/` for existing utilities** before writing inline helpers (e.g., `dateFormatter`, `parseIngredients`)
+4. **Search for similar patterns** across the codebase — if the same UI or logic exists in 2+ files, extract to a shared module
+
 ### Avoid Duplication
 
-- Extract repeated JSX into components
-- Extract repeated logic into hooks or utils
-- No code blocks >10 lines duplicated
+- Extract repeated JSX into components in `components/`
+- Extract repeated logic into hooks in `lib/hooks/` or utils in `lib/utils/`
+- No code blocks >10 lines duplicated across files
+- When adding a new screen or feature, scan existing files for similar UI patterns first
+
+### Dead Code
+
+- Remove unused imports, variables, functions, and components
+- Remove commented-out code blocks — use git history instead
+- Remove unused props from interfaces
+- Clean up `console.log` debug statements before committing
+
+### File Size Enforcement
+
+- **>300 lines**: must split before adding new features (see "When to Split Files")
+- **>200 lines**: consider whether new logic belongs in a separate hook or util
+- When editing a large file, extract at least one reusable piece during the change
 
 ### Self-Documenting Code
 

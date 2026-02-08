@@ -29,6 +29,7 @@ import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
 import type { MealType, Recipe } from '@/lib/types';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
+import { formatDateLocal, getWeekDatesArray, formatWeekRange, formatDayHeader } from '@/lib/utils/dateFormatter';
 
 // Cross-platform confirm dialog using centralized alert utility
 const showConfirmDelete = (title: string, message: string, onConfirm: () => void, cancelText: string, removeText: string) => {
@@ -38,59 +39,10 @@ const showConfirmDelete = (title: string, message: string, onConfirm: () => void
   ]);
 };
 
-// BCP-47 locale mapping for date formatting
-const LOCALE_MAP: Record<string, string> = {
-  en: 'en-US',
-  sv: 'sv-SE',
-  it: 'it-IT',
-};
-
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
 
 // Approximate height of each day section (header + 2 meal cards)
 const DAY_SECTION_HEIGHT = 180;
-
-function formatDateLocal(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getWeekDates(weekOffset: number = 0): Date[] {
-  const today = new Date();
-  const currentDay = today.getDay();
-  // Start week on Monday
-  const daysSinceMonday = (currentDay + 6) % 7;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - daysSinceMonday + weekOffset * 7);
-
-  const dates: Date[] = [];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + i);
-    dates.push(date);
-  }
-  return dates;
-}
-
-function formatWeekRange(dates: Date[], locale: string): string {
-  const first = dates[0];
-  const last = dates[6];
-  const bcp47 = LOCALE_MAP[locale] || 'en-US';
-  return `${first.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' })} - ${last.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' })}`;
-}
-
-function formatDayHeader(date: Date, locale: string, todayLabel: string): string {
-  const today = new Date();
-  const isToday = date.toDateString() === today.toDateString();
-  const bcp47 = LOCALE_MAP[locale] || 'en-US';
-  const dayName = date.toLocaleDateString(bcp47, { weekday: 'long' });
-  const monthDay = date.toLocaleDateString(bcp47, { month: 'short', day: 'numeric' });
-
-  if (isToday) return `${todayLabel} · ${monthDay}`;
-  return `${dayName} · ${monthDay}`;
-}
 
 export default function MealPlanScreen() {
   const router = useRouter();
@@ -123,8 +75,8 @@ export default function MealPlanScreen() {
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
-  const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
-  const groceryWeekDates = useMemo(() => getWeekDates(groceryWeekOffset), [groceryWeekOffset]);
+  const weekDates = useMemo(() => getWeekDatesArray(weekOffset), [weekOffset]);
+  const groceryWeekDates = useMemo(() => getWeekDatesArray(groceryWeekOffset), [groceryWeekOffset]);
 
   // Find today's index in the week
   const todayIndex = useMemo(() => {

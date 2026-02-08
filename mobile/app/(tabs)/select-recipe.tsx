@@ -16,9 +16,11 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer, fontFamily } from '@/lib/theme';
 import { GradientBackground, RecipeCard } from '@/components';
+import { EmptyState } from '@/components/EmptyState';
 import { useRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
+import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
 import type { MealType, Recipe } from '@/lib/types';
 
 // Map meal types to meal_label values for filtering
@@ -29,9 +31,6 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   dinner: ['meal', 'grill'],
   snack: ['dessert', 'drink'],
 };
-
-// BCP-47 locale mapping for date formatting
-const LOCALE_MAP: Record<string, string> = { en: 'en-US', sv: 'sv-SE', it: 'it-IT' };
 
 type TabType = 'library' | 'copy' | 'random' | 'quick';
 
@@ -119,7 +118,6 @@ export default function SelectRecipeScreen() {
 
   // Get target week date range based on the date being modified (not current week)
   const targetWeekDates = useMemo(() => {
-    // Parse the date param to get the week being modified
     const targetDate = new Date(date + 'T00:00:00');
     const targetDay = targetDate.getDay();
     const daysSinceMonday = (targetDay + 6) % 7;
@@ -128,14 +126,7 @@ export default function SelectRecipeScreen() {
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
 
-    const formatDate = (d: Date) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    return { start: formatDate(monday), end: formatDate(sunday), mondayDate: monday, sundayDate: sunday };
+    return { start: formatDateLocal(monday), end: formatDateLocal(sunday), mondayDate: monday, sundayDate: sunday };
   }, [date, copyWeekOffset]);
 
   // Get existing meals from meal plan that can be copied (from the week being modified)
@@ -167,7 +158,7 @@ export default function SelectRecipeScreen() {
     return meals.sort((a, b) => a.date.localeCompare(b.date));
   }, [mealPlan, recipes, date, mealType, targetWeekDates]);
 
-  const bcp47 = LOCALE_MAP[language] || 'en-US';
+  const bcp47 = toBcp47(language);
   const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString(bcp47, {
     weekday: 'long',
     month: 'short',
@@ -434,42 +425,18 @@ export default function SelectRecipeScreen() {
               )}
               contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
               ListEmptyComponent={
-                <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'] * 2, paddingHorizontal: spacing['3xl'] }}>
-                  <View style={{
-                    width: iconContainer['2xl'],
-                    height: iconContainer['2xl'],
-                    borderRadius: iconContainer['2xl'] / 2,
-                    backgroundColor: colors.glass.card,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: spacing.xl,
-                  }}>
-                    <Ionicons name={searchQuery ? "search" : "book-outline"} size={36} color={colors.text.inverse} />
-                  </View>
-                  <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                    {searchQuery ? t('selectRecipe.empty.noMatches') : t('selectRecipe.empty.noRecipes')}
-                  </Text>
-                  <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
-                    {searchQuery ? t('selectRecipe.empty.tryDifferent') : t('selectRecipe.empty.addRecipesFirst')}
-                  </Text>
-                  <Pressable
-                    onPress={() => {
+                <EmptyState
+                  icon={searchQuery ? "search" : "book-outline"}
+                  title={searchQuery ? t('selectRecipe.empty.noMatches') : t('selectRecipe.empty.noRecipes')}
+                  subtitle={searchQuery ? t('selectRecipe.empty.tryDifferent') : t('selectRecipe.empty.addRecipesFirst')}
+                  action={{
+                    label: t('selectRecipe.empty.addRecipeButton'),
+                    onPress: () => {
                       router.back();
                       router.push('/add-recipe');
-                    }}
-                    style={({ pressed }) => ({
-                      marginTop: spacing['2xl'],
-                      paddingHorizontal: spacing['2xl'],
-                      paddingVertical: spacing.md,
-                      backgroundColor: colors.primary,
-                      borderRadius: borderRadius.sm,
-                      ...shadows.lg,
-                      transform: [{ scale: pressed ? 0.98 : 1 }],
-                    })}
-                  >
-                    <Text style={{ color: colors.white, fontSize: fontSize.lg, fontWeight: '600' }}>{t('selectRecipe.empty.addRecipeButton')}</Text>
-                  </Pressable>
-                </View>
+                    },
+                  }}
+                />
               }
             />
           </>
@@ -621,25 +588,12 @@ export default function SelectRecipeScreen() {
               </View>
             ) : (
               /* No recipes for this meal type */
-              <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'], paddingHorizontal: spacing['3xl'] }}>
-                <View style={{
-                  width: iconContainer['2xl'],
-                  height: iconContainer['2xl'],
-                  borderRadius: iconContainer['2xl'] / 2,
-                  backgroundColor: colors.glass.card,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: spacing.xl,
-                }}>
-                  <Ionicons name="dice-outline" size={36} color={colors.text.inverse} />
-                </View>
-                <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                  {t('selectRecipe.random.noRecipes', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
-                </Text>
-                <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
-                  {t('selectRecipe.random.addRecipesHint', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
-                </Text>
-              </View>
+              <EmptyState
+                icon="dice-outline"
+                title={t('selectRecipe.random.noRecipes', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
+                subtitle={t('selectRecipe.random.addRecipesHint', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
+                style={{ paddingVertical: spacing['4xl'] }}
+              />
             )}
           </ScrollView>
         ) : (
@@ -696,25 +650,12 @@ export default function SelectRecipeScreen() {
             </View>
 
             {existingMeals.length === 0 ? (
-              <View style={{ alignItems: 'center', paddingVertical: spacing['4xl'], paddingHorizontal: spacing['3xl'] }}>
-                <View style={{
-                  width: iconContainer['2xl'],
-                  height: iconContainer['2xl'],
-                  borderRadius: iconContainer['2xl'] / 2,
-                  backgroundColor: colors.glass.card,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: spacing.xl,
-                }}>
-                  <Ionicons name="calendar-outline" size={36} color={colors.text.inverse} />
-                </View>
-                <Text style={{ color: colors.text.inverse, fontSize: fontSize['3xl'], fontWeight: '600', textAlign: 'center', letterSpacing: letterSpacing.normal }}>
-                  {t('selectRecipe.copy.noMeals')}
-                </Text>
-                <Text style={{ color: colors.gray[600], fontSize: fontSize.lg, marginTop: spacing.sm, textAlign: 'center', lineHeight: 22 }}>
-                  {t('selectRecipe.copy.planFirst')}
-                </Text>
-              </View>
+              <EmptyState
+                icon="calendar-outline"
+                title={t('selectRecipe.copy.noMeals')}
+                subtitle={t('selectRecipe.copy.planFirst')}
+                style={{ paddingVertical: spacing['4xl'] }}
+              />
             ) : (
               existingMeals.map((meal) => (
                 <Pressable

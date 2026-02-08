@@ -19,15 +19,15 @@ import { showAlert, showNotification } from '@/lib/alert';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { MirroredBackground } from '@/components/MirroredBackground';
-import { useRecipe, useDeleteRecipe, useUpdateRecipe, useSetMeal, useMealPlan, useCurrentUser } from '@/lib/hooks';
+import { useRecipe, useDeleteRecipe, useUpdateRecipe, useSetMeal, useMealPlan, useCurrentUser, useImagePicker } from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
+import { formatDateLocal, getWeekDatesArray, isPastDate } from '@/lib/utils/dateFormatter';
 import { AnimatedPressable, BouncingLoader, GradientBackground } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
@@ -63,31 +63,7 @@ const MEAL_OPTIONS: { value: MealLabel | null; labelKey: string }[] = [
   { value: 'grill', labelKey: 'labels.meal.grill' },
 ];
 
-// Helper to format date for meal key
-function formatDateLocal(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 // Get current week dates (Saturday to Friday)
-function getWeekDates(weekOffset: number = 0): Date[] {
-  const today = new Date();
-  const currentDay = today.getDay();
-  const daysSinceSaturday = (currentDay + 1) % 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() - daysSinceSaturday + weekOffset * 7);
-
-  const dates: Date[] = [];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(saturday);
-    date.setDate(saturday.getDate() + i);
-    dates.push(date);
-  }
-  return dates;
-}
-
 const MEAL_TYPES: { type: MealType; labelKey: string }[] = [
   { type: 'lunch', labelKey: 'labels.mealTime.lunch' },
   { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
@@ -328,7 +304,7 @@ export default function RecipeDetailScreen() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
-  const weekDates = useMemo(() => getWeekDates(weekOffset), [weekOffset]);
+  const weekDates = useMemo(() => getWeekDatesArray(weekOffset, 'saturday'), [weekOffset]);
   const { data: mealPlan } = useMealPlan();
 
   // Instruction step completion tracking (local state - resets on page reload)
@@ -476,87 +452,17 @@ export default function RecipeDetailScreen() {
     return mealPlan.meals[key] || null;
   };
 
-  // Check if date is in the past
-  const isPastDate = (date: Date): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
-    return checkDate < today;
-  };
-
-  const handlePickImage = async () => {
-    // Ask user for permission and show options
-    showAlert(
-      t('recipe.changePhoto'),
-      t('recipe.chooseOption'),
-      [
-        {
-          text: t('recipe.takePhoto'),
-          onPress: async () => {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== 'granted') {
-              showNotification(t('recipe.permissionNeeded'), t('recipe.cameraPermission'));
-              return;
-            }
-            const result = await ImagePicker.launchCameraAsync({
-              mediaTypes: ['images'],
-              allowsEditing: true,
-              aspect: [16, 9],
-              quality: 0.8,
-            });
-            if (!result.canceled && result.assets[0]) {
-              await saveImage(result.assets[0].uri);
-            }
-          },
-        },
-        {
-          text: t('recipe.chooseFromLibrary'),
-          onPress: async () => {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (status !== 'granted') {
-              showNotification(t('recipe.permissionNeeded'), t('recipe.libraryPermission'));
-              return;
-            }
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ['images'],
-              allowsEditing: true,
-              aspect: [16, 9],
-              quality: 0.8,
-            });
-            if (!result.canceled && result.assets[0]) {
-              await saveImage(result.assets[0].uri);
-            }
-          },
-        },
-        {
-          text: t('recipe.enterUrl'),
-          onPress: () => {
-            // Use cross-platform modal instead of iOS-only Alert.prompt
-            setImageUrlInput(recipe?.image_url || '');
-            setShowUrlModal(true);
-          },
-        },
-        { text: t('common.cancel'), style: 'cancel' },
-      ]
-    );
-  };
-
   const saveImage = async (localUri: string) => {
-    // Upload to cloud storage via API
     setIsUpdatingImage(true);
     try {
       const { api } = await import('@/lib/api');
       await api.uploadRecipeImage(id!, localUri);
-      // Refetch the recipe to get updated image URL
-      // The mutation will invalidate the cache
       await updateRecipe.mutateAsync({
         id: id!,
-        updates: {}, // Empty update just to trigger cache refresh
+        updates: {},
       });
       showNotification(t('common.success'), t('recipe.photoUploaded'));
     } catch (err) {
-      // Fallback: save local URI if upload fails
       console.warn('Upload failed, saving local URI:', err);
       try {
         await updateRecipe.mutateAsync({
@@ -571,6 +477,18 @@ export default function RecipeDetailScreen() {
       setIsUpdatingImage(false);
     }
   };
+
+  const { pickImage: handlePickImage } = useImagePicker(
+    (uri) => saveImage(uri),
+    {
+      aspect: [16, 9],
+      showUrlOption: true,
+      onUrlOptionSelected: () => {
+        setImageUrlInput(recipe?.image_url || '');
+        setShowUrlModal(true);
+      },
+    },
+  );
 
   const saveImageUrl = async (url: string) => {
     setIsUpdatingImage(true);
