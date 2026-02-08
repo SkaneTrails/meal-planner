@@ -4,7 +4,6 @@
 
 import type { ApiError } from '../types';
 
-// API base URL - configurable for different environments
 const getApiBaseUrl = (): string => {
   return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
 };
@@ -12,7 +11,6 @@ const getApiBaseUrl = (): string => {
 export const API_BASE_URL = getApiBaseUrl();
 export const API_PREFIX = '/api/v1';
 
-// Token getter function - set by AuthProvider
 let getAuthToken: (() => Promise<string | null>) | null = null;
 
 // Sign out callback - called when API returns 401/403 (auth failure)

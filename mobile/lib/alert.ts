@@ -24,30 +24,25 @@ export interface AlertButton {
  *
  * Note: On web, only 2 buttons are supported (cancel + action). Additional buttons are ignored.
  */
-export function showAlert(
+export const showAlert = (
   title: string,
   message?: string,
   buttons?: AlertButton[],
-): void {
+): void  => {
   if (Platform.OS === 'web') {
-    // Web fallback using browser dialogs
     if (!buttons || buttons.length === 0) {
-      // Simple notification
       window.alert(message ? `${title}\n\n${message}` : title);
       return;
     }
 
     if (buttons.length === 1) {
-      // Single button - just an alert. Browser alert() has no per-button callback,
+      // Browser alert() has no per-button callback,
       // so on web we cannot reliably invoke onPress when the user dismisses the alert.
       // This differs from native React Native behavior and is a known web limitation.
       window.alert(message ? `${title}\n\n${message}` : title);
       return;
     }
 
-    // Two buttons - use confirm dialog
-    // Find the action button (non-cancel) and cancel button
-    // Fallback to first button if all are cancel-style
     const cancelButton = buttons.find(b => b.style === 'cancel');
     const actionButton = buttons.find(b => b.style !== 'cancel') || buttons[0];
 
@@ -58,7 +53,6 @@ export function showAlert(
       cancelButton?.onPress?.();
     }
   } else {
-    // Native platforms - use React Native Alert
     Alert.alert(title, message, buttons);
   }
 }
@@ -66,7 +60,7 @@ export function showAlert(
 /**
  * Show a simple notification alert (single OK button).
  */
-export function showNotification(title: string, message?: string): void {
+export const showNotification = (title: string, message?: string): void  => {
   showAlert(title, message, [{ text: 'OK' }]);
 }
 
@@ -80,7 +74,7 @@ export function showNotification(title: string, message?: string): void {
  *   // User clicked OK
  * }
  */
-export function showConfirm(title: string, message?: string): Promise<boolean> {
+export const showConfirm = (title: string, message?: string): Promise<boolean>  => {
   return new Promise(resolve => {
     showAlert(title, message, [
       { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },

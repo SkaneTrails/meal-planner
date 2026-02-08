@@ -29,7 +29,7 @@ const adminKeys = {
 /**
  * Get current user info including role and household.
  */
-export function useCurrentUser(options?: { enabled?: boolean }) {
+export const useCurrentUser = (options?: { enabled?: boolean }) => {
   return useQuery<CurrentUser>({
     queryKey: adminKeys.currentUser(),
     queryFn: () => api.getCurrentUser(),
@@ -42,7 +42,7 @@ export function useCurrentUser(options?: { enabled?: boolean }) {
 /**
  * Get all households (superuser only).
  */
-export function useHouseholds(options?: { enabled?: boolean }) {
+export const useHouseholds = (options?: { enabled?: boolean }) => {
   return useQuery<Household[]>({
     queryKey: adminKeys.households(),
     queryFn: () => api.getHouseholds(),
@@ -54,7 +54,7 @@ export function useHouseholds(options?: { enabled?: boolean }) {
 /**
  * Get a specific household by ID.
  */
-export function useHousehold(id: string) {
+export const useHousehold = (id: string) => {
   return useQuery<Household>({
     queryKey: adminKeys.household(id),
     queryFn: () => api.getHousehold(id),
@@ -65,7 +65,7 @@ export function useHousehold(id: string) {
 /**
  * Get members of a household.
  */
-export function useHouseholdMembers(householdId: string) {
+export const useHouseholdMembers = (householdId: string) => {
   return useQuery<HouseholdMember[]>({
     queryKey: adminKeys.members(householdId),
     queryFn: () => api.getHouseholdMembers(householdId),
@@ -76,7 +76,7 @@ export function useHouseholdMembers(householdId: string) {
 /**
  * Create a new household.
  */
-export function useCreateHousehold() {
+export const useCreateHousehold = () => {
   const queryClient = useQueryClient();
 
   return useMutation<Household, Error, HouseholdCreate>({
@@ -90,7 +90,7 @@ export function useCreateHousehold() {
 /**
  * Add a member to a household.
  */
-export function useAddMember() {
+export const useAddMember = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -111,7 +111,7 @@ export function useAddMember() {
 /**
  * Remove a member from a household.
  */
-export function useRemoveMember() {
+export const useRemoveMember = () => {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, { householdId: string; email: string }>({
@@ -128,7 +128,7 @@ export function useRemoveMember() {
 /**
  * Get household settings.
  */
-export function useHouseholdSettings(householdId: string | null) {
+export const useHouseholdSettings = (householdId: string | null) => {
   return useQuery<HouseholdSettings>({
     queryKey: adminKeys.settings(householdId ?? ''),
     queryFn: () => api.getHouseholdSettings(householdId!),
@@ -139,7 +139,7 @@ export function useHouseholdSettings(householdId: string | null) {
 /**
  * Update household settings.
  */
-export function useUpdateHouseholdSettings() {
+export const useUpdateHouseholdSettings = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -160,7 +160,7 @@ export function useUpdateHouseholdSettings() {
 /**
  * Transfer a recipe to a different household (superuser only).
  */
-export function useTransferRecipe() {
+export const useTransferRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation<

@@ -19,7 +19,7 @@ import itLocale from './locales/it';
 type NestedRecord = { [key: string]: string | NestedRecord };
 
 /** Recursively collect all dot-separated key paths. */
-function collectKeys(obj: NestedRecord, prefix = ''): string[] {
+const collectKeys = (obj: NestedRecord, prefix = ''): string[]  => {
   const keys: string[] = [];
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
@@ -33,7 +33,7 @@ function collectKeys(obj: NestedRecord, prefix = ''): string[] {
 }
 
 /** Resolve a dot-path to its string value. */
-function resolve(obj: NestedRecord, path: string): string | undefined {
+const resolve = (obj: NestedRecord, path: string): string | undefined  => {
   let current: unknown = obj;
   for (const seg of path.split('.')) {
     if (current == null || typeof current !== 'object') return undefined;

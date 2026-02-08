@@ -9,7 +9,7 @@ import { Platform } from 'react-native';
 /**
  * Light haptic feedback for button taps.
  */
-export function hapticLight() {
+export const hapticLight = () => {
   if (Platform.OS !== 'web') {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   }
@@ -18,7 +18,7 @@ export function hapticLight() {
 /**
  * Medium haptic feedback for confirmations.
  */
-export function hapticMedium() {
+export const hapticMedium = () => {
   if (Platform.OS !== 'web') {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
   }
@@ -27,7 +27,7 @@ export function hapticMedium() {
 /**
  * Heavy haptic feedback for important actions.
  */
-export function hapticHeavy() {
+export const hapticHeavy = () => {
   if (Platform.OS !== 'web') {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
   }
@@ -36,7 +36,7 @@ export function hapticHeavy() {
 /**
  * Success haptic feedback.
  */
-export function hapticSuccess() {
+export const hapticSuccess = () => {
   if (Platform.OS !== 'web') {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
       () => {},
@@ -47,7 +47,7 @@ export function hapticSuccess() {
 /**
  * Warning haptic feedback.
  */
-export function hapticWarning() {
+export const hapticWarning = () => {
   if (Platform.OS !== 'web') {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(
       () => {},
@@ -58,7 +58,7 @@ export function hapticWarning() {
 /**
  * Error haptic feedback.
  */
-export function hapticError() {
+export const hapticError = () => {
   if (Platform.OS !== 'web') {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(
       () => {},
@@ -69,7 +69,7 @@ export function hapticError() {
 /**
  * Selection haptic feedback (very light, good for toggles).
  */
-export function hapticSelection() {
+export const hapticSelection = () => {
   if (Platform.OS !== 'web') {
     Haptics.selectionAsync().catch(() => {});
   }

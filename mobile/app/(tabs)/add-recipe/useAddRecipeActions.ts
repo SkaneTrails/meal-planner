@@ -167,13 +167,11 @@ export const useAddRecipeActions = () => {
   return {
     t,
     isManualMode,
-    // URL import
     url,
     setUrl,
     enhanceWithAI,
     setEnhanceWithAI,
     handleImport,
-    // Manual form
     title,
     setTitle,
     ingredients,
@@ -196,13 +194,11 @@ export const useAddRecipeActions = () => {
     setMealLabel,
     handleCreateManual,
     handlePickImage,
-    // Enhancement modal
     showSummaryModal,
     setShowSummaryModal,
     importedRecipe,
     handleViewRecipe,
     handleAddAnother,
-    // Status
     isPending,
   };
 };

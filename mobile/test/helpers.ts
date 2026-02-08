@@ -10,7 +10,7 @@ import type { CurrentUser, UserRole } from '@/lib/types';
 /**
  * Create a fresh QueryClient for testing (no retries, no cache).
  */
-export function createTestQueryClient() {
+export const createTestQueryClient = () => {
   return new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0 },
@@ -22,7 +22,7 @@ export function createTestQueryClient() {
 /**
  * Wrapper component that provides React Query context.
  */
-export function createQueryWrapper() {
+export const createQueryWrapper = () => {
   const queryClient = createTestQueryClient();
   return function QueryWrapper({ children }: { children: React.ReactNode }) {
     return React.createElement(
@@ -36,13 +36,11 @@ export function createQueryWrapper() {
 /**
  * Build a mock CurrentUser for testing different roles.
  */
-export function mockCurrentUser(overrides: Partial<CurrentUser> = {}): CurrentUser {
-  return {
-    uid: 'test-uid-123',
-    email: 'test@example.com',
-    role: 'member' as UserRole,
-    household_id: 'household-abc',
-    household_name: 'Test Household',
-    ...overrides,
-  };
-}
+export const mockCurrentUser = (overrides: Partial<CurrentUser> = {}): CurrentUser => ({
+  uid: 'test-uid-123',
+  email: 'test@example.com',
+  role: 'member' as UserRole,
+  household_id: 'household-abc',
+  household_name: 'Test Household',
+  ...overrides,
+});

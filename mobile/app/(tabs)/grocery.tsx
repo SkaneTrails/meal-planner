@@ -38,28 +38,22 @@ export default function GroceryScreen() {
   const { data: mealPlan } = useMealPlan();
   const { data: recipes = [] } = useRecipes();
 
-  // Filter function to hide items that are "at home"
   const filterOutItemsAtHome = useCallback((itemName: string) => {
     return isItemAtHome(itemName);
   }, [isItemAtHome]);
 
-  // Load data from AsyncStorage whenever the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       const loadData = async () => {
         try {
-          console.log('[Grocery] Screen focused, loading data...');
           const [customData, mealsData, servingsData] = await Promise.all([
             AsyncStorage.getItem('grocery_custom_items'),
             AsyncStorage.getItem('grocery_selected_meals'),
             AsyncStorage.getItem('grocery_meal_servings'),
           ]);
 
-          console.log('[Grocery] Raw data from storage:', { customData, mealsData, servingsData });
-
           if (customData) {
             const items = JSON.parse(customData);
-            console.log('[Grocery] Loaded custom items:', items.length);
             setCustomItems(items);
           } else {
             setCustomItems([]);
@@ -67,7 +61,6 @@ export default function GroceryScreen() {
 
           if (mealsData) {
             const meals = JSON.parse(mealsData);
-            console.log('[Grocery] Loaded selected meals:', meals);
             setSelectedMealKeys(meals);
           } else {
             setSelectedMealKeys([]);
@@ -75,7 +68,6 @@ export default function GroceryScreen() {
 
           if (servingsData) {
             const servings = JSON.parse(servingsData);
-            console.log('[Grocery] Loaded meal servings:', servings);
             setMealServings(servings);
           } else {
             setMealServings({});
@@ -96,7 +88,6 @@ export default function GroceryScreen() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isLoading && !hasLoadedOnce) {
-        console.log('[Grocery] Fallback: clearing loading state');
         setIsLoading(false);
         setHasLoadedOnce(true);
       }
@@ -109,20 +100,11 @@ export default function GroceryScreen() {
   const mealServingsJson = useMemo(() => JSON.stringify(mealServings), [mealServings]);
   const selectedMealKeysStr = useMemo(() => selectedMealKeys.join(','), [selectedMealKeys]);
 
-  // Track if we need to clear items
   const prevGeneratedItemsLengthRef = useRef(0);
   prevGeneratedItemsLengthRef.current = generatedItems.length;
 
-  // Generate grocery items from selected meals
   useEffect(() => {
-    console.log('[Grocery] Generate effect:', {
-      hasMealPlan: !!mealPlan,
-      selectedMealKeysLength: selectedMealKeys.length,
-      recipesLength: recipes.length,
-    });
-
     if (!mealPlan || !selectedMealKeys.length) {
-      // Only update if there are items to clear
       if (prevGeneratedItemsLengthRef.current > 0) {
         setGeneratedItems([]);
       }
@@ -143,33 +125,26 @@ export default function GroceryScreen() {
 
     selectedMealKeys.forEach((key) => {
       const recipeId = mealPlan.meals[key];
-      console.log(`[Grocery] Processing key: ${key}, recipeId: ${recipeId}`);
-
       if (!recipeId || recipeId.startsWith('custom:')) return;
 
       const recipe = recipeMap.get(recipeId);
-      console.log(`[Grocery] Found recipe:`, recipe?.title, `with ${recipe?.ingredients.length} ingredients`);
-
       if (!recipe) return;
 
-      // Calculate servings multiplier
       const requestedServings = mealServings[key] || recipe.servings || 2;
       const recipeServings = recipe.servings || 2;
       const multiplier = requestedServings / recipeServings;
 
-      // Format source with servings info
       const sourceLabel = multiplier !== 1
         ? `${recipe.title} (×${requestedServings})`
         : recipe.title;
 
       recipe.ingredients.forEach((ingredient) => {
-        // Strip step references for grouping key
         const cleanedIngredient = stripStepReference(ingredient);
         const name = cleanedIngredient.toLowerCase().trim();
 
         if (!ingredientsMap.has(name)) {
           ingredientsMap.set(name, {
-            name: cleanedIngredient, // Use cleaned name without step reference
+            name: cleanedIngredient,
             quantity: null,
             unit: null,
             category: 'other',
@@ -178,7 +153,6 @@ export default function GroceryScreen() {
             quantity_sources: [],
           });
         } else {
-          // Add this recipe to the sources
           const item = ingredientsMap.get(name)!;
           if (!item.recipe_sources.includes(sourceLabel)) {
             item.recipe_sources.push(sourceLabel);
@@ -188,21 +162,17 @@ export default function GroceryScreen() {
     });
 
     const items = Array.from(ingredientsMap.values());
-    console.log('[Grocery] Generated items:', items.length);
     setGeneratedItems(items);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mealPlanMealsJson, recipes.length, selectedMealKeysStr, mealServingsJson]);
 
-  // Save custom items to AsyncStorage whenever they change
   useEffect(() => {
     if (!isLoading) {
       AsyncStorage.setItem('grocery_custom_items', JSON.stringify(customItems))
-        .then(() => console.log('[Grocery] Saved custom items:', customItems.length))
         .catch((error) => console.error('[Grocery] Error saving custom items:', error));
     }
   }, [customItems, isLoading]);
 
-  // Combine generated and custom items
   const groceryListWithChecked = useMemo(() => {
     const allItems = [...generatedItems, ...customItems];
 
@@ -230,12 +200,9 @@ export default function GroceryScreen() {
   };
 
   const handleClearAll = async () => {
-    console.log('[Grocery] Clear button clicked!');
-
     // Cross-platform confirmation
     const doClear = async () => {
       try {
-        console.log('[Grocery] Clearing all data...');
         await Promise.all([
           AsyncStorage.removeItem('grocery_selected_meals'),
           AsyncStorage.removeItem('grocery_custom_items'),
@@ -246,8 +213,6 @@ export default function GroceryScreen() {
         setGeneratedItems([]);
         setSelectedMealKeys([]);
         clearChecked();
-
-        console.log('[Grocery] All data cleared');
       } catch (error) {
         console.error('[Grocery] Error clearing data:', error);
         showNotification(t('common.error'), t('grocery.failedToClearList'));
@@ -285,12 +250,10 @@ export default function GroceryScreen() {
   const totalItems = generatedItems.length + customItems.length;
   const checkedCount = checkedItems.size;
 
-  // Count items that are filtered out (at home)
   const hiddenAtHomeCount = useMemo(() => {
     return groceryListWithChecked.items.filter(item => isItemAtHome(item.name)).length;
   }, [groceryListWithChecked.items, isItemAtHome]);
 
-  // Items to buy = total - at home items
   const itemsToBuy = totalItems - hiddenAtHomeCount;
   // Checked items that are not at home (for progress display)
   const checkedItemsToBuy = useMemo(() => {

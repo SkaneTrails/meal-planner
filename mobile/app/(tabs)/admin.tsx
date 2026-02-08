@@ -35,7 +35,6 @@ export default function AdminScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newHouseholdName, setNewHouseholdName] = useState('');
 
-  // Check if user is superuser
   if (userLoading) {
     return (
       <GradientBackground muted>
@@ -308,7 +307,7 @@ interface HouseholdCardProps {
   onPress: () => void;
 }
 
-function HouseholdCard({ household, onPress }: HouseholdCardProps) {
+const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
   return (
     <Pressable
       onPress={onPress}
@@ -348,7 +347,7 @@ interface HouseholdDetailModalProps {
   onClose: () => void;
 }
 
-function HouseholdDetailModal({ household, onClose }: HouseholdDetailModalProps) {
+const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps) => {
   const { t } = useTranslation();
   const { data: members, isLoading, refetch } = useHouseholdMembers(household.id);
   const addMember = useAddMember();
@@ -591,7 +590,7 @@ interface MemberCardProps {
   onRemove: () => void;
 }
 
-function MemberCard({ member, onRemove }: MemberCardProps) {
+const MemberCard = ({ member, onRemove }: MemberCardProps) => {
   const { t } = useTranslation();
   const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
 

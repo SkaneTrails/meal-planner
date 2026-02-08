@@ -31,7 +31,6 @@ export const recipeApi = {
   },
 
   scrapeRecipe: async (url: string, enhance: boolean = false): Promise<Recipe> => {
-    console.log('[scrapeRecipe] Starting client-side fetch for:', url);
     try {
       const htmlResponse = await fetch(url, {
         headers: {
@@ -39,8 +38,6 @@ export const recipeApi = {
           'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
         },
       });
-
-      console.log('[scrapeRecipe] Client fetch response status:', htmlResponse.status);
 
       if (!htmlResponse.ok) {
         throw new ApiClientError(
@@ -50,24 +47,20 @@ export const recipeApi = {
       }
 
       const html = await htmlResponse.text();
-      console.log('[scrapeRecipe] Got HTML, length:', html.length);
 
       const request: RecipeParseRequest = { url, html };
       const params = new URLSearchParams();
       if (enhance) params.set('enhance', 'true');
       const query = params.toString();
 
-      console.log('[scrapeRecipe] Sending to /recipes/parse');
       return apiRequest<Recipe>(`/recipes/parse${query ? `?${query}` : ''}`, {
         method: 'POST',
         body: JSON.stringify(request),
       });
     } catch (error) {
-      console.log('[scrapeRecipe] Client-side fetch failed:', error);
       if (error instanceof ApiClientError) {
         throw error;
       }
-      console.log('[scrapeRecipe] Falling back to /recipes/scrape');
       const request: RecipeScrapeRequest = { url };
       const params = new URLSearchParams();
       if (enhance) params.set('enhance', 'true');
