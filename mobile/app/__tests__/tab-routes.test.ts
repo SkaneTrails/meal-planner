@@ -9,9 +9,10 @@
 
 import { readdirSync, statSync } from 'fs';
 import { join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { describe, it, expect } from 'vitest';
 
-const TABS_DIR = resolve(__dirname, '..', '(tabs)');
+const TABS_DIR = resolve(fileURLToPath(import.meta.url), '..', '..', '(tabs)');
 
 const ALLOWED_ROUTE_FILES = new Set([
   '_layout.tsx',
