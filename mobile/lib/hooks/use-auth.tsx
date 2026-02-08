@@ -125,7 +125,9 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       }
       handlingUnauthorizedRef.current = true;
 
-      firebaseSignOut(auth!).catch(() => {});
+      firebaseSignOut(auth!).catch((err) =>
+        console.warn('Sign-out failed during unauthorized handling', err),
+      );
 
       let title: string;
       let message: string;

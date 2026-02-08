@@ -165,7 +165,7 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       {children}
     </SettingsContext.Provider>
   );
-}
+};
 
 export const useSettings = () => {
   const context = useContext(SettingsContext);

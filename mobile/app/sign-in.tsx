@@ -18,8 +18,9 @@ export default function SignInScreen() {
   const handleSignOut = async () => {
     try {
       await signOut();
-    } catch {}
-
+    } catch (err) {
+      console.error('Failed to sign out', err);
+    }
   };
 
   if (user) {
