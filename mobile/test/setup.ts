@@ -63,13 +63,20 @@ vi.mock('@/lib/theme', () => ({
     text: { inverse: '#fff', dark: '#000', secondary: '#888', muted: '#aaa' },
     border: '#e0e0e0',
     white: '#fff',
+    success: '#22c55e',
+    error: '#ef4444',
+    diet: {
+      veggie: { text: '#16a34a', bg: '#dcfce7' },
+      fish: { text: '#0284c7', bg: '#e0f2fe' },
+      meat: { text: '#dc2626', bg: '#fee2e2' },
+    },
   },
   spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, '2xl': 32 },
   fontSize: { xs: 10, sm: 12, md: 14, lg: 16, xl: 20, '2xl': 24 },
   fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },
   fontFamily: { body: 'System', heading: 'System' },
   letterSpacing: { tighter: -0.8, tight: -0.5, normal: -0.2, wide: 0.8, wider: 1.2 },
-  borderRadius: { sm: 4, md: 8, lg: 12, xl: 16 },
+  borderRadius: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
   shadows: { sm: {}, md: {}, lg: {} },
 }));
 
