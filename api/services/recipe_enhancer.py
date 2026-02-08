@@ -76,12 +76,12 @@ def _format_recipe_text(recipe: dict[str, Any]) -> str:
     instructions_text = "\n".join(instructions) if isinstance(instructions, list) else instructions
 
     return f"""
-Titel: {recipe.get("title", "Okänd")}
+Title: {recipe.get("title", "Unknown")}
 
-Ingredienser:
+Ingredients:
 {chr(10).join(f"- {ing}" for ing in ingredients)}
 
-Instruktioner:
+Instructions:
 {instructions_text}
 """
 
