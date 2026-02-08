@@ -46,6 +46,14 @@ def parse_ingredients(text: str) -> list[str]:
     ...
 ```
 
+## Code Quality
+
+### Before Writing New Code
+
+1. **Check existing modules** before creating new functions — search `api/services/`, `api/models/`, and `scripts/` for existing implementations
+2. **Search for similar patterns** across the codebase — if the same logic exists in 2+ files, extract to a shared module
+3. **Remove dead code** — unused imports, commented-out blocks, and unreachable branches. Use git history, not comments
+
 ### When to Split Files
 
 - Multiple unrelated classes in one file → separate by class
