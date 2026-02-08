@@ -64,6 +64,38 @@ ScrollView.displayName = 'ScrollView';
 export { ScrollView };
 export const ActivityIndicator = mockComponent('ActivityIndicator');
 export const Platform = { OS: 'web', select: (obj: any) => obj.web ?? obj.default };
-export const StyleSheet = { create: (styles: any) => styles };
+export const StyleSheet = {
+  create: (styles: any) => styles,
+  flatten: (style: any): any => {
+    if (!style) return style;
+    if (Array.isArray(style)) {
+      return Object.assign({}, ...style.filter(Boolean).map((s: any) => StyleSheet.flatten(s)));
+    }
+    return style;
+  },
+};
+
+// Animated mock — Value stub that stores numeric value, spring/timing are no-ops
+class AnimatedValue {
+  _value: number;
+  constructor(value: number) {
+    this._value = value;
+  }
+  setValue(value: number) { this._value = value; }
+  interpolate(config: any) { return this; }
+}
+
+export const Animated = {
+  Value: AnimatedValue,
+  View: mockComponent('AnimatedView'),
+  Text: mockComponent('AnimatedText'),
+  Image: mockComponent('AnimatedImage'),
+  spring: (_value: any, _config: any) => ({ start: (cb?: any) => cb?.({ finished: true }) }),
+  timing: (_value: any, _config: any) => ({ start: (cb?: any) => cb?.({ finished: true }) }),
+  parallel: (anims: any[]) => ({ start: (cb?: any) => cb?.({ finished: true }) }),
+  sequence: (anims: any[]) => ({ start: (cb?: any) => cb?.({ finished: true }) }),
+  event: () => () => {},
+  createAnimatedComponent: (comp: any) => comp,
+};
 
 export { Pressable, Switch, TextInput };

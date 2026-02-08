@@ -43,6 +43,10 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, '.'),
       'react-native': path.resolve(__dirname, 'test/mocks/react-native.ts'),
+      'expo-linear-gradient': path.resolve(
+        __dirname,
+        'test/mocks/expo-linear-gradient.ts',
+      ),
     },
   },
 });
