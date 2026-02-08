@@ -12,7 +12,6 @@ import {
   RefreshControl,
   Pressable,
   useWindowDimensions,
-  Modal,
   ScrollView,
   Platform,
   UIManager,
@@ -21,7 +20,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useRecipes } from '@/lib/hooks';
-import { AnimatedPressable, RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
+import { AnimatedPressable, BottomSheetModal, RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
@@ -449,28 +448,17 @@ export default function RecipesScreen() {
       />
 
       {/* Sort Picker Modal */}
-      <Modal
+      <BottomSheetModal
         visible={showSortPicker}
-        transparent
+        onClose={() => setShowSortPicker(false)}
+        title={t('recipes.sortBy')}
         animationType="fade"
-        onRequestClose={() => setShowSortPicker(false)}
+        dismissOnBackdropPress
+        showDragHandle
+        showCloseButton={false}
+        backgroundColor="#F5EDE5"
+        scrollable={false}
       >
-        <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
-          onPress={() => setShowSortPicker(false)}
-        >
-          <View style={{
-            backgroundColor: '#F5EDE5',
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingBottom: 40,
-          }}>
-            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
-            </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 12 }}>
-              {t('recipes.sortBy')}
-            </Text>
             {SORT_OPTIONS.map((option) => (
               <Pressable
                 key={option.value}
@@ -502,9 +490,7 @@ export default function RecipesScreen() {
                 )}
               </Pressable>
             ))}
-          </View>
-        </Pressable>
-      </Modal>
+      </BottomSheetModal>
       </View>
     </GradientBackground>
   );

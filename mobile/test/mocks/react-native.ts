@@ -98,4 +98,8 @@ export const Animated = {
   createAnimatedComponent: (comp: any) => comp,
 };
 
-export { Pressable, Switch, TextInput };
+// Modal mock — renders children only when visible
+const Modal = ({ visible, children, testID, transparent, animationType, onRequestClose, ...props }: any) =>
+  visible ? React.createElement('div', { 'data-testid': testID, 'data-component': 'Modal', ...props }, children) : null;
+
+export { Pressable, Switch, TextInput, Modal };

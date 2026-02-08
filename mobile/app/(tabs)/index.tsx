@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, ScrollView, Pressable, RefreshControl, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, RefreshControl, TextInput } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib/theme';
 import { useRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
-import { AnimatedPressable, GradientBackground, HomeScreenSkeleton } from '@/components';
+import { AnimatedPressable, BottomSheetModal, GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
@@ -617,32 +617,17 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* Add Recipe Modal */}
-      <Modal
+      <BottomSheetModal
         visible={showAddModal}
-        transparent
+        onClose={() => setShowAddModal(false)}
+        title={t('home.addRecipe.title')}
         animationType="fade"
-        onRequestClose={() => setShowAddModal(false)}
+        dismissOnBackdropPress
+        showDragHandle
+        showCloseButton={false}
+        backgroundColor="#F5EDE5"
+        scrollable={false}
       >
-        <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}
-          onPress={() => setShowAddModal(false)}
-        >
-          <Pressable
-            style={{
-              backgroundColor: '#F5EDE5',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              paddingBottom: 40,
-            }}
-            onPress={(e) => e.stopPropagation()}
-          >
-            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, backgroundColor: '#C4B5A6', borderRadius: 2 }} />
-            </View>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: '#5D4E40', paddingHorizontal: 20, marginBottom: 16 }}>
-              {t('home.addRecipe.title')}
-            </Text>
-
             {/* Import from URL option */}
             <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
               <View style={{
@@ -745,9 +730,7 @@ export default function HomeScreen() {
               </View>
               <Ionicons name="chevron-forward" size={18} color="#8B7355" />
             </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      </BottomSheetModal>
     </GradientBackground>
   );
 }
