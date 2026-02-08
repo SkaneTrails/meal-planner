@@ -43,7 +43,6 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Check if auth is configured (Firebase + OAuth client IDs)
 const isAuthConfigured =
   isFirebaseConfigured &&
   Boolean(
@@ -52,8 +51,7 @@ const isAuthConfigured =
       process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
   );
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  // If auth is not configured, provide a mock authenticated user for development
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
     return (
       <AuthContext.Provider
@@ -76,7 +74,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   return <AuthProviderImpl>{children}</AuthProviderImpl>;
 }
 
-function AuthProviderImpl({ children }: AuthProviderProps) {
+const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,12 +83,9 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   // Keep a ref to the current user for the token getter to avoid closure issues
   const userRef = useRef<User | null>(null);
 
-  // For web: use Firebase's native GoogleAuthProvider
   const googleProvider =
     Platform.OS === 'web' ? new GoogleAuthProvider() : null;
 
-  // For native: Configure expo-auth-session Google Auth
-  // responseType: 'id_token' is required for Firebase Auth
   const [_request, response, promptAsync] = Google.useAuthRequest(
     Platform.OS !== 'web'
       ? {
@@ -99,14 +94,11 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
           responseType: 'id_token',
         }
       : {
-          // Minimal config for web (won't be used, but hook requires it)
           webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
         },
   );
 
-  // Register token getter for API client
   // Uses userRef to avoid stale closure issues - the ref is always current
-  // Firebase automatically refreshes tokens when they're close to expiration
   useEffect(() => {
     setAuthTokenGetter(async () => {
       const currentUser = userRef.current;
@@ -117,34 +109,24 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
         return null;
       }
     });
-  }, []); // Empty deps - we read from ref, not state
+  }, []);
 
-  // Register sign-out callback for API 401/403 responses
-  // This ensures stale auth state is cleared when token is invalid/expired
-  // or when user doesn't have household access
   // hadToken: true means we sent a token but server rejected it (real auth failure)
   //           false means no token was available (race condition during sign-in)
   useEffect(() => {
     setOnUnauthorized((status: number, hadToken: boolean) => {
-      // Only sign out and show alert if we actually sent a token
       // If no token was sent, it's likely a race condition during sign-in
       if (!hadToken) {
         return;
       }
 
-      // Prevent duplicate handling from parallel requests
       if (handlingUnauthorizedRef.current) {
         return;
       }
       handlingUnauthorizedRef.current = true;
 
-      firebaseSignOut(auth!).catch(() => {
-        // Sign out error - user will need to retry
-      });
+      firebaseSignOut(auth!).catch(() => {});
 
-      // Show user-friendly message for auth failures
-      // 401 = token invalid/expired session
-      // 403 = explicitly no household access
       let title: string;
       let message: string;
       if (status === 401) {
@@ -160,31 +142,26 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
       }
 
       if (Platform.OS === 'web') {
-        // Use window.alert on web for reliability; include title for consistency
         window.alert(`${title}\n\n${message}`);
       } else {
         showNotification(title, message);
       }
 
-      // Reset after a short delay to allow for retry after re-auth
       setTimeout(() => {
         handlingUnauthorizedRef.current = false;
       }, 1000);
     });
   }, []);
 
-  // Listen for auth state changes
   useEffect(() => {
     if (!auth) {
       setLoading(false);
       return;
     }
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      // Update ref immediately for the token getter
       userRef.current = firebaseUser;
       setUser(firebaseUser);
       setLoading(false);
-      // Reset unauthorized flag when user signs in again
       if (firebaseUser) {
         handlingUnauthorizedRef.current = false;
       }
@@ -193,9 +170,7 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
     return unsubscribe;
   }, []);
 
-  // Handle Google sign-in response (native only)
   useEffect(() => {
-    // Skip for web - we use signInWithPopup
     if (Platform.OS === 'web') return;
 
     if (response?.type === 'success') {
@@ -231,12 +206,8 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        // Web: Use Firebase's popup auth
-        console.log('Starting signInWithPopup...');
-        const result = await signInWithPopup(auth!, googleProvider);
-        console.log('signInWithPopup success:', result.user.email);
+        await signInWithPopup(auth!, googleProvider);
       } else {
-        // Native: Use expo-auth-session
         await promptAsync();
       }
     } catch (err) {
@@ -285,7 +256,7 @@ function AuthProviderImpl({ children }: AuthProviderProps) {
   );
 }
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');

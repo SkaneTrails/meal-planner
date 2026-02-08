@@ -16,8 +16,7 @@ import { useLanguageSync } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
 import { colors } from '@/lib/theme';
 
-// Custom tab bar background with subtle glass effect
-function TabBarBackground() {
+const TabBarBackground = () => {
   if (Platform.OS === 'ios') {
     return (
       <BlurView
@@ -63,10 +62,8 @@ export default function TabLayout() {
     isError,
   } = useCurrentUser({ enabled: !loading && !!user });
 
-  // Sync language from Firestore household settings on first load
   useLanguageSync(currentUser?.household_id);
 
-  // Show loading spinner while checking auth state
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bgLight }}>
@@ -75,12 +72,10 @@ export default function TabLayout() {
     );
   }
 
-  // Redirect to sign-in if not authenticated
   if (!user) {
     return <Redirect href="/sign-in" />;
   }
 
-  // Show loading while fetching user info
   if (userLoading) {
     return (
       <View

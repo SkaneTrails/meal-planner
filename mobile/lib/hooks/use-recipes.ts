@@ -20,7 +20,7 @@ export const recipeKeys = {
 /**
  * Hook to fetch all recipes.
  */
-export function useRecipes(search?: string) {
+export const useRecipes = (search?: string) => {
   return useQuery({
     queryKey: recipeKeys.list(search),
     queryFn: () => api.getRecipes(search),
@@ -30,7 +30,7 @@ export function useRecipes(search?: string) {
 /**
  * Hook to fetch a single recipe by ID.
  */
-export function useRecipe(id: string) {
+export const useRecipe = (id: string) => {
   return useQuery({
     queryKey: recipeKeys.detail(id),
     queryFn: () => api.getRecipe(id),
@@ -41,7 +41,7 @@ export function useRecipe(id: string) {
 /**
  * Hook to create a new recipe.
  */
-export function useCreateRecipe() {
+export const useCreateRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -56,7 +56,7 @@ export function useCreateRecipe() {
 /**
  * Hook to scrape a recipe from URL.
  */
-export function useScrapeRecipe() {
+export const useScrapeRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -76,7 +76,7 @@ export function useScrapeRecipe() {
 /**
  * Hook to update a recipe.
  */
-export function useUpdateRecipe() {
+export const useUpdateRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -97,7 +97,7 @@ export function useUpdateRecipe() {
 /**
  * Hook to delete a recipe.
  */
-export function useDeleteRecipe() {
+export const useDeleteRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation({

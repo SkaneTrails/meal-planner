@@ -11,12 +11,10 @@
 import { type FirebaseApp, getApps, initializeApp } from 'firebase/app';
 import { type Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
 
-// Check if Firebase is configured
 export const isFirebaseConfigured = Boolean(
   process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
 );
 
-// Firebase configuration - use environment variables for production
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -26,7 +24,6 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only if configured
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
@@ -35,7 +32,6 @@ if (isFirebaseConfigured) {
   auth = getAuth(app);
 }
 
-// Google provider for sign-in
 export const googleProvider = new GoogleAuthProvider();
 
 export { auth };

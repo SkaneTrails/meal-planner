@@ -11,10 +11,10 @@ interface BouncingLoaderProps {
   size?: number;
 }
 
-export function BouncingLoader({
+export const BouncingLoader = ({
   color = '#C4A77D',
   size = 12,
-}: BouncingLoaderProps) {
+}: BouncingLoaderProps) => {
   const bounce1 = useRef(new Animated.Value(0)).current;
   const bounce2 = useRef(new Animated.Value(0)).current;
   const bounce3 = useRef(new Animated.Value(0)).current;

@@ -31,7 +31,7 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
 
 import { GroceryProvider, useGroceryState } from '@/lib/grocery-context';
 
-function createGroceryWrapper() {
+const createGroceryWrapper = () => {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return React.createElement(GroceryProvider, null, children);
   };

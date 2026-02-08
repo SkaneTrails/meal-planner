@@ -167,15 +167,10 @@ export const useSelectRecipeState = () => {
   return {
     t, language, date, mealType, mode, router,
     MEAL_TYPE_LABELS, activeTab, setActiveTab,
-    // Library
     searchQuery, setSearchQuery, filteredRecipes,
-    // Random
     randomRecipe, mealTypeRecipes, shuffleRandom,
-    // Quick
     customText, setCustomText, handleSetCustomText,
-    // Copy
     copyWeekOffset, setCopyWeekOffset, targetWeekDates, existingMeals, formatMealDate,
-    // Common
     formattedDate, bcp47,
     handleSelectRecipe, handleCopyMeal, handleRemoveMeal,
     setMeal, removeMeal,

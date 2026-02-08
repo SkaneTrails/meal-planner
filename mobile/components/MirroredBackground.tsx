@@ -23,7 +23,7 @@ interface MirroredBackgroundProps {
   children?: React.ReactNode;
 }
 
-export function MirroredBackground({
+export const MirroredBackground = ({
   source,
   tileCount = 4,
   imageAspectRatio = 672 / 1450,
@@ -31,7 +31,7 @@ export function MirroredBackground({
   borderTopLeftRadius = 0,
   borderTopRightRadius = 0,
   children,
-}: MirroredBackgroundProps) {
+}: MirroredBackgroundProps) => {
   const tiles = Array.from({ length: tileCount }, (_, i) => i);
 
   return (

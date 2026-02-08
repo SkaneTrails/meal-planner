@@ -6,36 +6,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
 
-// Create a client with offline-friendly defaults
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Cache data for 5 minutes
       staleTime: 1000 * 60 * 5,
-      // Keep data in cache for 24 hours
       gcTime: 1000 * 60 * 60 * 24,
-      // Retry failed requests 3 times
       retry: 3,
-      // Refetch on window focus (web) or app foreground (mobile)
       refetchOnWindowFocus: true,
-      // Don't refetch on mount if data is fresh
       refetchOnMount: false,
     },
     mutations: {
-      // Retry mutations once
       retry: 1,
     },
   },
 });
 
-// Persist query cache to AsyncStorage
 const CACHE_KEY = 'meal-planner-query-cache';
 
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
   const data = cache
     .filter((query) => query.state.data !== undefined)
-    // Skip large data like full recipe lists - only cache smaller queries
     .filter((query) => {
       const key = query.queryKey;
       if (!Array.isArray(key)) {
@@ -45,7 +36,6 @@ export async function persistQueryCache(): Promise<void> {
       const resource = key[0];
       const type = key[1];
 
-      // Skip recipes list (can be large) but allow individual recipe details
       if (resource === 'recipes' && type === 'list') {
         return false;
       }
@@ -75,7 +65,6 @@ export async function persistQueryCache(): Promise<void> {
     const isQuotaOrStorageError = /quota|storage|capacity/i.test(message);
 
     if (isQuotaOrStorageError) {
-      // Quota exceeded - clear cache and continue
       try {
         await AsyncStorage.removeItem(CACHE_KEY);
       } catch (cleanupError) {
@@ -113,7 +102,7 @@ interface QueryProviderProps {
   children: React.ReactNode;
 }
 
-export function QueryProvider({ children }: QueryProviderProps) {
+export const QueryProvider = ({ children }: QueryProviderProps) => {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );

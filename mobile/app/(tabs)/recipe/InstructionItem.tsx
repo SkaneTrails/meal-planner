@@ -15,7 +15,6 @@ interface InstructionItemProps {
 export const InstructionItem = ({ instruction, index, isCompleted, onToggle, stepNumber }: InstructionItemProps) => {
   const { type, content, time } = instruction;
 
-  // Inline tip - compact indented terracotta callout (not numbered)
   if (type === 'tip') {
     return (
       <View style={{
@@ -50,7 +49,6 @@ export const InstructionItem = ({ instruction, index, isCompleted, onToggle, ste
     );
   }
 
-  // Section heading - visual divider (not numbered)
   if (type === 'heading') {
     return (
       <View style={{
@@ -75,7 +73,6 @@ export const InstructionItem = ({ instruction, index, isCompleted, onToggle, ste
     );
   }
 
-  // Unified step (both 'timeline' and 'step' types)
   const hasTime = type === 'timeline' && time !== null && time !== undefined;
   const displayNumber = stepNumber ?? 1;
 

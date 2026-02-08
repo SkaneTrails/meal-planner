@@ -23,7 +23,7 @@ const locales: Record<AppLanguage, Translations> = { en, sv, it };
  * value in the given translations object.  Returns `undefined` when the
  * path does not exist.
  */
-function resolve(obj: unknown, path: string): string | undefined {
+const resolve = (obj: unknown, path: string): string | undefined  => {
   let current: unknown = obj;
   for (const segment of path.split('.')) {
     if (current == null || typeof current !== 'object') return undefined;
@@ -36,10 +36,10 @@ function resolve(obj: unknown, path: string): string | undefined {
  * Replace `{{variable}}` placeholders with the corresponding values from
  * the params object.
  */
-function interpolate(
+const interpolate = (
   template: string,
   params?: Record<string, string | number>,
-): string {
+): string  => {
   if (!params) return template;
   return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) =>
     params[key] != null ? String(params[key]) : `{{${key}}}`,
@@ -64,7 +64,7 @@ export type TFunction = (
  * If the key is also missing from English, returns the key itself so missing
  * translations are obvious during development.
  */
-export function useTranslation() {
+export const useTranslation = () => {
   const { settings } = useSettings();
   const language = settings.language;
 
@@ -76,12 +76,10 @@ export function useTranslation() {
       if (value != null && value !== '') {
         return interpolate(value, params);
       }
-      // Fallback to English
       const fallback = resolve(en, key);
       if (fallback != null && fallback !== '') {
         return interpolate(fallback, params);
       }
-      // Return raw key so missing translations are visible
       return key;
     },
     [translations],

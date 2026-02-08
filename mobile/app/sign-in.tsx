@@ -18,12 +18,10 @@ export default function SignInScreen() {
   const handleSignOut = async () => {
     try {
       await signOut();
-    } catch {
-      // Ignore sign-out errors on sign-in screen
-    }
+    } catch {}
+
   };
 
-  // If already signed in, redirect to home
   if (user) {
     return <Redirect href="/(tabs)" />;
   }

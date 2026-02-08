@@ -28,7 +28,7 @@ interface GroceryContextValue extends GroceryState {
 
 const GroceryContext = createContext<GroceryContextValue | null>(null);
 
-export function GroceryProvider({ children }: { children: ReactNode }) {
+export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const [checkedItems, setCheckedItemsState] = useState<Set<string>>(new Set());
   const [customItems, setCustomItems] = useState<string[]>([]);
   const [selectedMealKeys, setSelectedMealKeys] = useState<string[]>([]);
@@ -47,7 +47,6 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
       }
       if (customData) {
         const items = JSON.parse(customData);
-        // Handle both old format (strings) and new format (GroceryItem objects)
         const names = items.map((i: string | { name: string }) =>
           typeof i === 'string' ? i : i.name,
         );
@@ -63,7 +62,6 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Load from storage only once on mount
   useEffect(() => {
     loadFromStorage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,7 +126,7 @@ export function GroceryProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useGroceryState() {
+export const useGroceryState = () => {
   const context = useContext(GroceryContext);
   if (!context) {
     throw new Error('useGroceryState must be used within a GroceryProvider');
