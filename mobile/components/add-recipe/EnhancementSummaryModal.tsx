@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, Pressable, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, iconContainer } from '@/lib/theme';
-import type { useAddRecipeActions } from './useAddRecipeActions';
+import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 
 type Actions = ReturnType<typeof useAddRecipeActions>;
 

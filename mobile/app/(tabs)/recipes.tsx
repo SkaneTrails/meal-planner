@@ -13,8 +13,8 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import type { DietLabel, MealLabel } from '@/lib/types';
-import { RecipeGrid } from './recipes/RecipeGrid';
-import { SearchBar, FilterChips } from './recipes/RecipeFilters';
+import { RecipeGrid } from '@/components/recipes/RecipeGrid';
+import { SearchBar, FilterChips } from '@/components/recipes/RecipeFilters';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);

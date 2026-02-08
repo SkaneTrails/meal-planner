@@ -5,10 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib/theme';
 import { AnimatedPressable, GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
-import { useHomeScreenData } from './index/useHomeScreenData';
-import { StatsCards } from './index/StatsCards';
-import { InspirationSection } from './index/InspirationSection';
-import { AddRecipeModal } from './index/AddRecipeModal';
+import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
+import { StatsCards } from '@/components/home/StatsCards';
+import { InspirationSection } from '@/components/home/InspirationSection';
+import { AddRecipeModal } from '@/components/home/AddRecipeModal';
 
 const HOMEPAGE_HERO = require('@/assets/images/homepage-hero.png');
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';

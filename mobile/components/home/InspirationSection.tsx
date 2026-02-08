@@ -8,7 +8,7 @@ import { borderRadius, colors, fontSize, letterSpacing, fontFamily } from '@/lib
 import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { Recipe } from '@/lib/types';
-import type { useHomeScreenData } from './useHomeScreenData';
+import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 
 const HOMEPAGE_HERO = require('@/assets/images/homepage-hero.png');
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';

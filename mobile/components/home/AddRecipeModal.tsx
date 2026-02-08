@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, fontSize, fontFamily } from '@/lib/theme';
 import { BottomSheetModal } from '@/components';
-import type { useHomeScreenData } from './useHomeScreenData';
+import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 

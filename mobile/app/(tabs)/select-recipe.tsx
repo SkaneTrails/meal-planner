@@ -4,11 +4,11 @@ import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize, fontFamily } from '@/lib/theme';
 import { GradientBackground } from '@/components';
-import { useSelectRecipeState, type TabType } from './select-recipe/useSelectRecipeState';
-import { QuickMealTab } from './select-recipe/QuickMealTab';
-import { LibraryTab } from './select-recipe/LibraryTab';
-import { RandomTab } from './select-recipe/RandomTab';
-import { CopyMealTab } from './select-recipe/CopyMealTab';
+import { useSelectRecipeState, type TabType } from '@/lib/hooks/useSelectRecipeState';
+import { QuickMealTab } from '@/components/select-recipe/QuickMealTab';
+import { LibraryTab } from '@/components/select-recipe/LibraryTab';
+import { RandomTab } from '@/components/select-recipe/RandomTab';
+import { CopyMealTab } from '@/components/select-recipe/CopyMealTab';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
 

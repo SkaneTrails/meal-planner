@@ -7,9 +7,9 @@ import { hapticLight } from '@/lib/haptics';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
-import { DAY_SECTION_HEIGHT, showConfirmDelete } from './meal-plan-constants';
+import { DAY_SECTION_HEIGHT, showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
 import type { MealType, Recipe } from '@/lib/types';
-import type { MealTypeOption } from './meal-plan-constants';
+import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
 
 export const useMealPlanActions = () => {
   const router = useRouter();
