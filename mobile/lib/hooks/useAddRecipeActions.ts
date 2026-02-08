@@ -35,8 +35,8 @@ export const useAddRecipeActions = () => {
 
   const isValidUrl = (text: string) => {
     try {
-      new URL(text);
-      return true;
+      const parsed = new URL(text);
+      return ['http:', 'https:'].includes(parsed.protocol);
     } catch {
       return false;
     }

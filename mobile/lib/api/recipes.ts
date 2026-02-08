@@ -31,6 +31,11 @@ export const recipeApi = {
   },
 
   scrapeRecipe: async (url: string, enhance: boolean = false): Promise<Recipe> => {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      throw new ApiClientError('Only http and https URLs are supported', 400);
+    }
+
     try {
       const htmlResponse = await fetch(url, {
         headers: {
