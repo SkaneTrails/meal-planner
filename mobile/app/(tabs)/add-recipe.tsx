@@ -17,8 +17,8 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import { useScrapeRecipe, useCreateRecipe } from '@/lib/hooks';
+import { useImagePicker } from '@/lib/hooks/useImagePicker';
 import { api } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -164,51 +164,10 @@ export default function AddRecipeScreen() {
     }
   };
 
-  const handlePickImage = () => {
-    showAlert(t('recipeDetail.changeImage'), t('recipeDetail.chooseSource'), [
-      {
-        text: t('recipeDetail.takePhoto'),
-        onPress: async () => {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
-          if (status !== 'granted') {
-            showNotification(t('common.error'), t('recipeDetail.cameraPermissionRequired'));
-            return;
-          }
-          const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-          });
-          if (!result.canceled && result.assets[0]) {
-            setSelectedImage(result.assets[0].uri);
-            setImageUrl(''); // Clear URL if local image selected
-          }
-        },
-      },
-      {
-        text: t('recipeDetail.chooseFromLibrary'),
-        onPress: async () => {
-          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-          if (status !== 'granted') {
-            showNotification(t('common.error'), t('recipeDetail.galleryPermissionRequired'));
-            return;
-          }
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-          });
-          if (!result.canceled && result.assets[0]) {
-            setSelectedImage(result.assets[0].uri);
-            setImageUrl(''); // Clear URL if local image selected
-          }
-        },
-      },
-      { text: t('common.cancel'), style: 'cancel' },
-    ]);
-  };
+  const { pickImage: handlePickImage } = useImagePicker((uri) => {
+    setSelectedImage(uri);
+    setImageUrl('');
+  });
 
   const handleViewRecipe = () => {
     setShowSummaryModal(false);
