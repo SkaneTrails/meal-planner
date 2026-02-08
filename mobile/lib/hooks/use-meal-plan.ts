@@ -20,7 +20,7 @@ export const mealPlanKeys = {
 /**
  * Hook to fetch the current household's meal plan.
  */
-export function useMealPlan() {
+export const useMealPlan = () => {
   return useQuery({
     queryKey: mealPlanKeys.detail(),
     queryFn: () => api.getMealPlan(),
@@ -30,7 +30,7 @@ export function useMealPlan() {
 /**
  * Hook to update the meal plan (batch update).
  */
-export function useUpdateMealPlan() {
+export const useUpdateMealPlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -44,7 +44,7 @@ export function useUpdateMealPlan() {
 /**
  * Hook to update a single meal.
  */
-export function useUpdateMeal() {
+export const useUpdateMeal = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -58,7 +58,7 @@ export function useUpdateMeal() {
 /**
  * Hook to update a day note.
  */
-export function useUpdateNote() {
+export const useUpdateNote = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -76,7 +76,7 @@ export function useUpdateNote() {
 /**
  * Hook to clear the meal plan.
  */
-export function useClearMealPlan() {
+export const useClearMealPlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -90,7 +90,7 @@ export function useClearMealPlan() {
 /**
  * Hook to set a meal (recipe or custom text).
  */
-export function useSetMeal() {
+export const useSetMeal = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -121,7 +121,7 @@ export function useSetMeal() {
 /**
  * Hook to remove a meal from the plan.
  */
-export function useRemoveMeal() {
+export const useRemoveMeal = () => {
   const queryClient = useQueryClient();
 
   return useMutation({

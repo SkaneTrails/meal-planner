@@ -6,10 +6,17 @@ import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import type { Recipe } from '@/lib/types';
 
-function getNextMeal(
+const getNextMeal = (
   mealPlan: { meals?: Record<string, string> } | undefined,
   recipes: Recipe[],
-): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string; isTomorrow?: boolean } | null {
+): {
+  title: string;
+  imageUrl?: string;
+  isCustom: boolean;
+  mealType: string;
+  recipeId?: string;
+  isTomorrow?: boolean;
+} | null => {
   if (!mealPlan?.meals) return null;
   const now = new Date();
   const today = formatDateLocal(now);
@@ -49,14 +56,14 @@ function getNextMeal(
   }
 
   return null;
-}
+};
 
-function getGreetingKey(): 'greetingMorning' | 'greetingAfternoon' | 'greetingEvening' {
+const getGreetingKey = (): 'greetingMorning' | 'greetingAfternoon' | 'greetingEvening' => {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return 'greetingMorning';
   if (hour >= 12 && hour < 18) return 'greetingAfternoon';
   return 'greetingEvening';
-}
+};
 
 export const useHomeScreenData = () => {
   const router = useRouter();

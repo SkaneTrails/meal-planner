@@ -9,7 +9,7 @@ interface GoogleLogoProps {
   size?: number;
 }
 
-export function GoogleLogo({ size = 24 }: GoogleLogoProps) {
+export const GoogleLogo = ({ size = 24 }: GoogleLogoProps) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Path

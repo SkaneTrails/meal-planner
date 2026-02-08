@@ -24,7 +24,6 @@ import { showNotification } from '@/lib/alert';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 
-// Common items that people often have at home
 const SUGGESTED_ITEMS = [
   'salt',
   'pepper',
@@ -43,16 +42,17 @@ const SUGGESTED_ITEMS = [
   'eggs',
 ];
 
-// Section header component
-function SectionHeader({
-  icon,
-  title,
-  subtitle
-}: {
+interface SectionHeaderProps {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle: string;
-}) {
+}
+
+const SectionHeader = ({
+  icon,
+  title,
+  subtitle
+}: SectionHeaderProps) => {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
       <View style={{
@@ -303,7 +303,6 @@ export default function SettingsScreen() {
               ...shadows.sm,
             }}>
               {LANGUAGES.map((lang, index) => {
-                // Flag image URLs - using circular flag icons
                 const flagUrls: Record<AppLanguage, string> = {
                   en: 'https://flagcdn.com/w80/gb.png',
                   sv: 'https://flagcdn.com/w80/se.png',

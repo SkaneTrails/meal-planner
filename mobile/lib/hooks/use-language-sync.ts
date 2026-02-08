@@ -16,7 +16,7 @@ import { useSettings, type AppLanguage } from '@/lib/settings-context';
 
 const SUPPORTED_LANGUAGES: AppLanguage[] = ['en', 'sv', 'it'];
 
-function isSupportedLanguage(value: string): value is AppLanguage {
+const isSupportedLanguage = (value: string): value is AppLanguage  => {
   return SUPPORTED_LANGUAGES.includes(value as AppLanguage);
 }
 
@@ -24,7 +24,7 @@ function isSupportedLanguage(value: string): value is AppLanguage {
  * Syncs language from Firestore household settings → local on first load.
  * Call this once in a component that has access to both auth and settings contexts.
  */
-export function useLanguageSync(householdId: string | null | undefined) {
+export const useLanguageSync = (householdId: string | null | undefined) => {
   const { settings, setLanguage } = useSettings();
   const { data: householdSettings } = useHouseholdSettings(householdId ?? null);
   const hasSynced = useRef(false);
@@ -36,7 +36,6 @@ export function useLanguageSync(householdId: string | null | undefined) {
     const remoteLanguage = householdSettings.language;
     if (!isSupportedLanguage(remoteLanguage)) return;
 
-    // Only sync if local language differs from Firestore
     if (settings.language !== remoteLanguage) {
       (async () => {
         try {
@@ -56,9 +55,9 @@ export function useLanguageSync(householdId: string | null | undefined) {
  * Returns a function that updates the household language in Firestore.
  * Used alongside the local setLanguage() in the settings screen.
  */
-export function useUpdateHouseholdLanguage(
+export const useUpdateHouseholdLanguage = (
   householdId: string | null | undefined,
-) {
+) => {
   const updateSettings = useUpdateHouseholdSettings();
 
   return async (language: AppLanguage) => {

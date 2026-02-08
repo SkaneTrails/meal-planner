@@ -33,14 +33,14 @@ const MEAL_TYPE_LABEL_KEYS: Record<MealType, string> = {
   snack: 'labels.mealTime.snack',
 };
 
-export function MealCell({
+export const MealCell = ({
   date,
   mealType,
   recipe,
   customText,
   onPress,
   onLongPress,
-}: MealCellProps) {
+}: MealCellProps) => {
   const { t } = useTranslation();
   const hasContent = recipe || customText;
   const displayText = recipe?.title || customText;
@@ -93,13 +93,13 @@ interface DayColumnProps {
   onMealLongPress?: (mealType: MealType) => void;
 }
 
-export function DayColumn({
+export const DayColumn = ({
   date,
   meals,
   note,
   onMealPress,
   onMealLongPress,
-}: DayColumnProps) {
+}: DayColumnProps) => {
   const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
   const dayNumber = date.getDate();
   const isToday = new Date().toDateString() === date.toDateString();

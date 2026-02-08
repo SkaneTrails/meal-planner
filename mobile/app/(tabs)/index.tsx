@@ -24,7 +24,6 @@ export default function HomeScreen() {
     handleImportRecipe,
   } = data;
 
-  // Show skeleton on initial load
   if (isLoading && recipes.length === 0) {
     return (
       <GradientBackground>

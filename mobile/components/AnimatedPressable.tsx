@@ -27,7 +27,7 @@ interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
   disableAnimation?: boolean;
 }
 
-export function AnimatedPressable({
+export const AnimatedPressable = ({
   children,
   style,
   pressScale = 0.97,
@@ -39,7 +39,7 @@ export function AnimatedPressable({
   onHoverIn,
   onHoverOut,
   ...props
-}: AnimatedPressableProps) {
+}: AnimatedPressableProps) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const isHovered = useRef(false);
   const isPressed = useRef(false);
@@ -78,7 +78,6 @@ export function AnimatedPressable({
   const handlePressOut = useCallback(
     (event: any) => {
       isPressed.current = false;
-      // Return to hover scale if still hovered, otherwise normal
       animateTo(isHovered.current ? hoverScale : 1, true);
       onPressOut?.(event);
     },
@@ -88,7 +87,6 @@ export function AnimatedPressable({
   const handleHoverIn = useCallback(
     (event: any) => {
       isHovered.current = true;
-      // Only animate hover if not pressed
       if (!isPressed.current) {
         animateTo(hoverScale);
       }
@@ -100,7 +98,6 @@ export function AnimatedPressable({
   const handleHoverOut = useCallback(
     (event: any) => {
       isHovered.current = false;
-      // Only animate back if not pressed
       if (!isPressed.current) {
         animateTo(1);
       }
@@ -121,7 +118,6 @@ export function AnimatedPressable({
     return { flex, flexGrow, flexShrink, flexBasis, alignSelf, width, height, minWidth, minHeight, maxWidth, maxHeight, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical };
   };
 
-  // Remove flex-related styles from inner view to avoid conflict
   const removeFlexStyle = (styleObj: StyleProp<ViewStyle>): ViewStyle => {
     // Flatten style arrays to handle style={[...styles]} properly
     const flattened = StyleSheet.flatten(styleObj);
@@ -145,7 +141,6 @@ export function AnimatedPressable({
       {({ pressed }) => {
         const hovered = isHovered.current;
         const resolvedStyle = typeof style === 'function' ? style({ pressed, hovered }) : style;
-        // For static styles, remove flex properties from inner view since they're on the Pressable
         const innerStyle = typeof style === 'function' ? resolvedStyle : removeFlexStyle(resolvedStyle);
 
         return (

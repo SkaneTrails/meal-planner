@@ -35,39 +35,32 @@ import {
 import { SettingsProvider } from '@/lib/settings-context';
 import '../global.css';
 
-// Prevent splash screen from auto-hiding until fonts are loaded
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // Load fonts: DM Sans for body, Playfair Display for headings, Ionicons for icons
   const [fontsLoaded] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     Ionicons: require('../public/fonts/Ionicons.ttf'),
-    // DM Sans - modern, clean body text
     DMSans_400Regular,
     DMSans_500Medium,
     DMSans_600SemiBold,
     DMSans_700Bold,
-    // Playfair Display - elegant serif for headings
     PlayfairDisplay_400Regular,
     PlayfairDisplay_500Medium,
     PlayfairDisplay_600SemiBold,
     PlayfairDisplay_700Bold,
   });
 
-  // Restore cache on app startup
   useEffect(() => {
     restoreQueryCache();
   }, []);
 
-  // Hide splash screen once fonts are loaded
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
-  // Persist cache when app goes to background
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
@@ -82,7 +75,6 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
-  // Don't render until fonts are loaded
   if (!fontsLoaded) {
     return null;
   }

@@ -15,7 +15,6 @@ import { useTranslation } from '@/lib/i18n';
 import { hapticLight } from '@/lib/haptics';
 import type { Recipe, DietLabel } from '@/lib/types';
 
-// Blurhash placeholder for loading state (soft cream color)
 const PLACEHOLDER_BLURHASH = 'L5PZfS~q.8-;_3t7xuIU00og?bD%';
 
 interface RecipeCardProps {
@@ -40,7 +39,7 @@ const DIET_LABEL_KEYS: Record<DietLabel, string> = {
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400';
 
-export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFavorite = true }: RecipeCardProps) {
+export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFavorite = true }: RecipeCardProps) => {
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
@@ -146,9 +145,7 @@ export function RecipeCard({ recipe, onPress, compact = false, cardSize, showFav
     );
   }
 
-  // Grid card layout - premium white card with tall image and content below
-  // 4:5 aspect ratio image with gradient overlay
-  const imageHeight = cardSize ? cardSize * 1.1 : 180; // Taller 4:5ish ratio
+  const imageHeight = cardSize ? cardSize * 1.1 : 180;
   const cardHeight = cardSize ? cardSize * 1.5 : 260;
 
   return (

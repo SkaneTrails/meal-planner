@@ -85,8 +85,6 @@ export const useMealPlanActions = () => {
     return recipe ? { recipe } : { customText: value };
   }, [mealPlan, recipeMap]);
 
-  // --- Scroll & jump-to-today ---
-
   const handleScroll = useCallback((scrollY: number) => {
     if (todayIndex < 0) return;
     const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
@@ -117,8 +115,6 @@ export const useMealPlanActions = () => {
       }, 100);
     }
   }, [todayIndex, weekOffset]);
-
-  // --- Swipe gesture ---
 
   const swipeThreshold = 50;
   const panResponder = useMemo(() => PanResponder.create({
@@ -155,8 +151,6 @@ export const useMealPlanActions = () => {
     },
   }), [swipeTranslateX]);
 
-  // --- Note editing ---
-
   const handleStartEditNote = useCallback((date: Date) => {
     const dateStr = formatDateLocal(date);
     setEditingNoteDate(dateStr);
@@ -188,8 +182,6 @@ export const useMealPlanActions = () => {
     }
   }, [noteText]);
 
-  // --- Meal actions ---
-
   const handleMealPress = useCallback((date: Date, mealType: MealType, mode?: 'library' | 'copy' | 'quick' | 'random') => {
     const dateStr = formatDateLocal(date);
     router.push({
@@ -213,8 +205,6 @@ export const useMealPlanActions = () => {
       t('mealPlan.removeMealConfirm'),
     );
   }, [removeMeal, t]);
-
-  // --- Grocery selection ---
 
   const handleToggleMeal = useCallback((date: Date, mealType: MealType, recipeServings?: number) => {
     const dateStr = formatDateLocal(date);
@@ -266,22 +256,17 @@ export const useMealPlanActions = () => {
   }, [weekOffset]);
 
   return {
-    // Translation
     t, language,
-    // Data
     MEAL_TYPES, NOTE_SUGGESTIONS,
     mealPlan, mealPlanLoading, recipes,
     weekDates, groceryWeekDates, todayIndex,
     recipeMap,
-    // State
     weekOffset, setWeekOffset,
     showGroceryModal, setShowGroceryModal,
     groceryWeekOffset, setGroceryWeekOffset,
     selectedMeals, mealServings,
     showJumpButton, editingNoteDate, noteText, setNoteText,
-    // Refs
     scrollViewRef, jumpButtonOpacity, swipeTranslateX, panResponder,
-    // Handlers
     handleScroll, jumpToToday, refetchMealPlan,
     getNoteForDate, getMealForSlot,
     handleStartEditNote, handleSaveNote, handleCancelEditNote, handleAddTag,

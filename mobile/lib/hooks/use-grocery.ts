@@ -6,7 +6,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../api';
 
-// Query keys
 export const groceryKeys = {
   all: ['grocery'] as const,
   list: (options?: { start_date?: string; end_date?: string; days?: number }) =>
@@ -22,7 +21,7 @@ interface GroceryListOptions {
 /**
  * Hook to fetch the grocery list for the current household's meal plan.
  */
-export function useGroceryList(options?: GroceryListOptions) {
+export const useGroceryList = (options?: GroceryListOptions) => {
   return useQuery({
     queryKey: groceryKeys.list(options),
     queryFn: () => api.getGroceryList(options),

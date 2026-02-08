@@ -246,21 +246,18 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   };
 
   return {
-    // Auth state
     currentUser,
     isSuperuser,
     households,
     canEdit,
     isUpdatingImage,
     t,
-    // Modal visibility
     showPlanModal,
     setShowPlanModal,
     showEditModal,
     setShowEditModal,
     showUrlModal,
     setShowUrlModal,
-    // Handlers
     handlePickImage,
     saveImageUrl,
     handlePlanMeal,

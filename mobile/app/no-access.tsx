@@ -30,17 +30,14 @@ export default function NoAccessScreen() {
     }
   };
 
-  // If not authenticated, redirect to sign-in
   if (!loading && !user) {
     return <Redirect href="/sign-in" />;
   }
 
-  // If user has a household or is a superuser, redirect to home
   if (currentUser?.household_id || currentUser?.role === 'superuser') {
     return <Redirect href="/(tabs)" />;
   }
 
-  // Show loading while checking user state
   if (loading || userLoading) {
     return (
       <GradientBackground animated style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
