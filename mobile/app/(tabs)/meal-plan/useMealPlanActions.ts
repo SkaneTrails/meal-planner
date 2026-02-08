@@ -1,0 +1,292 @@
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { Animated, PanResponder, type ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMealPlan, useRecipes, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
+import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
+import { showNotification } from '@/lib/alert';
+import { useTranslation } from '@/lib/i18n';
+import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
+import { DAY_SECTION_HEIGHT, showConfirmDelete } from './meal-plan-constants';
+import type { MealType, Recipe } from '@/lib/types';
+import type { MealTypeOption } from './meal-plan-constants';
+
+export const useMealPlanActions = () => {
+  const router = useRouter();
+  const { t, language } = useTranslation();
+
+  const MEAL_TYPES: MealTypeOption[] = useMemo(() => [
+    { type: 'lunch', label: t('labels.mealTime.lunch') },
+    { type: 'dinner', label: t('labels.mealTime.dinner') },
+  ], [t]);
+
+  const NOTE_SUGGESTIONS = useMemo(() => [
+    t('mealPlan.dayLabels.office'),
+    t('mealPlan.dayLabels.home'),
+    t('mealPlan.dayLabels.gym'),
+    t('mealPlan.dayLabels.dinnerOut'),
+    t('mealPlan.dayLabels.travel'),
+    t('mealPlan.dayLabels.party'),
+  ], [t]);
+
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [showGroceryModal, setShowGroceryModal] = useState(false);
+  const [groceryWeekOffset, setGroceryWeekOffset] = useState(0);
+  const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
+  const [mealServings, setMealServings] = useState<Record<string, number>>({});
+  const [showJumpButton, setShowJumpButton] = useState(false);
+  const [editingNoteDate, setEditingNoteDate] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState('');
+  const scrollViewRef = useRef<ScrollView>(null);
+  const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
+  const swipeTranslateX = useRef(new Animated.Value(0)).current;
+
+  const weekDates = useMemo(() => getWeekDatesArray(weekOffset), [weekOffset]);
+  const groceryWeekDates = useMemo(() => getWeekDatesArray(groceryWeekOffset), [groceryWeekOffset]);
+
+  const todayIndex = useMemo(() => {
+    const today = new Date();
+    return weekDates.findIndex(date => date.toDateString() === today.toDateString());
+  }, [weekDates]);
+
+  const {
+    data: mealPlan,
+    isLoading: mealPlanLoading,
+    refetch: refetchMealPlan,
+  } = useMealPlan();
+  const { data: recipes = [] } = useRecipes();
+  const setMeal = useSetMeal();
+  const updateNote = useUpdateNote();
+  const removeMeal = useRemoveMeal();
+
+  const recipeMap = useMemo(() => {
+    const map: Record<string, Recipe> = {};
+    for (const recipe of recipes) {
+      map[recipe.id] = recipe;
+    }
+    return map;
+  }, [recipes]);
+
+  const getNoteForDate = useCallback((date: Date): string | null => {
+    if (!mealPlan?.notes) return null;
+    const dateStr = formatDateLocal(date);
+    return mealPlan.notes[dateStr] || null;
+  }, [mealPlan]);
+
+  const getMealForSlot = useCallback((date: Date, mealType: MealType): { recipe?: Recipe; customText?: string } | null => {
+    if (!mealPlan?.meals) return null;
+    const dateStr = formatDateLocal(date);
+    const key = `${dateStr}_${mealType}`;
+    const value = mealPlan.meals[key];
+    if (!value) return null;
+    if (value.startsWith('custom:')) {
+      return { customText: value.slice(7) };
+    }
+    const recipe = recipeMap[value];
+    return recipe ? { recipe } : { customText: value };
+  }, [mealPlan, recipeMap]);
+
+  // --- Scroll & jump-to-today ---
+
+  const handleScroll = useCallback((scrollY: number) => {
+    if (todayIndex < 0) return;
+    const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
+    const tolerance = DAY_SECTION_HEIGHT / 2;
+    const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
+
+    if (!isNearToday && !showJumpButton) {
+      setShowJumpButton(true);
+      Animated.spring(jumpButtonOpacity, { toValue: 1, useNativeDriver: true }).start();
+    } else if (isNearToday && showJumpButton) {
+      Animated.timing(jumpButtonOpacity, { toValue: 0, duration: 200, useNativeDriver: true })
+        .start(() => setShowJumpButton(false));
+    }
+  }, [todayIndex, showJumpButton, jumpButtonOpacity]);
+
+  const jumpToToday = useCallback(() => {
+    if (weekOffset !== 0) {
+      setWeekOffset(0);
+    } else if (todayIndex >= 0 && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: todayIndex * DAY_SECTION_HEIGHT, animated: true });
+    }
+  }, [weekOffset, todayIndex]);
+
+  useEffect(() => {
+    if (todayIndex >= 0 && scrollViewRef.current) {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({ y: todayIndex * DAY_SECTION_HEIGHT, animated: false });
+      }, 100);
+    }
+  }, [todayIndex, weekOffset]);
+
+  // --- Swipe gesture ---
+
+  const swipeThreshold = 50;
+  const panResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponder: (_, gs) => {
+      const isHorizontalSwipe = Math.abs(gs.dx) > Math.abs(gs.dy) * 2;
+      return isHorizontalSwipe && Math.abs(gs.dx) > 10;
+    },
+    onPanResponderMove: (_, gs) => {
+      swipeTranslateX.setValue(gs.dx * 0.3);
+    },
+    onPanResponderRelease: (_, gs) => {
+      const springBack = () => Animated.spring(swipeTranslateX, { toValue: 0, useNativeDriver: true, tension: 100, friction: 12 }).start();
+
+      if (gs.dx > swipeThreshold) {
+        hapticLight();
+        Animated.timing(swipeTranslateX, { toValue: 100, duration: 150, useNativeDriver: true }).start(() => {
+          setWeekOffset(prev => prev - 1);
+          swipeTranslateX.setValue(-100);
+          springBack();
+        });
+      } else if (gs.dx < -swipeThreshold) {
+        hapticLight();
+        Animated.timing(swipeTranslateX, { toValue: -100, duration: 150, useNativeDriver: true }).start(() => {
+          setWeekOffset(prev => prev + 1);
+          swipeTranslateX.setValue(100);
+          springBack();
+        });
+      } else {
+        springBack();
+      }
+    },
+    onPanResponderTerminate: () => {
+      Animated.spring(swipeTranslateX, { toValue: 0, useNativeDriver: true, tension: 100, friction: 12 }).start();
+    },
+  }), [swipeTranslateX]);
+
+  // --- Note editing ---
+
+  const handleStartEditNote = useCallback((date: Date) => {
+    const dateStr = formatDateLocal(date);
+    setEditingNoteDate(dateStr);
+    setNoteText(getNoteForDate(date) || '');
+  }, [getNoteForDate]);
+
+  const handleSaveNote = useCallback(() => {
+    if (editingNoteDate) {
+      updateNote.mutate(
+        { date: editingNoteDate, note: noteText.trim() },
+        { onError: () => showNotification(t('common.error'), t('mealPlan.failedToSaveNote')) },
+      );
+      setEditingNoteDate(null);
+      setNoteText('');
+    }
+  }, [editingNoteDate, noteText, updateNote, t]);
+
+  const handleCancelEditNote = useCallback(() => {
+    setEditingNoteDate(null);
+    setNoteText('');
+  }, []);
+
+  const handleAddTag = useCallback((tag: string) => {
+    const currentTags = noteText.split(' ').filter(t => t.trim());
+    if (currentTags.includes(tag)) {
+      setNoteText(currentTags.filter(t => t !== tag).join(' '));
+    } else {
+      setNoteText([...currentTags, tag].join(' '));
+    }
+  }, [noteText]);
+
+  // --- Meal actions ---
+
+  const handleMealPress = useCallback((date: Date, mealType: MealType, mode?: 'library' | 'copy' | 'quick' | 'random') => {
+    const dateStr = formatDateLocal(date);
+    router.push({
+      pathname: '/select-recipe',
+      params: { date: dateStr, mealType, mode: mode || 'library' },
+    });
+  }, [router]);
+
+  const handleRemoveMeal = useCallback((date: Date, mealType: MealType, title: string, label: string) => {
+    const dateStr = formatDateLocal(date);
+    showConfirmDelete(
+      t('common.remove'),
+      t('mealPlan.removeMealTitle', { title, meal: label.toLowerCase() }),
+      () => {
+        removeMeal.mutate(
+          { date: dateStr, mealType },
+          { onError: () => showNotification(t('common.error'), t('mealPlan.failedToRemoveMeal')) },
+        );
+      },
+      t('common.cancel'),
+      t('mealPlan.removeMealConfirm'),
+    );
+  }, [removeMeal, t]);
+
+  // --- Grocery selection ---
+
+  const handleToggleMeal = useCallback((date: Date, mealType: MealType, recipeServings?: number) => {
+    const dateStr = formatDateLocal(date);
+    const key = `${dateStr}_${mealType}`;
+    setSelectedMeals(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+        setMealServings(prevServings => {
+          const { [key]: _, ...rest } = prevServings;
+          return rest;
+        });
+      } else {
+        newSet.add(key);
+        setMealServings(prevServings => ({ ...prevServings, [key]: recipeServings || 2 }));
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleChangeServings = useCallback((key: string, delta: number) => {
+    setMealServings(prev => {
+      const current = prev[key] || 2;
+      const newValue = Math.max(1, Math.min(12, current + delta));
+      return { ...prev, [key]: newValue };
+    });
+  }, []);
+
+  const handleCreateGroceryList = useCallback(async () => {
+    if (selectedMeals.size === 0) {
+      showNotification(t('mealPlan.noMealsSelected'), t('mealPlan.noMealsSelectedMessage'));
+      return;
+    }
+    try {
+      const mealsArray = Array.from(selectedMeals);
+      await AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(mealsArray));
+      await AsyncStorage.setItem('grocery_meal_servings', JSON.stringify(mealServings));
+      setShowGroceryModal(false);
+      setTimeout(() => router.push('/(tabs)/grocery'), 100);
+    } catch {
+      showNotification(t('common.error'), t('mealPlan.failedToSaveSelections'));
+    }
+  }, [selectedMeals, mealServings, router, t]);
+
+  const openGroceryModal = useCallback(() => {
+    hapticLight();
+    setGroceryWeekOffset(weekOffset);
+    setShowGroceryModal(true);
+  }, [weekOffset]);
+
+  return {
+    // Translation
+    t, language,
+    // Data
+    MEAL_TYPES, NOTE_SUGGESTIONS,
+    mealPlan, mealPlanLoading, recipes,
+    weekDates, groceryWeekDates, todayIndex,
+    recipeMap,
+    // State
+    weekOffset, setWeekOffset,
+    showGroceryModal, setShowGroceryModal,
+    groceryWeekOffset, setGroceryWeekOffset,
+    selectedMeals, mealServings,
+    showJumpButton, editingNoteDate, noteText, setNoteText,
+    // Refs
+    scrollViewRef, jumpButtonOpacity, swipeTranslateX, panResponder,
+    // Handlers
+    handleScroll, jumpToToday, refetchMealPlan,
+    getNoteForDate, getMealForSlot,
+    handleStartEditNote, handleSaveNote, handleCancelEditNote, handleAddTag,
+    handleMealPress, handleRemoveMeal,
+    handleToggleMeal, handleChangeServings, handleCreateGroceryList, openGroceryModal,
+  };
+};
