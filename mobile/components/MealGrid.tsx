@@ -7,14 +7,8 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '@/lib/i18n';
+import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import type { MealType, Recipe } from '@/lib/types';
-
-function formatDateLocal(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 interface MealCellProps {
   date: string;
