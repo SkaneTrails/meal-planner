@@ -3,6 +3,7 @@
  */
 
 export { AnimatedPressable } from './AnimatedPressable';
+export { BottomSheetModal } from './BottomSheetModal';
 export { BouncingLoader } from './BouncingLoader';
 export { EmptyState } from './EmptyState';
 export { FilterChip } from './FilterChip';

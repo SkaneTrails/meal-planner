@@ -28,7 +28,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, getWeekDatesArray, isPastDate } from '@/lib/utils/dateFormatter';
-import { AnimatedPressable, BouncingLoader, GradientBackground } from '@/components';
+import { AnimatedPressable, BouncingLoader, BottomSheetModal, GradientBackground } from '@/components';
 import { hapticLight, hapticSuccess, hapticWarning, hapticSelection } from '@/lib/haptics';
 import type { DietLabel, MealLabel, MealType, StructuredInstruction, RecipeVisibility } from '@/lib/types';
 
@@ -1306,28 +1306,11 @@ export default function RecipeDetailScreen() {
       </Animated.ScrollView>
 
       {/* Plan Modal */}
-      <Modal
+      <BottomSheetModal
         visible={showPlanModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowPlanModal(false)}
+        onClose={() => setShowPlanModal(false)}
+        title={t('recipe.addToMealPlan')}
       >
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-          <View style={{
-            backgroundColor: colors.white,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingTop: spacing.xl,
-            paddingBottom: 40,
-            maxHeight: '80%',
-          }}>
-            {/* Header */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing.xl, marginBottom: spacing.lg }}>
-              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse }}>{t('recipe.addToMealPlan')}</Text>
-              <Pressable onPress={() => setShowPlanModal(false)} style={{ padding: spacing.sm }}>
-                <Ionicons name="close" size={24} color={colors.gray[500]} />
-              </Pressable>
-            </View>
 
             {/* Week navigation */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.xl }}>
@@ -1435,57 +1418,43 @@ export default function RecipeDetailScreen() {
                 );
               })}
             </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      </BottomSheetModal>
 
       {/* Edit Modal */}
-      <Modal
+      <BottomSheetModal
         visible={showEditModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowEditModal(false)}
+        onClose={() => setShowEditModal(false)}
+        title={t('recipe.editRecipe')}
+        maxHeight="90%"
+        showCloseButton={false}
+        headerRight={
+          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            <Pressable
+              onPress={() => setShowEditModal(false)}
+              style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}
+            >
+              <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.gray[500] }}>{t('common.cancel')}</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleSaveEdit}
+              disabled={isSavingEdit}
+              style={({ pressed }) => ({
+                backgroundColor: pressed ? colors.primaryDark : colors.primary,
+                paddingHorizontal: spacing.lg,
+                paddingVertical: spacing.sm,
+                borderRadius: borderRadius.sm,
+                opacity: isSavingEdit ? 0.6 : 1,
+              })}
+            >
+              {isSavingEdit ? (
+                <ActivityIndicator size="small" color={colors.white} />
+              ) : (
+                <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('common.save')}</Text>
+              )}
+            </Pressable>
+          </View>
+        }
       >
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-          <View style={{
-            backgroundColor: colors.white,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingTop: spacing.xl,
-            paddingBottom: 40,
-            maxHeight: '90%',
-          }}>
-            {/* Header */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing.xl, marginBottom: spacing.xl }}>
-              <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.text.inverse }}>{t('recipe.editRecipe')}</Text>
-              <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-                <Pressable
-                  onPress={() => setShowEditModal(false)}
-                  style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}
-                >
-                  <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.gray[500] }}>{t('common.cancel')}</Text>
-                </Pressable>
-                <Pressable
-                  onPress={handleSaveEdit}
-                  disabled={isSavingEdit}
-                  style={({ pressed }) => ({
-                    backgroundColor: pressed ? colors.primaryDark : colors.primary,
-                    paddingHorizontal: spacing.lg,
-                    paddingVertical: spacing.sm,
-                    borderRadius: borderRadius.sm,
-                    opacity: isSavingEdit ? 0.6 : 1,
-                  })}
-                >
-                  {isSavingEdit ? (
-                    <ActivityIndicator size="small" color={colors.white} />
-                  ) : (
-                    <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('common.save')}</Text>
-                  )}
-                </Pressable>
-              </View>
-            </View>
-
-            <ScrollView style={{ paddingHorizontal: spacing.xl }} keyboardShouldPersistTaps="handled">
               {/* Diet Type */}
               <View style={{ marginBottom: spacing.xl }}>
                 <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
@@ -1825,10 +1794,7 @@ export default function RecipeDetailScreen() {
               </View>
 
               <View style={{ height: 40 }} />
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      </BottomSheetModal>
 
       {/* URL Input Modal (cross-platform replacement for Alert.prompt) */}
       <Modal

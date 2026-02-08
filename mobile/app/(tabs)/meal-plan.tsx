@@ -11,7 +11,6 @@ import {
   RefreshControl,
   Pressable,
   Image,
-  Modal,
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -23,7 +22,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
-import { AnimatedPressable, GradientBackground } from '@/components';
+import { AnimatedPressable, BottomSheetModal, GradientBackground } from '@/components';
 import { useMealPlan, useRecipes, useSetMeal, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
 import { hapticLight, hapticSelection, hapticSuccess } from '@/lib/haptics';
 import type { MealType, Recipe } from '@/lib/types';
@@ -900,25 +899,35 @@ export default function MealPlanScreen() {
         )}
 
         {/* Grocery list selection modal */}
-        <Modal
+        <BottomSheetModal
           visible={showGroceryModal}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setShowGroceryModal(false)}
-        >
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-            <View style={{ backgroundColor: '#F5E6D3', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '80%' }}>
-              {/* Modal header */}
-              <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 20, fontFamily: fontFamily.bodyBold, color: '#4A3728' }}>{t('mealPlan.selectMeals')}</Text>
-                  <Pressable onPress={() => setShowGroceryModal(false)}>
-                    <Ionicons name="close" size={24} color="#4A3728" />
-                  </Pressable>
-                </View>
-                <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>
-                  {t('mealPlan.selectMealsSubtitle')}
+          onClose={() => setShowGroceryModal(false)}
+          title={t('mealPlan.selectMeals')}
+          subtitle={t('mealPlan.selectMealsSubtitle')}
+          backgroundColor="#F5E6D3"
+          scrollable={false}
+          footer={
+            <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+              <Pressable
+                onPress={() => {
+                  hapticSuccess();
+                  handleCreateGroceryList();
+                }}
+                style={{
+                  backgroundColor: selectedMeals.size > 0 ? '#4A3728' : '#E8D5C4',
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                }}
+                disabled={selectedMeals.size === 0}
+              >
+                <Text style={{ fontSize: 16, fontFamily: fontFamily.bodySemibold, color: '#fff' }}>
+                  {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
                 </Text>
+              </Pressable>
+            </View>
+          }
+        >
 
                 {/* Week selector */}
                 <View style={{
@@ -965,7 +974,6 @@ export default function MealPlanScreen() {
                     <Ionicons name="chevron-forward" size={18} color="#4A3728" />
                   </Pressable>
                 </View>
-              </View>
 
               {/* Meal list */}
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
@@ -1084,30 +1092,7 @@ export default function MealPlanScreen() {
                   );
                 })}
               </ScrollView>
-
-              {/* Modal footer */}
-              <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
-                <Pressable
-                  onPress={() => {
-                    hapticSuccess();
-                    handleCreateGroceryList();
-                  }}
-                  style={{
-                    backgroundColor: selectedMeals.size > 0 ? '#4A3728' : '#E8D5C4',
-                    paddingVertical: 14,
-                    borderRadius: 12,
-                    alignItems: 'center',
-                  }}
-                  disabled={selectedMeals.size === 0}
-                >
-                  <Text style={{ fontSize: 16, fontFamily: fontFamily.bodySemibold, color: '#fff' }}>
-                    {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
+        </BottomSheetModal>
       </View>
     </GradientBackground>
   );
