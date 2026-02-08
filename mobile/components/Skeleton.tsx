@@ -20,12 +20,12 @@ interface SkeletonProps {
   style?: ViewStyle;
 }
 
-export function Skeleton({
+export const Skeleton = ({
   width = '100%',
   height = 16,
   borderRadius: radius = borderRadius.sm,
   style,
-}: SkeletonProps) {
+}: SkeletonProps) => {
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
@@ -67,9 +67,9 @@ interface RecipeCardSkeletonProps {
   cardSize?: number;
 }
 
-export function RecipeCardSkeleton({
+export const RecipeCardSkeleton = ({
   cardSize = 170,
-}: RecipeCardSkeletonProps) {
+}: RecipeCardSkeletonProps) => {
   const imageHeight = cardSize * 0.72;
 
   return (
@@ -85,13 +85,15 @@ export function RecipeCardSkeleton({
   );
 }
 
-export function RecipeListSkeleton({
-  count = 6,
-  cardSize = 170,
-}: {
+interface RecipeListSkeletonProps {
   count?: number;
   cardSize?: number;
-}) {
+}
+
+export const RecipeListSkeleton = ({
+  count = 6,
+  cardSize = 170,
+}: RecipeListSkeletonProps) => {
   return (
     <View style={styles.gridContainer}>
       {Array.from({ length: count }).map((_, i) => (
@@ -103,7 +105,7 @@ export function RecipeListSkeleton({
   );
 }
 
-export function StatCardSkeleton() {
+export const StatCardSkeleton = () => {
   return (
     <View style={styles.statCard}>
       <Skeleton width={32} height={32} borderRadius={10} />
@@ -119,7 +121,7 @@ export function StatCardSkeleton() {
   );
 }
 
-export function HomeScreenSkeleton() {
+export const HomeScreenSkeleton = () => {
   return (
     <View style={styles.homeContainer}>
       {/* Hero skeleton */}
@@ -153,7 +155,7 @@ export function HomeScreenSkeleton() {
   );
 }
 
-export function GroceryItemSkeleton() {
+export const GroceryItemSkeleton = () => {
   return (
     <View style={styles.groceryItem}>
       <Skeleton width={24} height={24} borderRadius={6} />
@@ -165,7 +167,11 @@ export function GroceryItemSkeleton() {
   );
 }
 
-export function GroceryListSkeleton({ count = 8 }: { count?: number }) {
+interface GroceryListSkeletonProps {
+  count?: number;
+}
+
+export const GroceryListSkeleton = ({ count = 8 }: GroceryListSkeletonProps) => {
   return (
     <View style={styles.groceryContainer}>
       {/* Stats card skeleton */}

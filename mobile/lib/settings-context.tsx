@@ -48,11 +48,10 @@ const defaultSettings: Settings = {
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 
-export function SettingsProvider({ children }: { children: React.ReactNode }) {
+export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load settings from AsyncStorage on mount
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -70,7 +69,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     loadSettings();
   }, []);
 
-  // Save settings to AsyncStorage
   const saveSettings = useCallback(async (newSettings: Settings) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
@@ -112,7 +110,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const isItemAtHome = useCallback(
     (item: string) => {
       const normalizedItem = item.toLowerCase().trim();
-      // Check if the item or any word in it matches items at home
       return settings.itemsAtHome.some(
         (homeItem) =>
           normalizedItem.includes(homeItem) ||
@@ -168,9 +165,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       {children}
     </SettingsContext.Provider>
   );
-}
+};
 
-export function useSettings() {
+export const useSettings = () => {
   const context = useContext(SettingsContext);
   if (!context) {
     throw new Error('useSettings must be used within a SettingsProvider');

@@ -38,7 +38,7 @@ vi.unmock('@/lib/settings-context');
 // Must import AFTER mocks are set up
 import { SettingsProvider, useSettings } from '@/lib/settings-context';
 
-function createSettingsWrapper() {
+const createSettingsWrapper = () => {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return React.createElement(SettingsProvider, null, children);
   };

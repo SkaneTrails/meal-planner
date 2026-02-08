@@ -24,12 +24,13 @@ import type { MeatPreference, MincedMeatPreference, DairyPreference, HouseholdSe
 
 
 
-// Section header component
-function SectionHeader({ icon, title, subtitle }: {
+interface SectionHeaderProps {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle: string;
-}) {
+}
+
+const SectionHeader = ({ icon, title, subtitle }: SectionHeaderProps) => {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
       <View style={{
@@ -55,18 +56,19 @@ function SectionHeader({ icon, title, subtitle }: {
   );
 }
 
-// Radio button group component
-function RadioGroup<T extends string>({
-  options,
-  value,
-  onChange,
-  disabled = false,
-}: {
+interface RadioGroupProps<T extends string> {
   options: { value: T; label: string; description: string }[];
   value: T;
   onChange: (value: T) => void;
   disabled?: boolean;
-}) {
+}
+
+const RadioGroup = <T extends string>({
+  options,
+  value,
+  onChange,
+  disabled = false,
+}: RadioGroupProps<T>) => {
   return (
     <View style={{ gap: spacing.sm }}>
       {options.map((option) => {
@@ -125,7 +127,6 @@ function RadioGroup<T extends string>({
   );
 }
 
-// Default settings for new households
 const DEFAULT_SETTINGS: HouseholdSettings = {
   household_size: 2,
   default_servings: 2,
@@ -175,15 +176,12 @@ export default function HouseholdSettingsScreen() {
     { value: 'dairy_free', label: t('householdSettings.dietary.dairyFree'), description: t('householdSettings.dietary.dairyFreeDesc') },
   ];
 
-  // Only admins and superusers can edit settings
   const canEdit = currentUser?.role === 'superuser' ||
     (currentUser?.role === 'admin' && currentUser?.household_id === householdId);
 
-  // Local state for editing
   const [settings, setSettings] = useState<HouseholdSettings>(DEFAULT_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Initialize local state when remote settings load
   useEffect(() => {
     if (remoteSettings) {
       setSettings({
@@ -248,7 +246,7 @@ export default function HouseholdSettingsScreen() {
     <GradientBackground muted>
       <Stack.Screen
         options={{
-          headerShown: false,  // Hide the default header - we'll create a custom one
+          headerShown: false,
         }}
       />
 

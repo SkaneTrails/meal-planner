@@ -19,7 +19,7 @@ vi.mock('@/lib/haptics', () => ({
   hapticLight: vi.fn(),
 }));
 
-function buildRecipe(overrides: Partial<Recipe> = {}): Recipe {
+const buildRecipe = (overrides: Partial<Recipe> = {}): Recipe  => {
   return {
     id: 'recipe-1',
     title: 'Creamy Pasta Bake',

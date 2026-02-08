@@ -7,7 +7,7 @@
 import React from 'react';
 
 // Simple component factory — renders a div with the RN component name as data attribute
-function mockComponent(name: string) {
+const mockComponent = (name: string) => {
   return React.forwardRef(({ children, testID, style, ...props }: any, ref: any) =>
     React.createElement('div', { 'data-testid': testID, 'data-component': name, ref, ...props }, children)
   );
