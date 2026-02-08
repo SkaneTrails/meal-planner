@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from google.cloud.firestore_v1 import FieldFilter
+from google.cloud.firestore_v1 import FieldFilter, aggregation
 
 if TYPE_CHECKING:
     from google.cloud.firestore_v1.client import Client as FirestoreClient
@@ -43,6 +43,44 @@ def get_recipes_by_ids(recipe_ids: set[str]) -> dict[str, Recipe]:
                 recipes[doc.id] = _doc_to_recipe(doc.id, data)
 
     return recipes
+
+
+def count_recipes(*, household_id: str | None = None) -> int:
+    """Count total recipes visible to a household using Firestore aggregation.
+
+    Uses server-side COUNT aggregation to avoid fetching all documents.
+    For household-scoped queries, counts owned + shared recipes (deduplication
+    may cause the actual unique count to be slightly lower).
+
+    Args:
+        household_id: If provided, count owned + shared recipes.
+                      If None, count all recipes (for superusers).
+
+    Returns:
+        Total number of matching recipes.
+    """
+    db = get_firestore_client()
+    collection = db.collection(RECIPES_COLLECTION)
+
+    if household_id is None:
+        count_query = aggregation.AggregationQuery(collection)
+        count_query.count(alias="total")
+        results = count_query.get()
+        return results[0][0].value  # type: ignore[index]
+
+    owned_query = collection.where(filter=FieldFilter("household_id", "==", household_id))
+    owned_agg = aggregation.AggregationQuery(owned_query)
+    owned_agg.count(alias="total")
+    owned_results = owned_agg.get()
+    owned_count = owned_results[0][0].value  # type: ignore[index]
+
+    shared_query = collection.where(filter=FieldFilter("visibility", "==", "shared"))
+    shared_agg = aggregation.AggregationQuery(shared_query)
+    shared_agg.count(alias="total")
+    shared_results = shared_agg.get()
+    shared_count = shared_results[0][0].value  # type: ignore[index]
+
+    return owned_count + shared_count
 
 
 def _build_household_query(db: FirestoreClient, household_id: str | None) -> list:

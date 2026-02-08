@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { View, FlatList, RefreshControl, useWindowDimensions } from 'react-native';
+import { View, FlatList, RefreshControl, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { colors } from '@/lib/theme';
 import { RecipeCard, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
@@ -19,6 +19,8 @@ interface RecipeGridProps {
   searchQuery: string;
   dietFilter: DietLabel | null;
   mealFilters: MealLabel[];
+  onEndReached?: () => void;
+  isFetchingNextPage?: boolean;
   t: TFunction;
 }
 
@@ -31,6 +33,8 @@ export const RecipeGrid = ({
   searchQuery,
   dietFilter,
   mealFilters,
+  onEndReached,
+  isFetchingNextPage,
   t,
 }: RecipeGridProps) => {
   const { width } = useWindowDimensions();
@@ -69,6 +73,8 @@ export const RecipeGrid = ({
         </View>
       )}
       contentContainerStyle={{ paddingHorizontal: horizontalPadding, paddingBottom: 100 }}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.5}
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
       }
@@ -79,6 +85,13 @@ export const RecipeGrid = ({
           subtitle={hasFilters ? t('recipes.tryAdjusting') : t('recipes.startBuilding')}
           action={!hasFilters ? { label: t('recipes.addFirstRecipe'), onPress: onAddRecipe } : undefined}
         />
+      }
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+            <ActivityIndicator size="small" color={colors.text.secondary} />
+          </View>
+        ) : null
       }
     />
   );

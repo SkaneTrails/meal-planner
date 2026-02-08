@@ -24,7 +24,7 @@ from api.models.recipe import (
 from api.services.image_service import create_thumbnail
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
-from api.storage.recipe_queries import get_recipes_paginated
+from api.storage.recipe_queries import count_recipes, get_recipes_paginated
 from api.storage.recipe_storage import EnhancementMetadata
 
 logger = logging.getLogger(__name__)
@@ -96,12 +96,15 @@ async def list_recipes(
 
     if search:
         recipes = recipe_storage.search_recipes(search, household_id=household_id)
-        return PaginatedRecipeList(items=recipes, next_cursor=None, has_more=False)
+        return PaginatedRecipeList(items=recipes, total_count=len(recipes), next_cursor=None, has_more=False)
 
+    total = count_recipes(household_id=household_id)
     recipes, next_cursor = get_recipes_paginated(
         household_id=household_id, limit=limit, cursor=cursor, include_duplicates=include_duplicates
     )
-    return PaginatedRecipeList(items=recipes, next_cursor=next_cursor, has_more=next_cursor is not None)
+    return PaginatedRecipeList(
+        items=recipes, total_count=total, next_cursor=next_cursor, has_more=next_cursor is not None
+    )
 
 
 @router.get("/{recipe_id}")

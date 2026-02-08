@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
+import { useAllRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
@@ -24,7 +24,7 @@ export const useSelectRecipeState = () => {
   }>();
   const router = useRouter();
 
-  const { data: recipes = [] } = useRecipes();
+  const { recipes } = useAllRecipes();
   const { data: mealPlan } = useMealPlan();
   const setMeal = useSetMeal();
   const removeMeal = useRemoveMeal();

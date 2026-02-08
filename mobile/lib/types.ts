@@ -105,6 +105,7 @@ export interface RecipeParseRequest {
 
 export interface PaginatedRecipeList {
   items: Recipe[];
+  total_count: number;
   next_cursor: string | null;
   has_more: boolean;
 }
