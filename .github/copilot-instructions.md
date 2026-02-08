@@ -43,7 +43,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
 - **Use existing scripts first** - before writing inline Python or ad-hoc commands, check `scripts/` and skill documentation for existing tools that do what you need (e.g., `recipe_reviewer.py` for Firestore recipe operations)
-- **PowerShell backtick escaping** - NEVER use backticks in `gh pr create --body` or similar CLI args. PowerShell interprets `` ` `` as escape characters, causing Unicode parse errors. Instead: write the body to a temp file, then use `--body-file tmp_pr_body.md`, then delete the file
+- **PowerShell backtick escaping** - NEVER include backtick characters in ANY `gh` CLI string argument — not just `--body`, but also `-f "body=..."`, `-f "query=..."`, commit messages, or any inline string. PowerShell interprets `` ` `` as escape characters, causing `Unicode escape sequence is not valid` errors. **Workarounds:** (1) Write content to a temp file, use `-F "body=@file.md"` or `--body-file`, then delete the file. (2) For short replies without markdown formatting, just omit backticks entirely (e.g., write `useSetMeal` not `` `useSetMeal` ``)
 
 ## Keeping Documentation Current
 
