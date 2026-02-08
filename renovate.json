@@ -5,6 +5,7 @@
     "helpers:pinGitHubActionDigests",
     "docker:pinDigests"
   ],
+  "rangeStrategy": "replace",
   "rebaseWhen": "behind-base-branch",
   "branchPrefix": "renovate/",
   "labels": [
