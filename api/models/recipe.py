@@ -123,6 +123,9 @@ class Recipe(RecipeBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: str = Field(..., description="Firestore document ID")
+    # Timestamp fields
+    created_at: datetime | None = Field(default=None, description="When the recipe was created")
+    updated_at: datetime | None = Field(default=None, description="When the recipe was last updated")
     # AI enhancement fields
     enhanced: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
     enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
@@ -191,6 +194,18 @@ class RecipeUpdate(BaseModel):
         if v is not None and (v < MIN_RATING or v > MAX_RATING):
             raise ValueError(_ERR_RATING_RANGE)
         return v
+
+
+DEFAULT_PAGE_LIMIT = 50
+MAX_PAGE_LIMIT = 200
+
+
+class PaginatedRecipeList(BaseModel):
+    """Paginated list of recipes with cursor for next page."""
+
+    items: list[Recipe]
+    next_cursor: str | None = Field(default=None, description="Cursor for the next page (recipe ID), null if last page")
+    has_more: bool = Field(default=False, description="Whether more results exist beyond this page")
 
 
 class RecipeScrapeRequest(BaseModel):

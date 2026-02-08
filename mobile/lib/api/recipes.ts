@@ -3,6 +3,7 @@
  */
 
 import type {
+  PaginatedRecipeList,
   Recipe,
   RecipeCreate,
   RecipeParseRequest,
@@ -12,11 +13,13 @@ import type {
 import { API_BASE_URL, API_PREFIX, ApiClientError, apiRequest, getAuthTokenFn } from './client';
 
 export const recipeApi = {
-  getRecipes: (search?: string): Promise<Recipe[]> => {
+  getRecipes: (search?: string, cursor?: string, limit?: number): Promise<PaginatedRecipeList> => {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
+    if (cursor) params.set('cursor', cursor);
+    if (limit) params.set('limit', String(limit));
     const query = params.toString();
-    return apiRequest<Recipe[]>(`/recipes${query ? `?${query}` : ''}`);
+    return apiRequest<PaginatedRecipeList>(`/recipes${query ? `?${query}` : ''}`);
   },
 
   getRecipe: (id: string): Promise<Recipe> => {

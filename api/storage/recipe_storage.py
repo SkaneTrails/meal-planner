@@ -1,5 +1,7 @@
 """Recipe storage service using Firestore."""
 
+from __future__ import annotations
+
 import contextlib
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -62,6 +64,9 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         diet_label=diet_label,
         meal_label=meal_label,
         rating=data.get("rating"),
+        # Timestamp fields
+        created_at=data.get("created_at"),
+        updated_at=data.get("updated_at"),
         # AI enhancement fields
         enhanced=data.get("enhanced", False),
         enhanced_at=data.get("enhanced_at"),
@@ -98,58 +103,14 @@ def find_recipe_by_url(url: str) -> Recipe | None:
         return _doc_to_recipe(doc.id, data)
 
     # Also check normalized URLs (in case stored URL differs slightly)
+    from api.storage.recipe_queries import get_all_recipes  # pragma: no cover
+
     all_recipes = get_all_recipes()  # pragma: no cover
     for recipe in all_recipes:  # pragma: no cover
         if normalize_url(recipe.url) == normalized:  # pragma: no cover
             return recipe  # pragma: no cover
 
     return None
-
-
-def get_all_recipes(*, include_duplicates: bool = False, household_id: str | None = None) -> list[Recipe]:
-    """
-    Get all recipes visible to a household.
-
-    Args:
-        include_duplicates: If False (default), deduplicate by URL.
-        household_id: If provided, filter to recipes owned by this household OR shared recipes.
-                      If None, return all recipes (for superusers).
-
-    Returns:
-        List of recipes.
-    """
-    db = get_firestore_client()
-    docs = db.collection(RECIPES_COLLECTION).order_by("created_at", direction="DESCENDING").stream()
-
-    recipes = []
-    for doc in docs:
-        data = doc.to_dict()
-        recipe = _doc_to_recipe(doc.id, data)
-
-        # Apply household filtering if specified
-        if household_id is not None:
-            is_owned = recipe.household_id == household_id
-            is_shared = recipe.visibility == "shared"
-
-            if not (is_owned or is_shared):
-                continue
-
-        recipes.append(recipe)
-
-    if include_duplicates:
-        return recipes
-
-    # Deduplicate by normalized URL (keep first occurrence, which is most recent)
-    seen_urls: set[str] = set()
-    unique_recipes = []
-
-    for recipe in recipes:
-        normalized = normalize_url(recipe.url) if recipe.url else f"__no_url_{recipe.id}"
-        if normalized not in seen_urls:
-            seen_urls.add(normalized)
-            unique_recipes.append(recipe)
-
-    return unique_recipes
 
 
 def save_recipe(
@@ -222,6 +183,8 @@ def save_recipe(
 
     return Recipe(
         id=doc_ref.id,
+        created_at=now,
+        updated_at=now,
         enhanced=meta.enhanced,
         enhanced_at=meta.enhanced_at,
         changes_made=meta.changes_made or None,

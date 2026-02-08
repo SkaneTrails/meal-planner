@@ -18,12 +18,15 @@ export const recipeKeys = {
 };
 
 /**
- * Hook to fetch all recipes.
+ * Hook to fetch all recipes (unwraps paginated response).
  */
 export const useRecipes = (search?: string) => {
   return useQuery({
     queryKey: recipeKeys.list(search),
-    queryFn: () => api.getRecipes(search),
+    queryFn: async () => {
+      const response = await api.getRecipes(search);
+      return response.items;
+    },
   });
 }
 

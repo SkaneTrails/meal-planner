@@ -103,6 +103,12 @@ export interface RecipeParseRequest {
   html: string;
 }
 
+export interface PaginatedRecipeList {
+  items: Recipe[];
+  next_cursor: string | null;
+  has_more: boolean;
+}
+
 // Meal Plan types
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
