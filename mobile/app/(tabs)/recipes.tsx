@@ -22,6 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useRecipes } from '@/lib/hooks';
 import { AnimatedPressable, RecipeCard, GradientBackground, RecipeListSkeleton } from '@/components';
+import { EmptyState } from '@/components/EmptyState';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
@@ -88,44 +89,17 @@ function RecipeGrid({ recipes, isLoading, onRefresh, onRecipePress, onAddRecipe,
         <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
       }
       ListEmptyComponent={
-        <View style={{ alignItems: 'center', paddingVertical: 80, paddingHorizontal: 32 }}>
-          <View style={{
-            width: 80,
-            height: 80,
-            borderRadius: 24,
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 20,
-          }}>
-            <Ionicons name={searchQuery || dietFilter || mealFilters.length > 0 ? "search" : "book-outline"} size={36} color={colors.white} />
-          </View>
-          <Text style={{ color: colors.text.inverse, fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
-            {searchQuery || dietFilter || mealFilters.length > 0
-              ? t('recipes.noMatchesFound')
-              : t('recipes.emptyLibrary')}
-          </Text>
-          <Text style={{ color: colors.text.secondary, fontSize: 14, marginTop: 8, textAlign: 'center', lineHeight: 20 }}>
-            {searchQuery || dietFilter || mealFilters.length > 0
-              ? t('recipes.tryAdjusting')
-              : t('recipes.startBuilding')}
-          </Text>
-          {!searchQuery && !dietFilter && mealFilters.length === 0 && (
-            <Pressable
-              onPress={onAddRecipe}
-              style={{
-                backgroundColor: colors.primary,
-                paddingHorizontal: 28,
-                paddingVertical: 14,
-                borderRadius: borderRadius.sm,
-                marginTop: spacing['2xl'],
-                ...shadows.lg,
-              }}
-            >
-              <Text style={{ color: colors.white, fontSize: 15, fontFamily: fontFamily.bodySemibold }}>{t('recipes.addFirstRecipe')}</Text>
-            </Pressable>
-          )}
-        </View>
+        (() => {
+          const hasFilters = !!(searchQuery || dietFilter || mealFilters.length > 0);
+          return (
+            <EmptyState
+              icon={hasFilters ? 'search' : 'book-outline'}
+              title={hasFilters ? t('recipes.noMatchesFound') : t('recipes.emptyLibrary')}
+              subtitle={hasFilters ? t('recipes.tryAdjusting') : t('recipes.startBuilding')}
+              action={!hasFilters ? { label: t('recipes.addFirstRecipe'), onPress: onAddRecipe } : undefined}
+            />
+          );
+        })()
       }
     />
   );

@@ -15,6 +15,7 @@ import { useSettings } from '@/lib/settings-context';
 import { AnimatedPressable, GradientBackground, HomeScreenSkeleton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
+import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import type { Recipe, GroceryItem } from '@/lib/types';
 
 // Local fallback image for inspiration section
@@ -22,24 +23,6 @@ const HOMEPAGE_HERO = require('@/assets/images/homepage-hero.png');
 
 // Blurhash placeholder for loading state
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
-
-function formatDateLocal(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getWeekDates(): { start: string; end: string } {
-  const today = new Date();
-  const currentDay = today.getDay();
-  const daysSinceSaturday = (currentDay + 1) % 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() - daysSinceSaturday);
-  const friday = new Date(saturday);
-  friday.setDate(saturday.getDate() + 6);
-  return { start: formatDateLocal(saturday), end: formatDateLocal(friday) };
-}
 
 function getNextMeal(mealPlan: { meals?: Record<string, string> } | undefined, recipes: Recipe[]): { title: string; imageUrl?: string; isCustom: boolean; mealType: string; recipeId?: string; isTomorrow?: boolean } | null {
   if (!mealPlan?.meals) return null;

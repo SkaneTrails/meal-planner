@@ -21,30 +21,6 @@ import { useTranslation } from '@/lib/i18n';
 import { AnimatedPressable, GroceryListView, GradientBackground, GroceryListSkeleton } from '@/components';
 import type { GroceryItem } from '@/lib/types';
 
-function formatDateLocal(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function getWeekDates(): { start: string; end: string } {
-  const today = new Date();
-  const currentDay = today.getDay();
-  // Calculate days since Saturday
-  const daysSinceSaturday = (currentDay + 1) % 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() - daysSinceSaturday);
-
-  const friday = new Date(saturday);
-  friday.setDate(saturday.getDate() + 6);
-
-  return {
-    start: formatDateLocal(saturday),
-    end: formatDateLocal(friday),
-  };
-}
-
 export default function GroceryScreen() {
   const router = useRouter();
   const { checkedItems, setCheckedItems, clearChecked, refreshFromStorage } = useGroceryState();
