@@ -61,7 +61,9 @@ jobs:
           for f in access/superusers.txt access/users.txt terraform.tfvars; do
             if [ -f "$f" ]; then
               while IFS= read -r line; do
-                [ -n "$line" ] && echo "::add-mask::$line"
+                if [ -n "$line" ]; then
+                  echo "::add-mask::$line"
+                fi
               done < "$f"
             fi
           done
