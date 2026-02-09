@@ -1,0 +1,99 @@
+name: Deploy Infrastructure (Terraform)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "functions/**"
+      - "infra/**"
+      - "Dockerfile"
+      - ".github/workflows/terraform-deploy.yml"
+  workflow_dispatch:
+
+# Required for Workload Identity Federation
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
+      SERVICE_NAME: meal-planner-api
+      REGION: ${{ secrets.GCP_REGION }}
+      REPOSITORY: meal-planner
+      TF_DIR: infra/environments/dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/github-provider
+          service_account: github-actions-terraform@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      # ---------------------------------------------------------------
+      # Docker image build + push
+      # ---------------------------------------------------------------
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          LATEST="${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest"
+          docker build -t "$IMAGE" -t "$LATEST" .
+          docker push "$IMAGE"
+          docker push "$LATEST"
+
+      # ---------------------------------------------------------------
+      # Reconstruct gitignored files from GitHub Secrets
+      # ---------------------------------------------------------------
+
+      - name: Reconstruct access files and tfvars
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          mkdir -p access
+          printf '%s\n' "${{ secrets.TF_SUPERUSERS }}" > access/superusers.txt
+          printf '%s\n' "${{ secrets.TF_USERS }}" > access/users.txt
+          printf '%s\n' '${{ secrets.TF_VARS_FILE }}' > terraform.tfvars
+
+          # Mask each line to avoid leaking PII in Terraform plan/apply output
+          for f in access/superusers.txt access/users.txt terraform.tfvars; do
+            if [ -f "$f" ]; then
+              while IFS= read -r line; do
+                [ -n "$line" ] && echo "::add-mask::$line"
+              done < "$f"
+            fi
+          done
+
+      # ---------------------------------------------------------------
+      # Terraform apply
+      # ---------------------------------------------------------------
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "~> 1.12"
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init -input=false
+
+      - name: Terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve -input=false -var "image_tag=${{ github.sha }}"

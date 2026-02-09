@@ -82,15 +82,6 @@ resource "google_project_iam_member" "github_actions_cloudrun_artifact_registry"
   depends_on = [google_service_account.github_actions_cloudrun]
 }
 
-# Grant Service Account User role (required to deploy Cloud Run with custom SA)
-resource "google_project_iam_member" "github_actions_cloudrun_sa_user" {
-  project = var.project
-  role    = "roles/iam.serviceAccountUser"
-  member  = "serviceAccount:${google_service_account.github_actions_cloudrun.email}"
-
-  depends_on = [google_service_account.github_actions_cloudrun]
-}
-
 # Grant Secret Manager access to Firebase service account (for fetching secrets in workflow)
 resource "google_project_iam_member" "github_actions_firebase_secretmanager" {
   project = var.project
@@ -98,6 +89,83 @@ resource "google_project_iam_member" "github_actions_firebase_secretmanager" {
   member  = "serviceAccount:${google_service_account.github_actions_firebase.email}"
 
   depends_on = [google_service_account.github_actions_firebase]
+}
+
+# -----------------------------------------------------------------------------
+# GitHub Actions Terraform Service Account
+# -----------------------------------------------------------------------------
+
+# Service account for GitHub Actions to run terraform apply
+resource "google_service_account" "github_actions_terraform" {
+  project      = var.project
+  account_id   = "github-actions-terraform"
+  display_name = "GitHub Actions Terraform Deploy"
+  description  = "Service account for GitHub Actions to run terraform plan/apply"
+
+  depends_on = [var.iam_api_service]
+}
+
+# Editor role covers most resource CRUD (Cloud Run, Functions, Storage, Firestore, APIs, etc.)
+resource "google_project_iam_member" "github_actions_terraform_editor" {
+  project = var.project
+  role    = "roles/editor"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# IAM Admin to create custom roles and manage bindings
+resource "google_project_iam_member" "github_actions_terraform_iam_admin" {
+  project = var.project
+  role    = "roles/iam.roleAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# Project IAM Admin to manage IAM policy bindings
+resource "google_project_iam_member" "github_actions_terraform_project_iam" {
+  project = var.project
+  role    = "roles/resourcemanager.projectIamAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# Service Account Admin to create/manage other service accounts
+resource "google_project_iam_member" "github_actions_terraform_sa_admin" {
+  project = var.project
+  role    = "roles/iam.serviceAccountAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# Secret Manager Admin to create/manage secrets
+resource "google_project_iam_member" "github_actions_terraform_secrets" {
+  project = var.project
+  role    = "roles/secretmanager.admin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# Firebase Admin to manage Firebase resources (auth, hosting)
+resource "google_project_iam_member" "github_actions_terraform_firebase" {
+  project = var.project
+  role    = "roles/firebase.admin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# IAM Workload Identity Pool Admin to manage WIF pools/providers
+resource "google_project_iam_member" "github_actions_terraform_wif" {
+  project = var.project
+  role    = "roles/iam.workloadIdentityPoolAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
 }
 
 # -----------------------------------------------------------------------------

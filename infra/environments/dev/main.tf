@@ -141,7 +141,7 @@ module "cloud_run" {
   project            = var.project
   region             = var.region
   service_name       = "meal-planner-api"
-  image_url          = "${module.artifact_registry.repository_url}/meal-planner-api:latest"
+  image_url          = "${module.artifact_registry.repository_url}/meal-planner-api:${var.image_tag}"
   firestore_database = var.firestore_database_name
   allowed_origins    = join(",", [
     module.firebase.hosting_url,
@@ -196,6 +196,30 @@ module "cloud_function" {
   run_api_service            = module.apis.run_service
 }
 
+# -----------------------------------------------------------------------------
+# Service Account User grants (scoped to specific runtime SAs, not project-level)
+# -----------------------------------------------------------------------------
+
+# Cloud Run deploy SA needs to attach the Cloud Run runtime SA during deployment
+resource "google_service_account_iam_member" "cloudrun_sa_user_on_api" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_run.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.iam.github_actions_cloudrun_email}"
+}
+
+# Terraform SA needs to attach runtime SAs when applying Cloud Run and Cloud Function configs
+resource "google_service_account_iam_member" "terraform_sa_user_on_api" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_run.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.iam.github_actions_terraform_email}"
+}
+
+resource "google_service_account_iam_member" "terraform_sa_user_on_function" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_function.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.iam.github_actions_terraform_email}"
+}
+
 # Workload Identity Federation - Keyless auth from GitHub Actions
 module "workload_federation" {
   source = "../../modules/workload_federation"
@@ -204,7 +228,8 @@ module "workload_federation" {
   github_repository_owner = var.github_repository_owner
   github_repository       = var.github_repository
   service_account_ids = {
-    firebase = module.iam.github_actions_firebase_service_account.id
-    cloudrun = module.iam.github_actions_cloudrun_service_account.id
+    firebase  = module.iam.github_actions_firebase_service_account.id
+    cloudrun  = module.iam.github_actions_cloudrun_service_account.id
+    terraform = module.iam.github_actions_terraform_service_account.id
   }
 }

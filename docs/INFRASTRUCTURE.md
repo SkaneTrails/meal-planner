@@ -166,6 +166,7 @@ For automated deployments on push to `main`:
 1. Add GitHub repository secrets:
    - `GCP_PROJECT_ID` — your project ID
    - `GCP_PROJECT_NUMBER` — from GCP Console > Project Dashboard
+   - `GCP_REGION` — your GCP region (must match `region` in `terraform.tfvars`, e.g. `europe-west1`)
 
 2. Sync access files and Terraform variables to GitHub secrets:
 
@@ -215,14 +216,13 @@ terraform apply
 
 ### What CI/CD Handles Automatically
 
-| Trigger                                          | Workflow               | What it deploys                       |
-| ------------------------------------------------ | ---------------------- | ------------------------------------- |
-| Push to `main` (changes in `api/`, `Dockerfile`) | `cloud-run-deploy.yml` | Docker image build + Cloud Run deploy |
-| Push to `main` (changes in `mobile/`)            | `firebase-hosting.yml` | Expo web build to Firebase Hosting    |
+| Trigger                                                                  | Workflow               | What it deploys                                                                             |
+| ------------------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------- |
+| Push to `main` (changes in `api/`, `infra/`, `functions/`, `Dockerfile`) | `terraform-deploy.yml` | Docker image build + full `terraform apply` (Cloud Run, Cloud Function, indexes, IAM, etc.) |
+| Push to `main` (changes in `mobile/`)                                    | `firebase-hosting.yml` | Expo web build to Firebase Hosting                                                          |
 
 ### What Requires Manual `terraform apply`
 
-- IAM or access file changes (run `sync-access-secrets` script first, then merge)
 - One-time bootstrap operations (Phase 1–7)
 
 ## Modules

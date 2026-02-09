@@ -32,6 +32,16 @@ output "github_actions_cloudrun_email" {
   value       = google_service_account.github_actions_cloudrun.email
 }
 
+output "github_actions_terraform_service_account" {
+  description = "Service account for GitHub Actions Terraform deployment"
+  value       = google_service_account.github_actions_terraform
+}
+
+output "github_actions_terraform_email" {
+  description = "Email of the GitHub Actions Terraform service account"
+  value       = google_service_account.github_actions_terraform.email
+}
+
 output "local_dev_service_account" {
   description = "Service account for local development"
   value       = google_service_account.local_dev
