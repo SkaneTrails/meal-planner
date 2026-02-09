@@ -35,7 +35,8 @@ The `created_at` field is **required** for queries.
     "created_by": str | None,        # User ID who created the recipe
 
     # Optional metadata
-    "image_url": str | None,
+    "image_url": str | None,            # Hero image (800x600) for detail screen
+    "thumbnail_url": str | None,        # Thumbnail (400x300) for cards/lists
     "servings": int | None,
     "prep_time": int | None,         # Minutes
     "cook_time": int | None,         # Minutes

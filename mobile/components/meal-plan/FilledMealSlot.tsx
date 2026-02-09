@@ -29,7 +29,7 @@ export const FilledMealSlot = ({
 }: FilledMealSlotProps) => {
   const router = useRouter();
   const title = recipe?.title || customText || '';
-  const imageUrl = recipe?.image_url || PLACEHOLDER_IMAGE;
+  const imageUrl = recipe?.thumbnail_url || recipe?.image_url || PLACEHOLDER_IMAGE;
 
   return (
     <View
