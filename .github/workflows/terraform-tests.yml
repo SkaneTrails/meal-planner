@@ -177,10 +177,9 @@ jobs:
             echo "| Init | $(icon "${{ steps.init.outcome }}") |"
             echo "| Validate | $(icon "${{ steps.validate.outcome }}") |"
             echo "| Plan | $(icon "${{ steps.plan.outcome }}") |"
+            echo ""
+            echo "> Full plan output is available in the Terraform plan step logs above."
           } >> "$GITHUB_STEP_SUMMARY"
-
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "> Full plan output is available in the Terraform plan step logs above." >> "$GITHUB_STEP_SUMMARY"
 
       # ---------------------------------------------------------------
       # Fail the job if any check failed
