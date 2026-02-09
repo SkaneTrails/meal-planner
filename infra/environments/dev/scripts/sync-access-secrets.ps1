@@ -99,6 +99,22 @@ if (Test-Path $tfvarsPath) {
     } finally {
         Remove-Item $tmpFile -ErrorAction SilentlyContinue
     }
+
+    # Extract region and set as a separate secret for Docker/deploy steps
+    $regionLine = Get-Content $tfvarsPath | Where-Object {
+        $_.Trim() -ne "" -and
+        -not $_.TrimStart().StartsWith("#") -and
+        $_ -match '^\s*region\s*='
+    } | Select-Object -First 1
+
+    if ($regionLine -and $regionLine -match '"([^"]+)"') {
+        $region = $Matches[1]
+        gh secret set GCP_REGION --repo $Repo --body $region
+        Write-Host "  Region '$region' stored as GCP_REGION" -ForegroundColor Green
+        $synced++
+    } else {
+        Write-Host "  Warning: Could not extract region from terraform.tfvars" -ForegroundColor Yellow
+    }
 } else {
     Write-Host "  Skipping terraform.tfvars (not found)" -ForegroundColor Yellow
 }

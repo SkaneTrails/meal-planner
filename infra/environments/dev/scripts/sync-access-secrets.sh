@@ -79,6 +79,16 @@ if [[ -f "$TFVARS_PATH" ]]; then
     gh secret set TF_VARS_FILE --repo "$REPO" < "$TFVARS_PATH"
     echo "  terraform.tfvars stored as TF_VARS_FILE"
     ((synced += 1))
+
+    # Extract region and set as a separate secret for Docker/deploy steps
+    REGION=$(grep -E '^[[:space:]]*region[[:space:]]*=' "$TFVARS_PATH" | grep -Ev '^[[:space:]]*#' | sed -E 's/.*=[[:space:]]*"(.*)".*/\1/' | head -n 1)
+    if [[ -n "$REGION" ]]; then
+        echo -n "$REGION" | gh secret set GCP_REGION --repo "$REPO"
+        echo "  Region '$REGION' stored as GCP_REGION"
+        ((synced += 1))
+    else
+        echo "  Warning: Could not extract region from terraform.tfvars"
+    fi
 else
     echo "  Skipping terraform.tfvars (not found)"
 fi
