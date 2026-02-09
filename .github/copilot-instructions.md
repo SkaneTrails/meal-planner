@@ -246,7 +246,7 @@ See `pyproject.toml` for tool configurations.
 
 ## When Making Changes
 
-1. Create feature branch: `git checkout -b feat/feature-name`
+1. Create feature branch: `git switch -c feat/feature-name`
 2. Write tests first (TDD)
 3. Implement the feature
 4. Run tests and linting: `uv run pytest --cov=api && uv run ruff check`

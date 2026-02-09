@@ -6,6 +6,7 @@
 
 - Python 3.14+
 - [UV package manager](https://github.com/astral-sh/uv)
+- Node.js 20+ and [pnpm](https://pnpm.io/) (for mobile app)
 
 ### Installation
 
@@ -14,9 +15,13 @@
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone and setup
-git clone https://github.com/YOUR-USERNAME/my-project.git
-cd my-project
+git clone https://github.com/YOUR-USERNAME/meal-planner.git
+cd meal-planner
 uv sync --extra dev
+
+# Mobile dependencies
+cd mobile
+pnpm install
 ```
 
 ### Pre-commit Hooks
@@ -62,6 +67,12 @@ npx expo start
 
 ### API Environment Variables
 
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
 The FastAPI backend requires the following environment variables:
 
 | Variable                         | Required | Description                                                  |
@@ -100,12 +111,14 @@ export SCRAPE_FUNCTION_URL="https://your-region-your-project.cloudfunctions.net/
 
 ### Mobile Environment Variables
 
-Copy `mobile/.env.example` to `mobile/.env.development`:
+Copy the example file and fill in your values:
 
 ```bash
 cd mobile
 cp .env.example .env.development
 ```
+
+Without Firebase/OAuth values, the app runs in dev mode with a mock user (`dev@localhost`).
 
 | Variable                         | Required | Description                                |
 | -------------------------------- | -------- | ------------------------------------------ |
@@ -192,7 +205,7 @@ uv run ruff format --check
 ### Type Checking
 
 ```bash
-uv run ty check app/
+uv run ty check api/
 ```
 
 ## API Endpoints
@@ -359,12 +372,12 @@ uv run python scripts/batch_test.py
 
 ### What It Does
 
-- Protein substitution (50% meat / 50% vegetarian alternatives)
-- Airfryer optimization with timing instructions
-- Timeline format for complex multi-step recipes
-- HelloFresh spice blend replacement with individual ingredients
-- Lactose-free dairy substitutions
-- Ingredient formatting (fractions, no duplicates, spices last)
+- Translates recipes to the household's configured language
+- Adjusts ingredients for dietary restrictions (gluten-free, dairy-free, nut-free, etc.)
+- Adapts cooking methods for available equipment (airfryer, sous vide, etc.)
+- Replaces branded spice mixes with individual ingredients
+- Adds coordinated timelines for complex multi-step recipes
+- Cleans up ingredient formatting (fractions, deduplication, spices last)
 
 ### Configuration
 
