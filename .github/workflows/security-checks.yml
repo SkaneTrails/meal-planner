@@ -126,13 +126,17 @@ jobs:
 
       - name: Generate SARIF report
         run: |
+          # Only scan secret/misconfig for SARIF — vuln results lack file-level
+          # artifact locations which causes GitHub's SARIF processor to reject
+          # the file with "expected artifact location". Vulnerability results
+          # are still captured in the JSON scan above.
           trivy fs \
             --format sarif \
             --output trivy-results.sarif \
             --severity CRITICAL,HIGH,MEDIUM \
             --exit-code 0 \
             --cache-dir ${{ env.TRIVY_CACHE_DIR }} \
-            --scanners vuln,secret,misconfig \
+            --scanners secret,misconfig \
             .
 
       - name: Upload Trivy results to GitHub Security
