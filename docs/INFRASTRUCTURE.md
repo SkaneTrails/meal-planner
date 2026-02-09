@@ -166,7 +166,6 @@ For automated deployments on push to `main`:
 1. Add GitHub repository secrets:
    - `GCP_PROJECT_ID` — your project ID
    - `GCP_PROJECT_NUMBER` — from GCP Console > Project Dashboard
-   - `GCP_REGION` — your GCP region (must match `region` in `terraform.tfvars`, e.g. `europe-west1`)
 
 2. Sync access files and Terraform variables to GitHub secrets:
 
