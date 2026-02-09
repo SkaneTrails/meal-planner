@@ -70,8 +70,10 @@ def count_recipes(*, household_id: str | None = None) -> int:
     owned_result = owned_query.count().get()
     owned_count = owned_result[0][0].value  # type: ignore[index]
 
-    shared_query = collection.where(filter=FieldFilter("visibility", "==", "shared"))
-    shared_result = shared_query.count().get()
+    shared_not_owned_query = collection.where(filter=FieldFilter("visibility", "==", "shared")).where(
+        filter=FieldFilter("household_id", "!=", household_id)
+    )
+    shared_result = shared_not_owned_query.count().get()
     shared_count = shared_result[0][0].value  # type: ignore[index]
 
     return owned_count + shared_count

@@ -3,7 +3,7 @@
  */
 
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import type { PaginatedRecipeList, Recipe, RecipeCreate, RecipeUpdate } from '../types';
 
@@ -51,11 +51,13 @@ export const useAllRecipes = () => {
       lastPage.has_more ? lastPage.next_cursor : undefined,
   });
 
-  // Auto-fetch next pages
+  // Auto-fetch next pages via effect to avoid side effects during render
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
-  if (hasNextPage && !isFetchingNextPage) {
-    fetchNextPage();
-  }
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const recipes: Recipe[] = useMemo(
     () => query.data?.pages.flatMap((page) => page.items) ?? [],

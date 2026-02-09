@@ -98,7 +98,7 @@ async def list_recipes(
         recipes = recipe_storage.search_recipes(search, household_id=household_id)
         return PaginatedRecipeList(items=recipes, total_count=len(recipes), next_cursor=None, has_more=False)
 
-    total = count_recipes(household_id=household_id)
+    total = count_recipes(household_id=household_id) if cursor is None else None
     recipes, next_cursor = get_recipes_paginated(
         household_id=household_id, limit=limit, cursor=cursor, include_duplicates=include_duplicates
     )
