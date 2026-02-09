@@ -160,41 +160,83 @@ def parse_recipe_html(html: str, url: str) -> Recipe | None:
         return None
 
 
-def scrape_recipe(url: str) -> Recipe | None:
+class ScrapeError:
+    """Structured error from scrape_recipe with reason detail."""
+
+    BLOCKED = "blocked"
+    PARSE_FAILED = "parse_failed"
+    SECURITY = "security"
+
+    def __init__(self, reason: str, message: str, status_code: int | None = None) -> None:
+        self.reason = reason
+        self.message = message
+        self.status_code = status_code
+
+
+# HTTP status codes that indicate the site is blocking our requests
+_BLOCKED_STATUS_CODES = {403, 406, 429, 451, 503}
+
+
+def _fetch_html(url: str) -> str | ScrapeError:
+    """Fetch HTML from URL with SSRF and blocking protection.
+
+    Returns HTML string on success, or ScrapeError on failure.
     """
-    Scrape a recipe from a URL.
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+    }
+    try:
+        response = httpx.get(url, follow_redirects=True, timeout=30.0, headers=headers)
+    except httpx.TimeoutException:
+        return ScrapeError(ScrapeError.BLOCKED, "Request timed out — site may be blocking cloud requests")
+    except Exception as e:
+        print(f"Recipe scraping error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
+        return ScrapeError(ScrapeError.PARSE_FAILED, f"Failed to scrape recipe: {type(e).__name__}")
+
+    if response.status_code in _BLOCKED_STATUS_CODES:
+        host = urlparse(url).hostname or url
+        return ScrapeError(
+            ScrapeError.BLOCKED,
+            f"{host} blocked the request (HTTP {response.status_code})",
+            status_code=response.status_code,
+        )
+
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        host = urlparse(url).hostname or url
+        return ScrapeError(
+            ScrapeError.BLOCKED, f"{host} returned HTTP {e.response.status_code}", status_code=e.response.status_code
+        )
+
+    final_url = str(response.url)
+    if final_url != url and not _is_safe_url(final_url):
+        print(f"Redirect blocked by security policy: {url} -> {final_url}", file=sys.stderr)
+        return ScrapeError(ScrapeError.SECURITY, "Redirect blocked by security policy")
+
+    return response.text
+
+
+def scrape_recipe(url: str) -> Recipe | ScrapeError:
+    """Scrape a recipe from a URL.
 
     Args:
         url: The URL of the recipe to scrape.
 
     Returns:
-        A Recipe object if successful, None otherwise.
+        A Recipe object if successful, or a ScrapeError with reason detail.
     """
-    # SSRF protection: validate URL before fetching
     if not _is_safe_url(url):
         print(f"URL blocked by security policy: {url}", file=sys.stderr)
-        return None
+        return ScrapeError(ScrapeError.SECURITY, f"URL blocked by security policy: {url}")
 
-    try:
-        # Use a browser-like User-Agent to avoid being blocked by recipe sites
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
-        }
-        response = httpx.get(url, follow_redirects=True, timeout=30.0, headers=headers)
-        response.raise_for_status()
+    html = _fetch_html(url)
+    if isinstance(html, ScrapeError):
+        return html
 
-        # Validate final URL after redirects to prevent SSRF bypass
-        final_url = str(response.url)
-        if final_url != url and not _is_safe_url(final_url):
-            print(f"Redirect blocked by security policy: {url} -> {final_url}", file=sys.stderr)
-            return None
-
-        html = response.text
-
-        # Use the shared parsing function
-        return parse_recipe_html(html, url)
-    except Exception as e:
-        print(f"Recipe scraping error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
-        return None
+    recipe = parse_recipe_html(html, url)
+    if recipe is None:
+        return ScrapeError(ScrapeError.PARSE_FAILED, f"Could not extract recipe data from {url}")
+    return recipe
