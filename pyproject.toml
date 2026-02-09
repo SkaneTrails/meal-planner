@@ -41,6 +41,7 @@ optional-dependencies.dev = [
 ]
 optional-dependencies.test = [
   "pytest>=8",
+  "pytest-asyncio>=0.24",
   "pytest-cov>=4.1",
   "pytest-mock>=3.12",
   "pytest-xdist>=3.5",
@@ -129,6 +130,7 @@ filterwarnings = [
 ]
 addopts = "-W error --strict-markers"
 markers = [
+  "asyncio: mark a test as an async test (auto-discovered by pytest-asyncio)",
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
   "integration: marks tests as integration tests",
 ]
