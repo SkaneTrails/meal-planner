@@ -127,7 +127,7 @@ if (Test-Path $backendPath) {
     if ($backendContent -match 'backend\s+"gcs"\s*\{[^}]*bucket\s*=\s*"([^"]+)"') {
         $bucket = $Matches[1]
         gh secret set TF_BACKEND_BUCKET --repo $Repo --body $bucket
-        Write-Host "  Backend bucket '$bucket' stored as TF_BACKEND_BUCKET" -ForegroundColor Green
+        Write-Host "  Stored as TF_BACKEND_BUCKET" -ForegroundColor Green
         $synced++
     } else {
         Write-Host "  Warning: Could not extract bucket from backend.tf" -ForegroundColor Yellow
@@ -136,7 +136,7 @@ if (Test-Path $backendPath) {
     if ($backendContent -match 'backend\s+"gcs"\s*\{[^}]*prefix\s*=\s*"([^"]+)"') {
         $prefix = $Matches[1]
         gh secret set TF_BACKEND_PREFIX --repo $Repo --body $prefix
-        Write-Host "  Backend prefix '$prefix' stored as TF_BACKEND_PREFIX" -ForegroundColor Green
+        Write-Host "  Stored as TF_BACKEND_PREFIX" -ForegroundColor Green
         $synced++
     } else {
         Write-Host "  Warning: Could not extract prefix from backend.tf" -ForegroundColor Yellow

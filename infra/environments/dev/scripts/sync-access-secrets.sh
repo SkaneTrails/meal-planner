@@ -101,7 +101,7 @@ if [[ -f "$BACKEND_PATH" ]]; then
 
     if [[ -n "$BUCKET" ]]; then
         echo -n "$BUCKET" | gh secret set TF_BACKEND_BUCKET --repo "$REPO"
-        echo "  Backend bucket '$BUCKET' stored as TF_BACKEND_BUCKET"
+        echo "  Stored as TF_BACKEND_BUCKET"
         ((synced += 1))
     else
         echo "  Warning: Could not extract bucket from backend.tf"
@@ -109,7 +109,7 @@ if [[ -f "$BACKEND_PATH" ]]; then
 
     if [[ -n "$PREFIX" ]]; then
         echo -n "$PREFIX" | gh secret set TF_BACKEND_PREFIX --repo "$REPO"
-        echo "  Backend prefix '$PREFIX' stored as TF_BACKEND_PREFIX"
+        echo "  Stored as TF_BACKEND_PREFIX"
         ((synced += 1))
     else
         echo "  Warning: Could not extract prefix from backend.tf"
