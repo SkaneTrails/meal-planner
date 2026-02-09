@@ -16,7 +16,7 @@ const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 export default function HomeScreen() {
   const data = useHomeScreenData();
   const {
-    router, recipes, isLoading, handleRefresh,
+    router, recipes, totalCount, isLoading, handleRefresh,
     greetingKey, t, recipeUrl, setRecipeUrl,
     showAddModal, setShowAddModal,
     groceryItemsCount, plannedMealsCount, nextMeal,
@@ -45,7 +45,7 @@ export default function HomeScreen() {
         <Header greetingKey={greetingKey} t={t} onSettings={() => { hapticLight(); router.push('/settings'); }} />
 
         <StatsCards
-          recipesCount={recipes.length}
+          recipesCount={totalCount}
           plannedMealsCount={plannedMealsCount}
           groceryItemsCount={groceryItemsCount}
           t={t}
