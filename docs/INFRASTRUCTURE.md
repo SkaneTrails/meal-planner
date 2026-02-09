@@ -166,7 +166,6 @@ For automated deployments on push to `main`:
 1. Add GitHub repository secrets:
    - `GCP_PROJECT_ID` — your project ID
    - `GCP_PROJECT_NUMBER` — from GCP Console > Project Dashboard
-   - `GCP_REGION` — your GCP region (must match `region` in `terraform.tfvars`, e.g. `europe-west1`)
 
 2. Sync access files and Terraform variables to GitHub secrets:
 
@@ -184,8 +183,8 @@ The script auto-detects the repository from `git remote`. To override:
 ```
 
 This uploads `access/superusers.txt`, `access/users.txt`, and `terraform.tfvars`
-as GitHub secrets (`TF_SUPERUSERS`, `TF_USERS`, `TF_VARS_FILE`) so the CI/CD
-workflow can run `terraform apply` with the correct configuration.
+as GitHub secrets (`TF_SUPERUSERS`, `TF_USERS`, `TF_VARS_FILE`, `GCP_REGION`) so
+the CI/CD workflow can run `terraform apply` with the correct configuration.
 
 **Re-run this script whenever you add or remove users from the access files.**
 

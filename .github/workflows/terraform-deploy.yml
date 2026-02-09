@@ -24,8 +24,8 @@ jobs:
     env:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
+      GCP_REGION: ${{ secrets.GCP_REGION }}
       SERVICE_NAME: meal-planner-api
-      REGION: ${{ secrets.GCP_REGION }}
       REPOSITORY: meal-planner
       TF_DIR: infra/environments/dev
 
@@ -44,21 +44,6 @@ jobs:
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
-
-      # ---------------------------------------------------------------
-      # Docker image build + push
-      # ---------------------------------------------------------------
-
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
-
-      - name: Build and push Docker image
-        run: |
-          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
-          LATEST="${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest"
-          docker build -t "$IMAGE" -t "$LATEST" .
-          docker push "$IMAGE"
-          docker push "$LATEST"
 
       # ---------------------------------------------------------------
       # Reconstruct gitignored files from GitHub Secrets
@@ -80,6 +65,21 @@ jobs:
               done < "$f"
             fi
           done
+
+      # ---------------------------------------------------------------
+      # Docker image build + push
+      # ---------------------------------------------------------------
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          LATEST="${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest"
+          docker build -t "$IMAGE" -t "$LATEST" .
+          docker push "$IMAGE"
+          docker push "$LATEST"
 
       # ---------------------------------------------------------------
       # Terraform apply
