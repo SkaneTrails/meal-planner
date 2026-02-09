@@ -105,6 +105,57 @@ resource "google_firestore_index" "recipes_by_diet_label" {
   }
 }
 
+# Recipes collection — household-scoped queries (owned recipes)
+resource "google_firestore_index" "recipes_by_household" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "household_id"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "created_at"
+    order      = "DESCENDING"
+  }
+}
+
+# Recipes collection — shared recipe listing
+resource "google_firestore_index" "recipes_by_visibility" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "visibility"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "created_at"
+    order      = "DESCENDING"
+  }
+}
+
+# Recipes collection — shared recipe count excluding own household
+resource "google_firestore_index" "recipes_shared_not_owned" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "visibility"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "household_id"
+    order      = "ASCENDING"
+  }
+}
+
 # Meal plans collection - query by week
 resource "google_firestore_index" "meal_plans_by_week" {
   project    = var.project
