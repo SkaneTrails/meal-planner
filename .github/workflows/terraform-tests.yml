@@ -186,27 +186,30 @@ jobs:
       - name: Write job summary
         if: always()
         run: |
-          echo "## Terraform Tests" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Step | Result |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|------|--------|" >> "$GITHUB_STEP_SUMMARY"
-
           icon() { [ "$1" = "success" ] && echo "✅" || echo "❌"; }
 
-          echo "| Format | $(icon "${{ steps.fmt.outcome }}") |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Init | $(icon "${{ steps.init.outcome }}") |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Validate | $(icon "${{ steps.validate.outcome }}") |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Plan | $(icon "${{ steps.plan.outcome }}") |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Terraform Tests"
+            echo ""
+            echo "| Step | Result |"
+            echo "|------|--------|"
+            echo "| Format | $(icon "${{ steps.fmt.outcome }}") |"
+            echo "| Init | $(icon "${{ steps.init.outcome }}") |"
+            echo "| Validate | $(icon "${{ steps.validate.outcome }}") |"
+            echo "| Plan | $(icon "${{ steps.plan.outcome }}") |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
           if [ -f "${{ env.TF_DIR }}/plan_output.txt" ]; then
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "<details><summary>Plan output</summary>" >> "$GITHUB_STEP_SUMMARY"
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            head -c 60000 "${{ env.TF_DIR }}/plan_output.txt" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+            {
+              echo ""
+              echo "<details><summary>Plan output</summary>"
+              echo ""
+              echo '```'
+              head -c 60000 "${{ env.TF_DIR }}/plan_output.txt"
+              echo '```'
+              echo ""
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
       # ---------------------------------------------------------------
