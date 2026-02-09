@@ -57,6 +57,9 @@ jobs:
           printf '%s\n' "${{ secrets.TF_USERS }}" > access/users.txt
           printf '%s\n' '${{ secrets.TF_VARS_FILE }}' > terraform.tfvars
 
+          # Partial backend config — actual bucket/prefix come from -backend-config flags
+          echo 'terraform { backend "gcs" {} }' > backend.tf
+
           # Mask each line to avoid leaking PII in Terraform plan/apply output
           for f in access/superusers.txt access/users.txt terraform.tfvars; do
             if [ -f "$f" ]; then
@@ -94,7 +97,10 @@ jobs:
 
       - name: Terraform init
         working-directory: ${{ env.TF_DIR }}
-        run: terraform init -input=false
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
+            -backend-config="prefix=${{ secrets.TF_BACKEND_PREFIX }}"
 
       - name: Terraform apply
         working-directory: ${{ env.TF_DIR }}

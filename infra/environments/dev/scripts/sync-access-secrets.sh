@@ -93,6 +93,31 @@ else
     echo "  Skipping terraform.tfvars (not found)"
 fi
 
+# Also sync backend config (bucket + prefix for terraform init -backend-config)
+BACKEND_PATH="$SCRIPT_DIR/../backend.tf"
+if [[ -f "$BACKEND_PATH" ]]; then
+    BUCKET=$(grep -A 10 'backend.*"gcs"' "$BACKEND_PATH" | grep -E '^[[:space:]]*bucket[[:space:]]*=' | sed -E 's/.*=[[:space:]]*"(.*)".*/\1/' | head -n 1)
+    PREFIX=$(grep -A 10 'backend.*"gcs"' "$BACKEND_PATH" | grep -E '^[[:space:]]*prefix[[:space:]]*=' | sed -E 's/.*=[[:space:]]*"(.*)".*/\1/' | head -n 1)
+
+    if [[ -n "$BUCKET" ]]; then
+        echo -n "$BUCKET" | gh secret set TF_BACKEND_BUCKET --repo "$REPO"
+        echo "  Backend bucket '$BUCKET' stored as TF_BACKEND_BUCKET"
+        ((synced += 1))
+    else
+        echo "  Warning: Could not extract bucket from backend.tf"
+    fi
+
+    if [[ -n "$PREFIX" ]]; then
+        echo -n "$PREFIX" | gh secret set TF_BACKEND_PREFIX --repo "$REPO"
+        echo "  Backend prefix '$PREFIX' stored as TF_BACKEND_PREFIX"
+        ((synced += 1))
+    else
+        echo "  Warning: Could not extract prefix from backend.tf"
+    fi
+else
+    echo "  Skipping backend.tf (not found)"
+fi
+
 echo ""
 if [[ $synced -gt 0 ]]; then
     echo "Synced $synced secret(s) to GitHub"
