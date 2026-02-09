@@ -204,6 +204,7 @@ class PaginatedRecipeList(BaseModel):
     """Paginated list of recipes with cursor for next page."""
 
     items: list[Recipe]
+    total_count: int | None = Field(default=None, description="Total number of recipes available (first page only)")
     next_cursor: str | None = Field(default=None, description="Cursor for the next page (recipe ID), null if last page")
     has_more: bool = Field(default=False, description="Whether more results exist beyond this page")
 

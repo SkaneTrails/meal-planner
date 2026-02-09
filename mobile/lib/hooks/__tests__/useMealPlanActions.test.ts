@@ -52,7 +52,7 @@ vi.mock('@/lib/hooks', () => ({
     isLoading: false,
     refetch: mockRefetch,
   })),
-  useRecipes: vi.fn(() => ({ data: mockRecipes })),
+  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
   useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
   useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
 }));

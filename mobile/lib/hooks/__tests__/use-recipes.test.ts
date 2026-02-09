@@ -47,19 +47,38 @@ describe('useRecipes', () => {
         { id: '1', title: 'Pasta' },
         { id: '2', title: 'Soup' },
       ],
+      total_count: 2,
       next_cursor: null,
       has_more: false,
     });
   });
 
-  it('fetches the recipe list', async () => {
+  it('fetches the recipe list using infinite query', async () => {
     const { result } = renderHook(() => useRecipes(), {
       wrapper: createQueryWrapper(),
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockApi.getRecipes).toHaveBeenCalledTimes(1);
-    expect(result.current.data).toHaveLength(2);
+    expect(result.current.data?.pages).toHaveLength(1);
+    expect(result.current.data?.pages[0].items).toHaveLength(2);
+  });
+
+  it('exposes total_count from first page', async () => {
+    mockApi.getRecipes.mockResolvedValue({
+      items: [{ id: '1', title: 'Pasta' }],
+      total_count: 75,
+      next_cursor: 'abc',
+      has_more: true,
+    });
+
+    const { result } = renderHook(() => useRecipes(), {
+      wrapper: createQueryWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.pages[0].total_count).toBe(75);
+    expect(result.current.hasNextPage).toBe(true);
   });
 });
 

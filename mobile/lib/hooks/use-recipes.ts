@@ -2,9 +2,10 @@
  * React Query hooks for recipes.
  */
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo } from 'react';
 import { api } from '../api';
-import type { RecipeCreate, RecipeUpdate } from '../types';
+import type { PaginatedRecipeList, Recipe, RecipeCreate, RecipeUpdate } from '../types';
 
 // Query keys
 export const recipeKeys = {
@@ -12,23 +13,65 @@ export const recipeKeys = {
   lists: () => [...recipeKeys.all, 'list'] as const,
   list: (search?: string) =>
     [...recipeKeys.lists(), { search }] as const,
+  allRecipes: () => [...recipeKeys.all, 'all'] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
   detail: (id: string) =>
     [...recipeKeys.details(), id] as const,
 };
 
 /**
- * Hook to fetch all recipes (unwraps paginated response).
+ * Hook to fetch recipes with infinite scrolling (cursor-based pagination).
+ * Used by the recipe library screen for paginated browsing.
  */
 export const useRecipes = (search?: string) => {
-  return useQuery({
+  return useInfiniteQuery<PaginatedRecipeList>({
     queryKey: recipeKeys.list(search),
-    queryFn: async () => {
-      const response = await api.getRecipes(search);
-      return response.items;
+    queryFn: async ({ pageParam }) => {
+      return api.getRecipes(search, pageParam as string | undefined);
     },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.has_more ? lastPage.next_cursor : undefined,
   });
-}
+};
+
+/**
+ * Hook to fetch ALL recipes across all pages.
+ * Used by consumers that need the complete recipe list (meal planner, grocery, home screen).
+ * Auto-fetches subsequent pages until all recipes are loaded.
+ */
+export const useAllRecipes = () => {
+  const query = useInfiniteQuery<PaginatedRecipeList>({
+    queryKey: recipeKeys.allRecipes(),
+    queryFn: async ({ pageParam }) => {
+      return api.getRecipes(undefined, pageParam as string | undefined);
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage.has_more ? lastPage.next_cursor : undefined,
+  });
+
+  // Auto-fetch next pages via effect to avoid side effects during render
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const recipes: Recipe[] = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items) ?? [],
+    [query.data?.pages],
+  );
+
+  const totalCount = query.data?.pages[0]?.total_count ?? 0;
+
+  return {
+    ...query,
+    recipes,
+    totalCount,
+  };
+};
 
 /**
  * Hook to fetch a single recipe by ID.
