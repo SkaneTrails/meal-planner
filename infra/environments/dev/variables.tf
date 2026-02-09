@@ -59,6 +59,11 @@ variable "recipe_images_bucket_name" {
   type        = string
 }
 
+variable "tfstate_bucket_name" {
+  description = "GCS bucket name for Terraform state (must be globally unique)"
+  type        = string
+}
+
 variable "image_tag" {
   description = "Docker image tag for Cloud Run (default: latest for local dev, CI passes git SHA)"
   type        = string
