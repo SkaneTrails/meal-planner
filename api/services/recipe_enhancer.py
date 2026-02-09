@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from api.services.prompt_loader import load_system_prompt
+from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
 
 if TYPE_CHECKING:
     from google import genai as genai_module
@@ -150,7 +151,8 @@ def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL) -> dic
 
     client = get_genai_client()
     system_prompt = load_system_prompt()
-    recipe_text = _format_recipe_text(recipe)
+    sanitized = sanitize_recipe_for_enhancement(recipe)
+    recipe_text = _format_recipe_text(sanitized)
 
     try:
         response = client.models.generate_content(

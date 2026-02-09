@@ -34,11 +34,19 @@ export const recipeApi = {
   },
 
   scrapeRecipe: async (url: string, enhance: boolean = false): Promise<Recipe> => {
+    // Validate URL before attempting fetch — TypeError from new URL()
+    // should be a hard error, not fall through to server-side scraping.
+    let parsed: URL;
     try {
-      const parsed = new URL(url);
-      if (!['http:', 'https:'].includes(parsed.protocol)) {
-        throw new ApiClientError('Only http and https URLs are supported', 400);
-      }
+      parsed = new URL(url);
+    } catch {
+      throw new ApiClientError('Invalid URL', 400);
+    }
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      throw new ApiClientError('Only http and https URLs are supported', 400);
+    }
+
+    try {
       const htmlResponse = await fetch(url, {
         headers: {
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -68,9 +76,8 @@ export const recipeApi = {
       if (error instanceof ApiClientError) {
         throw error;
       }
-      if (error instanceof TypeError) {
-        throw new ApiClientError('Invalid URL', 400);
-      }
+      // TypeError from fetch means CORS or network error — fall through
+      // to server-side scraping. Invalid URLs are already caught above.
       const request: RecipeScrapeRequest = { url };
       const params = new URLSearchParams();
       if (enhance) params.set('enhance', 'true');
