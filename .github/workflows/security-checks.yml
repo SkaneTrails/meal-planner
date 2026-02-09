@@ -139,6 +139,16 @@ jobs:
             --scanners secret,misconfig \
             .
 
+          # Trivy sometimes emits results with empty artifact URIs (e.g. for
+          # misconfigs it can't pin to a specific file). GitHub's SARIF processor
+          # rejects the entire file if any result has an empty URI. Remove them.
+          jq '(.runs[].results) |= map(
+            select(
+              .locations[0].physicalLocation.artifactLocation.uri != ""
+            )
+          )' trivy-results.sarif > trivy-results-clean.sarif
+          mv trivy-results-clean.sarif trivy-results.sarif
+
       - name: Upload Trivy results to GitHub Security
         if: always()
         continue-on-error: true # May fail on repos without code scanning enabled
