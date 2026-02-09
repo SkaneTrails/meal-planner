@@ -143,14 +143,14 @@ module "cloud_run" {
   service_name       = "meal-planner-api"
   image_url          = "${module.artifact_registry.repository_url}/meal-planner-api:${var.image_tag}"
   firestore_database = var.firestore_database_name
-  allowed_origins    = join(",", [
+  allowed_origins = join(",", [
     module.firebase.hosting_url,
     "https://${var.project}.firebaseapp.com",
     "http://localhost:8081",
     "http://localhost:19006",
     "http://localhost:3000",
   ])
-  gcs_bucket_name    = module.storage.bucket_name
+  gcs_bucket_name = module.storage.bucket_name
 
   # Allow public access - Firebase Auth is validated in application code
   allow_public_access = true
@@ -184,9 +184,9 @@ module "storage" {
 module "cloud_function" {
   source = "../../modules/cloud_function"
 
-  project      = var.project
-  region       = var.region
-  source_dir   = "${path.root}/../../../functions/scrape_recipe"
+  project    = var.project
+  region     = var.region
+  source_dir = "${path.root}/../../../functions/scrape_recipe"
 
   # Allow public access - the function handles its own validation
   allow_public_access = true

@@ -1,0 +1,202 @@
+name: Terraform Tests
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/terraform-tests.yml"
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:
+  terraform-checks:
+    name: Format / Validate / Plan
+    runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
+      GCP_REGION: ${{ secrets.GCP_REGION }}
+      TF_DIR: infra/environments/dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "~> 1.12"
+
+      # ---------------------------------------------------------------
+      # Format check (no credentials needed)
+      # ---------------------------------------------------------------
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check -recursive -diff
+        working-directory: infra
+        continue-on-error: true
+
+      # ---------------------------------------------------------------
+      # Authenticate + reconstruct gitignored files for init/validate/plan
+      # ---------------------------------------------------------------
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/github-provider
+          service_account: github-actions-terraform@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: Reconstruct gitignored files
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          mkdir -p access
+          printf '%s\n' "${{ secrets.TF_SUPERUSERS }}" > access/superusers.txt
+          printf '%s\n' "${{ secrets.TF_USERS }}" > access/users.txt
+          printf '%s\n' '${{ secrets.TF_VARS_FILE }}' > terraform.tfvars
+
+          # Partial backend config — actual bucket/prefix come from -backend-config flags
+          printf 'terraform {\n  backend "gcs" {}\n}\n' > backend.tf
+
+          # Mask each line to avoid leaking PII in plan output
+          for f in access/superusers.txt access/users.txt terraform.tfvars; do
+            if [ -f "$f" ]; then
+              while IFS= read -r line; do
+                if [ -n "$line" ]; then
+                  echo "::add-mask::$line"
+                fi
+              done < "$f"
+            fi
+          done
+
+      # ---------------------------------------------------------------
+      # Init / Validate / Plan
+      # ---------------------------------------------------------------
+
+      - name: Terraform init
+        id: init
+        working-directory: ${{ env.TF_DIR }}
+        continue-on-error: true
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
+            -backend-config="prefix=${{ secrets.TF_BACKEND_PREFIX }}"
+
+      - name: Terraform validate
+        id: validate
+        working-directory: ${{ env.TF_DIR }}
+        continue-on-error: true
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        id: plan
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          terraform plan -input=false -no-color -out=tfplan 2>&1 | tee plan_output.txt
+          echo "plan_exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      # ---------------------------------------------------------------
+      # PR comment with results
+      # ---------------------------------------------------------------
+
+      - name: Post plan to PR
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        if: always() && github.event_name == 'pull_request'
+        env:
+          FMT_OUTCOME: ${{ steps.fmt.outcome }}
+          INIT_OUTCOME: ${{ steps.init.outcome }}
+          VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const icon = (outcome) => outcome === 'success' ? '✅' : '❌';
+
+            const body = [
+              '## Terraform Tests — PR Summary',
+              '',
+              '| Step | Result |',
+              '|------|--------|',
+              `| Format | ${icon(process.env.FMT_OUTCOME)} |`,
+              `| Init | ${icon(process.env.INIT_OUTCOME)} |`,
+              `| Validate | ${icon(process.env.VALIDATE_OUTCOME)} |`,
+              `| Plan | ${icon(process.env.PLAN_OUTCOME)} |`,
+              '',
+              '_Full plan output is available in the [workflow logs](' + runUrl + ')._',
+              '',
+              `*Pushed by @${context.actor}, commit \`${context.sha.substring(0, 7)}\`*`,
+            ].join('\n');
+
+            // Find existing comment to update (avoid spam)
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const marker = '## Terraform Tests — PR Summary';
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      # ---------------------------------------------------------------
+      # Job summary (visible on workflow run page)
+      # ---------------------------------------------------------------
+
+      - name: Write job summary
+        if: always()
+        run: |
+          icon() { [ "$1" = "success" ] && echo "✅" || echo "❌"; }
+
+          {
+            echo "## Terraform Tests"
+            echo ""
+            echo "| Step | Result |"
+            echo "|------|--------|"
+            echo "| Format | $(icon "${{ steps.fmt.outcome }}") |"
+            echo "| Init | $(icon "${{ steps.init.outcome }}") |"
+            echo "| Validate | $(icon "${{ steps.validate.outcome }}") |"
+            echo "| Plan | $(icon "${{ steps.plan.outcome }}") |"
+            echo ""
+            echo "> Full plan output is available in the Terraform plan step logs above."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ---------------------------------------------------------------
+      # Fail the job if any check failed
+      # ---------------------------------------------------------------
+
+      - name: Check results
+        if: always()
+        run: |
+          if [ "${{ steps.fmt.outcome }}" != "success" ]; then
+            echo "::error::Terraform formatting check failed. Run 'terraform fmt -recursive' locally."
+            exit 1
+          fi
+          if [ "${{ steps.validate.outcome }}" != "success" ]; then
+            echo "::error::Terraform validation failed."
+            exit 1
+          fi
+          if [ "${{ steps.plan.outcome }}" != "success" ]; then
+            echo "::error::Terraform plan failed."
+            exit 1
+          fi
