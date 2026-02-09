@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from google.cloud.firestore_v1 import FieldFilter, aggregation
+from google.cloud.firestore_v1 import FieldFilter
 
 if TYPE_CHECKING:
     from google.cloud.firestore_v1.client import Client as FirestoreClient
@@ -63,22 +63,16 @@ def count_recipes(*, household_id: str | None = None) -> int:
     collection = db.collection(RECIPES_COLLECTION)
 
     if household_id is None:
-        count_query = aggregation.AggregationQuery(collection)
-        count_query.count(alias="total")
-        results = count_query.get()
-        return results[0][0].value  # type: ignore[index]
+        result = collection.count().get()
+        return result[0][0].value  # type: ignore[index]
 
     owned_query = collection.where(filter=FieldFilter("household_id", "==", household_id))
-    owned_agg = aggregation.AggregationQuery(owned_query)
-    owned_agg.count(alias="total")
-    owned_results = owned_agg.get()
-    owned_count = owned_results[0][0].value  # type: ignore[index]
+    owned_result = owned_query.count().get()
+    owned_count = owned_result[0][0].value  # type: ignore[index]
 
     shared_query = collection.where(filter=FieldFilter("visibility", "==", "shared"))
-    shared_agg = aggregation.AggregationQuery(shared_query)
-    shared_agg.count(alias="total")
-    shared_results = shared_agg.get()
-    shared_count = shared_results[0][0].value  # type: ignore[index]
+    shared_result = shared_query.count().get()
+    shared_count = shared_result[0][0].value  # type: ignore[index]
 
     return owned_count + shared_count
 
