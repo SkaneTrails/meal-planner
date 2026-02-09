@@ -196,6 +196,30 @@ module "cloud_function" {
   run_api_service            = module.apis.run_service
 }
 
+# -----------------------------------------------------------------------------
+# Service Account User grants (scoped to specific runtime SAs, not project-level)
+# -----------------------------------------------------------------------------
+
+# Cloud Run deploy SA needs to attach the Cloud Run runtime SA during deployment
+resource "google_service_account_iam_member" "cloudrun_sa_user_on_api" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_run.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.iam.github_actions_cloudrun_email}"
+}
+
+# Terraform SA needs to attach runtime SAs when applying Cloud Run and Cloud Function configs
+resource "google_service_account_iam_member" "terraform_sa_user_on_api" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_run.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.iam.github_actions_terraform_email}"
+}
+
+resource "google_service_account_iam_member" "terraform_sa_user_on_function" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_function.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${module.iam.github_actions_terraform_email}"
+}
+
 # Workload Identity Federation - Keyless auth from GitHub Actions
 module "workload_federation" {
   source = "../../modules/workload_federation"

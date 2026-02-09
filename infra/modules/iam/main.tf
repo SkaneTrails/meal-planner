@@ -82,15 +82,6 @@ resource "google_project_iam_member" "github_actions_cloudrun_artifact_registry"
   depends_on = [google_service_account.github_actions_cloudrun]
 }
 
-# Grant Service Account User role (required to deploy Cloud Run with custom SA)
-resource "google_project_iam_member" "github_actions_cloudrun_sa_user" {
-  project = var.project
-  role    = "roles/iam.serviceAccountUser"
-  member  = "serviceAccount:${google_service_account.github_actions_cloudrun.email}"
-
-  depends_on = [google_service_account.github_actions_cloudrun]
-}
-
 # Grant Secret Manager access to Firebase service account (for fetching secrets in workflow)
 resource "google_project_iam_member" "github_actions_firebase_secretmanager" {
   project = var.project
@@ -163,15 +154,6 @@ resource "google_project_iam_member" "github_actions_terraform_secrets" {
 resource "google_project_iam_member" "github_actions_terraform_firebase" {
   project = var.project
   role    = "roles/firebase.admin"
-  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
-
-  depends_on = [google_service_account.github_actions_terraform]
-}
-
-# Service Account User to attach SAs to Cloud Run / Cloud Functions
-resource "google_project_iam_member" "github_actions_terraform_sa_user" {
-  project = var.project
-  role    = "roles/iam.serviceAccountUser"
   member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
 
   depends_on = [google_service_account.github_actions_terraform]

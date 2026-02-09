@@ -66,6 +66,7 @@ These principles apply to every security decision. Reference them when challengi
 - Service account has `roles/owner` or `roles/editor`
 - API key has full access when read-only would suffice
 - Database user can write to tables it only needs to read
+- IAM binding is project-level when it could be resource-scoped (e.g., `serviceAccountUser`)
 
 **This project examples:**
 ```terraform
@@ -383,6 +384,41 @@ Remove or disable console.log in production builds:
 - Never commit `.tfvars` with real values
 - Use Secret Manager for sensitive variables
 - Enable audit logging on GCP resources
+
+#### IAM: Resource-Level vs Project-Level Bindings
+
+**Always prefer resource-level IAM bindings over project-level.**
+
+Project-level `google_project_iam_member` grants access to *all* resources of that type in the project. Resource-level bindings (e.g., `google_service_account_iam_member`, `google_storage_bucket_iam_member`) scope access to a single resource.
+
+**Critical role: `roles/iam.serviceAccountUser`**
+
+This role allows impersonating a service account. At project level, it grants impersonation of *every* SA in the project — a privilege escalation vector.
+
+```terraform
+# WRONG - can impersonate ANY service account in the project
+resource "google_project_iam_member" "sa_user" {
+  role   = "roles/iam.serviceAccountUser"
+  member = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+# CORRECT - can only impersonate the specific runtime SA
+resource "google_service_account_iam_member" "sa_user" {
+  service_account_id = "projects/${var.project}/serviceAccounts/${module.cloud_run.service_account_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.deployer.email}"
+}
+```
+
+**Challenge when:**
+- `roles/iam.serviceAccountUser` is granted at project level (GCP-0011)
+- `roles/editor` or `roles/owner` is used when a narrow role exists
+- IAM bindings use `google_project_iam_member` for roles that can be scoped to a resource
+
+**Other roles that should be resource-scoped when possible:**
+- `roles/storage.objectAdmin` → scope to specific bucket
+- `roles/secretmanager.secretAccessor` → scope to specific secret
+- `roles/cloudfunctions.invoker` → scope to specific function
 
 ---
 
