@@ -83,38 +83,53 @@ class TestListRecipes:
 
     def test_returns_empty_list(self, client: TestClient) -> None:
         """Should return empty paginated response when no recipes."""
-        with patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)):
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)),
+            patch("api.routers.recipes.count_recipes", return_value=0),
+        ):
             response = client.get("/recipes")
 
         assert response.status_code == 200
         data = response.json()
         assert data["items"] == []
+        assert data["total_count"] == 0
         assert data["next_cursor"] is None
         assert data["has_more"] is False
 
     def test_returns_recipes(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return paginated list of recipes."""
-        with patch("api.routers.recipes.get_recipes_paginated", return_value=([sample_recipe], None)):
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([sample_recipe], None)),
+            patch("api.routers.recipes.count_recipes", return_value=1),
+        ):
             response = client.get("/recipes")
 
         assert response.status_code == 200
         data = response.json()
         assert len(data["items"]) == 1
         assert data["items"][0]["title"] == "Test Carbonara"
+        assert data["total_count"] == 1
         assert data["has_more"] is False
 
     def test_returns_next_cursor_when_more_pages(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should include next_cursor when more pages exist."""
-        with patch("api.routers.recipes.get_recipes_paginated", return_value=([sample_recipe], "next_id")):
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([sample_recipe], "next_id")),
+            patch("api.routers.recipes.count_recipes", return_value=75),
+        ):
             response = client.get("/recipes")
 
         data = response.json()
         assert data["next_cursor"] == "next_id"
         assert data["has_more"] is True
+        assert data["total_count"] == 75
 
     def test_passes_pagination_params(self, client: TestClient) -> None:
         """Should pass limit and cursor to storage layer."""
-        with patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get:
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get,
+            patch("api.routers.recipes.count_recipes", return_value=0),
+        ):
             client.get("/recipes?limit=10&cursor=abc123")
 
         mock_get.assert_called_once_with(
@@ -130,14 +145,19 @@ class TestListRecipes:
         data = response.json()
         assert len(data["items"]) == 1
         assert data["has_more"] is False
+        assert data["total_count"] == 1
         mock_search.assert_called_once()
 
     def test_superuser_sees_all_recipes(self, superuser_client: TestClient) -> None:
         """Superuser should get all recipes without household filtering."""
-        with patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get:
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get,
+            patch("api.routers.recipes.count_recipes", return_value=0) as mock_count,
+        ):
             superuser_client.get("/recipes")
 
         mock_get.assert_called_once_with(household_id=None, limit=50, cursor=None, include_duplicates=False)
+        mock_count.assert_called_once_with(household_id=None)
 
 
 class TestGetRecipe:

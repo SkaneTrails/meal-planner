@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
-import { useMealPlan, useRecipes, useGroceryState } from '@/lib/hooks';
+import { useMealPlan, useAllRecipes, useGroceryState } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
@@ -36,7 +36,7 @@ export default function GroceryScreen() {
   const { t } = useTranslation();
   const { isItemAtHome } = useSettings();
   const { data: mealPlan } = useMealPlan();
-  const { data: recipes = [] } = useRecipes();
+  const { recipes } = useAllRecipes();
 
   const filterOutItemsAtHome = useCallback((itemName: string) => {
     return isItemAtHome(itemName);

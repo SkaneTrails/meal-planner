@@ -51,7 +51,21 @@ export default function RecipesScreen() {
     }, []),
   );
 
-  const { data: recipes = [], isLoading, refetch } = useRecipes();
+  const {
+    data,
+    isLoading,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useRecipes();
+
+  const recipes = useMemo(
+    () => data?.pages.flatMap((page) => page.items) ?? [],
+    [data?.pages],
+  );
+
+  const totalCount = data?.pages[0]?.total_count ?? 0;
 
   const filteredRecipes = useMemo(() => {
     let result = recipes.filter((recipe) => {
@@ -115,7 +129,7 @@ export default function RecipesScreen() {
               color: colors.text.secondary,
               marginTop: 4,
             }}>
-              {t('recipes.collectionCount', { count: recipes.length })}
+              {t('recipes.collectionCount', { count: totalCount })}
             </Text>
           </View>
         </View>
@@ -151,6 +165,12 @@ export default function RecipesScreen() {
           searchQuery={searchQuery}
           dietFilter={dietFilter}
           mealFilters={mealFilters}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          isFetchingNextPage={isFetchingNextPage}
           t={t}
         />
 

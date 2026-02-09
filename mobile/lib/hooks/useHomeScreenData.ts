@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'expo-router';
-import { useRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
+import { useAllRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
@@ -67,7 +67,7 @@ const getGreetingKey = (): 'greetingMorning' | 'greetingAfternoon' | 'greetingEv
 
 export const useHomeScreenData = () => {
   const router = useRouter();
-  const { data: recipes = [], isLoading: recipesLoading, refetch: refetchRecipes } = useRecipes();
+  const { recipes, totalCount, isLoading: recipesLoading, refetch: refetchRecipes } = useAllRecipes();
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
   const { isItemAtHome } = useSettings();
@@ -156,6 +156,7 @@ export const useHomeScreenData = () => {
   return {
     router,
     recipes,
+    totalCount,
     isLoading,
     handleRefresh,
     greetingKey,

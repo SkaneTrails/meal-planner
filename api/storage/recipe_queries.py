@@ -45,6 +45,40 @@ def get_recipes_by_ids(recipe_ids: set[str]) -> dict[str, Recipe]:
     return recipes
 
 
+def count_recipes(*, household_id: str | None = None) -> int:
+    """Count total recipes visible to a household using Firestore aggregation.
+
+    Uses server-side COUNT aggregation to avoid fetching all documents.
+    For household-scoped queries, counts owned + shared recipes (deduplication
+    may cause the actual unique count to be slightly lower).
+
+    Args:
+        household_id: If provided, count owned + shared recipes.
+                      If None, count all recipes (for superusers).
+
+    Returns:
+        Total number of matching recipes.
+    """
+    db = get_firestore_client()
+    collection = db.collection(RECIPES_COLLECTION)
+
+    if household_id is None:
+        result = collection.count().get()
+        return result[0][0].value  # type: ignore[index]
+
+    owned_query = collection.where(filter=FieldFilter("household_id", "==", household_id))
+    owned_result = owned_query.count().get()
+    owned_count = owned_result[0][0].value  # type: ignore[index]
+
+    shared_not_owned_query = collection.where(filter=FieldFilter("visibility", "==", "shared")).where(
+        filter=FieldFilter("household_id", "!=", household_id)
+    )
+    shared_result = shared_not_owned_query.count().get()
+    shared_count = shared_result[0][0].value  # type: ignore[index]
+
+    return owned_count + shared_count
+
+
 def _build_household_query(db: FirestoreClient, household_id: str | None) -> list:
     """Build Firestore queries for recipes visible to a household.
 
