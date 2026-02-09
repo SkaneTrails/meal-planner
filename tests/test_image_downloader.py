@@ -61,7 +61,10 @@ class TestDownloadImage:
         mock_response.content = image_bytes
         mock_response.raise_for_status = MagicMock()
 
-        with patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls:
+        with (
+            patch("api.services.image_downloader.is_safe_url", return_value=True),
+            patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls,
+        ):
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
             mock_cls.return_value.__aenter__.return_value = mock_client
@@ -71,9 +74,20 @@ class TestDownloadImage:
         assert result == image_bytes
 
     @pytest.mark.asyncio
+    async def test_blocks_unsafe_url(self) -> None:
+        """Should return None for URLs that fail SSRF validation."""
+        with patch("api.services.image_downloader.is_safe_url", return_value=False):
+            result = await _download_image("http://169.254.169.254/metadata")
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_returns_none_on_timeout(self) -> None:
         """Should return None when download times out."""
-        with patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls:
+        with (
+            patch("api.services.image_downloader.is_safe_url", return_value=True),
+            patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls,
+        ):
             mock_client = AsyncMock()
             mock_client.get.side_effect = httpx.TimeoutException("slow")
             mock_cls.return_value.__aenter__.return_value = mock_client
@@ -91,7 +105,10 @@ class TestDownloadImage:
             "Not Found", request=MagicMock(), response=mock_response
         )
 
-        with patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls:
+        with (
+            patch("api.services.image_downloader.is_safe_url", return_value=True),
+            patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls,
+        ):
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
             mock_cls.return_value.__aenter__.return_value = mock_client
@@ -103,7 +120,10 @@ class TestDownloadImage:
     @pytest.mark.asyncio
     async def test_returns_none_on_request_error(self) -> None:
         """Should return None on DNS failure or connection error."""
-        with patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls:
+        with (
+            patch("api.services.image_downloader.is_safe_url", return_value=True),
+            patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls,
+        ):
             mock_client = AsyncMock()
             mock_client.get.side_effect = httpx.ConnectError("DNS fail")
             mock_cls.return_value.__aenter__.return_value = mock_client
@@ -120,9 +140,27 @@ class TestDownloadImage:
         mock_response.content = oversized
         mock_response.raise_for_status = MagicMock()
 
-        with patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls:
+        with (
+            patch("api.services.image_downloader.is_safe_url", return_value=True),
+            patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls,
+        ):
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
+            mock_cls.return_value.__aenter__.return_value = mock_client
+
+            result = await _download_image(EXTERNAL_URL)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_returns_none_on_unexpected_exception(self) -> None:
+        """Should catch unexpected errors and return None."""
+        with (
+            patch("api.services.image_downloader.is_safe_url", return_value=True),
+            patch("api.services.image_downloader.httpx.AsyncClient") as mock_cls,
+        ):
+            mock_client = AsyncMock()
+            mock_client.get.side_effect = RuntimeError("unexpected")
             mock_cls.return_value.__aenter__.return_value = mock_client
 
             result = await _download_image(EXTERNAL_URL)

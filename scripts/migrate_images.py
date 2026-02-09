@@ -46,6 +46,8 @@ def get_bucket_name() -> str:
 def get_external_image_recipes(db: firestore.Client, bucket_name: str, limit: int | None) -> list[dict]:
     """Fetch recipes that have external (non-GCS) image URLs."""
     query = db.collection(RECIPES_COLLECTION).where("image_url", "!=", None)
+    if limit:
+        query = query.limit(limit)
     docs = query.stream()
 
     results = []
@@ -54,8 +56,6 @@ def get_external_image_recipes(db: firestore.Client, bucket_name: str, limit: in
         image_url = data.get("image_url", "")
         if image_url and not is_gcs_url(image_url, bucket_name):
             results.append({"id": doc.id, "title": data.get("title", ""), "image_url": image_url})
-            if limit and len(results) >= limit:
-                break
 
     return results
 
@@ -74,7 +74,7 @@ async def migrate_image(db: firestore.Client, recipe: dict, bucket_name: str) ->
         return False
 
     db.collection(RECIPES_COLLECTION).document(recipe_id).update(
-        {"image_url": result.hero_url, "thumbnail_url": result.thumbnail_url}
+        {"image_url": result.hero_url, "thumbnail_url": result.thumbnail_url, "updated_at": firestore.SERVER_TIMESTAMP}
     )
     logger.info("OK: %s (%s) → hero=%s, thumb=%s", recipe_id, recipe["title"], result.hero_url, result.thumbnail_url)
     return True

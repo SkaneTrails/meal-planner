@@ -13,7 +13,8 @@ import httpx
 from google.cloud import storage
 from PIL import UnidentifiedImageError
 
-from api.services.image_service import create_hero, create_thumbnail
+from api.services.image_service import create_hero_and_thumbnail
+from api.services.url_safety import is_safe_url
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,10 @@ async def _download_image(url: str) -> bytes | None:
     Returns:
         Raw image bytes, or None on failure.
     """
+    if not is_safe_url(url):
+        logger.warning("Blocked unsafe URL: %s", url)
+        return None
+
     try:
         async with httpx.AsyncClient(
             timeout=DOWNLOAD_TIMEOUT_SECONDS, follow_redirects=True, max_redirects=5
@@ -86,20 +91,21 @@ async def _download_image(url: str) -> bytes | None:
     except httpx.HTTPStatusError as e:
         logger.warning("HTTP %d downloading image from %s", e.response.status_code, url)
         return None
-    except httpx.RequestError as e:
-        logger.warning("Request error downloading image from %s: %s", url, e)
+    except (httpx.RequestError, Exception) as e:
+        logger.warning("Error downloading image from %s: %s", url, e)
         return None
 
 
 def _process_image(image_data: bytes, recipe_id: str) -> tuple[bytes, bytes] | None:
     """Create hero and thumbnail from raw image data.
 
+    Decodes the image once and resizes twice to avoid redundant decoding.
+
     Returns:
         Tuple of (hero_bytes, thumbnail_bytes), or None if processing fails.
     """
     try:
-        hero_data, _ = create_hero(image_data)
-        thumbnail_data, _ = create_thumbnail(image_data)
+        hero_data, thumbnail_data = create_hero_and_thumbnail(image_data)
         logger.info(
             "Created images for recipe %s: %d bytes -> hero %d bytes, thumb %d bytes",
             recipe_id,

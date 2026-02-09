@@ -84,3 +84,23 @@ def create_thumbnail(image_data: bytes) -> tuple[bytes, str]:
         img, max_width=THUMBNAIL_MAX_WIDTH, max_height=THUMBNAIL_MAX_HEIGHT, quality=THUMBNAIL_QUALITY
     )
     return thumb_bytes, "image/jpeg"
+
+
+def create_hero_and_thumbnail(image_data: bytes) -> tuple[bytes, bytes]:
+    """Create both hero and thumbnail from raw image data with a single decode.
+
+    More efficient than calling create_hero + create_thumbnail separately,
+    since the image is decoded from bytes only once.
+
+    Returns:
+        Tuple of (hero_bytes, thumbnail_bytes).
+
+    Raises:
+        PIL.UnidentifiedImageError: If image_data is not a valid image.
+    """
+    img = _to_rgb(Image.open(io.BytesIO(image_data)))
+    hero_bytes = _resize_image(img, max_width=HERO_MAX_WIDTH, max_height=HERO_MAX_HEIGHT, quality=HERO_QUALITY)
+    thumb_bytes = _resize_image(
+        img, max_width=THUMBNAIL_MAX_WIDTH, max_height=THUMBNAIL_MAX_HEIGHT, quality=THUMBNAIL_QUALITY
+    )
+    return hero_bytes, thumb_bytes

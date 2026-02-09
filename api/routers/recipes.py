@@ -90,7 +90,11 @@ async def _ingest_recipe_image(recipe: Recipe, *, household_id: str) -> Recipe:
     if not recipe.image_url:
         return recipe
 
-    bucket_name = _get_gcs_bucket()
+    try:
+        bucket_name = _get_gcs_bucket()
+    except KeyError:
+        logger.warning("GCS_BUCKET_NAME not configured — skipping image ingestion for recipe %s", recipe.id)
+        return recipe
     result = await download_and_upload_image(recipe.image_url, recipe.id, bucket_name)
 
     if result is not None:
