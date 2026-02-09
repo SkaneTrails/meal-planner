@@ -116,21 +116,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const planPath = '${{ env.TF_DIR }}/plan_output.txt';
-            let planOutput = '';
-            try {
-              planOutput = fs.readFileSync(planPath, 'utf8');
-            } catch (e) {
-              planOutput = 'Plan output not available';
-            }
-
-            // Truncate if too long for a PR comment (max ~65536 chars)
-            const maxLen = 60000;
-            if (planOutput.length > maxLen) {
-              planOutput = planOutput.substring(0, maxLen) + '\n\n... (truncated)';
-            }
-
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const icon = (outcome) => outcome === 'success' ? '✅' : '❌';
 
             const body = [
@@ -143,13 +129,7 @@ jobs:
               `| Validate | ${icon(process.env.VALIDATE_OUTCOME)} |`,
               `| Plan | ${icon(process.env.PLAN_OUTCOME)} |`,
               '',
-              '<details><summary>Plan output</summary>',
-              '',
-              '```',
-              planOutput,
-              '```',
-              '',
-              '</details>',
+              '_Full plan output is available in the [workflow logs](' + runUrl + ')._',
               '',
               `*Pushed by @${context.actor}, commit \`${context.sha.substring(0, 7)}\`*`,
             ].join('\n');
@@ -199,18 +179,8 @@ jobs:
             echo "| Plan | $(icon "${{ steps.plan.outcome }}") |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ -f "${{ env.TF_DIR }}/plan_output.txt" ]; then
-            {
-              echo ""
-              echo "<details><summary>Plan output</summary>"
-              echo ""
-              echo '```'
-              head -c 60000 "${{ env.TF_DIR }}/plan_output.txt"
-              echo '```'
-              echo ""
-              echo "</details>"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "> Full plan output is available in the Terraform plan step logs above." >> "$GITHUB_STEP_SUMMARY"
 
       # ---------------------------------------------------------------
       # Fail the job if any check failed
