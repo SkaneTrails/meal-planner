@@ -45,7 +45,7 @@ clean_content() {
     if [[ ! -f "$file" ]]; then
         return 1
     fi
-    grep -v '^\s*#' "$file" | grep -v '^\s*$' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+    grep -v '^[[:space:]]*#' "$file" | grep -v '^[[:space:]]*$' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
 synced=0

@@ -104,7 +104,7 @@ uv run ruff format
 
 ### TypeScript/React
 
-- **Formatter/Linter**: Biome + Prettier (configured in `mobile/`)
+- **Formatter/Linter**: Biome (configured in `mobile/biome.json` and `mobile/package.json` scripts)
 - **Components**: Arrow function components
 - **Hooks**: Custom hooks in `lib/hooks/`, tested in `__tests__/`
 - **Styling**: NativeWind (Tailwind for React Native)
