@@ -48,11 +48,16 @@ These principles apply to every security decision. Reference them when challengi
 - Don't trust requests just because they come from "inside" the network
 - Don't trust data just because it's from your own database
 - Don't trust users just because they're authenticated
+- Don't trust CI/CD pipelines — they run arbitrary code and have powerful credentials
+- Don't trust previous builds — verify freshly, pin explicitly
 
 **Challenge when:**
 - Code assumes internal services are safe
 - Requests between services skip authentication
 - "It's only called by our frontend" justifies missing validation
+- Workflow has no `permissions:` block (gets broad default GITHUB_TOKEN scope)
+- Third-party GitHub Actions are referenced by mutable tag instead of SHA digest
+- Pipeline secrets are available to steps that don't need them
 
 ### Least Privilege
 
@@ -116,6 +121,24 @@ try:
 except:
     raise HTTPException(401, "Authentication failed")
 ```
+
+**Dev bypass anti-pattern:**
+```python
+# WRONG - env var alone controls auth bypass (could leak to production)
+if os.getenv("SKIP_AUTH", "").lower() == "true":
+    return dev_user
+
+# CORRECT - fail secure by blocking in production
+if os.getenv("SKIP_AUTH", "").lower() == "true":
+    if os.getenv("K_SERVICE"):  # Cloud Run always sets this
+        raise RuntimeError("Auth bypass not allowed in production")
+    return dev_user
+```
+
+**Challenge when:**
+- `SKIP_AUTH` or similar dev bypass has no production guard
+- Default case grants access instead of denying
+- Error handling catches broadly and proceeds
 
 ### Separation of Duties
 
@@ -200,7 +223,9 @@ For detailed OWASP Top 10 and LLM Top 10 checklists with code patterns, see [ref
 | A04: Insecure Design | Feature flags, input validation | No rate limiting on API; no `SKIP_AUTH` production guard |
 | A05: Security Misconfiguration | CORS via env var | No security headers middleware |
 | A09: Logging & Monitoring | Logger on auth failures | No security event audit trail |
+| A06: Vulnerable Components | Renovate + Trivy scanning + lockfile pinning | No `pip-audit` in main test pipeline |
 | A10: SSRF | Recipe URL scraping - validate schemes + IP blocklist | Cloud Function CORS is `*` |
+| Supply Chain | SHA-pinned actions, image digests, release quarantine | Docker container runs as root; no `.dockerignore` |
 | LLM01: Prompt Injection | Structured prompts from `config/prompts/` | No input sanitization before Gemini |
 | LLM06: Sensitive Info | Never send PII to Gemini | `created_by` email could leak via `model_dump()` |
 
@@ -281,6 +306,8 @@ git log -p --all -S "secret-value" --source
 | "The framework handles it" | Verify the framework config. Defaults aren't always secure. |
 | "It's encrypted" | Encryption without key management is theater. Where's the key? |
 | "Only admins use this" | Admin accounts get compromised. Verify anyway. |
+| "It's just CI/CD" | Pipelines hold deploy keys and cloud credentials. They ARE production. |
+| "It runs in a container" | Containers aren't sandboxes. Non-root, minimal base, no secrets in layers. |
 
 ---
 
@@ -419,6 +446,99 @@ resource "google_service_account_iam_member" "sa_user" {
 - `roles/storage.objectAdmin` → scope to specific bucket
 - `roles/secretmanager.secretAccessor` → scope to specific secret
 - `roles/cloudfunctions.invoker` → scope to specific function
+
+### CI/CD Pipeline Security
+
+Pipelines are high-privilege environments — they hold deploy credentials, can push code, and run arbitrary commands. Apply the same rigor as production infrastructure.
+
+#### Workflow Permissions (Least-Privilege GITHUB_TOKEN)
+
+Every workflow MUST declare explicit `permissions:` to restrict GITHUB_TOKEN scope:
+
+```yaml
+# WRONG - inherits broad default permissions
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+# CORRECT - explicit minimal permissions
+permissions:
+  contents: read
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+```
+
+**Challenge when:**
+- A workflow has no `permissions:` block
+- Permissions are broader than needed (e.g., `contents: write` for a read-only job)
+- `id-token: write` is granted without Workload Identity Federation usage
+
+#### Third-Party Action Trust
+
+All GitHub Actions MUST be pinned to SHA digests, not mutable tags:
+
+```yaml
+# WRONG - tag can be force-pushed with malicious code
+- uses: actions/checkout@v4
+
+# CORRECT - immutable SHA with human-readable comment
+- uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4.3.0
+```
+
+**This project:** Renovate's `helpers:pinGitHubActionDigests` preset handles this automatically.
+
+**Challenge when:**
+- An action is referenced by tag (e.g., `@v4`) instead of SHA
+- A new action is added from an untrusted publisher
+- An action has write permissions to the repository or deployments
+
+#### Pipeline Secrets Exposure
+
+- Never echo secrets or env vars in CI logs
+- Use `::add-mask::` to redact sensitive values that appear in logs
+- Write secrets to temp files (not env vars) when tools need them, then clean up
+- Gate deploy steps behind branch/environment protection rules
+
+### Supply Chain Security
+
+Dependency supply chain attacks are a top-tier risk. Multiple layers of defense:
+
+| Layer | Mechanism | This Project |
+|-------|-----------|-------------|
+| Lockfiles | Pin exact versions at install time | `uv.lock`, `pnpm-lock.yaml` with `--frozen` flags |
+| Update quarantine | Delay adopting new versions | Renovate `minimumReleaseAge: 3 days` |
+| Auto-merge policy | Only minor/patch auto-merge | Renovate config — majors require manual review |
+| Image pinning | Pin Docker/OCI images to digest | `python:3.14-slim@sha256:...` in Dockerfile |
+| Vulnerability scanning | Detect known CVEs | Trivy on PRs + weekly schedule |
+| License compliance | Block copyleft in proprietary code | Trivy SBOM + license check |
+
+**Challenge when:**
+- A new dependency is added without justification
+- A Dockerfile uses a tag (`:latest`, `:3.14`) without SHA digest
+- Lockfile changes are large or unexpected (could indicate dependency confusion)
+- A dependency is imported but never used in code
+
+### Docker / Containers
+
+- **Always run as non-root** — add `USER` directive:
+  ```dockerfile
+  RUN addgroup --system app && adduser --system --ingroup app app
+  USER app
+  ```
+- **Use multi-stage builds** — build deps in one stage, copy only artifacts to slim runtime stage
+- **Pin base images to SHA digest** — prevents silent upstream changes
+- **Add `.dockerignore`** — exclude `.git/`, `tests/`, `.env`, `data/`, `*.md` from build context
+- **No secrets in image layers** — use build-time mounts or runtime env vars
+- **Minimize attack surface** — slim/distroless base images, no unnecessary packages
+
+**Challenge when:**
+- Dockerfile has no `USER` directive (runs as root)
+- Base image uses a mutable tag without digest
+- `COPY . .` without a `.dockerignore` (pulls in secrets, tests, git history)
+- Secrets are passed as `ARG` or `ENV` during build (visible in layer history)
 
 ---
 
