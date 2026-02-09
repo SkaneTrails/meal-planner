@@ -119,6 +119,32 @@ if (Test-Path $tfvarsPath) {
     Write-Host "  Skipping terraform.tfvars (not found)" -ForegroundColor Yellow
 }
 
+# Also sync backend config (bucket + prefix for terraform init -backend-config)
+$backendPath = Join-Path $PSScriptRoot ".." "backend.tf"
+if (Test-Path $backendPath) {
+    $backendContent = Get-Content $backendPath -Raw
+
+    if ($backendContent -match 'backend\s+"gcs"\s*\{[^}]*bucket\s*=\s*"([^"]+)"') {
+        $bucket = $Matches[1]
+        gh secret set TF_BACKEND_BUCKET --repo $Repo --body $bucket
+        Write-Host "  Stored as TF_BACKEND_BUCKET" -ForegroundColor Green
+        $synced++
+    } else {
+        Write-Host "  Warning: Could not extract bucket from backend.tf" -ForegroundColor Yellow
+    }
+
+    if ($backendContent -match 'backend\s+"gcs"\s*\{[^}]*prefix\s*=\s*"([^"]+)"') {
+        $prefix = $Matches[1]
+        gh secret set TF_BACKEND_PREFIX --repo $Repo --body $prefix
+        Write-Host "  Stored as TF_BACKEND_PREFIX" -ForegroundColor Green
+        $synced++
+    } else {
+        Write-Host "  Warning: Could not extract prefix from backend.tf" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "  Skipping backend.tf (not found)" -ForegroundColor Yellow
+}
+
 Write-Host ""
 if ($synced -gt 0) {
     Write-Host "Synced $synced secret(s) to GitHub" -ForegroundColor Green

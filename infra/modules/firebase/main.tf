@@ -99,10 +99,10 @@ resource "google_identity_platform_config" "auth" {
   # Enable email enumeration protection
   sign_in {
     allow_duplicate_emails = false
-      phone_number {
-        enabled            = false
-        test_phone_numbers = {}
-      }
+    phone_number {
+      enabled            = false
+      test_phone_numbers = {}
+    }
 
     anonymous {
       enabled = false
