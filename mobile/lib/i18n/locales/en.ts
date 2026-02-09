@@ -440,6 +440,7 @@ const en = {
     addMore: 'Add More',
     importFailed: 'Import failed',
     importFailedDefault: 'Could not import the recipe',
+    siteBlocked: '{{host}} blocks automatic import. Try adding the recipe manually by copying the ingredients and instructions from the website.',
     createFailed: 'Creation failed',
     createFailedDefault: 'Could not create the recipe',
     // Manual form

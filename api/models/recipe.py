@@ -11,6 +11,24 @@ MIN_RATING = 1
 MAX_RATING = 5
 _ERR_RATING_RANGE = "Rating must be between 1 and 5"
 
+# Input limits to prevent abuse and prompt injection
+MAX_INGREDIENTS = 100
+MAX_INSTRUCTIONS = 50
+MAX_TAGS = 30
+MAX_INGREDIENT_LENGTH = 300
+MAX_INSTRUCTION_LENGTH = 5000
+MAX_TAG_LENGTH = 100
+MAX_TIPS_LENGTH = 2000
+
+# Control characters to strip (C0 controls except tab/newline/carriage-return)
+_CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+def _sanitize_text(text: str, max_length: int) -> str:
+    """Strip control characters and truncate to max length."""
+    cleaned = _CONTROL_CHAR_RE.sub("", text)
+    return cleaned[:max_length]
+
 
 class DietLabel(str, Enum):
     """Diet type labels for recipes."""
@@ -95,27 +113,45 @@ class RecipeBase(BaseModel):
 
     title: str = Field(..., min_length=1, max_length=500)
     url: str
-    ingredients: list[str] = Field(default_factory=list)
-    instructions: list[str] = Field(default_factory=list)
+    ingredients: list[str] = Field(default_factory=list, max_length=MAX_INGREDIENTS)
+    instructions: list[str] = Field(default_factory=list, max_length=MAX_INSTRUCTIONS)
     image_url: str | None = None
     thumbnail_url: str | None = Field(default=None, description="Thumbnail image URL (400x300) for cards/lists")
     servings: int | None = Field(default=None, ge=1)
     prep_time: int | None = Field(default=None, ge=0, description="Prep time in minutes")
     cook_time: int | None = Field(default=None, ge=0, description="Cook time in minutes")
     total_time: int | None = Field(default=None, ge=0, description="Total time in minutes")
-    cuisine: str | None = None
-    category: str | None = None
-    tags: list[str] = Field(default_factory=list)
+    cuisine: str | None = Field(default=None, max_length=100)
+    category: str | None = Field(default=None, max_length=100)
+    tags: list[str] = Field(default_factory=list, max_length=MAX_TAGS)
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
     rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating from 1-5 stars")
-    tips: str | None = Field(default=None, description="Cooking tips")
+    tips: str | None = Field(default=None, max_length=MAX_TIPS_LENGTH, description="Cooking tips")
     # Household fields (for multi-tenancy)
     household_id: str | None = Field(default=None, description="Household that owns this recipe (None = legacy/shared)")
     visibility: Literal["household", "shared"] = Field(
         default="household", description="'household' = private, 'shared' = visible to all"
     )
     created_by: str | None = Field(default=None, description="Email of user who created the recipe")
+
+    @field_validator("ingredients", mode="after")
+    @classmethod
+    def validate_ingredient_lengths(cls, v: list[str]) -> list[str]:
+        """Ensure each ingredient is within length limit and strip control characters."""
+        return [_sanitize_text(item, MAX_INGREDIENT_LENGTH) for item in v]
+
+    @field_validator("instructions", mode="after")
+    @classmethod
+    def validate_instruction_lengths(cls, v: list[str]) -> list[str]:
+        """Ensure each instruction is within length limit and strip control characters."""
+        return [_sanitize_text(item, MAX_INSTRUCTION_LENGTH) for item in v]
+
+    @field_validator("tags", mode="after")
+    @classmethod
+    def validate_tag_lengths(cls, v: list[str]) -> list[str]:
+        """Ensure each tag is within length limit."""
+        return [_sanitize_text(item, MAX_TAG_LENGTH) for item in v]
 
 
 class Recipe(RecipeBase):

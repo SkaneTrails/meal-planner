@@ -390,6 +390,8 @@ class TestScrapeRecipe:
         """Should return 422 when scraping fails."""
         mock_response = MagicMock()
         mock_response.status_code = 422
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.json.return_value = {"error": "Failed to scrape", "reason": "parse_failed"}
 
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
@@ -404,6 +406,30 @@ class TestScrapeRecipe:
             response = client.post("/recipes/scrape", json={"url": "https://example.com/bad"})
 
         assert response.status_code == 422
+
+    def test_returns_blocked_error_for_403(self, client: TestClient) -> None:
+        """Should return structured blocked error when site returns 403."""
+        mock_response = MagicMock()
+        mock_response.status_code = 403
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.json.return_value = {"error": "www.ica.se blocked the request (HTTP 403)", "reason": "blocked"}
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://www.ica.se/recept/test/"})
+
+        assert response.status_code == 422
+        detail = response.json()["detail"]
+        assert detail["reason"] == "blocked"
+        assert "blocked" in detail["message"].lower()
 
     def test_enhance_parameter_enhances_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should enhance recipe when enhance=true."""

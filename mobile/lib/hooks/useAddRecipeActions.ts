@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useScrapeRecipe, useCreateRecipe, useImagePicker } from '@/lib/hooks';
-import { api } from '@/lib/api';
+import { api, ApiClientError } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
+
+const extractHostname = (url: string): string => {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+};
 
 export const useAddRecipeActions = () => {
   const router = useRouter();
@@ -71,8 +79,16 @@ export const useAddRecipeActions = () => {
         ]);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
-      showNotification(t('addRecipe.importFailed'), message);
+      if (err instanceof ApiClientError && err.reason === 'blocked') {
+        const host = extractHostname(url);
+        showNotification(
+          t('addRecipe.importFailed'),
+          t('addRecipe.siteBlocked', { host }),
+        );
+      } else {
+        const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
+        showNotification(t('addRecipe.importFailed'), message);
+      }
     }
   };
 

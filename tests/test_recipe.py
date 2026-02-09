@@ -3,7 +3,18 @@
 import pytest
 from pydantic import ValidationError
 
-from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeUpdate
+from api.models.recipe import (
+    MAX_INGREDIENT_LENGTH,
+    MAX_INGREDIENTS,
+    MAX_INSTRUCTION_LENGTH,
+    MAX_INSTRUCTIONS,
+    MAX_TAGS,
+    DietLabel,
+    MealLabel,
+    Recipe,
+    RecipeCreate,
+    RecipeUpdate,
+)
 
 
 class TestRecipe:
@@ -107,3 +118,70 @@ class TestRecipeUpdateRating:
         """Negative ratings should be rejected."""
         with pytest.raises(ValidationError, match="Rating must be between 1 and 5"):
             RecipeUpdate(rating=-1)
+
+
+class TestRecipeInputValidation:
+    """Tests for input sanitization and length limits."""
+
+    def test_ingredient_length_truncated(self) -> None:
+        """Ingredients exceeding max length should be truncated."""
+        long_ingredient = "x" * (MAX_INGREDIENT_LENGTH + 100)
+        recipe = RecipeCreate(title="Test", url="https://example.com", ingredients=[long_ingredient])
+        assert len(recipe.ingredients[0]) == MAX_INGREDIENT_LENGTH
+
+    def test_instruction_length_truncated(self) -> None:
+        """Instructions exceeding max length should be truncated."""
+        long_instruction = "y" * (MAX_INSTRUCTION_LENGTH + 100)
+        recipe = RecipeCreate(title="Test", url="https://example.com", instructions=[long_instruction])
+        assert len(recipe.instructions[0]) == MAX_INSTRUCTION_LENGTH
+
+    def test_too_many_ingredients_rejected(self) -> None:
+        """More than MAX_INGREDIENTS should be rejected."""
+        ingredients = [f"item {i}" for i in range(MAX_INGREDIENTS + 1)]
+        with pytest.raises(ValidationError):
+            RecipeCreate(title="Test", url="https://example.com", ingredients=ingredients)
+
+    def test_too_many_instructions_rejected(self) -> None:
+        """More than MAX_INSTRUCTIONS should be rejected."""
+        instructions = [f"step {i}" for i in range(MAX_INSTRUCTIONS + 1)]
+        with pytest.raises(ValidationError):
+            RecipeCreate(title="Test", url="https://example.com", instructions=instructions)
+
+    def test_too_many_tags_rejected(self) -> None:
+        """More than MAX_TAGS should be rejected."""
+        tags = [f"tag{i}" for i in range(MAX_TAGS + 1)]
+        with pytest.raises(ValidationError):
+            RecipeCreate(title="Test", url="https://example.com", tags=tags)
+
+    def test_control_characters_stripped(self) -> None:
+        """Control characters should be removed from ingredients and instructions."""
+        recipe = RecipeCreate(
+            title="Test",
+            url="https://example.com",
+            ingredients=["2 dl gr\x00ädde", "1 \x07egg"],
+            instructions=["Cook \x0bwell"],
+        )
+        assert recipe.ingredients[0] == "2 dl grädde"
+        assert recipe.ingredients[1] == "1 egg"
+        assert recipe.instructions[0] == "Cook well"
+
+    def test_tabs_and_newlines_preserved(self) -> None:
+        """Tabs and newlines are legitimate whitespace and should be preserved."""
+        recipe = RecipeCreate(
+            title="Test", url="https://example.com", ingredients=["2 dl grädde"], instructions=["Step 1\n\tSubstep A"]
+        )
+        assert "\n" in recipe.instructions[0]
+        assert "\t" in recipe.instructions[0]
+
+    def test_normal_recipe_passes(self) -> None:
+        """A normal recipe should pass all validators without modification."""
+        recipe = RecipeCreate(
+            title="Pasta Carbonara",
+            url="https://example.com/recipe",
+            ingredients=["200g spaghetti", "100g pancetta", "2 ägg", "½ dl parmesan"],
+            instructions=["Koka pastan al dente", "Stek pancettan krispig"],
+            tags=["pasta", "italian"],
+        )
+        assert len(recipe.ingredients) == 4
+        assert len(recipe.instructions) == 2
+        assert recipe.ingredients[0] == "200g spaghetti"

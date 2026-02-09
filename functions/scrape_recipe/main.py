@@ -10,7 +10,25 @@ Supports two modes:
 
 import functions_framework
 from flask import Request, jsonify
-from recipe_scraper import parse_recipe_html, scrape_recipe
+from recipe_scraper import ScrapeError, parse_recipe_html, scrape_recipe
+
+_CORS_HEADERS = {"Access-Control-Allow-Origin": "*"}
+
+
+def _validate_request(request: Request) -> tuple | dict:
+    """Validate the incoming request, returning parsed JSON or an error tuple."""
+    if request.method != "POST":
+        return (jsonify({"error": "Method not allowed"}), 405, _CORS_HEADERS)
+
+    try:
+        request_json = request.get_json(silent=True)
+    except Exception:
+        return (jsonify({"error": "Invalid JSON"}), 400, _CORS_HEADERS)
+
+    if not request_json or "url" not in request_json:
+        return (jsonify({"error": "Missing 'url' in request body"}), 400, _CORS_HEADERS)
+
+    return request_json
 
 
 @functions_framework.http
@@ -24,42 +42,37 @@ def scrape_recipe_handler(request: Request) -> tuple:
     Returns:
         JSON response with the scraped recipe or an error message.
     """
-    # Handle CORS preflight
     if request.method == "OPTIONS":
-        headers = {
+        preflight_headers = {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "POST",
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Max-Age": "3600",
         }
-        return ("", 204, headers)
+        return ("", 204, preflight_headers)
 
-    # Set CORS headers for the main request
-    headers = {"Access-Control-Allow-Origin": "*"}
+    validated = _validate_request(request)
+    if isinstance(validated, tuple):
+        return validated
 
-    # Validate request
-    if request.method != "POST":
-        return (jsonify({"error": "Method not allowed"}), 405, headers)
+    url = validated["url"]
+    html = validated.get("html")
 
-    try:
-        request_json = request.get_json(silent=True)
-    except Exception:
-        return (jsonify({"error": "Invalid JSON"}), 400, headers)
+    if html:
+        recipe = parse_recipe_html(html, url)
+        if recipe is None:
+            return (
+                jsonify({"error": f"Failed to parse recipe from {url}", "reason": "parse_failed"}),
+                422,
+                _CORS_HEADERS,
+            )
+    else:
+        result = scrape_recipe(url)
+        if isinstance(result, ScrapeError):
+            status_code = 422 if result.reason == ScrapeError.PARSE_FAILED else 403
+            return (jsonify({"error": result.message, "reason": result.reason}), status_code, _CORS_HEADERS)
+        recipe = result
 
-    if not request_json or "url" not in request_json:
-        return (jsonify({"error": "Missing 'url' in request body"}), 400, headers)
-
-    url = request_json["url"]
-    html = request_json.get("html")
-
-    # If HTML is provided, parse it directly (client-side scraping)
-    # Otherwise, fetch the HTML from the URL (server-side scraping)
-    recipe = parse_recipe_html(html, url) if html else scrape_recipe(url)
-
-    if recipe is None:
-        return (jsonify({"error": f"Failed to scrape recipe from {url}"}), 422, headers)
-
-    # Return the recipe as JSON
     return (
         jsonify(
             {
@@ -75,5 +88,5 @@ def scrape_recipe_handler(request: Request) -> tuple:
             }
         ),
         200,
-        headers,
+        _CORS_HEADERS,
     )

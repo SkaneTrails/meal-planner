@@ -31,11 +31,13 @@ export const getOnUnauthorizedFn = () => onUnauthorized;
 
 export class ApiClientError extends Error {
   status: number;
+  reason?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, reason?: string) {
     super(message);
     this.name = 'ApiClientError';
     this.status = status;
+    this.reason = reason;
   }
 }
 
@@ -81,12 +83,22 @@ export const apiRequest = async <T>(
     } catch {
       error = { detail: `HTTP ${response.status}: ${response.statusText}` };
     }
-    throw new ApiClientError(
-      typeof error.detail === 'string'
-        ? error.detail
-        : JSON.stringify(error.detail),
-      response.status,
-    );
+
+    const detail = error.detail;
+    let message: string;
+    let reason: string | undefined;
+
+    if (typeof detail === 'object' && detail !== null && 'message' in detail) {
+      const structured = detail as { message: string; reason?: string };
+      message = structured.message;
+      reason = structured.reason;
+    } else if (typeof detail === 'string') {
+      message = detail;
+    } else {
+      message = JSON.stringify(detail);
+    }
+
+    throw new ApiClientError(message, response.status, reason);
   }
 
   if (response.status === 204) {

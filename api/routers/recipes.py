@@ -197,8 +197,16 @@ async def scrape_recipe(
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(_get_scrape_url(), json={"url": url})
 
-            if response.status_code == _HTTP_422:
-                raise HTTPException(status_code=_HTTP_422, detail=f"Failed to scrape recipe from {url}")
+            if response.status_code in {_HTTP_422, 403}:
+                error_data = (
+                    response.json() if response.headers.get("content-type", "").startswith("application/json") else {}
+                )
+                reason = error_data.get("reason", "parse_failed")
+                error_msg = error_data.get("error", f"Failed to scrape recipe from {url}")
+
+                if reason == "blocked":
+                    raise HTTPException(status_code=_HTTP_422, detail={"message": error_msg, "reason": "blocked"})
+                raise HTTPException(status_code=_HTTP_422, detail=error_msg)
 
             response.raise_for_status()
             scraped_data = response.json()
