@@ -25,7 +25,7 @@ def _validate_request(request: Request) -> tuple | dict:
     except Exception:
         return (jsonify({"error": "Invalid JSON"}), 400, _CORS_HEADERS)
 
-    if not request_json or "url" not in request_json:
+    if not isinstance(request_json, dict) or "url" not in request_json:
         return (jsonify({"error": "Missing 'url' in request body"}), 400, _CORS_HEADERS)
 
     return request_json

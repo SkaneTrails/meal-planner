@@ -191,11 +191,6 @@ def _fetch_html(url: str) -> str | ScrapeError:
         response = httpx.get(url, follow_redirects=True, timeout=30.0, headers=headers)
     except httpx.TimeoutException:
         return ScrapeError(ScrapeError.BLOCKED, "Request timed out — site may be blocking cloud requests")
-    except httpx.HTTPStatusError as e:
-        host = urlparse(url).hostname or url
-        return ScrapeError(
-            ScrapeError.BLOCKED, f"{host} returned HTTP {e.response.status_code}", status_code=e.response.status_code
-        )
     except Exception as e:
         print(f"Recipe scraping error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
         return ScrapeError(ScrapeError.PARSE_FAILED, f"Failed to scrape recipe: {type(e).__name__}")
@@ -206,6 +201,14 @@ def _fetch_html(url: str) -> str | ScrapeError:
             ScrapeError.BLOCKED,
             f"{host} blocked the request (HTTP {response.status_code})",
             status_code=response.status_code,
+        )
+
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        host = urlparse(url).hostname or url
+        return ScrapeError(
+            ScrapeError.BLOCKED, f"{host} returned HTTP {e.response.status_code}", status_code=e.response.status_code
         )
 
     final_url = str(response.url)

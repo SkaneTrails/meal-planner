@@ -21,12 +21,6 @@ _INJECTION_PATTERNS = re.compile(
     re.IGNORECASE,
 )
 
-# Max total characters for recipe text sent to Gemini
-MAX_RECIPE_TEXT_LENGTH = 15_000
-
-RECIPE_BOUNDARY_START = "---RECIPE DATA START---"
-RECIPE_BOUNDARY_END = "---RECIPE DATA END---"
-
 
 def sanitize_for_llm(text: str) -> str:
     """Remove prompt injection patterns from text.
