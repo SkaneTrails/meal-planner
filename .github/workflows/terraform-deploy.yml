@@ -25,7 +25,7 @@ jobs:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
       SERVICE_NAME: meal-planner-api
-      REGION: europe-west1
+      REGION: ${{ secrets.GCP_REGION }}
       REPOSITORY: meal-planner
       TF_DIR: infra/environments/dev
 
@@ -68,9 +68,18 @@ jobs:
         working-directory: ${{ env.TF_DIR }}
         run: |
           mkdir -p access
-          echo "${{ secrets.TF_SUPERUSERS }}" > access/superusers.txt
-          echo "${{ secrets.TF_USERS }}" > access/users.txt
-          echo '${{ secrets.TF_VARS_FILE }}' > terraform.tfvars
+          printf '%s\n' "${{ secrets.TF_SUPERUSERS }}" > access/superusers.txt
+          printf '%s\n' "${{ secrets.TF_USERS }}" > access/users.txt
+          printf '%s\n' '${{ secrets.TF_VARS_FILE }}' > terraform.tfvars
+
+          # Mask each line to avoid leaking PII in Terraform plan/apply output
+          for f in access/superusers.txt access/users.txt terraform.tfvars; do
+            if [ -f "$f" ]; then
+              while IFS= read -r line; do
+                [ -n "$line" ] && echo "::add-mask::$line"
+              done < "$f"
+            fi
+          done
 
       # ---------------------------------------------------------------
       # Terraform apply
