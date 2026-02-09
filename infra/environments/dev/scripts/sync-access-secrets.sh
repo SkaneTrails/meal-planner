@@ -71,14 +71,14 @@ for filename in "${!FILES[@]}"; do
 
     echo -n "$content" | gh secret set "$secret" --repo "$REPO"
     echo "  Stored as $secret"
-    ((synced++))
+    ((synced += 1))
 done
 
 # Also sync tfvars
 if [[ -f "$TFVARS_PATH" ]]; then
     gh secret set TF_VARS_FILE --repo "$REPO" < "$TFVARS_PATH"
     echo "  terraform.tfvars stored as TF_VARS_FILE"
-    ((synced++))
+    ((synced += 1))
 else
     echo "  Skipping terraform.tfvars (not found)"
 fi
