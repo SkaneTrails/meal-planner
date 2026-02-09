@@ -21,3 +21,11 @@ firestore_database_name = "meal-planner"
 #   echo -n "your-api-key" | gcloud secrets versions add gemini-api-key --data-file=-
 # Then set enable_recipe_enhancement = true
 enable_recipe_enhancement = false
+
+# GCS bucket name for recipe images (must be globally unique)
+recipe_images_bucket_name = "your-project-recipe-images"
+
+# Docker image tag for Cloud Run
+# Default "latest" works for local dev. CI overrides with git SHA via:
+#   terraform apply -var image_tag=$SHA
+# image_tag = "latest"

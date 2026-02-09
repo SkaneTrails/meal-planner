@@ -141,7 +141,7 @@ module "cloud_run" {
   project            = var.project
   region             = var.region
   service_name       = "meal-planner-api"
-  image_url          = "${module.artifact_registry.repository_url}/meal-planner-api:latest"
+  image_url          = "${module.artifact_registry.repository_url}/meal-planner-api:${var.image_tag}"
   firestore_database = var.firestore_database_name
   allowed_origins    = join(",", [
     module.firebase.hosting_url,
@@ -204,7 +204,8 @@ module "workload_federation" {
   github_repository_owner = var.github_repository_owner
   github_repository       = var.github_repository
   service_account_ids = {
-    firebase = module.iam.github_actions_firebase_service_account.id
-    cloudrun = module.iam.github_actions_cloudrun_service_account.id
+    firebase  = module.iam.github_actions_firebase_service_account.id
+    cloudrun  = module.iam.github_actions_cloudrun_service_account.id
+    terraform = module.iam.github_actions_terraform_service_account.id
   }
 }

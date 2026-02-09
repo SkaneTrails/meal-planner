@@ -215,14 +215,13 @@ terraform apply
 
 ### What CI/CD Handles Automatically
 
-| Trigger                                          | Workflow               | What it deploys                       |
-| ------------------------------------------------ | ---------------------- | ------------------------------------- |
-| Push to `main` (changes in `api/`, `Dockerfile`) | `cloud-run-deploy.yml` | Docker image build + Cloud Run deploy |
-| Push to `main` (changes in `mobile/`)            | `firebase-hosting.yml` | Expo web build to Firebase Hosting    |
+| Trigger                                                                  | Workflow               | What it deploys                                                                             |
+| ------------------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------- |
+| Push to `main` (changes in `api/`, `infra/`, `functions/`, `Dockerfile`) | `terraform-deploy.yml` | Docker image build + full `terraform apply` (Cloud Run, Cloud Function, indexes, IAM, etc.) |
+| Push to `main` (changes in `mobile/`)                                    | `firebase-hosting.yml` | Expo web build to Firebase Hosting                                                          |
 
 ### What Requires Manual `terraform apply`
 
-- IAM or access file changes (run `sync-access-secrets` script first, then merge)
 - One-time bootstrap operations (Phase 1–7)
 
 ## Modules
