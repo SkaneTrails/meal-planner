@@ -141,7 +141,7 @@ module "cloud_run" {
   project            = var.project
   region             = var.region
   service_name       = "meal-planner-api"
-  image_url          = "${module.artifact_registry.repository_url}/api:latest"
+  image_url          = "${module.artifact_registry.repository_url}/meal-planner-api:latest"
   firestore_database = var.firestore_database_name
   allowed_origins    = join(",", [
     module.firebase.hosting_url,
