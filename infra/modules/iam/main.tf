@@ -114,22 +114,22 @@ resource "google_project_iam_member" "github_actions_terraform_editor" {
   depends_on = [google_service_account.github_actions_terraform]
 }
 
-# IAM Admin to create custom roles and manage bindings
-resource "google_project_iam_member" "github_actions_terraform_iam_admin" {
-  project = var.project
-  role    = "roles/iam.roleAdmin"
-  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+# NOTE: roles/iam.roleAdmin and roles/resourcemanager.projectIamAdmin for the
+# terraform SA are granted via the prerequisite_roles binding above (which uses
+# iam_binding). Do NOT add separate iam_member resources for those roles — mixing
+# iam_binding (authoritative) with iam_member (additive) on the same role causes
+# them to fight, stripping the SA's permissions on every apply.
 
-  depends_on = [google_service_account.github_actions_terraform]
+# Remove old iam_member resources from state without destroying them in GCP.
+# The prerequisite_roles binding now manages these roles for the terraform SA.
+removed {
+  from = google_project_iam_member.github_actions_terraform_iam_admin
+  lifecycle { destroy = false }
 }
 
-# Project IAM Admin to manage IAM policy bindings
-resource "google_project_iam_member" "github_actions_terraform_project_iam" {
-  project = var.project
-  role    = "roles/resourcemanager.projectIamAdmin"
-  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
-
-  depends_on = [google_service_account.github_actions_terraform]
+removed {
+  from = google_project_iam_member.github_actions_terraform_project_iam
+  lifecycle { destroy = false }
 }
 
 # Service Account Admin to create/manage other service accounts
@@ -210,14 +210,22 @@ resource "google_project_iam_member" "local_dev_secrets" {
 }
 
 # Grant prerequisite roles needed to create custom roles
+# Uses iam_binding (authoritative) — must include ALL members for these roles,
+# including the terraform SA. Mixing iam_binding + iam_member on the same role
+# causes them to fight (binding strips members that only iam_member knows about).
 resource "google_project_iam_binding" "prerequisite_roles" {
-  for_each = length(local.all_users) > 0 ? toset(local.prerequisite_roles) : toset([])
+  for_each = toset(local.prerequisite_roles)
 
   project = var.project
   role    = each.value
-  members = local.user_members
+  members = concat(local.user_members, [
+    "serviceAccount:${google_service_account.github_actions_terraform.email}",
+  ])
 
-  depends_on = [var.iam_api_service]
+  depends_on = [
+    var.iam_api_service,
+    google_service_account.github_actions_terraform,
+  ]
 }
 
 # Grant each role to all users (including superusers)
