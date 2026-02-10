@@ -154,6 +154,35 @@ class RecipeBase(BaseModel):
         return [_sanitize_text(item, MAX_TAG_LENGTH) for item in v]
 
 
+class OriginalRecipe(BaseModel):
+    """Snapshot of the original recipe before AI enhancement.
+
+    Applies the same sanitization and length constraints as RecipeBase
+    to keep API responses consistent and prevent unsanitized data.
+    """
+
+    title: str = Field(..., max_length=500)
+    ingredients: list[str] = Field(default_factory=list, max_length=MAX_INGREDIENTS)
+    instructions: list[str] = Field(default_factory=list, max_length=MAX_INSTRUCTIONS)
+    servings: int | None = None
+    prep_time: int | None = None
+    cook_time: int | None = None
+    total_time: int | None = None
+    image_url: str | None = None
+
+    @field_validator("ingredients", mode="after")
+    @classmethod
+    def validate_ingredient_lengths(cls, v: list[str]) -> list[str]:
+        """Sanitize ingredient strings and enforce length limits."""
+        return [_sanitize_text(item, MAX_INGREDIENT_LENGTH) for item in v]
+
+    @field_validator("instructions", mode="after")
+    @classmethod
+    def validate_instruction_lengths(cls, v: list[str]) -> list[str]:
+        """Sanitize instruction strings and enforce length limits."""
+        return [_sanitize_text(item, MAX_INSTRUCTION_LENGTH) for item in v]
+
+
 class Recipe(RecipeBase):
     """A recipe with all fields including database ID."""
 
@@ -167,6 +196,7 @@ class Recipe(RecipeBase):
     enhanced: bool = Field(default=False, description="Whether this recipe has been AI-enhanced")
     enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
+    original: OriginalRecipe | None = Field(default=None, description="Original recipe data before enhancement")
 
     @computed_field
     @property

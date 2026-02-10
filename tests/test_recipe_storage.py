@@ -146,6 +146,51 @@ class TestDocToRecipe:
             result = _doc_to_recipe("doc123", data)
             assert result.visibility == valid_value
 
+    def test_maps_original_recipe_snapshot(self) -> None:
+        """Should map nested original data into OriginalRecipe model."""
+        data = {
+            "title": "Enhanced Recipe",
+            "enhanced": True,
+            "original": {
+                "title": "Original Title",
+                "ingredients": ["flour", "sugar"],
+                "instructions": ["Mix together", "Bake"],
+                "servings": 4,
+                "prep_time": 10,
+                "cook_time": 30,
+                "total_time": 40,
+                "image_url": "https://example.com/img.jpg",
+            },
+        }
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.original is not None
+        assert result.original.title == "Original Title"
+        assert result.original.ingredients == ["flour", "sugar"]
+        assert result.original.instructions == ["Mix together", "Bake"]
+        assert result.original.servings == 4
+        assert result.original.prep_time == 10
+        assert result.original.cook_time == 30
+        assert result.original.total_time == 40
+        assert result.original.image_url == "https://example.com/img.jpg"
+
+    def test_handles_missing_original(self) -> None:
+        """Should return None for original when field is absent."""
+        data = {"title": "Recipe", "enhanced": False}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.original is None
+
+    def test_handles_null_original(self) -> None:
+        """Should return None for original when field is explicitly null."""
+        data = {"title": "Recipe", "original": None}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.original is None
+
 
 class TestSaveRecipe:
     """Tests for save_recipe function."""
