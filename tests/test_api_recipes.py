@@ -348,6 +348,65 @@ class TestScrapeRecipe:
         assert response.status_code == 422
         assert response.json()["detail"]["reason"] == "security"
 
+    def test_returns_422_for_not_supported_site(self, client: TestClient) -> None:
+        """Should return 422 with not_supported reason when Cloud Function reports unsupported site."""
+        fetch_result = FetchResult(html="<html>no recipe schema</html>", final_url="https://coop.se/recipe")
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 422
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = {
+            "error": "coop.se is not supported for automatic recipe import. Try adding the recipe manually.",
+            "reason": "not_supported",
+        }
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://coop.se/recipe"})
+
+            mock_client.post.assert_called_once()
+
+        assert response.status_code == 422
+        detail = response.json()["detail"]
+        assert detail["reason"] == "not_supported"
+        assert "coop.se" in detail["message"]
+
+    def test_not_supported_skips_cloud_function_fallback(self, client: TestClient) -> None:
+        """Should NOT fall back to Cloud Function scrape when site is not supported."""
+        fetch_result = FetchResult(html="<html>no schema</html>", final_url="https://unsupported.com/recipe")
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 422
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = {"error": "unsupported.com is not supported", "reason": "not_supported"}
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://unsupported.com/recipe"})
+
+            # Should only call CF once (for parse), NOT a second time for fallback scrape
+            assert mock_client.post.call_count == 1
+
+        assert response.status_code == 422
+
     def test_ingests_external_image_to_gcs(self, client: TestClient) -> None:
         """Should download external image and replace image_url with GCS URL."""
         scraped_data = {
