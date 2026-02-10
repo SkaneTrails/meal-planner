@@ -76,7 +76,7 @@ When a recipe is enhanced, the document structure changes:
 3. **App display**: Always reads top-level fields (enhanced version if available)
 4. **"View original" toggle**: Reads from `original` nested field
 
-**CRITICAL**: Enhancement scripts MUST use Firestore `.update()` (merge), NEVER `.set()` (overwrite). See `scripts/recipe_reviewer.py` for the reference implementation.
+**CRITICAL**: Enhancement scripts MUST use Firestore `.update()` (merge), NEVER `.set()` (overwrite). See `tools/recipe_manager.py` for the reference implementation.
 
 ## Common Schema Mistakes (DO NOT DO)
 

@@ -284,12 +284,14 @@ functions/               # Google Cloud Functions
 
 scripts/                 # CLI tools
 ├── recipe_enhancer.py   # Gemini AI recipe enhancement
-├── recipe_reviewer.py   # Manual recipe review helper
 ├── batch_test.py        # Batch testing for enhancer
 ├── test_gemini.py       # Gemini API test script
 ├── run-api.sh           # Start FastAPI server
 ├── run-dev.sh           # Start all dev services
 └── run-function.sh      # Run Cloud Function locally
+
+tools/                   # Interactive CLI tools
+└── recipe_manager.py    # Firestore recipe CRUD + interactive menu
 
 tests/                   # API test files (pytest)
 ├── conftest.py          # Shared fixtures
@@ -359,9 +361,9 @@ uv run python scripts/recipe_enhancer.py --list
 ### Other Scripts
 
 ```bash
-# Manual recipe review workflow
-uv run python scripts/recipe_reviewer.py next      # Get next unprocessed recipe
-uv run python scripts/recipe_reviewer.py status    # Show review progress
+# Recipe management (list, get, export, delete, enhance, etc.)
+uv run python tools/recipe_manager.py --project <project_id> list
+uv run python tools/recipe_manager.py --project <project_id> status
 
 # Test Gemini integration
 uv run python scripts/test_gemini.py
