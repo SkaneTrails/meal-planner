@@ -10,6 +10,7 @@ import type {
   RecipeScrapeRequest,
   RecipeUpdate,
 } from '../types';
+import { Platform } from 'react-native';
 import { API_BASE_URL, API_PREFIX, ApiClientError, apiRequest, getAuthTokenFn } from './client';
 
 export const recipeApi = {
@@ -124,11 +125,26 @@ export const recipeApi = {
       // Keep defaults if parsing fails
     }
 
-    formData.append('file', {
-      uri: imageUri,
-      name: fileName,
-      type: mimeType,
-    } as unknown as Blob);
+    if (Platform.OS === 'web') {
+      // On web, blob: URIs must be fetched into a real Blob/File object.
+      // The RN-style { uri, name, type } shorthand only works on native.
+      const imageResponse = await fetch(imageUri);
+      if (!imageResponse.ok) {
+        throw new ApiClientError(
+          `Failed to load image from URI (status ${imageResponse.status} ${imageResponse.statusText})`,
+          imageResponse.status,
+        );
+      }
+      const blob = await imageResponse.blob();
+      const file = new File([blob], fileName, { type: blob.type || mimeType });
+      formData.append('file', file);
+    } else {
+      formData.append('file', {
+        uri: imageUri,
+        name: fileName,
+        type: mimeType,
+      } as unknown as Blob);
+    }
 
     const headers: Record<string, string> = { Accept: 'application/json' };
 

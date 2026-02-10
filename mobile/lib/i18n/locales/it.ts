@@ -190,6 +190,7 @@ const it: Translations = {
     chooseOption: "Scegli un'opzione",
     takePhoto: 'Scatta foto',
     chooseFromLibrary: 'Scegli dalla libreria',
+    chooseFromLibraryOrUrl: 'Clicca OK per inserire un URL, oppure Annulla per scegliere un file dal computer.',
     enterUrl: 'Inserisci URL',
     permissionNeeded: 'Permesso necessario',
     cameraPermission: 'Il permesso della fotocamera è necessario per scattare foto',

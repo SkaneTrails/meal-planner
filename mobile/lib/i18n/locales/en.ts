@@ -197,6 +197,7 @@ const en = {
     chooseOption: 'Choose an option',
     takePhoto: 'Take Photo',
     chooseFromLibrary: 'Choose from Library',
+    chooseFromLibraryOrUrl: 'Click OK to enter a URL, or Cancel to choose a file from your computer.',
     enterUrl: 'Enter URL',
     permissionNeeded: 'Permission needed',
     cameraPermission: 'Camera permission is required to take photos',

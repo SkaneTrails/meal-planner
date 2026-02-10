@@ -34,7 +34,16 @@
       "themeColor": "#4A3728",
       "backgroundColor": "#F5E6D3"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Meal Planner to access your photos to set recipe images.",
+          "cameraPermission": "Allow Meal Planner to use your camera to take recipe photos."
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     }
