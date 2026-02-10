@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';

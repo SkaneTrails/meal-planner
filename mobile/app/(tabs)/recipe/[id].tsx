@@ -251,7 +251,7 @@ export default function RecipeDetailScreen() {
               t={t}
               onToggleStep={toggleStep}
               onToggleAiChanges={() => setShowAiChanges(!showAiChanges)}
-              onToggleOriginal={() => { hapticSelection(); setShowOriginal(!showOriginal); }}
+              onToggleOriginal={() => { hapticSelection(); setShowOriginal(!showOriginal); setCompletedSteps(new Set()); }}
               onOpenEditModal={() => setShowEditModal(true)}
               onShowPlanModal={() => setShowPlanModal(true)}
               onShare={handleShare}

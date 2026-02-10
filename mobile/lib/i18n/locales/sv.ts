@@ -155,7 +155,7 @@ const sv: Translations = {
     stepsDone: '{{completed}}/{{total}} klara',
     tips: 'Tips',
     aiImprovements: 'AI-förbättringar',
-    viewOriginal: 'Visa originalrecept',
+    viewSource: 'Visa källa',
     showOriginal: 'Visa original',
     showEnhanced: 'Visa förbättrad',
     addToMealPlan: 'Lägg till i matsedel',

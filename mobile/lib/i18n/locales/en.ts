@@ -161,7 +161,7 @@ const en = {
     stepsDone: '{{completed}}/{{total}} done',
     tips: 'Tips',
     aiImprovements: 'AI Improvements',
-    viewOriginal: 'View original recipe',
+    viewSource: 'View source',
     showOriginal: 'Show original',
     showEnhanced: 'Show enhanced',
     addToMealPlan: 'Add to Meal Plan',

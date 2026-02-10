@@ -155,16 +155,32 @@ class RecipeBase(BaseModel):
 
 
 class OriginalRecipe(BaseModel):
-    """Snapshot of the original recipe before AI enhancement."""
+    """Snapshot of the original recipe before AI enhancement.
 
-    title: str
-    ingredients: list[str] = Field(default_factory=list)
-    instructions: list[str] = Field(default_factory=list)
+    Applies the same sanitization and length constraints as RecipeBase
+    to keep API responses consistent and prevent unsanitized data.
+    """
+
+    title: str = Field(..., max_length=500)
+    ingredients: list[str] = Field(default_factory=list, max_length=MAX_INGREDIENTS)
+    instructions: list[str] = Field(default_factory=list, max_length=MAX_INSTRUCTIONS)
     servings: int | None = None
     prep_time: int | None = None
     cook_time: int | None = None
     total_time: int | None = None
     image_url: str | None = None
+
+    @field_validator("ingredients", mode="after")
+    @classmethod
+    def validate_ingredient_lengths(cls, v: list[str]) -> list[str]:
+        """Sanitize ingredient strings and enforce length limits."""
+        return [_sanitize_text(item, MAX_INGREDIENT_LENGTH) for item in v]
+
+    @field_validator("instructions", mode="after")
+    @classmethod
+    def validate_instruction_lengths(cls, v: list[str]) -> list[str]:
+        """Sanitize instruction strings and enforce length limits."""
+        return [_sanitize_text(item, MAX_INSTRUCTION_LENGTH) for item in v]
 
 
 class Recipe(RecipeBase):

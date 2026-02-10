@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, Linking } from 'react-native';
+import { Text, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontFamily, fontSize } from '@/lib/theme';
 import { showNotification } from '@/lib/alert';
@@ -41,7 +41,7 @@ export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFo
       >
         <Ionicons name="link" size={18} color={colors.text.inverse} />
         <Text style={{ color: colors.text.inverse, marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
-          {t('recipe.viewOriginal')}
+          {t('recipe.viewSource')}
         </Text>
       </Pressable>
     )}
