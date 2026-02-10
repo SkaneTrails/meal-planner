@@ -21,6 +21,7 @@ from api.models.recipe import (
     RecipeScrapeRequest,
     RecipeUpdate,
 )
+from api.services.html_fetcher import FetchError, FetchResult, fetch_html
 from api.services.image_downloader import download_and_upload_image
 from api.services.image_service import create_hero, create_thumbnail
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
@@ -177,14 +178,16 @@ async def scrape_recipe(
 ) -> Recipe:
     """Scrape a recipe from a URL and save it.
 
-    This endpoint proxies to the scrape Cloud Function for isolation.
+    Uses a two-tier strategy to handle sites that block cloud IPs:
+    1. API fetches HTML server-side, sends to Cloud Function for parsing
+    2. Falls back to Cloud Function server-side scraping if API fetch fails
+
     If enhance=true, the recipe will be enhanced with AI after scraping.
     Recipe will be owned by the user's household.
     """
     household_id = _require_household(user)
     url = str(request.url)
 
-    # Check if recipe already exists
     existing = recipe_storage.find_recipe_by_url(url)
     if existing:
         raise HTTPException(
@@ -192,7 +195,63 @@ async def scrape_recipe(
             detail={"message": "Recipe from this URL already exists", "recipe_id": existing.id},
         )
 
-    # Call the scrape function
+    scraped_data = await _scrape_with_fallback(url)
+
+    recipe_create = build_recipe_create_from_scraped(scraped_data)
+    saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
+    saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
+
+    if enhance:  # pragma: no cover
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
+
+    return saved_recipe
+
+
+async def _scrape_with_fallback(url: str) -> dict:
+    """Try API-side HTML fetch + parse, falling back to Cloud Function scrape.
+
+    Returns scraped recipe data dict on success, raises HTTPException on failure.
+    """
+    fetch_result = await fetch_html(url)
+
+    if isinstance(fetch_result, FetchError) and fetch_result.reason == "security":
+        raise HTTPException(status_code=_HTTP_422, detail={"message": fetch_result.message, "reason": "security"})
+
+    if isinstance(fetch_result, FetchResult):
+        effective_url = fetch_result.final_url
+        logger.info("API-side fetch succeeded for %s, sending to Cloud Function for parsing", effective_url)
+        scraped_data = await _send_html_to_cloud_function(effective_url, fetch_result.html)
+        if scraped_data is not None:
+            return scraped_data
+        logger.warning("Cloud Function parse failed after API fetch for %s, trying full scrape", effective_url)
+
+    return await _cloud_function_scrape(url)
+
+
+async def _send_html_to_cloud_function(url: str, html: str) -> dict | None:
+    """Send pre-fetched HTML to Cloud Function for parsing.
+
+    Returns parsed recipe dict, or None if parsing fails.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(_get_scrape_url(), json={"url": url, "html": html})
+
+            if response.status_code == _HTTP_422:
+                return None
+
+            response.raise_for_status()
+            return response.json()
+    except (httpx.TimeoutException, httpx.HTTPStatusError, httpx.RequestError) as e:
+        logger.warning("Cloud Function parse call failed for %s: %s", url, e)
+        return None
+
+
+async def _cloud_function_scrape(url: str) -> dict:
+    """Delegate full scraping to the Cloud Function (last resort).
+
+    Returns scraped data dict on success, raises HTTPException on failure.
+    """
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(_get_scrape_url(), json={"url": url})
@@ -209,7 +268,7 @@ async def scrape_recipe(
                 raise HTTPException(status_code=_HTTP_422, detail=error_msg)
 
             response.raise_for_status()
-            scraped_data = response.json()
+            return response.json()
     except httpx.TimeoutException as e:
         raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="Scraping request timed out") from e
     except httpx.HTTPStatusError as e:  # pragma: no cover
@@ -220,15 +279,6 @@ async def scrape_recipe(
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Scraping service unavailable: {e!s}"
         ) from e
-
-    recipe_create = build_recipe_create_from_scraped(scraped_data)
-    saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
-    saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
-
-    if enhance:  # pragma: no cover
-        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
-
-    return saved_recipe
 
 
 @router.post("/parse", status_code=status.HTTP_201_CREATED)

@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from api.auth.models import AuthenticatedUser
 from api.models.recipe import Recipe, RecipeCreate
 from api.routers.recipes import router
+from api.services.html_fetcher import FetchError, FetchResult
 
 # Create a test app without auth for unit testing
 app = FastAPI()
@@ -258,8 +259,44 @@ class TestScrapeRecipe:
         assert response.status_code == 409
         assert "already exists" in response.json()["detail"]["message"]
 
-    def test_scrapes_and_saves_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
-        """Should scrape recipe and save it."""
+    def test_scrapes_via_api_fetch_and_parse(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should fetch HTML server-side and send to Cloud Function for parsing."""
+        scraped_data = {
+            "title": "Scraped Recipe",
+            "url": "https://example.com/new",
+            "ingredients": ["flour"],
+            "instructions": ["Mix"],
+        }
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 200
+        mock_cf_response.json.return_value = scraped_data
+        mock_cf_response.raise_for_status = MagicMock()
+
+        fetch_result = FetchResult(html="<html>recipe</html>", final_url="https://example.com/new")
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://example.com/new"})
+
+            mock_client.post.assert_called_once()
+            call_args = mock_client.post.call_args
+            assert "html" in call_args.kwargs.get("json", call_args[1].get("json", {}))
+
+        assert response.status_code == 201
+
+    def test_falls_back_to_cloud_function_scrape(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should fall back to Cloud Function scrape when API fetch fails."""
         scraped_data = {
             "title": "Scraped Recipe",
             "url": "https://example.com/new",
@@ -272,8 +309,11 @@ class TestScrapeRecipe:
         mock_response.json.return_value = scraped_data
         mock_response.raise_for_status = MagicMock()
 
+        fetch_error = FetchError(reason="blocked", message="Site blocked the request")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
         ):
@@ -286,6 +326,27 @@ class TestScrapeRecipe:
             response = client.post("/recipes/scrape", json={"url": "https://example.com/new"})
 
         assert response.status_code == 201
+
+    def test_returns_422_for_security_fetch_error(self, client: TestClient) -> None:
+        """Should return 422 without Cloud Function fallback for security errors."""
+        security_error = FetchError(reason="security", message="Redirect to internal IP blocked")
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=security_error),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://evil.com/recipe"})
+
+            mock_client.post.assert_not_called()
+
+        assert response.status_code == 422
+        assert response.json()["detail"]["reason"] == "security"
 
     def test_ingests_external_image_to_gcs(self, client: TestClient) -> None:
         """Should download external image and replace image_url with GCS URL."""
@@ -318,8 +379,11 @@ class TestScrapeRecipe:
         mock_response.json.return_value = scraped_data
         mock_response.raise_for_status = MagicMock()
 
+        fetch_error = FetchError(reason="blocked", message="blocked")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved_with_external),
             patch(
@@ -368,8 +432,11 @@ class TestScrapeRecipe:
         mock_response.json.return_value = scraped_data
         mock_response.raise_for_status = MagicMock()
 
+        fetch_error = FetchError(reason="blocked", message="blocked")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved_recipe),
             patch("api.routers.recipes.download_and_upload_image", new_callable=AsyncMock, return_value=None),
@@ -387,14 +454,17 @@ class TestScrapeRecipe:
         assert data["image_url"] == "https://example.com/broken-image.jpg"
 
     def test_returns_422_on_scrape_failure(self, client: TestClient) -> None:
-        """Should return 422 when scraping fails."""
+        """Should return 422 when both API fetch and Cloud Function scrape fail."""
         mock_response = MagicMock()
         mock_response.status_code = 422
         mock_response.headers = {"content-type": "application/json"}
         mock_response.json.return_value = {"error": "Failed to scrape", "reason": "parse_failed"}
 
+        fetch_error = FetchError(reason="fetch_failed", message="Failed")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
@@ -408,14 +478,17 @@ class TestScrapeRecipe:
         assert response.status_code == 422
 
     def test_returns_blocked_error_for_403(self, client: TestClient) -> None:
-        """Should return structured blocked error when site returns 403."""
+        """Should return structured blocked error when both tiers are blocked."""
         mock_response = MagicMock()
         mock_response.status_code = 403
         mock_response.headers = {"content-type": "application/json"}
         mock_response.json.return_value = {"error": "www.ica.se blocked the request (HTTP 403)", "reason": "blocked"}
 
+        fetch_error = FetchError(reason="blocked", message="www.ica.se blocked the request (HTTP 403)")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
@@ -433,7 +506,6 @@ class TestScrapeRecipe:
 
     def test_enhance_parameter_enhances_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should enhance recipe when enhance=true."""
-        # Pre-import to avoid google.genai Pydantic conflict with mocked httpx.AsyncClient
         from api.services import recipe_enhancer  # noqa: F401
 
         scraped_data = {
@@ -464,8 +536,11 @@ class TestScrapeRecipe:
             changes_made=["Added weight to flour"],
         )
 
+        fetch_error = FetchError(reason="blocked", message="blocked")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe") as mock_save,
             patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true"}),
@@ -511,8 +586,11 @@ class TestScrapeRecipe:
 
         from api.services.recipe_enhancer import EnhancementError
 
+        fetch_error = FetchError(reason="blocked", message="blocked")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
             patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true"}),
@@ -532,9 +610,12 @@ class TestScrapeRecipe:
         assert response.json()["enhanced"] is False
 
     def test_returns_504_on_timeout(self, client: TestClient) -> None:
-        """Should return 504 on scraping timeout."""
+        """Should return 504 on scraping timeout when both tiers fail."""
+        fetch_error = FetchError(reason="blocked", message="timed out")
+
         with (
             patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
