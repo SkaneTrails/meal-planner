@@ -28,6 +28,7 @@ Note: --project is required. Reads and writes recipes in the meal-planner databa
 
 import argparse
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 from google.cloud import firestore
@@ -215,7 +216,11 @@ def get_enhanced_recipe(recipe_id: str) -> None:
 
 
 def delete_enhanced_recipe(recipe_id: str, *, force: bool = False) -> None:
-    """Delete a bad enhanced recipe and remove from processed list."""
+    """Delete an entire recipe document from Firestore.
+
+    By default only deletes recipes flagged as enhanced. Use force=True
+    to delete any recipe regardless of enhancement status.
+    """
     db = get_db(_project)
     doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
     doc = doc_ref.get()
@@ -312,7 +317,9 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     else:
         print("\U0001f4dd Updating existing enhanced recipe")
 
-    update_payload.update(updates)
+    protected_keys = {"original", "enhanced", "enhanced_at", "updated_at"}
+    safe_updates = {k: v for k, v in updates.items() if k not in protected_keys}
+    update_payload.update(safe_updates)
 
     update_payload["enhanced"] = True
     update_payload["enhanced_at"] = now
@@ -324,7 +331,10 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
 
     doc_ref.update(update_payload)
     print(f"\u2705 Enhanced recipe: {recipe_id}")
-    print(f"   Updated fields: {list(updates.keys())}")
+    print(f"   Updated fields: {list(safe_updates.keys())}")
+    stripped = set(updates) - set(safe_updates)
+    if stripped:
+        print(f"   ⚠️ Stripped protected keys: {stripped}")
     if "original" in update_payload:
         print(f"   Original snapshot: {len(update_payload['original'])} fields preserved")
 
@@ -370,7 +380,8 @@ def show_status() -> None:
     print(f"   \u2705 Processed:        {processed}")
     print(f"   \u23ed\ufe0f Skipped:          {skipped}")
     print(f"   \U0001f4dd Remaining:        {remaining}")
-    print(f"   Progress:            {((processed + skipped) / total * 100):.1f}%\n")
+    pct = ((processed + skipped) / total * 100) if total else 0.0
+    print(f"   Progress:            {pct:.1f}%\n")
 
 
 # ---------------------------------------------------------------------------
@@ -409,7 +420,7 @@ def _menu_delete() -> None:
     delete_enhanced_recipe(recipe_id, force=force)
 
 
-def _menu_id_action(fn: callable) -> None:
+def _menu_id_action(fn: Callable[[str], None]) -> None:
     recipe_id = _prompt("Recipe ID")
     fn(recipe_id)
 
@@ -459,6 +470,15 @@ def interactive_menu() -> None:
 # ---------------------------------------------------------------------------
 
 
+def _non_negative_int(value: str) -> int:
+    """Argparse type validator for non-negative integers."""
+    n = int(value)
+    if n < 0:
+        msg = f"must be non-negative, got {n}"
+        raise argparse.ArgumentTypeError(msg)
+    return n
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Firestore recipe manager — CRUD, enhancement review, and interactive menu"
@@ -471,7 +491,7 @@ def _build_parser() -> argparse.ArgumentParser:
     sub.add_parser("status", help="Show review progress")
 
     p_list = sub.add_parser("list", help="List all recipes")
-    p_list.add_argument("--limit", type=int, default=0, help="Max recipes to show (0=all)")
+    p_list.add_argument("--limit", type=_non_negative_int, default=0, help="Max recipes to show (0=all)")
 
     for name in ("get", "enhanced", "skip", "done"):
         p = sub.add_parser(name)
@@ -481,7 +501,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p_export.add_argument("recipe_id")
     p_export.add_argument("--output", default=None, help="Output file path")
 
-    p_delete = sub.add_parser("delete", help="Delete a bad enhanced recipe")
+    p_delete = sub.add_parser("delete", help="Delete a recipe document from Firestore")
     p_delete.add_argument("recipe_id")
     p_delete.add_argument("--force", action="store_true", help="Delete even if not enhanced")
 
@@ -503,8 +523,8 @@ def _set_project(project: str) -> None:
 
 def _dispatch(args: argparse.Namespace) -> None:
     """Dispatch CLI subcommand to the appropriate handler."""
-    simple_commands: dict[str, callable] = {"next": get_next_recipe, "status": show_status}
-    id_commands: dict[str, callable] = {
+    simple_commands: dict[str, Callable[[], None]] = {"next": get_next_recipe, "status": show_status}
+    id_commands: dict[str, Callable[[str], None]] = {
         "get": get_recipe,
         "enhanced": get_enhanced_recipe,
         "skip": mark_skipped,
