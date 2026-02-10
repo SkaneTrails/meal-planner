@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 import httpx
 from recipe_scrapers import scrape_html
+from recipe_scrapers._exceptions import NoSchemaFoundInWildMode, WebsiteNotImplementedError
 
 # Blocked IP ranges for SSRF protection
 BLOCKED_IP_RANGES = [
@@ -122,9 +123,22 @@ def _safe_int(value: str | int | None) -> int | None:
     return int(match.group()) if match else None
 
 
-def parse_recipe_html(html: str, url: str) -> Recipe | None:
-    """
-    Parse a recipe from HTML content.
+class ScrapeError:
+    """Structured error from scrape_recipe with reason detail."""
+
+    BLOCKED = "blocked"
+    NOT_SUPPORTED = "not_supported"
+    PARSE_FAILED = "parse_failed"
+    SECURITY = "security"
+
+    def __init__(self, reason: str, message: str, status_code: int | None = None) -> None:
+        self.reason = reason
+        self.message = message
+        self.status_code = status_code
+
+
+def parse_recipe_html(html: str, url: str) -> Recipe | ScrapeError:
+    """Parse a recipe from HTML content.
 
     This is used for client-side scraping where the client fetches the HTML
     and sends it to the API for parsing, avoiding cloud IP blocking issues.
@@ -134,11 +148,42 @@ def parse_recipe_html(html: str, url: str) -> Recipe | None:
         url: The original URL (used for metadata extraction).
 
     Returns:
-        A Recipe object if successful, None otherwise.
+        A Recipe object on success, or a ScrapeError with reason detail.
     """
     try:
         scraper = scrape_html(html, org_url=url)
+    except WebsiteNotImplementedError:
+        return _try_wild_mode_or_not_supported(html, url)
+    except Exception as e:
+        print(f"Recipe parsing error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
+        return ScrapeError(ScrapeError.PARSE_FAILED, f"Could not extract recipe data from {url}")
 
+    return _build_recipe(scraper, url)
+
+
+def _try_wild_mode_or_not_supported(html: str, url: str) -> Recipe | ScrapeError:
+    """Attempt wild_mode parsing, returning NOT_SUPPORTED if no schema found."""
+    host = urlparse(url).hostname or url
+    try:
+        scraper = scrape_html(html, org_url=url, wild_mode=True)
+    except NoSchemaFoundInWildMode:
+        return ScrapeError(
+            ScrapeError.NOT_SUPPORTED,
+            f"{host} is not supported for automatic recipe import. Try adding the recipe manually.",
+        )
+    except Exception as e:
+        print(f"Wild-mode parsing error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
+        return ScrapeError(
+            ScrapeError.NOT_SUPPORTED,
+            f"{host} is not supported for automatic recipe import. Try adding the recipe manually.",
+        )
+
+    return _build_recipe(scraper, url)
+
+
+def _build_recipe(scraper: object, url: str) -> Recipe | ScrapeError:
+    """Extract recipe fields from a scraper instance."""
+    try:
         instructions: list[str] = _safe_get(scraper.instructions_list, [])
         if not instructions:
             raw_instructions = _safe_get(scraper.instructions, "")
@@ -156,21 +201,8 @@ def parse_recipe_html(html: str, url: str) -> Recipe | None:
             total_time=_safe_get_optional(scraper.total_time),
         )
     except Exception as e:
-        print(f"Recipe parsing error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
-        return None
-
-
-class ScrapeError:
-    """Structured error from scrape_recipe with reason detail."""
-
-    BLOCKED = "blocked"
-    PARSE_FAILED = "parse_failed"
-    SECURITY = "security"
-
-    def __init__(self, reason: str, message: str, status_code: int | None = None) -> None:
-        self.reason = reason
-        self.message = message
-        self.status_code = status_code
+        print(f"Recipe field extraction error for {url}: {type(e).__name__}: {e}", file=sys.stderr)
+        return ScrapeError(ScrapeError.PARSE_FAILED, f"Could not extract recipe data from {url}")
 
 
 # HTTP status codes that indicate the site is blocking our requests
@@ -236,7 +268,4 @@ def scrape_recipe(url: str) -> Recipe | ScrapeError:
     if isinstance(html, ScrapeError):
         return html
 
-    recipe = parse_recipe_html(html, url)
-    if recipe is None:
-        return ScrapeError(ScrapeError.PARSE_FAILED, f"Could not extract recipe data from {url}")
-    return recipe
+    return parse_recipe_html(html, url)

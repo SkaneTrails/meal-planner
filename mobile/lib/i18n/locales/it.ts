@@ -427,6 +427,7 @@ const it: Translations = {
     importFailed: 'Importazione fallita',
     importFailedDefault: 'Impossibile importare la ricetta',
     siteBlocked: '{{host}} blocca l\'importazione automatica. Prova ad aggiungere la ricetta manualmente copiando gli ingredienti e le istruzioni dal sito web.',
+    siteNotSupported: '{{host}} non è supportato per l\'importazione automatica. Prova ad aggiungere la ricetta manualmente copiando gli ingredienti e le istruzioni dal sito web.',
     createFailed: 'Creazione fallita',
     createFailedDefault: 'Impossibile creare la ricetta',
     // Manual form

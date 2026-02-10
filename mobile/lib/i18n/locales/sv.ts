@@ -427,6 +427,7 @@ const sv: Translations = {
     importFailed: 'Import misslyckades',
     importFailedDefault: 'Kunde inte importera receptet',
     siteBlocked: '{{host}} blockerar automatisk import. Prova att lägga till receptet manuellt genom att kopiera ingredienser och instruktioner från webbsidan.',
+    siteNotSupported: '{{host}} stöds inte för automatisk import. Prova att lägga till receptet manuellt genom att kopiera ingredienser och instruktioner från webbsidan.',
     createFailed: 'Skapande misslyckades',
     createFailedDefault: 'Kunde inte skapa receptet',
     // Manual form
