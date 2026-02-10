@@ -52,7 +52,7 @@ class FetchError:
     message: str
 
 
-def _validate_redirect(response: httpx.Response) -> None:
+async def _validate_redirect(response: httpx.Response) -> None:
     """Event hook: validate each redirect hop against SSRF policy."""
     if response.is_redirect and response.has_redirect_location:
         location = response.headers["location"]
