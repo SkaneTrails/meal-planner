@@ -3,6 +3,7 @@
 import logging
 import os
 import uuid
+from dataclasses import dataclass
 from typing import Annotated
 
 import httpx
@@ -220,25 +221,47 @@ async def _scrape_with_fallback(url: str) -> dict:
     if isinstance(fetch_result, FetchResult):
         effective_url = fetch_result.final_url
         logger.info("API-side fetch succeeded for %s, sending to Cloud Function for parsing", effective_url)
-        scraped_data = await _send_html_to_cloud_function(effective_url, fetch_result.html)
-        if scraped_data is not None:
-            return scraped_data
+        parse_result = await _send_html_to_cloud_function(effective_url, fetch_result.html)
+
+        if isinstance(parse_result, dict):
+            return parse_result
+
+        if isinstance(parse_result, _ParseError) and parse_result.reason in {"not_supported", "blocked"}:
+            raise HTTPException(
+                status_code=_HTTP_422, detail={"message": parse_result.message, "reason": parse_result.reason}
+            )
+
         logger.warning("Cloud Function parse failed after API fetch for %s, trying full scrape", effective_url)
 
     return await _cloud_function_scrape(url)
 
 
-async def _send_html_to_cloud_function(url: str, html: str) -> dict | None:
+@dataclass
+class _ParseError:
+    """Cloud Function parse error with reason detail."""
+
+    reason: str
+    message: str
+
+
+async def _send_html_to_cloud_function(url: str, html: str) -> dict | _ParseError | None:
     """Send pre-fetched HTML to Cloud Function for parsing.
 
-    Returns parsed recipe dict, or None if parsing fails.
+    Returns parsed recipe dict on success, _ParseError with reason on
+    structured failure, or None on unexpected/network errors.
     """
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(_get_scrape_url(), json={"url": url, "html": html})
 
             if response.status_code == _HTTP_422:
-                return None
+                error_data = (
+                    response.json() if response.headers.get("content-type", "").startswith("application/json") else {}
+                )
+                return _ParseError(
+                    reason=error_data.get("reason", "parse_failed"),
+                    message=error_data.get("error", f"Failed to parse recipe from {url}"),
+                )
 
             response.raise_for_status()
             return response.json()
@@ -263,8 +286,8 @@ async def _cloud_function_scrape(url: str) -> dict:
                 reason = error_data.get("reason", "parse_failed")
                 error_msg = error_data.get("error", f"Failed to scrape recipe from {url}")
 
-                if reason == "blocked":
-                    raise HTTPException(status_code=_HTTP_422, detail={"message": error_msg, "reason": "blocked"})
+                if reason in {"blocked", "not_supported"}:
+                    raise HTTPException(status_code=_HTTP_422, detail={"message": error_msg, "reason": reason})
                 raise HTTPException(status_code=_HTTP_422, detail=error_msg)
 
             response.raise_for_status()
@@ -282,7 +305,7 @@ async def _cloud_function_scrape(url: str) -> dict:
 
 
 @router.post("/parse", status_code=status.HTTP_201_CREATED)
-async def parse_recipe(  # pragma: no cover
+async def parse_recipe(
     user: Annotated[AuthenticatedUser, Depends(require_auth)],
     request: RecipeParseRequest,
     *,
@@ -307,26 +330,17 @@ async def parse_recipe(  # pragma: no cover
             detail={"message": "Recipe from this URL already exists", "recipe_id": existing.id},
         )
 
-    # Call the scrape function with HTML
-    try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(_get_scrape_url(), json={"url": url, "html": html})
+    parse_result = await _send_html_to_cloud_function(url, html)
 
-            if response.status_code == _HTTP_422:
-                raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
+    if isinstance(parse_result, _ParseError):
+        raise HTTPException(
+            status_code=_HTTP_422, detail={"message": parse_result.message, "reason": parse_result.reason}
+        )
 
-            response.raise_for_status()
-            scraped_data = response.json()
-    except httpx.TimeoutException as e:
-        raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="Parsing request timed out") from e
-    except httpx.HTTPStatusError as e:  # pragma: no cover
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Parsing service error: {e.response.text}"
-        ) from e
-    except httpx.RequestError as e:  # pragma: no cover
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Parsing service unavailable: {e!s}"
-        ) from e
+    if parse_result is None:
+        raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
+
+    scraped_data = parse_result
 
     recipe_create = build_recipe_create_from_scraped(scraped_data)
     saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)

@@ -59,17 +59,15 @@ def scrape_recipe_handler(request: Request) -> tuple:
     html = validated.get("html")
 
     if html:
-        recipe = parse_recipe_html(html, url)
-        if recipe is None:
-            return (
-                jsonify({"error": f"Failed to parse recipe from {url}", "reason": "parse_failed"}),
-                422,
-                _CORS_HEADERS,
-            )
+        result = parse_recipe_html(html, url)
+        if isinstance(result, ScrapeError):
+            status_code = 422 if result.reason != ScrapeError.BLOCKED else 403
+            return (jsonify({"error": result.message, "reason": result.reason}), status_code, _CORS_HEADERS)
+        recipe = result
     else:
         result = scrape_recipe(url)
         if isinstance(result, ScrapeError):
-            status_code = 422 if result.reason == ScrapeError.PARSE_FAILED else 403
+            status_code = 422 if result.reason in {ScrapeError.PARSE_FAILED, ScrapeError.NOT_SUPPORTED} else 403
             return (jsonify({"error": result.message, "reason": result.reason}), status_code, _CORS_HEADERS)
         recipe = result
 

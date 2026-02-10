@@ -85,6 +85,12 @@ export const useAddRecipeActions = () => {
           t('addRecipe.importFailed'),
           t('addRecipe.siteBlocked', { host }),
         );
+      } else if (err instanceof ApiClientError && err.reason === 'not_supported') {
+        const host = extractHostname(url);
+        showNotification(
+          t('addRecipe.importFailed'),
+          t('addRecipe.siteNotSupported', { host }),
+        );
       } else {
         const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
         showNotification(t('addRecipe.importFailed'), message);
