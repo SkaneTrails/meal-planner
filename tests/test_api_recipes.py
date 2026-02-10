@@ -688,6 +688,83 @@ class TestScrapeRecipe:
         assert response.status_code == 504
 
 
+class TestParseRecipe:
+    """Tests for POST /recipes/parse endpoint."""
+
+    def test_returns_422_with_not_supported_reason(self, client: TestClient) -> None:
+        """Should return structured 422 with not_supported reason from Cloud Function."""
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 422
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = {
+            "error": "coop.se is not supported for automatic recipe import. Try adding the recipe manually.",
+            "reason": "not_supported",
+        }
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post(
+                "/recipes/parse",
+                json={
+                    "url": "https://coop.se/recipe",
+                    "html": "<html><head><title>Coop Recipe</title></head><body><div class='content'>"
+                    + "x" * 100
+                    + "</div></body></html>",
+                },
+            )
+
+        assert response.status_code == 422
+        detail = response.json()["detail"]
+        assert detail["reason"] == "not_supported"
+        assert "coop.se" in detail["message"]
+
+    def test_returns_201_on_successful_parse(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should parse HTML and save recipe on success."""
+        scraped_data = {
+            "title": "Parsed Recipe",
+            "url": "https://example.com/parsed",
+            "ingredients": ["flour", "sugar"],
+            "instructions": ["Mix", "Bake"],
+        }
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 200
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = scraped_data
+        mock_cf_response.raise_for_status = MagicMock()
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post(
+                "/recipes/parse",
+                json={
+                    "url": "https://example.com/parsed",
+                    "html": "<html><head><title>Recipe</title></head><body><div class='recipe'>"
+                    + "x" * 100
+                    + "</div></body></html>",
+                },
+            )
+
+        assert response.status_code == 201
+
+
 class TestUpdateRecipe:
     """Tests for PUT /recipes/{recipe_id} endpoint."""
 

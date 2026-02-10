@@ -305,7 +305,7 @@ async def _cloud_function_scrape(url: str) -> dict:
 
 
 @router.post("/parse", status_code=status.HTTP_201_CREATED)
-async def parse_recipe(  # pragma: no cover
+async def parse_recipe(
     user: Annotated[AuthenticatedUser, Depends(require_auth)],
     request: RecipeParseRequest,
     *,
@@ -330,26 +330,17 @@ async def parse_recipe(  # pragma: no cover
             detail={"message": "Recipe from this URL already exists", "recipe_id": existing.id},
         )
 
-    # Call the scrape function with HTML
-    try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(_get_scrape_url(), json={"url": url, "html": html})
+    parse_result = await _send_html_to_cloud_function(url, html)
 
-            if response.status_code == _HTTP_422:
-                raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
+    if isinstance(parse_result, _ParseError):
+        raise HTTPException(
+            status_code=_HTTP_422, detail={"message": parse_result.message, "reason": parse_result.reason}
+        )
 
-            response.raise_for_status()
-            scraped_data = response.json()
-    except httpx.TimeoutException as e:
-        raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="Parsing request timed out") from e
-    except httpx.HTTPStatusError as e:  # pragma: no cover
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Parsing service error: {e.response.text}"
-        ) from e
-    except httpx.RequestError as e:  # pragma: no cover
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Parsing service unavailable: {e!s}"
-        ) from e
+    if parse_result is None:
+        raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
+
+    scraped_data = parse_result
 
     recipe_create = build_recipe_create_from_scraped(scraped_data)
     saved_recipe = recipe_storage.save_recipe(recipe_create, household_id=household_id, created_by=user.email)
