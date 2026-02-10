@@ -28,6 +28,17 @@ export interface StructuredInstruction {
 
 export type RecipeVisibility = 'household' | 'shared';
 
+export interface OriginalRecipe {
+  title: string;
+  ingredients: string[];
+  instructions: string[];
+  servings: number | null;
+  prep_time: number | null;
+  cook_time: number | null;
+  total_time: number | null;
+  image_url: string | null;
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -56,6 +67,7 @@ export interface Recipe {
   enhanced_at?: string; // ISO timestamp of enhancement
   tips?: string;
   changes_made?: string[];
+  original?: OriginalRecipe | null; // Original data before AI enhancement
 }
 
 export interface RecipeCreate {

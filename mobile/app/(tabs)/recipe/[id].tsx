@@ -56,6 +56,7 @@ export default function RecipeDetailScreen() {
 
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showAiChanges, setShowAiChanges] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(false);
 
   const toggleStep = (index: number) => {
     hapticSelection();
@@ -245,10 +246,12 @@ export default function RecipeDetailScreen() {
               totalTime={totalTime}
               completedSteps={completedSteps}
               showAiChanges={showAiChanges}
+              showOriginal={showOriginal}
               canEdit={canEdit}
               t={t}
               onToggleStep={toggleStep}
               onToggleAiChanges={() => setShowAiChanges(!showAiChanges)}
+              onToggleOriginal={() => { hapticSelection(); setShowOriginal(!showOriginal); setCompletedSteps(new Set()); }}
               onOpenEditModal={() => setShowEditModal(true)}
               onShowPlanModal={() => setShowPlanModal(true)}
               onShare={handleShare}

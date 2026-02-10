@@ -73,6 +73,7 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         enhanced_at=data.get("enhanced_at"),
         tips=data.get("tips"),
         changes_made=data.get("changes_made"),
+        original=data.get("original"),
         # Household fields
         household_id=data.get("household_id"),
         visibility=raw_vis if (raw_vis := data.get("visibility")) in ("household", "shared") else "household",
