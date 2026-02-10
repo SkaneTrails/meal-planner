@@ -15,6 +15,7 @@ import dataclasses
 import json
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -36,11 +37,25 @@ def get_firestore_client() -> firestore.Client:
     return firestore.Client(database="meal-planner")
 
 
+def _api_fetch(url: str) -> bytes:
+    """Fetch from local API with timeout and error handling."""
+    try:
+        resp = urllib.request.urlopen(url, timeout=30)  # noqa: S310
+        return resp.read()
+    except urllib.error.HTTPError as exc:
+        hint = " (start API with SKIP_AUTH=true?)" if exc.code == 401 else ""
+        msg = f"API returned HTTP {exc.code}{hint}: {url}"
+        raise SystemExit(msg) from exc
+    except urllib.error.URLError as exc:
+        msg = f"Cannot connect to API (is it running?): {exc.reason}"
+        raise SystemExit(msg) from exc
+
+
 def get_enhanced_missing_original(recipe_id: str | None = None) -> list[dict]:
     """Fetch enhanced recipes missing 'original' via the local API."""
     if recipe_id:
-        resp = urllib.request.urlopen(f"{API_BASE}/recipes/{recipe_id}")  # noqa: S310
-        recipe = json.loads(resp.read())
+        data = _api_fetch(f"{API_BASE}/recipes/{recipe_id}")
+        recipe = json.loads(data)
         if recipe.get("enhanced") and not recipe.get("original"):
             return [recipe]
         if recipe.get("original"):
@@ -56,8 +71,8 @@ def get_enhanced_missing_original(recipe_id: str | None = None) -> list[dict]:
         url = f"{API_BASE}/recipes?limit=100"
         if cursor:
             url += f"&cursor={cursor}"
-        resp = urllib.request.urlopen(url)  # noqa: S310
-        data = json.loads(resp.read())
+        raw = _api_fetch(url)
+        data = json.loads(raw)
         items = data.get("items", [])
         for r in items:
             if r.get("enhanced") and not r.get("original"):
@@ -136,7 +151,9 @@ def main() -> None:
         )
 
         if apply:
-            db.collection("recipes").document(rid).update({"original": original})
+            db.collection("recipes").document(rid).update(
+                {"original": original, "updated_at": firestore.SERVER_TIMESTAMP}
+            )
             print("    💾 Saved to Firestore")
         else:
             output = Path(f"data/original_{rid}.json")

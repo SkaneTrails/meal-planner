@@ -128,8 +128,14 @@ export const recipeApi = {
     if (Platform.OS === 'web') {
       // On web, blob: URIs must be fetched into a real Blob/File object.
       // The RN-style { uri, name, type } shorthand only works on native.
-      const response = await fetch(imageUri);
-      const blob = await response.blob();
+      const imageResponse = await fetch(imageUri);
+      if (!imageResponse.ok) {
+        throw new ApiClientError(
+          `Failed to load image from URI (status ${imageResponse.status} ${imageResponse.statusText})`,
+          imageResponse.status,
+        );
+      }
+      const blob = await imageResponse.blob();
       const file = new File([blob], fileName, { type: blob.type || mimeType });
       formData.append('file', file);
     } else {
