@@ -109,6 +109,14 @@ lint.per-file-ignores."tests/**/*.py" = [
   "S101",    # Allow assert in tests (required for pytest)
 ]
 
+lint.per-file-ignores."tools/**/*.py" = [
+  "ANN201",  # Missing return type annotation ok in CLI tools
+  "C901",    # Complex functions ok in CLI tools (interactive menus)
+  "PERF401", # List comprehension optimization not needed for Firestore iteration
+  "PLR0912", # Too many branches ok in CLI argument parsing
+  "PLR2004", # Magic numbers ok in CLI tools
+]
+
 lint.flake8-quotes.inline-quotes = "double"
 lint.isort.combine-as-imports = true
 lint.isort.split-on-trailing-comma = false
@@ -117,7 +125,7 @@ lint.isort.split-on-trailing-comma = false
 known_first_party = [ "meal-planner" ]
 pep621_dev_dependency_groups = [ "dev" ]
 ignore = [ "DEP002" ]
-extend_exclude = [ ".venv/", "functions/", "scripts/" ]
+extend_exclude = [ ".venv/", "functions/", "scripts/", "tools/" ]
 
 [tool.pytest.ini_options]
 testpaths = [ "tests" ]

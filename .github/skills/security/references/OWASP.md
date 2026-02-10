@@ -316,7 +316,7 @@ prompt = f"Recipe: {recipe}"  # No PII
 
 **This project:** Recipe enhancement is read-then-write with human review:
 1. LLM generates enhanced recipe (safe - just text)
-2. Human reviews via `recipe_reviewer.py`
+2. Human reviews via `recipe_manager.py`
 3. Human approves upload
 
 **If adding automated enhancement:** Add approval step or strict output validation.
