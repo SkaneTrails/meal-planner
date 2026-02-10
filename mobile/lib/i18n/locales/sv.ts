@@ -190,6 +190,7 @@ const sv: Translations = {
     chooseOption: 'Välj ett alternativ',
     takePhoto: 'Ta foto',
     chooseFromLibrary: 'Välj från bibliotek',
+    chooseFromLibraryOrUrl: 'Klicka OK för att ange en URL, eller Avbryt för att välja en fil från din dator.',
     enterUrl: 'Ange URL',
     permissionNeeded: 'Behörighet krävs',
     cameraPermission: 'Kamerabehörighet krävs för att ta foton',
