@@ -7,6 +7,8 @@ import pytest
 
 from api.services.html_fetcher import FetchError, FetchResult, fetch_html
 
+_SAFE_URL_PATCH = patch("api.services.html_fetcher.is_safe_url", return_value=True)
+
 
 @pytest.mark.asyncio
 class TestFetchHtml:
@@ -18,9 +20,11 @@ class TestFetchHtml:
         mock_response.status_code = 200
         mock_response.is_success = True
         mock_response.text = "<html><body>Recipe</body></html>"
+        mock_response.content = b"<html><body>Recipe</body></html>"
         mock_response.url = "https://example.com/recipe"
+        mock_response.headers = {}
 
-        with patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
             mock_client.__aenter__.return_value = mock_client
@@ -46,7 +50,7 @@ class TestFetchHtml:
         mock_response.status_code = 403
         mock_response.is_success = False
 
-        with patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
             mock_client.__aenter__.return_value = mock_client
@@ -65,7 +69,7 @@ class TestFetchHtml:
         mock_response.status_code = 429
         mock_response.is_success = False
 
-        with patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
             mock_client.__aenter__.return_value = mock_client
@@ -79,7 +83,7 @@ class TestFetchHtml:
 
     async def test_returns_error_on_timeout(self) -> None:
         """Should return FetchError on timeout."""
-        with patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
             mock_client.get.side_effect = httpx.TimeoutException("timed out")
             mock_client.__aenter__.return_value = mock_client
@@ -93,7 +97,7 @@ class TestFetchHtml:
 
     async def test_returns_error_on_network_failure(self) -> None:
         """Should return FetchError on network errors."""
-        with patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
             mock_client.get.side_effect = httpx.ConnectError("connection refused")
             mock_client.__aenter__.return_value = mock_client
@@ -111,7 +115,7 @@ class TestFetchHtml:
         mock_response.status_code = 500
         mock_response.is_success = False
 
-        with patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
             mock_client.get.return_value = mock_response
             mock_client.__aenter__.return_value = mock_client
@@ -123,20 +127,13 @@ class TestFetchHtml:
         assert isinstance(result, FetchError)
         assert result.reason == "fetch_failed"
 
-    async def test_blocks_unsafe_redirect(self) -> None:
-        """Should return FetchError if redirect goes to blocked URL."""
-        mock_response = AsyncMock()
-        mock_response.status_code = 200
-        mock_response.is_success = True
-        mock_response.text = "<html></html>"
-        mock_response.url = "http://169.254.169.254/metadata"
+    async def test_blocks_unsafe_redirect_via_event_hook(self) -> None:
+        """Should return FetchError when redirect targets blocked URL."""
+        from api.services.html_fetcher import _UnsafeRedirectError
 
-        with (
-            patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class,
-            patch("api.services.html_fetcher.is_safe_url", side_effect=[True, False]),
-        ):
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
             mock_client = AsyncMock()
-            mock_client.get.return_value = mock_response
+            mock_client.get.side_effect = _UnsafeRedirectError("Redirect blocked")
             mock_client.__aenter__.return_value = mock_client
             mock_client.__aexit__.return_value = None
             mock_client_class.return_value = mock_client
@@ -145,3 +142,24 @@ class TestFetchHtml:
 
         assert isinstance(result, FetchError)
         assert result.reason == "security"
+
+    async def test_returns_error_for_oversized_response(self) -> None:
+        """Should return FetchError when response exceeds max size."""
+        mock_response = AsyncMock()
+        mock_response.status_code = 200
+        mock_response.is_success = True
+        mock_response.headers = {"content-length": "10000000"}
+        mock_response.content = b"x" * 10_000_000
+
+        with _SAFE_URL_PATCH, patch("api.services.html_fetcher.httpx.AsyncClient") as mock_client_class:
+            mock_client = AsyncMock()
+            mock_client.get.return_value = mock_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            result = await fetch_html("https://example.com/huge")
+
+        assert isinstance(result, FetchError)
+        assert result.reason == "fetch_failed"
+        assert "5 MB" in result.message

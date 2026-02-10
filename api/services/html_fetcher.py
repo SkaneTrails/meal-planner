@@ -17,6 +17,7 @@ from api.services.url_safety import is_safe_url
 logger = logging.getLogger(__name__)
 
 FETCH_TIMEOUT = 30.0
+MAX_RESPONSE_BYTES = 5 * 1024 * 1024  # 5 MB
 
 _BROWSER_HEADERS = {
     "User-Agent": (
@@ -29,6 +30,10 @@ _BROWSER_HEADERS = {
 }
 
 _BLOCKED_STATUS_CODES = {403, 406, 429, 451, 503}
+
+
+class _UnsafeRedirectError(Exception):
+    """Raised when a redirect targets a blocked URL."""
 
 
 @dataclass
@@ -47,6 +52,16 @@ class FetchError:
     message: str
 
 
+def _validate_redirect(response: httpx.Response) -> None:
+    """Event hook: validate each redirect hop against SSRF policy."""
+    if response.is_redirect and response.has_redirect_location:
+        location = response.headers["location"]
+        resolved = str(response.url.join(location))
+        if not is_safe_url(resolved):
+            msg = f"Redirect to {resolved} blocked by security policy"
+            raise _UnsafeRedirectError(msg)
+
+
 async def fetch_html(url: str) -> FetchResult | FetchError:
     """Fetch HTML from a URL with safety checks and blocking detection.
 
@@ -56,8 +71,15 @@ async def fetch_html(url: str) -> FetchResult | FetchError:
         return FetchError(reason="security", message=f"URL blocked by security policy: {url}")
 
     try:
-        async with httpx.AsyncClient(timeout=FETCH_TIMEOUT, follow_redirects=True) as client:
+        async with httpx.AsyncClient(
+            timeout=FETCH_TIMEOUT,
+            follow_redirects=True,
+            max_redirects=5,
+            event_hooks={"response": [_validate_redirect]},
+        ) as client:
             response = await client.get(url, headers=_BROWSER_HEADERS)
+    except _UnsafeRedirectError as e:
+        return FetchError(reason="security", message=str(e))
     except httpx.TimeoutException:
         return FetchError(reason="blocked", message="Request timed out — site may be blocking cloud requests")
     except httpx.RequestError as e:
@@ -69,7 +91,7 @@ async def fetch_html(url: str) -> FetchResult | FetchError:
 
 
 def _check_response(url: str, response: httpx.Response) -> FetchError | None:
-    """Check HTTP response for blocking or errors. Returns FetchError or None."""
+    """Check HTTP response for blocking, errors, or oversized body."""
     if response.status_code in _BLOCKED_STATUS_CODES:
         host = urlparse(url).hostname or url
         return FetchError(reason="blocked", message=f"{host} blocked the request (HTTP {response.status_code})")
@@ -77,8 +99,11 @@ def _check_response(url: str, response: httpx.Response) -> FetchError | None:
     if not response.is_success:
         return FetchError(reason="fetch_failed", message=f"HTTP {response.status_code} from {urlparse(url).hostname}")
 
-    final_url = str(response.url)
-    if final_url != url and not is_safe_url(final_url):
-        return FetchError(reason="security", message="Redirect blocked by security policy")
+    content_length = response.headers.get("content-length")
+    body_too_large = (content_length and int(content_length) > MAX_RESPONSE_BYTES) or (
+        len(response.content) > MAX_RESPONSE_BYTES
+    )
+    if body_too_large:
+        return FetchError(reason="fetch_failed", message="Response too large (exceeds 5 MB limit)")
 
     return None

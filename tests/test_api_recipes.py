@@ -327,6 +327,27 @@ class TestScrapeRecipe:
 
         assert response.status_code == 201
 
+    def test_returns_422_for_security_fetch_error(self, client: TestClient) -> None:
+        """Should return 422 without Cloud Function fallback for security errors."""
+        security_error = FetchError(reason="security", message="Redirect to internal IP blocked")
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=security_error),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/scrape", json={"url": "https://evil.com/recipe"})
+
+            mock_client.post.assert_not_called()
+
+        assert response.status_code == 422
+        assert response.json()["detail"]["reason"] == "security"
+
     def test_ingests_external_image_to_gcs(self, client: TestClient) -> None:
         """Should download external image and replace image_url with GCS URL."""
         scraped_data = {

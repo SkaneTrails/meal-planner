@@ -21,7 +21,7 @@ from api.models.recipe import (
     RecipeScrapeRequest,
     RecipeUpdate,
 )
-from api.services.html_fetcher import FetchResult, fetch_html
+from api.services.html_fetcher import FetchError, FetchResult, fetch_html
 from api.services.image_downloader import download_and_upload_image
 from api.services.image_service import create_hero, create_thumbnail
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
@@ -214,12 +214,16 @@ async def _scrape_with_fallback(url: str) -> dict:
     """
     fetch_result = await fetch_html(url)
 
+    if isinstance(fetch_result, FetchError) and fetch_result.reason == "security":
+        raise HTTPException(status_code=_HTTP_422, detail={"message": fetch_result.message, "reason": "security"})
+
     if isinstance(fetch_result, FetchResult):
-        logger.info("API-side fetch succeeded for %s, sending to Cloud Function for parsing", url)
-        scraped_data = await _send_html_to_cloud_function(url, fetch_result.html)
+        effective_url = fetch_result.final_url
+        logger.info("API-side fetch succeeded for %s, sending to Cloud Function for parsing", effective_url)
+        scraped_data = await _send_html_to_cloud_function(effective_url, fetch_result.html)
         if scraped_data is not None:
             return scraped_data
-        logger.warning("Cloud Function parse failed after API fetch for %s, trying full scrape", url)
+        logger.warning("Cloud Function parse failed after API fetch for %s, trying full scrape", effective_url)
 
     return await _cloud_function_scrape(url)
 
