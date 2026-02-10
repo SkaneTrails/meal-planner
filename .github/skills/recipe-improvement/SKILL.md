@@ -17,28 +17,31 @@ This skill activates when:
 - The developer asks to review, improve, or optimize a recipe
 - Working with recipe data from the Firestore database
 - The developer mentions "recipe", "cooking", "ingredients", or "instructions"
-- Using the `scripts/recipe_reviewer.py` tool to process recipes
+- Using the `tools/recipe_manager.py` tool to process recipes
 
 ---
 
-## Recipe Reviewer Tool
+## Recipe Manager Tool
 
-The `scripts/recipe_reviewer.py` script manages the recipe review workflow:
+The `tools/recipe_manager.py` tool manages recipes in Firestore (CRUD, enhancement review, interactive menu):
 
 ```bash
-uv run python scripts/recipe_reviewer.py <command> [args]
+uv run python tools/recipe_manager.py --project <project_id> <command> [args]
 ```
 
 | Command                | Description                                                  |
 | ---------------------- | ------------------------------------------------------------ |
-| `next`                 | Fetch the next unprocessed recipe                            |
+| `list`                 | List all recipes (ID, enhanced status, title)                |
 | `get <id>`             | Fetch a specific recipe by ID                                |
 | `enhanced <id>`        | Fetch the enhanced version of a recipe                       |
+| `export <id>`          | Export recipe to a JSON file                                 |
 | `delete <id>`          | Delete a bad enhanced recipe and unmark from processed       |
 | `update <id> '<json>'` | Apply improvements and save to database                      |
-| `skip <id>`            | Mark recipe as skipped (no changes needed)                   |
 | `upload <id> <file>`   | Upload enhanced recipe from a JSON file                      |
+| `skip <id>`            | Mark recipe as skipped (no changes needed)                   |
+| `next`                 | Fetch the next unprocessed recipe                            |
 | `status`               | Show progress (processed/skipped/remaining counts)           |
+| *(no command)*         | Launch interactive menu for human users                      |
 
 **Database configuration:**
 
@@ -49,16 +52,16 @@ uv run python scripts/recipe_reviewer.py <command> [args]
 
 ```bash
 # 1. Check the enhanced version to see what's wrong
-uv run python scripts/recipe_reviewer.py enhanced <id>
+uv run python tools/recipe_manager.py --project <project_id> enhanced <id>
 
 # 2. Delete the bad version (also unmarks from processed)
-uv run python scripts/recipe_reviewer.py delete <id>
+uv run python tools/recipe_manager.py --project <project_id> delete <id>
 
 # 3. Check the original to see what we're working with
-uv run python scripts/recipe_reviewer.py get <id>
+uv run python tools/recipe_manager.py --project <project_id> get <id>
 
 # 4. Create and apply the new enhanced version
-uv run python scripts/recipe_reviewer.py update <id> '<json>'
+uv run python tools/recipe_manager.py --project <project_id> update <id> '<json>'
 ```
 
 ---
@@ -98,7 +101,7 @@ Enhanced recipes store **both versions in the same Firestore document**:
 
 1. **NEVER use `.set()`** on an existing recipe — it destroys all fields not in the payload. Always use `.update()` to merge.
 2. **The `original` snapshot is immutable** — set once on first enhancement, never modified after.
-3. **Always fetch before modifying** — `recipe_reviewer.py get <id>` to see current state.
+3. **Always fetch before modifying** — `recipe_manager.py get <id>` to see current state.
 4. **The `update` command handles snapshotting automatically** — on first enhancement it creates the `original` snapshot; on re-enhancement it preserves the existing one.
 
 ### Enhancement flow
@@ -115,7 +118,7 @@ Scrape → save original to document → user requests enhancement →
 | ❌ Wrong | ✅ Correct |
 | -------- | --------- |
 | `doc_ref.set(enhanced_data)` | `doc_ref.update(enhanced_data)` |
-| Write inline Python with `.set()` | Use `recipe_reviewer.py update` |
+| Write inline Python with `.set()` | Use `recipe_manager.py update` |
 | Fetch original, add timeline, upload | Fetch enhanced, add timeline, upload |
 | Scale original to 4P and call it "enhanced" | Apply real cooking improvements (techniques, timing, tips) |
 | Assume you know what's there | Always read current state before modifying |
@@ -147,7 +150,7 @@ Scrape → save original to document → user requests enhancement →
 @'
 { "cuisine": "Italian", "tags": ["pasta"] }
 '@ | Out-File -Encoding utf8 data/temp_update.json
-uv run python scripts/recipe_reviewer.py update <id> (Get-Content data/temp_update.json -Raw)
+uv run python tools/recipe_manager.py --project <project_id> update <id> (Get-Content data/temp_update.json -Raw)
 ```
 
 ---

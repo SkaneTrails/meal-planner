@@ -43,7 +43,7 @@ You are collaborating with a human who may make changes between your edits:
 - **After pulling from main** - check `git diff HEAD@{1} --name-only` for changes to `.github/copilot-instructions.md`, `.github/skills/**`, `*.instructions.md`, `.github/agents/**`, or `.copilot-tasks.md`. If any changed, re-read them before continuing work — they may contain updated instructions, new skills, or task state changes from another session
 - **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
-- **Use existing scripts first** - before writing inline Python or ad-hoc commands, check `scripts/` and skill documentation for existing tools that do what you need (e.g., `recipe_reviewer.py` for Firestore recipe operations)
+- **Use existing scripts first** - before writing inline Python or ad-hoc commands, check `tools/` and `scripts/` and skill documentation for existing tools that do what you need (e.g., `recipe_manager.py` for Firestore recipe operations)
 - **PowerShell backtick escaping** - NEVER include backtick characters in ANY `gh` CLI string argument — not just `--body`, but also `-f "body=..."`, `-f "query=..."`, commit messages, or any inline string. PowerShell interprets `` ` `` as escape characters, causing `Unicode escape sequence is not valid` errors. **Workarounds:** (1) Write content to a temp file, use `-F "body=@file.md"` or `--body-file`, then delete the file. (2) For short replies without markdown formatting, just omit backticks entirely (e.g., write `useSetMeal` not `` `useSetMeal` ``)
 - **PowerShell pipeline commands hang** - NEVER use `Get-ChildItem | ForEach-Object`, `Select-String` pipelines, or nested PowerShell commands for workspace scanning — they hang indefinitely on Windows. Use `grep_search`, `file_search`, `list_dir`, or `semantic_search` tools instead. For simple line counts or file checks, use `read_file` or single-file terminal commands.
 
@@ -120,7 +120,6 @@ scripts/                 # CLI tools
 ├── setup-local-dev.ps1  # Local dev setup (Windows) - configures GCP auth
 ├── setup-local-dev.sh   # Local dev setup (macOS/Linux)
 ├── recipe_enhancer.py   # Gemini AI recipe enhancement
-├── recipe_reviewer.py   # Manual recipe review helper
 ├── validate_gemini.py   # Validate enhanced recipes
 ├── upload_enhanced_recipe.py  # Re-upload corrupted enhanced recipes from JSON
 ├── batch_test.py        # Batch testing for enhancer
@@ -128,6 +127,9 @@ scripts/                 # CLI tools
 ├── run-api.sh           # Start FastAPI server
 ├── run-dev.sh           # Start all dev services
 └── run-function.sh      # Run Cloud Function locally
+
+tools/                   # Interactive CLI tools
+└── recipe_manager.py    # Firestore recipe CRUD + interactive menu
 
 infra/                   # Terraform infrastructure
 ├── environments/
