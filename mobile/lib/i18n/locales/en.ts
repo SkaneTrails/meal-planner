@@ -162,6 +162,8 @@ const en = {
     tips: 'Tips',
     aiImprovements: 'AI Improvements',
     viewOriginal: 'View original recipe',
+    showOriginal: 'Show original',
+    showEnhanced: 'Show enhanced',
     addToMealPlan: 'Add to Meal Plan',
     thisWeek: 'This Week',
     nextWeek: 'Next Week',

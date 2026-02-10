@@ -1,11 +1,13 @@
-import React from 'react';
-import { View, Text, Pressable, Linking } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { RecipeInstructions } from './RecipeInstructions';
 import { RecipeEnhancedInfo } from './RecipeEnhancedInfo';
+import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
+import { RecipeActionsFooter } from './RecipeActionsFooter';
 import { DIET_LABELS } from './recipe-detail-constants';
 import type { Recipe } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
@@ -15,10 +17,12 @@ interface RecipeContentProps {
   totalTime: number | null;
   completedSteps: Set<number>;
   showAiChanges: boolean;
+  showOriginal: boolean;
   canEdit: boolean;
   t: TFunction;
   onToggleStep: (index: number) => void;
   onToggleAiChanges: () => void;
+  onToggleOriginal: () => void;
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
   onShare: () => void;
@@ -29,14 +33,34 @@ export const RecipeContent = ({
   totalTime,
   completedSteps,
   showAiChanges,
+  showOriginal,
   canEdit,
   t,
   onToggleStep,
   onToggleAiChanges,
+  onToggleOriginal,
   onOpenEditModal,
   onShowPlanModal,
   onShare,
-}: RecipeContentProps) => (
+}: RecipeContentProps) => {
+  const hasOriginal = Boolean(recipe.enhanced && recipe.original);
+  const displayIngredients = useMemo(
+    () => (showOriginal && recipe.original ? recipe.original.ingredients : recipe.ingredients),
+    [showOriginal, recipe.original, recipe.ingredients],
+  );
+  const displayInstructions = useMemo(
+    () => (showOriginal && recipe.original ? recipe.original.instructions : recipe.instructions),
+    [showOriginal, recipe.original, recipe.instructions],
+  );
+
+  const displayRecipe = useMemo(
+    () => (showOriginal && recipe.original
+      ? { ...recipe, ingredients: displayIngredients, instructions: displayInstructions, structured_instructions: undefined }
+      : recipe),
+    [showOriginal, recipe, displayIngredients, displayInstructions],
+  );
+
+  return (
   <>
     {/* Action buttons row */}
     <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
@@ -181,6 +205,15 @@ export const RecipeContent = ({
       </View>
     )}
 
+    {/* Original / Enhanced toggle */}
+    {hasOriginal && (
+      <OriginalEnhancedToggle
+        showOriginal={showOriginal}
+        t={t}
+        onToggle={onToggleOriginal}
+      />
+    )}
+
     {/* Ingredients */}
     <View style={{ marginTop: spacing.xl }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
@@ -191,18 +224,18 @@ export const RecipeContent = ({
           {t('recipe.ingredients')}
         </Text>
       </View>
-      {recipe.ingredients.length === 0 ? (
+      {displayIngredients.length === 0 ? (
         <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>{t('recipe.noIngredients')}</Text>
       ) : (
         <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
-          {recipe.ingredients.map((ingredient, index) => (
+          {displayIngredients.map((ingredient, index) => (
             <View
               key={index}
               style={{
                 flexDirection: 'row',
                 alignItems: 'flex-start',
                 paddingVertical: spacing.sm,
-                borderBottomWidth: index < recipe.ingredients.length - 1 ? 1 : 0,
+                borderBottomWidth: index < displayIngredients.length - 1 ? 1 : 0,
                 borderBottomColor: 'rgba(139, 115, 85, 0.15)',
               }}
             >
@@ -217,7 +250,7 @@ export const RecipeContent = ({
     </View>
 
     <RecipeInstructions
-      recipe={recipe}
+      recipe={displayRecipe}
       completedSteps={completedSteps}
       t={t}
       onToggleStep={onToggleStep}
@@ -230,59 +263,11 @@ export const RecipeContent = ({
       onToggleAiChanges={onToggleAiChanges}
     />
 
-    {/* Source link */}
-    {recipe.url && (
-      <Pressable
-        onPress={() => {
-          try {
-            const parsed = new URL(recipe.url);
-            if (!['http:', 'https:'].includes(parsed.protocol)) {
-              showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
-              return;
-            }
-            Linking.openURL(recipe.url).catch(() => {
-              showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
-            });
-          } catch {
-            showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
-          }
-        }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingVertical: spacing.lg,
-          marginTop: spacing.sm,
-          backgroundColor: colors.bgMid,
-          borderRadius: borderRadius.md,
-        }}
-      >
-        <Ionicons name="link" size={18} color={colors.text.inverse} />
-        <Text style={{ color: colors.text.inverse, marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
-          {t('recipe.viewOriginal')}
-        </Text>
-      </Pressable>
-    )}
-
-    {/* Add to Meal Plan button */}
-    <Pressable
-      onPress={onShowPlanModal}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: spacing.md,
-        marginTop: spacing.md,
-        marginBottom: 100,
-        backgroundColor: pressed ? colors.primaryDark : colors.primary,
-        borderRadius: borderRadius.sm,
-        ...shadows.md,
-      })}
-    >
-      <Ionicons name="calendar" size={20} color={colors.white} />
-      <Text style={{ color: colors.white, marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontFamily: fontFamily.bodySemibold }}>
-        {t('recipe.addToMealPlan')}
-      </Text>
-    </Pressable>
+    <RecipeActionsFooter
+      url={recipe.url}
+      t={t}
+      onShowPlanModal={onShowPlanModal}
+    />
   </>
-);
+  );
+};

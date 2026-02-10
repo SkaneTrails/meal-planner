@@ -156,6 +156,8 @@ const sv: Translations = {
     tips: 'Tips',
     aiImprovements: 'AI-förbättringar',
     viewOriginal: 'Visa originalrecept',
+    showOriginal: 'Visa original',
+    showEnhanced: 'Visa förbättrad',
     addToMealPlan: 'Lägg till i matsedel',
     thisWeek: 'Denna vecka',
     nextWeek: 'Nästa vecka',

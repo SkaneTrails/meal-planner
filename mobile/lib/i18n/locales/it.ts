@@ -156,6 +156,8 @@ const it: Translations = {
     tips: 'Consigli',
     aiImprovements: 'Miglioramenti AI',
     viewOriginal: 'Vedi ricetta originale',
+    showOriginal: 'Mostra originale',
+    showEnhanced: 'Mostra migliorata',
     addToMealPlan: 'Aggiungi al menu',
     thisWeek: 'Questa settimana',
     nextWeek: 'Prossima settimana',
