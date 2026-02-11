@@ -73,7 +73,7 @@ export const RecipeContent = ({
           width: 40,
           height: 40,
           borderRadius: 20,
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
           alignItems: 'center',
           justifyContent: 'center',
           opacity: canEdit ? 1 : 0.5,
@@ -89,7 +89,7 @@ export const RecipeContent = ({
           width: 40,
           height: 40,
           borderRadius: 20,
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -104,7 +104,7 @@ export const RecipeContent = ({
           width: 40,
           height: 40,
           borderRadius: 20,
-          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -143,7 +143,7 @@ export const RecipeContent = ({
     <View style={{
       flexDirection: 'row',
       marginTop: spacing.lg,
-      backgroundColor: 'rgba(255, 255, 255, 0.7)',
+      backgroundColor: 'rgba(255, 255, 255, 0.92)',
       borderRadius: borderRadius.lg,
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.sm,
@@ -217,17 +217,17 @@ export const RecipeContent = ({
     {/* Ingredients */}
     <View style={{ marginTop: spacing.xl }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
-        <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
+        <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(93, 78, 64, 0.12)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
           <Ionicons name="list" size={18} color="#5D4037" />
         </View>
-        <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
+        <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: '#3D3D3D', letterSpacing: letterSpacing.normal }}>
           {t('recipe.ingredients')}
         </Text>
       </View>
       {displayIngredients.length === 0 ? (
         <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>{t('recipe.noIngredients')}</Text>
       ) : (
-        <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
+        <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
           {displayIngredients.map((ingredient, index) => (
             <View
               key={index}

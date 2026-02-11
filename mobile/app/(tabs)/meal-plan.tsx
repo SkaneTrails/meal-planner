@@ -47,44 +47,21 @@ export default function MealPlanScreen() {
     <GradientBackground structured>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View>
-              <Text style={{
-                fontSize: fontSize['4xl'],
-                fontFamily: fontFamily.display,
-                color: '#3D3D3D',
-                letterSpacing: letterSpacing.tight,
-              }}>{t('mealPlan.title')}</Text>
-              <Text style={{
-                fontSize: fontSize.lg,
-                fontFamily: fontFamily.body,
-                color: 'rgba(93, 78, 64, 0.7)',
-                marginTop: 4,
-              }}>{t('mealPlan.subtitle')}</Text>
-            </View>
-            <AnimatedPressable
-              onPress={openGroceryModal}
-              hoverScale={1.03}
-              pressScale={0.97}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: '#7A6858',
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                borderRadius: borderRadius.lg,
-              }}
-            >
-              <Ionicons name="cart-outline" size={16} color={colors.white} />
-              <Text style={{
-                marginLeft: 8,
-                fontSize: fontSize.md,
-                fontWeight: fontWeight.semibold,
-                color: colors.white,
-              }}>{t('mealPlan.createList')}</Text>
-            </AnimatedPressable>
-          </View>
+        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}>
+          <Text style={{
+            fontSize: fontSize['3xl'],
+            fontFamily: fontFamily.display,
+            color: '#3D3D3D',
+            letterSpacing: letterSpacing.tight,
+            textAlign: 'center',
+          }}>{t('mealPlan.title')}</Text>
+          <Text style={{
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.body,
+            color: 'rgba(93, 78, 64, 0.6)',
+            marginTop: 2,
+            textAlign: 'center',
+          }}>{t('mealPlan.subtitle')}</Text>
         </View>
 
         <WeekSelector
@@ -122,7 +99,19 @@ export default function MealPlanScreen() {
                 const isEditing = editingNoteDate === dateStr;
 
                 return (
-                  <View key={date.toISOString()} style={{ marginBottom: 24 }}>
+                  <View key={date.toISOString()} style={{
+                    marginBottom: 16,
+                    backgroundColor: isToday ? 'rgba(255, 255, 255, 0.96)' : 'rgba(255, 255, 255, 0.92)',
+                    borderRadius: 18,
+                    padding: 14,
+                    borderWidth: 1,
+                    borderColor: isToday ? 'rgba(93, 78, 64, 0.12)' : 'rgba(0, 0, 0, 0.04)',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 6 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 16,
+                    elevation: 4,
+                  }}>
                     <DayHeader
                       date={date}
                       isToday={isToday}
@@ -169,6 +158,36 @@ export default function MealPlanScreen() {
                   </View>
                 );
               })}
+
+              {/* Skapa lista button at end of list */}
+              <AnimatedPressable
+                onPress={openGroceryModal}
+                hoverScale={1.02}
+                pressScale={0.98}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#7A6858',
+                  paddingVertical: 16,
+                  borderRadius: 16,
+                  marginTop: 8,
+                  marginBottom: 20,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 12,
+                  elevation: 4,
+                }}
+              >
+                <Ionicons name="cart-outline" size={20} color={colors.white} />
+                <Text style={{
+                  marginLeft: 10,
+                  fontSize: fontSize.lg,
+                  fontWeight: fontWeight.semibold,
+                  color: colors.white,
+                }}>{t('mealPlan.createList')}</Text>
+              </AnimatedPressable>
             </ScrollView>
           </Animated.View>
         </View>

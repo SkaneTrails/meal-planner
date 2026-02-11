@@ -81,14 +81,14 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           flexDirection: 'row',
           alignItems: 'center',
           padding: 14,
-          backgroundColor: 'rgba(255, 255, 255, 0.94)',
+          backgroundColor: 'rgba(255, 255, 255, 0.96)',
           borderRadius: 20,
           transform: [{ scale: scaleAnim }],
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.05,
-          shadowRadius: 24,
-          elevation: 3,
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.1,
+          shadowRadius: 16,
+          elevation: 4,
         }}>
           <Image
             source={{ uri: recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE }}
@@ -151,8 +151,8 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
     );
   }
 
-  const imageHeight = cardSize ? cardSize * 1.1 : 180;
-  const cardHeight = cardSize ? cardSize * 1.5 : 260;
+  const imageHeight = cardSize ? cardSize * 0.85 : 160;
+  const cardHeight = cardSize ? cardSize * 1.2 : 220;
 
   return (
     <Pressable
@@ -168,7 +168,11 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           borderRadius: 22,
           overflow: 'hidden',
           transform: [{ scale: scaleAnim }],
-          ...shadows.md,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.12,
+          shadowRadius: 16,
+          elevation: 5,
         }}
       >
         {/* Image with gradient overlay */}
@@ -221,29 +225,29 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
         </View>
 
         {/* Content below image */}
-        <View style={{ padding: 12, flex: 1, justifyContent: 'space-between' }}>
+        <View style={{ paddingHorizontal: 10, paddingVertical: 8, flex: 1, justifyContent: 'space-between' }}>
           {/* Title - 2 lines max */}
           <Text style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
             color: '#3D3228',
-            lineHeight: 20,
+            lineHeight: 19,
           }} numberOfLines={2}>
             {recipe.title}
           </Text>
 
           {/* Time info */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             {totalTime && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="time-outline" size={14} color="#8B7355" />
-                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginLeft: 4 }}>{totalTime} min</Text>
+                <Ionicons name="time-outline" size={13} color="#8B7355" />
+                <Text style={{ fontSize: fontSize.xs, color: '#8B7355', marginLeft: 3 }}>{totalTime} min</Text>
               </View>
             )}
             {recipe.servings && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="people-outline" size={14} color="#8B7355" />
-                <Text style={{ fontSize: fontSize.sm, color: '#8B7355', marginLeft: 4 }}>{recipe.servings}</Text>
+                <Ionicons name="people-outline" size={13} color="#8B7355" />
+                <Text style={{ fontSize: fontSize.xs, color: '#8B7355', marginLeft: 3 }}>{recipe.servings}</Text>
               </View>
             )}
           </View>

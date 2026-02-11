@@ -21,10 +21,10 @@ export const RecipeInstructions = ({
 }: RecipeInstructionsProps) => (
   <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
-      <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255, 255, 255, 0.35)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 1 }}>
+      <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(93, 78, 64, 0.12)', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
         <Ionicons name="book" size={18} color="#5D4037" />
       </View>
-      <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.normal }}>
+      <Text style={{ fontSize: fontSize['3xl'], fontFamily: fontFamily.display, color: '#3D3D3D', letterSpacing: letterSpacing.normal }}>
         {t('recipe.instructions')}
       </Text>
       {completedSteps.size > 0 && recipe.instructions.length > 0 && (

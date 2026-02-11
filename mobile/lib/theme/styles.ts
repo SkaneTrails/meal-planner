@@ -18,7 +18,7 @@ export const glassCardStyle = {
   backgroundColor: colors.glass.light,
   borderRadius: borderRadius.lg,
   borderWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.3)',
+  borderColor: 'rgba(0, 0, 0, 0.04)',
   ...shadows.sm,
 } as const;
 
