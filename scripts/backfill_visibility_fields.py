@@ -39,11 +39,14 @@ def backfill(project: str, *, dry_run: bool = False) -> None:
 
         if dry_run:
             print(f"  [DRY RUN] {doc.id}: would set {missing}")
+            updated += 1
         else:
-            doc.reference.update(missing)
-            print(f"  Updated {doc.id}: set {missing}")
-
-        updated += 1
+            try:
+                doc.reference.update(missing)
+                print(f"  Updated {doc.id}: set {missing}")
+                updated += 1
+            except Exception as e:
+                print(f"  ERROR {doc.id}: {e}")
 
     print(f"\nDone. Total: {total}, Updated: {updated}, Skipped: {skipped}")
 

@@ -549,6 +549,9 @@ class TestSearchRecipes:
             search_recipes("Pasta", show_hidden=False)
 
         mock_query.where.assert_called_once()
+        actual_filter = mock_query.where.call_args.kwargs["filter"]
+        assert actual_filter.field_path == "hidden"
+        assert actual_filter.value is False
 
     def test_show_hidden_skips_filter(self) -> None:
         """Should not add hidden filter when show_hidden=True."""
@@ -786,6 +789,9 @@ class TestBuildHouseholdQuery:
         _build_household_query(mock_db, household_id=None, show_hidden=False)
 
         mock_collection.where.assert_called_once()
+        actual_filter = mock_collection.where.call_args.kwargs["filter"]
+        assert actual_filter.field_path == "hidden"
+        assert actual_filter.value is False
 
     def test_show_hidden_true_skips_filter(self) -> None:
         """Should not add hidden filter when show_hidden=True."""
