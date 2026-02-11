@@ -34,7 +34,7 @@ const UNITS = new Set([
   // Volume - metric
   'ml', 'milliliter', 'milliliters', 'l', 'liter', 'liters', 'dl', 'deciliter', 'deciliters', 'cl',
   // Volume - imperial
-  'tsp', 'teaspoon', 'teaspoons', 'tbsp', 'tablespoon', 'tablespoons', 'cup', 'cups', 'fl oz',
+  'tsp', 'teaspoon', 'teaspoons', 'tbsp', 'tablespoon', 'tablespoons', 'cup', 'cups',
   // Weight - metric
   'g', 'gram', 'grams', 'kg', 'kilogram', 'kilograms', 'mg',
   // Weight - imperial

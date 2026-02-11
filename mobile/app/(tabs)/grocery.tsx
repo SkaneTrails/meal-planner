@@ -19,7 +19,7 @@ import { showAlert, showNotification } from '@/lib/alert';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import { AnimatedPressable, GroceryListView, GradientBackground, GroceryListSkeleton } from '@/components';
-import { scaleIngredient, normalizeIngredientName, parseIngredient, formatQuantity } from '@/lib/utils/ingredientParser';
+import { scaleIngredient, normalizeIngredientName, parseIngredient } from '@/lib/utils/ingredientParser';
 import type { GroceryItem } from '@/lib/types';
 
 export default function GroceryScreen() {

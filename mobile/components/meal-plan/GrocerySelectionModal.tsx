@@ -53,8 +53,8 @@ export const GrocerySelectionModal = ({
         <Pressable
           onPress={() => { hapticSuccess(); onCreateGroceryList(); }}
           style={({ pressed }) => ({
-            backgroundColor: selectedMeals.size > 0 
-              ? pressed ? '#5D4E40' : '#7A6858' 
+            backgroundColor: selectedMeals.size > 0
+              ? pressed ? '#5D4E40' : '#7A6858'
               : 'rgba(122, 104, 88, 0.2)',
             paddingVertical: 16,
             borderRadius: 14,
@@ -62,9 +62,9 @@ export const GrocerySelectionModal = ({
           })}
           disabled={selectedMeals.size === 0}
         >
-          <Text style={{ 
-            fontSize: 17, 
-            fontFamily: fontFamily.bodySemibold, 
+          <Text style={{
+            fontSize: 17,
+            fontFamily: fontFamily.bodySemibold,
             color: selectedMeals.size > 0 ? '#fff' : 'rgba(93, 78, 64, 0.5)',
           }}>
             {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
@@ -92,10 +92,10 @@ export const GrocerySelectionModal = ({
 
         return (
           <View key={date.toISOString()} style={{ marginBottom: 16 }}>
-            <Text style={{ 
-              fontSize: 16, 
-              fontFamily: fontFamily.bodySemibold, 
-              color: isToday ? '#3D3D3D' : 'rgba(93, 78, 64, 0.7)', 
+            <Text style={{
+              fontSize: 16,
+              fontFamily: fontFamily.bodySemibold,
+              color: isToday ? '#3D3D3D' : 'rgba(93, 78, 64, 0.7)',
               marginBottom: 10,
             }}>
               {formatDayHeader(date, language, t('mealPlan.today'))}
@@ -187,10 +187,10 @@ const GroceryMealItem = ({
   onToggle,
   onChangeServings,
 }: GroceryMealItemProps) => (
-  <View style={{ 
-    backgroundColor: isSelected ? 'rgba(107, 142, 107, 0.1)' : 'rgba(0, 0, 0, 0.02)', 
-    borderRadius: 14, 
-    padding: 14, 
+  <View style={{
+    backgroundColor: isSelected ? 'rgba(107, 142, 107, 0.1)' : 'rgba(0, 0, 0, 0.02)',
+    borderRadius: 14,
+    padding: 14,
     marginBottom: 8,
     borderWidth: isSelected ? 1 : 0,
     borderColor: 'rgba(107, 142, 107, 0.3)',
