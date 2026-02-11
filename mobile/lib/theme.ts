@@ -4,7 +4,7 @@
  */
 
 export { colors, lightColors } from './theme/colors';
-export { fontFamily, fontSize, fontWeight, letterSpacing, typography } from './theme/typography';
+export { fontFamily, fontFamilyWeight, fontSize, fontWeight, letterSpacing, typography } from './theme/typography';
 export {
   spacing,
   layout,
