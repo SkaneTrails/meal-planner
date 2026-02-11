@@ -1,5 +1,6 @@
 """Grocery list Pydantic models."""
 
+from datetime import datetime
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -113,3 +114,49 @@ class GroceryList(BaseModel):
                 existing.quantity_sources.extend(item.quantity_sources)
                 return
         self.items.append(item)
+
+
+# ---------------------------------------------------------------------------
+# Grocery list state (persisted in Firestore, shared across household)
+# ---------------------------------------------------------------------------
+
+
+class CustomGroceryItem(BaseModel):
+    """A manually-added grocery item."""
+
+    name: str
+    category: GroceryCategory = GroceryCategory.OTHER
+
+
+class GroceryListState(BaseModel):
+    """The persisted grocery list state shared across a household."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    selected_meals: list[str] = Field(default_factory=list, description="Meal keys, e.g. ['2026-02-10_lunch']")
+    meal_servings: dict[str, int] = Field(default_factory=dict, description="Servings per meal key")
+    checked_items: list[str] = Field(default_factory=list, description="Names of checked-off items")
+    custom_items: list[CustomGroceryItem] = Field(default_factory=list, description="Manually added items")
+    updated_at: datetime | None = None
+    created_by: str | None = None
+
+
+class GroceryListStateSave(BaseModel):
+    """Request body for saving (replacing) grocery list state."""
+
+    selected_meals: list[str] = Field(default_factory=list)
+    meal_servings: dict[str, int] = Field(default_factory=dict)
+    checked_items: list[str] = Field(default_factory=list)
+    custom_items: list[CustomGroceryItem] = Field(default_factory=list)
+
+
+class GroceryListStatePatch(BaseModel):
+    """Request body for partially updating grocery list state.
+
+    Only provided fields are merged; omitted fields stay unchanged.
+    """
+
+    selected_meals: list[str] | None = None
+    meal_servings: dict[str, int] | None = None
+    checked_items: list[str] | None = None
+    custom_items: list[CustomGroceryItem] | None = None
