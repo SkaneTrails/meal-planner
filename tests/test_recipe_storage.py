@@ -18,6 +18,7 @@ from api.storage.recipe_storage import (
     find_recipe_by_url,
     get_recipe,
     normalize_url,
+    review_enhancement,
     save_recipe,
     search_recipes,
     update_recipe,
@@ -209,6 +210,24 @@ class TestDocToRecipe:
 
         assert result.hidden is False
         assert result.favorited is False
+
+    def test_maps_show_enhanced_and_enhancement_reviewed_fields(self) -> None:
+        """Should map show_enhanced and enhancement_reviewed from Firestore."""
+        data = {"title": "Recipe", "enhanced": True, "show_enhanced": True, "enhancement_reviewed": True}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.show_enhanced is True
+        assert result.enhancement_reviewed is True
+
+    def test_defaults_show_enhanced_and_enhancement_reviewed_to_false(self) -> None:
+        """Should default show_enhanced and enhancement_reviewed to False when missing."""
+        data = {"title": "Recipe", "enhanced": True}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.show_enhanced is False
+        assert result.enhancement_reviewed is False
 
 
 class TestSaveRecipe:
@@ -1152,3 +1171,100 @@ class TestGetRecipesPaginated:
 
         assert len(recipes) == 2
         assert next_cursor is not None
+
+
+class TestReviewEnhancement:
+    """Tests for review_enhancement function."""
+
+    def test_approve_sets_show_enhanced_true(self) -> None:
+        """Approve should set show_enhanced=True and enhancement_reviewed=True."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"title": "Recipe", "enhanced": True, "household_id": "hh1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch("api.storage.recipe_storage.get_recipe") as mock_get,
+        ):
+            mock_get.return_value = MagicMock()
+            result = review_enhancement("recipe1", approve=True, household_id="hh1")
+
+        mock_doc_ref.update.assert_called_once()
+        call_args = mock_doc_ref.update.call_args[0][0]
+        assert call_args["show_enhanced"] is True
+        assert call_args["enhancement_reviewed"] is True
+        assert result is not None
+
+    def test_reject_sets_show_enhanced_false(self) -> None:
+        """Reject should set show_enhanced=False and enhancement_reviewed=True."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"title": "Recipe", "enhanced": True, "household_id": "hh1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch("api.storage.recipe_storage.get_recipe") as mock_get,
+        ):
+            mock_get.return_value = MagicMock()
+            result = review_enhancement("recipe1", approve=False, household_id="hh1")
+
+        mock_doc_ref.update.assert_called_once()
+        call_args = mock_doc_ref.update.call_args[0][0]
+        assert call_args["show_enhanced"] is False
+        assert call_args["enhancement_reviewed"] is True
+        assert result is not None
+
+    def test_returns_none_if_not_found(self) -> None:
+        """Should return None if recipe doesn't exist."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = review_enhancement("recipe1", approve=True, household_id="hh1")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_returns_none_if_wrong_household(self) -> None:
+        """Should return None if recipe belongs to different household."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"title": "Recipe", "enhanced": True, "household_id": "other_hh"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = review_enhancement("recipe1", approve=True, household_id="hh1")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_returns_none_if_not_enhanced(self) -> None:
+        """Should return None if recipe is not enhanced."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"title": "Recipe", "enhanced": False, "household_id": "hh1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = review_enhancement("recipe1", approve=True, household_id="hh1")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()

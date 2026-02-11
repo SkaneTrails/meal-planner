@@ -94,6 +94,7 @@ lint.per-file-ignores."scripts/**/*.py" = [
   "C901",    # Complex functions ok in CLI scripts (main, process_batch)
   "E402",    # Module-level import not at top (needed for sys.path manipulation)
   "F841",    # Unused variable ok (sometimes used for debugging)
+  "FBT003",  # Boolean positional value ok (Firestore FieldFilter)
   "PERF401", # List comprehension optimization not needed for Firestore iteration
   "PLR0911", # Too many return statements ok in CLI argument parsing
   "PLR0912", # Too many branches ok in CLI argument parsing

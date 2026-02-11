@@ -1,26 +1,39 @@
 # User Configuration - Kitchen Equipment
 
+## Component-Level Equipment Optimization
+
+**Evaluate each component independently.** Don't treat equipment choice as all-or-nothing — use the best method for each element:
+
+- **Best tool per component**: Fish stays pan-fried (sauce technique), vegetables go to airfryer (faster, crispier)
+- **Parallel cooking**: Airfryer + stovetop simultaneously saves time
+- **Energy efficiency**: Airfryer for small items vs heating entire oven
+- **Quality over simplicity**: Split cooking if it produces better results
+
 ## Available equipment
 
 ### Air fryer: Xiaomi Smart Air Fryer 4.5L
 
 - **Capacity**: 2-3 chicken breasts or ~400g protein per batch
 - **For 4 servings**: Plan for 2 batches (chicken first, rest while Quorn cooks)
+- **Advantages over oven**: No preheat (saves 10+ min), lower energy, better caramelization on glazed items
 
 **Good for air fryer:**
 
-| Food                       | Temperature   | Time                |
-| -------------------------- | ------------- | ------------------- |
-| Chicken breast/thigh (dry) | 180°C → 200°C | 10-12 min + 2-3 min |
-| Breaded/panko-crusted fish | 180°C         | 8-10 min            |
-| Halloumi, paneer           | 180°C         | 8-10 min            |
-| Oumph (all variants)       | 200°C         | 8-10 min            |
+| Food                             | Temperature   | Time                     |
+| -------------------------------- | ------------- | ------------------------ |
+| Parsnips (honey-glazed quarters) | 180°C         | 15–18 min, shake halfway |
+| Root vegetables (carrots, beets) | 180°C         | 18–22 min                |
+| Chicken breast/thigh (dry)       | 180°C → 200°C | 10-12 min + 2-3 min      |
+| Breaded/panko-crusted fish       | 180°C         | 8-10 min                 |
+| Halloumi, paneer                 | 180°C         | 8-10 min                 |
+| Oumph (all variants)             | 200°C         | 8-10 min                 |
 
 **DO NOT use air fryer for:**
 
 - **Quorn** (dries out → fry in butter on the stove instead)
 - Protein that simmers in sauce (curry, stew, dal)
 - Protein that is built into an oven dish
+- Items needing fond for pan sauce (e.g., pan-fried fish with butter-caper sauce)
 
 ### Oven: IKEA FRILLESÅS
 
