@@ -236,29 +236,29 @@ export default function AdminScreen() {
             padding: spacing.lg,
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.inverse }}>
+              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: '#3D3D3D' }}>
                 {t('admin.createHousehold.button')}
               </Text>
               <Pressable onPress={() => setShowCreateModal(false)}>
-                <Ionicons name="close" size={28} color={colors.text.muted} />
+                <Ionicons name="close" size={28} color="#8B7355" />
               </Pressable>
             </View>
 
             <View style={{ marginTop: spacing.xl }}>
-              <Text style={{ fontSize: fontSize.md, color: colors.text.inverse, marginBottom: spacing.sm }}>
+              <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: '#3D3D3D', marginBottom: spacing.sm }}>
                 {t('admin.createHousehold.nameLabel')}
               </Text>
               <TextInput
                 value={newHouseholdName}
                 onChangeText={setNewHouseholdName}
                 placeholder={t('admin.createHousehold.namePlaceholder')}
-                placeholderTextColor={colors.text.inverse + '60'}
+                placeholderTextColor="#8B735580"
                 style={{
                   backgroundColor: colors.white,
                   borderRadius: borderRadius.lg,
                   padding: spacing.md,
                   fontSize: fontSize.lg,
-                  color: colors.text.inverse,
+                  color: '#3D3D3D',
                   ...shadows.sm,
                 }}
                 autoFocus
@@ -272,7 +272,7 @@ export default function AdminScreen() {
               pressScale={0.97}
               disableAnimation={!newHouseholdName.trim() || createHousehold.isPending}
               style={{
-                backgroundColor: !newHouseholdName.trim() ? colors.text.muted : colors.primary,
+                backgroundColor: !newHouseholdName.trim() ? '#C5B8A8' : '#5D4E40',
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 marginTop: spacing.xl,
@@ -500,18 +500,18 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: colors.white,
+            backgroundColor: colors.bgLight,
             padding: spacing.lg,
-            borderTopWidth: 1,
-            borderTopColor: colors.border,
+            borderTopLeftRadius: borderRadius.xl,
+            borderTopRightRadius: borderRadius.xl,
             ...shadows.lg,
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
-              <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: colors.text.inverse }}>
+              <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: '#3D3D3D' }}>
                 {t('admin.addMember.title')}
               </Text>
               <Pressable onPress={() => setShowAddMember(false)}>
-                <Ionicons name="close" size={24} color={colors.text.muted} />
+                <Ionicons name="close" size={24} color="#8B7355" />
               </Pressable>
             </View>
 
@@ -519,15 +519,15 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
               value={newMemberEmail}
               onChangeText={setNewMemberEmail}
               placeholder={t('admin.addMember.emailPlaceholder')}
-              placeholderTextColor={colors.text.inverse + '60'}
+              placeholderTextColor="#8B735580"
               keyboardType="email-address"
               autoCapitalize="none"
               style={{
-                backgroundColor: colors.bgLight,
+                backgroundColor: colors.white,
                 borderRadius: borderRadius.md,
                 padding: spacing.md,
                 fontSize: fontSize.md,
-                color: colors.text.inverse,
+                color: '#3D3D3D',
                 marginBottom: spacing.sm,
               }}
             />
@@ -541,13 +541,13 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
                     flex: 1,
                     padding: spacing.sm,
                     marginRight: role === 'member' ? spacing.sm : 0,
-                    backgroundColor: newMemberRole === role ? colors.primary : colors.bgMid,
+                    backgroundColor: newMemberRole === role ? '#3D3D3D' : colors.white,
                     borderRadius: borderRadius.md,
                     alignItems: 'center',
                   }}
                 >
                   <Text style={{
-                    color: newMemberRole === role ? 'white' : colors.text.inverse,
+                    color: newMemberRole === role ? 'white' : '#3D3D3D',
                     fontWeight: fontWeight.medium,
                   }}>
                     {t(`labels.role.${role}` as 'labels.role.member')}
@@ -563,7 +563,7 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
               pressScale={0.97}
               disableAnimation={!newMemberEmail.trim() || addMember.isPending}
               style={{
-                backgroundColor: !newMemberEmail.trim() ? colors.text.muted : colors.primary,
+                backgroundColor: !newMemberEmail.trim() ? '#C5B8A8' : '#3D3D3D',
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 alignItems: 'center',

@@ -38,13 +38,13 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
       }}>
         <Ionicons name="add" size={16} color="rgba(93, 78, 64, 0.6)" />
       </View>
-      <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.8)' }}>
+      <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.8)' }}>
         {label}
       </Text>
     </View>
 
     {/* Actions: Primary (Library) + Secondary icon buttons */}
-    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
       {/* Primary action: Library */}
       <AnimatedPressable
         onPress={() => onPress(date, mealType, 'library')}
@@ -54,14 +54,14 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: '#5D4E40',
-          paddingHorizontal: 14,
-          paddingVertical: 8,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
           borderRadius: 10,
-          gap: 6,
+          gap: 5,
         }}
       >
-        <Ionicons name="book-outline" size={14} color="#FFFFFF" />
-        <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>
+        <Ionicons name="book-outline" size={13} color="#FFFFFF" />
+        <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>
           {t('mealPlan.library')}
         </Text>
       </AnimatedPressable>

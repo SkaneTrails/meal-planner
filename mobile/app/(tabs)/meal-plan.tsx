@@ -50,7 +50,8 @@ export default function MealPlanScreen() {
         <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}>
           <Text style={{
             fontSize: fontSize['3xl'],
-            fontFamily: fontFamily.display,
+            fontFamily: fontFamily.displayBold,
+            fontWeight: '700',
             color: '#3D3D3D',
             letterSpacing: letterSpacing.tight,
             textAlign: 'center',

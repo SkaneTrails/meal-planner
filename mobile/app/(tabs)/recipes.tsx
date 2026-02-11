@@ -114,7 +114,8 @@ export default function RecipesScreen() {
           <View style={{ marginBottom: 8 }}>
             <Text style={{
               fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.display,
+              fontFamily: fontFamily.displayBold,
+              fontWeight: '700',
               color: '#3D3D3D',
               letterSpacing: letterSpacing.tight,
               textAlign: 'center',

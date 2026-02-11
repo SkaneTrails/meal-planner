@@ -70,7 +70,7 @@ const InspirationHeader = ({ t, onShuffle }: { t: Data['t']; onShuffle: () => vo
 
 const InspirationCard = ({ recipe, t, onPress }: { recipe: Recipe; t: Data['t']; onPress: () => void }) => (
   <AnimatedPressable onPress={onPress} hoverScale={1.01} pressScale={0.99}
-    style={{ backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: borderRadius.md, overflow: 'hidden' }}>
+    style={{ borderRadius: borderRadius.md, overflow: 'hidden' }}>
     <Image
       source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
       style={{ width: '100%', height: 160 }}
