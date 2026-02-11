@@ -7,12 +7,10 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import {
   View,
   Text,
-  Pressable,
   TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
 import { useMealPlan, useAllRecipes, useGroceryState } from '@/lib/hooks';
 import { showAlert, showNotification } from '@/lib/alert';
@@ -23,15 +21,16 @@ import type { GroceryItem } from '@/lib/types';
 
 export default function GroceryScreen() {
   const router = useRouter();
-  const { checkedItems, setCheckedItems, clearChecked, refreshFromStorage } = useGroceryState();
-  const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
+  const {
+    checkedItems, setCheckedItems, clearChecked,
+    customItems, addCustomItem,
+    selectedMealKeys, mealServings,
+    isLoading: contextLoading,
+    clearAll, refreshFromApi,
+  } = useGroceryState();
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
-  const [selectedMealKeys, setSelectedMealKeys] = useState<string[]>([]);
-  const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const { t } = useTranslation();
   const { isItemAtHome } = useSettings();
@@ -44,56 +43,9 @@ export default function GroceryScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      const loadData = async () => {
-        try {
-          const [customData, mealsData, servingsData] = await Promise.all([
-            AsyncStorage.getItem('grocery_custom_items'),
-            AsyncStorage.getItem('grocery_selected_meals'),
-            AsyncStorage.getItem('grocery_meal_servings'),
-          ]);
-
-          if (customData) {
-            const items = JSON.parse(customData);
-            setCustomItems(items);
-          } else {
-            setCustomItems([]);
-          }
-
-          if (mealsData) {
-            const meals = JSON.parse(mealsData);
-            setSelectedMealKeys(meals);
-          } else {
-            setSelectedMealKeys([]);
-          }
-
-          if (servingsData) {
-            const servings = JSON.parse(servingsData);
-            setMealServings(servings);
-          } else {
-            setMealServings({});
-          }
-        } catch (error) {
-          console.error('[Grocery] Error loading data:', error);
-        } finally {
-          setIsLoading(false);
-          setHasLoadedOnce(true);
-        }
-      };
-
-      loadData();
-    }, []) // Empty deps - only run once on mount/focus
+      refreshFromApi();
+    }, [refreshFromApi])
   );
-
-  // Fallback: ensure loading state is cleared even if useFocusEffect doesn't fire
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (isLoading && !hasLoadedOnce) {
-        setIsLoading(false);
-        setHasLoadedOnce(true);
-      }
-    }, 2000);
-    return () => clearTimeout(timeout);
-  }, [isLoading, hasLoadedOnce]);
 
   // Memoize serialized values to prevent infinite loops
   const mealPlanMealsJson = useMemo(() => JSON.stringify(mealPlan?.meals || {}), [mealPlan?.meals]);
@@ -166,15 +118,19 @@ export default function GroceryScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mealPlanMealsJson, recipes.length, selectedMealKeysStr, mealServingsJson]);
 
-  useEffect(() => {
-    if (!isLoading) {
-      AsyncStorage.setItem('grocery_custom_items', JSON.stringify(customItems))
-        .catch((error) => console.error('[Grocery] Error saving custom items:', error));
-    }
-  }, [customItems, isLoading]);
-
   const groceryListWithChecked = useMemo(() => {
-    const allItems = [...generatedItems, ...customItems];
+    const allItems: GroceryItem[] = [
+      ...generatedItems,
+      ...customItems.map((item) => ({
+        name: item.name,
+        quantity: null,
+        unit: null,
+        category: item.category,
+        checked: false,
+        recipe_sources: [],
+        quantity_sources: [],
+      })),
+    ];
 
     return {
       user_id: 'default',
@@ -200,21 +156,11 @@ export default function GroceryScreen() {
   };
 
   const handleClearAll = async () => {
-    // Cross-platform confirmation
     const doClear = async () => {
       try {
-        await Promise.all([
-          AsyncStorage.removeItem('grocery_selected_meals'),
-          AsyncStorage.removeItem('grocery_custom_items'),
-          AsyncStorage.removeItem('grocery_checked_items'),
-        ]);
-
-        setCustomItems([]);
+        await clearAll();
         setGeneratedItems([]);
-        setSelectedMealKeys([]);
-        clearChecked();
-      } catch (error) {
-        console.error('[Grocery] Error clearing data:', error);
+      } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
     };
@@ -232,17 +178,10 @@ export default function GroceryScreen() {
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
 
-    const newItem: GroceryItem = {
+    addCustomItem({
       name: newItemText.trim(),
-      quantity: null,
-      unit: null,
       category: 'other',
-      checked: false,
-      recipe_sources: [],
-      quantity_sources: [],
-    };
-
-    setCustomItems((prev) => [...prev, newItem]);
+    });
     setNewItemText('');
     setShowAddItem(false);
   };
@@ -262,8 +201,8 @@ export default function GroceryScreen() {
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
 
-  // Show skeleton on initial load only (not on subsequent focus events)
-  if (isLoading && !hasLoadedOnce) {
+  // Show skeleton whenever the grocery context is loading
+  if (contextLoading) {
     return (
       <GradientBackground neutral>
         <View style={{ flex: 1 }}>
