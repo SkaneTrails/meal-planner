@@ -222,6 +222,7 @@ See `pyproject.toml` for tool configurations.
 ### API (pytest)
 - New API endpoints → `tests/test_api_*.py`
 - New service functions → `tests/test_*.py`
+- **New model fields** → Test storage layer mapping (`_doc_to_recipe`, `_doc_to_*`)
 - Bug fixes → Include a test that covers the fixed behavior
 - Run: `uv run pytest --cov=api --cov-report=term-missing`
 
@@ -230,6 +231,12 @@ See `pyproject.toml` for tool configurations.
 - Auth/role-based behavior (permissions, navigation guards) → `mobile/app/__tests__/*.test.tsx`
 - Test utilities: `mobile/test/helpers.ts` (query wrapper, mock user factory)
 - Run: `cd mobile && pnpm test`
+
+### Pre-Commit Checklist
+Before committing changes that add new functionality:
+- [ ] Storage layer: Do mapping functions (`_doc_to_*`) include the new fields?
+- [ ] Are those mappings tested with explicit assertions?
+- [ ] Does coverage remain ≥90%? (`uv run pytest --cov=api`)
 
 **Exceptions:** Terraform, config files, pure UI styling.
 
