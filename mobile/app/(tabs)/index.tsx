@@ -160,7 +160,7 @@ const NextMealCard = ({ nextMeal, t, onPress }: { nextMeal: NextMealType; t: TFn
         source={nextMeal?.imageUrl ? { uri: nextMeal.imageUrl } : HOMEPAGE_HERO}
         style={{ width: 72, height: 72, borderRadius: borderRadius.md }}
         contentFit="cover"
-        placeholder={PLACEHOLDER_BLURHASH}
+        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
         transition={200}
       />
       <View style={{ flex: 1, marginLeft: 14 }}>

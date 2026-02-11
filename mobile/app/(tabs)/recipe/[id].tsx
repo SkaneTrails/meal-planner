@@ -2,7 +2,7 @@
  * Recipe detail screen.
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Pressable,
@@ -40,7 +40,9 @@ export default function RecipeDetailScreen() {
   const { data: recipe, isLoading, error } = useRecipe(id);
 
   const {
-    canEdit, isSuperuser, households, isUpdatingImage, t,
+    canEdit, isSuperuser, households, isUpdatingImage,
+    isReviewingEnhancement, needsEnhancementReview,
+    canEnhance, isEnhancing, t,
     showPlanModal, setShowPlanModal,
     showEditModal, setShowEditModal,
     showUrlModal, setShowUrlModal,
@@ -49,6 +51,8 @@ export default function RecipeDetailScreen() {
     handleThumbUp, handleThumbDown,
     handleShare, handleDelete,
     handleSaveEdit, handleTransferRecipe,
+    handleReviewEnhancement,
+    handleEnhanceRecipe,
   } = useRecipeActions(id, recipe);
 
   const [weekOffset, setWeekOffset] = useState(0);
@@ -59,42 +63,31 @@ export default function RecipeDetailScreen() {
   const [showAiChanges, setShowAiChanges] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
 
+  useEffect(() => {
+    if (recipe?.enhanced === true && recipe?.show_enhanced === false) {
+      setShowOriginal(true);
+    }
+  }, [recipe?.enhanced, recipe?.show_enhanced]);
+
   const toggleStep = (index: number) => {
     hapticSelection();
     setCompletedSteps(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
-      } else {
-        newSet.add(index);
-      }
-      return newSet;
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
     });
   };
 
   const getMealForSlot = (date: Date, mealType: MealType): string | null => {
     if (!mealPlan?.meals) return null;
-    const dateStr = formatDateLocal(date);
-    const key = `${dateStr}_${mealType}`;
-    return mealPlan.meals[key] || null;
+    return mealPlan.meals[`${formatDateLocal(date)}_${mealType}`] || null;
   };
 
   if (isLoading) {
     return (
       <GradientBackground structured style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{
-          width: 64,
-          height: 64,
-          backgroundColor: 'rgba(255, 255, 255, 0.85)',
-          borderRadius: 16,
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.08,
-          shadowRadius: 12,
-          elevation: 3,
-        }}>
+        <View style={{ width: 64, height: 64, backgroundColor: 'rgba(255, 255, 255, 0.85)', borderRadius: 16, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 3 }}>
           <BouncingLoader size={12} />
         </View>
       </GradientBackground>
@@ -251,6 +244,10 @@ export default function RecipeDetailScreen() {
               showAiChanges={showAiChanges}
               showOriginal={showOriginal}
               canEdit={canEdit}
+              canEnhance={canEnhance}
+              isEnhancing={isEnhancing}
+              needsEnhancementReview={needsEnhancementReview}
+              isReviewingEnhancement={isReviewingEnhancement}
               t={t}
               onToggleStep={toggleStep}
               onToggleAiChanges={() => setShowAiChanges(!showAiChanges)}
@@ -258,6 +255,8 @@ export default function RecipeDetailScreen() {
               onOpenEditModal={() => setShowEditModal(true)}
               onShowPlanModal={() => setShowPlanModal(true)}
               onShare={handleShare}
+              onEnhance={handleEnhanceRecipe}
+              onReviewEnhancement={handleReviewEnhancement}
             />
           </View>
         </MirroredBackground>

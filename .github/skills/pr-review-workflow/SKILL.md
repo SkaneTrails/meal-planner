@@ -22,14 +22,7 @@ This skill activates when:
 
 After every `git push` to a PR branch, do ALL of the following **in order**:
 
-### Step 1: Copilot review (automated)
-
-Copilot review is triggered automatically by the `copilot-review.yml` GitHub Actions workflow
-on PR open and `ready_for_review`. There is no reliable CLI command to request it manually.
-
-See [Section 8](#8-copilot-review-automation) for details.
-
-### Step 2: Fetch and present review comments
+### Step 1: Fetch and present review comments
 
 **Always run BOTH of these commands:**
 

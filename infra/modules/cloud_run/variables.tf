@@ -98,12 +98,6 @@ variable "gemini_secret_name" {
   default     = ""
 }
 
-variable "enable_recipe_enhancement" {
-  description = "Enable recipe enhancement feature (requires gemini_secret_name)"
-  type        = bool
-  default     = false
-}
-
 variable "scrape_function_url" {
   description = "URL of the recipe scraping Cloud Function"
   type        = string

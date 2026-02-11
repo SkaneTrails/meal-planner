@@ -9,14 +9,14 @@ Take a recipe and improve it by:
 1. Making vague ingredients concrete (exact quantities and units)
 2. Optimizing cooking instructions for available equipment
 3. Adapting for household dietary preferences
-4. Replacing HelloFresh spice blends with individual spices
+4. Replacing proprietary spice blends with individual spices (see locale configuration)
 5. Reviewing and correcting cooking fats for the cooking method (see fat rules)
 
 ## Output language
 
-**Write the recipe in the language specified by the household language setting.**
+**Write the recipe in the language specified in the language configuration.**
 
-The JSON keys and field names are always in English — only the VALUES are in the household's language.
+The JSON keys and field names are always in English — only the VALUES are in the specified language.
 
 ## Output JSON
 

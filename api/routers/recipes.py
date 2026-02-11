@@ -27,6 +27,7 @@ from api.models.recipe import (
 from api.services.html_fetcher import FetchError, FetchResult, fetch_html
 from api.services.image_downloader import download_and_upload_image
 from api.services.image_service import create_hero, create_thumbnail
+from api.services.prompt_loader import DEFAULT_LANGUAGE
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
 from api.storage.recipe_queries import count_recipes, get_recipes_paginated
@@ -61,15 +62,22 @@ def _require_household(user: AuthenticatedUser) -> str:
     return user.household_id
 
 
-def _try_enhance(saved_recipe: Recipe, *, household_id: str, created_by: str) -> Recipe:  # pragma: no cover
-    """Attempt AI enhancement on a saved recipe, returning original on failure."""
-    from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance, is_enhancement_enabled
+def _get_household_language(household_id: str) -> str:
+    """Read the household's configured language, defaulting to Swedish."""
+    from api.storage.household_storage import get_household_settings
 
-    if not is_enhancement_enabled():
-        return saved_recipe
+    settings = get_household_settings(household_id)
+    return (settings or {}).get("language", DEFAULT_LANGUAGE)
+
+
+def _try_enhance(
+    saved_recipe: Recipe, *, household_id: str, created_by: str, language: str = DEFAULT_LANGUAGE
+) -> Recipe:  # pragma: no cover
+    """Attempt AI enhancement on a saved recipe, returning original on failure."""
+    from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
 
     try:
-        enhanced_data = do_enhance(saved_recipe.model_dump())
+        enhanced_data = do_enhance(saved_recipe.model_dump(), language=language)
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, saved_recipe)
 
         return recipe_storage.save_recipe(
@@ -211,7 +219,8 @@ async def scrape_recipe(
     saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
-        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
+        language = _get_household_language(household_id)
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email, language=language)
 
     return saved_recipe
 
@@ -355,7 +364,8 @@ async def parse_recipe(
     saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
-        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email)
+        language = _get_household_language(household_id)
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email, language=language)
 
     return saved_recipe
 
@@ -536,25 +546,11 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
 
     If the recipe is shared/legacy (not owned by user's household), a copy is created
     first and the copy is enhanced. The original shared recipe remains unchanged.
-
-    **Currently disabled** - Set ENABLE_RECIPE_ENHANCEMENT=true to enable.
     """
     from datetime import UTC, datetime
 
     household_id = _require_household(user)
-    from api.services.recipe_enhancer import (
-        EnhancementDisabledError,
-        EnhancementError,
-        enhance_recipe as do_enhance,
-        is_enhancement_enabled,
-    )
-
-    # Check if enhancement is enabled
-    if not is_enhancement_enabled():
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Recipe enhancement is currently disabled. Set ENABLE_RECIPE_ENHANCEMENT=true to enable.",
-        )
+    from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
 
     # Get the recipe
     recipe = recipe_storage.get_recipe(recipe_id)
@@ -579,8 +575,10 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             )
         target_recipe = copied
 
+    language = _get_household_language(household_id)
+
     try:  # pragma: no cover
-        enhanced_data = do_enhance(target_recipe.model_dump())
+        enhanced_data = do_enhance(target_recipe.model_dump(), language=language)
         enhanced_recipe = build_recipe_create_from_enhanced(enhanced_data, target_recipe)
 
         return recipe_storage.save_recipe(
@@ -593,8 +591,6 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             created_by=user.email,
         )
 
-    except EnhancementDisabledError as e:  # pragma: no cover
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)) from e
     except EnhancementError as e:  # pragma: no cover
         logger.exception("Failed to enhance recipe_id=%s", recipe_id)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
