@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, TextInput, ScrollView } from 'react-native';
-import { colors, fontFamily } from '@/lib/theme';
+import { fontFamily } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 import type { TFunction } from '@/lib/i18n';
 
@@ -39,14 +39,14 @@ export const DayHeader = ({
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isEditing ? 8 : 12 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {isToday && (
-          <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
-            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodyBold, color: colors.white }}>{t('mealPlan.today')}</Text>
+          <View style={{ backgroundColor: '#5D4E40', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
+            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodyBold, color: '#FFFFFF' }}>{t('mealPlan.today')}</Text>
           </View>
         )}
         <Text style={{
           fontSize: 16,
           fontFamily: fontFamily.bodySemibold,
-          color: isToday ? colors.text.primary : colors.text.secondary,
+          color: isToday ? '#2D2D2D' : 'rgba(45, 45, 45, 0.75)',
           letterSpacing: -0.2,
         }}>
           {formatDayHeader(date, language, t('mealPlan.today'))}
@@ -59,23 +59,23 @@ export const DayHeader = ({
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              backgroundColor: 'rgba(93, 78, 64, 0.12)',
               paddingHorizontal: 10,
               paddingVertical: 4,
               borderRadius: 12,
             }}>
-              <Text style={{ fontSize: 12, color: colors.white }}>{note}</Text>
+              <Text style={{ fontSize: 12, color: '#5D4E40' }}>{note}</Text>
             </View>
           ) : (
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              backgroundColor: 'rgba(93, 78, 64, 0.08)',
               paddingHorizontal: 10,
               paddingVertical: 4,
               borderRadius: 12,
             }}>
-              <Text style={{ fontSize: 12, color: colors.text.secondary }}>{t('mealPlan.addNote')}</Text>
+              <Text style={{ fontSize: 12, color: 'rgba(93, 78, 64, 0.6)' }}>{t('mealPlan.addNote')}</Text>
             </View>
           )}
         </Pressable>

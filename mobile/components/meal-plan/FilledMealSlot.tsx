@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontFamily } from '@/lib/theme';
+import { spacing, fontFamily } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
@@ -36,10 +36,15 @@ export const FilledMealSlot = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(139, 115, 85, 0.25)',
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        borderRadius: 14,
+        padding: 14,
         marginBottom: spacing.sm,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
       }}
     >
       <Pressable
@@ -57,10 +62,10 @@ export const FilledMealSlot = ({
           resizeMode="cover"
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: colors.text.primary }}>
+          <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: '#2D2D2D' }}>
             {title}
           </Text>
-          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: '#5D4E40', marginTop: 2 }}>
+          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.7)', marginTop: 2 }}>
             {label}
           </Text>
         </View>

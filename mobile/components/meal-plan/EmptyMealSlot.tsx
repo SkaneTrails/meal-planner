@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fontFamily } from '@/lib/theme';
+import { fontFamily } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
 import type { MealType } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
@@ -19,92 +19,94 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
     style={{
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.35)',
-      borderRadius: 16,
-      padding: 12,
+      backgroundColor: 'rgba(255, 255, 255, 0.75)',
+      borderRadius: 14,
+      padding: 14,
       marginBottom: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 3,
+      elevation: 2,
     }}
   >
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 12 }}>
+    {/* Label section */}
+    <View style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}>
       <View style={{
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        width: 26,
+        height: 26,
+        borderRadius: 13,
+        backgroundColor: 'rgba(93, 78, 64, 0.08)',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 8,
       }}>
-        <Ionicons name="add" size={18} color={colors.white} />
+        <Ionicons name="add" size={16} color="rgba(93, 78, 64, 0.5)" />
       </View>
-      <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>
+      <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.7)' }}>
         {label}
       </Text>
     </View>
 
-    <View style={{ flex: 1, alignItems: 'flex-end' }}>
-      <View style={{ flexDirection: 'row', gap: 6, marginBottom: 6 }}>
-        <ActionButton
-          icon="book-outline"
-          label={t('mealPlan.library')}
-          bgColor="rgba(255, 255, 255, 0.85)"
-          textColor="#5D4E40"
-          onPress={() => onPress(date, mealType, 'library')}
-        />
-        <ActionButton
-          icon="dice-outline"
-          label={t('mealPlan.random')}
-          bgColor="rgba(220, 215, 210, 0.9)"
-          textColor="#5D4E40"
-          onPress={() => onPress(date, mealType, 'random')}
-        />
-      </View>
-      <View style={{ flexDirection: 'row', gap: 6 }}>
-        <ActionButton
-          icon="copy-outline"
-          label={t('mealPlan.copy')}
-          bgColor="rgba(160, 150, 140, 0.85)"
-          textColor="#FFFFFF"
-          onPress={() => onPress(date, mealType, 'copy')}
-        />
-        <ActionButton
-          icon="create-outline"
-          label={t('mealPlan.quick')}
-          bgColor="rgba(93, 78, 64, 0.85)"
-          textColor="#FFFFFF"
-          onPress={() => onPress(date, mealType, 'quick')}
-        />
-      </View>
+    {/* Actions: Primary (Library) + Secondary icon buttons */}
+    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+      {/* Primary action: Library */}
+      <AnimatedPressable
+        onPress={() => onPress(date, mealType, 'library')}
+        hoverScale={1.03}
+        pressScale={0.97}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: '#5D4E40',
+          paddingHorizontal: 14,
+          paddingVertical: 8,
+          borderRadius: 10,
+          gap: 6,
+        }}
+      >
+        <Ionicons name="book-outline" size={14} color="#FFFFFF" />
+        <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>
+          {t('mealPlan.library')}
+        </Text>
+      </AnimatedPressable>
+
+      {/* Secondary actions: icon-only ghost buttons */}
+      <SecondaryActionButton
+        icon="dice-outline"
+        onPress={() => onPress(date, mealType, 'random')}
+      />
+      <SecondaryActionButton
+        icon="copy-outline"
+        onPress={() => onPress(date, mealType, 'copy')}
+      />
+      <SecondaryActionButton
+        icon="create-outline"
+        onPress={() => onPress(date, mealType, 'quick')}
+      />
     </View>
   </View>
 );
 
-interface ActionButtonProps {
+interface SecondaryActionButtonProps {
   icon: React.ComponentProps<typeof Ionicons>['name'];
-  label: string;
-  bgColor: string;
-  textColor: string;
   onPress: () => void;
 }
 
-const ActionButton = ({ icon, label, bgColor, textColor, onPress }: ActionButtonProps) => (
+const SecondaryActionButton = ({ icon, onPress }: SecondaryActionButtonProps) => (
   <AnimatedPressable
     onPress={onPress}
-    hoverScale={1.05}
-    pressScale={0.95}
+    hoverScale={1.1}
+    pressScale={0.9}
     style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: bgColor,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
+      width: 34,
+      height: 34,
       borderRadius: 10,
-      gap: 4,
-      minWidth: 75,
+      backgroundColor: 'rgba(93, 78, 64, 0.08)',
+      alignItems: 'center',
       justifyContent: 'center',
     }}
   >
-    <Ionicons name={icon} size={14} color={textColor} />
-    <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: textColor }}>{label}</Text>
+    <Ionicons name={icon} size={16} color="rgba(93, 78, 64, 0.6)" />
   </AnimatedPressable>
 );
