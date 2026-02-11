@@ -103,10 +103,6 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
 
-      env {
-        name  = "ENABLE_RECIPE_ENHANCEMENT"
-        value = "true"
-      }
 
       # Scrape function URL
       dynamic "env" {

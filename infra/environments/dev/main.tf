@@ -156,6 +156,7 @@ module "cloud_run" {
   allow_public_access = true
 
   # Recipe enhancement with Gemini
+  # Prerequisite: a secret version must exist before first deploy — see docs/INFRASTRUCTURE.md
   gemini_secret_id   = module.secrets.gemini_api_key_secret_id
   gemini_secret_name = module.secrets.gemini_api_key_secret_name
 
