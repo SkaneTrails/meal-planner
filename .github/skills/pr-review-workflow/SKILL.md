@@ -395,19 +395,6 @@ After addressing comments and fixing CI issues:
 
 ## 8. Creating PRs
 
-### Copilot review automation
-
-Copilot review is requested automatically via GitHub Actions (`.github/workflows/copilot-review.yml`).
-There is **no reliable CLI command** to request Copilot review:
-
-- `gh pr create --reviewer copilot` → fails with "'copilot' not found", aborts PR creation
-- `gh pr edit <PR> --add-reviewer copilot` → unreliable, sometimes works but not guaranteed
-
-The workflow uses the [gh-copilot-review](https://github.com/ChrisCarini/gh-copilot-review) extension
-and triggers on `opened`, `ready_for_review`, and `reopened` events.
-
-> **Requires** a fine-grained PAT secret (`GH_TOKEN_COPILOT_REVIEW`) with `Pull requests: Read and write` permission.
-
 ### Multi-line bodies (PowerShell)
 
 NEVER pass backtick-containing text via `--body` in PowerShell — backticks are parsed as escape characters causing Unicode parse errors.

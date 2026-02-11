@@ -10,9 +10,11 @@ import pytest
 from api.services.prompt_loader import DEFAULT_LANGUAGE
 from api.services.recipe_enhancer import (
     DEFAULT_MODEL,
+    EnhancementConfigError,
     EnhancementError,
     _flatten_metadata,
     _format_recipe_text,
+    _normalize_ingredients,
     _parse_instructions,
     _preserve_original_fields,
     _validate_response,
@@ -25,18 +27,18 @@ class TestGetGenaiClient:
     """Tests for get_genai_client function."""
 
     def test_raises_error_when_genai_not_available(self) -> None:
-        """Should raise EnhancementError if google-genai is not installed."""
+        """Should raise EnhancementConfigError if google-genai is not installed."""
         with (
             patch("api.services.recipe_enhancer.GENAI_AVAILABLE", new=False),
-            pytest.raises(EnhancementError, match="google-genai is not installed"),
+            pytest.raises(EnhancementConfigError, match="google-genai is not installed"),
         ):
             get_genai_client()
 
     def test_raises_error_when_api_key_missing(self) -> None:
-        """Should raise EnhancementError if GOOGLE_API_KEY not set."""
+        """Should raise EnhancementConfigError if GOOGLE_API_KEY not set."""
         with patch("api.services.recipe_enhancer.GENAI_AVAILABLE", new=True), patch.dict(os.environ, {}, clear=True):
             os.environ.pop("GOOGLE_API_KEY", None)
-            with pytest.raises(EnhancementError, match="GOOGLE_API_KEY"):
+            with pytest.raises(EnhancementConfigError, match="GOOGLE_API_KEY"):
                 get_genai_client()
 
     def test_creates_client_with_api_key(self) -> None:
@@ -118,6 +120,53 @@ class TestParseInstructions:
         text = "Step 1\n\n\n\nStep 2"
         result = _parse_instructions(text)
         assert result == ["Step 1", "Step 2"]
+
+
+class TestNormalizeIngredients:
+    """Tests for _normalize_ingredients function."""
+
+    def test_passes_through_plain_strings(self) -> None:
+        """Should leave string ingredients unchanged."""
+        ingredients = ["1 cup flour", "2 eggs"]
+        assert _normalize_ingredients(ingredients) == ["1 cup flour", "2 eggs"]
+
+    def test_flattens_dict_with_quantity_unit_item(self) -> None:
+        """Should flatten structured dicts returned by Gemini."""
+        ingredients = [
+            {"item": "Fine salt", "quantity": "to taste", "unit": ""},
+            {"item": "Oranges", "quantity": "4", "unit": ""},
+            {"item": "Water", "quantity": "1", "unit": "cup"},
+        ]
+        result = _normalize_ingredients(ingredients)
+        assert result == ["to taste Fine salt", "4 Oranges", "1 cup Water"]
+
+    def test_handles_mixed_strings_and_dicts(self) -> None:
+        """Should handle a mix of strings and dicts."""
+        ingredients = ["500 g pasta", {"item": "Salt", "quantity": "1", "unit": "tsp"}]
+        result = _normalize_ingredients(ingredients)
+        assert result == ["500 g pasta", "1 tsp Salt"]
+
+    def test_handles_dict_with_name_key(self) -> None:
+        """Should fall back to 'name' key when 'item' is missing."""
+        ingredients = [{"name": "Pepper", "quantity": "½", "unit": "tsp"}]
+        result = _normalize_ingredients(ingredients)
+        assert result == ["½ tsp Pepper"]
+
+    def test_handles_empty_dict_fields(self) -> None:
+        """Should skip empty quantity/unit fields gracefully."""
+        ingredients = [{"item": "Salt", "quantity": "", "unit": ""}]
+        result = _normalize_ingredients(ingredients)
+        assert result == ["Salt"]
+
+    def test_handles_empty_list(self) -> None:
+        """Should return empty list for empty input."""
+        assert _normalize_ingredients([]) == []
+
+    def test_coerces_non_string_values(self) -> None:
+        """Should coerce unexpected types to strings."""
+        ingredients = [42, True]
+        result = _normalize_ingredients(ingredients)
+        assert result == ["42", "True"]
 
 
 class TestValidateResponse:
@@ -351,5 +400,38 @@ class TestEnhanceRecipe:
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
             pytest.raises(EnhancementError, match="Failed to parse"),
+        ):
+            enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
+
+    def test_normalizes_string_ingredients_to_list(self) -> None:
+        """Should split newline-separated ingredient string into a list."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.text = json.dumps(
+            {"title": "Test", "ingredients": "1 cup flour\n2 eggs\nSalt", "instructions": ["Mix"]}
+        )
+        mock_client.models.generate_content.return_value = mock_response
+
+        with (
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
+            patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
+        ):
+            result = enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
+
+            assert result["ingredients"] == ["1 cup flour", "2 eggs", "Salt"]
+
+    def test_raises_on_unsupported_ingredients_type(self) -> None:
+        """Should raise EnhancementError when ingredients is neither list nor string."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.text = json.dumps({"title": "Test", "ingredients": 42, "instructions": ["Mix"]})
+        mock_client.models.generate_content.return_value = mock_response
+
+        with (
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
+            patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
+            pytest.raises(EnhancementError, match="Unsupported ingredients type"),
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})

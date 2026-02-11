@@ -550,7 +550,7 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
     from datetime import UTC, datetime
 
     household_id = _require_household(user)
-    from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
+    from api.services.recipe_enhancer import EnhancementConfigError, EnhancementError, enhance_recipe as do_enhance
 
     # Get the recipe
     recipe = recipe_storage.get_recipe(recipe_id)
@@ -590,6 +590,10 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             household_id=household_id,
             created_by=user.email,
         )
+
+    except EnhancementConfigError as e:  # pragma: no cover
+        logger.warning("Enhancement unavailable for recipe_id=%s: %s", recipe_id, e)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)) from e
 
     except EnhancementError as e:  # pragma: no cover
         logger.exception("Failed to enhance recipe_id=%s", recipe_id)
