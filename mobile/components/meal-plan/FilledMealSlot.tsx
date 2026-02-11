@@ -36,15 +36,10 @@ export const FilledMealSlot = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        borderRadius: 14,
-        padding: 14,
-        marginBottom: spacing.sm,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
-        elevation: 2,
+        backgroundColor: 'rgba(240, 235, 228, 0.85)',
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 6,
       }}
     >
       <Pressable

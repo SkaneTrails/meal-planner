@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const BACKGROUND_IMAGE = require('@/assets/images/background.png');
+const BACKGROUND_GRADIENT = require('@/assets/images/bck_b.png');
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
@@ -156,94 +157,100 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
 
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 
-  // Neutral variant: warm neutral surface with subtle warmth, no heavy gradient
+  // Neutral variant: warm beige-grey solid surface for grocery list
   if (neutral) {
     return (
-      <ImageBackground
-        source={BACKGROUND_IMAGE}
-        style={[styles.container, style, { width: windowWidth, height: windowHeight }]}
-        resizeMode="stretch"
-      >
-        {/* Strong frosted overlay - keeps warmth but removes color intensity */}
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              backgroundColor: 'rgba(252, 249, 245, 0.7)',
-            },
-          ]}
-        />
+      <View style={[styles.container, style, { width: windowWidth, height: windowHeight, backgroundColor: '#EBE4DB' }]}>
         {children}
-      </ImageBackground>
+      </View>
+    );
+  }
+
+  // Muted variant for settings - uses gradient background image with darker overlay
+  if (muted) {
+    return (
+      <View style={[styles.container, style, { width: windowWidth, height: windowHeight, overflow: 'hidden' }]}>
+        <ImageBackground
+          source={BACKGROUND_GRADIENT}
+          style={{ width: windowWidth, height: windowHeight + 200, marginTop: -100 }}
+          resizeMode="cover"
+        >
+          {/* Darker overlay for settings */}
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundColor: 'rgba(0, 0, 0, 0.15)',
+              },
+            ]}
+          />
+        </ImageBackground>
+        <View style={[StyleSheet.absoluteFill]}>
+          {children}
+        </View>
+      </View>
     );
   }
 
   if (!animated) {
     return (
-      <ImageBackground
-        source={BACKGROUND_IMAGE}
-        style={[styles.container, style, { width: windowWidth, height: windowHeight }]}
-        resizeMode="stretch"
-      >
-        {/* Slight darkening overlay for mobile to make colors richer */}
-        {isMobile && !muted && !structured && (
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: 'rgba(0, 0, 0, 0.03)',
-              },
-            ]}
-          />
-        )}
-        {/* Muted/desaturating overlay for settings-like pages */}
-        {muted && (
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: 'rgba(128, 128, 128, 0.45)',
-              },
-            ]}
-          />
-        )}
-        {/* Structured variant: stronger neutral wash for content-heavy screens */}
-        {structured && (
-          <>
-            {/* Frosted glass effect - significantly desaturates background */}
+      <View style={[styles.container, style, { width: windowWidth, height: windowHeight, overflow: 'hidden' }]}>
+        <ImageBackground
+          source={BACKGROUND_GRADIENT}
+          style={{ width: windowWidth, height: windowHeight + 200, marginTop: -100 }}
+          resizeMode="cover"
+        >
+          {/* Brighten the image slightly for main page */}
+          {!structured && (
             <View
               style={[
                 StyleSheet.absoluteFill,
                 {
-                  backgroundColor: 'rgba(250, 247, 244, 0.35)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 },
               ]}
             />
-            {/* Very subtle warm tint at top only */}
-            <LinearGradient
-              colors={['rgba(232, 200, 170, 0.06)', 'transparent']}
-              locations={[0, 0.25]}
-              style={[StyleSheet.absoluteFill]}
-            />
-          </>
-        )}
-        {children}
-      </ImageBackground>
+          )}
+          {/* Structured variant: stronger neutral wash for content-heavy screens */}
+          {structured && (
+            <>
+              {/* Warm beige-grey surface for content screens */}
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  {
+                    backgroundColor: 'rgba(235, 228, 219, 0.96)',
+                  },
+                ]}
+              />
+              {/* Very subtle warm tint at top only */}
+              <LinearGradient
+                colors={['rgba(210, 200, 190, 0.15)', 'transparent']}
+                locations={[0, 0.3]}
+                style={[StyleSheet.absoluteFill]}
+              />
+            </>
+          )}
+        </ImageBackground>
+        <View style={[StyleSheet.absoluteFill]}>
+          {children}
+        </View>
+      </View>
     );
   }
 
   const orbs = [
     { color: '#E8D0C0', size: SCREEN_WIDTH * 0.8, x: -SCREEN_WIDTH * 0.2, y: -SCREEN_HEIGHT * 0.1, duration: 20000, delay: 0 },
+    { color: '#6B8E6B', size: SCREEN_WIDTH * 0.5, x: SCREEN_WIDTH * 0.5, y: SCREEN_HEIGHT * 0.15, duration: 22000, delay: 3000 },
     { color: '#D4A080', size: SCREEN_WIDTH * 0.7, x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT * 0.6, duration: 25000, delay: 2000 },
-    { color: '#C8A090', size: SCREEN_WIDTH * 0.6, x: SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.3, duration: 18000, delay: 1000 },
-    { color: '#E0B090', size: SCREEN_WIDTH * 0.5, x: SCREEN_WIDTH * 0.5, y: SCREEN_HEIGHT * 0.1, duration: 22000, delay: 3000 },
-    { color: '#D08060', size: SCREEN_WIDTH * 0.55, x: -SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.7, duration: 24000, delay: 1500 },
-    { color: '#C89070', size: SCREEN_WIDTH * 0.45, x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT * 0.4, duration: 19000, delay: 2500 },
+    { color: '#5A7A5A', size: SCREEN_WIDTH * 0.45, x: SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.35, duration: 18000, delay: 1000 },
+    { color: '#E0B090', size: SCREEN_WIDTH * 0.55, x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT * 0.1, duration: 22000, delay: 3000 },
+    { color: '#C88060', size: SCREEN_WIDTH * 0.55, x: -SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.7, duration: 24000, delay: 1500 },
   ];
 
   return (
     <View style={[styles.container, style]}>
-      {/* Base gradient - matching background.png tones */}
+      {/* Base gradient - warm terracotta tones */}
       <LinearGradient
         colors={['#E8D8C8', '#D8B8A0', '#D0A080', '#C88060']}
         locations={[0, 0.33, 0.66, 1]}

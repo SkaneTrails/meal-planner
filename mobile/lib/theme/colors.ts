@@ -76,13 +76,13 @@ export const lightColors = {
   info: '#42A5F5',
   infoBg: '#E3F2FD',
 
-  // Glass/Blur effects - for transparent cards on warm background
+  // Glass/Blur effects - near-solid surfaces for app-like feel
   glass: {
-    light: 'rgba(255, 255, 255, 0.7)',
-    medium: 'rgba(255, 255, 255, 0.55)',
-    dark: 'rgba(255, 255, 255, 0.4)',
-    card: 'rgba(255, 255, 255, 0.6)',
-    border: 'transparent',
+    light: 'rgba(255, 255, 255, 0.88)',
+    medium: 'rgba(255, 255, 255, 0.78)',
+    dark: 'rgba(255, 255, 255, 0.65)',
+    card: 'rgba(255, 255, 255, 0.85)',
+    border: 'rgba(0, 0, 0, 0.04)',
   },
 } as const;
 

@@ -46,12 +46,14 @@ interface SectionHeaderProps {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle: string;
+  iconColor?: string;
 }
 
 const SectionHeader = ({
   icon,
   title,
-  subtitle
+  subtitle,
+  iconColor = '#5D4E40',
 }: SectionHeaderProps) => {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
@@ -64,7 +66,7 @@ const SectionHeader = ({
         justifyContent: 'center',
         marginRight: spacing.md,
       }}>
-        <Ionicons name={icon} size={20} color="#5D4E40" />
+        <Ionicons name={icon} size={20} color={iconColor} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.text.primary }}>
@@ -338,7 +340,7 @@ export default function SettingsScreen() {
                   </View>
                   <Text style={{ flex: 1, fontSize: fontSize.md, color: colors.text.dark }}>{lang.label}</Text>
                   {settings.language === lang.code && (
-                    <Ionicons name="checkmark-circle" size={20} color={colors.accent} />
+                    <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
                   )}
                 </Pressable>
               )})}
@@ -351,6 +353,7 @@ export default function SettingsScreen() {
               icon="home"
               title={t('settings.itemsAtHome')}
               subtitle={t('settings.itemsAtHomeDesc')}
+              iconColor="#6B8E6B"
             />
 
             {/* Current items - show first */}

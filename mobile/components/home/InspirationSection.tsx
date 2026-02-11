@@ -55,12 +55,12 @@ const InspirationHeader = ({ t, onShuffle }: { t: Data['t']; onShuffle: () => vo
       pressScale={0.95}
       style={{
         flexDirection: 'row', alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        backgroundColor: 'rgba(255, 255, 255, 0.25)',
         paddingHorizontal: 10, paddingVertical: 6,
         borderRadius: borderRadius.full,
       }}
     >
-      <Ionicons name="shuffle" size={12} color="#8B7355" />
+      <Ionicons name="shuffle" size={12} color="rgba(255, 255, 255, 0.8)" />
       <Text style={{ color: '#5D4E40', fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, marginLeft: 4 }}>
         {t('home.inspiration.shuffle')}
       </Text>
@@ -70,7 +70,7 @@ const InspirationHeader = ({ t, onShuffle }: { t: Data['t']; onShuffle: () => vo
 
 const InspirationCard = ({ recipe, t, onPress }: { recipe: Recipe; t: Data['t']; onPress: () => void }) => (
   <AnimatedPressable onPress={onPress} hoverScale={1.01} pressScale={0.99}
-    style={{ backgroundColor: 'rgba(255,255,255,0.35)', borderRadius: borderRadius.md, overflow: 'hidden' }}>
+    style={{ backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: borderRadius.md, overflow: 'hidden' }}>
     <Image
       source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
       style={{ width: '100%', height: 160 }}
@@ -128,7 +128,8 @@ const GetStartedFallback = ({ t, onPress }: { t: Data['t']; onPress: () => void 
     </Text>
 
     <AnimatedPressable onPress={onPress} hoverScale={1.01} pressScale={0.99}
-      style={{ backgroundColor: 'rgba(255,255,255,0.35)', borderRadius: borderRadius.md, overflow: 'hidden' }}>
+      style={{ backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: borderRadius.md, overflow: 'hidden',
+        borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.04)' }}>
       <Image
         source={HOMEPAGE_HERO}
         style={{ width: '100%', height: 140 }}
