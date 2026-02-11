@@ -65,11 +65,16 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        paddingVertical: 10,
-        backgroundColor: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
-        borderRadius: 8,
-        marginBottom: 6,
-        opacity: checked ? 0.7 : 1,
+        paddingVertical: 12,
+        backgroundColor: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.92)',
+        borderRadius: 10,
+        marginBottom: 8,
+        opacity: checked ? 0.85 : 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 2,
       }}
     >
       {showReorder && (
@@ -101,8 +106,8 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: 12,
-            backgroundColor: checked ? '#5D4E40' : 'transparent',
-            borderColor: checked ? '#5D4E40' : 'rgba(93, 78, 64, 0.3)',
+            backgroundColor: checked ? '#6B8E6B' : 'transparent',
+            borderColor: checked ? '#6B8E6B' : 'rgba(93, 78, 64, 0.3)',
           }}
         >
           {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}

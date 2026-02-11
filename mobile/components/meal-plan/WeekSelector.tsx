@@ -43,7 +43,7 @@ export const WeekSelector = ({
         style={{
           padding: 8,
           borderRadius: borderRadius.full,
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
         }}
       >
         <Ionicons name="chevron-back" size={18} color="rgba(93, 78, 64, 0.7)" />
@@ -72,7 +72,7 @@ export const WeekSelector = ({
         style={{
           padding: 8,
           borderRadius: borderRadius.full,
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
         }}
       >
         <Ionicons name="chevron-forward" size={18} color="rgba(93, 78, 64, 0.7)" />

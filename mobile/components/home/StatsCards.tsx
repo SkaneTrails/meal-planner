@@ -20,9 +20,9 @@ export const StatsCards = ({ recipesCount, plannedMealsCount, groceryItemsCount,
 
   return (
     <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
-      <StatCard icon="book-outline" value={recipesCount} label={t('home.stats.recipes')} onPress={() => router.push('/recipes')} />
-      <StatCard icon="calendar-outline" value={plannedMealsCount} label={t('home.stats.planned')} onPress={() => router.push('/meal-plan')} />
-      <StatCard icon="cart-outline" value={groceryItemsCount} label={t('home.stats.toBuy')} onPress={() => router.push('/grocery')} />
+      <StatCard icon="book-outline" value={recipesCount} label={t('home.stats.recipes')} iconColor="#8B7355" onPress={() => router.push('/recipes')} />
+      <StatCard icon="calendar-outline" value={plannedMealsCount} label={t('home.stats.planned')} iconColor="#8B7355" onPress={() => router.push('/meal-plan')} />
+      <StatCard icon="cart-outline" value={groceryItemsCount} label={t('home.stats.toBuy')} iconColor="#8B7355" onPress={() => router.push('/grocery')} />
     </View>
   );
 };
@@ -31,23 +31,26 @@ interface StatCardProps {
   icon: keyof typeof Ionicons.glyphMap;
   value: number;
   label: string;
+  iconColor: string;
   onPress: () => void;
 }
 
-const StatCard = ({ icon, value, label, onPress }: StatCardProps) => (
+const StatCard = ({ icon, value, label, iconColor, onPress }: StatCardProps) => (
   <AnimatedPressable
     onPress={onPress}
     hoverScale={1.03}
     pressScale={0.97}
     style={{
       flex: 1,
-      backgroundColor: 'rgba(255,255,255,0.35)',
+      backgroundColor: 'rgba(255,255,255,0.92)',
       borderRadius: borderRadius.md,
       padding: 12,
+      borderWidth: 1,
+      borderColor: 'rgba(0, 0, 0, 0.04)',
       ...shadows.sm,
     }}
   >
-    <Ionicons name={icon} size={18} color="#8B7355" style={{ marginBottom: 8 }} />
+    <Ionicons name={icon} size={18} color={iconColor} style={{ marginBottom: 8 }} />
     <Text style={{
       fontSize: fontSize['3xl'],
       fontFamily: fontFamily.bodySemibold,
