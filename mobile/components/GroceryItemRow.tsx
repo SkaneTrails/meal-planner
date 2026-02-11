@@ -71,7 +71,7 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
         marginBottom: 8,
         opacity: checked ? 0.85 : 1,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 1, height: 2 },
         shadowOpacity: 0.06,
         shadowRadius: 6,
         elevation: 2,

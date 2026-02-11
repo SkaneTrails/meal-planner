@@ -148,7 +148,7 @@ export const RecipeContent = ({
       paddingVertical: spacing.md,
       paddingHorizontal: spacing.sm,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: { width: 1, height: 2 },
       shadowOpacity: 0.06,
       shadowRadius: 6,
       elevation: 2,
@@ -227,7 +227,7 @@ export const RecipeContent = ({
       {displayIngredients.length === 0 ? (
         <Text style={{ color: colors.gray[500], fontSize: fontSize.xl, fontStyle: 'italic' }}>{t('recipe.noIngredients')}</Text>
       ) : (
-        <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
+        <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, padding: spacing.lg, shadowColor: '#000', shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
           {displayIngredients.map((ingredient, index) => (
             <View
               key={index}

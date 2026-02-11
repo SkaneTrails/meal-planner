@@ -204,7 +204,7 @@ export default function AdminScreen() {
                 onPress={() => setSelectedHousehold(item)}
               />
             )}
-            contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: 100 }}
+            contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: 70 }}
             refreshControl={
               <RefreshControl
                 refreshing={householdsLoading}

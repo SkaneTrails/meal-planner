@@ -20,9 +20,19 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
 
   return (
     <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}>
-      <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginBottom: spacing.md }}>
-        {t('selectRecipe.copy.title')}
-      </Text>
+      {/* Header with sage accent */}
+      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+        <View style={{
+          width: 48, height: 48, borderRadius: 24,
+          backgroundColor: 'rgba(107, 142, 107, 0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm,
+        }}>
+          <Ionicons name="copy" size={24} color="#6B8E6B" />
+        </View>
+        <Text style={{ fontSize: fontSize['2xl'], fontWeight: '700', color: colors.text.inverse, textAlign: 'center', letterSpacing: -0.3 }}>
+          {t('selectRecipe.copy.title')}
+        </Text>
+        <View style={{ width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B', marginTop: spacing.sm }} />
+      </View>
 
       {/* Week selector */}
       <View style={{
@@ -97,6 +107,26 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           </Pressable>
         ))
       )}
+
+      {/* Clear meal button */}
+      <Pressable
+        onPress={state.handleRemoveMeal}
+        disabled={state.removeMeal.isPending}
+        style={({ pressed }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: spacing.md,
+          borderRadius: 12,
+          backgroundColor: pressed ? 'rgba(93, 78, 64, 0.12)' : 'rgba(93, 78, 64, 0.08)',
+          marginTop: spacing.lg,
+        })}
+      >
+        <Ionicons name="trash-outline" size={18} color="rgba(93, 78, 64, 0.7)" />
+        <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: 'rgba(93, 78, 64, 0.7)' }}>
+          {t('selectRecipe.clearMeal')}
+        </Text>
+      </Pressable>
     </ScrollView>
   );
 };

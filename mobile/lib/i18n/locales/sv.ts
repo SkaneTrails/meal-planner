@@ -381,6 +381,13 @@ const sv: Translations = {
     recipeLibraryDesc: 'Hantera din receptsamling',
     showHiddenRecipes: 'Visa dolda recept',
     showHiddenRecipesDesc: 'Inkludera recept du markerat med tummen ner',
+    membersSection: 'Medlemmar',
+    membersSectionDesc: 'Personer i ditt hushåll',
+    addMemberPlaceholder: 'E-postadress',
+    memberAdded: 'Medlem tillagd',
+    memberRemoved: 'Medlem borttagen',
+    removeMemberConfirm: 'Ta bort {{name}} från ditt hushåll?',
+    cannotRemoveSelf: 'Du kan inte ta bort dig själv',
   },
 
   admin: {

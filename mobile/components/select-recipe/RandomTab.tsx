@@ -16,7 +16,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
 
   if (!randomRecipe) {
     return (
-      <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100, flex: 1 }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}>
         <EmptyState
           icon="dice-outline"
           title={t('selectRecipe.random.noRecipes', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
@@ -28,7 +28,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100, flex: 1 }}>
+    <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}>
       <View style={{ alignItems: 'center' }}>
         {/* Header */}
         <RandomHeader
@@ -63,7 +63,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
             style={({ pressed }) => ({
               flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
               paddingVertical: spacing.md, borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? colors.primaryDark : colors.primary, ...shadows.md,
+              backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B', ...shadows.md,
             })}
           >
             <Ionicons name="checkmark-circle" size={20} color={colors.white} />
@@ -87,13 +87,14 @@ const RandomHeader = ({ t, mealTypeCount, mealTypeLabel }: RandomHeaderProps) =>
   <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
     <View style={{
       width: 56, height: 56, borderRadius: 28,
-      backgroundColor: colors.glass.card, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md,
+      backgroundColor: 'rgba(107, 142, 107, 0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md,
     }}>
-      <Ionicons name="dice" size={32} color={colors.text.inverse} />
+      <Ionicons name="dice" size={32} color="#6B8E6B" />
     </View>
     <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, textAlign: 'center', letterSpacing: letterSpacing.normal }}>
       {t('selectRecipe.random.howAbout')}
     </Text>
+    <View style={{ width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B', marginTop: spacing.sm }} />
     <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }}>
       {t('selectRecipe.random.matchCount', { count: mealTypeCount })} {mealTypeLabel}
     </Text>

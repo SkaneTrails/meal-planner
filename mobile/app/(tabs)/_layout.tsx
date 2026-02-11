@@ -30,12 +30,12 @@ const TabBarBackground = () => {
           bottom: 0,
           borderRadius: 16,
           overflow: 'hidden',
-          backgroundColor: 'rgba(255, 255, 255, 0.55)',
+          backgroundColor: 'rgba(235, 228, 219, 0.85)',
         }}
       />
     );
   }
-  // Fallback for Android/web - subtle semi-transparent
+  // Fallback for Android/web - warm beige with subtle shadow
   return (
     <View
       style={{
@@ -44,10 +44,15 @@ const TabBarBackground = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        backgroundColor: 'rgba(235, 228, 219, 0.95)',
         borderRadius: 16,
         borderWidth: 0.5,
-        borderColor: 'rgba(0, 0, 0, 0.06)',
+        borderColor: 'rgba(93, 78, 64, 0.1)',
+        shadowColor: '#000',
+        shadowOffset: { width: 2, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 4,
       }}
     />
   );

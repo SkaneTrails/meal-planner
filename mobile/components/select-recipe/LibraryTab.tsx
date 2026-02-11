@@ -19,7 +19,7 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
     <>
       {/* Search bar */}
       <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12, shadowColor: '#000', shadowOffset: { width: 1, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 }}>
           <Ionicons name="search" size={18} color="rgba(93, 78, 64, 0.5)" />
           <TextInput
             style={{ flex: 1, marginLeft: spacing.sm, fontSize: fontSize.lg, color: '#3D3D3D' }}

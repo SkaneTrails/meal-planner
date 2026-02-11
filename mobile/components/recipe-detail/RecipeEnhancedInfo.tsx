@@ -29,7 +29,7 @@ export const RecipeEnhancedInfo = ({
             {t('recipe.tips')}
           </Text>
         </View>
-        <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, padding: spacing.lg, borderLeftWidth: 4, borderLeftColor: '#C4704B', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
+        <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, padding: spacing.lg, borderLeftWidth: 4, borderLeftColor: '#C4704B', shadowColor: '#000', shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
           <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.text.inverse, lineHeight: 24 }}>
             {recipe.tips}
           </Text>
@@ -38,7 +38,7 @@ export const RecipeEnhancedInfo = ({
     )}
 
     {recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0 && (
-      <View style={{ marginBottom: spacing.xl, backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
+      <View style={{ marginBottom: spacing.xl, backgroundColor: 'rgba(255, 255, 255, 0.92)', borderRadius: borderRadius.lg, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 }}>
         <Pressable
           onPress={onToggleAiChanges}
           style={({ pressed }) => ({

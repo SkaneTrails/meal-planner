@@ -90,7 +90,7 @@ export default function RecipeDetailScreen() {
           alignItems: 'center',
           justifyContent: 'center',
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
+          shadowOffset: { width: 2, height: 4 },
           shadowOpacity: 0.08,
           shadowRadius: 12,
           elevation: 3,
@@ -113,7 +113,7 @@ export default function RecipeDetailScreen() {
           justifyContent: 'center',
           marginBottom: spacing.lg,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
+          shadowOffset: { width: 2, height: 4 },
           shadowOpacity: 0.08,
           shadowRadius: 12,
           elevation: 3,
@@ -239,7 +239,7 @@ export default function RecipeDetailScreen() {
           }} />
           <View style={{
             padding: spacing.xl,
-            paddingBottom: 200,
+            paddingBottom: 100,
             maxWidth: 720,
             alignSelf: 'center',
             width: '100%',

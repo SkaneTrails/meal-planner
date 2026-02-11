@@ -35,7 +35,7 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <GradientBackground structured style={{ flex: 1, paddingBottom: 100 }}>
+      <GradientBackground structured style={{ flex: 1, paddingBottom: 70 }}>
         {/* Header - same style as other pages */}
         <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
           <Text style={{
@@ -76,14 +76,6 @@ export default function SelectRecipeScreen() {
         )}
 
         {renderActiveTab()}
-
-        {(activeTab === 'quick' || activeTab === 'copy') && (
-          <RemoveMealFooter
-            onRemove={handleRemoveMeal}
-            isPending={removeMeal.isPending}
-            label={t('selectRecipe.clearMeal')}
-          />
-        )}
       </GradientBackground>
     </>
   );
@@ -113,7 +105,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
             alignItems: 'center',
             transform: [{ scale: pressed ? 0.98 : 1 }],
             shadowColor: activeTab === tab ? '#000' : 'transparent',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: { width: 1, height: 1 },
             shadowOpacity: activeTab === tab ? 0.08 : 0,
             shadowRadius: 4,
             elevation: activeTab === tab ? 2 : 0,
@@ -129,33 +121,5 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
         </Pressable>
       ))}
     </View>
-  </View>
-);
-
-interface RemoveMealFooterProps {
-  onRemove: () => void;
-  isPending: boolean;
-  label: string;
-}
-
-const RemoveMealFooter = ({ onRemove, isPending, label }: RemoveMealFooterProps) => (
-  <View style={{ padding: spacing.lg, backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
-    <Pressable
-      onPress={onRemove}
-      disabled={isPending}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: spacing.md,
-        borderRadius: 12,
-        backgroundColor: pressed ? 'rgba(93, 78, 64, 0.12)' : 'rgba(93, 78, 64, 0.08)',
-      })}
-    >
-      <Ionicons name="trash-outline" size={18} color="rgba(93, 78, 64, 0.7)" />
-      <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: 'rgba(93, 78, 64, 0.7)' }}>
-        {label}
-      </Text>
-    </Pressable>
   </View>
 );

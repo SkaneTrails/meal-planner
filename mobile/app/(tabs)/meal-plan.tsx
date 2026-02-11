@@ -45,7 +45,7 @@ export default function MealPlanScreen() {
 
   return (
     <GradientBackground structured>
-      <View style={{ flex: 1, paddingBottom: 100 }}>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}>
           <Text style={{
@@ -81,7 +81,7 @@ export default function MealPlanScreen() {
             <ScrollView
               ref={scrollViewRef}
               style={{ flex: 1 }}
-              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 70 }}
               onScroll={onScroll}
               scrollEventThrottle={16}
               showsVerticalScrollIndicator={false}
@@ -108,7 +108,7 @@ export default function MealPlanScreen() {
                     borderWidth: 1,
                     borderColor: isToday ? 'rgba(93, 78, 64, 0.12)' : 'rgba(0, 0, 0, 0.04)',
                     shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 6 },
+                    shadowOffset: { width: 2, height: 6 },
                     shadowOpacity: 0.1,
                     shadowRadius: 16,
                     elevation: 4,
@@ -175,7 +175,7 @@ export default function MealPlanScreen() {
                   marginTop: 8,
                   marginBottom: 20,
                   shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 4 },
+                  shadowOffset: { width: 2, height: 4 },
                   shadowOpacity: 0.15,
                   shadowRadius: 12,
                   elevation: 4,
@@ -219,7 +219,7 @@ export default function MealPlanScreen() {
                 paddingVertical: 10,
                 borderRadius: borderRadius.full,
                 shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
+                shadowOffset: { width: 1, height: 2 },
                 shadowOpacity: 0.15,
                 shadowRadius: 8,
                 elevation: 4,

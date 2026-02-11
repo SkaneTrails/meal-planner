@@ -85,7 +85,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           borderRadius: 20,
           transform: [{ scale: scaleAnim }],
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 6 },
+          shadowOffset: { width: 2, height: 6 },
           shadowOpacity: 0.1,
           shadowRadius: 16,
           elevation: 4,
@@ -151,8 +151,8 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
     );
   }
 
-  const imageHeight = cardSize ? cardSize * 0.75 : 140;
-  const cardHeight = cardSize ? cardSize * 1.35 : 240;
+  const imageHeight = cardSize ? cardSize * 0.65 : 120;
+  const cardHeight = imageHeight + 64;
 
   return (
     <Pressable
@@ -169,7 +169,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           overflow: 'hidden',
           transform: [{ scale: scaleAnim }],
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 6 },
+          shadowOffset: { width: 2, height: 6 },
           shadowOpacity: 0.12,
           shadowRadius: 16,
           elevation: 5,
@@ -225,7 +225,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
         </View>
 
         {/* Content below image */}
-        <View style={{ paddingHorizontal: 10, paddingVertical: 6, flex: 1, justifyContent: 'space-between' }}>
+        <View style={{ paddingHorizontal: 10, paddingVertical: 6, paddingBottom: 8, gap: 4 }}>
           {/* Title - 2 lines max */}
           <Text style={{
             fontSize: fontSize.md,

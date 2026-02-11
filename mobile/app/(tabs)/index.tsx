@@ -36,7 +36,7 @@ export default function HomeScreen() {
     <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 100, paddingTop: 0 }}
+        contentContainerStyle={{ paddingBottom: 70, paddingTop: 0 }}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} tintColor={colors.accent} />
         }
@@ -87,7 +87,7 @@ const Header = ({ greetingKey, t, onSettings }: { greetingKey: string; t: TFn; o
           fontSize: fontSize['4xl'], fontFamily: fontFamily.display,
           color: colors.text.primary, letterSpacing: letterSpacing.tight,
           marginBottom: 4, textShadowColor: 'rgba(0, 0, 0, 0.15)',
-          textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2,
+          textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 2,
         }}>
           {t(`home.${greetingKey}` as any)}
         </Text>

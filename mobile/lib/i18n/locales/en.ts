@@ -393,6 +393,13 @@ const en = {
     recipeLibraryDesc: 'Manage your recipe collection',
     showHiddenRecipes: 'Show Hidden Recipes',
     showHiddenRecipesDesc: 'Include recipes you marked with thumbs-down',
+    membersSection: 'Members',
+    membersSectionDesc: 'People in your household',
+    addMemberPlaceholder: 'Email address',
+    memberAdded: 'Member added',
+    memberRemoved: 'Member removed',
+    removeMemberConfirm: 'Remove {{name}} from your household?',
+    cannotRemoveSelf: 'You cannot remove yourself',
   },
 
   // ── Admin screen ──────────────────────────────────────────────────

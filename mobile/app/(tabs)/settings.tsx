@@ -148,7 +148,7 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground muted>
-      <View style={{ flex: 1, paddingBottom: 100 }}>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{ padding: 20, paddingTop: 44, paddingBottom: 40 }}
@@ -163,7 +163,7 @@ export default function SettingsScreen() {
               color: colors.text.primary,
               letterSpacing: -0.5,
               textShadowColor: 'rgba(0, 0, 0, 0.15)',
-              textShadowOffset: { width: 0, height: 1 },
+              textShadowOffset: { width: 1, height: 1 },
               textShadowRadius: 2,
             }}>{t('settings.title')}</Text>
             <Text style={{

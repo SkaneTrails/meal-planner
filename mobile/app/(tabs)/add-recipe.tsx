@@ -40,7 +40,7 @@ export default function AddRecipeScreen() {
       <GradientBackground style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }}
+          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 80 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

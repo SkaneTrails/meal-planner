@@ -76,7 +76,7 @@ export const RecipeHero = ({
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md, textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
+        <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md, textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 2 }, textShadowRadius: 4 }}>
           {title}
         </Text>
         <ThumbRating

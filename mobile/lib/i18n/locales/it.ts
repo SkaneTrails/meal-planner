@@ -381,6 +381,13 @@ const it: Translations = {
     recipeLibraryDesc: 'Gestisci la tua collezione di ricette',
     showHiddenRecipes: 'Mostra Ricette Nascoste',
     showHiddenRecipesDesc: 'Includi le ricette che hai segnato con il pollice in giù',
+    membersSection: 'Membri',
+    membersSectionDesc: 'Persone nel tuo nucleo familiare',
+    addMemberPlaceholder: 'Indirizzo email',
+    memberAdded: 'Membro aggiunto',
+    memberRemoved: 'Membro rimosso',
+    removeMemberConfirm: 'Rimuovere {{name}} dal tuo nucleo familiare?',
+    cannotRemoveSelf: 'Non puoi rimuovere te stesso',
   },
 
   admin: {

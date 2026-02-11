@@ -108,7 +108,7 @@ export default function RecipesScreen() {
 
   return (
     <GradientBackground structured>
-      <View style={{ flex: 1, paddingBottom: 100 }}>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}>
           <View style={{ marginBottom: 8 }}>

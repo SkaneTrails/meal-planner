@@ -284,7 +284,8 @@ export default function GroceryScreen() {
           <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
             <Text style={{
               fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.display,
+              fontFamily: fontFamily.displayBold,
+              fontWeight: '700',
               color: '#3D3D3D',
               letterSpacing: letterSpacing.tight,
               textAlign: 'center',
@@ -305,12 +306,13 @@ export default function GroceryScreen() {
 
   return (
     <GradientBackground neutral>
-      <View style={{ flex: 1, paddingBottom: 100 }}>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
       {/* Header with title */}
       <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
         <Text style={{
           fontSize: fontSize['3xl'],
-          fontFamily: fontFamily.display,
+          fontFamily: fontFamily.displayBold,
+          fontWeight: '700',
           color: '#3D3D3D',
           letterSpacing: letterSpacing.tight,
           textAlign: 'center',
@@ -333,7 +335,7 @@ export default function GroceryScreen() {
           padding: spacing.md,
           marginBottom: spacing.sm,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
+          shadowOffset: { width: 1, height: 1 },
           shadowOpacity: 0.06,
           shadowRadius: 4,
           elevation: 2,
@@ -343,8 +345,8 @@ export default function GroceryScreen() {
               <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.7)' }}>{t('grocery.thisWeeksShopping')}</Text>
               {/* Progress text - stronger hierarchy, emotional anchor */}
               <Text style={{
-                fontSize: 22,
-                fontWeight: '700',
+                fontSize: 17,
+                fontWeight: '600',
                 color: '#3D3D3D',
                 marginTop: 4,
               }}>
@@ -456,7 +458,7 @@ export default function GroceryScreen() {
             borderRadius: borderRadius.md,
             padding: spacing.md,
             shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
+            shadowOffset: { width: 1, height: 1 },
             shadowOpacity: 0.04,
             shadowRadius: 3,
             elevation: 1,

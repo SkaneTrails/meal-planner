@@ -16,11 +16,12 @@ import {
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily, letterSpacing } from '@/lib/theme';
-import { showNotification } from '@/lib/alert';
+import { showNotification, showAlert } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
-import { useCurrentUser, useHouseholdSettings, useUpdateHouseholdSettings } from '@/lib/hooks/use-admin';
-import { GradientBackground } from '@/components';
-import type { MeatPreference, MincedMeatPreference, DairyPreference, HouseholdSettings } from '@/lib/types';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useCurrentUser, useHouseholdSettings, useUpdateHouseholdSettings, useHouseholdMembers, useAddMember, useRemoveMember } from '@/lib/hooks/use-admin';
+import { AnimatedPressable, GradientBackground } from '@/components';
+import type { MeatPreference, MincedMeatPreference, DairyPreference, HouseholdSettings, HouseholdMember } from '@/lib/types';
 
 
 
@@ -155,7 +156,14 @@ export default function HouseholdSettingsScreen() {
   const { data: remoteSettings, isLoading } = useHouseholdSettings(householdId ?? null);
   const updateSettings = useUpdateHouseholdSettings();
   const { data: currentUser } = useCurrentUser();
+  const { user } = useAuth();
   const { t } = useTranslation();
+
+  const { data: members, isLoading: membersLoading, refetch: refetchMembers } = useHouseholdMembers(householdId ?? '');
+  const addMember = useAddMember();
+  const removeMember = useRemoveMember();
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>('member');
 
   // Options for dropdowns (inside component for i18n)
   const MEAT_OPTIONS: { value: MeatPreference; label: string; description: string }[] = [
@@ -232,6 +240,52 @@ export default function HouseholdSettingsScreen() {
     setHasChanges(true);
   };
 
+  const handleAddMember = async () => {
+    if (!newMemberEmail.trim() || !householdId) return;
+
+    try {
+      await addMember.mutateAsync({
+        householdId,
+        data: { email: newMemberEmail.trim(), role: newMemberRole },
+      });
+      setNewMemberEmail('');
+      setNewMemberRole('member');
+      refetchMembers();
+      showNotification(t('settings.memberAdded'));
+    } catch (error) {
+      showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToAddMember'));
+    }
+  };
+
+  const handleRemoveMember = (member: HouseholdMember) => {
+    if (member.email === user?.email) {
+      showNotification(t('common.error'), t('settings.cannotRemoveSelf'));
+      return;
+    }
+    if (!householdId) return;
+
+    showAlert(
+      t('admin.removeMember'),
+      t('settings.removeMemberConfirm', { name: member.display_name || member.email }),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.remove'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeMember.mutateAsync({ householdId, email: member.email });
+              refetchMembers();
+              showNotification(t('settings.memberRemoved'));
+            } catch (error) {
+              showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToRemoveMember'));
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (!householdId) {
     return (
       <GradientBackground muted>
@@ -293,7 +347,7 @@ export default function HouseholdSettingsScreen() {
               color: colors.text.primary,
               letterSpacing: letterSpacing.tight,
               textShadowColor: 'rgba(0, 0, 0, 0.15)',
-              textShadowOffset: { width: 0, height: 1 },
+              textShadowOffset: { width: 1, height: 1 },
               textShadowRadius: 2,
             }}>{t('householdSettings.title')}</Text>
             <Text style={{
@@ -438,6 +492,188 @@ export default function HouseholdSettingsScreen() {
                 </View>
               </View>
             </View>
+          </View>
+
+          {/* Members */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <SectionHeader
+              icon="people"
+              title={t('settings.membersSection')}
+              subtitle={t('settings.membersSectionDesc')}
+            />
+
+            {membersLoading ? (
+              <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: spacing.md }} />
+            ) : members && members.length > 0 ? (
+              <View style={{ gap: spacing.xs }}>
+                {members.map((member) => {
+                  const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
+                  const isSelf = member.email === user?.email;
+
+                  return (
+                    <View
+                      key={member.email}
+                      style={{
+                        backgroundColor: colors.glass.card,
+                        borderRadius: borderRadius.lg,
+                        padding: spacing.md,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        ...shadows.sm,
+                      }}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                          <Text style={{
+                            fontSize: fontSize.md,
+                            fontWeight: fontWeight.medium,
+                            color: colors.text.inverse,
+                          }}>
+                            {member.display_name || member.email}
+                          </Text>
+                          {isSelf && (
+                            <Text style={{ fontSize: fontSize.xs, color: colors.text.inverse + '60' }}>
+                              (you)
+                            </Text>
+                          )}
+                        </View>
+                        {member.display_name && (
+                          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+                            {member.email}
+                          </Text>
+                        )}
+                        <View style={{
+                          backgroundColor: roleColor + '20',
+                          paddingHorizontal: spacing.sm,
+                          paddingVertical: 2,
+                          borderRadius: borderRadius.full,
+                          alignSelf: 'flex-start',
+                          marginTop: spacing.xs,
+                        }}>
+                          <Text style={{
+                            fontSize: fontSize.xs,
+                            color: roleColor,
+                            fontWeight: fontWeight.medium,
+                            textTransform: 'uppercase',
+                          }}>
+                            {t(`labels.role.${member.role}` as 'labels.role.member')}
+                          </Text>
+                        </View>
+                      </View>
+                      {canEdit && !isSelf && (
+                        <AnimatedPressable
+                          onPress={() => handleRemoveMember(member)}
+                          hoverScale={1.1}
+                          pressScale={0.9}
+                          style={{ padding: spacing.sm }}
+                        >
+                          <Ionicons name="trash-outline" size={18} color={colors.error} />
+                        </AnimatedPressable>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              <View style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.lg,
+                padding: spacing.lg,
+                alignItems: 'center',
+                ...shadows.sm,
+              }}>
+                <Text style={{ color: colors.text.inverse + '80', fontSize: fontSize.sm }}>
+                  {t('admin.noMembers')}
+                </Text>
+              </View>
+            )}
+
+            {canEdit && (
+              <View style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.lg,
+                padding: spacing.md,
+                marginTop: spacing.sm,
+                ...shadows.sm,
+              }}>
+                <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm }}>
+                  <TextInput
+                    value={newMemberEmail}
+                    onChangeText={setNewMemberEmail}
+                    placeholder={t('settings.addMemberPlaceholder')}
+                    placeholderTextColor={colors.text.inverse + '60'}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    style={{
+                      flex: 1,
+                      backgroundColor: colors.white,
+                      borderRadius: borderRadius.sm,
+                      paddingHorizontal: spacing.md,
+                      paddingVertical: spacing.sm,
+                      fontSize: fontSize.md,
+                      color: colors.text.inverse,
+                    }}
+                  />
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                  {(['member', 'admin'] as const).map((role) => (
+                    <Pressable
+                      key={role}
+                      onPress={() => setNewMemberRole(role)}
+                      style={{
+                        flex: 1,
+                        paddingVertical: spacing.xs,
+                        backgroundColor: newMemberRole === role ? colors.primary : colors.white,
+                        borderRadius: borderRadius.sm,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text style={{
+                        color: newMemberRole === role ? colors.white : colors.text.inverse,
+                        fontWeight: fontWeight.medium,
+                        fontSize: fontSize.sm,
+                      }}>
+                        {t(`labels.role.${role}` as 'labels.role.member')}
+                      </Text>
+                    </Pressable>
+                  ))}
+
+                  <AnimatedPressable
+                    onPress={handleAddMember}
+                    disabled={!newMemberEmail.trim() || addMember.isPending}
+                    hoverScale={1.02}
+                    pressScale={0.97}
+                    disableAnimation={!newMemberEmail.trim() || addMember.isPending}
+                    style={{
+                      backgroundColor: newMemberEmail.trim() ? colors.primary : colors.bgDark,
+                      paddingHorizontal: spacing.lg,
+                      paddingVertical: spacing.xs,
+                      borderRadius: borderRadius.sm,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    {addMember.isPending ? (
+                      <ActivityIndicator size="small" color={colors.white} />
+                    ) : (
+                      <>
+                        <Ionicons name="person-add" size={14} color={newMemberEmail.trim() ? colors.white : colors.text.inverse + '60'} />
+                        <Text style={{
+                          color: newMemberEmail.trim() ? colors.white : colors.text.inverse + '60',
+                          fontWeight: fontWeight.medium,
+                          fontSize: fontSize.sm,
+                        }}>
+                          {t('admin.addMemberButton')}
+                        </Text>
+                      </>
+                    )}
+                  </AnimatedPressable>
+                </View>
+              </View>
+            )}
           </View>
 
           {/* Dietary Preferences */}
