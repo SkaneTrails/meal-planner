@@ -17,6 +17,8 @@ interface GradientBackgroundProps {
   style?: object;
   animated?: boolean;
   muted?: boolean; // Adds a desaturating overlay for a B&W-ish effect
+  structured?: boolean; // Faint gradient variant for structured content screens (meal plan, etc.)
+  neutral?: boolean; // Warm neutral surface - no visible gradient, just light beige/warm gray
 }
 
 const FloatingOrb = ({
@@ -149,10 +151,32 @@ const FloatingOrb = ({
   );
 }
 
-export const GradientBackground = ({ children, style, animated = false, muted = false }: GradientBackgroundProps) => {
+export const GradientBackground = ({ children, style, animated = false, muted = false, structured = false, neutral = false }: GradientBackgroundProps) => {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+
+  // Neutral variant: warm neutral surface with subtle warmth, no heavy gradient
+  if (neutral) {
+    return (
+      <ImageBackground
+        source={BACKGROUND_IMAGE}
+        style={[styles.container, style, { width: windowWidth, height: windowHeight }]}
+        resizeMode="stretch"
+      >
+        {/* Strong frosted overlay - keeps warmth but removes color intensity */}
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: 'rgba(252, 249, 245, 0.7)',
+            },
+          ]}
+        />
+        {children}
+      </ImageBackground>
+    );
+  }
 
   if (!animated) {
     return (
@@ -162,7 +186,7 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
         resizeMode="stretch"
       >
         {/* Slight darkening overlay for mobile to make colors richer */}
-        {isMobile && !muted && (
+        {isMobile && !muted && !structured && (
           <View
             style={[
               StyleSheet.absoluteFill,
@@ -182,6 +206,26 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
               },
             ]}
           />
+        )}
+        {/* Structured variant: stronger neutral wash for content-heavy screens */}
+        {structured && (
+          <>
+            {/* Frosted glass effect - significantly desaturates background */}
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  backgroundColor: 'rgba(250, 247, 244, 0.35)',
+                },
+              ]}
+            />
+            {/* Very subtle warm tint at top only */}
+            <LinearGradient
+              colors={['rgba(232, 200, 170, 0.06)', 'transparent']}
+              locations={[0, 0.25]}
+              style={[StyleSheet.absoluteFill]}
+            />
+          </>
         )}
         {children}
       </ImageBackground>

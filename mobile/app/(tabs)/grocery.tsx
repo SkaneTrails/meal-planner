@@ -204,14 +204,14 @@ export default function GroceryScreen() {
   // Show skeleton whenever the grocery context is loading
   if (contextLoading) {
     return (
-      <GradientBackground>
+      <GradientBackground neutral>
         <View style={{ flex: 1 }}>
-          <View style={{ paddingHorizontal: 16, paddingTop: 44, paddingBottom: 8 }}>
+          <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 8 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <Text style={{
                 fontSize: fontSize['4xl'],
                 fontFamily: fontFamily.display,
-                color: colors.text.primary,
+                color: '#3D3D3D',
                 letterSpacing: letterSpacing.tight,
               }}>{t('grocery.title')}</Text>
             </View>
@@ -223,16 +223,16 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground>
+    <GradientBackground neutral>
       <View style={{ flex: 1, paddingBottom: 100 }}>
       {/* Header with title */}
-      <View style={{ paddingHorizontal: 16, paddingTop: 44, paddingBottom: 8 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
             <Text style={{
               fontSize: fontSize['4xl'],
               fontFamily: fontFamily.display,
-              color: colors.text.primary,
+              color: '#3D3D3D',
               letterSpacing: letterSpacing.tight,
             }}>{t('grocery.title')}</Text>
           </View>
@@ -240,22 +240,28 @@ export default function GroceryScreen() {
       </View>
 
       {/* Stats and controls */}
-      <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.md }}>
-        {/* Stats card */}
+      <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>
+        {/* Stats card - off-white surface for stacking effect */}
         <View style={{
-          backgroundColor: colors.glass.card,
+          backgroundColor: '#FFFFFF',
           borderRadius: borderRadius.md,
           padding: spacing.md,
           marginBottom: spacing.sm,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
+          elevation: 2,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View>
-              <Text style={{ fontSize: fontSize.sm, color: '#8B7355' }}>{t('grocery.thisWeeksShopping')}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.7)' }}>{t('grocery.thisWeeksShopping')}</Text>
+              {/* Progress text - stronger hierarchy, emotional anchor */}
               <Text style={{
-                fontSize: fontSize.xl,
-                fontWeight: fontWeight.bold,
-                color: '#5D4E40',
-                marginTop: 2,
+                fontSize: 22,
+                fontWeight: '700',
+                color: '#3D3D3D',
+                marginTop: 4,
               }}>
                 {itemsToBuy === 0
                   ? t('grocery.noItemsYet')
@@ -263,8 +269,8 @@ export default function GroceryScreen() {
               </Text>
             </View>
 
-            <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-              {/* Add Item button */}
+            <View style={{ flexDirection: 'row', gap: 6 }}>
+              {/* Add Item button - PRIMARY action */}
               <AnimatedPressable
                 onPress={() => setShowAddItem(!showAddItem)}
                 hoverScale={1.08}
@@ -272,16 +278,16 @@ export default function GroceryScreen() {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingHorizontal: 10,
+                  paddingHorizontal: 12,
                   paddingVertical: 8,
-                  borderRadius: borderRadius.sm,
-                  backgroundColor: showAddItem ? '#7A6858' : 'rgba(255, 255, 255, 0.7)',
+                  borderRadius: 10,
+                  backgroundColor: '#5D4E40',
                 }}
               >
-                <Ionicons name={showAddItem ? 'close' : 'add'} size={16} color={showAddItem ? colors.white : '#5D4E40'} />
+                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color="#FFFFFF" />
               </AnimatedPressable>
 
-              {/* Clear All button */}
+              {/* Clear All button - secondary, lower opacity */}
               {totalItems > 0 && (
                 <AnimatedPressable
                   onPress={handleClearAll}
@@ -293,14 +299,14 @@ export default function GroceryScreen() {
                     paddingHorizontal: 10,
                     paddingVertical: 8,
                     borderRadius: 10,
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                    backgroundColor: 'rgba(93, 78, 64, 0.08)',
                   }}
                 >
-                  <Ionicons name="trash-outline" size={16} color="#5D4E40" />
+                  <Ionicons name="trash-outline" size={16} color="rgba(93, 78, 64, 0.5)" />
                 </AnimatedPressable>
               )}
 
-              {/* Reset checked button */}
+              {/* Reset checked button - secondary, lower opacity */}
               {checkedCount > 0 && (
                 <AnimatedPressable
                   onPress={handleClearChecked}
@@ -312,21 +318,21 @@ export default function GroceryScreen() {
                     paddingHorizontal: 10,
                     paddingVertical: 8,
                     borderRadius: 10,
-                    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                    backgroundColor: 'rgba(93, 78, 64, 0.08)',
                   }}
                 >
-                  <Ionicons name="refresh" size={16} color="#5D4E40" />
+                  <Ionicons name="refresh" size={16} color="rgba(93, 78, 64, 0.5)" />
                 </AnimatedPressable>
               )}
             </View>
           </View>
 
-          {/* Progress bar */}
+          {/* Progress bar - thicker with rounded ends */}
           {itemsToBuy > 0 && (
-            <View style={{ marginTop: 12 }}>
-              <View style={{ height: 4, backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: 2, overflow: 'hidden' }}>
+            <View style={{ marginTop: 14 }}>
+              <View style={{ height: 6, backgroundColor: 'rgba(93, 78, 64, 0.1)', borderRadius: 3, overflow: 'hidden' }}>
                 <View
-                  style={{ height: '100%', backgroundColor: '#7A6858', borderRadius: 2, width: `${(checkedItemsToBuy / itemsToBuy) * 100}%` }}
+                  style={{ height: '100%', backgroundColor: '#7A6858', borderRadius: 3, width: `${(checkedItemsToBuy / itemsToBuy) * 100}%` }}
                 />
               </View>
             </View>
@@ -358,24 +364,29 @@ export default function GroceryScreen() {
           )}
         </View>
 
-        {/* Add item input */}
+        {/* Add item input - clean card on neutral surface */}
         {showAddItem && (
           <View style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.65)',
+            backgroundColor: '#FFFFFF',
             borderRadius: borderRadius.md,
             padding: spacing.md,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.04,
+            shadowRadius: 3,
+            elevation: 1,
           }}>
-            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#5D4E40', marginBottom: 8 }}>{t('grocery.addItemLabel')}</Text>
+            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.7)', marginBottom: 8 }}>{t('grocery.addItemLabel')}</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <TextInput
                 style={{
                   flex: 1,
-                  backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                  backgroundColor: 'rgba(93, 78, 64, 0.06)',
                   borderRadius: borderRadius.sm,
                   paddingHorizontal: 12,
                   paddingVertical: 10,
                   fontSize: 14,
-                  color: '#5D4E40',
+                  color: '#3D3D3D',
                 }}
                 placeholder={t('grocery.addItemExamplePlaceholder')}
                 placeholderTextColor="#A09080"

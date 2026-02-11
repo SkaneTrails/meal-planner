@@ -25,12 +25,6 @@ interface RecipeCardProps {
   showFavorite?: boolean; // Whether to show favorite heart icon
 }
 
-const DIET_COLORS: Record<DietLabel, { text: string; bg: string }> = {
-  veggie: { text: colors.diet.veggie.text, bg: colors.diet.veggie.bg },
-  fish: { text: colors.diet.fish.text, bg: colors.diet.fish.bg },
-  meat: { text: colors.diet.meat.text, bg: colors.diet.meat.bg },
-};
-
 const DIET_LABEL_KEYS: Record<DietLabel, string> = {
   veggie: 'labels.diet.veggie',
   fish: 'labels.diet.fish',
@@ -81,41 +75,55 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={{ marginBottom: 12 }}
+        style={{ marginBottom: 14 }}
       >
         <Animated.View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          padding: 12,
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.lg,
+          padding: 14,
+          backgroundColor: 'rgba(255, 255, 255, 0.94)',
+          borderRadius: 20,
           transform: [{ scale: scaleAnim }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.05,
+          shadowRadius: 24,
+          elevation: 3,
         }}>
           <Image
             source={{ uri: recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE }}
-            style={{ width: 56, height: 56, borderRadius: borderRadius.sm }}
+            style={{ width: 60, height: 60, borderRadius: 14 }}
             contentFit="cover"
             placeholder={PLACEHOLDER_BLURHASH}
             transition={200}
           />
-          <View style={{ flex: 1, marginLeft: 14 }}>
+          <View style={{ flex: 1, marginLeft: 16 }}>
             <Text style={{
-              fontSize: fontSize.lg,
-              fontWeight: fontWeight.semibold,
-              color: colors.text.inverse,
-              letterSpacing: letterSpacing.normal,
+              fontSize: 16,
+              fontWeight: '500',
+              color: '#3D3D3D',
+              letterSpacing: -0.2,
+              lineHeight: 22,
             }} numberOfLines={1}>
               {recipe.title}
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 }}>
               {recipe.diet_label && (
                 <View style={{
-                  backgroundColor: DIET_COLORS[recipe.diet_label].bg,
-                  paddingHorizontal: 8,
+                  backgroundColor: recipe.diet_label === 'veggie' ? 'rgba(78, 154, 89, 0.12)' :
+                                   recipe.diet_label === 'fish' ? 'rgba(21, 101, 192, 0.12)' :
+                                   'rgba(180, 80, 70, 0.12)',
+                  paddingHorizontal: 10,
                   paddingVertical: 4,
-                  borderRadius: borderRadius.full,
+                  borderRadius: 8,
                 }}>
-                  <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: DIET_COLORS[recipe.diet_label].text }}>
+                  <Text style={{
+                    fontSize: 12,
+                    fontWeight: '500',
+                    color: recipe.diet_label === 'veggie' ? '#2F6B3B' :
+                           recipe.diet_label === 'fish' ? '#1565C0' :
+                           '#A0453D',
+                  }}>
                     {t(DIET_LABEL_KEYS[recipe.diet_label])}
                   </Text>
                 </View>
@@ -125,21 +133,19 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
                   <Ionicons
                     name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
                     size={13}
-                    color={recipe.rating >= 3 ? colors.success : colors.error}
+                    color={recipe.rating >= 3 ? '#4A8B5C' : '#B0645C'}
                   />
                 </View>
               )}
               {totalTime && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons name="time-outline" size={13} color={colors.text.muted} />
-                  <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary, marginLeft: 4 }}>{totalTime}m</Text>
+                  <Ionicons name="time-outline" size={13} color="rgba(93, 78, 64, 0.5)" />
+                  <Text style={{ fontSize: 13, color: 'rgba(93, 78, 64, 0.6)', marginLeft: 4 }}>{totalTime}m</Text>
                 </View>
               )}
             </View>
           </View>
-          <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: borderRadius.sm, padding: 10 }}>
-            <Ionicons name="chevron-forward" size={16} color={colors.text.inverse} />
-          </View>
+          <Ionicons name="chevron-forward" size={18} color="rgba(93, 78, 64, 0.3)" />
         </Animated.View>
       </Pressable>
     );
