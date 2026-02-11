@@ -28,8 +28,9 @@ COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 
-# Copy application code
+# Copy application code and configuration
 COPY api/ ./api/
+COPY config/ ./config/
 
 # Cloud Run sets PORT environment variable
 ENV PORT=8080
