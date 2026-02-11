@@ -1,8 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Animated, PanResponder, type ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useMealPlan, useAllRecipes, useUpdateNote, useRemoveMeal } from '@/lib/hooks';
+import { useMealPlan, useAllRecipes, useUpdateNote, useRemoveMeal, useGroceryState } from '@/lib/hooks';
 import { hapticLight } from '@/lib/haptics';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -14,6 +13,7 @@ import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants'
 export const useMealPlanActions = () => {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { saveSelections } = useGroceryState();
 
   const MEAL_TYPES: MealTypeOption[] = useMemo(() => [
     { type: 'lunch', label: t('labels.mealTime.lunch') },
@@ -240,14 +240,13 @@ export const useMealPlanActions = () => {
     }
     try {
       const mealsArray = Array.from(selectedMeals);
-      await AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(mealsArray));
-      await AsyncStorage.setItem('grocery_meal_servings', JSON.stringify(mealServings));
+      await saveSelections(mealsArray, mealServings);
       setShowGroceryModal(false);
       setTimeout(() => router.push('/(tabs)/grocery'), 100);
     } catch {
       showNotification(t('common.error'), t('mealPlan.failedToSaveSelections'));
     }
-  }, [selectedMeals, mealServings, router, t]);
+  }, [selectedMeals, mealServings, router, t, saveSelections]);
 
   const openGroceryModal = useCallback(() => {
     hapticLight();

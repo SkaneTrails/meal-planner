@@ -126,7 +126,9 @@ class RecipeBase(BaseModel):
     tags: list[str] = Field(default_factory=list, max_length=MAX_TAGS)
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
-    rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating from 1-5 stars")
+    rating: int | None = Field(default=None, ge=1, le=5, description="Recipe rating (5 = approved/tested)")
+    hidden: bool = Field(default=False, description="Hidden from recipe lists (thumbs down)")
+    favorited: bool = Field(default=False, description="Household favorite (heart)")
     tips: str | None = Field(default=None, max_length=MAX_TIPS_LENGTH, description="Cooking tips")
     # Household fields (for multi-tenancy)
     household_id: str | None = Field(default=None, description="Household that owns this recipe (None = legacy/shared)")
@@ -252,7 +254,9 @@ class RecipeUpdate(BaseModel):
     tips: str | None = None
     diet_label: DietLabel | None = None
     meal_label: MealLabel | None = None
-    rating: int | None = Field(default=None, description="Recipe rating: null to clear, 1-5 to set")
+    rating: int | None = Field(default=None, description="Recipe rating: null to clear, 5 to approve")
+    hidden: bool | None = Field(default=None, description="Hide from recipe lists")
+    favorited: bool | None = Field(default=None, description="Mark as household favorite")
     visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
 
     @field_validator("rating")

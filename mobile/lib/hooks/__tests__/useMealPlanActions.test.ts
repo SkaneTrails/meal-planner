@@ -46,6 +46,8 @@ const mockRecipes: Recipe[] = [
   } as Recipe,
 ];
 
+const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+
 vi.mock('@/lib/hooks', () => ({
   useMealPlan: vi.fn(() => ({
     data: mockMealPlan,
@@ -55,6 +57,7 @@ vi.mock('@/lib/hooks', () => ({
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
   useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
   useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
+  useGroceryState: vi.fn(() => ({ saveSelections: mockSaveSelections })),
 }));
 
 vi.mock('expo-router', () => ({
@@ -76,13 +79,6 @@ vi.mock('@/lib/haptics', () => ({
   hapticSelection: vi.fn(),
 }));
 
-vi.mock('@react-native-async-storage/async-storage', () => ({
-  default: {
-    setItem: vi.fn().mockResolvedValue(undefined),
-    getItem: vi.fn().mockResolvedValue(null),
-  },
-}));
-
 vi.mock('@/lib/utils/dateFormatter', () => ({
   formatDateLocal: (d: Date) => d.toISOString().split('T')[0],
   getWeekDatesArray: () => [
@@ -99,7 +95,6 @@ vi.mock('@/lib/utils/dateFormatter', () => ({
 }));
 
 import { showNotification } from '@/lib/alert';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMealPlanActions } from '../useMealPlanActions';
 
 describe('useMealPlanActions', () => {
@@ -203,19 +198,15 @@ describe('useMealPlanActions', () => {
       expect(showNotification).toHaveBeenCalledWith('mealPlan.noMealsSelected', 'mealPlan.noMealsSelectedMessage');
     });
 
-    it('saves to AsyncStorage and navigates when meals are selected', async () => {
+    it('saves via context and navigates when meals are selected', async () => {
       const { result } = renderActions();
 
       act(() => result.current.handleToggleMeal(new Date('2026-01-05'), 'lunch', 4));
       await act(() => result.current.handleCreateGroceryList());
 
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        'grocery_selected_meals',
-        JSON.stringify(['2026-01-05_lunch']),
-      );
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        'grocery_meal_servings',
-        JSON.stringify({ '2026-01-05_lunch': 4 }),
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        ['2026-01-05_lunch'],
+        { '2026-01-05_lunch': 4 },
       );
       expect(result.current.showGroceryModal).toBe(false);
     });

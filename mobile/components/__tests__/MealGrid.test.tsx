@@ -11,6 +11,7 @@ const buildRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   ingredients: ['pasta', 'egg'],
   instructions: ['Boil', 'Mix'],
   image_url: null,
+  thumbnail_url: null,
   servings: null,
   prep_time: null,
   cook_time: null,
@@ -21,6 +22,8 @@ const buildRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   diet_label: null,
   meal_label: null,
   rating: null,
+  hidden: false,
+  favorited: false,
   ...overrides,
 });
 

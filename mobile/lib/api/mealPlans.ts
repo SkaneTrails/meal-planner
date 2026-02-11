@@ -4,6 +4,9 @@
 
 import type {
   GroceryList,
+  GroceryListState,
+  GroceryListStatePatch,
+  GroceryListStateSave,
   MealPlan,
   MealPlanUpdate,
   MealUpdateRequest,
@@ -54,5 +57,27 @@ export const groceryApi = {
     if (options?.days) params.set('days', options.days.toString());
     const query = params.toString();
     return apiRequest<GroceryList>(`/grocery${query ? `?${query}` : ''}`);
+  },
+
+  getGroceryState: (): Promise<GroceryListState> => {
+    return apiRequest<GroceryListState>('/grocery/state');
+  },
+
+  saveGroceryState: (body: GroceryListStateSave): Promise<GroceryListState> => {
+    return apiRequest<GroceryListState>('/grocery/state', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  },
+
+  patchGroceryState: (body: GroceryListStatePatch): Promise<GroceryListState> => {
+    return apiRequest<GroceryListState>('/grocery/state', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  clearGroceryState: (): Promise<void> => {
+    return apiRequest<void>('/grocery/state', { method: 'DELETE' });
   },
 };

@@ -11,6 +11,7 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { AnimatedPressable, GradientBackground } from '@/components';
 import { Image } from 'expo-image';
@@ -84,7 +85,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
-  const { settings, addItemAtHome, removeItemAtHome, setLanguage } = useSettings();
+  const { settings, addItemAtHome, removeItemAtHome, setLanguage, toggleShowHiddenRecipes } = useSettings();
   const updateHouseholdLanguage = useUpdateHouseholdLanguage(currentUser?.household_id);
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
@@ -288,6 +289,39 @@ export default function SettingsScreen() {
                 <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
               )}
             </AnimatedPressable>
+          </View>
+
+          {/* Recipe Library Section */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <SectionHeader
+              icon="book"
+              title={t('settings.recipeLibrary')}
+              subtitle={t('settings.recipeLibraryDesc')}
+            />
+
+            <View style={{
+              backgroundColor: colors.glass.card,
+              borderRadius: borderRadius.md,
+              padding: spacing.lg,
+              ...shadows.sm,
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flex: 1, marginRight: spacing.md }}>
+                  <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.dark }}>
+                    {t('settings.showHiddenRecipes')}
+                  </Text>
+                  <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', marginTop: 4 }}>
+                    {t('settings.showHiddenRecipesDesc')}
+                  </Text>
+                </View>
+                <Switch
+                  value={settings.showHiddenRecipes}
+                  onValueChange={toggleShowHiddenRecipes}
+                  trackColor={{ false: colors.bgDark, true: colors.accent + '80' }}
+                  thumbColor={settings.showHiddenRecipes ? colors.accent : colors.bgMid}
+                />
+              </View>
+            </View>
           </View>
 
           {/* Language Section */}

@@ -11,6 +11,7 @@ interface RecipeHeroProps {
   title: string;
   imageUrl: string | null;
   rating: number | null;
+  hidden: boolean;
   headerHeight: number;
   scrollY: Animated.Value;
   isUpdatingImage: boolean;
@@ -23,6 +24,7 @@ export const RecipeHero = ({
   title,
   imageUrl,
   rating,
+  hidden,
   headerHeight,
   scrollY,
   isUpdatingImage,
@@ -79,6 +81,7 @@ export const RecipeHero = ({
         </Text>
         <ThumbRating
           rating={rating}
+          hidden={hidden}
           onThumbUp={onThumbUp}
           onThumbDown={onThumbDown}
           size={24}

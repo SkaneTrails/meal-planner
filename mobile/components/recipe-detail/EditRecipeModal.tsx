@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, TextInput, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import { BottomSheetModal } from '@/components';
 import { DIET_OPTIONS, MEAL_OPTIONS, VISIBILITY_OPTIONS } from './recipe-detail-constants';
@@ -25,6 +26,7 @@ interface EditRecipeModalProps {
     visibility: RecipeVisibility;
   }) => Promise<void>;
   onTransferRecipe: (targetHouseholdId: string) => Promise<void>;
+  onDelete: () => void;
 }
 
 export const EditRecipeModal = ({
@@ -36,6 +38,7 @@ export const EditRecipeModal = ({
   onClose,
   onSave,
   onTransferRecipe,
+  onDelete,
 }: EditRecipeModalProps) => {
   const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(recipe.diet_label);
   const [editMealLabel, setEditMealLabel] = useState<MealLabel | null>(recipe.meal_label);
@@ -293,6 +296,28 @@ export const EditRecipeModal = ({
       </View>
 
       <TagEditor editTags={editTags} setEditTags={setEditTags} t={t} />
+
+      {/* Delete Recipe */}
+      <View style={{ marginTop: spacing.xl, paddingTop: spacing.xl, borderTopWidth: 1, borderTopColor: colors.bgDark }}>
+        <Pressable
+          onPress={onDelete}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: pressed ? colors.errorBg : 'transparent',
+            paddingVertical: spacing.md,
+            borderRadius: borderRadius.md,
+            borderWidth: 1,
+            borderColor: colors.error,
+          })}
+        >
+          <Ionicons name="trash-outline" size={20} color={colors.error} style={{ marginRight: spacing.sm }} />
+          <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.error }}>
+            {t('recipe.deleteRecipe')}
+          </Text>
+        </Pressable>
+      </View>
 
       <View style={{ height: 40 }} />
     </BottomSheetModal>

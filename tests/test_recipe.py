@@ -120,6 +120,50 @@ class TestRecipeUpdateRating:
             RecipeUpdate(rating=-1)
 
 
+class TestRecipeHiddenAndFavorited:
+    """Tests for hidden and favorited fields."""
+
+    def test_hidden_defaults_false(self) -> None:
+        """Hidden should default to False."""
+        recipe = Recipe(id="test", title="Recipe", url="https://example.com")
+        assert recipe.hidden is False
+
+    def test_favorited_defaults_false(self) -> None:
+        """Favorited should default to False."""
+        recipe = Recipe(id="test", title="Recipe", url="https://example.com")
+        assert recipe.favorited is False
+
+    def test_hidden_can_be_set_true(self) -> None:
+        """Hidden can be set to True."""
+        recipe = Recipe(id="test", title="Recipe", url="https://example.com", hidden=True)
+        assert recipe.hidden is True
+
+    def test_favorited_can_be_set_true(self) -> None:
+        """Favorited can be set to True."""
+        recipe = Recipe(id="test", title="Recipe", url="https://example.com", favorited=True)
+        assert recipe.favorited is True
+
+    def test_update_hidden(self) -> None:
+        """RecipeUpdate should allow setting hidden."""
+        update = RecipeUpdate(hidden=True)
+        assert update.hidden is True
+
+    def test_update_favorited(self) -> None:
+        """RecipeUpdate should allow setting favorited."""
+        update = RecipeUpdate(favorited=True)
+        assert update.favorited is True
+
+    def test_update_hidden_defaults_none(self) -> None:
+        """RecipeUpdate hidden should default to None (no change)."""
+        update = RecipeUpdate()
+        assert update.hidden is None
+
+    def test_update_favorited_defaults_none(self) -> None:
+        """RecipeUpdate favorited should default to None (no change)."""
+        update = RecipeUpdate()
+        assert update.favorited is None
+
+
 class TestRecipeInputValidation:
     """Tests for input sanitization and length limits."""
 

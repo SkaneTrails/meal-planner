@@ -47,7 +47,7 @@ export default function RecipeDetailScreen() {
     handlePickImage, saveImageUrl,
     handlePlanMeal, handleClearMeal,
     handleThumbUp, handleThumbDown,
-    handleDelete, handleShare,
+    handleShare, handleDelete,
     handleSaveEdit, handleTransferRecipe,
   } = useRecipeActions(id, recipe);
 
@@ -170,41 +170,27 @@ export default function RecipeDetailScreen() {
             </Pressable>
           ),
           headerRight: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-              <Pressable
-                onPress={() => {
-                  hapticLight();
-                  if (id) toggleFavorite(id);
-                }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Ionicons
-                  name={isRecipeFavorite ? 'heart' : 'heart-outline'}
-                  size={22}
-                  color={isRecipeFavorite ? colors.coral : colors.white}
-                />
-              </Pressable>
-              <Pressable
-                onPress={handleDelete}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Ionicons name="trash-outline" size={22} color={colors.white} />
-              </Pressable>
-            </View>
+            <Pressable
+              onPress={() => {
+                hapticLight();
+                if (id) toggleFavorite(id);
+              }}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: spacing.sm,
+              }}
+            >
+              <Ionicons
+                name={isRecipeFavorite ? 'heart' : 'heart-outline'}
+                size={22}
+                color={isRecipeFavorite ? colors.coral : colors.white}
+              />
+            </Pressable>
           ),
         }}
       />
@@ -221,6 +207,7 @@ export default function RecipeDetailScreen() {
           title={recipe.title}
           imageUrl={recipe.image_url}
           rating={recipe.rating}
+          hidden={recipe.hidden}
           headerHeight={HEADER_HEIGHT}
           scrollY={scrollY}
           isUpdatingImage={isUpdatingImage}
@@ -299,6 +286,7 @@ export default function RecipeDetailScreen() {
           onClose={() => setShowEditModal(false)}
           onSave={handleSaveEdit}
           onTransferRecipe={handleTransferRecipe}
+          onDelete={handleDelete}
         />
       )}
 

@@ -58,6 +58,8 @@ export interface Recipe {
   diet_label: DietLabel | null;
   meal_label: MealLabel | null;
   rating: number | null;
+  hidden: boolean;
+  favorited: boolean;
   // Household ownership fields
   household_id?: string | null; // Owning household (null = legacy/unassigned)
   visibility?: RecipeVisibility; // 'household' = private, 'shared' = public
@@ -106,6 +108,8 @@ export interface RecipeUpdate {
   diet_label?: DietLabel | null;
   meal_label?: MealLabel | null;
   rating?: number | null;
+  hidden?: boolean;
+  favorited?: boolean;
   visibility?: RecipeVisibility;
 }
 
@@ -187,6 +191,35 @@ export interface GroceryItem {
 
 export interface GroceryList {
   items: GroceryItem[];
+}
+
+// Grocery list state (persisted in Firestore, shared across household)
+export interface CustomGroceryItem {
+  name: string;
+  category: GroceryCategory;
+}
+
+export interface GroceryListState {
+  selected_meals: string[];
+  meal_servings: Record<string, number>;
+  checked_items: string[];
+  custom_items: CustomGroceryItem[];
+  updated_at?: string | null;
+  created_by?: string | null;
+}
+
+export interface GroceryListStateSave {
+  selected_meals: string[];
+  meal_servings: Record<string, number>;
+  checked_items?: string[];
+  custom_items?: CustomGroceryItem[];
+}
+
+export interface GroceryListStatePatch {
+  selected_meals?: string[];
+  meal_servings?: Record<string, number>;
+  checked_items?: string[];
+  custom_items?: CustomGroceryItem[];
 }
 
 // API Response types
