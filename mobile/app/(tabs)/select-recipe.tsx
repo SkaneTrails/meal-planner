@@ -35,14 +35,26 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <GradientBackground structured style={{ flex: 1 }}>
-        {/* Contextual header - shows what day/meal you're selecting for */}
+      <GradientBackground structured style={{ flex: 1, paddingBottom: 100 }}>
+        {/* Header - same style as other pages */}
         <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
-          <Text style={{ fontSize: 14, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.6)' }}>
-            {t('selectRecipe.choosingFor')}
+          <Text style={{
+            fontSize: fontSize['3xl'],
+            fontFamily: fontFamily.display,
+            color: '#3D3D3D',
+            letterSpacing: -0.3,
+            textAlign: 'center',
+          }}>
+            {formattedDate}
           </Text>
-          <Text style={{ fontSize: 24, fontFamily: fontFamily.display, color: '#3D3D3D', marginTop: 2 }}>
-            {formattedDate} · {MEAL_TYPE_LABELS[mealType]}
+          <Text style={{
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.body,
+            color: 'rgba(93, 78, 64, 0.6)',
+            marginTop: 2,
+            textAlign: 'center',
+          }}>
+            {t('selectRecipe.choosingFor')} {MEAL_TYPE_LABELS[mealType].toLowerCase()}
           </Text>
         </View>
 

@@ -151,24 +151,25 @@ const NextMealCard = ({ nextMeal, t, onPress }: { nextMeal: NextMealType; t: TFn
       hoverScale={1.01}
       pressScale={0.99}
       style={{
-        backgroundColor: colors.glass.card, borderRadius: borderRadius.md,
-        padding: 12, flexDirection: 'row', alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: borderRadius.md,
+        padding: 14, flexDirection: 'row', alignItems: 'center',
+        borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.04)',
       }}
     >
       <Image
         source={nextMeal?.imageUrl ? { uri: nextMeal.imageUrl } : HOMEPAGE_HERO}
-        style={{ width: 64, height: 64, borderRadius: borderRadius.md }}
+        style={{ width: 72, height: 72, borderRadius: borderRadius.md }}
         contentFit="cover"
         placeholder={PLACEHOLDER_BLURHASH}
         transition={200}
       />
       <View style={{ flex: 1, marginLeft: 14 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
           {nextMeal && !nextMeal.isTomorrow && (
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#E07B54', marginRight: 6 }} />
+            <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#6B8E6B', marginRight: 6 }} />
           )}
           <Text style={{
-            fontSize: fontSize.xs,
+            fontSize: fontSize.sm,
             color: nextMeal && !nextMeal.isTomorrow ? '#5D4E40' : '#8B7355',
             fontFamily: nextMeal && !nextMeal.isTomorrow ? fontFamily.bodySemibold : fontFamily.body,
             textTransform: 'uppercase', letterSpacing: letterSpacing.wide,
@@ -179,12 +180,12 @@ const NextMealCard = ({ nextMeal, t, onPress }: { nextMeal: NextMealType; t: TFn
           </Text>
         </View>
         <Text style={{
-          fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: '#5D4E40',
-        }} numberOfLines={1}>
+          fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: '#5D4E40',
+        }} numberOfLines={2}>
           {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#8B7355" />
+      <Ionicons name="chevron-forward" size={20} color="#8B7355" />
     </AnimatedPressable>
   </View>
 );

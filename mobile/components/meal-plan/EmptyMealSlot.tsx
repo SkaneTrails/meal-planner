@@ -19,15 +19,10 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
     style={{
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.75)',
-      borderRadius: 14,
-      padding: 14,
-      marginBottom: 8,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.06,
-      shadowRadius: 3,
-      elevation: 2,
+      backgroundColor: 'rgba(245, 242, 238, 0.7)',
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 6,
     }}
   >
     {/* Label section */}
@@ -36,14 +31,14 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
         width: 26,
         height: 26,
         borderRadius: 13,
-        backgroundColor: 'rgba(93, 78, 64, 0.08)',
+        backgroundColor: 'rgba(93, 78, 64, 0.12)',
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 8,
       }}>
-        <Ionicons name="add" size={16} color="rgba(93, 78, 64, 0.5)" />
+        <Ionicons name="add" size={16} color="rgba(93, 78, 64, 0.6)" />
       </View>
-      <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.7)' }}>
+      <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.8)' }}>
         {label}
       </Text>
     </View>
@@ -102,11 +97,11 @@ const SecondaryActionButton = ({ icon, onPress }: SecondaryActionButtonProps) =>
       width: 34,
       height: 34,
       borderRadius: 10,
-      backgroundColor: 'rgba(93, 78, 64, 0.08)',
+      backgroundColor: 'rgba(93, 78, 64, 0.12)',
       alignItems: 'center',
       justifyContent: 'center',
     }}
   >
-    <Ionicons name={icon} size={16} color="rgba(93, 78, 64, 0.6)" />
+    <Ionicons name={icon} size={17} color="rgba(93, 78, 64, 0.7)" />
   </AnimatedPressable>
 );

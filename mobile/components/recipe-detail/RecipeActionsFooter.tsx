@@ -35,12 +35,12 @@ export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFo
           justifyContent: 'center',
           paddingVertical: spacing.lg,
           marginTop: spacing.sm,
-          backgroundColor: colors.bgMid,
+          backgroundColor: 'rgba(180, 175, 168, 0.4)',
           borderRadius: borderRadius.md,
         }}
       >
-        <Ionicons name="link" size={18} color={colors.text.inverse} />
-        <Text style={{ color: colors.text.inverse, marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
+        <Ionicons name="link" size={18} color="#5D4E40" />
+        <Text style={{ color: '#5D4E40', marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
           {t('recipe.viewSource')}
         </Text>
       </Pressable>
@@ -55,7 +55,7 @@ export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFo
         paddingVertical: spacing.md,
         marginTop: spacing.md,
         marginBottom: 100,
-        backgroundColor: pressed ? colors.primaryDark : colors.primary,
+        backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B',
         borderRadius: borderRadius.sm,
         ...shadows.md,
       })}

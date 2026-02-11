@@ -110,21 +110,23 @@ export default function RecipesScreen() {
     <GradientBackground structured>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 4 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}>
           <View style={{ marginBottom: 8 }}>
             <Text style={{
-              fontSize: fontSize['4xl'],
+              fontSize: fontSize['3xl'],
               fontFamily: fontFamily.display,
               color: '#3D3D3D',
               letterSpacing: letterSpacing.tight,
+              textAlign: 'center',
             }}>
               {t('recipes.title')}
             </Text>
             <Text style={{
-              fontSize: fontSize.lg,
+              fontSize: fontSize.md,
               fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.7)',
-              marginTop: 4,
+              color: 'rgba(93, 78, 64, 0.6)',
+              marginTop: 2,
+              textAlign: 'center',
             }}>
               {t('recipes.collectionCount', { count: totalCount })}
             </Text>

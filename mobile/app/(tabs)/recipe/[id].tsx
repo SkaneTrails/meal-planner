@@ -8,6 +8,7 @@ import {
   Pressable,
   Animated,
   Text,
+  StyleSheet,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -80,50 +81,58 @@ export default function RecipeDetailScreen() {
 
   if (isLoading) {
     return (
-      <GradientBackground style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <GradientBackground structured style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View style={{
-          width: 96,
-          height: 96,
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          borderRadius: 24,
+          width: 64,
+          height: 64,
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          borderRadius: 16,
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: spacing.lg,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 3,
         }}>
-          <BouncingLoader size={14} />
+          <BouncingLoader size={12} />
         </View>
-        <Text style={{ color: colors.text.primary, fontSize: fontSize['2xl'], fontFamily: fontFamily.displayBold }}>{t('recipe.loading')}</Text>
       </GradientBackground>
     );
   }
 
   if (error || !recipe) {
     return (
-      <GradientBackground style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl }}>
+      <GradientBackground structured style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl }}>
         <View style={{
-          width: 96,
-          height: 96,
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          borderRadius: 24,
+          width: 80,
+          height: 80,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          borderRadius: 20,
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: spacing.xl,
+          marginBottom: spacing.lg,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 3,
         }}>
-          <Ionicons name="alert-circle-outline" size={48} color={colors.text.primary} />
+          <Ionicons name="alert-circle-outline" size={40} color="rgba(93, 78, 64, 0.6)" />
         </View>
-        <Text style={{ color: colors.text.primary, fontSize: 32, fontFamily: fontFamily.displayBold, marginBottom: spacing.sm }}>{t('recipe.notFound')}</Text>
-        <Text style={{ color: colors.text.secondary, fontSize: fontSize.lg, fontFamily: fontFamily.body, marginTop: spacing.sm, textAlign: 'center' }}>{t('recipe.notFoundMessage')}</Text>
+        <Text style={{ color: '#3D3D3D', fontSize: fontSize['2xl'], fontFamily: fontFamily.displayBold, textAlign: 'center' }}>{t('recipe.notFound')}</Text>
+        <Text style={{ color: 'rgba(93, 78, 64, 0.7)', fontSize: fontSize.md, fontFamily: fontFamily.body, marginTop: spacing.sm, textAlign: 'center' }}>{t('recipe.notFoundMessage')}</Text>
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => ({
             marginTop: spacing.xl,
-            paddingHorizontal: 28,
-            paddingVertical: spacing.lg,
-            backgroundColor: pressed ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.5)',
+            paddingHorizontal: 24,
+            paddingVertical: spacing.md,
+            backgroundColor: pressed ? 'rgba(122, 104, 88, 0.2)' : 'rgba(122, 104, 88, 0.12)',
             borderRadius: borderRadius.sm,
           })}
         >
-          <Text style={{ color: colors.text.primary, fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold }}>{t('common.goBack')}</Text>
+          <Text style={{ color: '#5D4E40', fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold }}>{t('common.goBack')}</Text>
         </Pressable>
       </GradientBackground>
     );
@@ -221,6 +230,13 @@ export default function RecipeDetailScreen() {
           borderTopLeftRadius={32}
           borderTopRightRadius={32}
         >
+          {/* Warm grey overlay matching other screens */}
+          <View style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: 'rgba(235, 232, 228, 0.94)',
+            borderTopLeftRadius: 32,
+            borderTopRightRadius: 32,
+          }} />
           <View style={{
             padding: spacing.xl,
             paddingBottom: 140,

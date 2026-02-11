@@ -30,7 +30,7 @@ const TabBarBackground = () => {
           bottom: 0,
           borderRadius: 16,
           overflow: 'hidden',
-          backgroundColor: 'rgba(255, 255, 255, 0.25)',
+          backgroundColor: 'rgba(255, 255, 255, 0.55)',
         }}
       />
     );
@@ -44,10 +44,10 @@ const TabBarBackground = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
         borderRadius: 16,
         borderWidth: 0.5,
-        borderColor: 'rgba(139, 115, 85, 0.08)',
+        borderColor: 'rgba(0, 0, 0, 0.06)',
       }}
     />
   );

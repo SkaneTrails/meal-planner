@@ -36,10 +36,12 @@ export const SearchBar = ({
     <View style={{
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.glass.card,
+      backgroundColor: 'rgba(255, 255, 255, 0.92)',
       borderRadius: borderRadius.md,
       paddingHorizontal: 12,
       paddingVertical: 10,
+      borderWidth: 1,
+      borderColor: 'rgba(0, 0, 0, 0.05)',
     }}>
       <Ionicons name="search" size={18} color="#8B7355" />
       <TextInput
@@ -80,7 +82,7 @@ interface FilterChipsProps {
 }
 
 const DIET_CHIPS: { diet: DietLabel; emoji: string; activeColor: string }[] = [
-  { diet: 'veggie', emoji: '🌱', activeColor: '#4A8C5C' },
+  { diet: 'veggie', emoji: '🌱', activeColor: '#6B8E6B' },
   { diet: 'fish', emoji: '🐟', activeColor: '#2D7AB8' },
   { diet: 'meat', emoji: '🍗', activeColor: '#B85C38' },
 ];
@@ -107,14 +109,14 @@ export const FilterChips = ({
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16,
-          backgroundColor: !dietFilter && !showFavoritesOnly ? '#5D4E40' : 'transparent',
-          borderWidth: 1.5,
-          borderColor: !dietFilter && !showFavoritesOnly ? '#5D4E40' : '#8B7355',
+          paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
+          backgroundColor: !dietFilter && !showFavoritesOnly ? '#5D4E40' : 'rgba(232, 222, 212, 0.7)',
+          borderWidth: !dietFilter && !showFavoritesOnly ? 0 : 1,
+          borderColor: 'rgba(139, 115, 85, 0.3)',
         }}
       >
         <Text style={{
-          fontSize: 14, fontWeight: '600',
+          fontSize: 13, fontWeight: '600',
           color: !dietFilter && !showFavoritesOnly ? colors.white : '#5D4E40',
         }}>
           {t('labels.diet.all')}
@@ -129,16 +131,16 @@ export const FilterChips = ({
           hoverScale={1.05}
           pressScale={0.95}
           style={{
-            paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16,
-            backgroundColor: dietFilter === diet ? activeColor : 'transparent',
-            borderWidth: 1.5,
-            borderColor: dietFilter === diet ? activeColor : '#8B7355',
-            flexDirection: 'row', alignItems: 'center', gap: 6,
+            paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
+            backgroundColor: dietFilter === diet ? activeColor : 'rgba(232, 222, 212, 0.7)',
+            borderWidth: dietFilter === diet ? 0 : 1,
+            borderColor: 'rgba(139, 115, 85, 0.3)',
+            flexDirection: 'row', alignItems: 'center', gap: 5,
           }}
         >
-          <Text style={{ fontSize: 14 }}>{emoji}</Text>
+          <Text style={{ fontSize: 13 }}>{emoji}</Text>
           <Text style={{
-            fontSize: 14, fontWeight: '600',
+            fontSize: 13, fontWeight: '600',
             color: dietFilter === diet ? colors.white : '#5D4E40',
           }}>
             {t(`labels.diet.${diet}`)}
@@ -152,20 +154,20 @@ export const FilterChips = ({
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16,
-          backgroundColor: showFavoritesOnly ? '#C75050' : 'transparent',
-          borderWidth: 1.5,
-          borderColor: showFavoritesOnly ? '#C75050' : '#8B7355',
-          flexDirection: 'row', alignItems: 'center', gap: 6,
+          paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
+          backgroundColor: showFavoritesOnly ? '#C75050' : 'rgba(232, 222, 212, 0.7)',
+          borderWidth: showFavoritesOnly ? 0 : 1,
+          borderColor: 'rgba(139, 115, 85, 0.3)',
+          flexDirection: 'row', alignItems: 'center', gap: 5,
         }}
       >
         <Ionicons
           name={showFavoritesOnly ? 'heart' : 'heart-outline'}
-          size={16}
+          size={15}
           color={showFavoritesOnly ? colors.white : '#C75050'}
         />
         <Text style={{
-          fontSize: 14, fontWeight: '600',
+          fontSize: 13, fontWeight: '600',
           color: showFavoritesOnly ? colors.white : '#5D4E40',
         }}>
           {t('recipes.favorites')}
@@ -178,14 +180,14 @@ export const FilterChips = ({
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16,
-          backgroundColor: 'transparent',
-          borderWidth: 1.5, borderColor: '#8B7355',
-          flexDirection: 'row', alignItems: 'center', gap: 6,
+          paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
+          backgroundColor: 'rgba(232, 222, 212, 0.7)',
+          borderWidth: 1, borderColor: 'rgba(139, 115, 85, 0.3)',
+          flexDirection: 'row', alignItems: 'center', gap: 5,
         }}
       >
-        <Ionicons name="funnel-outline" size={14} color="#5D4E40" />
-        <Text style={{ fontSize: 14, fontWeight: '600', color: '#5D4E40' }}>
+        <Ionicons name="funnel-outline" size={13} color="#5D4E40" />
+        <Text style={{ fontSize: 13, fontWeight: '600', color: '#5D4E40' }}>
           {sortOptions.find((o) => o.value === sortBy)?.label}
         </Text>
       </AnimatedPressable>
