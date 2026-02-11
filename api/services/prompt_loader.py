@@ -93,6 +93,11 @@ def load_system_prompt(language: str = DEFAULT_LANGUAGE) -> str:
 
     parts = [p for p in (core, locale, user) if p]
 
+    if not parts:
+        prompts_dir = get_prompts_dir()
+        msg = f"No prompt files found — prompts directory may be missing: {prompts_dir}"
+        raise FileNotFoundError(msg)
+
     return "\n\n---\n\n".join(parts)
 
 

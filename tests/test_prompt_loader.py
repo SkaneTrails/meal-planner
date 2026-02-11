@@ -3,6 +3,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from api.services.prompt_loader import (
     DEFAULT_LANGUAGE,
     LANGUAGE_NAMES,
@@ -251,6 +253,16 @@ class TestLoadSystemPrompt:
             result = load_system_prompt("en")
 
         assert "Output in English" in result
+
+    def test_raises_when_no_prompt_files_found(self, tmp_path: Path) -> None:
+        """Should raise FileNotFoundError when prompts directory is missing."""
+        empty_dir = tmp_path / "missing" / "prompts"
+
+        with (
+            patch("api.services.prompt_loader.get_prompts_dir", return_value=empty_dir),
+            pytest.raises(FileNotFoundError, match="No prompt files found"),
+        ):
+            load_system_prompt()
 
 
 class TestValidatePrompts:
