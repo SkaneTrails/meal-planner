@@ -2,17 +2,38 @@
  * Typography scale, font families, weights, letter spacing, and presets.
  */
 
+import { Platform } from 'react-native';
+
 // Font families - DM Sans for everything (unified font)
+// Web uses CSS font names with weights, native uses Expo font names (which embed weight)
+const isWeb = Platform.OS === 'web';
+
+// For web: fontFamily is just the font name, weight comes from fontWeight
+// For native: fontFamily includes the weight (e.g., DMSans_600SemiBold)
 export const fontFamily = {
-  display: 'DMSans_600SemiBold',
-  displayRegular: 'DMSans_400Regular',
-  displayMedium: 'DMSans_500Medium',
-  displayBold: 'DMSans_700Bold',
-  body: 'DMSans_400Regular',
-  bodyMedium: 'DMSans_500Medium',
-  bodySemibold: 'DMSans_600SemiBold',
-  bodyBold: 'DMSans_700Bold',
-  accent: 'DMSans_500Medium',
+  display: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
+  displayRegular: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
+  displayMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+  displayBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
+  body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
+  bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+  bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
+  bodyBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
+  accent: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+};
+
+// Font weights - used in addition to fontFamily for web
+// On native, fontFamily already includes weight, so these are redundant but harmless
+export const fontFamilyWeight = {
+  display: '600' as const,
+  displayRegular: '400' as const,
+  displayMedium: '500' as const,
+  displayBold: '700' as const,
+  body: '400' as const,
+  bodyMedium: '500' as const,
+  bodySemibold: '600' as const,
+  bodyBold: '700' as const,
+  accent: '500' as const,
 };
 
 // Typography scale - refined for luxury feel
