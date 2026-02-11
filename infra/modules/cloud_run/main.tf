@@ -103,6 +103,7 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
 
+
       # Scrape function URL
       dynamic "env" {
         for_each = var.scrape_function_url != "" ? [1] : []
