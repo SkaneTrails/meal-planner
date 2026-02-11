@@ -160,7 +160,7 @@ export default function RecipeDetailScreen() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                backgroundColor: 'rgba(93, 78, 64, 0.75)',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginLeft: spacing.sm,
@@ -179,7 +179,7 @@ export default function RecipeDetailScreen() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                backgroundColor: 'rgba(93, 78, 64, 0.75)',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: spacing.sm,
@@ -239,7 +239,7 @@ export default function RecipeDetailScreen() {
           }} />
           <View style={{
             padding: spacing.xl,
-            paddingBottom: 140,
+            paddingBottom: 200,
             maxWidth: 720,
             alignSelf: 'center',
             width: '100%',

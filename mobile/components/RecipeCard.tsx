@@ -225,14 +225,13 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
         </View>
 
         {/* Content below image */}
-        <View style={{ paddingHorizontal: 10, paddingVertical: 10, flex: 1, justifyContent: 'space-between' }}>
+        <View style={{ paddingHorizontal: 10, paddingVertical: 6, flex: 1, justifyContent: 'space-between' }}>
           {/* Title - 2 lines max */}
           <Text style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodyBold,
-            fontWeight: '600',
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.bodySemibold,
             color: '#3D3228',
-            lineHeight: 20,
+            lineHeight: 18,
           }} numberOfLines={2}>
             {recipe.title}
           </Text>
