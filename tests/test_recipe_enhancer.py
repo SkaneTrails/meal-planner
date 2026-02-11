@@ -302,13 +302,30 @@ class TestEnhanceRecipe:
         with (
             patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
-            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt") as mock_prompt,
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
 
+            mock_prompt.assert_called_once_with("sv")
             mock_client.models.generate_content.assert_called_once()
             call_kwargs = mock_client.models.generate_content.call_args
             assert call_kwargs.kwargs["model"] == DEFAULT_MODEL
+
+    def test_passes_language_to_system_prompt(self) -> None:
+        """Should pass language parameter to load_system_prompt."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.text = json.dumps({"title": "Enhanced", "ingredients": [], "instructions": []})
+        mock_client.models.generate_content.return_value = mock_response
+
+        with (
+            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
+            patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="English prompt") as mock_prompt,
+        ):
+            enhance_recipe({"title": "Test", "ingredients": [], "instructions": []}, language="en")
+
+            mock_prompt.assert_called_once_with("en")
 
     def test_converts_string_instructions_to_list(self) -> None:
         """Should convert string instructions to list."""
