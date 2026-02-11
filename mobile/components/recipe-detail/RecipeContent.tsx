@@ -6,10 +6,11 @@ import { AnimatedPressable } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { RecipeInstructions } from './RecipeInstructions';
 import { RecipeEnhancedInfo } from './RecipeEnhancedInfo';
+import { EnhancementReviewBanner } from './EnhancementReviewBanner';
 import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
 import { RecipeActionsFooter } from './RecipeActionsFooter';
 import { DIET_LABELS } from './recipe-detail-constants';
-import type { Recipe } from '@/lib/types';
+import type { Recipe, EnhancementReviewAction } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
 
 interface RecipeContentProps {
@@ -19,6 +20,8 @@ interface RecipeContentProps {
   showAiChanges: boolean;
   showOriginal: boolean;
   canEdit: boolean;
+  needsEnhancementReview: boolean;
+  isReviewingEnhancement: boolean;
   t: TFunction;
   onToggleStep: (index: number) => void;
   onToggleAiChanges: () => void;
@@ -26,6 +29,7 @@ interface RecipeContentProps {
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
   onShare: () => void;
+  onReviewEnhancement: (action: EnhancementReviewAction) => void;
 }
 
 export const RecipeContent = ({
@@ -35,6 +39,8 @@ export const RecipeContent = ({
   showAiChanges,
   showOriginal,
   canEdit,
+  needsEnhancementReview,
+  isReviewingEnhancement,
   t,
   onToggleStep,
   onToggleAiChanges,
@@ -42,6 +48,7 @@ export const RecipeContent = ({
   onOpenEditModal,
   onShowPlanModal,
   onShare,
+  onReviewEnhancement,
 }: RecipeContentProps) => {
   const hasOriginal = Boolean(recipe.enhanced && recipe.original);
   const displayIngredients = useMemo(
@@ -211,6 +218,16 @@ export const RecipeContent = ({
         showOriginal={showOriginal}
         t={t}
         onToggle={onToggleOriginal}
+      />
+    )}
+
+    {/* Enhancement review banner */}
+    {needsEnhancementReview && (
+      <EnhancementReviewBanner
+        t={t}
+        isSubmitting={isReviewingEnhancement}
+        onApprove={() => onReviewEnhancement('approve')}
+        onReject={() => onReviewEnhancement('reject')}
       />
     )}
 

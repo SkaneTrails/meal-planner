@@ -6,7 +6,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import { useSettings } from '../settings-context';
-import type { PaginatedRecipeList, Recipe, RecipeCreate, RecipeUpdate } from '../types';
+import type { EnhancementReviewAction, PaginatedRecipeList, Recipe, RecipeCreate, RecipeUpdate } from '../types';
 
 // Query keys
 export const recipeKeys = {
@@ -161,6 +161,27 @@ export const useDeleteRecipe = () => {
       queryClient.removeQueries({
         queryKey: recipeKeys.detail(id),
       });
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+    },
+  });
+}
+
+/**
+ * Hook to review (approve/reject) an AI enhancement.
+ */
+export const useReviewEnhancement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      action,
+    }: {
+      id: string;
+      action: EnhancementReviewAction;
+    }) => api.reviewEnhancement(id, action),
+    onSuccess: (data) => {
+      queryClient.setQueryData(recipeKeys.detail(data.id), data);
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });

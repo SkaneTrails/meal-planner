@@ -1,13 +1,13 @@
 import { Share } from 'react-native';
 import { useRouter } from 'expo-router';
 import { showAlert, showNotification } from '@/lib/alert';
-import { useDeleteRecipe, useUpdateRecipe, useSetMeal, useCurrentUser, useImagePicker } from '@/lib/hooks';
+import { useDeleteRecipe, useUpdateRecipe, useSetMeal, useCurrentUser, useImagePicker, useReviewEnhancement } from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { hapticLight, hapticSuccess, hapticWarning } from '@/lib/haptics';
-import type { MealType, Recipe, DietLabel, MealLabel, RecipeVisibility } from '@/lib/types';
+import type { MealType, Recipe, DietLabel, MealLabel, RecipeVisibility, EnhancementReviewAction } from '@/lib/types';
 import { useState } from 'react';
 
 interface EditUpdates {
@@ -30,6 +30,7 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
   const setMeal = useSetMeal();
+  const reviewEnhancement = useReviewEnhancement();
 
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
@@ -238,12 +239,42 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     ]);
   };
 
+  const handleReviewEnhancement = async (action: EnhancementReviewAction) => {
+    if (!id || !recipe) return;
+    if (!currentUser) {
+      showNotification(t('recipe.pleaseWait'), t('recipe.loadingAccount'));
+      return;
+    }
+    if (recipe.household_id !== currentUser.household_id) {
+      showNotification(t('recipe.cannotRate'), t('recipe.cannotRateMessage'));
+      return;
+    }
+    try {
+      await reviewEnhancement.mutateAsync({ id, action });
+      hapticSuccess();
+      if (action === 'approve') {
+        showNotification(t('recipe.enhancementApproved'), t('recipe.enhancementApprovedMessage'));
+      } else {
+        showNotification(t('recipe.enhancementRejected'), t('recipe.enhancementRejectedMessage'));
+      }
+    } catch {
+      hapticWarning();
+      showNotification(t('common.error'), t('recipe.reviewFailed'));
+    }
+  };
+
+  const needsEnhancementReview = Boolean(
+    recipe?.enhanced && !recipe?.enhancement_reviewed,
+  );
+
   return {
     currentUser,
     isSuperuser,
     households,
     canEdit,
     isUpdatingImage,
+    isReviewingEnhancement: reviewEnhancement.isPending,
+    needsEnhancementReview,
     t,
     showPlanModal,
     setShowPlanModal,
@@ -261,5 +292,6 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     handleShare,
     handleSaveEdit,
     handleTransferRecipe,
+    handleReviewEnhancement,
   };
 };

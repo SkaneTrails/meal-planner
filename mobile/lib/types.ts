@@ -28,6 +28,8 @@ export interface StructuredInstruction {
 
 export type RecipeVisibility = 'household' | 'shared';
 
+export type EnhancementReviewAction = 'approve' | 'reject';
+
 export interface OriginalRecipe {
   title: string;
   ingredients: string[];
@@ -67,6 +69,8 @@ export interface Recipe {
   // AI enhancement fields
   enhanced?: boolean; // True if AI-enhanced
   enhanced_at?: string; // ISO timestamp of enhancement
+  show_enhanced?: boolean; // User approved the enhancement
+  enhancement_reviewed?: boolean; // User has reviewed the enhancement
   tips?: string;
   changes_made?: string[];
   original?: OriginalRecipe | null; // Original data before AI enhancement
