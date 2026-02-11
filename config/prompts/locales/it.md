@@ -39,12 +39,12 @@ Round to practical metric amounts:
 Where traditional, use:
 
 - **Bicchiere** (glass, ~200-250 ml) — specify ml in parentheses
-- **Tazzina** (small cup, ~80 ml) — for espresso-sized portions
+- **Tazzina** (small cup, ~80 ml) — for liquids only (espresso-sized portions)
 
 **Examples:**
 
-- "1 bicchiere di vino (200 ml)"
-- "1 tazzina di parmigiano grattugiato (80 g)"
+- "1 bicchiere di vino bianco (200 ml)"
+- "1 tazzina di marsala (80 ml)"
 
 ### Vague amounts — Italian conversions
 
@@ -76,8 +76,16 @@ Use Italian dairy products, NOT foreign substitutions.
 ### Olive oil
 
 - **Olio extravergine d'oliva** for finishing, salads, traditional dishes
-- **Olio di oliva** or **olio di semi** for frying (when specified)
+- **Olio di oliva** for light frying and sautéing
+- **Olio di arachide** (peanut oil) for deep frying — standard choice in Italian kitchens
+- **Olio di semi** only when a neutral, inexpensive oil is needed
 - Default assumption: use olio extravergine unless recipe specifies otherwise
+
+### Soffritto
+
+- The base of most Italian dishes: **cipolla, carota, sedano** (onion, carrot, celery)
+- Do not over-explain or substitute — Italian cooks know this convention
+- Write "Preparare il soffritto con cipolla, carota e sedano" — not step-by-step chopping instructions
 
 ### Tomatoes
 
@@ -87,6 +95,25 @@ Use Italian tomato product names:
 - **Passata di pomodoro** (tomato purée)
 - **Concentrato di pomodoro** (tomato paste)
 - **Pomodorini** (cherry tomatoes)
+
+### Flour types
+
+Italian recipes distinguish flour types — use the correct one:
+
+| Italian           | Use                                      |
+| ----------------- | ---------------------------------------- |
+| Farina 00         | Pasta fresca, pizza, dolci — very fine   |
+| Farina 0          | Pane, focaccia — slightly coarser        |
+| Semola rimacinata | Pasta secca, pane pugliese — durum wheat |
+| Farina integrale  | Wholemeal — specify when called for      |
+
+**NEVER write "all-purpose flour"** — always use the Italian flour type.
+
+### Cheese naming
+
+- **Parmigiano Reggiano** or **Grana Padano** — NEVER just "Parmesan" or "parmigiano"
+- **Pecorino Romano** — not just "pecorino" (there are many types)
+- **Mozzarella di bufala** vs **fiordilatte** (cow's milk mozzarella) — specify which
 
 ### Pasta
 
@@ -120,7 +147,7 @@ Standard Italian package sizes:
 
 When suggesting alternatives or substitutions, use ingredients commonly found in Italian supermarkets (Esselunga, Coop, Conad, Carrefour):
 
-- **Vegetarian protein**: Tofu, seitan, legumi — NOT heavily processed meat substitutes
+- **Vegetarian protein**: Tofu, seitan, legumi (ceci, lenticchie, fagioli) — prefer whole-food proteins; Quorn also available in larger stores
 - **Cheese**: Parmigiano Reggiano, Grana Padano, pecorino, mozzarella — use proper Italian names
 - **Fresh herbs**: Basilico, prezzemolo, rosmarino, salvia, origano fresco
 - **Pantry staples**: Use Italian product names (es. "farina 00" not "all-purpose flour")

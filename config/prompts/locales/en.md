@@ -87,31 +87,33 @@ Use UK dairy product names and types.
 
 - **Vegetable oil** or **sunflower oil** for neutral frying oil
 - **Olive oil** for Mediterranean dishes, salads, finishing
-- **Rapeseed oil** increasingly common as UK-grown alternative
+- **Rapeseed oil** widely available as UK-grown alternative
 - Butter for finishing and flavour
 
 ### Terminology differences
 
 Use UK English terms, NOT US terms:
 
-| UK term            | NOT US term                           |
-| ------------------ | ------------------------------------- |
-| Courgette          | Zucchini                              |
-| Aubergine          | Eggplant                              |
-| Coriander (fresh)  | Cilantro                              |
-| Rocket             | Arugula                               |
-| Spring onion       | Scallion                              |
-| Minced meat        | Ground meat                           |
-| Grill              | Broil                                 |
-| Tin                | Can                                   |
-| Baking tray        | Cookie sheet                          |
-| Kitchen paper      | Paper towel                           |
-| Cling film         | Plastic wrap                          |
-| Plain flour        | All-purpose flour                     |
-| Self-raising flour | Self-rising flour                     |
-| Icing sugar        | Confectioners' sugar / Powdered sugar |
-| Caster sugar       | Superfine sugar                       |
-| Demerara sugar     | Light brown sugar (similar)           |
+| UK term            | NOT US term                            |
+| ------------------ | -------------------------------------- |
+| Courgette          | Zucchini                               |
+| Aubergine          | Eggplant                               |
+| Coriander (fresh)  | Cilantro                               |
+| Rocket             | Arugula                                |
+| Spring onion       | Scallion                               |
+| Minced meat        | Ground meat                            |
+| Grill              | Broil                                  |
+| Tin                | Can                                    |
+| Baking tray        | Cookie sheet                           |
+| Kitchen paper      | Paper towel                            |
+| Cling film         | Plastic wrap                           |
+| Plain flour        | All-purpose flour                      |
+| Self-raising flour | Self-rising flour                      |
+| Icing sugar        | Confectioners' sugar / Powdered sugar  |
+| Caster sugar       | Superfine sugar                        |
+| Demerara sugar     | Light brown sugar (similar)            |
+| Strong bread flour | Bread flour                            |
+| 00 flour           | (Italian import, no direct equivalent) |
 
 ### Oven temperatures
 
@@ -134,7 +136,7 @@ ALWAYS replace "packet", "tin", "jar" with actual measurements:
 - "1 packet of pasta" → "500 g pasta"
 - "1 pot of double cream" → "300 ml double cream"
 - "1 tin of coconut milk" → "400 ml coconut milk"
-- "1 tin of tuna" → "145 g tin of tuna"
+- "1 tin of tuna" → "160 g tin of tuna"
 
 Standard UK package sizes:
 
@@ -142,7 +144,7 @@ Standard UK package sizes:
 - Chopped tomatoes: 400 g tin
 - Double cream: 300 ml pot
 - Coconut milk: 400 ml tin
-- Tuna: 145 g tin
+- Tuna: 160 g tin
 - Beans (baked/kidney): 400 g tin
 
 ## UK ingredient availability
@@ -153,7 +155,8 @@ When suggesting alternatives or substitutions, use ingredients commonly found in
 - **Cheese**: Cheddar, Red Leicester, Stilton, plus European imports (Parmesan, mozzarella, etc.)
 - **Fresh herbs**: Parsley, coriander, basil, thyme, rosemary — fresh herbs sold in small pots or packets
 - **Asian ingredients**: Available in larger supermarkets or Asian grocers
-- **Soy sauce**: Light soy sauce, dark soy sauce (specify type — UK stocks both Chinese and Japanese varieties)
+- **Soy sauce**: Light soy sauce, dark soy sauce — specify type (e.g., "light soy sauce" or "Japanese soy sauce (e.g. Kikkoman)")
+- **UK pantry staples**: Worcestershire sauce, Marmite, HP sauce, Mango chutney — do not substitute with non-UK alternatives
 
 ## Portion markers
 
