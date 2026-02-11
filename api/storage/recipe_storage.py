@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 
 from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
 
-from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
+from api.models.recipe import DietLabel, MealLabel, OriginalRecipe, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
 
 
@@ -147,7 +147,42 @@ def save_recipe(
         else db.collection(RECIPES_COLLECTION).document()
     )
 
+    # Snapshot original data before overwriting with enhanced version
+    original_snapshot: OriginalRecipe | None = None
+    existing_created_at: datetime | None = None
+    if meta.enhanced and recipe_id:
+        existing = cast("DocumentSnapshot", doc_ref.get())
+        if existing.exists:
+            existing_data = existing.to_dict() or {}
+            existing_created_at = existing_data.get("created_at")
+
+            # Reuse preserved original snapshot if recipe was already enhanced
+            existing_original = existing_data.get("original")
+            if isinstance(existing_original, dict) and existing_original:
+                original_snapshot = OriginalRecipe(
+                    title=existing_original.get("title", ""),
+                    ingredients=existing_original.get("ingredients", []),
+                    instructions=existing_original.get("instructions", []),
+                    servings=existing_original.get("servings"),
+                    prep_time=existing_original.get("prep_time"),
+                    cook_time=existing_original.get("cook_time"),
+                    total_time=existing_original.get("total_time"),
+                    image_url=existing_original.get("image_url"),
+                )
+            else:
+                original_snapshot = OriginalRecipe(
+                    title=existing_data.get("title", ""),
+                    ingredients=existing_data.get("ingredients", []),
+                    instructions=existing_data.get("instructions", []),
+                    servings=existing_data.get("servings"),
+                    prep_time=existing_data.get("prep_time"),
+                    cook_time=existing_data.get("cook_time"),
+                    total_time=existing_data.get("total_time"),
+                    image_url=existing_data.get("image_url"),
+                )
+
     now = datetime.now(tz=UTC)
+    created_at = existing_created_at if existing_created_at else now
     data = {
         "title": recipe.title,
         "url": recipe.url,
@@ -165,7 +200,7 @@ def save_recipe(
         "tips": recipe.tips,
         "diet_label": recipe.diet_label.value if recipe.diet_label else None,
         "meal_label": recipe.meal_label.value if recipe.meal_label else None,
-        "created_at": now,
+        "created_at": created_at,
         "updated_at": now,
         # Household fields
         "household_id": household_id,
@@ -176,12 +211,16 @@ def save_recipe(
     # Add enhancement fields if present
     if meta.enhanced:
         data["enhanced"] = meta.enhanced
+        data["show_enhanced"] = False
+        data["enhancement_reviewed"] = False
     if meta.enhanced_at:
         data["enhanced_at"] = meta.enhanced_at
     if meta.changes_made:
         data["changes_made"] = meta.changes_made
+    if original_snapshot:
+        data["original"] = original_snapshot.model_dump()
 
-    doc_ref.set(data)
+    doc_ref.set(data, merge=True)
 
     # Type cast visibility to match Recipe model's Literal type
     visibility_value = data["visibility"]
@@ -190,11 +229,14 @@ def save_recipe(
 
     return Recipe(
         id=doc_ref.id,
-        created_at=now,
+        created_at=created_at,
         updated_at=now,
         enhanced=meta.enhanced,
         enhanced_at=meta.enhanced_at,
         changes_made=meta.changes_made or None,
+        original=original_snapshot,
+        show_enhanced=False,
+        enhancement_reviewed=False,
         household_id=household_id,
         visibility=visibility_value,  # type: ignore[arg-type]
         created_by=created_by,
