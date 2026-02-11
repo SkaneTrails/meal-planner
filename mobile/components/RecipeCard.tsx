@@ -25,12 +25,6 @@ interface RecipeCardProps {
   showFavorite?: boolean; // Whether to show favorite heart icon
 }
 
-const DIET_COLORS: Record<DietLabel, { text: string; bg: string }> = {
-  veggie: { text: colors.diet.veggie.text, bg: colors.diet.veggie.bg },
-  fish: { text: colors.diet.fish.text, bg: colors.diet.fish.bg },
-  meat: { text: colors.diet.meat.text, bg: colors.diet.meat.bg },
-};
-
 const DIET_LABEL_KEYS: Record<DietLabel, string> = {
   veggie: 'labels.diet.veggie',
   fish: 'labels.diet.fish',

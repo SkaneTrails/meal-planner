@@ -112,7 +112,6 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
             fontFamily: fontFamily.bodySemibold,
             color: activeTab === tab ? '#3D3D3D' : 'rgba(93, 78, 64, 0.6)',
           }}>
-          }}>
             {labels[tab]}
           </Text>
         </Pressable>

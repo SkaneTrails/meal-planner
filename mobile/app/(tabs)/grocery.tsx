@@ -342,7 +342,7 @@ export default function GroceryScreen() {
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   borderRadius: 10,
-                  backgroundColor: showAddItem ? '#5D4E40' : '#5D4E40',
+                  backgroundColor: '#5D4E40',
                 }}
               >
                 <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color="#FFFFFF" />

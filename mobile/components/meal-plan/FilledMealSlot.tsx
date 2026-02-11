@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, spacing, fontFamily } from '@/lib/theme';
+import { spacing, fontFamily } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
