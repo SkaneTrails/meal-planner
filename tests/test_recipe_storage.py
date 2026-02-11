@@ -6,6 +6,7 @@ from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, Recipe
 from api.storage.recipe_queries import (
     _build_household_query,
     _deduplicate_recipes,
+    count_recipes,
     get_all_recipes,
     get_recipes_by_ids,
     get_recipes_paginated,
@@ -382,6 +383,38 @@ class TestDeleteRecipe:
         assert result is False
         mock_doc_ref.delete.assert_not_called()
 
+    def test_returns_false_when_not_owned_by_household(self) -> None:
+        """Should return False when recipe is owned by different household."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "other-household"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = delete_recipe("doc123", household_id="my-household")
+
+        assert result is False
+        mock_doc_ref.delete.assert_not_called()
+
+    def test_deletes_when_owned_by_household(self) -> None:
+        """Should delete when recipe is owned by the specified household."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "my-household"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = delete_recipe("doc123", household_id="my-household")
+
+        assert result is True
+        mock_doc_ref.delete.assert_called_once()
+
 
 class TestUpdateRecipe:
     """Tests for update_recipe function."""
@@ -422,6 +455,44 @@ class TestUpdateRecipe:
         update_data = mock_doc_ref.update.call_args[0][0]
         assert update_data["title"] == "Updated"
         assert "updated_at" in update_data
+
+    def test_returns_none_when_not_owned_by_household(self) -> None:
+        """Should return None when recipe is owned by different household."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "other-household"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = update_recipe("doc123", RecipeUpdate(title="New"), household_id="my-household")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_updates_when_owned_by_household(self) -> None:
+        """Should update when recipe is owned by the specified household."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "my-household"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch(
+                "api.storage.recipe_storage.get_recipe",
+                return_value=Recipe(id="doc123", title="Updated", url="https://example.com"),
+            ),
+        ):
+            result = update_recipe("doc123", RecipeUpdate(title="Updated"), household_id="my-household")
+
+        assert result is not None
+        mock_doc_ref.update.assert_called_once()
 
 
 class TestGetAllRecipes:
@@ -491,6 +562,83 @@ class TestGetAllRecipes:
             result = get_all_recipes(include_duplicates=True)
 
         assert len(result) == 2
+
+
+class TestCountRecipes:
+    """Tests for count_recipes function."""
+
+    def test_counts_all_recipes_for_superuser(self) -> None:
+        """Superuser (household_id=None) should count all recipes."""
+        mock_db = MagicMock()
+        mock_count_result = MagicMock()
+        mock_count_result.value = 42
+        mock_query = MagicMock()
+        mock_query.where.return_value = mock_query
+        mock_query.count.return_value.get.return_value = [[mock_count_result]]
+        mock_db.collection.return_value = mock_query
+
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
+            result = count_recipes(household_id=None)
+
+        assert result == 42
+
+    def test_counts_owned_and_shared_for_household(self) -> None:
+        """Regular user should count owned + shared recipes."""
+        mock_db = MagicMock()
+        mock_owned_result = MagicMock()
+        mock_owned_result.value = 10
+        mock_shared_result = MagicMock()
+        mock_shared_result.value = 5
+
+        mock_owned_query = MagicMock()
+        mock_owned_query.where.return_value = mock_owned_query
+        mock_owned_query.count.return_value.get.return_value = [[mock_owned_result]]
+
+        mock_shared_query = MagicMock()
+        mock_shared_query.where.return_value = mock_shared_query
+        mock_shared_query.count.return_value.get.return_value = [[mock_shared_result]]
+
+        mock_collection = MagicMock()
+        mock_collection.where.side_effect = [mock_owned_query, mock_shared_query]
+        mock_db.collection.return_value = mock_collection
+
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
+            result = count_recipes(household_id="household-1")
+
+        assert result == 15
+
+    def test_applies_hidden_filter_by_default(self) -> None:
+        """Should filter hidden recipes when show_hidden=False."""
+        mock_db = MagicMock()
+        mock_count_result = MagicMock()
+        mock_count_result.value = 10
+        mock_query = MagicMock()
+        mock_query.where.return_value = mock_query
+        mock_query.count.return_value.get.return_value = [[mock_count_result]]
+        mock_db.collection.return_value = mock_query
+
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
+            count_recipes(household_id=None, show_hidden=False)
+
+        mock_query.where.assert_called_once()
+        actual_filter = mock_query.where.call_args.kwargs["filter"]
+        assert actual_filter.field_path == "hidden"
+        assert actual_filter.value is False
+
+    def test_skips_hidden_filter_when_requested(self) -> None:
+        """Should include hidden recipes when show_hidden=True."""
+        mock_db = MagicMock()
+        mock_count_result = MagicMock()
+        mock_count_result.value = 20
+        mock_query = MagicMock()
+        mock_query.count.return_value.get.return_value = [[mock_count_result]]
+        mock_db.collection.return_value = mock_query
+
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
+            result = count_recipes(household_id=None, show_hidden=True)
+
+        assert result == 20
+        mock_query.where.assert_not_called()
 
 
 class TestFindRecipeByUrl:

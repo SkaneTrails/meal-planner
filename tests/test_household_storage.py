@@ -15,14 +15,18 @@ from api.storage.household_storage import (
     add_member,
     add_superuser,
     create_household,
+    delete_household,
     get_household,
+    get_household_settings,
     get_user_membership,
+    household_name_exists,
     is_superuser,
     list_all_households,
     list_household_members,
     remove_member,
     remove_superuser,
     update_household,
+    update_household_settings,
 )
 
 
@@ -359,3 +363,139 @@ class TestEmailNormalization:
         remove_member("User@Example.COM")
 
         mock_db.collection.return_value.document.assert_called_with("user@example.com")
+
+
+class TestHouseholdNameExists:
+    """Tests for household_name_exists function."""
+
+    def test_returns_true_when_name_taken(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.id = "household-1"
+        mock_doc.to_dict.return_value = {
+            "name": "Smith Family",
+            "created_at": datetime.now(UTC),
+            "created_by": "a@b.com",
+        }
+        mock_db.collection.return_value.stream.return_value = [mock_doc]
+
+        assert household_name_exists("smith family") is True
+
+    def test_returns_false_when_name_not_taken(self, mock_db) -> None:
+        mock_db.collection.return_value.stream.return_value = []
+
+        assert household_name_exists("New Name") is False
+
+    def test_allows_same_household_to_keep_name(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.id = "household-1"
+        mock_doc.to_dict.return_value = {
+            "name": "Smith Family",
+            "created_at": datetime.now(UTC),
+            "created_by": "a@b.com",
+        }
+        mock_db.collection.return_value.stream.return_value = [mock_doc]
+
+        assert household_name_exists("smith family", exclude_id="household-1") is False
+
+
+class TestDeleteHousehold:
+    """Tests for delete_household function."""
+
+    def test_deletes_existing_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = delete_household("household-1")
+
+        assert result is True
+        mock_doc_ref.delete.assert_called_once()
+
+    def test_returns_false_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = delete_household("nonexistent")
+
+        assert result is False
+        mock_doc_ref.delete.assert_not_called()
+
+
+class TestGetHouseholdSettings:
+    """Tests for get_household_settings function."""
+
+    def test_returns_none_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        result = get_household_settings("nonexistent")
+
+        assert result is None
+
+    def test_returns_empty_dict_when_no_settings(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = False
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value.get.return_value = mock_settings_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = get_household_settings("household-1")
+
+        assert result == {}
+
+    def test_returns_settings_when_exists(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"language": "sv", "theme": "dark"}
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value.get.return_value = mock_settings_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = get_household_settings("household-1")
+
+        assert result == {"language": "sv", "theme": "dark"}
+
+
+class TestUpdateHouseholdSettings:
+    """Tests for update_household_settings function."""
+
+    def test_returns_false_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        result = update_household_settings("nonexistent", {"language": "sv"})
+
+        assert result is False
+
+    def test_updates_settings_with_merge(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_ref = MagicMock()
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = update_household_settings("household-1", {"language": "sv"})
+
+        assert result is True
+        mock_settings_ref.set.assert_called_once_with({"language": "sv"}, merge=True)
