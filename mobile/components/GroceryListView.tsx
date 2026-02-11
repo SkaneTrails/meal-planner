@@ -118,7 +118,7 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
+      <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
         <Pressable
           onPress={handleToggleReorder}
           style={{
@@ -139,7 +139,7 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
       </View>
 
       {reorderMode ? (
-        <View style={{ flex: 1, paddingHorizontal: 16 }}>
+        <View style={{ flex: 1, paddingHorizontal: 20 }}>
           <Text style={{
             fontSize: 12, color: 'rgba(93, 78, 64, 0.7)',
             marginBottom: 10, fontStyle: 'italic',
@@ -160,7 +160,7 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
       ) : (
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
           {displayItems.map((item) => (

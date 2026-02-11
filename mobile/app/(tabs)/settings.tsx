@@ -148,7 +148,7 @@ export default function SettingsScreen() {
       <View style={{ flex: 1, paddingBottom: 100 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 16, paddingTop: 44, paddingBottom: 40 }}
+          contentContainerStyle={{ padding: 20, paddingTop: 44, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

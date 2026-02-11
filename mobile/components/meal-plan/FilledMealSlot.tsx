@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontFamily } from '@/lib/theme';
+import { borderRadius, spacing, fontFamily } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
@@ -62,10 +62,10 @@ export const FilledMealSlot = ({
           resizeMode="cover"
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: colors.text.primary }}>
+          <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: '#2D2D2D' }}>
             {title}
           </Text>
-          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: '#5D4E40', marginTop: 2 }}>
+          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.7)', marginTop: 2 }}>
             {label}
           </Text>
         </View>

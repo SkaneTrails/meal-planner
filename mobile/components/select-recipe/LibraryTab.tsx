@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TextInput, FlatList, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontSize } from '@/lib/theme';
+import { spacing, fontSize } from '@/lib/theme';
 import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
@@ -18,19 +18,19 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
   return (
     <>
       {/* Search bar */}
-      <View style={{ backgroundColor: colors.glass.card, paddingHorizontal: spacing.lg, paddingVertical: spacing.md }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.glass.light, borderRadius: borderRadius.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}>
-          <Ionicons name="search" size={20} color={colors.gray[500]} />
+      <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: 14, paddingHorizontal: 16, paddingVertical: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 }}>
+          <Ionicons name="search" size={18} color="rgba(93, 78, 64, 0.5)" />
           <TextInput
-            style={{ flex: 1, marginLeft: spacing.sm, fontSize: fontSize.lg, color: colors.text.inverse }}
+            style={{ flex: 1, marginLeft: spacing.sm, fontSize: fontSize.lg, color: '#3D3D3D' }}
             placeholder={t('selectRecipe.searchPlaceholder')}
-            placeholderTextColor={colors.gray[500]}
+            placeholderTextColor="rgba(93, 78, 64, 0.4)"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery !== '' && (
             <Pressable onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color={colors.gray[500]} />
+              <Ionicons name="close-circle" size={18} color="rgba(93, 78, 64, 0.4)" />
             </Pressable>
           )}
         </View>
@@ -47,7 +47,7 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
             onPress={() => handleSelectRecipe(item.id)}
           />
         )}
-        contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
         ListEmptyComponent={
           <EmptyState
             icon={searchQuery ? "search" : "book-outline"}

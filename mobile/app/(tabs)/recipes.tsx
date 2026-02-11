@@ -107,26 +107,23 @@ export default function RecipesScreen() {
   }, []);
 
   return (
-    <GradientBackground>
+    <GradientBackground structured>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 16, paddingTop: 44, paddingBottom: 4 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 4 }}>
           <View style={{ marginBottom: 8 }}>
             <Text style={{
               fontSize: fontSize['4xl'],
               fontFamily: fontFamily.display,
-              color: colors.text.primary,
+              color: '#3D3D3D',
               letterSpacing: letterSpacing.tight,
-              textShadowColor: 'rgba(0, 0, 0, 0.15)',
-              textShadowOffset: { width: 0, height: 1 },
-              textShadowRadius: 2,
             }}>
               {t('recipes.title')}
             </Text>
             <Text style={{
               fontSize: fontSize.lg,
               fontFamily: fontFamily.body,
-              color: colors.text.secondary,
+              color: 'rgba(93, 78, 64, 0.7)',
               marginTop: 4,
             }}>
               {t('recipes.collectionCount', { count: totalCount })}

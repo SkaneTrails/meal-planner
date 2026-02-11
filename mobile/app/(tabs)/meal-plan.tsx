@@ -47,22 +47,19 @@ export default function MealPlanScreen() {
     <GradientBackground structured>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 44, paddingBottom: 12 }}>
+        <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
               <Text style={{
                 fontSize: fontSize['4xl'],
                 fontFamily: fontFamily.display,
-                color: colors.text.primary,
+                color: '#3D3D3D',
                 letterSpacing: letterSpacing.tight,
-                textShadowColor: 'rgba(0, 0, 0, 0.15)',
-                textShadowOffset: { width: 0, height: 1 },
-                textShadowRadius: 2,
               }}>{t('mealPlan.title')}</Text>
               <Text style={{
                 fontSize: fontSize.lg,
                 fontFamily: fontFamily.body,
-                color: colors.text.secondary,
+                color: 'rgba(93, 78, 64, 0.7)',
                 marginTop: 4,
               }}>{t('mealPlan.subtitle')}</Text>
             </View>
@@ -106,7 +103,7 @@ export default function MealPlanScreen() {
             <ScrollView
               ref={scrollViewRef}
               style={{ flex: 1 }}
-              contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
               onScroll={onScroll}
               scrollEventThrottle={16}
               showsVerticalScrollIndicator={false}

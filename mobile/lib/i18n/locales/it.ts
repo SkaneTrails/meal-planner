@@ -262,6 +262,7 @@ const it: Translations = {
   },
 
   selectRecipe: {
+    choosingFor: 'Scegli ricetta per',
     tabs: {
       library: '📚 Libreria',
       random: '🎲 Casuale',

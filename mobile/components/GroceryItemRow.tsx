@@ -64,10 +64,11 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 14,
-        backgroundColor: isActive ? 'rgba(255, 255, 255, 0.65)' : 'rgba(255, 255, 255, 0.55)',
-        borderRadius: 12,
-        marginBottom: 8,
+        padding: 10,
+        paddingVertical: 10,
+        backgroundColor: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)',
+        borderRadius: 8,
+        marginBottom: 6,
         opacity: checked ? 0.7 : 1,
       }}
     >
@@ -93,18 +94,18 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
       >
         <View
           style={{
-            width: 24,
-            height: 24,
-            borderRadius: 8,
+            width: 22,
+            height: 22,
+            borderRadius: 6,
             borderWidth: 2,
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: 14,
-            backgroundColor: checked ? 'rgba(255, 255, 255, 0.9)' : 'transparent',
-            borderColor: checked ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.5)',
+            marginRight: 12,
+            backgroundColor: checked ? '#5D4E40' : 'transparent',
+            borderColor: checked ? '#5D4E40' : 'rgba(93, 78, 64, 0.3)',
           }}
         >
-          {checked && <Ionicons name="checkmark" size={16} color="#5D4E40" />}
+          {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
         </View>
 
         <View style={{ flex: 1 }}>

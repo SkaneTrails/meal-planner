@@ -32,7 +32,7 @@ export const SearchBar = ({
   searchInputRef,
   t,
 }: SearchBarProps) => (
-  <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
+  <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
     <View style={{
       flexDirection: 'row',
       alignItems: 'center',
@@ -99,7 +99,7 @@ export const FilterChips = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+      contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
     >
       {/* All chip */}
       <AnimatedPressable

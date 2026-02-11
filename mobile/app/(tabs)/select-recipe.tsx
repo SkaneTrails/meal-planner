@@ -35,7 +35,17 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <GradientBackground style={{ flex: 1 }}>
+      <GradientBackground structured style={{ flex: 1 }}>
+        {/* Contextual header - shows what day/meal you're selecting for */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
+          <Text style={{ fontSize: 14, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.6)' }}>
+            {t('selectRecipe.choosingFor')}
+          </Text>
+          <Text style={{ fontSize: 24, fontFamily: fontFamily.display, color: '#3D3D3D', marginTop: 2 }}>
+            {formattedDate} · {MEAL_TYPE_LABELS[mealType]}
+          </Text>
+        </View>
+
         {!mode && (
           <TabBar
             tabs={TAB_KEYS}
@@ -77,25 +87,31 @@ interface TabBarProps {
 }
 
 const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
-  <View style={{ backgroundColor: colors.glass.card, paddingHorizontal: spacing.md, paddingVertical: spacing.md }}>
-    <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+  <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
+    <View style={{ flexDirection: 'row', gap: 8, backgroundColor: 'rgba(93, 78, 64, 0.06)', borderRadius: 12, padding: 4 }}>
       {tabs.map((tab) => (
         <Pressable
           key={tab}
           onPress={() => onTabPress(tab)}
           style={({ pressed }) => ({
             flex: 1,
-            paddingVertical: spacing.sm,
-            borderRadius: borderRadius.sm,
-            backgroundColor: activeTab === tab ? colors.primary : colors.glass.light,
+            paddingVertical: 10,
+            borderRadius: 10,
+            backgroundColor: activeTab === tab ? '#FFFFFF' : 'transparent',
             alignItems: 'center',
             transform: [{ scale: pressed ? 0.98 : 1 }],
+            shadowColor: activeTab === tab ? '#000' : 'transparent',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: activeTab === tab ? 0.08 : 0,
+            shadowRadius: 4,
+            elevation: activeTab === tab ? 2 : 0,
           })}
         >
           <Text style={{
             fontSize: fontSize.sm,
             fontFamily: fontFamily.bodySemibold,
-            color: activeTab === tab ? colors.white : colors.text.inverse,
+            color: activeTab === tab ? '#3D3D3D' : 'rgba(93, 78, 64, 0.6)',
+          }}>
           }}>
             {labels[tab]}
           </Text>
@@ -112,7 +128,7 @@ interface RemoveMealFooterProps {
 }
 
 const RemoveMealFooter = ({ onRemove, isPending, label }: RemoveMealFooterProps) => (
-  <View style={{ padding: spacing.lg, backgroundColor: colors.glass.card }}>
+  <View style={{ padding: spacing.lg, backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
     <Pressable
       onPress={onRemove}
       disabled={isPending}
@@ -121,12 +137,12 @@ const RemoveMealFooter = ({ onRemove, isPending, label }: RemoveMealFooterProps)
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: spacing.md,
-        borderRadius: borderRadius.sm,
-        backgroundColor: pressed ? colors.glass.medium : colors.glass.light,
+        borderRadius: 12,
+        backgroundColor: pressed ? 'rgba(93, 78, 64, 0.12)' : 'rgba(93, 78, 64, 0.08)',
       })}
     >
-      <Ionicons name="trash-outline" size={18} color={colors.text.inverse} />
-      <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
+      <Ionicons name="trash-outline" size={18} color="rgba(93, 78, 64, 0.7)" />
+      <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: 'rgba(93, 78, 64, 0.7)' }}>
         {label}
       </Text>
     </Pressable>

@@ -272,6 +272,7 @@ const en = {
 
   // ── Select recipe screen ──────────────────────────────────────────
   selectRecipe: {
+    choosingFor: 'Choose recipe for',
     tabs: {
       library: '📚 Library',
       random: '🎲 Random',

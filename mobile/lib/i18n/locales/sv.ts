@@ -262,6 +262,7 @@ const sv: Translations = {
   },
 
   selectRecipe: {
+    choosingFor: 'Välj recept för',
     tabs: {
       library: '📚 Bibliotek',
       random: '🎲 Slumpa',
