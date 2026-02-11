@@ -76,6 +76,8 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         tips=data.get("tips"),
         changes_made=data.get("changes_made"),
         original=data.get("original"),
+        show_enhanced=data.get("show_enhanced", False),
+        enhancement_reviewed=data.get("enhancement_reviewed", False),
         # Household fields
         household_id=data.get("household_id"),
         visibility=raw_vis if (raw_vis := data.get("visibility")) in ("household", "shared") else "household",
@@ -294,6 +296,45 @@ def delete_recipe(recipe_id: str, *, household_id: str | None = None) -> bool:
 
     doc_ref.delete()
     return True
+
+
+def review_enhancement(recipe_id: str, *, approve: bool, household_id: str) -> Recipe | None:
+    """
+    Review an enhanced recipe - approve or reject the enhancement.
+
+    Args:
+        recipe_id: The Firestore document ID.
+        approve: True to show enhanced version, False to show original.
+        household_id: Verify the recipe belongs to this household.
+
+    Returns:
+        The updated recipe, or None if not found/not authorized/not enhanced.
+    """
+    db = get_firestore_client()
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+
+    doc = cast("DocumentSnapshot", doc_ref.get())
+    if not doc.exists:
+        return None
+
+    data = doc.to_dict()
+    if not data:
+        return None
+
+    # Verify household ownership
+    if data.get("household_id") != household_id:
+        return None
+
+    # Recipe must be enhanced
+    if not data.get("enhanced", False):
+        return None
+
+    # Update the review status
+    update_data = {"enhancement_reviewed": True, "show_enhanced": approve, "updated_at": datetime.now(tz=UTC)}
+    doc_ref.update(update_data)
+    data.update(update_data)
+
+    return _doc_to_recipe(recipe_id, data)
 
 
 def search_recipes(query: str, *, household_id: str | None = None, show_hidden: bool = False) -> list[Recipe]:

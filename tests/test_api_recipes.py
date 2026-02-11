@@ -939,3 +939,61 @@ class TestEnhanceRecipe:
             response = client.post("/recipes/nonexistent/enhance")
 
         assert response.status_code == 404
+
+
+class TestReviewEnhancementEndpoint:
+    """Tests for POST /recipes/{recipe_id}/enhancement/review endpoint."""
+
+    def test_approve_enhancement(self, client: TestClient) -> None:
+        """Should approve enhancement and return updated recipe."""
+        enhanced_recipe = Recipe(
+            id="recipe123",
+            title="Enhanced Recipe",
+            url="https://example.com/recipe",
+            household_id="test_household",
+            enhanced=True,
+            show_enhanced=True,
+            enhancement_reviewed=True,
+        )
+
+        with patch("api.routers.recipes.recipe_storage.review_enhancement", return_value=enhanced_recipe):
+            response = client.post("/recipes/recipe123/enhancement/review", json={"action": "approve"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["show_enhanced"] is True
+        assert data["enhancement_reviewed"] is True
+
+    def test_reject_enhancement(self, client: TestClient) -> None:
+        """Should reject enhancement and return updated recipe."""
+        enhanced_recipe = Recipe(
+            id="recipe123",
+            title="Enhanced Recipe",
+            url="https://example.com/recipe",
+            household_id="test_household",
+            enhanced=True,
+            show_enhanced=False,
+            enhancement_reviewed=True,
+        )
+
+        with patch("api.routers.recipes.recipe_storage.review_enhancement", return_value=enhanced_recipe):
+            response = client.post("/recipes/recipe123/enhancement/review", json={"action": "reject"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["show_enhanced"] is False
+        assert data["enhancement_reviewed"] is True
+
+    def test_returns_404_when_not_found(self, client: TestClient) -> None:
+        """Should return 404 when recipe not found or not enhanced."""
+        with patch("api.routers.recipes.recipe_storage.review_enhancement", return_value=None):
+            response = client.post("/recipes/nonexistent/enhancement/review", json={"action": "approve"})
+
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+
+    def test_returns_422_for_invalid_action(self, client: TestClient) -> None:
+        """Should return 422 for invalid action."""
+        response = client.post("/recipes/recipe123/enhancement/review", json={"action": "invalid"})
+
+        assert response.status_code == 422

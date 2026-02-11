@@ -15,6 +15,8 @@ from api.auth.models import AuthenticatedUser
 from api.models.recipe import (
     DEFAULT_PAGE_LIMIT,
     MAX_PAGE_LIMIT,
+    EnhancementReviewAction,
+    EnhancementReviewRequest,
     PaginatedRecipeList,
     Recipe,
     RecipeCreate,
@@ -596,3 +598,29 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
     except EnhancementError as e:  # pragma: no cover
         logger.exception("Failed to enhance recipe_id=%s", recipe_id)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+
+
+@router.post("/{recipe_id}/enhancement/review", status_code=status.HTTP_200_OK)
+async def review_enhancement(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str, request: EnhancementReviewRequest
+) -> Recipe:
+    """
+    Review an AI-enhanced recipe - approve or reject the enhancement.
+
+    - **approve**: Accept the enhancement, show enhanced version going forward
+    - **reject**: Keep original, enhanced data preserved for potential future use
+
+    Only works for enhanced recipes that belong to the user's household.
+    """
+    household_id = _require_household(user)
+
+    approve = request.action == EnhancementReviewAction.APPROVE
+    result = recipe_storage.review_enhancement(recipe_id, approve=approve, household_id=household_id)
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Recipe not found, not enhanced, or not owned by your household",
+        )
+
+    return result

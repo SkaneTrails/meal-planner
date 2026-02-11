@@ -62,6 +62,7 @@ class HouseholdSettings(BaseModel):
     household_size: int = Field(default=2, ge=1, le=20, description="Number of people in household")
     default_servings: int = Field(default=2, ge=1, le=20, description="Default number of servings for recipes")
     language: str = Field(default="sv", description="Preferred language for recipes (sv, en, it)")
+    ai_features_enabled: bool = Field(default=True, description="Show AI enhancement controls in UI")
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
     equipment: EquipmentSettings = Field(default_factory=EquipmentSettings)
@@ -94,6 +95,7 @@ class HouseholdSettingsUpdate(BaseModel):
     household_size: int | None = Field(default=None, ge=1, le=20)
     default_servings: int | None = Field(default=None, ge=1, le=20)
     language: str | None = None
+    ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
 
     dietary: DietarySettingsUpdate | None = None
     equipment: EquipmentSettingsUpdate | None = None

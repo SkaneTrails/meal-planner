@@ -199,6 +199,10 @@ class Recipe(RecipeBase):
     enhanced_at: datetime | None = Field(default=None, description="When the recipe was enhanced")
     changes_made: list[str] | None = Field(default=None, description="List of changes made by AI")
     original: OriginalRecipe | None = Field(default=None, description="Original recipe data before enhancement")
+    show_enhanced: bool = Field(
+        default=False, description="Display enhanced version (False = show original until approved)"
+    )
+    enhancement_reviewed: bool = Field(default=False, description="User has reviewed the enhancement")
 
     @computed_field
     @property
@@ -296,3 +300,16 @@ class RecipeParseRequest(BaseModel):
 
     url: HttpUrl = Field(..., description="URL of the recipe (for metadata)")
     html: str = Field(..., min_length=100, description="HTML content of the recipe page")
+
+
+class EnhancementReviewAction(str, Enum):
+    """Actions for reviewing an AI enhancement."""
+
+    APPROVE = "approve"
+    REJECT = "reject"
+
+
+class EnhancementReviewRequest(BaseModel):
+    """Request body for reviewing an AI enhancement."""
+
+    action: EnhancementReviewAction = Field(..., description="'approve' to show enhanced, 'reject' to show original")

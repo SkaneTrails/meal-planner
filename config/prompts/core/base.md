@@ -44,7 +44,7 @@ ALWAYS return a valid JSON object with this structure:
 - `ingredients` is always an array of strings
 - `instructions` is always an **array of strings** — each step is a separate element. NEVER a single string.
 - `tags` is an array of strings, written in the household's language
-- `changes_made` is an array of strings documenting all changes
+- `changes_made` is an array of strings documenting all changes — written in the household's language
 - `metadata.category` and `metadata.cuisine` — written in the household's language
 
 ## Preserve numeric fields
