@@ -12,7 +12,7 @@ import os
 import re
 import warnings
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Never
 
 from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
 from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
@@ -84,6 +84,12 @@ def _parse_instructions(instructions: str) -> list[str]:
     if len(parts) == 1:
         parts = instructions.split("\n\n")
     return [p.strip() for p in parts if p.strip()]
+
+
+def _raise_unsupported_ingredients_type(ingredients: Any) -> Never:
+    """Raise EnhancementError for unsupported ingredient types."""
+    msg = f"Unsupported ingredients type from Gemini: {type(ingredients).__name__}"
+    raise EnhancementError(msg)
 
 
 def _normalize_ingredients(ingredients: list[Any]) -> list[str]:
@@ -182,8 +188,16 @@ def enhance_recipe(
             enhanced["instructions"] = _parse_instructions(enhanced["instructions"])
 
         # Normalize ingredients to plain strings (Gemini may return dicts)
-        if enhanced.get("ingredients"):
-            enhanced["ingredients"] = _normalize_ingredients(enhanced["ingredients"])
+        ingredients = enhanced.get("ingredients")
+        if ingredients:
+            if isinstance(ingredients, list):
+                enhanced["ingredients"] = _normalize_ingredients(ingredients)
+            elif isinstance(ingredients, str):
+                enhanced["ingredients"] = _normalize_ingredients(
+                    [part.strip() for part in ingredients.splitlines() if part.strip()]
+                )
+            else:
+                _raise_unsupported_ingredients_type(ingredients)
 
         # Add timestamps and preserve original fields
         enhanced["updated_at"] = datetime.now(UTC)

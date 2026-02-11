@@ -168,6 +168,8 @@ class TestNormalizeIngredients:
         result = _normalize_ingredients(ingredients)
         assert result == ["42", "True"]
 
+
+class TestValidateResponse:
     """Tests for _validate_response function."""
 
     def test_returns_text_on_valid_response(self) -> None:
@@ -398,5 +400,38 @@ class TestEnhanceRecipe:
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
             pytest.raises(EnhancementError, match="Failed to parse"),
+        ):
+            enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
+
+    def test_normalizes_string_ingredients_to_list(self) -> None:
+        """Should split newline-separated ingredient string into a list."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.text = json.dumps(
+            {"title": "Test", "ingredients": "1 cup flour\n2 eggs\nSalt", "instructions": ["Mix"]}
+        )
+        mock_client.models.generate_content.return_value = mock_response
+
+        with (
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
+            patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
+        ):
+            result = enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
+
+            assert result["ingredients"] == ["1 cup flour", "2 eggs", "Salt"]
+
+    def test_raises_on_unsupported_ingredients_type(self) -> None:
+        """Should raise EnhancementError when ingredients is neither list nor string."""
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.text = json.dumps({"title": "Test", "ingredients": 42, "instructions": ["Mix"]})
+        mock_client.models.generate_content.return_value = mock_response
+
+        with (
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
+            patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
+            pytest.raises(EnhancementError, match="Unsupported ingredients type"),
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
