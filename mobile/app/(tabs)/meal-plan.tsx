@@ -44,7 +44,7 @@ export default function MealPlanScreen() {
   };
 
   return (
-    <GradientBackground>
+    <GradientBackground structured>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 24, paddingTop: 44, paddingBottom: 12 }}>
@@ -176,18 +176,18 @@ export default function MealPlanScreen() {
           </Animated.View>
         </View>
 
-        {/* Floating Jump to Today button */}
+        {/* Floating Jump to Today button - refined: smaller, more translucent */}
         {(showJumpButton || weekOffset !== 0) && (
           <Animated.View
             style={{
               position: 'absolute',
-              bottom: 100,
+              bottom: 110,
               alignSelf: 'center',
               opacity: weekOffset !== 0 ? 1 : jumpButtonOpacity,
               transform: [{
                 scale: weekOffset !== 0 ? 1 : jumpButtonOpacity.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0.8, 1],
+                  outputRange: [0.85, 1],
                 }),
               }],
             }}
@@ -197,14 +197,19 @@ export default function MealPlanScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#7A6858',
-                paddingHorizontal: spacing.xl,
-                paddingVertical: spacing.md,
-                borderRadius: borderRadius.xl,
+                backgroundColor: 'rgba(93, 78, 64, 0.85)',
+                paddingHorizontal: spacing.lg,
+                paddingVertical: 10,
+                borderRadius: borderRadius.full,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 4,
               }}
             >
-              <Ionicons name="today" size={18} color={colors.white} />
-              <Text style={{ marginLeft: 8, fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>
+              <Ionicons name="today" size={16} color={colors.white} />
+              <Text style={{ marginLeft: 6, fontSize: 13, fontFamily: fontFamily.bodySemibold, color: colors.white }}>
                 {t('mealPlan.jumpToToday')}
               </Text>
             </Pressable>

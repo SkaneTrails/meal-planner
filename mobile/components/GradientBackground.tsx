@@ -17,6 +17,7 @@ interface GradientBackgroundProps {
   style?: object;
   animated?: boolean;
   muted?: boolean; // Adds a desaturating overlay for a B&W-ish effect
+  structured?: boolean; // Faint gradient variant for structured content screens (meal plan, etc.)
 }
 
 const FloatingOrb = ({
@@ -149,7 +150,7 @@ const FloatingOrb = ({
   );
 }
 
-export const GradientBackground = ({ children, style, animated = false, muted = false }: GradientBackgroundProps) => {
+export const GradientBackground = ({ children, style, animated = false, muted = false, structured = false }: GradientBackgroundProps) => {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -162,7 +163,7 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
         resizeMode="stretch"
       >
         {/* Slight darkening overlay for mobile to make colors richer */}
-        {isMobile && !muted && (
+        {isMobile && !muted && !structured && (
           <View
             style={[
               StyleSheet.absoluteFill,
@@ -182,6 +183,26 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
               },
             ]}
           />
+        )}
+        {/* Structured variant: faint neutral overlay, warm only at top - for content-heavy screens */}
+        {structured && (
+          <>
+            {/* Neutral base overlay to desaturate background */}
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  backgroundColor: 'rgba(245, 240, 235, 0.12)',
+                },
+              ]}
+            />
+            {/* Subtle warm gradient at top only */}
+            <LinearGradient
+              colors={['rgba(232, 200, 170, 0.08)', 'transparent']}
+              locations={[0, 0.35]}
+              style={[StyleSheet.absoluteFill]}
+            />
+          </>
         )}
         {children}
       </ImageBackground>
