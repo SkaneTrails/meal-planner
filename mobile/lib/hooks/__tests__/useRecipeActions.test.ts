@@ -8,6 +8,7 @@ const mockDeleteMutateAsync = vi.fn();
 const mockSetMealMutateAsync = vi.fn();
 const mockTransferMutateAsync = vi.fn();
 const mockReviewMutateAsync = vi.fn();
+const mockEnhanceMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
 
@@ -18,6 +19,7 @@ vi.mock('@/lib/hooks', () => ({
   useSetMeal: vi.fn(() => ({ mutateAsync: mockSetMealMutateAsync })),
   useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
   useReviewEnhancement: vi.fn(() => ({ mutateAsync: mockReviewMutateAsync, isPending: false })),
+  useEnhanceRecipe: vi.fn(() => ({ mutateAsync: mockEnhanceMutateAsync, isPending: false })),
 }));
 
 vi.mock('@/lib/hooks/use-admin', () => ({
@@ -95,6 +97,7 @@ beforeEach(() => {
   mockDeleteMutateAsync.mockResolvedValue(undefined);
   mockSetMealMutateAsync.mockResolvedValue(undefined);
   mockReviewMutateAsync.mockResolvedValue(undefined);
+  mockEnhanceMutateAsync.mockResolvedValue(undefined);
   mockUseCurrentUser.mockReturnValue({ data: mockCurrentUser() } as any);
 });
 
@@ -447,6 +450,80 @@ describe('useRecipeActions', () => {
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       await act(async () => result.current.handleReviewEnhancement('approve'));
       expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.reviewFailed');
+    });
+  });
+
+  describe('canEnhance', () => {
+    it('returns true for owned non-enhanced recipe', () => {
+      const recipe = makeRecipe({ household_id: 'household-abc', enhanced: false });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canEnhance).toBe(true);
+    });
+
+    it('returns false for already enhanced recipe', () => {
+      const recipe = makeRecipe({ household_id: 'household-abc', enhanced: true });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canEnhance).toBe(false);
+    });
+
+    it('returns false for non-owned recipe', () => {
+      const recipe = makeRecipe({ household_id: 'other-household', enhanced: false });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canEnhance).toBe(false);
+    });
+
+    it('returns false when recipe is undefined', () => {
+      const { result } = renderHook(() => useRecipeActions('recipe-1', undefined), { wrapper });
+      expect(result.current.canEnhance).toBe(false);
+    });
+  });
+
+  describe('handleEnhanceRecipe', () => {
+    it('does nothing when id is undefined', async () => {
+      const recipe = makeRecipe();
+      const { result } = renderHook(() => useRecipeActions(undefined, recipe), { wrapper });
+      await act(async () => result.current.handleEnhanceRecipe());
+      expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it('shows confirmation dialog', async () => {
+      const recipe = makeRecipe();
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleEnhanceRecipe());
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.enhanceRecipe',
+        'recipe.enhanceConfirm',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel' }),
+          expect.objectContaining({ text: 'recipe.enhance' }),
+        ]),
+      );
+    });
+
+    it('calls enhanceRecipe and shows success when confirmed', async () => {
+      const recipe = makeRecipe();
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleEnhanceRecipe());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const enhanceButton = buttons.find(b => b.text === 'recipe.enhance')!;
+      await act(async () => enhanceButton.onPress!());
+
+      expect(mockEnhanceMutateAsync).toHaveBeenCalledWith('recipe-1');
+      expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhanceSuccess', 'recipe.enhanceSuccessMessage');
+    });
+
+    it('shows error notification on failure', async () => {
+      mockEnhanceMutateAsync.mockRejectedValue(new Error('Enhancement failed'));
+      const recipe = makeRecipe();
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleEnhanceRecipe());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const enhanceButton = buttons.find(b => b.text === 'recipe.enhance')!;
+      await act(async () => enhanceButton.onPress!());
+
+      expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.enhanceFailed');
     });
   });
 });

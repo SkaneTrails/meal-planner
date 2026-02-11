@@ -1,7 +1,7 @@
 import { Share } from 'react-native';
 import { useRouter } from 'expo-router';
 import { showAlert, showNotification } from '@/lib/alert';
-import { useDeleteRecipe, useUpdateRecipe, useSetMeal, useCurrentUser, useImagePicker, useReviewEnhancement } from '@/lib/hooks';
+import { useDeleteRecipe, useUpdateRecipe, useSetMeal, useCurrentUser, useImagePicker, useReviewEnhancement, useEnhanceRecipe } from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
@@ -31,6 +31,7 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   const updateRecipe = useUpdateRecipe();
   const setMeal = useSetMeal();
   const reviewEnhancement = useReviewEnhancement();
+  const enhanceRecipe = useEnhanceRecipe();
 
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
@@ -267,6 +268,28 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     recipe?.enhanced && !recipe?.enhancement_reviewed,
   );
 
+  const canEnhance = Boolean(isOwned && !recipe?.enhanced);
+
+  const handleEnhanceRecipe = async () => {
+    if (!id || !recipe) return;
+    showAlert(t('recipe.enhanceRecipe'), t('recipe.enhanceConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('recipe.enhance'),
+        onPress: async () => {
+          try {
+            await enhanceRecipe.mutateAsync(id);
+            hapticSuccess();
+            showNotification(t('recipe.enhanceSuccess'), t('recipe.enhanceSuccessMessage'));
+          } catch {
+            hapticWarning();
+            showNotification(t('common.error'), t('recipe.enhanceFailed'));
+          }
+        },
+      },
+    ]);
+  };
+
   return {
     currentUser,
     isSuperuser,
@@ -275,6 +298,8 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     isUpdatingImage,
     isReviewingEnhancement: reviewEnhancement.isPending,
     needsEnhancementReview,
+    canEnhance,
+    isEnhancing: enhanceRecipe.isPending,
     t,
     showPlanModal,
     setShowPlanModal,
@@ -293,5 +318,6 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     handleSaveEdit,
     handleTransferRecipe,
     handleReviewEnhancement,
+    handleEnhanceRecipe,
   };
 };

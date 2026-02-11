@@ -186,3 +186,18 @@ export const useReviewEnhancement = () => {
     },
   });
 }
+
+/**
+ * Hook to trigger AI enhancement on an existing recipe.
+ */
+export const useEnhanceRecipe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => api.enhanceRecipe(id),
+    onSuccess: (data) => {
+      queryClient.setQueryData(recipeKeys.detail(data.id), data);
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+    },
+  });
+}

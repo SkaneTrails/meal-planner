@@ -41,7 +41,8 @@ export default function RecipeDetailScreen() {
 
   const {
     canEdit, isSuperuser, households, isUpdatingImage,
-    isReviewingEnhancement, needsEnhancementReview, t,
+    isReviewingEnhancement, needsEnhancementReview,
+    canEnhance, isEnhancing, t,
     showPlanModal, setShowPlanModal,
     showEditModal, setShowEditModal,
     showUrlModal, setShowUrlModal,
@@ -51,6 +52,7 @@ export default function RecipeDetailScreen() {
     handleShare, handleDelete,
     handleSaveEdit, handleTransferRecipe,
     handleReviewEnhancement,
+    handleEnhanceRecipe,
   } = useRecipeActions(id, recipe);
 
   const [weekOffset, setWeekOffset] = useState(0);
@@ -238,6 +240,8 @@ export default function RecipeDetailScreen() {
               showAiChanges={showAiChanges}
               showOriginal={showOriginal}
               canEdit={canEdit}
+              canEnhance={canEnhance}
+              isEnhancing={isEnhancing}
               needsEnhancementReview={needsEnhancementReview}
               isReviewingEnhancement={isReviewingEnhancement}
               t={t}
@@ -247,6 +251,7 @@ export default function RecipeDetailScreen() {
               onOpenEditModal={() => setShowEditModal(true)}
               onShowPlanModal={() => setShowPlanModal(true)}
               onShare={handleShare}
+              onEnhance={handleEnhanceRecipe}
               onReviewEnhancement={handleReviewEnhancement}
             />
           </View>
