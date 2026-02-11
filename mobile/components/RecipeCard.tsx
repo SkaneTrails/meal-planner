@@ -9,7 +9,7 @@ import { View, Text, Pressable, Animated } from 'react-native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, borderRadius, fontSize, fontWeight, letterSpacing, shadows } from '@/lib/theme';
+import { colors, borderRadius, fontSize, fontFamily, fontWeight, letterSpacing, shadows } from '@/lib/theme';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
 import { hapticLight } from '@/lib/haptics';
@@ -100,7 +100,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           <View style={{ flex: 1, marginLeft: 16 }}>
             <Text style={{
               fontSize: 16,
-              fontWeight: '500',
+              fontFamily: fontFamily.bodyMedium,
               color: '#3D3D3D',
               letterSpacing: -0.2,
               lineHeight: 22,
@@ -119,7 +119,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
                 }}>
                   <Text style={{
                     fontSize: 12,
-                    fontWeight: '500',
+                    fontFamily: fontFamily.bodyMedium,
                     color: recipe.diet_label === 'veggie' ? '#2F6B3B' :
                            recipe.diet_label === 'fish' ? '#1565C0' :
                            '#A0453D',
@@ -229,7 +229,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
           {/* Title - 2 lines max */}
           <Text style={{
             fontSize: fontSize.md,
-            fontWeight: fontWeight.semibold,
+            fontFamily: fontFamily.bodySemibold,
             color: '#3D3228',
             lineHeight: 19,
           }} numberOfLines={2}>
