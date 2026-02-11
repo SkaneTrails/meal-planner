@@ -1,7 +1,6 @@
 """Tests for api/routers/recipes.py."""
 
 import json
-import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
@@ -644,8 +643,6 @@ class TestScrapeRecipe:
             patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe") as mock_save,
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true"}),
-            patch("api.services.recipe_enhancer.is_enhancement_enabled", return_value=True),
             patch("api.services.recipe_enhancer.get_genai_client") as mock_genai,
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="prompt"),
         ):
@@ -694,8 +691,6 @@ class TestScrapeRecipe:
             patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true"}),
-            patch("api.services.recipe_enhancer.is_enhancement_enabled", return_value=True),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementError("API error")),
         ):
             mock_client = AsyncMock()
@@ -921,21 +916,9 @@ class TestCopyRecipe:
 class TestEnhanceRecipe:
     """Tests for POST /recipes/{recipe_id}/enhance endpoint."""
 
-    def test_returns_503_when_disabled(self, client: TestClient) -> None:
-        """Should return 503 when enhancement is disabled."""
-        with patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "false"}):
-            response = client.post("/recipes/test123/enhance")
-
-        assert response.status_code == 503
-        assert "disabled" in response.json()["detail"].lower()
-
     def test_returns_404_when_recipe_not_found(self, client: TestClient) -> None:
         """Should return 404 when recipe not found."""
-        with (
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true"}),
-            patch("api.services.recipe_enhancer.is_enhancement_enabled", return_value=True),
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=None),
-        ):
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=None):
             response = client.post("/recipes/nonexistent/enhance")
 
         assert response.status_code == 404

@@ -43,19 +43,6 @@ class EnhancementError(Exception):
     """Raised when recipe enhancement fails."""
 
 
-class EnhancementDisabledError(Exception):
-    """Raised when enhancement is disabled."""
-
-
-def is_enhancement_enabled() -> bool:
-    """
-    Check if recipe enhancement is enabled.
-
-    Currently disabled - set ENABLE_RECIPE_ENHANCEMENT=true to enable.
-    """
-    return os.getenv("ENABLE_RECIPE_ENHANCEMENT", "false").lower() == "true"
-
-
 def get_genai_client() -> genai_module.Client:
     """Get configured Gemini client."""
     if not GENAI_AVAILABLE:
@@ -143,13 +130,8 @@ def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL, langua
         Enhanced recipe dict with improved ingredients, instructions, tips
 
     Raises:
-        EnhancementDisabledError: If enhancement is disabled
         EnhancementError: If enhancement fails
     """
-    if not is_enhancement_enabled():
-        msg = "Recipe enhancement is currently disabled"
-        raise EnhancementDisabledError(msg)
-
     client = get_genai_client()
     system_prompt = load_system_prompt(language)
     sanitized = sanitize_recipe_for_enhancement(recipe)

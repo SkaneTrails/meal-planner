@@ -9,7 +9,6 @@ import pytest
 
 from api.services.recipe_enhancer import (
     DEFAULT_MODEL,
-    EnhancementDisabledError,
     EnhancementError,
     _flatten_metadata,
     _format_recipe_text,
@@ -18,39 +17,7 @@ from api.services.recipe_enhancer import (
     _validate_response,
     enhance_recipe,
     get_genai_client,
-    is_enhancement_enabled,
 )
-
-
-class TestIsEnhancementEnabled:
-    """Tests for is_enhancement_enabled function."""
-
-    def test_disabled_by_default(self) -> None:
-        """Should be disabled when env var not set."""
-        with patch.dict(os.environ, {}, clear=True):
-            # Remove the key if it exists
-            os.environ.pop("ENABLE_RECIPE_ENHANCEMENT", None)
-            assert is_enhancement_enabled() is False
-
-    def test_enabled_when_true(self) -> None:
-        """Should be enabled when env var is 'true'."""
-        with patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true"}):
-            assert is_enhancement_enabled() is True
-
-    def test_enabled_case_insensitive(self) -> None:
-        """Should handle case insensitive 'TRUE'."""
-        with patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "TRUE"}):
-            assert is_enhancement_enabled() is True
-
-    def test_disabled_when_false(self) -> None:
-        """Should be disabled when env var is 'false'."""
-        with patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "false"}):
-            assert is_enhancement_enabled() is False
-
-    def test_disabled_for_invalid_value(self) -> None:
-        """Should be disabled for any non-'true' value."""
-        with patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "yes"}):
-            assert is_enhancement_enabled() is False
 
 
 class TestGetGenaiClient:
@@ -285,11 +252,6 @@ class TestFlattenMetadata:
 class TestEnhanceRecipe:
     """Tests for enhance_recipe function."""
 
-    def test_raises_when_disabled(self) -> None:
-        """Should raise EnhancementDisabledError when enhancement disabled."""
-        with patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "false"}), pytest.raises(EnhancementDisabledError):
-            enhance_recipe({"title": "Test"})
-
     def test_calls_gemini_with_correct_params(self) -> None:
         """Should call Gemini API with correct configuration."""
         mock_client = MagicMock()
@@ -300,7 +262,7 @@ class TestEnhanceRecipe:
         mock_client.models.generate_content.return_value = mock_response
 
         with (
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt") as mock_prompt,
         ):
@@ -319,7 +281,7 @@ class TestEnhanceRecipe:
         mock_client.models.generate_content.return_value = mock_response
 
         with (
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="English prompt") as mock_prompt,
         ):
@@ -341,7 +303,7 @@ class TestEnhanceRecipe:
         mock_client.models.generate_content.return_value = mock_response
 
         with (
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
         ):
@@ -367,7 +329,7 @@ class TestEnhanceRecipe:
         }
 
         with (
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
         ):
@@ -384,7 +346,7 @@ class TestEnhanceRecipe:
         mock_client.models.generate_content.return_value = mock_response
 
         with (
-            patch.dict(os.environ, {"ENABLE_RECIPE_ENHANCEMENT": "true", "GOOGLE_API_KEY": "test"}),
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
             pytest.raises(EnhancementError, match="Failed to parse"),

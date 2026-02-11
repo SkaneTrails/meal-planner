@@ -156,7 +156,6 @@ module "cloud_run" {
   allow_public_access = true
 
   # Recipe enhancement with Gemini
-  enable_recipe_enhancement = var.enable_recipe_enhancement
   gemini_secret_id          = module.secrets.gemini_api_key_secret_id
   gemini_secret_name        = module.secrets.gemini_api_key_secret_name
 
