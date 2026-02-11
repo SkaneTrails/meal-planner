@@ -151,8 +151,8 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
     );
   }
 
-  const imageHeight = cardSize ? cardSize * 0.85 : 160;
-  const cardHeight = cardSize ? cardSize * 1.2 : 220;
+  const imageHeight = cardSize ? cardSize * 0.75 : 140;
+  const cardHeight = cardSize ? cardSize * 1.35 : 240;
 
   return (
     <Pressable
@@ -225,13 +225,14 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
         </View>
 
         {/* Content below image */}
-        <View style={{ paddingHorizontal: 10, paddingVertical: 8, flex: 1, justifyContent: 'space-between' }}>
+        <View style={{ paddingHorizontal: 10, paddingVertical: 10, flex: 1, justifyContent: 'space-between' }}>
           {/* Title - 2 lines max */}
           <Text style={{
-            fontSize: fontSize.md,
-            fontFamily: fontFamily.bodySemibold,
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodyBold,
+            fontWeight: '600',
             color: '#3D3228',
-            lineHeight: 19,
+            lineHeight: 20,
           }} numberOfLines={2}>
             {recipe.title}
           </Text>
