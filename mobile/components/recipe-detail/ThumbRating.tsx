@@ -5,14 +5,15 @@ import { colors, spacing } from '@/lib/theme';
 
 interface ThumbRatingProps {
   rating: number | null;
+  hidden: boolean;
   onThumbUp: () => void;
   onThumbDown: () => void;
   size?: number;
 }
 
-export const ThumbRating = ({ rating, onThumbUp, onThumbDown, size = 28 }: ThumbRatingProps) => {
+export const ThumbRating = ({ rating, hidden, onThumbUp, onThumbDown, size = 28 }: ThumbRatingProps) => {
   const isThumbUp = rating === 5;
-  const isThumbDown = rating === 1;
+  const isThumbDown = hidden;
 
   return (
     <View style={{ flexDirection: 'row', gap: spacing.md }}>

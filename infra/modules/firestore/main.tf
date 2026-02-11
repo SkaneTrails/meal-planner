@@ -172,3 +172,64 @@ resource "google_firestore_index" "meal_plans_by_week" {
     order      = "DESCENDING"
   }
 }
+
+# Recipes collection — hidden filter (superuser: all non-hidden recipes)
+resource "google_firestore_index" "recipes_by_hidden" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "hidden"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "created_at"
+    order      = "DESCENDING"
+  }
+}
+
+# Recipes collection — household + hidden filter (owned non-hidden recipes)
+resource "google_firestore_index" "recipes_by_household_hidden" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "household_id"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "hidden"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "created_at"
+    order      = "DESCENDING"
+  }
+}
+
+# Recipes collection — visibility + hidden filter (shared non-hidden recipes)
+resource "google_firestore_index" "recipes_by_visibility_hidden" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "visibility"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "hidden"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "created_at"
+    order      = "DESCENDING"
+  }
+}

@@ -389,6 +389,10 @@ const en = {
     failedToAddItem: 'Failed to add item',
     failedToRemoveItem: 'Failed to remove item',
     failedToChangeLanguage: 'Failed to change language',
+    recipeLibrary: 'Recipe Library',
+    recipeLibraryDesc: 'Manage your recipe collection',
+    showHiddenRecipes: 'Show Hidden Recipes',
+    showHiddenRecipesDesc: 'Include recipes you marked with thumbs-down',
   },
 
   // ── Admin screen ──────────────────────────────────────────────────
