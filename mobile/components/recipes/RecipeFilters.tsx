@@ -116,7 +116,7 @@ export const FilterChips = ({
         }}
       >
         <Text style={{
-          fontSize: 13, fontWeight: '600',
+          fontSize: 13, fontFamily: fontFamily.bodySemibold,
           color: !dietFilter && !showFavoritesOnly ? colors.white : '#5D4E40',
         }}>
           {t('labels.diet.all')}
@@ -140,7 +140,7 @@ export const FilterChips = ({
         >
           <Text style={{ fontSize: 13 }}>{emoji}</Text>
           <Text style={{
-            fontSize: 13, fontWeight: '600',
+            fontSize: 13, fontFamily: fontFamily.bodySemibold,
             color: dietFilter === diet ? colors.white : '#5D4E40',
           }}>
             {t(`labels.diet.${diet}`)}
@@ -167,7 +167,7 @@ export const FilterChips = ({
           color={showFavoritesOnly ? colors.white : '#C75050'}
         />
         <Text style={{
-          fontSize: 13, fontWeight: '600',
+          fontSize: 13, fontFamily: fontFamily.bodySemibold,
           color: showFavoritesOnly ? colors.white : '#5D4E40',
         }}>
           {t('recipes.favorites')}
@@ -187,7 +187,7 @@ export const FilterChips = ({
         }}
       >
         <Ionicons name="funnel-outline" size={13} color="#5D4E40" />
-        <Text style={{ fontSize: 13, fontWeight: '600', color: '#5D4E40' }}>
+                <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>
           {sortOptions.find((o) => o.value === sortBy)?.label}
         </Text>
       </AnimatedPressable>
