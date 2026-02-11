@@ -173,6 +173,8 @@ const en = {
     enhancementRejected: 'Enhancement rejected',
     enhancementRejectedMessage: 'The original version will be shown by default',
     reviewFailed: 'Could not save your review',
+    cannotReviewEnhancement: 'Cannot Review',
+    cannotReviewEnhancementMessage: 'Copy this recipe to your household first to review the enhancement.',
     enhanceRecipe: 'Enhance with AI',
     enhanceConfirm: 'Use AI to improve this recipe with better instructions, precise measurements, and cooking tips?',
     enhance: 'Enhance',

@@ -425,7 +425,7 @@ describe('useRecipeActions', () => {
       const recipe = makeRecipe({ enhanced: true, household_id: 'other-household' });
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       await act(async () => result.current.handleReviewEnhancement('approve'));
-      expect(mockShowNotification).toHaveBeenCalledWith('recipe.cannotRate', 'recipe.cannotRateMessage');
+      expect(mockShowNotification).toHaveBeenCalledWith('recipe.cannotReviewEnhancement', 'recipe.cannotReviewEnhancementMessage');
     });
 
     it('calls reviewEnhancement with approve and shows success', async () => {

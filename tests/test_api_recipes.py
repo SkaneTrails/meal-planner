@@ -643,6 +643,7 @@ class TestScrapeRecipe:
             patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe") as mock_save,
+            patch("api.routers.recipes._get_household_language", return_value="sv"),
             patch("api.services.recipe_enhancer.get_genai_client") as mock_genai,
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="prompt"),
         ):
@@ -691,6 +692,7 @@ class TestScrapeRecipe:
             patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
             patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
             patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes._get_household_language", return_value="sv"),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementError("API error")),
         ):
             mock_client = AsyncMock()

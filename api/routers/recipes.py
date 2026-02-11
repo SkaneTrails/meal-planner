@@ -27,6 +27,7 @@ from api.models.recipe import (
 from api.services.html_fetcher import FetchError, FetchResult, fetch_html
 from api.services.image_downloader import download_and_upload_image
 from api.services.image_service import create_hero, create_thumbnail
+from api.services.prompt_loader import DEFAULT_LANGUAGE
 from api.services.recipe_mapper import build_recipe_create_from_enhanced, build_recipe_create_from_scraped
 from api.storage import recipe_storage
 from api.storage.recipe_queries import count_recipes, get_recipes_paginated
@@ -66,11 +67,11 @@ def _get_household_language(household_id: str) -> str:
     from api.storage.household_storage import get_household_settings
 
     settings = get_household_settings(household_id)
-    return (settings or {}).get("language", "sv")
+    return (settings or {}).get("language", DEFAULT_LANGUAGE)
 
 
 def _try_enhance(
-    saved_recipe: Recipe, *, household_id: str, created_by: str, language: str = "sv"
+    saved_recipe: Recipe, *, household_id: str, created_by: str, language: str = DEFAULT_LANGUAGE
 ) -> Recipe:  # pragma: no cover
     """Attempt AI enhancement on a saved recipe, returning original on failure."""
     from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance

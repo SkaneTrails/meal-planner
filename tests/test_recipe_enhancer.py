@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from api.services.prompt_loader import DEFAULT_LANGUAGE
 from api.services.recipe_enhancer import (
     DEFAULT_MODEL,
     EnhancementError,
@@ -268,7 +269,7 @@ class TestEnhanceRecipe:
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
 
-            mock_prompt.assert_called_once_with("sv")
+            mock_prompt.assert_called_once_with(DEFAULT_LANGUAGE)
             mock_client.models.generate_content.assert_called_once()
             call_kwargs = mock_client.models.generate_content.call_args
             assert call_kwargs.kwargs["model"] == DEFAULT_MODEL

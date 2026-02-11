@@ -14,7 +14,7 @@ import warnings
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
-from api.services.prompt_loader import load_system_prompt
+from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
 from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
 
 if TYPE_CHECKING:
@@ -117,7 +117,9 @@ def _flatten_metadata(enhanced: dict[str, Any]) -> None:
                 enhanced[key] = metadata[key]
 
 
-def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL, language: str = "sv") -> dict[str, Any]:
+def enhance_recipe(
+    recipe: dict[str, Any], *, model: str = DEFAULT_MODEL, language: str = DEFAULT_LANGUAGE
+) -> dict[str, Any]:
     """
     Enhance a recipe using Gemini AI.
 

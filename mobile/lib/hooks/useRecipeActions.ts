@@ -247,7 +247,7 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
       return;
     }
     if (recipe.household_id !== currentUser.household_id) {
-      showNotification(t('recipe.cannotRate'), t('recipe.cannotRateMessage'));
+      showNotification(t('recipe.cannotReviewEnhancement'), t('recipe.cannotReviewEnhancementMessage'));
       return;
     }
     try {

@@ -2,7 +2,7 @@
  * Recipe detail screen.
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Pressable,
@@ -61,9 +61,13 @@ export default function RecipeDetailScreen() {
 
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showAiChanges, setShowAiChanges] = useState(false);
-  const [showOriginal, setShowOriginal] = useState(
-    () => recipe?.enhanced === true && recipe?.show_enhanced === false && recipe?.enhancement_reviewed === true,
-  );
+  const [showOriginal, setShowOriginal] = useState(false);
+
+  useEffect(() => {
+    if (recipe?.enhanced === true && recipe?.show_enhanced === false) {
+      setShowOriginal(true);
+    }
+  }, [recipe?.enhanced, recipe?.show_enhanced]);
 
   const toggleStep = (index: number) => {
     hapticSelection();

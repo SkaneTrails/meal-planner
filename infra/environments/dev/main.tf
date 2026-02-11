@@ -156,8 +156,8 @@ module "cloud_run" {
   allow_public_access = true
 
   # Recipe enhancement with Gemini
-  gemini_secret_id          = module.secrets.gemini_api_key_secret_id
-  gemini_secret_name        = module.secrets.gemini_api_key_secret_name
+  gemini_secret_id   = module.secrets.gemini_api_key_secret_id
+  gemini_secret_name = module.secrets.gemini_api_key_secret_name
 
   # Scrape function URL
   scrape_function_url = module.cloud_function.function_url

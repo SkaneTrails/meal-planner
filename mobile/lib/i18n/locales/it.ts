@@ -167,6 +167,8 @@ const it: Translations = {
     enhancementRejected: 'Miglioramento rifiutato',
     enhancementRejectedMessage: 'La versione originale verrà mostrata per impostazione predefinita',
     reviewFailed: 'Impossibile salvare la tua revisione',
+    cannotReviewEnhancement: 'Impossibile revisionare',
+    cannotReviewEnhancementMessage: 'Copia prima questa ricetta nel tuo nucleo familiare per revisionare il miglioramento.',
     enhanceRecipe: 'Migliora con AI',
     enhanceConfirm: 'Usare l\'AI per migliorare questa ricetta con istruzioni migliori, misure precise e consigli di cottura?',
     enhance: 'Migliora',

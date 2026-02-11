@@ -167,6 +167,8 @@ const sv: Translations = {
     enhancementRejected: 'Förbättring avvisad',
     enhancementRejectedMessage: 'Originalversionen visas som standard',
     reviewFailed: 'Kunde inte spara din granskning',
+    cannotReviewEnhancement: 'Kan inte granska',
+    cannotReviewEnhancementMessage: 'Kopiera receptet till ditt hushåll först för att granska förbättringen.',
     enhanceRecipe: 'Förbättra med AI',
     enhanceConfirm: 'Använda AI för att förbättra receptet med bättre instruktioner, exakta mått och lagningstips?',
     enhance: 'Förbättra',
