@@ -7,7 +7,7 @@
  * - setCheckedItems: replaces the full checked set
  * - clearChecked: resets all checked items
  * - addCustomItem: appends a CustomGroceryItem
- * - saveSelections: saves meals + servings via full PUT
+ * - saveSelections: saves meals + servings via PATCH
  * - clearAll: resets all state and calls API delete
  * - refreshFromApi: reloads state from API
  * - useGroceryState: throws when used outside provider
@@ -224,14 +224,14 @@ describe('GroceryProvider', () => {
   });
 
   describe('saveSelections', () => {
-    it('saves meals and servings via full PUT', async () => {
+    it('saves meals and servings via PATCH', async () => {
       const { result } = renderHook(() => useGroceryState(), {
         wrapper: createGroceryWrapper(),
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      act(() => {
-        result.current.saveSelections(
+      await act(async () => {
+        await result.current.saveSelections(
           ['monday-lunch', 'tuesday-dinner'],
           { 'monday-lunch': 4, 'tuesday-dinner': 2 },
         );
@@ -239,12 +239,28 @@ describe('GroceryProvider', () => {
 
       expect(result.current.selectedMealKeys).toEqual(['monday-lunch', 'tuesday-dinner']);
       expect(result.current.mealServings).toEqual({ 'monday-lunch': 4, 'tuesday-dinner': 2 });
-      expect(mockSaveGroceryState).toHaveBeenCalledWith(
-        expect.objectContaining({
-          selected_meals: ['monday-lunch', 'tuesday-dinner'],
-          meal_servings: { 'monday-lunch': 4, 'tuesday-dinner': 2 },
-        }),
-      );
+      expect(mockPatchGroceryState).toHaveBeenCalledWith({
+        selected_meals: ['monday-lunch', 'tuesday-dinner'],
+        meal_servings: { 'monday-lunch': 4, 'tuesday-dinner': 2 },
+      });
+    });
+  });
+
+  describe('legacy custom items normalization', () => {
+    it('converts string[] from AsyncStorage to CustomGroceryItem[]', async () => {
+      mockGetGroceryState.mockRejectedValue(new Error('offline'));
+      mockStorage['grocery_custom_items'] = JSON.stringify(['bread', 'milk']);
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.customItems).toEqual([
+        { name: 'bread', category: 'other' },
+        { name: 'milk', category: 'other' },
+      ]);
     });
   });
 

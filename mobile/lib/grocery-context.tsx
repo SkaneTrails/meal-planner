@@ -31,7 +31,7 @@ interface GroceryContextValue {
   clearChecked: () => void;
   addCustomItem: (item: CustomGroceryItem) => void;
   setCustomItems: (items: CustomGroceryItem[]) => void;
-  saveSelections: (meals: string[], servings: Record<string, number>) => void;
+  saveSelections: (meals: string[], servings: Record<string, number>) => Promise<void>;
   clearAll: () => Promise<void>;
   refreshFromApi: () => Promise<void>;
 }
@@ -54,6 +54,11 @@ const cacheToAsyncStorage = async (state: {
   ]).catch(() => {});
 };
 
+const normalizeCustomItems = (raw: unknown[]): CustomGroceryItem[] =>
+  raw.map((item) =>
+    typeof item === 'string' ? { name: item, category: 'other' as const } : (item as CustomGroceryItem),
+  );
+
 const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
   const [checkedData, customData, mealsData, servingsData] = await Promise.all([
     AsyncStorage.getItem('grocery_checked_items'),
@@ -62,9 +67,11 @@ const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
     AsyncStorage.getItem('grocery_meal_servings'),
   ]);
 
+  const rawCustom = customData ? JSON.parse(customData) : [];
+
   return {
     checked_items: checkedData ? JSON.parse(checkedData) : [],
-    custom_items: customData ? JSON.parse(customData) : [],
+    custom_items: Array.isArray(rawCustom) ? normalizeCustomItems(rawCustom) : [],
     selected_meals: mealsData ? JSON.parse(mealsData) : [],
     meal_servings: servingsData ? JSON.parse(servingsData) : {},
   };
@@ -86,7 +93,9 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     const patch = { ...pendingPatchRef.current };
     pendingPatchRef.current = {};
     if (Object.keys(patch).length === 0) return;
-    api.patchGroceryState(patch).catch(() => {});
+    api.patchGroceryState(patch).catch((err: unknown) => {
+      console.warn('[GroceryContext] Patch failed, will resync on next focus:', err);
+    });
   }, []);
 
   const enqueuePatch = useCallback((fields: Record<string, unknown>) => {
@@ -192,17 +201,15 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     enqueuePatch({ custom_items: items });
   }, [enqueuePatch]);
 
-  const saveSelections = useCallback((meals: string[], servings: Record<string, number>) => {
+  const saveSelections = useCallback(async (meals: string[], servings: Record<string, number>) => {
     setSelectedMealKeys(meals);
     setMealServings(servings);
     AsyncStorage.setItem('grocery_selected_meals', JSON.stringify(meals)).catch(() => {});
     AsyncStorage.setItem('grocery_meal_servings', JSON.stringify(servings)).catch(() => {});
-    api.saveGroceryState({
+    await api.patchGroceryState({
       selected_meals: meals,
       meal_servings: servings,
-      checked_items: Array.from(checkedRef.current),
-      custom_items: customItemsRef.current,
-    }).catch(() => {});
+    });
   }, []);
 
   const clearAll = useCallback(async () => {

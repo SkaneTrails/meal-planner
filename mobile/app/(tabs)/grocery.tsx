@@ -23,7 +23,7 @@ export default function GroceryScreen() {
   const router = useRouter();
   const {
     checkedItems, setCheckedItems, clearChecked,
-    customItems, addCustomItem, setCustomItems,
+    customItems, addCustomItem,
     selectedMealKeys, mealServings,
     isLoading: contextLoading,
     clearAll, refreshFromApi,
@@ -201,7 +201,7 @@ export default function GroceryScreen() {
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
 
-  // Show skeleton on initial load only (not on subsequent focus events)
+  // Show skeleton whenever the grocery context is loading
   if (contextLoading) {
     return (
       <GradientBackground>

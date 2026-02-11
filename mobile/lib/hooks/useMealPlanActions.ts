@@ -240,7 +240,7 @@ export const useMealPlanActions = () => {
     }
     try {
       const mealsArray = Array.from(selectedMeals);
-      saveSelections(mealsArray, mealServings);
+      await saveSelections(mealsArray, mealServings);
       setShowGroceryModal(false);
       setTimeout(() => router.push('/(tabs)/grocery'), 100);
     } catch {

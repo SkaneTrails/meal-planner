@@ -200,8 +200,8 @@ export interface GroceryListState {
   meal_servings: Record<string, number>;
   checked_items: string[];
   custom_items: CustomGroceryItem[];
-  updated_at: string | null;
-  created_by: string | null;
+  updated_at?: string | null;
+  created_by?: string | null;
 }
 
 export interface GroceryListStateSave {

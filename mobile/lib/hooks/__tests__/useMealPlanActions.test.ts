@@ -46,7 +46,7 @@ const mockRecipes: Recipe[] = [
   } as Recipe,
 ];
 
-const mockSaveSelections = vi.fn();
+const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 
 vi.mock('@/lib/hooks', () => ({
   useMealPlan: vi.fn(() => ({
