@@ -14,7 +14,7 @@ import warnings
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
-from api.services.prompt_loader import load_system_prompt
+from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
 from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
 
 if TYPE_CHECKING:
@@ -41,19 +41,6 @@ DEFAULT_MODEL = "gemini-2.5-flash"
 
 class EnhancementError(Exception):
     """Raised when recipe enhancement fails."""
-
-
-class EnhancementDisabledError(Exception):
-    """Raised when enhancement is disabled."""
-
-
-def is_enhancement_enabled() -> bool:
-    """
-    Check if recipe enhancement is enabled.
-
-    Currently disabled - set ENABLE_RECIPE_ENHANCEMENT=true to enable.
-    """
-    return os.getenv("ENABLE_RECIPE_ENHANCEMENT", "false").lower() == "true"
 
 
 def get_genai_client() -> genai_module.Client:
@@ -130,27 +117,25 @@ def _flatten_metadata(enhanced: dict[str, Any]) -> None:
                 enhanced[key] = metadata[key]
 
 
-def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL) -> dict[str, Any]:
+def enhance_recipe(
+    recipe: dict[str, Any], *, model: str = DEFAULT_MODEL, language: str = DEFAULT_LANGUAGE
+) -> dict[str, Any]:
     """
     Enhance a recipe using Gemini AI.
 
     Args:
         recipe: Original recipe dict with title, ingredients, instructions
         model: Gemini model to use (default: gemini-2.5-flash)
+        language: Language code for locale-specific rules (default: sv)
 
     Returns:
         Enhanced recipe dict with improved ingredients, instructions, tips
 
     Raises:
-        EnhancementDisabledError: If enhancement is disabled
         EnhancementError: If enhancement fails
     """
-    if not is_enhancement_enabled():
-        msg = "Recipe enhancement is currently disabled"
-        raise EnhancementDisabledError(msg)
-
     client = get_genai_client()
-    system_prompt = load_system_prompt()
+    system_prompt = load_system_prompt(language)
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
 

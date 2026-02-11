@@ -75,7 +75,7 @@ const InspirationCard = ({ recipe, t, onPress }: { recipe: Recipe; t: Data['t'];
       source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
       style={{ width: '100%', height: 160 }}
       contentFit="cover"
-      placeholder={PLACEHOLDER_BLURHASH}
+      placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
       transition={200}
     />
     <LinearGradient
@@ -134,7 +134,7 @@ const GetStartedFallback = ({ t, onPress }: { t: Data['t']; onPress: () => void 
         source={HOMEPAGE_HERO}
         style={{ width: '100%', height: 140 }}
         contentFit="cover"
-        placeholder={PLACEHOLDER_BLURHASH}
+        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
         transition={200}
       />
       <LinearGradient

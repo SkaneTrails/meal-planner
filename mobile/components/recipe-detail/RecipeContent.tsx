@@ -6,10 +6,11 @@ import { AnimatedPressable } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { RecipeInstructions } from './RecipeInstructions';
 import { RecipeEnhancedInfo } from './RecipeEnhancedInfo';
+import { EnhancementReviewBanner } from './EnhancementReviewBanner';
 import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
 import { RecipeActionsFooter } from './RecipeActionsFooter';
 import { DIET_LABELS } from './recipe-detail-constants';
-import type { Recipe } from '@/lib/types';
+import type { Recipe, EnhancementReviewAction } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
 
 interface RecipeContentProps {
@@ -19,6 +20,10 @@ interface RecipeContentProps {
   showAiChanges: boolean;
   showOriginal: boolean;
   canEdit: boolean;
+  canEnhance: boolean;
+  isEnhancing: boolean;
+  needsEnhancementReview: boolean;
+  isReviewingEnhancement: boolean;
   t: TFunction;
   onToggleStep: (index: number) => void;
   onToggleAiChanges: () => void;
@@ -26,6 +31,8 @@ interface RecipeContentProps {
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
   onShare: () => void;
+  onEnhance: () => void;
+  onReviewEnhancement: (action: EnhancementReviewAction) => void;
 }
 
 export const RecipeContent = ({
@@ -35,6 +42,10 @@ export const RecipeContent = ({
   showAiChanges,
   showOriginal,
   canEdit,
+  canEnhance,
+  isEnhancing,
+  needsEnhancementReview,
+  isReviewingEnhancement,
   t,
   onToggleStep,
   onToggleAiChanges,
@@ -42,6 +53,8 @@ export const RecipeContent = ({
   onOpenEditModal,
   onShowPlanModal,
   onShare,
+  onEnhance,
+  onReviewEnhancement,
 }: RecipeContentProps) => {
   const hasOriginal = Boolean(recipe.enhanced && recipe.original);
   const displayIngredients = useMemo(
@@ -111,6 +124,25 @@ export const RecipeContent = ({
       >
         <Ionicons name="share" size={20} color={colors.text.inverse} />
       </AnimatedPressable>
+      {canEnhance && (
+        <AnimatedPressable
+          onPress={onEnhance}
+          hoverScale={1.1}
+          pressScale={0.9}
+          disabled={isEnhancing}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: isEnhancing ? 0.5 : 1,
+          }}
+        >
+          <Ionicons name="sparkles" size={20} color={isEnhancing ? colors.gray[400] : '#7C3AED'} />
+        </AnimatedPressable>
+      )}
     </View>
 
     {/* Meta info (labels) */}
@@ -211,6 +243,16 @@ export const RecipeContent = ({
         showOriginal={showOriginal}
         t={t}
         onToggle={onToggleOriginal}
+      />
+    )}
+
+    {/* Enhancement review banner */}
+    {needsEnhancementReview && (
+      <EnhancementReviewBanner
+        t={t}
+        isSubmitting={isReviewingEnhancement}
+        onApprove={() => onReviewEnhancement('approve')}
+        onReject={() => onReviewEnhancement('reject')}
       />
     )}
 

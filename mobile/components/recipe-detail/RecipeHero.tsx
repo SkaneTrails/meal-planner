@@ -59,7 +59,7 @@ export const RecipeHero = ({
       source={{ uri: imageUrl || PLACEHOLDER_IMAGE }}
       style={{ width: '100%', height: headerHeight }}
       contentFit="cover"
-      placeholder={PLACEHOLDER_BLURHASH}
+      placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
       transition={400}
     />
 

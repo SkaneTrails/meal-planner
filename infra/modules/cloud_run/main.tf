@@ -103,13 +103,9 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
 
-      # Recipe enhancement feature flag
-      dynamic "env" {
-        for_each = var.enable_recipe_enhancement ? [1] : []
-        content {
-          name  = "ENABLE_RECIPE_ENHANCEMENT"
-          value = "true"
-        }
+      env {
+        name  = "ENABLE_RECIPE_ENHANCEMENT"
+        value = "true"
       }
 
       # Scrape function URL

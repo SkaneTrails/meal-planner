@@ -94,7 +94,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
             source={{ uri: recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: 60, height: 60, borderRadius: 14 }}
             contentFit="cover"
-            placeholder={PLACEHOLDER_BLURHASH}
+            placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
             transition={200}
           />
           <View style={{ flex: 1, marginLeft: 16 }}>
@@ -181,7 +181,7 @@ export const RecipeCard = ({ recipe, onPress, compact = false, cardSize, showFav
             source={{ uri: recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE }}
             style={{ width: '100%', height: imageHeight }}
             contentFit="cover"
-            placeholder={PLACEHOLDER_BLURHASH}
+            placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
             transition={300}
           />
 
