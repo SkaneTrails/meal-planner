@@ -45,7 +45,7 @@ export const DayHeader = ({
           </View>
         )}
         <Text style={{
-          fontSize: 16,
+          fontSize: 15,
           fontFamily: fontFamily.bodySemibold,
           color: isToday ? '#2D2D2D' : 'rgba(45, 45, 45, 0.75)',
           letterSpacing: -0.2,
