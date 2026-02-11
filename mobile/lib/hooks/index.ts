@@ -5,6 +5,7 @@
 export * from '../grocery-context';
 export * from './use-admin';
 export * from './use-grocery';
+export * from './use-grocery-state';
 export * from './use-language-sync';
 export * from './use-meal-plan';
 export * from './use-recipes';

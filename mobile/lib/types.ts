@@ -189,6 +189,35 @@ export interface GroceryList {
   items: GroceryItem[];
 }
 
+// Grocery list state (persisted in Firestore, shared across household)
+export interface CustomGroceryItem {
+  name: string;
+  category: GroceryCategory;
+}
+
+export interface GroceryListState {
+  selected_meals: string[];
+  meal_servings: Record<string, number>;
+  checked_items: string[];
+  custom_items: CustomGroceryItem[];
+  updated_at: string | null;
+  created_by: string | null;
+}
+
+export interface GroceryListStateSave {
+  selected_meals: string[];
+  meal_servings: Record<string, number>;
+  checked_items?: string[];
+  custom_items?: CustomGroceryItem[];
+}
+
+export interface GroceryListStatePatch {
+  selected_meals?: string[];
+  meal_servings?: Record<string, number>;
+  checked_items?: string[];
+  custom_items?: CustomGroceryItem[];
+}
+
 // API Response types
 export interface ApiError {
   detail: string | { message: string; [key: string]: unknown };
