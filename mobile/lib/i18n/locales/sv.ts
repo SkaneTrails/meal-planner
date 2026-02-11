@@ -377,6 +377,10 @@ const sv: Translations = {
     failedToAddItem: 'Kunde inte lägga till vara',
     failedToRemoveItem: 'Kunde inte ta bort vara',
     failedToChangeLanguage: 'Kunde inte byta språk',
+    recipeLibrary: 'Receptbibliotek',
+    recipeLibraryDesc: 'Hantera din receptsamling',
+    showHiddenRecipes: 'Visa dolda recept',
+    showHiddenRecipesDesc: 'Inkludera recept du markerat med tummen ner',
   },
 
   admin: {

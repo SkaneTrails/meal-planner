@@ -69,6 +69,7 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   ingredients: ['1 cup flour', '2 eggs'],
   instructions: ['Mix', 'Bake'],
   image_url: 'https://example.com/image.jpg',
+  thumbnail_url: null,
   servings: 4,
   prep_time: 10,
   cook_time: 20,
@@ -79,6 +80,8 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   diet_label: null,
   meal_label: null,
   rating: null,
+  hidden: false,
+  favorited: false,
   household_id: 'household-abc',
   visibility: 'household',
   ...overrides,
@@ -152,36 +155,49 @@ describe('useRecipeActions', () => {
       await act(async () => result.current.handleThumbUp());
       expect(mockMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', updates: { rating: null } });
     });
+
+    it('approves and un-hides a hidden recipe', async () => {
+      const recipe = makeRecipe({ hidden: true, rating: null });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleThumbUp());
+      expect(mockMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', updates: { rating: 5, hidden: false } });
+    });
   });
 
   describe('handleThumbDown', () => {
-    it('does nothing when id is undefined', () => {
+    it('does nothing when id is undefined', async () => {
       const recipe = makeRecipe();
       const { result } = renderHook(() => useRecipeActions(undefined, recipe), { wrapper });
-      act(() => result.current.handleThumbDown());
-      expect(mockShowAlert).not.toHaveBeenCalled();
+      await act(async () => result.current.handleThumbDown());
+      expect(mockMutateAsync).not.toHaveBeenCalled();
     });
 
-    it('shows delete confirm when rating already 1', () => {
-      const recipe = makeRecipe({ rating: 1 });
+    it('hides a visible recipe', async () => {
+      const recipe = makeRecipe({ hidden: false, rating: null });
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
-      act(() => result.current.handleThumbDown());
-      expect(mockShowAlert).toHaveBeenCalledWith(
-        'recipe.deleteRecipe',
-        expect.any(String),
-        expect.any(Array),
-      );
+      await act(async () => result.current.handleThumbDown());
+      expect(mockMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', updates: { hidden: true } });
     });
 
-    it('shows mark-not-favorite dialog when unrated', () => {
-      const recipe = makeRecipe({ rating: null });
+    it('un-hides a hidden recipe', async () => {
+      const recipe = makeRecipe({ hidden: true });
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
-      act(() => result.current.handleThumbDown());
-      expect(mockShowAlert).toHaveBeenCalledWith(
-        'recipe.notFavorite',
-        expect.any(String),
-        expect.any(Array),
-      );
+      await act(async () => result.current.handleThumbDown());
+      expect(mockMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', updates: { hidden: false } });
+    });
+
+    it('clears rating when hiding an approved recipe', async () => {
+      const recipe = makeRecipe({ hidden: false, rating: 5 });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleThumbDown());
+      expect(mockMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', updates: { hidden: true, rating: null } });
+    });
+
+    it('shows notification when recipe not owned by user household', async () => {
+      const recipe = makeRecipe({ household_id: 'other-household' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleThumbDown());
+      expect(mockShowNotification).toHaveBeenCalledWith('recipe.cannotRate', 'recipe.cannotRateMessage');
     });
   });
 

@@ -113,27 +113,33 @@ async def _ingest_recipe_image(recipe: Recipe, *, household_id: str) -> Recipe:
 
 
 @router.get("")
-async def list_recipes(
+async def list_recipes(  # noqa: PLR0913
     user: Annotated[AuthenticatedUser, Depends(require_auth)],
     search: Annotated[str | None, Query(description="Search recipes by title")] = None,
     *,
     include_duplicates: Annotated[bool, Query(description="Include duplicate URLs")] = False,
+    show_hidden: Annotated[bool, Query(description="Include hidden (thumbs-down) recipes")] = False,
     limit: Annotated[int, Query(ge=1, le=MAX_PAGE_LIMIT, description="Max recipes per page")] = DEFAULT_PAGE_LIMIT,
     cursor: Annotated[str | None, Query(description="Cursor (recipe ID) for next page")] = None,
 ) -> PaginatedRecipeList:
     """Get recipes visible to the user, with cursor-based pagination.
 
     Superusers see all recipes. Regular users see their household's recipes and shared recipes.
+    Hidden recipes (thumbs-down) are excluded by default unless show_hidden=true.
     """
     household_id = None if user.role == "superuser" else user.household_id
 
     if search:
-        recipes = recipe_storage.search_recipes(search, household_id=household_id)
+        recipes = recipe_storage.search_recipes(search, household_id=household_id, show_hidden=show_hidden)
         return PaginatedRecipeList(items=recipes, total_count=len(recipes), next_cursor=None, has_more=False)
 
-    total = count_recipes(household_id=household_id) if cursor is None else None
+    total = count_recipes(household_id=household_id, show_hidden=show_hidden) if cursor is None else None
     recipes, next_cursor = get_recipes_paginated(
-        household_id=household_id, limit=limit, cursor=cursor, include_duplicates=include_duplicates
+        household_id=household_id,
+        limit=limit,
+        cursor=cursor,
+        include_duplicates=include_duplicates,
+        show_hidden=show_hidden,
     )
     return PaginatedRecipeList(
         items=recipes, total_count=total, next_cursor=next_cursor, has_more=next_cursor is not None

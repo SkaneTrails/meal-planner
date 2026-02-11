@@ -14,11 +14,12 @@ import { Platform } from 'react-native';
 import { API_BASE_URL, API_PREFIX, ApiClientError, apiRequest, getAuthTokenFn } from './client';
 
 export const recipeApi = {
-  getRecipes: (search?: string, cursor?: string, limit?: number): Promise<PaginatedRecipeList> => {
+  getRecipes: (search?: string, cursor?: string, limit?: number, showHidden?: boolean): Promise<PaginatedRecipeList> => {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (cursor) params.set('cursor', cursor);
     if (limit) params.set('limit', String(limit));
+    if (showHidden) params.set('show_hidden', 'true');
     const query = params.toString();
     return apiRequest<PaginatedRecipeList>(`/recipes${query ? `?${query}` : ''}`);
   },

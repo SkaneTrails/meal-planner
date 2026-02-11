@@ -120,14 +120,22 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     }
     hapticSuccess();
     try {
-      const newRating = recipe.rating === 5 ? null : 5;
-      await updateRecipe.mutateAsync({ id, updates: { rating: newRating } });
+      if (recipe.rating === 5) {
+        // Toggle off approval
+        await updateRecipe.mutateAsync({ id, updates: { rating: null } });
+      } else {
+        // Approve (and un-hide if hidden)
+        await updateRecipe.mutateAsync({
+          id,
+          updates: { rating: 5, ...(recipe.hidden && { hidden: false }) },
+        });
+      }
     } catch {
       showNotification(t('common.error'), t('recipe.failedToUpdateRating'));
     }
   };
 
-  const handleThumbDown = () => {
+  const handleThumbDown = async () => {
     if (!id || !recipe) return;
     if (!currentUser) {
       showNotification(t('recipe.pleaseWait'), t('recipe.loadingAccount'));
@@ -138,34 +146,19 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
       return;
     }
     hapticWarning();
-    if (recipe.rating === 1) {
-      showAlert(t('recipe.deleteRecipe'), t('recipe.deleteConfirm', { title: recipe.title }), [
-        { text: t('recipe.keepIt'), style: 'cancel' },
-        {
-          text: t('recipe.yesDelete'),
-          style: 'destructive',
-          onPress: async () => {
-            try { await deleteRecipe.mutateAsync(id!); router.back(); } catch { showNotification(t('common.error'), t('recipe.failedToDelete')); }
-          },
-        },
-      ]);
-    } else {
-      showAlert(t('recipe.notFavorite'), t('recipe.notFavoriteMessage'), [
-        {
-          text: t('recipe.justMarkNotFavorite'),
-          style: 'cancel',
-          onPress: async () => {
-            try { await updateRecipe.mutateAsync({ id, updates: { rating: 1 } }); } catch { showNotification(t('common.error'), t('recipe.failedToUpdateRating')); }
-          },
-        },
-        {
-          text: t('recipe.yesDelete'),
-          style: 'destructive',
-          onPress: async () => {
-            try { await deleteRecipe.mutateAsync(id!); router.back(); } catch { showNotification(t('common.error'), t('recipe.failedToDelete')); }
-          },
-        },
-      ]);
+    try {
+      if (recipe.hidden) {
+        // Toggle off: un-hide
+        await updateRecipe.mutateAsync({ id, updates: { hidden: false } });
+      } else {
+        // Hide (and clear approval if approved)
+        await updateRecipe.mutateAsync({
+          id,
+          updates: { hidden: true, ...(recipe.rating !== null && { rating: null }) },
+        });
+      }
+    } catch {
+      showNotification(t('common.error'), t('recipe.failedToUpdateRating'));
     }
   };
 

@@ -191,6 +191,24 @@ class TestDocToRecipe:
 
         assert result.original is None
 
+    def test_maps_hidden_and_favorited_fields(self) -> None:
+        """Should map hidden and favorited visibility fields from Firestore."""
+        data = {"title": "Recipe", "hidden": True, "favorited": True}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.hidden is True
+        assert result.favorited is True
+
+    def test_defaults_hidden_and_favorited_to_false(self) -> None:
+        """Should default hidden and favorited to False when missing."""
+        data = {"title": "Recipe"}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.hidden is False
+        assert result.favorited is False
+
 
 class TestSaveRecipe:
     """Tests for save_recipe function."""
@@ -419,7 +437,8 @@ class TestGetAllRecipes:
         mock_doc2.id = "doc2"
         mock_doc2.to_dict.return_value = {"title": "Recipe 2", "url": "https://example.com/2"}
 
-        mock_db.collection.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
+        mock_collection = mock_db.collection.return_value
+        mock_collection.where.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
             mock_doc1,
             mock_doc2,
         ]
@@ -440,7 +459,8 @@ class TestGetAllRecipes:
         mock_doc2.id = "doc2"
         mock_doc2.to_dict.return_value = {"title": "Recipe 1 Duplicate", "url": "https://example.com/recipe/"}
 
-        mock_db.collection.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
+        mock_collection = mock_db.collection.return_value
+        mock_collection.where.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
             mock_doc1,
             mock_doc2,
         ]
@@ -461,7 +481,8 @@ class TestGetAllRecipes:
         mock_doc2.id = "doc2"
         mock_doc2.to_dict.return_value = {"title": "Recipe 1 Duplicate", "url": "https://example.com/recipe/"}
 
-        mock_db.collection.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
+        mock_collection = mock_db.collection.return_value
+        mock_collection.where.return_value.order_by.return_value.order_by.return_value.stream.return_value = [
             mock_doc1,
             mock_doc2,
         ]
@@ -506,13 +527,43 @@ class TestSearchRecipes:
         mock_doc.id = "doc123"
         mock_doc.to_dict.return_value = {"title": "Pasta Carbonara", "url": "https://example.com"}
 
-        mock_db.collection.return_value.where.return_value.where.return_value.stream.return_value = [mock_doc]
+        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
+            mock_doc
+        ]
 
         with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
             result = search_recipes("Pasta")
 
         assert len(result) == 1
         assert result[0].title == "Pasta Carbonara"
+
+    def test_excludes_hidden_by_default(self) -> None:
+        """Should add hidden==False filter when show_hidden is False."""
+        mock_db = MagicMock()
+        mock_query = MagicMock()
+        mock_query.where.return_value = mock_query
+        mock_query.stream.return_value = iter([])
+        mock_db.collection.return_value.where.return_value.where.return_value = mock_query
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            search_recipes("Pasta", show_hidden=False)
+
+        mock_query.where.assert_called_once()
+
+    def test_show_hidden_skips_filter(self) -> None:
+        """Should not add hidden filter when show_hidden=True."""
+        mock_db = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.id = "doc123"
+        mock_doc.to_dict.return_value = {"title": "Pasta Hidden", "url": "https://example.com", "hidden": True}
+
+        mock_db.collection.return_value.where.return_value.where.return_value.stream.return_value = [mock_doc]
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = search_recipes("Pasta", show_hidden=True)
+
+        assert len(result) == 1
+        assert result[0].title == "Pasta Hidden"
 
 
 class TestCopyRecipe:
@@ -726,6 +777,26 @@ class TestBuildHouseholdQuery:
 
         assert len(queries) == 2
 
+    def test_show_hidden_false_adds_filter(self) -> None:
+        """Should add hidden==False filter when show_hidden is False."""
+        mock_db = MagicMock()
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        _build_household_query(mock_db, household_id=None, show_hidden=False)
+
+        mock_collection.where.assert_called_once()
+
+    def test_show_hidden_true_skips_filter(self) -> None:
+        """Should not add hidden filter when show_hidden=True."""
+        mock_db = MagicMock()
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        _build_household_query(mock_db, household_id=None, show_hidden=True)
+
+        mock_collection.where.assert_not_called()
+
 
 class TestGetRecipesPaginated:
     """Tests for get_recipes_paginated cursor-based pagination."""
@@ -749,6 +820,7 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
+            mock_query.where.return_value = mock_query
             mock_query.order_by.return_value = mock_query
             mock_query.limit.return_value = mock_query
             mock_query.stream.return_value = iter(docs)
@@ -765,6 +837,7 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
+            mock_query.where.return_value = mock_query
             mock_query.order_by.return_value = mock_query
             mock_query.limit.return_value = mock_query
             mock_query.stream.return_value = iter(docs)
@@ -783,13 +856,14 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
+            mock_query.where.return_value = mock_query
             mock_query.order_by.return_value = mock_query
             mock_query.start_after.return_value = mock_query
             mock_query.limit.return_value = mock_query
             mock_query.stream.return_value = iter(docs)
 
             mock_collection = mock_client.return_value.collection.return_value
-            mock_collection.order_by.return_value = mock_query
+            mock_collection.where.return_value = mock_query
             mock_collection.document.return_value.get.return_value = cursor_doc
 
             recipes, _next_cursor = get_recipes_paginated(household_id=None, limit=10, cursor="r2")
@@ -805,12 +879,13 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             mock_query = MagicMock()
+            mock_query.where.return_value = mock_query
             mock_query.order_by.return_value = mock_query
             mock_query.limit.return_value = mock_query
             mock_query.stream.return_value = iter(docs)
 
             mock_collection = mock_client.return_value.collection.return_value
-            mock_collection.order_by.return_value = mock_query
+            mock_collection.where.return_value = mock_query
             mock_collection.document.return_value.get.return_value = cursor_doc
 
             recipes, _ = get_recipes_paginated(household_id=None, limit=10, cursor="invalid")
@@ -841,22 +916,20 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             owned_query = MagicMock()
+            owned_query.where.return_value = owned_query
             owned_query.order_by.return_value = owned_query
             owned_query.limit.return_value = owned_query
             owned_query.stream.return_value = iter(owned_docs)
 
             shared_query = MagicMock()
+            shared_query.where.return_value = shared_query
             shared_query.order_by.return_value = shared_query
             shared_query.limit.return_value = shared_query
             shared_query.stream.return_value = iter(shared_docs)
 
             mock_collection = mock_client.return_value.collection.return_value
-            mock_collection.where.return_value.order_by.return_value.order_by.return_value = owned_query
-            # Second call to .where() returns the shared query
-            mock_collection.where.side_effect = [
-                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=owned_query)))),
-                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=shared_query)))),
-            ]
+            # Each .where() call returns a mock that chains .where().order_by().order_by()
+            mock_collection.where.side_effect = [owned_query, shared_query]
 
             recipes, next_cursor = get_recipes_paginated(household_id="hh1", limit=10)
 
@@ -877,20 +950,19 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             owned_query = MagicMock()
+            owned_query.where.return_value = owned_query
             owned_query.order_by.return_value = owned_query
             owned_query.limit.return_value = owned_query
             owned_query.stream.return_value = iter(owned_docs)
 
             shared_query = MagicMock()
+            shared_query.where.return_value = shared_query
             shared_query.order_by.return_value = shared_query
             shared_query.limit.return_value = shared_query
             shared_query.stream.return_value = iter(shared_docs)
 
             mock_collection = mock_client.return_value.collection.return_value
-            mock_collection.where.side_effect = [
-                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=owned_query)))),
-                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=shared_query)))),
-            ]
+            mock_collection.where.side_effect = [owned_query, shared_query]
 
             recipes, next_cursor = get_recipes_paginated(household_id="hh1", limit=10)
 
@@ -908,20 +980,19 @@ class TestGetRecipesPaginated:
 
         with patch("api.storage.recipe_queries.get_firestore_client") as mock_client:
             owned_query = MagicMock()
+            owned_query.where.return_value = owned_query
             owned_query.order_by.return_value = owned_query
             owned_query.limit.return_value = owned_query
             owned_query.stream.return_value = iter(owned_docs)
 
             shared_query = MagicMock()
+            shared_query.where.return_value = shared_query
             shared_query.order_by.return_value = shared_query
             shared_query.limit.return_value = shared_query
             shared_query.stream.return_value = iter(shared_docs)
 
             mock_collection = mock_client.return_value.collection.return_value
-            mock_collection.where.side_effect = [
-                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=owned_query)))),
-                MagicMock(order_by=MagicMock(return_value=MagicMock(order_by=MagicMock(return_value=shared_query)))),
-            ]
+            mock_collection.where.side_effect = [owned_query, shared_query]
 
             recipes, next_cursor = get_recipes_paginated(household_id="hh1", limit=2)
 

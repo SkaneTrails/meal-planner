@@ -27,6 +27,7 @@ interface Settings {
   itemsAtHome: string[]; // List of ingredients always at home (won't appear in grocery list)
   language: AppLanguage; // App language
   favoriteRecipes: string[]; // List of favorite recipe IDs
+  showHiddenRecipes: boolean; // Show recipes marked with thumbs-down
 }
 
 interface SettingsContextType {
@@ -38,12 +39,14 @@ interface SettingsContextType {
   setLanguage: (language: AppLanguage) => Promise<void>;
   toggleFavorite: (recipeId: string) => Promise<void>;
   isFavorite: (recipeId: string) => boolean;
+  toggleShowHiddenRecipes: () => Promise<void>;
 }
 
 const defaultSettings: Settings = {
   itemsAtHome: [],
   language: 'en',
   favoriteRecipes: [],
+  showHiddenRecipes: false,
 };
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
@@ -149,6 +152,14 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     [settings.favoriteRecipes],
   );
 
+  const toggleShowHiddenRecipes = useCallback(async () => {
+    const newSettings = {
+      ...settings,
+      showHiddenRecipes: !settings.showHiddenRecipes,
+    };
+    await saveSettings(newSettings);
+  }, [settings, saveSettings]);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -160,6 +171,7 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
         setLanguage,
         toggleFavorite,
         isFavorite,
+        toggleShowHiddenRecipes,
       }}
     >
       {children}

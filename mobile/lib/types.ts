@@ -58,6 +58,8 @@ export interface Recipe {
   diet_label: DietLabel | null;
   meal_label: MealLabel | null;
   rating: number | null;
+  hidden: boolean;
+  favorited: boolean;
   // Household ownership fields
   household_id?: string | null; // Owning household (null = legacy/unassigned)
   visibility?: RecipeVisibility; // 'household' = private, 'shared' = public
@@ -106,6 +108,8 @@ export interface RecipeUpdate {
   diet_label?: DietLabel | null;
   meal_label?: MealLabel | null;
   rating?: number | null;
+  hidden?: boolean;
+  favorited?: boolean;
   visibility?: RecipeVisibility;
 }
 
