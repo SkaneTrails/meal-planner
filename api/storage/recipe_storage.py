@@ -155,16 +155,31 @@ def save_recipe(
         if existing.exists:
             existing_data = existing.to_dict() or {}
             existing_created_at = existing_data.get("created_at")
-            original_snapshot = OriginalRecipe(
-                title=existing_data.get("title", ""),
-                ingredients=existing_data.get("ingredients", []),
-                instructions=existing_data.get("instructions", []),
-                servings=existing_data.get("servings"),
-                prep_time=existing_data.get("prep_time"),
-                cook_time=existing_data.get("cook_time"),
-                total_time=existing_data.get("total_time"),
-                image_url=existing_data.get("image_url"),
-            )
+
+            # Reuse preserved original snapshot if recipe was already enhanced
+            existing_original = existing_data.get("original")
+            if isinstance(existing_original, dict) and existing_original:
+                original_snapshot = OriginalRecipe(
+                    title=existing_original.get("title", ""),
+                    ingredients=existing_original.get("ingredients", []),
+                    instructions=existing_original.get("instructions", []),
+                    servings=existing_original.get("servings"),
+                    prep_time=existing_original.get("prep_time"),
+                    cook_time=existing_original.get("cook_time"),
+                    total_time=existing_original.get("total_time"),
+                    image_url=existing_original.get("image_url"),
+                )
+            else:
+                original_snapshot = OriginalRecipe(
+                    title=existing_data.get("title", ""),
+                    ingredients=existing_data.get("ingredients", []),
+                    instructions=existing_data.get("instructions", []),
+                    servings=existing_data.get("servings"),
+                    prep_time=existing_data.get("prep_time"),
+                    cook_time=existing_data.get("cook_time"),
+                    total_time=existing_data.get("total_time"),
+                    image_url=existing_data.get("image_url"),
+                )
 
     now = datetime.now(tz=UTC)
     created_at = existing_created_at if existing_created_at else now
@@ -205,7 +220,7 @@ def save_recipe(
     if original_snapshot:
         data["original"] = original_snapshot.model_dump()
 
-    doc_ref.set(data)
+    doc_ref.set(data, merge=True)
 
     # Type cast visibility to match Recipe model's Literal type
     visibility_value = data["visibility"]
