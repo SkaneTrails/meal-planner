@@ -43,16 +43,20 @@ class EnhancementError(Exception):
     """Raised when recipe enhancement fails."""
 
 
+class EnhancementConfigError(EnhancementError):
+    """Raised when enhancement is unavailable due to missing configuration."""
+
+
 def get_genai_client() -> genai_module.Client:
     """Get configured Gemini client."""
     if not GENAI_AVAILABLE:
         msg = "google-genai is not installed. Install with: uv add google-genai"
-        raise EnhancementError(msg)
+        raise EnhancementConfigError(msg)
 
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         msg = "GOOGLE_API_KEY environment variable not set"
-        raise EnhancementError(msg)
+        raise EnhancementConfigError(msg)
 
     return genai.Client(api_key=api_key)
 
@@ -80,6 +84,28 @@ def _parse_instructions(instructions: str) -> list[str]:
     if len(parts) == 1:
         parts = instructions.split("\n\n")
     return [p.strip() for p in parts if p.strip()]
+
+
+def _normalize_ingredients(ingredients: list[Any]) -> list[str]:
+    """Ensure every ingredient is a plain string.
+
+    Gemini sometimes returns structured objects like
+    ``{"item": "Salt", "quantity": "1 tsp", "unit": ""}``
+    instead of flat strings. This flattens them.
+    """
+    result: list[str] = []
+    for ing in ingredients:
+        if isinstance(ing, str):
+            result.append(ing)
+        elif isinstance(ing, dict):
+            quantity = str(ing.get("quantity", "")).strip()
+            unit = str(ing.get("unit", "")).strip()
+            item = str(ing.get("item") or ing.get("name", "")).strip()
+            parts = [p for p in (quantity, unit, item) if p]
+            result.append(" ".join(parts) if parts else str(ing))
+        else:
+            result.append(str(ing))
+    return result
 
 
 def _validate_response(response: Any) -> str:
@@ -154,6 +180,10 @@ def enhance_recipe(
         # Ensure instructions is a list
         if isinstance(enhanced.get("instructions"), str):
             enhanced["instructions"] = _parse_instructions(enhanced["instructions"])
+
+        # Normalize ingredients to plain strings (Gemini may return dicts)
+        if enhanced.get("ingredients"):
+            enhanced["ingredients"] = _normalize_ingredients(enhanced["ingredients"])
 
         # Add timestamps and preserve original fields
         enhanced["updated_at"] = datetime.now(UTC)

@@ -64,9 +64,8 @@ export default function RecipeDetailScreen() {
   const [showOriginal, setShowOriginal] = useState(false);
 
   useEffect(() => {
-    if (recipe?.enhanced === true && recipe?.show_enhanced === false) {
-      setShowOriginal(true);
-    }
+    if (recipe?.enhanced !== true) return;
+    setShowOriginal(recipe.show_enhanced === false);
   }, [recipe?.enhanced, recipe?.show_enhanced]);
 
   const toggleStep = (index: number) => {
