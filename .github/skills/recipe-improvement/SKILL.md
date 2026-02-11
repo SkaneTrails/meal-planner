@@ -175,24 +175,38 @@ This skill requires two configuration files in the same directory:
 - **Garlic**: Add in the final 5-10 minutes to prevent bitterness
 - **Dense vegetables** (potatoes, carrots, root veg): Start first, they need the most time
 
-### 2. Airfryer for Proteins (When It Adds Value)
+### 2. Component-Level Equipment Optimization
 
-**The goal is better food, not simplicity.** Use airfryer when it improves results:
+**Evaluate each component independently.** Don't treat equipment choice as all-or-nothing — use the best method for each element.
 
-| ✅ Good candidates | Why |
-| ----------------- | --- |
-| Sheet pan chicken + vegetables | Chicken dries out waiting for vegetables - separate cooking gives control |
-| Whole chicken breast, thighs | Precise doneness, juicier result than oven |
-| Halloumi, paneer | Crispy exterior without pan-frying |
-| When oven is occupied | Parallel cooking reduces total time |
+| Principle | Example |
+| --------- | ------- |
+| Best tool per component | Fish stays pan-fried (sauce technique), parsnips go to airfryer (faster, crispier) |
+| Parallel cooking | Airfryer + stovetop simultaneously saves time |
+| Energy efficiency | Airfryer for small items vs heating entire oven |
+| Quality over simplicity | Split cooking if it produces better results |
+
+**Airfryer advantages for vegetables:**
+- No preheat time (oven takes 10+ min)
+- Lower energy consumption
+- Better caramelization on glazed items (honey, maple)
+- Frees oven for larger items or other dishes
+
+| ✅ Good airfryer candidates | Temperature | Time |
+| -------------------------- | ----------- | ---- |
+| Parsnips (honey-glazed quarters) | 180°C | 15–18 min, shake halfway |
+| Root vegetables (carrots, beets) | 180°C | 18–22 min |
+| Halloumi, paneer | 180°C | 8–10 min |
+| Chicken breast/thigh | 180°C → 200°C | 10–12 min + 2–3 min |
+| Oumph (all variants) | 200°C | 8–10 min |
 
 | ❌ Not a good fit | Why |
 | ---------------- | --- |
 | Proteins that simmer in sauce | Pre-cooking adds complexity without benefit |
 | Large roasts (whole chicken) | Won't fit, needs even heat circulation |
-| When original method works well | Don't change what isn't broken |
+| Items needing fond for sauce | Pan technique required (e.g., pan-fried fish with pan sauce) |
 
-**Key insight:** "One-pan simplicity" is not sacred. If splitting cooking between oven and airfryer produces better results (juicier protein, properly cooked vegetables), that's the right call.
+**Key insight:** "One-pan simplicity" is not sacred. If splitting cooking between methods produces better results (faster, crispier, juicier), that's the right call.
 
 Check `equipment.md` for specific temperatures and cooking times.
 
