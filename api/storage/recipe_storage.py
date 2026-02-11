@@ -65,6 +65,8 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         diet_label=diet_label,
         meal_label=meal_label,
         rating=data.get("rating"),
+        hidden=data.get("hidden", False),
+        favorited=data.get("favorited", False),
         # Timestamp fields
         created_at=data.get("created_at"),
         updated_at=data.get("updated_at"),
@@ -294,7 +296,7 @@ def delete_recipe(recipe_id: str, *, household_id: str | None = None) -> bool:
     return True
 
 
-def search_recipes(query: str, *, household_id: str | None = None) -> list[Recipe]:
+def search_recipes(query: str, *, household_id: str | None = None, show_hidden: bool = False) -> list[Recipe]:
     """
     Search recipes by title (case-sensitive prefix match).
 
@@ -305,17 +307,20 @@ def search_recipes(query: str, *, household_id: str | None = None) -> list[Recip
         query: The search query.
         household_id: If provided, filter to recipes owned by this household OR shared recipes.
                       If None, return all matching recipes (for superusers).
+        show_hidden: If False (default), exclude hidden recipes.
 
     Returns:
         List of matching recipes.
     """
     db = get_firestore_client()
-    docs = (
+    base_query = (
         db.collection(RECIPES_COLLECTION)
         .where(filter=FieldFilter("title", ">=", query))
         .where(filter=FieldFilter("title", "<=", query + "\uf8ff"))
-        .stream()
     )
+    if not show_hidden:
+        base_query = base_query.where(filter=FieldFilter("hidden", "==", False))  # noqa: FBT003
+    docs = base_query.stream()
 
     recipes = []
     for doc in docs:

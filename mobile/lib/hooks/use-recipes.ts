@@ -5,15 +5,16 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
+import { useSettings } from '../settings-context';
 import type { PaginatedRecipeList, Recipe, RecipeCreate, RecipeUpdate } from '../types';
 
 // Query keys
 export const recipeKeys = {
   all: ['recipes'] as const,
   lists: () => [...recipeKeys.all, 'list'] as const,
-  list: (search?: string) =>
-    [...recipeKeys.lists(), { search }] as const,
-  allRecipes: () => [...recipeKeys.all, 'all'] as const,
+  list: (search?: string, showHidden?: boolean) =>
+    [...recipeKeys.lists(), { search, showHidden }] as const,
+  allRecipes: (showHidden?: boolean) => [...recipeKeys.all, 'all', { showHidden }] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
   detail: (id: string) =>
     [...recipeKeys.details(), id] as const,
@@ -22,12 +23,16 @@ export const recipeKeys = {
 /**
  * Hook to fetch recipes with infinite scrolling (cursor-based pagination).
  * Used by the recipe library screen for paginated browsing.
+ * Respects the showHiddenRecipes setting from settings context.
  */
 export const useRecipes = (search?: string) => {
+  const { settings } = useSettings();
+  const showHidden = settings.showHiddenRecipes;
+
   return useInfiniteQuery<PaginatedRecipeList>({
-    queryKey: recipeKeys.list(search),
+    queryKey: recipeKeys.list(search, showHidden),
     queryFn: async ({ pageParam }) => {
-      return api.getRecipes(search, pageParam as string | undefined);
+      return api.getRecipes(search, pageParam as string | undefined, undefined, showHidden);
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) =>
@@ -39,12 +44,16 @@ export const useRecipes = (search?: string) => {
  * Hook to fetch ALL recipes across all pages.
  * Used by consumers that need the complete recipe list (meal planner, grocery, home screen).
  * Auto-fetches subsequent pages until all recipes are loaded.
+ * Respects the showHiddenRecipes setting from settings context.
  */
 export const useAllRecipes = () => {
+  const { settings } = useSettings();
+  const showHidden = settings.showHiddenRecipes;
+
   const query = useInfiniteQuery<PaginatedRecipeList>({
-    queryKey: recipeKeys.allRecipes(),
+    queryKey: recipeKeys.allRecipes(showHidden),
     queryFn: async ({ pageParam }) => {
-      return api.getRecipes(undefined, pageParam as string | undefined);
+      return api.getRecipes(undefined, pageParam as string | undefined, undefined, showHidden);
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) =>

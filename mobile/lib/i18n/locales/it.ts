@@ -377,6 +377,10 @@ const it: Translations = {
     failedToAddItem: 'Impossibile aggiungere articolo',
     failedToRemoveItem: 'Impossibile rimuovere articolo',
     failedToChangeLanguage: 'Impossibile cambiare lingua',
+    recipeLibrary: 'Libreria Ricette',
+    recipeLibraryDesc: 'Gestisci la tua collezione di ricette',
+    showHiddenRecipes: 'Mostra Ricette Nascoste',
+    showHiddenRecipesDesc: 'Includi le ricette che hai segnato con il pollice in giù',
   },
 
   admin: {

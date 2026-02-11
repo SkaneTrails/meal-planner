@@ -27,6 +27,7 @@ const buildRecipe = (overrides: Partial<Recipe> = {}): Recipe  => {
     ingredients: ['pasta', 'cream'],
     instructions: ['Cook pasta', 'Add cream'],
     image_url: 'https://example.com/image.jpg',
+    thumbnail_url: null,
     servings: 4,
     prep_time: 10,
     cook_time: 20,
@@ -37,6 +38,8 @@ const buildRecipe = (overrides: Partial<Recipe> = {}): Recipe  => {
     diet_label: null,
     meal_label: null,
     rating: null,
+    hidden: false,
+    favorited: false,
     ...overrides,
   };
 }

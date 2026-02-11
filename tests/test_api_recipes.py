@@ -134,7 +134,7 @@ class TestListRecipes:
             client.get("/recipes?limit=10&cursor=abc123")
 
         mock_get.assert_called_once_with(
-            household_id="test_household", limit=10, cursor="abc123", include_duplicates=False
+            household_id="test_household", limit=10, cursor="abc123", include_duplicates=False, show_hidden=False
         )
 
     def test_search_parameter(self, client: TestClient, sample_recipe: Recipe) -> None:
@@ -157,8 +157,50 @@ class TestListRecipes:
         ):
             superuser_client.get("/recipes")
 
-        mock_get.assert_called_once_with(household_id=None, limit=50, cursor=None, include_duplicates=False)
-        mock_count.assert_called_once_with(household_id=None)
+        mock_get.assert_called_once_with(
+            household_id=None, limit=50, cursor=None, include_duplicates=False, show_hidden=False
+        )
+        mock_count.assert_called_once_with(household_id=None, show_hidden=False)
+
+    def test_show_hidden_defaults_false(self, client: TestClient) -> None:
+        """Should default show_hidden=False, excluding hidden recipes."""
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get,
+            patch("api.routers.recipes.count_recipes", return_value=0) as mock_count,
+        ):
+            client.get("/recipes")
+
+        mock_get.assert_called_once_with(
+            household_id="test_household", limit=50, cursor=None, include_duplicates=False, show_hidden=False
+        )
+        mock_count.assert_called_once_with(household_id="test_household", show_hidden=False)
+
+    def test_show_hidden_param_passed_to_paginated(self, client: TestClient) -> None:
+        """Should pass show_hidden=True to storage layer when requested."""
+        with (
+            patch("api.routers.recipes.get_recipes_paginated", return_value=([], None)) as mock_get,
+            patch("api.routers.recipes.count_recipes", return_value=0) as mock_count,
+        ):
+            client.get("/recipes?show_hidden=true")
+
+        mock_get.assert_called_once_with(
+            household_id="test_household", limit=50, cursor=None, include_duplicates=False, show_hidden=True
+        )
+        mock_count.assert_called_once_with(household_id="test_household", show_hidden=True)
+
+    def test_show_hidden_param_passed_to_search(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should pass show_hidden to search_recipes."""
+        with patch("api.routers.recipes.recipe_storage.search_recipes", return_value=[sample_recipe]) as mock_search:
+            client.get("/recipes?search=carbonara&show_hidden=true")
+
+        mock_search.assert_called_once_with("carbonara", household_id="test_household", show_hidden=True)
+
+    def test_search_defaults_show_hidden_false(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Search should default show_hidden=False."""
+        with patch("api.routers.recipes.recipe_storage.search_recipes", return_value=[sample_recipe]) as mock_search:
+            client.get("/recipes?search=carbonara")
+
+        mock_search.assert_called_once_with("carbonara", household_id="test_household", show_hidden=False)
 
 
 class TestGetRecipe:
