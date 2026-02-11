@@ -30,20 +30,20 @@ from google.cloud.firestore_v1 import FieldFilter
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
 
 
-def backfill_enhancement_review(*, dry_run: bool = True) -> None:
+def backfill_enhancement_review(*, dry_run: bool = False) -> None:
     """Backfill enhancement_reviewed and show_enhanced fields."""
     db = get_firestore_client()
 
     # Query for enhanced recipes that haven't been reviewed
     query = db.collection(RECIPES_COLLECTION).where(filter=FieldFilter("enhanced", "==", True))
 
-    docs = list(query.stream())
-    print(f"Found {len(docs)} enhanced recipes")
-
+    # Stream documents incrementally to avoid loading all into memory
     updated = 0
     skipped = 0
+    total = 0
 
-    for doc in docs:
+    for doc in query.stream():
+        total += 1
         data = doc.to_dict()
         if not data:
             continue
@@ -71,6 +71,7 @@ def backfill_enhancement_review(*, dry_run: bool = True) -> None:
         updated += 1
 
     print()
+    print(f"Found {total} enhanced recipes")
     print(f"Summary: {updated} recipes {'would be updated' if dry_run else 'updated'}, {skipped} already reviewed")
 
     if dry_run and updated > 0:

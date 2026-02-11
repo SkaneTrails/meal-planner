@@ -330,9 +330,11 @@ def review_enhancement(recipe_id: str, *, approve: bool, household_id: str) -> R
         return None
 
     # Update the review status
-    doc_ref.update({"enhancement_reviewed": True, "show_enhanced": approve, "updated_at": datetime.now(tz=UTC)})
+    update_data = {"enhancement_reviewed": True, "show_enhanced": approve, "updated_at": datetime.now(tz=UTC)}
+    doc_ref.update(update_data)
+    data.update(update_data)
 
-    return get_recipe(recipe_id)
+    return _doc_to_recipe(recipe_id, data)
 
 
 def search_recipes(query: str, *, household_id: str | None = None, show_hidden: bool = False) -> list[Recipe]:
