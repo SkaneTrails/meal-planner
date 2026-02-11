@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Backfill enhancement_reviewed and show_enhanced for existing enhanced recipes.
 
 Sets enhancement_reviewed=True and show_enhanced=True for all recipes that:
