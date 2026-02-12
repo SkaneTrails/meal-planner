@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from api.auth.firebase import require_auth
+from api.auth.helpers import require_household
 from api.auth.models import AuthenticatedUser
 from api.models.grocery_list import (
     GroceryItem,
@@ -30,15 +31,6 @@ def _get_today() -> date:
     return datetime.now(tz=UTC).date()
 
 
-def _require_household(user: AuthenticatedUser) -> str:
-    """Require user to have a household, return household_id."""
-    if not user.household_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You must be a member of a household to access grocery lists"
-        )
-    return user.household_id
-
-
 @router.get("")
 async def generate_grocery_list(
     user: Annotated[AuthenticatedUser, Depends(require_auth)],
@@ -52,7 +44,7 @@ async def generate_grocery_list(
     If end_date is not provided, uses an inclusive range of `days` starting at start_date
     (i.e., end_date = start_date + timedelta(days=days - 1)).
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
 
     # Determine date range
     effective_start = start_date if start_date is not None else _get_today()
@@ -117,7 +109,7 @@ async def get_grocery_state(user: Annotated[AuthenticatedUser, Depends(require_a
     Returns saved selections, servings, checked items, and custom items.
     If no state exists yet, returns an empty default state.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     data = grocery_list_storage.load_grocery_state(household_id)
     if data is None:
         return GroceryListState()
@@ -132,7 +124,7 @@ async def save_grocery_state(
 
     All household members will see the updated state.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     data = grocery_list_storage.save_grocery_state(
         household_id,
         selected_meals=body.selected_meals,
@@ -153,7 +145,7 @@ async def patch_grocery_state(
     Only provided fields are merged; omitted fields stay unchanged.
     Creates a new state with the provided fields if none exists yet.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
 
     updates = body.model_dump(exclude_none=True)
     if not updates:
@@ -179,5 +171,5 @@ async def patch_grocery_state(
 @router.delete("/state", status_code=status.HTTP_204_NO_CONTENT)
 async def clear_grocery_state(user: Annotated[AuthenticatedUser, Depends(require_auth)]) -> None:
     """Clear (delete) the household's grocery list state."""
-    household_id = _require_household(user)
+    household_id = require_household(user)
     grocery_list_storage.delete_grocery_state(household_id)

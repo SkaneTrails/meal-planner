@@ -299,7 +299,9 @@ class RecipeParseRequest(BaseModel):
     """
 
     url: HttpUrl = Field(..., description="URL of the recipe (for metadata)")
-    html: str = Field(..., min_length=100, description="HTML content of the recipe page")
+    html: str = Field(
+        ..., min_length=100, max_length=10_000_000, description="HTML content of the recipe page (max 10 MB)"
+    )
 
 
 class EnhancementReviewAction(str, Enum):

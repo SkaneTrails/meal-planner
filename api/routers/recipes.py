@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, 
 from google.cloud import storage
 
 from api.auth.firebase import require_auth
+from api.auth.helpers import require_household
 from api.auth.models import AuthenticatedUser
 from api.models.recipe import (
     DEFAULT_PAGE_LIMIT,
@@ -51,15 +52,6 @@ def _get_gcs_bucket() -> str:
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
 _HTTP_422 = 422
-
-
-def _require_household(user: AuthenticatedUser) -> str:
-    """Require user to have a household, return household_id."""
-    if not user.household_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You must be a member of a household to create/edit recipes"
-        )
-    return user.household_id
 
 
 def _get_household_language(household_id: str) -> str:
@@ -182,7 +174,7 @@ async def create_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)
 
     Recipe will be owned by the user's household.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     return recipe_storage.save_recipe(recipe, household_id=household_id, created_by=user.email)
 
 
@@ -202,7 +194,7 @@ async def scrape_recipe(
     If enhance=true, the recipe will be enhanced with AI after scraping.
     Recipe will be owned by the user's household.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     url = str(request.url)
 
     existing = recipe_storage.find_recipe_by_url(url)
@@ -312,12 +304,12 @@ async def _cloud_function_scrape(url: str) -> dict:
     except httpx.TimeoutException as e:
         raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail="Scraping request timed out") from e
     except httpx.HTTPStatusError as e:  # pragma: no cover
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Scraping service error: {e.response.text}"
-        ) from e
+        logger.exception("Scraping service error for %s", url)
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Scraping service returned an error") from e
     except httpx.RequestError as e:  # pragma: no cover
+        logger.exception("Scraping service unavailable for %s", url)
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Scraping service unavailable: {e!s}"
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Scraping service unavailable"
         ) from e
 
 
@@ -334,7 +326,7 @@ async def parse_recipe(
     the HTML directly (avoiding cloud IP blocking issues) and sends it to the API.
     Recipe will be owned by the user's household.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     url = str(request.url)
     html = request.html
     logger.info("[parse_recipe] Received request for URL: %s, HTML length: %d", url, len(html))
@@ -378,7 +370,7 @@ async def update_recipe(
 
     Users can only update recipes they own (same household).
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     recipe = recipe_storage.update_recipe(recipe_id, updates, household_id=household_id)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
@@ -391,7 +383,7 @@ async def delete_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)
 
     Users can only delete recipes they own (same household).
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
     if not recipe_storage.delete_recipe(recipe_id, household_id=household_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
@@ -412,7 +404,7 @@ async def upload_recipe_image(  # pragma: no cover
 
     Both are converted to JPEG for optimal storage and loading performance.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
 
     # Verify recipe exists and user owns it
     recipe = recipe_storage.get_recipe(recipe_id)
@@ -509,7 +501,7 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
 
     The copy will be owned by the user's household with visibility="household".
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
 
     recipe = recipe_storage.get_recipe(recipe_id)
     if recipe is None:
@@ -549,7 +541,7 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
     """
     from datetime import UTC, datetime
 
-    household_id = _require_household(user)
+    household_id = require_household(user)
     from api.services.recipe_enhancer import EnhancementConfigError, EnhancementError, enhance_recipe as do_enhance
 
     # Get the recipe
@@ -612,7 +604,7 @@ async def review_enhancement(
 
     Only works for enhanced recipes that belong to the user's household.
     """
-    household_id = _require_household(user)
+    household_id = require_household(user)
 
     approve = request.action == EnhancementReviewAction.APPROVE
     result = recipe_storage.review_enhancement(recipe_id, approve=approve, household_id=household_id)
