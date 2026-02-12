@@ -15,7 +15,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { AnimatedPressable, FilterChip, GradientBackground } from '@/components';
+import { AnimatedPressable, GradientBackground } from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
   useAddMember,
@@ -1226,6 +1226,71 @@ export default function HouseholdSettingsScreen() {
                 subtitle={t('householdSettings.equipment.subtitle')}
               />
 
+              {/* Selected equipment */}
+              {settings.equipment.length > 0 && (
+                <View
+                  style={{
+                    backgroundColor: colors.glass.card,
+                    borderRadius: borderRadius.lg,
+                    padding: spacing.lg,
+                    marginBottom: spacing.md,
+                    ...shadows.sm,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: fontSize.xs,
+                      fontWeight: fontWeight.semibold,
+                      color: colors.text.inverse + '80',
+                      marginBottom: spacing.sm,
+                    }}
+                  >
+                    {t('householdSettings.equipment.yourEquipment', {
+                      count: settings.equipment.length,
+                    })}
+                  </Text>
+                  <View
+                    style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}
+                  >
+                    {settings.equipment.map((item) => (
+                      <Pressable
+                        key={item}
+                        onPress={() => canEdit && toggleEquipment(item)}
+                        disabled={!canEdit}
+                        style={({ pressed }) => ({
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          backgroundColor: pressed
+                            ? colors.errorBg
+                            : colors.bgDark,
+                          paddingHorizontal: spacing.sm,
+                          paddingVertical: spacing.xs,
+                          borderRadius: borderRadius.full,
+                          gap: 4,
+                        })}
+                      >
+                        <Text
+                          style={{
+                            fontSize: fontSize.sm,
+                            color: colors.text.inverse,
+                          }}
+                        >
+                          {t(`householdSettings.equipment.items.${item}`)}
+                        </Text>
+                        {canEdit && (
+                          <Ionicons
+                            name="close-circle"
+                            size={14}
+                            color={colors.text.inverse + '60'}
+                          />
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {/* Available equipment grouped by category */}
               <View
                 style={{
                   backgroundColor: colors.glass.card,
@@ -1234,37 +1299,70 @@ export default function HouseholdSettingsScreen() {
                   ...shadows.sm,
                 }}
               >
-                {EQUIPMENT_CATEGORIES.map(({ key, items }) => (
-                  <View key={key} style={{ marginBottom: spacing.lg }}>
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        fontWeight: fontWeight.semibold,
-                        color: colors.text.muted,
-                        marginBottom: spacing.sm,
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {t(`householdSettings.equipment.categories.${key}`)}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        gap: spacing.sm,
-                      }}
-                    >
-                      {items.map((item) => (
-                        <FilterChip
-                          key={item}
-                          label={t(`householdSettings.equipment.items.${item}`)}
-                          selected={settings.equipment.includes(item)}
-                          onPress={() => canEdit && toggleEquipment(item)}
-                        />
-                      ))}
+                {EQUIPMENT_CATEGORIES.map(({ key, items }) => {
+                  const available = items.filter(
+                    (item) => !settings.equipment.includes(item),
+                  );
+                  if (available.length === 0) return null;
+                  return (
+                    <View key={key} style={{ marginBottom: spacing.lg }}>
+                      <Text
+                        style={{
+                          fontSize: fontSize.xs,
+                          fontWeight: fontWeight.semibold,
+                          color: colors.text.inverse + '80',
+                          marginBottom: spacing.sm,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {t(`householdSettings.equipment.categories.${key}`)}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          gap: 6,
+                        }}
+                      >
+                        {available.map((item) => (
+                          <Pressable
+                            key={item}
+                            onPress={() => canEdit && toggleEquipment(item)}
+                            disabled={!canEdit}
+                            style={({ pressed }) => ({
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              backgroundColor: pressed
+                                ? colors.successBg
+                                : 'transparent',
+                              paddingHorizontal: spacing.sm,
+                              paddingVertical: spacing.xs,
+                              borderRadius: borderRadius.full,
+                              borderWidth: 1,
+                              borderColor: colors.text.inverse + '30',
+                              borderStyle: 'dashed',
+                              gap: 4,
+                            })}
+                          >
+                            <Ionicons
+                              name="add"
+                              size={14}
+                              color={colors.text.inverse + '80'}
+                            />
+                            <Text
+                              style={{
+                                fontSize: fontSize.sm,
+                                color: colors.text.inverse + '80',
+                              }}
+                            >
+                              {t(`householdSettings.equipment.items.${item}`)}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
             </View>
           </ScrollView>

@@ -579,6 +579,7 @@ const en = {
     equipment: {
       title: 'Kitchen Equipment',
       subtitle: 'Select equipment to optimize recipe instructions',
+      yourEquipment: 'Your equipment ({{count}})',
       categories: {
         appliances: 'Appliances',
         oven_features: 'Oven Features',

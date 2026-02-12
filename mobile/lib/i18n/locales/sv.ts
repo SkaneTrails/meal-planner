@@ -566,6 +566,7 @@ const sv: Translations = {
     equipment: {
       title: 'Köksutrustning',
       subtitle: 'Välj utrustning för att optimera receptinstruktioner',
+      yourEquipment: 'Din utrustning ({{count}})',
       categories: {
         appliances: 'Apparater',
         oven_features: 'Ugnsfunktioner',

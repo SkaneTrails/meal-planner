@@ -576,6 +576,7 @@ const it: Translations = {
     equipment: {
       title: 'Attrezzatura cucina',
       subtitle: 'Seleziona attrezzatura per ottimizzare le istruzioni',
+      yourEquipment: 'La tua attrezzatura ({{count}})',
       categories: {
         appliances: 'Elettrodomestici',
         oven_features: 'Funzioni forno',
