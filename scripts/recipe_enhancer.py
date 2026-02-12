@@ -42,13 +42,10 @@ except ImportError as exc:
 
 from google.cloud import firestore
 
-from api.services.prompt_loader import load_system_prompt
+from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
 
 # Default Gemini model for recipe enhancement
 DEFAULT_MODEL = "gemini-2.5-flash"
-
-# Load system prompt from modular files
-SYSTEM_PROMPT = load_system_prompt()
 
 
 def get_firestore_client() -> firestore.Client:
@@ -114,7 +111,7 @@ def get_recipe(recipe_id: str) -> dict | None:
     return None
 
 
-def enhance_recipe(recipe: dict) -> dict | None:
+def enhance_recipe(recipe: dict, *, language: str = DEFAULT_LANGUAGE) -> dict | None:
     """Enhance recipe using Gemini AI."""
     api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
@@ -122,6 +119,7 @@ def enhance_recipe(recipe: dict) -> dict | None:
         return None
 
     client = genai.Client(api_key=api_key)
+    system_prompt = load_system_prompt(language)
 
     recipe_text = f"""
 Enhance this recipe according to the rules:
@@ -143,7 +141,7 @@ Enhance this recipe according to the rules:
             model=DEFAULT_MODEL,
             contents=recipe_text,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT, response_mime_type="application/json", temperature=0.3
+                system_instruction=system_prompt, response_mime_type="application/json", temperature=0.3
             ),
         )
     except TimeoutError as e:
@@ -246,7 +244,9 @@ def display_diff(original: dict, enhanced: dict) -> None:
     print("\n" + "=" * 60)
 
 
-def process_batch(limit: int | None, *, include_enhanced: bool, delay: float, dry_run: bool) -> None:
+def process_batch(
+    limit: int | None, *, include_enhanced: bool, delay: float, dry_run: bool, language: str = DEFAULT_LANGUAGE
+) -> None:
     """Process multiple recipes in batch mode."""
     print("\n🔄 Batch Processing Mode")
     print("-" * 60)
@@ -280,7 +280,7 @@ def process_batch(limit: int | None, *, include_enhanced: bool, delay: float, dr
 
         # Enhance
         try:
-            enhanced = enhance_recipe(recipe)
+            enhanced = enhance_recipe(recipe, language=language)
 
             if not enhanced:
                 print("         ❌ Enhancement failed")
@@ -342,7 +342,12 @@ def main() -> None:
             except ValueError:
                 invalid_value = sys.argv[delay_idx + 1]
                 print(f"⚠️  Invalid value for --delay: {invalid_value!r}. Using default delay of {delay} seconds.")
-
+    # Parse language (default: sv)
+    language = DEFAULT_LANGUAGE
+    if "--language" in sys.argv:
+        lang_idx = sys.argv.index("--language")
+        if lang_idx + 1 < len(sys.argv):
+            language = sys.argv[lang_idx + 1]
     # List command
     if arg == "--list":
         limit = 50
@@ -359,7 +364,7 @@ def main() -> None:
             if a.isdigit():
                 limit = int(a)
                 break
-        process_batch(limit, include_enhanced=include_enhanced, delay=delay, dry_run=dry_run)
+        process_batch(limit, include_enhanced=include_enhanced, delay=delay, dry_run=dry_run, language=language)
         return
 
     # Get recipe by ID
@@ -381,8 +386,8 @@ def main() -> None:
             return
 
     # Enhance with Gemini
-    print("\n🤖 Enhancing with Gemini 2.5 Flash...")
-    enhanced = enhance_recipe(original)
+    print(f"\n🤖 Enhancing with Gemini 2.5 Flash (language={language})...")
+    enhanced = enhance_recipe(original, language=language)
 
     if not enhanced:
         return

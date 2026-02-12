@@ -3,6 +3,7 @@
  */
 
 import type {
+  EnhancementReviewAction,
   PaginatedRecipeList,
   Recipe,
   RecipeCreate,
@@ -100,6 +101,19 @@ export const recipeApi = {
 
   deleteRecipe: (id: string): Promise<void> => {
     return apiRequest<void>(`/recipes/${id}`, { method: 'DELETE' });
+  },
+
+  reviewEnhancement: (id: string, action: EnhancementReviewAction): Promise<Recipe> => {
+    return apiRequest<Recipe>(`/recipes/${id}/enhancement/review`, {
+      method: 'POST',
+      body: JSON.stringify({ action }),
+    });
+  },
+
+  enhanceRecipe: (id: string): Promise<Recipe> => {
+    return apiRequest<Recipe>(`/recipes/${id}/enhance`, {
+      method: 'POST',
+    });
   },
 
   uploadRecipeImage: async (id: string, imageUri: string): Promise<Recipe> => {

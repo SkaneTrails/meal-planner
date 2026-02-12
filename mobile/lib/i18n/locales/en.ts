@@ -94,7 +94,7 @@ const en = {
 
   // ── Home screen ───────────────────────────────────────────────────
   home: {
-    greeting: 'Good morning',  // Default fallback
+    greeting: 'Good morning', // Default fallback
     greetingMorning: 'Good morning',
     greetingAfternoon: 'Good afternoon',
     greetingEvening: 'Good evening',
@@ -145,7 +145,8 @@ const en = {
     noMatchesFound: 'No matches found',
     emptyLibrary: 'Your recipe book is empty',
     tryAdjusting: 'Try adjusting your search or filters',
-    startBuilding: 'Start building your collection by adding your favorite recipes',
+    startBuilding:
+      'Start building your collection by adding your favorite recipes',
     addFirstRecipe: 'Add Your First Recipe',
   },
 
@@ -164,6 +165,26 @@ const en = {
     viewSource: 'View source',
     showOriginal: 'Show original',
     showEnhanced: 'Show enhanced',
+    reviewBanner: 'This recipe has been enhanced by AI',
+    reviewBannerDescription:
+      'Review the changes and decide whether to keep them',
+    approveEnhancement: 'Keep Enhanced',
+    rejectEnhancement: 'Use Original',
+    enhancementApproved: 'Enhancement approved',
+    enhancementApprovedMessage: 'The enhanced version will be shown by default',
+    enhancementRejected: 'Enhancement rejected',
+    enhancementRejectedMessage: 'The original version will be shown by default',
+    reviewFailed: 'Could not save your review',
+    cannotReviewEnhancement: 'Cannot Review',
+    cannotReviewEnhancementMessage:
+      'Copy this recipe to your household first to review the enhancement.',
+    enhanceRecipe: 'Enhance with AI',
+    enhanceConfirm:
+      'Use AI to improve this recipe with better instructions, precise measurements, and cooking tips?',
+    enhance: 'Enhance',
+    enhanceSuccess: 'Recipe enhanced',
+    enhanceSuccessMessage: 'The recipe has been improved by AI',
+    enhanceFailed: 'Could not enhance recipe',
     addToMealPlan: 'Add to Meal Plan',
     thisWeek: 'This Week',
     nextWeek: 'Next Week',
@@ -197,7 +218,8 @@ const en = {
     chooseOption: 'Choose an option',
     takePhoto: 'Take Photo',
     chooseFromLibrary: 'Choose from Library',
-    chooseFromLibraryOrUrl: 'Click OK to enter a URL, or Cancel to choose a file from your computer.',
+    chooseFromLibraryOrUrl:
+      'Click OK to enter a URL, or Cancel to choose a file from your computer.',
     enterUrl: 'Enter URL',
     permissionNeeded: 'Permission needed',
     cameraPermission: 'Camera permission is required to take photos',
@@ -225,7 +247,8 @@ const en = {
     yesDelete: 'Yes, delete',
     keepIt: 'No, keep it',
     cannotEdit: 'Cannot Edit',
-    cannotEditMessage: 'Copy this recipe to your household first to make changes.',
+    cannotEditMessage:
+      'Copy this recipe to your household first to make changes.',
     couldNotOpenUrl: 'Could not open the recipe URL',
     shareMessage: 'Check out this recipe: {{title}}\n\n{{url}}',
     copyToHousehold: 'Copy to your household',
@@ -248,7 +271,8 @@ const en = {
     selectMeals: 'Select Meals',
     selectMealsSubtitle: 'Choose which meals to include in your grocery list',
     noMealsSelected: 'No meals selected',
-    noMealsSelectedMessage: 'Please select at least one meal to create a grocery list.',
+    noMealsSelectedMessage:
+      'Please select at least one meal to create a grocery list.',
     failedToRemoveMeal: 'Failed to remove meal. Please try again.',
     failedToSaveNote: 'Failed to save note. Please try again.',
     failedToSaveSelections: 'Failed to save selections',
@@ -281,7 +305,7 @@ const en = {
     },
     quick: {
       title: 'Quick Meal',
-      placeholder: "What are you having?",
+      placeholder: 'What are you having?',
       addButton: 'Add Meal',
     },
     random: {
@@ -291,7 +315,8 @@ const en = {
       shuffle: 'Shuffle',
       addToPlan: 'Add to Plan',
       noRecipes: 'No {{mealType}} recipes yet',
-      addRecipesHint: 'Add some recipes with the "{{mealType}}" meal type to use random selection',
+      addRecipesHint:
+        'Add some recipes with the "{{mealType}}" meal type to use random selection',
       servings: '{{count}} servings',
       time: '{{count}} min',
     },
@@ -333,7 +358,8 @@ const en = {
     emptyList: 'Your list is empty',
     emptyListSubtitle: 'Add meals to your plan or add items manually',
     clearEntireList: 'Clear Entire List?',
-    clearEntireListMessage: 'This will remove all items from your grocery list.',
+    clearEntireListMessage:
+      'This will remove all items from your grocery list.',
     clear: 'Clear',
     failedToClearList: 'Failed to clear list',
     categories: {
@@ -354,7 +380,8 @@ const en = {
     reorderHintMobile: 'Hold and drag to reorder items',
     addItemLabel: 'Add Item',
     addItemExamplePlaceholder: 'e.g. Milk, 2 liters',
-    goToMealPlan: 'Go to Weekly Menu and tap "Create List" to generate your shopping list from planned meals.',
+    goToMealPlan:
+      'Go to Weekly Menu and tap "Create List" to generate your shopping list from planned meals.',
   },
 
   // ── Settings screen ───────────────────────────────────────────────
@@ -405,7 +432,8 @@ const en = {
   // ── Admin screen ──────────────────────────────────────────────────
   admin: {
     accessRequired: 'Admin Access Required',
-    accessRequiredMessage: 'You need superuser permissions to access this area.',
+    accessRequiredMessage:
+      'You need superuser permissions to access this area.',
     title: 'Admin',
     subtitle: 'Superuser Dashboard',
     loggedInAs: 'Logged in as',
@@ -455,8 +483,10 @@ const en = {
     addMore: 'Add More',
     importFailed: 'Import failed',
     importFailedDefault: 'Could not import the recipe',
-    siteBlocked: '{{host}} blocks automatic import. Try adding the recipe manually by copying the ingredients and instructions from the website.',
-    siteNotSupported: '{{host}} is not supported for automatic import. Try adding the recipe manually by copying the ingredients and instructions from the website.',
+    siteBlocked:
+      '{{host}} blocks automatic import. Try adding the recipe manually by copying the ingredients and instructions from the website.',
+    siteNotSupported:
+      '{{host}} is not supported for automatic import. Try adding the recipe manually by copying the ingredients and instructions from the website.',
     createFailed: 'Creation failed',
     createFailedDefault: 'Could not create the recipe',
     // Manual form
@@ -469,7 +499,8 @@ const en = {
     ingredients: 'Ingredients',
     ingredientsPlaceholder: 'One ingredient per line\ne.g., 200g pasta\n4 eggs',
     instructions: 'Instructions',
-    instructionsPlaceholder: 'One step per line\ne.g., Boil water\nCook pasta for 10 minutes',
+    instructionsPlaceholder:
+      'One step per line\ne.g., Boil water\nCook pasta for 10 minutes',
     imageOptional: 'Image (optional)',
     addImage: 'Add Image',
     creating: 'Creating...',
@@ -569,11 +600,13 @@ const en = {
  * non-English locale files can assign their own translations while still
  * being structurally checked against the English key tree.
  */
-type WidenStrings<T> =
-  T extends string ? string
-  : T extends Array<infer U> ? Array<WidenStrings<U>>
-  : T extends object ? { [K in keyof T]: WidenStrings<T[K]> }
-  : T;
+type WidenStrings<T> = T extends string
+  ? string
+  : T extends Array<infer U>
+    ? Array<WidenStrings<U>>
+    : T extends object
+      ? { [K in keyof T]: WidenStrings<T[K]> }
+      : T;
 
 export type Translations = WidenStrings<typeof en>;
 export default en;

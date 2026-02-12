@@ -48,6 +48,10 @@ const mockSettingsData = {
   },
 };
 
+vi.mock('@/lib/hooks/use-auth', () => ({
+  useAuth: () => ({ user: { email: 'test@example.com' }, signOut: vi.fn() }),
+}));
+
 vi.mock('@/lib/hooks/use-admin', () => ({
   useCurrentUser: () => ({ data: mockCurrentUserData, isLoading: false }),
   useHouseholdSettings: () => ({ data: mockSettingsData, isLoading: false }),
@@ -55,6 +59,9 @@ vi.mock('@/lib/hooks/use-admin', () => ({
     mutateAsync: mockMutateAsync,
     isPending: false,
   }),
+  useHouseholdMembers: () => ({ data: [], isLoading: false, refetch: vi.fn() }),
+  useAddMember: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useRemoveMember: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
 async function renderScreen() {

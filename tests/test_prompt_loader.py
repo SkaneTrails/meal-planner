@@ -3,14 +3,33 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from api.services.prompt_loader import (
+    DEFAULT_LANGUAGE,
+    LANGUAGE_NAMES,
     get_prompts_dir,
     load_core_prompts,
+    load_locale_prompt,
     load_prompt_file,
     load_system_prompt,
     load_user_prompts,
     validate_prompts,
 )
+
+
+class TestConstants:
+    """Tests for module-level constants."""
+
+    def test_default_language_is_swedish(self) -> None:
+        """Default language should be Swedish."""
+        assert DEFAULT_LANGUAGE == "sv"
+
+    def test_language_names_contains_supported_languages(self) -> None:
+        """Should map sv, en, it to full names."""
+        assert LANGUAGE_NAMES["sv"] == "Swedish"
+        assert LANGUAGE_NAMES["en"] == "English"
+        assert LANGUAGE_NAMES["it"] == "Italian"
 
 
 class TestGetPromptsDir:
@@ -108,6 +127,75 @@ class TestLoadUserPrompts:
         assert "Dietary preferences" in result
         assert "Kitchen equipment" in result
 
+    def test_renders_language_template_swedish(self, tmp_path: Path) -> None:
+        """Should render {language_name} as Swedish for sv."""
+        user_dir = tmp_path / "config" / "prompts" / "user"
+        user_dir.mkdir(parents=True)
+
+        (user_dir / "language.md").write_text("Output in {language_name}", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=tmp_path / "config" / "prompts"):
+            result = load_user_prompts("sv")
+
+        assert "Output in Swedish" in result
+
+    def test_renders_language_template_english(self, tmp_path: Path) -> None:
+        """Should render {language_name} as English for en."""
+        user_dir = tmp_path / "config" / "prompts" / "user"
+        user_dir.mkdir(parents=True)
+
+        (user_dir / "language.md").write_text("Output in {language_name}", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=tmp_path / "config" / "prompts"):
+            result = load_user_prompts("en")
+
+        assert "Output in English" in result
+
+    def test_capitalizes_unknown_language(self, tmp_path: Path) -> None:
+        """Should capitalize unknown language codes."""
+        user_dir = tmp_path / "config" / "prompts" / "user"
+        user_dir.mkdir(parents=True)
+
+        (user_dir / "language.md").write_text("Output in {language_name}", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=tmp_path / "config" / "prompts"):
+            result = load_user_prompts("fr")
+
+        assert "Output in Fr" in result
+
+
+class TestLoadLocalePrompt:
+    """Tests for load_locale_prompt function."""
+
+    def test_loads_existing_locale(self, tmp_path: Path) -> None:
+        """Should load locale file when it exists."""
+        locale_dir = tmp_path / "config" / "prompts" / "locales"
+        locale_dir.mkdir(parents=True)
+
+        (locale_dir / "sv.md").write_text("Swedish locale content", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=tmp_path / "config" / "prompts"):
+            result = load_locale_prompt("sv")
+
+        assert result == "Swedish locale content"
+
+    def test_returns_empty_for_missing_locale(self) -> None:
+        """Should return empty string for unsupported locale."""
+        result = load_locale_prompt("xx")
+        assert result == ""
+
+    def test_defaults_to_swedish(self, tmp_path: Path) -> None:
+        """Should default to Swedish locale."""
+        locale_dir = tmp_path / "config" / "prompts" / "locales"
+        locale_dir.mkdir(parents=True)
+
+        (locale_dir / "sv.md").write_text("Swedish", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=tmp_path / "config" / "prompts"):
+            result = load_locale_prompt()
+
+        assert result == "Swedish"
+
 
 class TestLoadSystemPrompt:
     """Tests for load_system_prompt function."""
@@ -117,8 +205,27 @@ class TestLoadSystemPrompt:
         result = load_system_prompt()
         assert isinstance(result, str)
 
-    def test_combines_core_and_user_prompts(self, tmp_path: Path) -> None:
-        """Should combine core and user prompts with separator."""
+    def test_combines_core_locale_and_user_prompts(self, tmp_path: Path) -> None:
+        """Should combine core, locale, and user prompts with separators."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "locales").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("Core content", encoding="utf-8")
+        (prompts_dir / "locales" / "sv.md").write_text("Swedish locale", encoding="utf-8")
+        (prompts_dir / "user" / "dietary.md").write_text("User content", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv")
+
+        assert "Core content" in result
+        assert "Swedish locale" in result
+        assert "User content" in result
+        assert result.count("---") == 2
+
+    def test_omits_locale_when_missing(self, tmp_path: Path) -> None:
+        """Should work without locale file (only core + user)."""
         prompts_dir = tmp_path / "config" / "prompts"
         (prompts_dir / "core").mkdir(parents=True)
         (prompts_dir / "user").mkdir(parents=True)
@@ -127,11 +234,35 @@ class TestLoadSystemPrompt:
         (prompts_dir / "user" / "dietary.md").write_text("User content", encoding="utf-8")
 
         with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
-            result = load_system_prompt()
+            result = load_system_prompt("xx")
 
         assert "Core content" in result
         assert "User content" in result
-        assert "---" in result  # Separator between sections
+        assert result.count("---") == 1
+
+    def test_passes_language_to_user_prompts(self, tmp_path: Path) -> None:
+        """Should pass language code for template rendering."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("Core", encoding="utf-8")
+        (prompts_dir / "user" / "language.md").write_text("Output in {language_name}", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("en")
+
+        assert "Output in English" in result
+
+    def test_raises_when_no_prompt_files_found(self, tmp_path: Path) -> None:
+        """Should raise FileNotFoundError when prompts directory is missing."""
+        empty_dir = tmp_path / "missing" / "prompts"
+
+        with (
+            patch("api.services.prompt_loader.get_prompts_dir", return_value=empty_dir),
+            pytest.raises(FileNotFoundError, match="No prompt files found"),
+        ):
+            load_system_prompt()
 
 
 class TestValidatePrompts:
@@ -146,7 +277,14 @@ class TestValidatePrompts:
         """Should check all expected prompt files."""
         result = validate_prompts()
 
-        expected_keys = ["core/base.md", "core/formatting.md", "core/rules.md", "user/dietary.md", "user/equipment.md"]
+        expected_keys = [
+            "core/base.md",
+            "core/formatting.md",
+            "core/rules.md",
+            "locales/sv.md",
+            "user/dietary.md",
+            "user/equipment.md",
+        ]
         for key in expected_keys:
             assert key in result
 

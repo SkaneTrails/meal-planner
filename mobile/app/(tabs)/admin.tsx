@@ -4,41 +4,63 @@
  * Only visible to users with 'superuser' role.
  */
 
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  RefreshControl,
-  Pressable,
-  TextInput,
-  Modal,
   ActivityIndicator,
+  FlatList,
+  Modal,
+  Pressable,
+  RefreshControl,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 import { AnimatedPressable, GradientBackground } from '@/components';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, fontWeight } from '@/lib/theme';
 import { showAlert, showNotification } from '@/lib/alert';
+import {
+  useAddMember,
+  useCreateHousehold,
+  useCurrentUser,
+  useHouseholdMembers,
+  useHouseholds,
+  useRemoveMember,
+} from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';
-import { useCurrentUser, useHouseholds, useHouseholdMembers, useCreateHousehold, useAddMember, useRemoveMember } from '@/lib/hooks/use-admin';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import type { Household, HouseholdMember } from '@/lib/types';
 
 export default function AdminScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
-  const { data: households, isLoading: householdsLoading, refetch: refetchHouseholds } = useHouseholds();
+  const {
+    data: households,
+    isLoading: householdsLoading,
+    refetch: refetchHouseholds,
+  } = useHouseholds();
   const createHousehold = useCreateHousehold();
 
-  const [selectedHousehold, setSelectedHousehold] = useState<Household | null>(null);
+  const [selectedHousehold, setSelectedHousehold] = useState<Household | null>(
+    null,
+  );
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newHouseholdName, setNewHouseholdName] = useState('');
 
   if (userLoading) {
     return (
       <GradientBackground muted>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </GradientBackground>
@@ -48,23 +70,34 @@ export default function AdminScreen() {
   if (!currentUser || currentUser.role !== 'superuser') {
     return (
       <GradientBackground muted>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: spacing.xl,
+          }}
+        >
           <Ionicons name="lock-closed" size={64} color={colors.text.muted} />
-          <Text style={{
-            fontSize: fontSize['2xl'],
-            fontWeight: fontWeight.semibold,
-            color: colors.text.muted,
-            marginTop: spacing.lg,
-            textAlign: 'center',
-          }}>
+          <Text
+            style={{
+              fontSize: fontSize['2xl'],
+              fontWeight: fontWeight.semibold,
+              color: colors.text.muted,
+              marginTop: spacing.lg,
+              textAlign: 'center',
+            }}
+          >
             {t('admin.accessRequired')}
           </Text>
-          <Text style={{
-            fontSize: fontSize.lg,
-            color: colors.text.muted,
-            marginTop: spacing.sm,
-            textAlign: 'center',
-          }}>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              color: colors.text.muted,
+              marginTop: spacing.sm,
+              textAlign: 'center',
+            }}
+          >
             {t('admin.accessRequiredMessage')}
           </Text>
         </View>
@@ -81,7 +114,12 @@ export default function AdminScreen() {
       setNewHouseholdName('');
       refetchHouseholds();
     } catch (error) {
-      showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToCreateHousehold'));
+      showNotification(
+        t('common.error'),
+        error instanceof Error
+          ? error.message
+          : t('admin.failedToCreateHousehold'),
+      );
     }
   };
 
@@ -89,13 +127,15 @@ export default function AdminScreen() {
     <GradientBackground muted>
       <View style={{ flex: 1 }}>
         {/* Header */}
-        <View style={{
-          paddingHorizontal: 24,
-          paddingTop: 60,
-          paddingBottom: spacing.md,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
+        <View
+          style={{
+            paddingHorizontal: 24,
+            paddingTop: 60,
+            paddingBottom: spacing.md,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
           <AnimatedPressable
             onPress={() => router.back()}
             hoverScale={1.1}
@@ -114,45 +154,76 @@ export default function AdminScreen() {
             <Ionicons name="chevron-back" size={22} color="white" />
           </AnimatedPressable>
           <View style={{ flex: 1 }}>
-            <Text style={{
-              fontSize: fontSize['4xl'],
-              fontWeight: '600',
-              color: colors.text.primary,
-              letterSpacing: -0.5,
-            }}>
+            <Text
+              style={{
+                fontSize: fontSize['4xl'],
+                fontWeight: '600',
+                color: colors.text.primary,
+                letterSpacing: -0.5,
+              }}
+            >
               {t('tabs.admin')}
             </Text>
-            <Text style={{
-              fontSize: fontSize.lg,
-              color: colors.text.secondary,
-              marginTop: 4,
-            }}>
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                color: colors.text.secondary,
+                marginTop: 4,
+              }}
+            >
               {t('admin.subtitle')}
             </Text>
           </View>
         </View>
 
         {/* Current User Info */}
-        <View style={{
-          marginHorizontal: spacing.lg,
-          marginBottom: spacing.md,
-          padding: spacing.md,
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.lg,
-          ...shadows.sm,
-        }}>
-          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '99' }}>{t('admin.loggedInAs')}</Text>
-          <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.inverse }}>
+        <View
+          style={{
+            marginHorizontal: spacing.lg,
+            marginBottom: spacing.md,
+            padding: spacing.md,
+            backgroundColor: colors.glass.card,
+            borderRadius: borderRadius.lg,
+            ...shadows.sm,
+          }}
+        >
+          <Text
+            style={{ fontSize: fontSize.sm, color: colors.text.inverse + '99' }}
+          >
+            {t('admin.loggedInAs')}
+          </Text>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontWeight: fontWeight.medium,
+              color: colors.text.inverse,
+            }}
+          >
             {currentUser.email}
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: spacing.xs }}>
-            <View style={{
-              backgroundColor: colors.success + '20',
-              paddingHorizontal: spacing.sm,
-              paddingVertical: 2,
-              borderRadius: borderRadius.full,
-            }}>
-              <Text style={{ fontSize: fontSize.xs, color: colors.success, fontWeight: fontWeight.medium, textTransform: 'uppercase' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: spacing.xs,
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: colors.success + '20',
+                paddingHorizontal: spacing.sm,
+                paddingVertical: 2,
+                borderRadius: borderRadius.full,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: fontSize.xs,
+                  color: colors.success,
+                  fontWeight: fontWeight.medium,
+                  textTransform: 'uppercase',
+                }}
+              >
                 {t(`labels.role.${currentUser.role}` as 'labels.role.member')}
               </Text>
             </View>
@@ -161,18 +232,22 @@ export default function AdminScreen() {
 
         {/* Households List */}
         <View style={{ flex: 1 }}>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: spacing.lg,
-            marginBottom: spacing.sm,
-          }}>
-            <Text style={{
-              fontSize: fontSize['2xl'],
-              fontWeight: fontWeight.semibold,
-              color: colors.text.inverse,
-            }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingHorizontal: spacing.lg,
+              marginBottom: spacing.sm,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: fontSize['2xl'],
+                fontWeight: fontWeight.semibold,
+                color: colors.text.inverse,
+              }}
+            >
               {t('admin.households')}
             </Text>
             <AnimatedPressable
@@ -189,7 +264,13 @@ export default function AdminScreen() {
               }}
             >
               <Ionicons name="add" size={18} color="white" />
-              <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontWeight: fontWeight.medium,
+                  marginLeft: 4,
+                }}
+              >
                 {t('admin.newButton')}
               </Text>
             </AnimatedPressable>
@@ -204,7 +285,10 @@ export default function AdminScreen() {
                 onPress={() => setSelectedHousehold(item)}
               />
             )}
-            contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: 70 }}
+            contentContainerStyle={{
+              paddingHorizontal: spacing.lg,
+              paddingBottom: 70,
+            }}
             refreshControl={
               <RefreshControl
                 refreshing={householdsLoading}
@@ -214,8 +298,14 @@ export default function AdminScreen() {
             }
             ListEmptyComponent={
               <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                <Ionicons name="home-outline" size={48} color={colors.text.muted} />
-                <Text style={{ color: colors.text.muted, marginTop: spacing.md }}>
+                <Ionicons
+                  name="home-outline"
+                  size={48}
+                  color={colors.text.muted}
+                />
+                <Text
+                  style={{ color: colors.text.muted, marginTop: spacing.md }}
+                >
                   {t('admin.noHouseholds')}
                 </Text>
               </View>
@@ -230,13 +320,27 @@ export default function AdminScreen() {
           presentationStyle="pageSheet"
           onRequestClose={() => setShowCreateModal(false)}
         >
-          <View style={{
-            flex: 1,
-            backgroundColor: colors.bgLight,
-            padding: spacing.lg,
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: '#3D3D3D' }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: colors.bgLight,
+              padding: spacing.lg,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: fontSize['2xl'],
+                  fontWeight: fontWeight.bold,
+                  color: '#3D3D3D',
+                }}
+              >
                 {t('admin.createHousehold.button')}
               </Text>
               <Pressable onPress={() => setShowCreateModal(false)}>
@@ -245,7 +349,14 @@ export default function AdminScreen() {
             </View>
 
             <View style={{ marginTop: spacing.xl }}>
-              <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: '#3D3D3D', marginBottom: spacing.sm }}>
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontWeight: fontWeight.semibold,
+                  color: '#3D3D3D',
+                  marginBottom: spacing.sm,
+                }}
+              >
                 {t('admin.createHousehold.nameLabel')}
               </Text>
               <TextInput
@@ -270,9 +381,13 @@ export default function AdminScreen() {
               disabled={!newHouseholdName.trim() || createHousehold.isPending}
               hoverScale={1.02}
               pressScale={0.97}
-              disableAnimation={!newHouseholdName.trim() || createHousehold.isPending}
+              disableAnimation={
+                !newHouseholdName.trim() || createHousehold.isPending
+              }
               style={{
-                backgroundColor: !newHouseholdName.trim() ? '#C5B8A8' : '#5D4E40',
+                backgroundColor: !newHouseholdName.trim()
+                  ? '#C5B8A8'
+                  : '#5D4E40',
                 padding: spacing.md,
                 borderRadius: borderRadius.lg,
                 marginTop: spacing.xl,
@@ -282,7 +397,13 @@ export default function AdminScreen() {
               {createHousehold.isPending ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text style={{ color: 'white', fontSize: fontSize.lg, fontWeight: fontWeight.semibold }}>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: fontSize.lg,
+                    fontWeight: fontWeight.semibold,
+                  }}
+                >
                   {t('admin.createHousehold.button')}
                 </Text>
               )}
@@ -319,43 +440,66 @@ const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
         ...shadows.sm,
       })}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <View style={{ flex: 1 }}>
-          <Text style={{
-            fontSize: fontSize.lg,
-            fontWeight: fontWeight.semibold,
-            color: colors.text.inverse,
-          }}>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontWeight: fontWeight.semibold,
+              color: colors.text.inverse,
+            }}
+          >
             {household.name}
           </Text>
-          <Text style={{
-            fontSize: fontSize.sm,
-            color: colors.text.inverse + '99',
-            marginTop: 2,
-          }}>
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              color: colors.text.inverse + '99',
+              marginTop: 2,
+            }}
+          >
             ID: {household.id}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={colors.text.inverse + '80'} />
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.text.inverse + '80'}
+        />
       </View>
     </Pressable>
   );
-}
+};
 
 interface HouseholdDetailModalProps {
   household: Household;
   onClose: () => void;
 }
 
-const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps) => {
+const HouseholdDetailModal = ({
+  household,
+  onClose,
+}: HouseholdDetailModalProps) => {
   const { t } = useTranslation();
-  const { data: members, isLoading, refetch } = useHouseholdMembers(household.id);
+  const {
+    data: members,
+    isLoading,
+    refetch,
+  } = useHouseholdMembers(household.id);
   const addMember = useAddMember();
   const removeMember = useRemoveMember();
 
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMemberEmail, setNewMemberEmail] = useState('');
-  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>('member');
+  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>(
+    'member',
+  );
 
   const handleAddMember = async () => {
     if (!newMemberEmail.trim()) return;
@@ -369,14 +513,20 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
       setNewMemberEmail('');
       refetch();
     } catch (error) {
-      showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToAddMember'));
+      showNotification(
+        t('common.error'),
+        error instanceof Error ? error.message : t('admin.failedToAddMember'),
+      );
     }
   };
 
   const handleRemoveMember = (email: string) => {
     showAlert(
       t('admin.removeMember'),
-      t('admin.removeMemberConfirm', { name: email, household: household.name }),
+      t('admin.removeMemberConfirm', {
+        name: email,
+        household: household.name,
+      }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -384,14 +534,22 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
           style: 'destructive',
           onPress: async () => {
             try {
-              await removeMember.mutateAsync({ householdId: household.id, email });
+              await removeMember.mutateAsync({
+                householdId: household.id,
+                email,
+              });
               refetch();
             } catch (error) {
-              showNotification(t('common.error'), error instanceof Error ? error.message : t('admin.failedToRemoveMember'));
+              showNotification(
+                t('common.error'),
+                error instanceof Error
+                  ? error.message
+                  : t('admin.failedToRemoveMember'),
+              );
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -403,17 +561,21 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
       onRequestClose={onClose}
     >
       <GradientBackground muted>
-        <View style={{
-          flex: 1,
-        }}>
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
           {/* Header */}
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: spacing.lg,
-            paddingTop: spacing.xl,
-            paddingBottom: spacing.md,
-          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: spacing.lg,
+              paddingTop: spacing.xl,
+              paddingBottom: spacing.md,
+            }}
+          >
             <AnimatedPressable
               onPress={onClose}
               hoverScale={1.1}
@@ -432,158 +594,211 @@ const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps)
               <Ionicons name="chevron-back" size={22} color="white" />
             </AnimatedPressable>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: colors.text.inverse }}>
+              <Text
+                style={{
+                  fontSize: fontSize['2xl'],
+                  fontWeight: fontWeight.bold,
+                  color: colors.text.inverse,
+                }}
+              >
                 {household.name}
               </Text>
-              <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+              <Text
+                style={{
+                  fontSize: fontSize.sm,
+                  color: colors.text.inverse + '80',
+                }}
+              >
                 {t('admin.createdBy', { email: household.created_by })}
               </Text>
             </View>
           </View>
 
-        {/* Members */}
-        <View style={{ flex: 1, padding: spacing.lg }}>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: spacing.md,
-          }}>
-            <Text style={{ fontSize: fontSize.xl, fontWeight: fontWeight.semibold, color: colors.text.inverse }}>
-              {t('admin.members')}
-            </Text>
-            <AnimatedPressable
-              onPress={() => setShowAddMember(true)}
-              hoverScale={1.05}
-              pressScale={0.95}
+          {/* Members */}
+          <View style={{ flex: 1, padding: spacing.lg }}>
+            <View
               style={{
-                backgroundColor: colors.primary,
-                paddingHorizontal: spacing.md,
-                paddingVertical: spacing.sm,
-                borderRadius: borderRadius.lg,
                 flexDirection: 'row',
+                justifyContent: 'space-between',
                 alignItems: 'center',
+                marginBottom: spacing.md,
               }}
             >
-              <Ionicons name="person-add" size={16} color="white" />
-              <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
-                {t('admin.addMemberButton')}
+              <Text
+                style={{
+                  fontSize: fontSize.xl,
+                  fontWeight: fontWeight.semibold,
+                  color: colors.text.inverse,
+                }}
+              >
+                {t('admin.members')}
               </Text>
-            </AnimatedPressable>
-          </View>
-
-          {isLoading ? (
-            <ActivityIndicator size="large" color={colors.primary} />
-          ) : (
-            <FlatList
-              data={members || []}
-              keyExtractor={(item) => item.email}
-              renderItem={({ item }) => (
-                <MemberCard
-                  member={item}
-                  onRemove={() => handleRemoveMember(item.email)}
-                />
-              )}
-              ListEmptyComponent={
-                <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                  <Text style={{ color: colors.text.muted }}>{t('admin.noMembers')}</Text>
-                </View>
-              }
-            />
-          )}
-        </View>
-
-        {/* Add Member Form */}
-        {showAddMember && (
-          <View style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: colors.bgLight,
-            padding: spacing.lg,
-            borderTopLeftRadius: borderRadius.xl,
-            borderTopRightRadius: borderRadius.xl,
-            ...shadows.lg,
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
-              <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: '#3D3D3D' }}>
-                {t('admin.addMember.title')}
-              </Text>
-              <Pressable onPress={() => setShowAddMember(false)}>
-                <Ionicons name="close" size={24} color="#8B7355" />
-              </Pressable>
-            </View>
-
-            <TextInput
-              value={newMemberEmail}
-              onChangeText={setNewMemberEmail}
-              placeholder={t('admin.addMember.emailPlaceholder')}
-              placeholderTextColor="#8B735580"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              style={{
-                backgroundColor: colors.white,
-                borderRadius: borderRadius.md,
-                padding: spacing.md,
-                fontSize: fontSize.md,
-                color: '#3D3D3D',
-                marginBottom: spacing.sm,
-              }}
-            />
-
-            <View style={{ flexDirection: 'row', marginBottom: spacing.md }}>
-              {(['member', 'admin'] as const).map((role) => (
-                <Pressable
-                  key={role}
-                  onPress={() => setNewMemberRole(role)}
+              <AnimatedPressable
+                onPress={() => setShowAddMember(true)}
+                hoverScale={1.05}
+                pressScale={0.95}
+                style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.lg,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Ionicons name="person-add" size={16} color="white" />
+                <Text
                   style={{
-                    flex: 1,
-                    padding: spacing.sm,
-                    marginRight: role === 'member' ? spacing.sm : 0,
-                    backgroundColor: newMemberRole === role ? '#3D3D3D' : colors.white,
-                    borderRadius: borderRadius.md,
-                    alignItems: 'center',
+                    color: 'white',
+                    fontWeight: fontWeight.medium,
+                    marginLeft: 4,
                   }}
                 >
-                  <Text style={{
-                    color: newMemberRole === role ? 'white' : '#3D3D3D',
-                    fontWeight: fontWeight.medium,
-                  }}>
-                    {t(`labels.role.${role}` as 'labels.role.member')}
-                  </Text>
-                </Pressable>
-              ))}
+                  {t('admin.addMemberButton')}
+                </Text>
+              </AnimatedPressable>
             </View>
 
-            <AnimatedPressable
-              onPress={handleAddMember}
-              disabled={!newMemberEmail.trim() || addMember.isPending}
-              hoverScale={1.02}
-              pressScale={0.97}
-              disableAnimation={!newMemberEmail.trim() || addMember.isPending}
+            {isLoading ? (
+              <ActivityIndicator size="large" color={colors.primary} />
+            ) : (
+              <FlatList
+                data={members || []}
+                keyExtractor={(item) => item.email}
+                renderItem={({ item }) => (
+                  <MemberCard
+                    member={item}
+                    onRemove={() => handleRemoveMember(item.email)}
+                  />
+                )}
+                ListEmptyComponent={
+                  <View style={{ alignItems: 'center', padding: spacing.xl }}>
+                    <Text style={{ color: colors.text.muted }}>
+                      {t('admin.noMembers')}
+                    </Text>
+                  </View>
+                }
+              />
+            )}
+          </View>
+
+          {/* Add Member Form */}
+          {showAddMember && (
+            <View
               style={{
-                backgroundColor: !newMemberEmail.trim() ? '#C5B8A8' : '#3D3D3D',
-                padding: spacing.md,
-                borderRadius: borderRadius.lg,
-                alignItems: 'center',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: colors.bgLight,
+                padding: spacing.lg,
+                borderTopLeftRadius: borderRadius.xl,
+                borderTopRightRadius: borderRadius.xl,
+                ...shadows.lg,
               }}
             >
-              {addMember.isPending ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text style={{ color: 'white', fontSize: fontSize.md, fontWeight: fontWeight.semibold }}>
-                  {t('admin.addMember.button')}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: spacing.md,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.lg,
+                    fontWeight: fontWeight.semibold,
+                    color: '#3D3D3D',
+                  }}
+                >
+                  {t('admin.addMember.title')}
                 </Text>
-              )}
-            </AnimatedPressable>
-          </View>
-        )}
+                <Pressable onPress={() => setShowAddMember(false)}>
+                  <Ionicons name="close" size={24} color="#8B7355" />
+                </Pressable>
+              </View>
+
+              <TextInput
+                value={newMemberEmail}
+                onChangeText={setNewMemberEmail}
+                placeholder={t('admin.addMember.emailPlaceholder')}
+                placeholderTextColor="#8B735580"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                style={{
+                  backgroundColor: colors.white,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.md,
+                  fontSize: fontSize.md,
+                  color: '#3D3D3D',
+                  marginBottom: spacing.sm,
+                }}
+              />
+
+              <View style={{ flexDirection: 'row', marginBottom: spacing.md }}>
+                {(['member', 'admin'] as const).map((role) => (
+                  <Pressable
+                    key={role}
+                    onPress={() => setNewMemberRole(role)}
+                    style={{
+                      flex: 1,
+                      padding: spacing.sm,
+                      marginRight: role === 'member' ? spacing.sm : 0,
+                      backgroundColor:
+                        newMemberRole === role ? '#3D3D3D' : colors.white,
+                      borderRadius: borderRadius.md,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: newMemberRole === role ? 'white' : '#3D3D3D',
+                        fontWeight: fontWeight.medium,
+                      }}
+                    >
+                      {t(`labels.role.${role}` as 'labels.role.member')}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              <AnimatedPressable
+                onPress={handleAddMember}
+                disabled={!newMemberEmail.trim() || addMember.isPending}
+                hoverScale={1.02}
+                pressScale={0.97}
+                disableAnimation={!newMemberEmail.trim() || addMember.isPending}
+                style={{
+                  backgroundColor: !newMemberEmail.trim()
+                    ? '#C5B8A8'
+                    : '#3D3D3D',
+                  padding: spacing.md,
+                  borderRadius: borderRadius.lg,
+                  alignItems: 'center',
+                }}
+              >
+                {addMember.isPending ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: fontSize.md,
+                      fontWeight: fontWeight.semibold,
+                    }}
+                  >
+                    {t('admin.addMember.button')}
+                  </Text>
+                )}
+              </AnimatedPressable>
+            </View>
+          )}
         </View>
       </GradientBackground>
     </Modal>
   );
-}
+};
 
 interface MemberCardProps {
   member: HouseholdMember;
@@ -592,46 +807,57 @@ interface MemberCardProps {
 
 const MemberCard = ({ member, onRemove }: MemberCardProps) => {
   const { t } = useTranslation();
-  const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
+  const roleColor =
+    member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <View style={{
-      backgroundColor: colors.glass.card,
-      borderRadius: borderRadius.lg,
-      padding: spacing.md,
-      marginBottom: spacing.sm,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      ...shadows.sm,
-    }}>
+    <View
+      style={{
+        backgroundColor: colors.glass.card,
+        borderRadius: borderRadius.lg,
+        padding: spacing.md,
+        marginBottom: spacing.sm,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        ...shadows.sm,
+      }}
+    >
       <View style={{ flex: 1 }}>
-        <Text style={{
-          fontSize: fontSize.md,
-          fontWeight: fontWeight.medium,
-          color: colors.text.inverse,
-        }}>
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            fontWeight: fontWeight.medium,
+            color: colors.text.inverse,
+          }}
+        >
           {member.display_name || member.email}
         </Text>
         {member.display_name && (
-          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+          <Text
+            style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
+          >
             {member.email}
           </Text>
         )}
-        <View style={{
-          backgroundColor: roleColor + '20',
-          paddingHorizontal: spacing.sm,
-          paddingVertical: 2,
-          borderRadius: borderRadius.full,
-          alignSelf: 'flex-start',
-          marginTop: spacing.xs,
-        }}>
-          <Text style={{
-            fontSize: fontSize.xs,
-            color: roleColor,
-            fontWeight: fontWeight.medium,
-            textTransform: 'uppercase',
-          }}>
+        <View
+          style={{
+            backgroundColor: roleColor + '20',
+            paddingHorizontal: spacing.sm,
+            paddingVertical: 2,
+            borderRadius: borderRadius.full,
+            alignSelf: 'flex-start',
+            marginTop: spacing.xs,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: fontSize.xs,
+              color: roleColor,
+              fontWeight: fontWeight.medium,
+              textTransform: 'uppercase',
+            }}
+          >
             {t(`labels.role.${member.role}` as 'labels.role.member')}
           </Text>
         </View>
@@ -648,4 +874,4 @@ const MemberCard = ({ member, onRemove }: MemberCardProps) => {
       </AnimatedPressable>
     </View>
   );
-}
+};

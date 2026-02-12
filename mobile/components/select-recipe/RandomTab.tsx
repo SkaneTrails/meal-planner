@@ -1,9 +1,16 @@
-import React from 'react';
-import { View, Text, ScrollView, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, letterSpacing } from '@/lib/theme';
+import React from 'react';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  letterSpacing,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 
@@ -12,15 +19,30 @@ interface RandomTabProps {
 }
 
 export const RandomTab = ({ state }: RandomTabProps) => {
-  const { t, randomRecipe, mealTypeRecipes, shuffleRandom, handleSelectRecipe, setMeal, MEAL_TYPE_LABELS, mealType } = state;
+  const {
+    t,
+    randomRecipe,
+    mealTypeRecipes,
+    shuffleRandom,
+    handleSelectRecipe,
+    setMeal,
+    MEAL_TYPE_LABELS,
+    mealType,
+  } = state;
 
   if (!randomRecipe) {
     return (
-      <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}
+      >
         <EmptyState
           icon="dice-outline"
-          title={t('selectRecipe.random.noRecipes', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
-          subtitle={t('selectRecipe.random.addRecipesHint', { mealType: MEAL_TYPE_LABELS[mealType].toLowerCase() })}
+          title={t('selectRecipe.random.noRecipes', {
+            mealType: MEAL_TYPE_LABELS[mealType].toLowerCase(),
+          })}
+          subtitle={t('selectRecipe.random.addRecipesHint', {
+            mealType: MEAL_TYPE_LABELS[mealType].toLowerCase(),
+          })}
           style={{ paddingVertical: spacing['4xl'] }}
         />
       </ScrollView>
@@ -28,7 +50,9 @@ export const RandomTab = ({ state }: RandomTabProps) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}>
+    <ScrollView
+      contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}
+    >
       <View style={{ alignItems: 'center' }}>
         {/* Header */}
         <RandomHeader
@@ -39,7 +63,11 @@ export const RandomTab = ({ state }: RandomTabProps) => {
 
         {/* Recipe Card */}
         <View style={{ width: '100%', marginBottom: spacing.xl }}>
-          <RandomRecipeCard recipe={randomRecipe} onSelect={handleSelectRecipe} t={t} />
+          <RandomRecipeCard
+            recipe={randomRecipe}
+            onSelect={handleSelectRecipe}
+            t={t}
+          />
         </View>
 
         {/* Action buttons */}
@@ -47,13 +75,27 @@ export const RandomTab = ({ state }: RandomTabProps) => {
           <Pressable
             onPress={shuffleRandom}
             style={({ pressed }) => ({
-              flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-              paddingVertical: spacing.md, borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? colors.glass.medium : colors.glass.card, ...shadows.sm,
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: spacing.md,
+              borderRadius: borderRadius.sm,
+              backgroundColor: pressed
+                ? colors.glass.medium
+                : colors.glass.card,
+              ...shadows.sm,
             })}
           >
             <Ionicons name="shuffle" size={20} color={colors.text.inverse} />
-            <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
+            <Text
+              style={{
+                marginLeft: spacing.sm,
+                fontSize: fontSize.lg,
+                fontWeight: '600',
+                color: colors.text.inverse,
+              }}
+            >
               {t('selectRecipe.random.shuffle')}
             </Text>
           </Pressable>
@@ -61,13 +103,25 @@ export const RandomTab = ({ state }: RandomTabProps) => {
             onPress={() => handleSelectRecipe(randomRecipe.id)}
             disabled={setMeal.isPending}
             style={({ pressed }) => ({
-              flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-              paddingVertical: spacing.md, borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B', ...shadows.md,
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: spacing.md,
+              borderRadius: borderRadius.sm,
+              backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B',
+              ...shadows.md,
             })}
           >
             <Ionicons name="checkmark-circle" size={20} color={colors.white} />
-            <Text style={{ marginLeft: spacing.sm, fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
+            <Text
+              style={{
+                marginLeft: spacing.sm,
+                fontSize: fontSize.lg,
+                fontWeight: '600',
+                color: colors.white,
+              }}
+            >
               {t('selectRecipe.random.addToPlan')}
             </Text>
           </Pressable>
@@ -83,20 +137,54 @@ interface RandomHeaderProps {
   mealTypeLabel: string;
 }
 
-const RandomHeader = ({ t, mealTypeCount, mealTypeLabel }: RandomHeaderProps) => (
+const RandomHeader = ({
+  t,
+  mealTypeCount,
+  mealTypeLabel,
+}: RandomHeaderProps) => (
   <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
-    <View style={{
-      width: 56, height: 56, borderRadius: 28,
-      backgroundColor: 'rgba(107, 142, 107, 0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md,
-    }}>
+    <View
+      style={{
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: 'rgba(107, 142, 107, 0.15)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: spacing.md,
+      }}
+    >
       <Ionicons name="dice" size={32} color="#6B8E6B" />
     </View>
-    <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, textAlign: 'center', letterSpacing: letterSpacing.normal }}>
+    <Text
+      style={{
+        fontSize: fontSize['3xl'],
+        fontWeight: '700',
+        color: colors.text.inverse,
+        textAlign: 'center',
+        letterSpacing: letterSpacing.normal,
+      }}
+    >
       {t('selectRecipe.random.howAbout')}
     </Text>
-    <View style={{ width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B', marginTop: spacing.sm }} />
-    <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], marginTop: spacing.xs }}>
-      {t('selectRecipe.random.matchCount', { count: mealTypeCount })} {mealTypeLabel}
+    <View
+      style={{
+        width: 40,
+        height: 3,
+        borderRadius: 2,
+        backgroundColor: '#6B8E6B',
+        marginTop: spacing.sm,
+      }}
+    />
+    <Text
+      style={{
+        fontSize: fontSize.lg,
+        color: colors.gray[600],
+        marginTop: spacing.xs,
+      }}
+    >
+      {t('selectRecipe.random.matchCount', { count: mealTypeCount })}{' '}
+      {mealTypeLabel}
     </Text>
   </View>
 );
@@ -111,21 +199,49 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
   <Pressable
     onPress={() => onSelect(recipe.id)}
     style={({ pressed }) => ({
-      backgroundColor: colors.glass.card, borderRadius: borderRadius.lg,
-      overflow: 'hidden', ...shadows.md, transform: [{ scale: pressed ? 0.99 : 1 }],
+      backgroundColor: colors.glass.card,
+      borderRadius: borderRadius.lg,
+      overflow: 'hidden',
+      ...shadows.md,
+      transform: [{ scale: pressed ? 0.99 : 1 }],
     })}
   >
     {(recipe.thumbnail_url || recipe.image_url) && (
-      <Image source={{ uri: recipe.thumbnail_url || recipe.image_url }} style={{ width: '100%', height: 180 }} resizeMode="cover" />
+      <Image
+        source={{ uri: recipe.thumbnail_url || recipe.image_url }}
+        style={{ width: '100%', height: 180 }}
+        resizeMode="cover"
+      />
     )}
     <View style={{ padding: spacing.lg }}>
-      <Text style={{ fontSize: fontSize['3xl'], fontWeight: '700', color: colors.text.inverse, marginBottom: spacing.sm, letterSpacing: letterSpacing.normal }}>
+      <Text
+        style={{
+          fontSize: fontSize['3xl'],
+          fontWeight: '700',
+          color: colors.text.inverse,
+          marginBottom: spacing.sm,
+          letterSpacing: letterSpacing.normal,
+        }}
+      >
         {recipe.title}
       </Text>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.md }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: spacing.md,
+          marginBottom: spacing.md,
+        }}
+      >
         {recipe.total_time && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.xs,
+            }}
+          >
             <Ionicons name="time-outline" size={16} color={colors.gray[500]} />
             <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
               {t('selectRecipe.random.time', { count: recipe.total_time })}
@@ -133,26 +249,54 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
           </View>
         )}
         {recipe.servings && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-            <Ionicons name="people-outline" size={16} color={colors.gray[500]} />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.xs,
+            }}
+          >
+            <Ionicons
+              name="people-outline"
+              size={16}
+              color={colors.gray[500]}
+            />
             <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
               {t('selectRecipe.random.servings', { count: recipe.servings })}
             </Text>
           </View>
         )}
         {recipe.diet_label && (
-          <View style={{
-            paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.sm,
-            backgroundColor: recipe.diet_label === 'veggie' ? colors.diet.veggie.bg :
-                           recipe.diet_label === 'fish' ? colors.diet.fish.bg : colors.diet.meat.bg,
-          }}>
-            <Text style={{
-              fontSize: fontSize.sm, fontWeight: '600',
-              color: recipe.diet_label === 'veggie' ? colors.diet.veggie.text :
-                     recipe.diet_label === 'fish' ? colors.diet.fish.text : colors.diet.meat.text,
-            }}>
-              {recipe.diet_label === 'veggie' ? `🥬 ${t('labels.diet.veggie')}` :
-               recipe.diet_label === 'fish' ? `🐟 ${t('labels.diet.fish')}` : `🥩 ${t('labels.diet.meat')}`}
+          <View
+            style={{
+              paddingHorizontal: spacing.sm,
+              paddingVertical: spacing.xs,
+              borderRadius: borderRadius.sm,
+              backgroundColor:
+                recipe.diet_label === 'veggie'
+                  ? colors.diet.veggie.bg
+                  : recipe.diet_label === 'fish'
+                    ? colors.diet.fish.bg
+                    : colors.diet.meat.bg,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: fontSize.sm,
+                fontWeight: '600',
+                color:
+                  recipe.diet_label === 'veggie'
+                    ? colors.diet.veggie.text
+                    : recipe.diet_label === 'fish'
+                      ? colors.diet.fish.text
+                      : colors.diet.meat.text,
+              }}
+            >
+              {recipe.diet_label === 'veggie'
+                ? `🥬 ${t('labels.diet.veggie')}`
+                : recipe.diet_label === 'fish'
+                  ? `🐟 ${t('labels.diet.fish')}`
+                  : `🥩 ${t('labels.diet.meat')}`}
             </Text>
           </View>
         )}
@@ -160,10 +304,26 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
 
       {recipe.ingredients && recipe.ingredients.length > 0 && (
         <View>
-          <Text style={{ fontSize: fontSize.md, fontWeight: '600', color: colors.gray[600], marginBottom: spacing.xs }}>
-            {t('selectRecipe.random.ingredientsCount', { count: recipe.ingredients.length })}
+          <Text
+            style={{
+              fontSize: fontSize.md,
+              fontWeight: '600',
+              color: colors.gray[600],
+              marginBottom: spacing.xs,
+            }}
+          >
+            {t('selectRecipe.random.ingredientsCount', {
+              count: recipe.ingredients.length,
+            })}
           </Text>
-          <Text style={{ fontSize: fontSize.base, color: colors.gray[500], lineHeight: 18 }} numberOfLines={2}>
+          <Text
+            style={{
+              fontSize: fontSize.base,
+              color: colors.gray[500],
+              lineHeight: 18,
+            }}
+            numberOfLines={2}
+          >
             {recipe.ingredients.slice(0, 5).join(' • ')}
             {recipe.ingredients.length > 5 ? ' ...' : ''}
           </Text>

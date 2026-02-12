@@ -2,21 +2,31 @@
  * Recipes screen - Recipe Library with search and filters.
  */
 
-import React, { useState, useMemo, useRef, useCallback } from 'react';
-import { View, Text, TextInput, Pressable, Platform, UIManager } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fontSize, fontFamily, letterSpacing } from '@/lib/theme';
-import { useRecipes } from '@/lib/hooks';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  Platform,
+  Pressable,
+  Text,
+  type TextInput,
+  UIManager,
+  View,
+} from 'react-native';
 import { BottomSheetModal, GradientBackground } from '@/components';
-import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useSettings } from '@/lib/settings-context';
-import { useTranslation } from '@/lib/i18n';
-import type { DietLabel, MealLabel } from '@/lib/types';
+import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
-import { SearchBar, FilterChips } from '@/components/recipes/RecipeFilters';
+import { hapticLight, hapticSelection } from '@/lib/haptics';
+import { useRecipes } from '@/lib/hooks';
+import { useTranslation } from '@/lib/i18n';
+import { useSettings } from '@/lib/settings-context';
+import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import type { DietLabel, MealLabel } from '@/lib/types';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -72,9 +82,13 @@ export default function RecipesScreen() {
       const matchesSearch =
         searchQuery === '' ||
         recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        recipe.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        recipe.tags.some((tag) =>
+          tag.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
       const matchesDiet = !dietFilter || recipe.diet_label === dietFilter;
-      const matchesMeal = mealFilters.length === 0 || (recipe.meal_label && mealFilters.includes(recipe.meal_label));
+      const matchesMeal =
+        mealFilters.length === 0 ||
+        (recipe.meal_label && mealFilters.includes(recipe.meal_label));
       const matchesFavorites = !showFavoritesOnly || isFavorite(recipe.id);
       return matchesSearch && matchesDiet && matchesMeal && matchesFavorites;
     });
@@ -86,7 +100,15 @@ export default function RecipesScreen() {
     }
 
     return result;
-  }, [recipes, searchQuery, dietFilter, mealFilters, sortBy, showFavoritesOnly, isFavorite]);
+  }, [
+    recipes,
+    searchQuery,
+    dietFilter,
+    mealFilters,
+    sortBy,
+    showFavoritesOnly,
+    isFavorite,
+  ]);
 
   const handleDietChange = useCallback((diet: DietLabel | null) => {
     setDietFilter(diet);
@@ -110,25 +132,31 @@ export default function RecipesScreen() {
     <GradientBackground structured>
       <View style={{ flex: 1, paddingBottom: 70 }}>
         {/* Header */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}>
+        <View
+          style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}
+        >
           <View style={{ marginBottom: 8 }}>
-            <Text style={{
-              fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.displayBold,
-              fontWeight: '700',
-              color: '#3D3D3D',
-              letterSpacing: letterSpacing.tight,
-              textAlign: 'center',
-            }}>
+            <Text
+              style={{
+                fontSize: fontSize['3xl'],
+                fontFamily: fontFamily.displayBold,
+                fontWeight: '700',
+                color: '#3D3D3D',
+                letterSpacing: letterSpacing.tight,
+                textAlign: 'center',
+              }}
+            >
               {t('recipes.title')}
             </Text>
-            <Text style={{
-              fontSize: fontSize.md,
-              fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.6)',
-              marginTop: 2,
-              textAlign: 'center',
-            }}>
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontFamily: fontFamily.body,
+                color: 'rgba(93, 78, 64, 0.6)',
+                marginTop: 2,
+                textAlign: 'center',
+              }}
+            >
               {t('recipes.collectionCount', { count: totalCount })}
             </Text>
           </View>
@@ -200,16 +228,21 @@ export default function RecipesScreen() {
                 justifyContent: 'space-between',
                 paddingVertical: 16,
                 paddingHorizontal: 20,
-                backgroundColor: sortBy === option.value ? 'rgba(255, 255, 255, 0.6)' : 'transparent',
+                backgroundColor:
+                  sortBy === option.value
+                    ? 'rgba(255, 255, 255, 0.6)'
+                    : 'transparent',
                 borderRadius: 12,
                 marginHorizontal: 8,
               }}
             >
-              <Text style={{
-                fontSize: 16,
-                color: '#5D4E40',
-                fontWeight: sortBy === option.value ? '600' : '400',
-              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: '#5D4E40',
+                  fontWeight: sortBy === option.value ? '600' : '400',
+                }}
+              >
                 {option.label}
               </Text>
               {sortBy === option.value && (

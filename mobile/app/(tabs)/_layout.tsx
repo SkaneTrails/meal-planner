@@ -5,13 +5,13 @@
  * Requires household membership - redirects to no-access if not in a household (except superusers).
  */
 
-import React from 'react';
-import { View, ActivityIndicator, Platform } from 'react-native';
-import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { Redirect, Tabs } from 'expo-router';
+import React from 'react';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useLanguageSync } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
 import { colors } from '@/lib/theme';
@@ -56,7 +56,7 @@ const TabBarBackground = () => {
       }}
     />
   );
-}
+};
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -71,7 +71,14 @@ export default function TabLayout() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.bgLight }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.bgLight,
+        }}
+      >
         <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
@@ -135,13 +142,21 @@ export default function TabLayout() {
           title: t('tabs.home'),
           tabBarAccessibilityLabel: t('tabs.home'),
           tabBarIcon: ({ focused }) => (
-            <View style={{
-              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
-              borderRadius: 12,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-            }}>
-              <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View
+              style={{
+                backgroundColor: focused
+                  ? 'rgba(93, 78, 64, 0.12)'
+                  : 'transparent',
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+              }}
+            >
+              <Ionicons
+                name={focused ? 'home' : 'home-outline'}
+                size={20}
+                color={focused ? '#5D4E40' : '#6B5B4B'}
+              />
             </View>
           ),
         }}
@@ -152,13 +167,21 @@ export default function TabLayout() {
           title: t('tabs.recipes'),
           tabBarAccessibilityLabel: t('tabs.recipes'),
           tabBarIcon: ({ focused }) => (
-            <View style={{
-              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
-              borderRadius: 12,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-            }}>
-              <Ionicons name={focused ? "book" : "book-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View
+              style={{
+                backgroundColor: focused
+                  ? 'rgba(93, 78, 64, 0.12)'
+                  : 'transparent',
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+              }}
+            >
+              <Ionicons
+                name={focused ? 'book' : 'book-outline'}
+                size={20}
+                color={focused ? '#5D4E40' : '#6B5B4B'}
+              />
             </View>
           ),
         }}
@@ -169,13 +192,21 @@ export default function TabLayout() {
           title: t('tabs.mealPlan'),
           tabBarAccessibilityLabel: t('tabs.mealPlan'),
           tabBarIcon: ({ focused }) => (
-            <View style={{
-              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
-              borderRadius: 12,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-            }}>
-              <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View
+              style={{
+                backgroundColor: focused
+                  ? 'rgba(93, 78, 64, 0.12)'
+                  : 'transparent',
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+              }}
+            >
+              <Ionicons
+                name={focused ? 'calendar' : 'calendar-outline'}
+                size={20}
+                color={focused ? '#5D4E40' : '#6B5B4B'}
+              />
             </View>
           ),
         }}
@@ -186,13 +217,21 @@ export default function TabLayout() {
           title: t('tabs.grocery'),
           tabBarAccessibilityLabel: t('tabs.grocery'),
           tabBarIcon: ({ focused }) => (
-            <View style={{
-              backgroundColor: focused ? 'rgba(93, 78, 64, 0.12)' : 'transparent',
-              borderRadius: 12,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-            }}>
-              <Ionicons name={focused ? "cart" : "cart-outline"} size={20} color={focused ? '#5D4E40' : '#6B5B4B'} />
+            <View
+              style={{
+                backgroundColor: focused
+                  ? 'rgba(93, 78, 64, 0.12)'
+                  : 'transparent',
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+              }}
+            >
+              <Ionicons
+                name={focused ? 'cart' : 'cart-outline'}
+                size={20}
+                color={focused ? '#5D4E40' : '#6B5B4B'}
+              />
             </View>
           ),
         }}

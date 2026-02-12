@@ -2,9 +2,9 @@
  * Individual grocery item row with checkbox, quantity display, and drag handle.
  */
 
-import React, { useState } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { Platform, Pressable, Text, View } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
 import type { GroceryItem } from '@/lib/types';
 
@@ -48,7 +48,13 @@ const formatQuantity = (item: GroceryItem): string => {
   return '';
 };
 
-export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: GroceryItemRowProps) => {
+export const GroceryItemRow = ({
+  item,
+  onToggle,
+  drag,
+  isActive,
+  showReorder,
+}: GroceryItemRowProps) => {
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 
@@ -82,14 +88,20 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
           onLongPress={Platform.OS !== 'web' ? drag : undefined}
           onPressIn={Platform.OS === 'web' ? drag : undefined}
           delayLongPress={100}
-          style={({ pressed }) => ({
-            padding: 8,
-            marginRight: 4,
-            opacity: pressed ? 0.6 : 1,
-            cursor: Platform.OS === 'web' ? 'grab' : undefined,
-          } as any)}
+          style={({ pressed }) =>
+            ({
+              padding: 8,
+              marginRight: 4,
+              opacity: pressed ? 0.6 : 1,
+              cursor: Platform.OS === 'web' ? 'grab' : undefined,
+            }) as any
+          }
         >
-          <Ionicons name="reorder-three" size={24} color="rgba(93, 78, 64, 0.6)" />
+          <Ionicons
+            name="reorder-three"
+            size={24}
+            color="rgba(93, 78, 64, 0.6)"
+          />
         </Pressable>
       )}
 
@@ -125,7 +137,13 @@ export const GroceryItemRow = ({ item, onToggle, drag, isActive, showReorder }: 
             {quantity ? `${quantity} ${item.name}` : item.name}
           </Text>
           {item.recipe_sources.length > 0 && (
-            <Text style={{ fontSize: 12, color: 'rgba(93, 78, 64, 0.7)', marginTop: 3 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                color: 'rgba(93, 78, 64, 0.7)',
+                marginTop: 3,
+              }}
+            >
               {item.recipe_sources.join(' · ')}
             </Text>
           )}

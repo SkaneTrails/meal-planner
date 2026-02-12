@@ -1,5 +1,6 @@
 """Tests for api/storage/recipe_storage.py and api/storage/recipe_queries.py."""
 
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
@@ -250,6 +251,7 @@ class TestSaveRecipe:
         assert result.id == "new_doc_id"
         assert result.title == "Test Recipe"
         mock_doc_ref.set.assert_called_once()
+        assert mock_doc_ref.set.call_args[1]["merge"] is True
 
     def test_saves_with_custom_id(self) -> None:
         """Should use custom recipe_id when provided."""
@@ -271,6 +273,15 @@ class TestSaveRecipe:
         mock_db = MagicMock()
         mock_doc_ref = MagicMock()
         mock_doc_ref.id = "enhanced_id"
+        mock_existing_doc = MagicMock()
+        mock_existing_doc.exists = True
+        mock_existing_doc.to_dict.return_value = {
+            "title": "Original Title",
+            "ingredients": ["flour"],
+            "instructions": ["Mix"],
+            "created_at": datetime(2025, 1, 1, tzinfo=UTC),
+        }
+        mock_doc_ref.get.return_value = mock_existing_doc
         mock_db.collection.return_value.document.return_value = mock_doc_ref
 
         recipe = RecipeCreate(title="Enhanced", url="https://example.com")
@@ -282,14 +293,145 @@ class TestSaveRecipe:
                 enhancement=EnhancementMetadata(enhanced=True, changes_made=["Added spices", "Fixed instructions"]),
             )
 
-        # Check the data passed to set()
         call_args = mock_doc_ref.set.call_args[0][0]
         assert call_args["enhanced"] is True
         assert call_args["changes_made"] == ["Added spices", "Fixed instructions"]
+        assert call_args["show_enhanced"] is False
+        assert call_args["enhancement_reviewed"] is False
 
-        # Check returned recipe
         assert result.enhanced is True
         assert result.changes_made == ["Added spices", "Fixed instructions"]
+
+    def test_snapshots_original_on_enhancement(self) -> None:
+        """Should snapshot original recipe data into 'original' field when enhancing."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "recipe_id"
+        mock_existing_doc = MagicMock()
+        mock_existing_doc.exists = True
+        mock_existing_doc.to_dict.return_value = {
+            "title": "Original Title",
+            "ingredients": ["100g flour", "2 eggs"],
+            "instructions": ["Mix flour", "Add eggs"],
+            "servings": 4,
+            "prep_time": 10,
+            "cook_time": 30,
+            "total_time": 40,
+            "image_url": "https://example.com/image.jpg",
+            "created_at": datetime(2025, 1, 1, tzinfo=UTC),
+        }
+        mock_doc_ref.get.return_value = mock_existing_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        enhanced_recipe = RecipeCreate(
+            title="Enhanced Title", url="https://example.com", ingredients=["150g flour", "3 eggs"]
+        )
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = save_recipe(
+                enhanced_recipe,
+                recipe_id="recipe_id",
+                enhancement=EnhancementMetadata(enhanced=True, changes_made=["Updated quantities"]),
+            )
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        original = call_args["original"]
+        assert original["title"] == "Original Title"
+        assert original["ingredients"] == ["100g flour", "2 eggs"]
+        assert original["instructions"] == ["Mix flour", "Add eggs"]
+        assert original["servings"] == 4
+        assert original["image_url"] == "https://example.com/image.jpg"
+
+        assert result.original is not None
+        assert result.original.title == "Original Title"
+        assert result.original.ingredients == ["100g flour", "2 eggs"]
+        assert result.original.servings == 4
+
+    def test_preserves_created_at_on_enhancement(self) -> None:
+        """Should keep the original created_at when enhancing an existing recipe."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "recipe_id"
+        original_created = datetime(2025, 1, 15, tzinfo=UTC)
+        mock_existing_doc = MagicMock()
+        mock_existing_doc.exists = True
+        mock_existing_doc.to_dict.return_value = {
+            "title": "Original",
+            "ingredients": [],
+            "instructions": [],
+            "created_at": original_created,
+        }
+        mock_doc_ref.get.return_value = mock_existing_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        recipe = RecipeCreate(title="Enhanced", url="https://example.com")
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = save_recipe(recipe, recipe_id="recipe_id", enhancement=EnhancementMetadata(enhanced=True))
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        assert call_args["created_at"] == original_created
+        assert result.created_at == original_created
+
+    def test_no_original_snapshot_for_new_recipe(self) -> None:
+        """Should not snapshot original when saving a new recipe (no recipe_id)."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "new_id"
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        recipe = RecipeCreate(title="New", url="https://example.com")
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            save_recipe(recipe, enhancement=EnhancementMetadata(enhanced=True))
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        assert "original" not in call_args
+
+    def test_preserves_original_on_re_enhancement(self) -> None:
+        """Should reuse existing original snapshot when re-enhancing an already-enhanced recipe."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "recipe_id"
+        true_original = {
+            "title": "True Original",
+            "ingredients": ["100g flour"],
+            "instructions": ["Mix"],
+            "servings": 2,
+            "prep_time": 5,
+            "cook_time": 20,
+            "total_time": 25,
+            "image_url": "https://example.com/original.jpg",
+        }
+        mock_existing_doc = MagicMock()
+        mock_existing_doc.exists = True
+        mock_existing_doc.to_dict.return_value = {
+            "title": "First Enhanced Title",
+            "ingredients": ["150g flour"],
+            "instructions": ["Mix well"],
+            "original": true_original,
+            "enhanced": True,
+            "created_at": datetime(2025, 1, 1, tzinfo=UTC),
+        }
+        mock_doc_ref.get.return_value = mock_existing_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        re_enhanced = RecipeCreate(title="Second Enhanced Title", url="https://example.com", ingredients=["200g flour"])
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = save_recipe(
+                re_enhanced,
+                recipe_id="recipe_id",
+                enhancement=EnhancementMetadata(enhanced=True, changes_made=["Further improvements"]),
+            )
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        assert call_args["original"]["title"] == "True Original"
+        assert call_args["original"]["ingredients"] == ["100g flour"]
+        assert call_args["title"] == "Second Enhanced Title"
+
+        assert result.original is not None
+        assert result.original.title == "True Original"
 
     def test_does_not_include_false_enhanced(self) -> None:
         """Should not include enhanced=False in saved data."""

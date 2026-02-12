@@ -22,14 +22,7 @@ This skill activates when:
 
 After every `git push` to a PR branch, do ALL of the following **in order**:
 
-### Step 1: Copilot review (automated)
-
-Copilot review is triggered automatically by the `copilot-review.yml` GitHub Actions workflow
-on PR open and `ready_for_review`. There is no reliable CLI command to request it manually.
-
-See [Section 8](#8-copilot-review-automation) for details.
-
-### Step 2: Fetch and present review comments
+### Step 1: Fetch and present review comments
 
 **Always run BOTH of these commands:**
 
@@ -401,19 +394,6 @@ After addressing comments and fixing CI issues:
 ---
 
 ## 8. Creating PRs
-
-### Copilot review automation
-
-Copilot review is requested automatically via GitHub Actions (`.github/workflows/copilot-review.yml`).
-There is **no reliable CLI command** to request Copilot review:
-
-- `gh pr create --reviewer copilot` → fails with "'copilot' not found", aborts PR creation
-- `gh pr edit <PR> --add-reviewer copilot` → unreliable, sometimes works but not guaranteed
-
-The workflow uses the [gh-copilot-review](https://github.com/ChrisCarini/gh-copilot-review) extension
-and triggers on `opened`, `ready_for_review`, and `reopened` events.
-
-> **Requires** a fine-grained PAT secret (`GH_TOKEN_COPILOT_REVIEW`) with `Pull requests: Read and write` permission.
 
 ### Multi-line bodies (PowerShell)
 

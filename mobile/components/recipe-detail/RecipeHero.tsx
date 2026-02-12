@@ -1,11 +1,27 @@
-import React from 'react';
-import { View, Text, Pressable, Animated, ActivityIndicator } from 'react-native';
-import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, spacing, fontFamily, fontSize, letterSpacing, borderRadius } from '@/lib/theme';
+import React from 'react';
+import {
+  ActivityIndicator,
+  Animated,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  letterSpacing,
+  spacing,
+} from '@/lib/theme';
+import {
+  PLACEHOLDER_BLURHASH,
+  PLACEHOLDER_IMAGE,
+} from './recipe-detail-constants';
 import { ThumbRating } from './ThumbRating';
-import { PLACEHOLDER_BLURHASH, PLACEHOLDER_IMAGE } from './recipe-detail-constants';
 
 interface RecipeHeroProps {
   title: string;
@@ -59,7 +75,7 @@ export const RecipeHero = ({
       source={{ uri: imageUrl || PLACEHOLDER_IMAGE }}
       style={{ width: '100%', height: headerHeight }}
       contentFit="cover"
-      placeholder={PLACEHOLDER_BLURHASH}
+      placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
       transition={400}
     />
 
@@ -75,8 +91,26 @@ export const RecipeHero = ({
         paddingHorizontal: spacing.xl,
       }}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Text style={{ fontSize: fontSize['4xl'], fontFamily: fontFamily.display, color: colors.white, letterSpacing: letterSpacing.tight, flex: 1, marginRight: spacing.md, textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 2 }, textShadowRadius: 4 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: fontSize['4xl'],
+            fontFamily: fontFamily.display,
+            color: colors.white,
+            letterSpacing: letterSpacing.tight,
+            flex: 1,
+            marginRight: spacing.md,
+            textShadowColor: 'rgba(0, 0, 0, 0.5)',
+            textShadowOffset: { width: 1, height: 2 },
+            textShadowRadius: 4,
+          }}
+        >
           {title}
         </Text>
         <ThumbRating
@@ -95,7 +129,9 @@ export const RecipeHero = ({
         position: 'absolute',
         top: 60,
         right: spacing.lg,
-        backgroundColor: pressed ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.3)',
+        backgroundColor: pressed
+          ? 'rgba(255, 255, 255, 0.45)'
+          : 'rgba(255, 255, 255, 0.3)',
         borderRadius: borderRadius.xl,
         width: 44,
         height: 44,

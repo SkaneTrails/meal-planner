@@ -156,6 +156,33 @@ resource "google_firestore_index" "recipes_shared_not_owned" {
   }
 }
 
+# Recipes collection — shared recipe count with hidden filter (visibility + household_id != X + hidden)
+resource "google_firestore_index" "recipes_shared_not_owned_hidden" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "hidden"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "visibility"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "household_id"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "__name__"
+    order      = "ASCENDING"
+  }
+}
+
 # Meal plans collection - query by week
 resource "google_firestore_index" "meal_plans_by_week" {
   project    = var.project

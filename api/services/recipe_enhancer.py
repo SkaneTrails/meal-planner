@@ -12,9 +12,9 @@ import os
 import re
 import warnings
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Never
 
-from api.services.prompt_loader import load_system_prompt
+from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
 from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
 
 if TYPE_CHECKING:
@@ -43,29 +43,20 @@ class EnhancementError(Exception):
     """Raised when recipe enhancement fails."""
 
 
-class EnhancementDisabledError(Exception):
-    """Raised when enhancement is disabled."""
-
-
-def is_enhancement_enabled() -> bool:
-    """
-    Check if recipe enhancement is enabled.
-
-    Currently disabled - set ENABLE_RECIPE_ENHANCEMENT=true to enable.
-    """
-    return os.getenv("ENABLE_RECIPE_ENHANCEMENT", "false").lower() == "true"
+class EnhancementConfigError(EnhancementError):
+    """Raised when enhancement is unavailable due to missing configuration."""
 
 
 def get_genai_client() -> genai_module.Client:
     """Get configured Gemini client."""
     if not GENAI_AVAILABLE:
         msg = "google-genai is not installed. Install with: uv add google-genai"
-        raise EnhancementError(msg)
+        raise EnhancementConfigError(msg)
 
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         msg = "GOOGLE_API_KEY environment variable not set"
-        raise EnhancementError(msg)
+        raise EnhancementConfigError(msg)
 
     return genai.Client(api_key=api_key)
 
@@ -93,6 +84,34 @@ def _parse_instructions(instructions: str) -> list[str]:
     if len(parts) == 1:
         parts = instructions.split("\n\n")
     return [p.strip() for p in parts if p.strip()]
+
+
+def _raise_unsupported_ingredients_type(ingredients: Any) -> Never:
+    """Raise EnhancementError for unsupported ingredient types."""
+    msg = f"Unsupported ingredients type from Gemini: {type(ingredients).__name__}"
+    raise EnhancementError(msg)
+
+
+def _normalize_ingredients(ingredients: list[Any]) -> list[str]:
+    """Ensure every ingredient is a plain string.
+
+    Gemini sometimes returns structured objects like
+    ``{"item": "Salt", "quantity": "1 tsp", "unit": ""}``
+    instead of flat strings. This flattens them.
+    """
+    result: list[str] = []
+    for ing in ingredients:
+        if isinstance(ing, str):
+            result.append(ing)
+        elif isinstance(ing, dict):
+            quantity = str(ing.get("quantity", "")).strip()
+            unit = str(ing.get("unit", "")).strip()
+            item = str(ing.get("item") or ing.get("name", "")).strip()
+            parts = [p for p in (quantity, unit, item) if p]
+            result.append(" ".join(parts) if parts else str(ing))
+        else:
+            result.append(str(ing))
+    return result
 
 
 def _validate_response(response: Any) -> str:
@@ -130,27 +149,25 @@ def _flatten_metadata(enhanced: dict[str, Any]) -> None:
                 enhanced[key] = metadata[key]
 
 
-def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL) -> dict[str, Any]:
+def enhance_recipe(
+    recipe: dict[str, Any], *, model: str = DEFAULT_MODEL, language: str = DEFAULT_LANGUAGE
+) -> dict[str, Any]:
     """
     Enhance a recipe using Gemini AI.
 
     Args:
         recipe: Original recipe dict with title, ingredients, instructions
         model: Gemini model to use (default: gemini-2.5-flash)
+        language: Language code for locale-specific rules (default: sv)
 
     Returns:
         Enhanced recipe dict with improved ingredients, instructions, tips
 
     Raises:
-        EnhancementDisabledError: If enhancement is disabled
         EnhancementError: If enhancement fails
     """
-    if not is_enhancement_enabled():
-        msg = "Recipe enhancement is currently disabled"
-        raise EnhancementDisabledError(msg)
-
     client = get_genai_client()
-    system_prompt = load_system_prompt()
+    system_prompt = load_system_prompt(language)
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
 
@@ -169,6 +186,18 @@ def enhance_recipe(recipe: dict[str, Any], *, model: str = DEFAULT_MODEL) -> dic
         # Ensure instructions is a list
         if isinstance(enhanced.get("instructions"), str):
             enhanced["instructions"] = _parse_instructions(enhanced["instructions"])
+
+        # Normalize ingredients to plain strings (Gemini may return dicts)
+        ingredients = enhanced.get("ingredients")
+        if ingredients:
+            if isinstance(ingredients, list):
+                enhanced["ingredients"] = _normalize_ingredients(ingredients)
+            elif isinstance(ingredients, str):
+                enhanced["ingredients"] = _normalize_ingredients(
+                    [part.strip() for part in ingredients.splitlines() if part.strip()]
+                )
+            else:
+                _raise_unsupported_ingredients_type(ingredients)
 
         # Add timestamps and preserve original fields
         enhanced["updated_at"] = datetime.now(UTC)

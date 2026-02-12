@@ -90,7 +90,7 @@ const sv: Translations = {
   },
 
   home: {
-    greeting: 'God morgon',  // Default fallback
+    greeting: 'God morgon', // Default fallback
     greetingMorning: 'God morgon',
     greetingAfternoon: 'God eftermiddag',
     greetingEvening: 'God kväll',
@@ -140,7 +140,8 @@ const sv: Translations = {
     noMatchesFound: 'Inga träffar',
     emptyLibrary: 'Din receptbok är tom',
     tryAdjusting: 'Prova att ändra din sökning eller dina filter',
-    startBuilding: 'Börja bygga din samling genom att lägga till dina favoritrecept',
+    startBuilding:
+      'Börja bygga din samling genom att lägga till dina favoritrecept',
     addFirstRecipe: 'Lägg till ditt första recept',
   },
 
@@ -158,6 +159,26 @@ const sv: Translations = {
     viewSource: 'Visa källa',
     showOriginal: 'Visa original',
     showEnhanced: 'Visa förbättrad',
+    reviewBanner: 'Det här receptet har förbättrats av AI',
+    reviewBannerDescription:
+      'Granska ändringarna och bestäm om du vill behålla dem',
+    approveEnhancement: 'Behåll förbättrad',
+    rejectEnhancement: 'Använd original',
+    enhancementApproved: 'Förbättring godkänd',
+    enhancementApprovedMessage: 'Den förbättrade versionen visas som standard',
+    enhancementRejected: 'Förbättring avvisad',
+    enhancementRejectedMessage: 'Originalversionen visas som standard',
+    reviewFailed: 'Kunde inte spara din granskning',
+    cannotReviewEnhancement: 'Kan inte granska',
+    cannotReviewEnhancementMessage:
+      'Kopiera receptet till ditt hushåll först för att granska förbättringen.',
+    enhanceRecipe: 'Förbättra med AI',
+    enhanceConfirm:
+      'Använda AI för att förbättra receptet med bättre instruktioner, exakta mått och lagningstips?',
+    enhance: 'Förbättra',
+    enhanceSuccess: 'Recept förbättrat',
+    enhanceSuccessMessage: 'Receptet har förbättrats av AI',
+    enhanceFailed: 'Kunde inte förbättra receptet',
     addToMealPlan: 'Lägg till i matsedel',
     thisWeek: 'Denna vecka',
     nextWeek: 'Nästa vecka',
@@ -190,7 +211,8 @@ const sv: Translations = {
     chooseOption: 'Välj ett alternativ',
     takePhoto: 'Ta foto',
     chooseFromLibrary: 'Välj från bibliotek',
-    chooseFromLibraryOrUrl: 'Klicka OK för att ange en URL, eller Avbryt för att välja en fil från din dator.',
+    chooseFromLibraryOrUrl:
+      'Klicka OK för att ange en URL, eller Avbryt för att välja en fil från din dator.',
     enterUrl: 'Ange URL',
     permissionNeeded: 'Behörighet krävs',
     cameraPermission: 'Kamerabehörighet krävs för att ta foton',
@@ -207,7 +229,8 @@ const sv: Translations = {
     pleaseWait: 'Vänta',
     loadingAccount: 'Laddar din kontoinformation. Försök igen om en stund.',
     cannotRate: 'Kan inte betygsätta',
-    cannotRateMessage: 'Kopiera receptet till ditt hushåll först för att betygsätta.',
+    cannotRateMessage:
+      'Kopiera receptet till ditt hushåll först för att betygsätta.',
     failedToUpdateRating: 'Kunde inte uppdatera betyg',
     deleteRecipe: 'Ta bort recept',
     deleteConfirm: 'Är du säker på att du vill ta bort "{{title}}"?',
@@ -218,7 +241,8 @@ const sv: Translations = {
     yesDelete: 'Ja, ta bort',
     keepIt: 'Nej, behåll',
     cannotEdit: 'Kan inte redigera',
-    cannotEditMessage: 'Kopiera receptet till ditt hushåll först för att göra ändringar.',
+    cannotEditMessage:
+      'Kopiera receptet till ditt hushåll först för att göra ändringar.',
     couldNotOpenUrl: 'Kunde inte öppna receptets URL',
     shareMessage: 'Kolla in det här receptet: {{title}}\n\n{{url}}',
     copyToHousehold: 'Kopiera till ditt hushåll',
@@ -240,7 +264,8 @@ const sv: Translations = {
     selectMeals: 'Välj måltider',
     selectMealsSubtitle: 'Välj vilka måltider som ska ingå i din inköpslista',
     noMealsSelected: 'Inga måltider valda',
-    noMealsSelectedMessage: 'Välj minst en måltid för att skapa en inköpslista.',
+    noMealsSelectedMessage:
+      'Välj minst en måltid för att skapa en inköpslista.',
     failedToRemoveMeal: 'Kunde inte ta bort måltid. Försök igen.',
     failedToSaveNote: 'Kunde inte spara anteckning. Försök igen.',
     failedToSaveSelections: 'Kunde inte spara val',
@@ -281,14 +306,16 @@ const sv: Translations = {
       shuffle: 'Slumpa',
       addToPlan: 'Lägg till i plan',
       noRecipes: 'Inga {{mealType}}-recept ännu',
-      addRecipesHint: 'Lägg till recept med måltidstypen "{{mealType}}" för att använda slumpval',
+      addRecipesHint:
+        'Lägg till recept med måltidstypen "{{mealType}}" för att använda slumpval',
       servings: '{{count}} portioner',
       time: '{{count}} min',
     },
     copy: {
       title: 'Kopiera en måltid från din befintliga plan:',
       noMeals: 'Inga måltider att kopiera',
-      planFirst: 'Planera några måltider först, sedan kan du kopiera dem till andra dagar',
+      planFirst:
+        'Planera några måltider först, sedan kan du kopiera dem till andra dagar',
     },
     empty: {
       noMatches: 'Inga träffar',
@@ -320,7 +347,8 @@ const sv: Translations = {
     addItemPlaceholder: 'Lägg till en vara...',
     addButton: 'Lägg till',
     emptyList: 'Din lista är tom',
-    emptyListSubtitle: 'Lägg till måltider i din plan eller lägg till varor manuellt',
+    emptyListSubtitle:
+      'Lägg till måltider i din plan eller lägg till varor manuellt',
     clearEntireList: 'Rensa hela listan?',
     clearEntireListMessage: 'Detta tar bort alla varor från din inköpslista.',
     clear: 'Rensa',
@@ -336,14 +364,16 @@ const sv: Translations = {
       other: 'Övrigt',
     },
     noItemsInCategory: 'Inga varor ännu',
-    emptyFromMealPlan: 'Lägg till måltider i din plan för att generera en inköpslista',
+    emptyFromMealPlan:
+      'Lägg till måltider i din plan för att generera en inköpslista',
     doneSorting: 'Klar med sortering',
     sortItems: 'Sortera varor',
     reorderHintWeb: 'Dra för att ändra ordning',
     reorderHintMobile: 'Håll och dra för att ändra ordning',
     addItemLabel: 'Lägg till vara',
     addItemExamplePlaceholder: 't.ex. Mjölk, 2 liter',
-    goToMealPlan: 'Gå till Veckomeny och tryck "Skapa lista" för att generera din inköpslista från planerade måltider.',
+    goToMealPlan:
+      'Gå till Veckomeny och tryck "Skapa lista" för att generera din inköpslista från planerade måltider.',
   },
 
   settings: {
@@ -392,7 +422,8 @@ const sv: Translations = {
 
   admin: {
     accessRequired: 'Adminåtkomst krävs',
-    accessRequiredMessage: 'Du behöver superanvändarbehörighet för att komma åt detta.',
+    accessRequiredMessage:
+      'Du behöver superanvändarbehörighet för att komma åt detta.',
     title: 'Admin',
     subtitle: 'Superanvändarpanel',
     loggedInAs: 'Inloggad som',
@@ -441,13 +472,16 @@ const sv: Translations = {
     addMore: 'Lägg till fler',
     importFailed: 'Import misslyckades',
     importFailedDefault: 'Kunde inte importera receptet',
-    siteBlocked: '{{host}} blockerar automatisk import. Prova att lägga till receptet manuellt genom att kopiera ingredienser och instruktioner från webbsidan.',
-    siteNotSupported: '{{host}} stöds inte för automatisk import. Prova att lägga till receptet manuellt genom att kopiera ingredienser och instruktioner från webbsidan.',
+    siteBlocked:
+      '{{host}} blockerar automatisk import. Prova att lägga till receptet manuellt genom att kopiera ingredienser och instruktioner från webbsidan.',
+    siteNotSupported:
+      '{{host}} stöds inte för automatisk import. Prova att lägga till receptet manuellt genom att kopiera ingredienser och instruktioner från webbsidan.',
     createFailed: 'Skapande misslyckades',
     createFailedDefault: 'Kunde inte skapa receptet',
     // Manual form
     manualTitle: 'Skapa recept',
-    manualDescription: 'Fyll i detaljerna för att skapa ett nytt recept manuellt.',
+    manualDescription:
+      'Fyll i detaljerna för att skapa ett nytt recept manuellt.',
     recipeTitle: 'Recepttitel',
     titlePlaceholder: 't.ex. Pasta Carbonara',
     titleRequired: 'Ange en recepttitel',
@@ -455,7 +489,8 @@ const sv: Translations = {
     ingredients: 'Ingredienser',
     ingredientsPlaceholder: 'En ingrediens per rad\nt.ex. 200g pasta\n4 ägg',
     instructions: 'Instruktioner',
-    instructionsPlaceholder: 'Ett steg per rad\nt.ex. Koka vatten\nKoka pasta i 10 minuter',
+    instructionsPlaceholder:
+      'Ett steg per rad\nt.ex. Koka vatten\nKoka pasta i 10 minuter',
     imageOptional: 'Bild (valfritt)',
     addImage: 'Lägg till bild',
     creating: 'Skapar...',
