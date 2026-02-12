@@ -27,6 +27,9 @@ import {
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
+const HEADER_BUTTON_BG = 'rgba(93, 78, 64, 0.75)';
+const CONTENT_BOTTOM_PADDING = 100;
+
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -232,7 +235,7 @@ export default function RecipeDetailScreen() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: 'rgba(93, 78, 64, 0.75)',
+                backgroundColor: HEADER_BUTTON_BG,
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginLeft: spacing.sm,
@@ -251,7 +254,7 @@ export default function RecipeDetailScreen() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: 'rgba(93, 78, 64, 0.75)',
+                backgroundColor: HEADER_BUTTON_BG,
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: spacing.sm,
@@ -314,7 +317,7 @@ export default function RecipeDetailScreen() {
           <View
             style={{
               padding: spacing.xl,
-              paddingBottom: 100,
+              paddingBottom: CONTENT_BOTTOM_PADDING,
               maxWidth: 720,
               alignSelf: 'center',
               width: '100%',

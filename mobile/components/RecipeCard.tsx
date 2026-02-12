@@ -302,6 +302,7 @@ export const RecipeCard = ({
             style={{
               fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
+              fontWeight: fontWeight.semibold,
               color: '#3D3228',
               lineHeight: 18,
             }}
