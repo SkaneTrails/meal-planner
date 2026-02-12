@@ -215,6 +215,8 @@ def save_recipe(
         "household_id": household_id,
         "visibility": recipe.visibility if hasattr(recipe, "visibility") else "household",
         "created_by": created_by,
+        # Explicit default so Firestore WHERE hidden==false matches new recipes
+        "hidden": False,
     }
 
     # Add enhancement fields if present
