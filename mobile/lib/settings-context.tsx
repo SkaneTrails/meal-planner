@@ -19,6 +19,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { useAuth } from './hooks/use-auth';
 import {
   useAddFavoriteRecipe,
   useAddItemAtHome,
@@ -79,8 +80,12 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   const [localSettings, setLocalSettings] = useState<LocalSettings>(defaultLocalSettings);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
 
-  // Cloud state
-  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
+  // Wait for Firebase auth before firing API calls
+  const { user, loading: authLoading } = useAuth();
+  const isAuthenticated = !authLoading && !!user;
+
+  // Cloud state — only fetch when authenticated
+  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser({ enabled: isAuthenticated });
   const householdId = currentUser?.household_id ?? null;
   const { data: itemsAtHomeData, isLoading: isItemsLoading } = useItemsAtHome(householdId);
   const { data: favoritesData, isLoading: isFavoritesLoading } = useFavoriteRecipes(householdId);
@@ -138,7 +143,7 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     [localSettings, itemsAtHomeData, favoritesData, resolvedLanguage],
   );
 
-  const isLoading = isLocalLoading || isUserLoading || isItemsLoading || isFavoritesLoading || isSettingsLoading;
+  const isLoading = isLocalLoading || authLoading || isUserLoading || isItemsLoading || isFavoritesLoading || isSettingsLoading;
 
   const addItemAtHome = useCallback(
     async (item: string) => {
@@ -221,20 +226,33 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     await saveLocalSettings(newSettings);
   }, [localSettings, saveLocalSettings]);
 
+  const contextValue = useMemo<SettingsContextType>(
+    () => ({
+      settings,
+      isLoading,
+      addItemAtHome,
+      removeItemAtHome,
+      isItemAtHome,
+      setLanguage,
+      toggleFavorite,
+      isFavorite,
+      toggleShowHiddenRecipes,
+    }),
+    [
+      settings,
+      isLoading,
+      addItemAtHome,
+      removeItemAtHome,
+      isItemAtHome,
+      setLanguage,
+      toggleFavorite,
+      isFavorite,
+      toggleShowHiddenRecipes,
+    ],
+  );
+
   return (
-    <SettingsContext.Provider
-      value={{
-        settings,
-        isLoading,
-        addItemAtHome,
-        removeItemAtHome,
-        isItemAtHome,
-        setLanguage,
-        toggleFavorite,
-        isFavorite,
-        toggleShowHiddenRecipes,
-      }}
-    >
+    <SettingsContext.Provider value={contextValue}>
       {children}
     </SettingsContext.Provider>
   );
