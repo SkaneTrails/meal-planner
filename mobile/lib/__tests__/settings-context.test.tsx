@@ -39,6 +39,7 @@ let mockFavoriteRecipes: string[] = [];
 let mockHouseholdLanguage = 'en';
 
 // Store mock implementations that can be reconfigured
+const mockUseCurrentUser = vi.fn();
 const mockUseItemsAtHome = vi.fn();
 const mockUseAddItemAtHome = vi.fn();
 const mockUseRemoveItemAtHome = vi.fn();
@@ -49,10 +50,7 @@ const mockUseHouseholdSettings = vi.fn();
 const mockUseUpdateHouseholdSettings = vi.fn();
 
 vi.mock('@/lib/hooks/use-admin', () => ({
-  useCurrentUser: vi.fn(() => ({
-    data: { uid: 'test-uid', email: 'test@example.com', household_id: 'test-household' },
-    isLoading: false,
-  })),
+  useCurrentUser: (...args: unknown[]) => mockUseCurrentUser(...args),
   useItemsAtHome: (...args: unknown[]) => mockUseItemsAtHome(...args),
   useAddItemAtHome: (...args: unknown[]) => mockUseAddItemAtHome(...args),
   useRemoveItemAtHome: (...args: unknown[]) => mockUseRemoveItemAtHome(...args),
@@ -68,6 +66,9 @@ vi.unmock('@/lib/settings-context');
 
 // Must import AFTER mocks are set up
 import { SettingsProvider, useSettings } from '@/lib/settings-context';
+import { useAuth } from '@/lib/hooks/use-auth';
+
+const mockUseAuth = vi.mocked(useAuth);
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -97,6 +98,11 @@ describe('SettingsProvider', () => {
     mockItemsAtHome = [];
     mockFavoriteRecipes = [];
     mockHouseholdLanguage = 'en';
+
+    mockUseCurrentUser.mockImplementation(() => ({
+      data: { uid: 'test-uid', email: 'test@example.com', household_id: 'test-household' },
+      isLoading: false,
+    }));
 
     mockUseItemsAtHome.mockImplementation(() => ({
       data: { items_at_home: mockItemsAtHome },
@@ -423,5 +429,90 @@ describe('useSettings', () => {
     }).toThrow('useSettings must be used within a SettingsProvider');
 
     spy.mockRestore();
+  });
+});
+
+/**
+ * Regression tests for infinite re-render loop (React error #185).
+ *
+ * Bug: PR #204 added useCurrentUser() in SettingsProvider without gating on
+ * auth readiness. In production, this fired API calls before Firebase auth
+ * resolved, causing 401 errors and cascading re-renders.
+ *
+ * Fix (PR #209): Gate useCurrentUser with { enabled: isAuthenticated }.
+ */
+describe('SettingsProvider auth gate', () => {
+  it('disables useCurrentUser when auth is loading', () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      loading: true,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    expect(mockUseCurrentUser).toHaveBeenCalledWith(
+      expect.objectContaining({ enabled: false }),
+    );
+  });
+
+  it('disables useCurrentUser when user is null (not signed in)', () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      loading: false,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    expect(mockUseCurrentUser).toHaveBeenCalledWith(
+      expect.objectContaining({ enabled: false }),
+    );
+  });
+
+  it('enables useCurrentUser when authenticated', () => {
+    mockUseAuth.mockReturnValue({
+      user: { email: 'test@example.com' } as any,
+      loading: false,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    expect(mockUseCurrentUser).toHaveBeenCalledWith(
+      expect.objectContaining({ enabled: true }),
+    );
+  });
+
+  it('reports loading while auth is resolving', () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      loading: true,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    const { result } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    expect(result.current.isLoading).toBe(true);
   });
 });
