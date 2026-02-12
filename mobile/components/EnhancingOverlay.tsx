@@ -20,7 +20,13 @@ interface EnhancingOverlayProps {
 }
 
 export const EnhancingOverlay = ({ visible, message }: EnhancingOverlayProps) => (
-  <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
+  <Modal
+    visible={visible}
+    transparent
+    animationType="fade"
+    statusBarTranslucent
+    onRequestClose={() => {}}
+  >
     <View style={styles.backdrop}>
       <View style={styles.card}>
         <Ionicons name="sparkles" size={32} color="#7C3AED" />
