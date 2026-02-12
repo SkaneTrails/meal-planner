@@ -263,21 +263,9 @@ def test_parse_ingredients_extracts_quantities():
 - **Group by purpose** (dev, test, production)
 - **Document why** - add comment for non-obvious dependencies
 
-## Refactoring Triggers
-
-When you encounter these patterns, refactor immediately:
-
-- Function exceeds 50 lines → extract helpers
-- Module exceeds 500 lines → split by domain
-- Duplicate logic in 3+ places → create shared function
-- Class has >10 methods → split into multiple classes
-- Conditional complexity >3 levels → extract to functions
-- Test setup >20 lines → create fixture or factory
-
 ## Pre-Commit Checklist
 
 - [ ] Ruff passes: `uv run ruff check`
-- [ ] Tests pass: `uv run pytest --cov=api`
 - [ ] Type hints on all new functions
 - [ ] Docstrings on all public functions/classes
 - [ ] No magic numbers (extract to constants)
