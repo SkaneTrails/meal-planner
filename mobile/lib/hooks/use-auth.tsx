@@ -53,12 +53,18 @@ const isAuthConfigured =
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
+    const shouldUseMockUser = __DEV__;
+    const mockUser = { email: 'dev@localhost' } as User;
+    const authError = shouldUseMockUser
+      ? null
+      : 'Authentication is not configured. Please set Firebase and Google OAuth environment variables.';
+
     return (
       <AuthContext.Provider
         value={{
-          user: { email: 'dev@localhost' } as User,
+          user: shouldUseMockUser ? mockUser : null,
           loading: false,
-          error: null,
+          error: authError,
           signIn: async () =>
             console.warn('Auth not configured - using dev mode'),
           signOut: async () =>

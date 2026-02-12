@@ -25,6 +25,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import {
@@ -35,10 +36,12 @@ import {
 import { SettingsProvider } from '@/lib/settings-context';
 import '../global.css';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // Silently ignore on web where splash screen may not be available
+});
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     Ionicons: require('../public/fonts/Ionicons.ttf'),
     DMSans_400Regular,
@@ -56,10 +59,10 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync().catch(() => {});
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -75,34 +78,36 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
   return (
-    <AuthProvider>
-      <QueryProvider>
-        <SettingsProvider>
-          <GroceryProvider>
-            <StatusBar style="dark" />
-            <Stack
-              screenOptions={{
-                animation: 'slide_from_right',
-                contentStyle: { backgroundColor: '#E8D8C8' }, // Match background.png base color
-              }}
-            >
-              <Stack.Screen
-                name="sign-in"
-                options={{ headerShown: false, animation: 'fade' }}
-              />
-              <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false, animation: 'fade' }}
-              />
-            </Stack>
-          </GroceryProvider>
-        </SettingsProvider>
-      </QueryProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <QueryProvider>
+          <SettingsProvider>
+            <GroceryProvider>
+              <StatusBar style="dark" />
+              <Stack
+                screenOptions={{
+                  animation: 'slide_from_right',
+                  contentStyle: { backgroundColor: '#E8D8C8' }, // Match background.png base color
+                }}
+              >
+                <Stack.Screen
+                  name="sign-in"
+                  options={{ headerShown: false, animation: 'fade' }}
+                />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false, animation: 'fade' }}
+                />
+              </Stack>
+            </GroceryProvider>
+          </SettingsProvider>
+        </QueryProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
