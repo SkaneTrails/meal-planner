@@ -26,7 +26,9 @@ vi.mock('expo-router', async () => ({
 
 // Controllable mocks for admin hooks
 let mockCurrentUserData: any = null;
+let mockCurrentUserLoading = false;
 const mockMutateAsync = vi.fn().mockResolvedValue({});
+const mockUseHouseholdSettings = vi.fn().mockReturnValue({ data: null, isLoading: false });
 const mockSettingsData = {
   household_size: 4,
   default_servings: 4,
@@ -53,8 +55,8 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 vi.mock('@/lib/hooks/use-admin', () => ({
-  useCurrentUser: () => ({ data: mockCurrentUserData, isLoading: false }),
-  useHouseholdSettings: () => ({ data: mockSettingsData, isLoading: false }),
+  useCurrentUser: () => ({ data: mockCurrentUserData, isLoading: mockCurrentUserLoading }),
+  useHouseholdSettings: (...args: any[]) => mockUseHouseholdSettings(...args),
   useUpdateHouseholdSettings: () => ({
     mutateAsync: mockMutateAsync,
     isPending: false,
@@ -77,6 +79,8 @@ async function renderScreen() {
 describe('Household Settings screen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCurrentUserLoading = false;
+    mockUseHouseholdSettings.mockReturnValue({ data: mockSettingsData, isLoading: false });
   });
 
   describe('when user is a regular member', () => {
@@ -272,19 +276,34 @@ describe('Household Settings screen', () => {
     });
   });
 
-  describe('no household ID', () => {
+  describe('no route param for household ID', () => {
     beforeEach(() => {
-      mockCurrentUserData = mockCurrentUser({ role: 'admin' });
-      // Override search params to have no id
       Object.assign(mockSearchParams, { id: undefined });
     });
 
     afterEach(() => {
-      // Restore
       Object.assign(mockSearchParams, { id: 'household-abc' });
     });
 
-    it('shows invalid household ID message', async () => {
+    it('shows spinner while user is still loading', async () => {
+      mockCurrentUserData = null;
+      mockCurrentUserLoading = true;
+      await renderScreen();
+      expect(screen.queryByText('Invalid household ID')).toBeNull();
+    });
+
+    it('falls back to currentUser.household_id', async () => {
+      mockCurrentUserData = mockCurrentUser({
+        role: 'admin',
+        household_id: 'user-household-xyz',
+      });
+      await renderScreen();
+      expect(mockUseHouseholdSettings).toHaveBeenCalledWith('user-household-xyz');
+      expect(screen.queryByText('Invalid household ID')).toBeNull();
+    });
+
+    it('shows invalid household ID when user has no household', async () => {
+      mockCurrentUserData = mockCurrentUser({ role: 'admin', household_id: undefined as any });
       await renderScreen();
       expect(screen.getByText('Invalid household ID')).toBeTruthy();
     });

@@ -844,6 +844,11 @@ class TestAddFavoriteRecipe:
         response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": ""})
         assert response.status_code == 422
 
+    def test_whitespace_only_recipe_id_rejected(self, member_client: TestClient) -> None:
+        """Whitespace-only recipe_id should be rejected by validation."""
+        response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": "   "})
+        assert response.status_code == 422
+
     def test_household_not_found(self, member_client: TestClient) -> None:
         """Should return 404 when household doesn't exist."""
         with patch(

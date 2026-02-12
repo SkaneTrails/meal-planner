@@ -208,13 +208,16 @@ const DEFAULT_SETTINGS: HouseholdSettings = {
 
 export default function HouseholdSettingsScreen() {
   const router = useRouter();
-  const { id: householdId } = useLocalSearchParams<{ id: string }>();
+  const { id: paramId } = useLocalSearchParams<{ id: string }>();
 
-  const { data: remoteSettings, isLoading } = useHouseholdSettings(
+  const { data: currentUser, isLoading: userLoading } = useCurrentUser();
+  const householdId = paramId ?? currentUser?.household_id;
+
+  const { data: remoteSettings, isLoading: settingsLoading } = useHouseholdSettings(
     householdId ?? null,
   );
+  const isLoading = userLoading || settingsLoading;
   const updateSettings = useUpdateHouseholdSettings();
-  const { data: currentUser } = useCurrentUser();
   const { user } = useAuth();
   const { t } = useTranslation();
 
@@ -427,6 +430,17 @@ export default function HouseholdSettingsScreen() {
   };
 
   if (!householdId) {
+    if (userLoading) {
+      return (
+        <GradientBackground muted>
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <ActivityIndicator size="large" color={colors.accent} />
+          </View>
+        </GradientBackground>
+      );
+    }
     return (
       <GradientBackground muted>
         <View
