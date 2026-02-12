@@ -82,6 +82,9 @@ def _try_enhance(
     except EnhancementError as e:
         logger.warning("Enhancement failed for recipe_id=%s: %s", saved_recipe.id, e)
         return saved_recipe
+    except Exception:
+        logger.exception("Unexpected error during enhancement for recipe_id=%s", saved_recipe.id)
+        return saved_recipe
 
 
 async def _ingest_recipe_image(recipe: Recipe, *, household_id: str) -> Recipe:
@@ -589,7 +592,13 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
 
     except EnhancementError as e:  # pragma: no cover
         logger.exception("Failed to enhance recipe_id=%s", recipe_id)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Enhancement failed") from e
+
+    except Exception as e:  # pragma: no cover
+        logger.exception("Unexpected error enhancing recipe_id=%s", recipe_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Enhancement failed due to an unexpected error"
+        ) from e
 
 
 @router.post("/{recipe_id}/enhancement/review", status_code=status.HTTP_200_OK)
