@@ -61,7 +61,7 @@ When reading the file, also check:
 ```markdown
 # Copilot Working Context
 
-## Active
+## General
 Items not tied to a specific branch:
 - [ ] Feature idea or future work
 
@@ -142,7 +142,7 @@ When a review issue is valid but out of scope:
 
 ### After merge
 
-1. Move deferred items to `## Active > ### Discovered Issues` with `[from PR #N]` prefix
+1. Move deferred items to `## General > ### Discovered Issues` with `[from PR #N]` prefix
 2. Remove the branch section
 
 ---

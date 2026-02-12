@@ -50,7 +50,7 @@ gh api graphql -f query='
             id
             isResolved
             comments(first: 5) {
-              nodes { body path author { login } }
+              nodes { body path author { login } databaseId }
             }
           }
         }

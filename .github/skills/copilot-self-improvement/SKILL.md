@@ -167,7 +167,7 @@ When reviewing skills (on request or during health checks):
 | Up-to-date | Reflects current project state? |
 | Dependencies valid | Referenced files actually exist? |
 
-**Verdict:** ✅ Fit / 🟡 Needs attention / ❌ Needs rewrite (block on fixing per No Deferral Rule)
+**Verdict:** ✅ Fit / 🟡 Needs attention / ❌ Needs rewrite (fix structural issues NOW, not later)
 
 ---
 

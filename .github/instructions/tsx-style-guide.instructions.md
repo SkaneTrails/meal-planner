@@ -68,8 +68,6 @@ export const RecipeCard = ({ recipe, onPress }: RecipeCardProps) => {
   const handlePress = () => onPress(recipe.id);
   const totalTime = recipe.prep_time + recipe.cook_time;
 
-  if (!recipe) return null;
-
   return <View>{/* ... */}</View>;
 };
 ```
