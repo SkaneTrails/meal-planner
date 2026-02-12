@@ -6,6 +6,7 @@ export { AnimatedPressable } from './AnimatedPressable';
 export { BottomSheetModal } from './BottomSheetModal';
 export { BouncingLoader } from './BouncingLoader';
 export { EmptyState } from './EmptyState';
+export { EnhancingOverlay } from './EnhancingOverlay';
 export { ErrorBoundary } from './ErrorBoundary';
 export { FilterChip } from './FilterChip';
 export { GradientBackground } from './GradientBackground';
