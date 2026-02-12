@@ -128,7 +128,8 @@ class FavoriteRecipeAdd(BaseModel):
     def validate_recipe_id(cls, v: str) -> str:
         v = v.strip()
         if not v:
-            raise ValueError("Recipe ID cannot be empty")
+            msg = "Recipe ID cannot be empty"
+            raise ValueError(msg)
         return v
 
 
