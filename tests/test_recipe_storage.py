@@ -253,6 +253,22 @@ class TestSaveRecipe:
         mock_doc_ref.set.assert_called_once()
         assert mock_doc_ref.set.call_args[1]["merge"] is True
 
+    def test_stores_normalized_url(self) -> None:
+        """Should store normalized_url alongside the raw url."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "doc_id"
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        recipe = RecipeCreate(title="Test", url="https://Example.COM/Recipe/", ingredients=[], instructions=[])
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            save_recipe(recipe)
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        assert call_args["url"] == "https://Example.COM/Recipe/"
+        assert call_args["normalized_url"] == "https://example.com/recipe"
+
     def test_saves_with_custom_id(self) -> None:
         """Should use custom recipe_id when provided."""
         mock_db = MagicMock()
@@ -655,6 +671,29 @@ class TestUpdateRecipe:
         assert result is not None
         mock_doc_ref.update.assert_called_once()
 
+    def test_syncs_normalized_url_on_url_change(self) -> None:
+        """Should update normalized_url when URL is changed."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "h1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch(
+                "api.storage.recipe_storage.get_recipe",
+                return_value=Recipe(id="doc123", title="Test", url="https://new.example.com/recipe/"),
+            ),
+        ):
+            update_recipe("doc123", RecipeUpdate(url="https://new.example.com/recipe/"), household_id="h1")
+
+        update_data = mock_doc_ref.update.call_args[0][0]
+        assert update_data["url"] == "https://new.example.com/recipe/"
+        assert update_data["normalized_url"] == "https://new.example.com/recipe"
+
 
 class TestGetAllRecipes:
     """Tests for get_all_recipes function."""
@@ -824,6 +863,65 @@ class TestFindRecipeByUrl:
 
         assert result is not None
         assert result.title == "Found"
+
+    def test_falls_back_to_normalized_url_query(self) -> None:
+        """Should query normalized_url field when exact URL match fails."""
+        mock_db = MagicMock()
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        # First .where() (exact URL) returns nothing
+        exact_query = MagicMock()
+        exact_query.limit.return_value.stream.return_value = iter([])
+
+        # Second .where() (normalized_url) returns a match
+        normalized_doc = MagicMock()
+        normalized_doc.id = "doc456"
+        normalized_doc.to_dict.return_value = {"title": "Found via normalized", "url": "https://example.com/recipe/"}
+        normalized_query = MagicMock()
+        normalized_query.limit.return_value.stream.return_value = iter([normalized_doc])
+
+        mock_collection.where.side_effect = [exact_query, normalized_query]
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = find_recipe_by_url("https://example.com/recipe")
+
+        assert result is not None
+        assert result.title == "Found via normalized"
+        assert mock_collection.where.call_count == 2
+
+    def test_returns_none_when_no_match(self) -> None:
+        """Should return None when neither exact nor normalized URL matches."""
+        mock_db = MagicMock()
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        empty_query = MagicMock()
+        empty_query.limit.return_value.stream.return_value = iter([])
+        mock_collection.where.return_value = empty_query
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = find_recipe_by_url("https://example.com/nonexistent")
+
+        assert result is None
+
+    def test_does_not_load_all_recipes(self) -> None:
+        """Should never call get_all_recipes (the old full-scan fallback)."""
+        mock_db = MagicMock()
+        mock_collection = MagicMock()
+        mock_db.collection.return_value = mock_collection
+
+        empty_query = MagicMock()
+        empty_query.limit.return_value.stream.return_value = iter([])
+        mock_collection.where.return_value = empty_query
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch("api.storage.recipe_queries.get_all_recipes") as mock_get_all,
+        ):
+            find_recipe_by_url("https://example.com/recipe")
+
+        mock_get_all.assert_not_called()
 
 
 class TestSearchRecipes:
