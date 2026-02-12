@@ -13,12 +13,10 @@ import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import {
-  borderRadius,
   colors,
   fontFamily,
   fontSize,
   fontWeight,
-  letterSpacing,
   shadows,
 } from '@/lib/theme';
 import type { DietLabel, Recipe } from '@/lib/types';

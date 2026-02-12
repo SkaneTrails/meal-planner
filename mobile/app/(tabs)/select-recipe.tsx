@@ -11,13 +11,7 @@ import {
   type TabType,
   useSelectRecipeState,
 } from '@/lib/hooks/useSelectRecipeState';
-import {
-  borderRadius,
-  colors,
-  fontFamily,
-  fontSize,
-  spacing,
-} from '@/lib/theme';
+import { fontFamily, fontSize, spacing } from '@/lib/theme';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
 
@@ -32,8 +26,6 @@ export default function SelectRecipeScreen() {
     activeTab,
     setActiveTab,
     shuffleRandom,
-    handleRemoveMeal,
-    removeMeal,
   } = state;
 
   const renderActiveTab = () => {

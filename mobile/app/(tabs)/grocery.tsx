@@ -13,7 +13,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import {
   AnimatedPressable,
   GradientBackground,
@@ -29,7 +29,6 @@ import {
   colors,
   fontFamily,
   fontSize,
-  fontWeight,
   letterSpacing,
   spacing,
 } from '@/lib/theme';
@@ -42,8 +41,7 @@ import {
 
 export default function GroceryScreen() {
   const router = useRouter();
-  const { checkedItems, setCheckedItems, clearChecked, refreshFromStorage } =
-    useGroceryState();
+  const { checkedItems, setCheckedItems, clearChecked } = useGroceryState();
   const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);

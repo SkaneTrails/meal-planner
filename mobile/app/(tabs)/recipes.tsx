@@ -20,7 +20,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import type { DietLabel, MealLabel } from '@/lib/types';
 
 if (
