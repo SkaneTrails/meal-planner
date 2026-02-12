@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { BouncingLoader, GradientBackground } from '@/components';
+import { BouncingLoader, EnhancingOverlay, GradientBackground } from '@/components';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
@@ -386,6 +386,8 @@ export default function RecipeDetailScreen() {
         onClose={() => setShowUrlModal(false)}
         onSave={saveImageUrl}
       />
+
+      <EnhancingOverlay visible={isEnhancing} message={t('recipe.enhancing')} />
     </GradientBackground>
   );
 }
