@@ -46,6 +46,14 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);
   },
+  FilterChip: ({ label, selected, onPress }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', {
+      onClick: onPress,
+      'aria-pressed': selected,
+      'data-testid': `chip-${label}`,
+    }, label);
+  },
 }));
 
 // Mock @/lib/alert

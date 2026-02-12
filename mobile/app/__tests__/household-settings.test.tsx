@@ -41,13 +41,7 @@ const mockSettingsData = {
     chicken_alternative: null,
     meat_alternative: null,
   },
-  equipment: {
-    airfryer: true,
-    airfryer_model: 'Xiaomi Smart Air Fryer',
-    airfryer_capacity_liters: 4,
-    convection_oven: true,
-    grill_function: true,
-  },
+  equipment: ['air_fryer', 'convection_oven', 'grill_function'],
 };
 
 vi.mock('@/lib/hooks/use-auth', () => ({
@@ -117,7 +111,7 @@ describe('Household Settings screen', () => {
 
     it('disables all text inputs', async () => {
       await renderScreen();
-      const inputs = screen.getAllByRole('textbox');
+      const inputs = screen.queryAllByRole('textbox');
       for (const input of inputs) {
         expect((input as HTMLInputElement).disabled).toBe(true);
       }

@@ -15,7 +15,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { AnimatedPressable, GradientBackground } from '@/components';
+import { AnimatedPressable, FilterChip, GradientBackground } from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
   useAddMember,
@@ -185,6 +185,21 @@ const RadioGroup = <T extends string>({
   );
 };
 
+/**
+ * Equipment categories with their item keys.
+ * Mirrors the API catalog in api/models/equipment.py.
+ * To add equipment: add the key here + add i18n translations.
+ */
+const EQUIPMENT_CATEGORIES = [
+  {
+    key: 'appliances',
+    items: ['air_fryer', 'stand_mixer', 'food_processor', 'immersion_blender', 'pressure_cooker', 'slow_cooker', 'sous_vide'],
+  },
+  { key: 'oven_features', items: ['convection_oven', 'grill_function', 'steam_oven'] },
+  { key: 'cookware', items: ['dutch_oven', 'cast_iron_skillet', 'wok'] },
+  { key: 'tools', items: ['probe_thermometer', 'kitchen_torch'] },
+] as const;
+
 const DEFAULT_SETTINGS: HouseholdSettings = {
   household_size: 2,
   default_servings: 2,
@@ -197,13 +212,7 @@ const DEFAULT_SETTINGS: HouseholdSettings = {
     chicken_alternative: null,
     meat_alternative: null,
   },
-  equipment: {
-    airfryer: false,
-    airfryer_model: null,
-    airfryer_capacity_liters: null,
-    convection_oven: true,
-    grill_function: true,
-  },
+  equipment: [],
 };
 
 export default function HouseholdSettingsScreen() {
@@ -317,10 +326,7 @@ export default function HouseholdSettingsScreen() {
           ...DEFAULT_SETTINGS.dietary,
           ...(remoteSettings.dietary ?? {}),
         },
-        equipment: {
-          ...DEFAULT_SETTINGS.equipment,
-          ...(remoteSettings.equipment ?? {}),
-        },
+        equipment: Array.isArray(remoteSettings.equipment) ? remoteSettings.equipment : [],
       });
     }
   }, [remoteSettings]);
@@ -359,13 +365,12 @@ export default function HouseholdSettingsScreen() {
     setHasChanges(true);
   };
 
-  const updateEquipment = <K extends keyof HouseholdSettings['equipment']>(
-    key: K,
-    value: HouseholdSettings['equipment'][K],
-  ) => {
+  const toggleEquipment = (key: string) => {
     setSettings((prev) => ({
       ...prev,
-      equipment: { ...prev.equipment, [key]: value },
+      equipment: prev.equipment.includes(key)
+        ? prev.equipment.filter((k) => k !== key)
+        : [...prev.equipment, key],
     }));
     setHasChanges(true);
   };
@@ -1229,155 +1234,37 @@ export default function HouseholdSettingsScreen() {
                   ...shadows.sm,
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: spacing.lg,
-                  }}
-                >
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontWeight: fontWeight.medium,
-                        color: colors.text.inverse,
-                      }}
-                    >
-                      {t('householdSettings.equipment.airfryer')}
-                    </Text>
+                {EQUIPMENT_CATEGORIES.map(({ key, items }) => (
+                  <View key={key} style={{ marginBottom: spacing.lg }}>
                     <Text
                       style={{
                         fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                      }}
-                    >
-                      {t('householdSettings.equipment.airfryerDesc')}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.equipment.airfryer}
-                    onValueChange={(value) =>
-                      updateEquipment('airfryer', value)
-                    }
-                    disabled={!canEdit}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                  />
-                </View>
-
-                {settings.equipment.airfryer && (
-                  <View
-                    style={{
-                      backgroundColor: colors.bgLight,
-                      borderRadius: borderRadius.md,
-                      padding: spacing.md,
-                      marginBottom: spacing.lg,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
+                        fontWeight: fontWeight.semibold,
+                        color: colors.text.muted,
                         marginBottom: spacing.sm,
+                        textTransform: 'uppercase',
                       }}
                     >
-                      {t('householdSettings.equipment.model')}
+                      {t(`householdSettings.equipment.categories.${key}`)}
                     </Text>
-                    <TextInput
-                      value={settings.equipment.airfryer_model ?? ''}
-                      onChangeText={(value) =>
-                        updateEquipment('airfryer_model', value || null)
-                      }
-                      editable={canEdit}
-                      placeholder={t(
-                        'householdSettings.equipment.modelPlaceholder',
-                      )}
+                    <View
                       style={{
-                        backgroundColor: colors.white,
-                        borderRadius: borderRadius.md,
-                        padding: spacing.md,
-                        fontSize: fontSize.md,
-                        color: colors.text.inverse,
-                        borderWidth: 1,
-                        borderColor: colors.border,
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        gap: spacing.sm,
                       }}
-                    />
+                    >
+                      {items.map((item) => (
+                        <FilterChip
+                          key={item}
+                          label={t(`householdSettings.equipment.items.${item}`)}
+                          selected={settings.equipment.includes(item)}
+                          onPress={() => canEdit && toggleEquipment(item)}
+                        />
+                      ))}
+                    </View>
                   </View>
-                )}
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: spacing.lg,
-                  }}
-                >
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontWeight: fontWeight.medium,
-                        color: colors.text.inverse,
-                      }}
-                    >
-                      {t('householdSettings.equipment.convectionOven')}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                      }}
-                    >
-                      {t('householdSettings.equipment.convectionDesc')}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.equipment.convection_oven}
-                    onValueChange={(value) =>
-                      updateEquipment('convection_oven', value)
-                    }
-                    disabled={!canEdit}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontWeight: fontWeight.medium,
-                        color: colors.text.inverse,
-                      }}
-                    >
-                      {t('householdSettings.equipment.grillFunction')}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                      }}
-                    >
-                      {t('householdSettings.equipment.grillDesc')}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.equipment.grill_function}
-                    onValueChange={(value) =>
-                      updateEquipment('grill_function', value)
-                    }
-                    disabled={!canEdit}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                  />
-                </View>
+                ))}
               </View>
             </View>
           </ScrollView>

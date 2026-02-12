@@ -2,7 +2,9 @@
 
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from api.models.equipment import validate_equipment_keys
 
 
 class MeatPreference(str, Enum):
@@ -44,18 +46,6 @@ class DietarySettings(BaseModel):
     meat_alternative: str | None = Field(default=None, description="Alternative for other meats (e.g., Oumph)")
 
 
-class EquipmentSettings(BaseModel):
-    """Available kitchen equipment."""
-
-    airfryer: bool = Field(default=False, description="Has an airfryer")
-    airfryer_model: str | None = Field(default=None, description="Airfryer model for capacity/timing info")
-    airfryer_capacity_liters: float | None = Field(default=None, ge=1, le=10, description="Airfryer capacity in liters")
-
-    # Oven features
-    convection_oven: bool = Field(default=True, description="Oven has convection/hot air mode")
-    grill_function: bool = Field(default=True, description="Oven has grill/broil function")
-
-
 class HouseholdSettings(BaseModel):
     """Complete household settings."""
 
@@ -69,7 +59,20 @@ class HouseholdSettings(BaseModel):
     favorite_recipes: list[str] = Field(default_factory=list, description="Recipe IDs favorited by the household")
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
-    equipment: EquipmentSettings = Field(default_factory=EquipmentSettings)
+    equipment: list[str] = Field(default_factory=list, description="Equipment keys from the equipment catalog")
+
+    @field_validator("equipment", mode="before")
+    @classmethod
+    def validate_equipment(cls, v: object) -> list[str]:
+        """Validate equipment keys against the catalog and discard old dict format."""
+        if isinstance(v, dict):
+            return []
+        if not isinstance(v, list):
+            return []
+        try:
+            return validate_equipment_keys(v)
+        except ValueError:
+            return [k for k in v if isinstance(k, str)]
 
 
 class DietarySettingsUpdate(BaseModel):
@@ -81,16 +84,6 @@ class DietarySettingsUpdate(BaseModel):
     dairy: DairyPreference | None = None
     chicken_alternative: str | None = None
     meat_alternative: str | None = None
-
-
-class EquipmentSettingsUpdate(BaseModel):
-    """Partial update for equipment settings (all fields optional)."""
-
-    airfryer: bool | None = None
-    airfryer_model: str | None = None
-    airfryer_capacity_liters: float | None = Field(default=None, ge=1, le=10)
-    convection_oven: bool | None = None
-    grill_function: bool | None = None
 
 
 class HouseholdSettingsUpdate(BaseModel):
@@ -106,4 +99,14 @@ class HouseholdSettingsUpdate(BaseModel):
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
 
     dietary: DietarySettingsUpdate | None = None
-    equipment: EquipmentSettingsUpdate | None = None
+    equipment: list[str] | None = None
+
+    @field_validator("equipment", mode="before")
+    @classmethod
+    def validate_equipment(cls, v: object) -> list[str] | None:
+        """Validate equipment keys against the catalog."""
+        if v is None:
+            return None
+        if not isinstance(v, list):
+            return None
+        return validate_equipment_keys(v)

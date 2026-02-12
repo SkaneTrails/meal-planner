@@ -1,57 +1,35 @@
 # Kitchen Equipment
 
-## Available Equipment
+## How Equipment Works
 
-**Standard**: Stovetop (spis) and oven are always available.
+Equipment is now **dynamic** — each household selects their available equipment from a standard catalog, and the selection is injected into the Gemini enhancement prompt at runtime.
 
-**Specialty**: Only the equipment listed below. Do NOT suggest appliances not listed here (e.g., slow cooker, sous vide, instant pot, bread machine, etc.)
+### Architecture
 
----
+1. **Catalog**: `api/models/equipment.py` defines `EQUIPMENT_CATALOG` — a dict of equipment keys, each with a `category` and a `prompt_hint` (one-liner for Gemini)
+2. **Storage**: Firestore `households/{id}/settings.equipment` stores a `list[str]` of selected keys (e.g., `["air_fryer", "convection_oven", "wok"]`)
+3. **Prompt generation**: `get_equipment_prompt(keys)` builds a markdown section listing the selected equipment hints. If no equipment is selected, it tells Gemini "standard kitchen only — do not suggest specialty equipment"
+4. **Pipeline**: `enhance_recipe()` → `load_system_prompt(language, equipment=keys)` → Gemini receives the equipment context
 
-## Airfryer: Xiaomi Smart Air Fryer
+### Adding New Equipment
 
-**Specifications**:
+1. Add a key to `EQUIPMENT_CATALOG` in `api/models/equipment.py` with `category` and `prompt_hint`
+2. Add i18n translations in `mobile/lib/i18n/locales/{en,sv,it}.ts` under `equipment.items.<key>`
+3. Add the key to `EQUIPMENT_CATEGORIES` in `mobile/app/household-settings.tsx` under the correct category
+4. That's it — validation, prompt generation, and UI rendering are all derived from the catalog
 
-- Capacity: 4.5L (medium size)
-- Temperature range: 40-200°C
-- Digital/smart controls with precise temperature settings
+### Current Catalog (15 items)
 
-**Capacity constraints**:
+| Category | Keys |
+|----------|------|
+| Appliances | `air_fryer`, `stand_mixer`, `food_processor`, `immersion_blender`, `pressure_cooker`, `slow_cooker`, `sous_vide` |
+| Oven features | `convection_oven`, `grill_function`, `steam_oven` |
+| Cookware | `dutch_oven`, `cast_iron_skillet`, `wok` |
+| Tools | `probe_thermometer`, `kitchen_torch` |
 
-- Fits: 2-3 chicken breasts per batch, or ~400g protein comfortably
-- **For 4 servings**: Plan for 2 batches when cooking proteins
-- Strategy: Cook chicken in batch 1, keep warm; cook Quorn in batch 2 (faster)
+### Design Decisions
 
-**Cooking times**:
-
-- **Chicken breast**: 180°C for 10-12 minutes, then 200°C for 2-3 minutes for crispy exterior
-- **Chicken thighs**: 180°C for 15-18 minutes, flip halfway
-- **Salmon**: 180°C for 8-10 minutes
-- **Vegetables**: 180°C for 12-15 minutes, shake halfway
-
-**Benefits**: Faster, crispier results, frees up oven space for other components
-
----
-
-## Oven: IKEA FRILLESÅS Built-in Oven
-
-**Specifications**:
-
-- 5 rack positions
-- Multiple heating functions
-
-**Functions available**:
-
-- **Varmluft** (convection/hot air) - even heat, great for multiple trays
-- **Över- och undervärme** (conventional top + bottom)
-- **Grill** (top element only)
-- **Varmluft + grill** combo - crispy top with even cooking
-- **Pizza function** - higher bottom heat
-
-**Optimization tips**:
-
-- **Use varmluft at 20-25°C lower** than conventional temps (175°C instead of 200°C)
-- **Multiple trays**: With varmluft, use 2-3 racks simultaneously - vegetables on middle, protein above/below
-- **Crispy finish**: Switch to grill for last 2-3 minutes
-- **Sheet pan meals**: Varmluft ensures even browning across the whole tray
-- **Pizza function**: Good for flatbreads, tarts, or dishes needing crispy bottoms
+- **No backward compat**: Old boolean `{ airfryer: true, ... }` format is silently converted to `[]` on read
+- **No equipment API endpoint**: Catalog is a fixed dict, labels come from i18n
+- **Prompt hints are English-only**: Gemini input language doesn't need translation
+- **Categories are for UI grouping only**: Not stored in Firestore
