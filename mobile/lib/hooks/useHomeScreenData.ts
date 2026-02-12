@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { useAllRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
@@ -74,7 +74,8 @@ export const useHomeScreenData = () => {
   const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [inspirationIndex, setInspirationIndex] = useState(() => Math.floor(Math.random() * 10000));
+  const [shuffleCount, setShuffleCount] = useState(0);
+  const inspirationIdRef = useRef<string | null>(null);
   const greetingKey = useMemo(() => getGreetingKey(), []);
 
   const isLoading = recipesLoading || mealPlanLoading;
@@ -129,19 +130,25 @@ export const useHomeScreenData = () => {
     );
   }, [recipes]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: shuffleCount triggers re-pick intentionally
   const inspirationRecipe = useMemo(() => {
     if (inspirationRecipes.length === 0) return null;
-    return inspirationRecipes[inspirationIndex % inspirationRecipes.length];
-  }, [inspirationRecipes, inspirationIndex]);
+    const existing = inspirationRecipes.find(r => r.id === inspirationIdRef.current);
+    if (existing) return existing;
+    const picked = inspirationRecipes[Math.floor(Math.random() * inspirationRecipes.length)];
+    inspirationIdRef.current = picked.id;
+    return picked;
+  }, [inspirationRecipes, shuffleCount]);
 
   const shuffleInspiration = useCallback(() => {
     if (inspirationRecipes.length <= 1) return;
-    let newIndex: number;
+    let picked: Recipe;
     do {
-      newIndex = Math.floor(Math.random() * inspirationRecipes.length);
-    } while (newIndex === inspirationIndex && inspirationRecipes.length > 1);
-    setInspirationIndex(newIndex);
-  }, [inspirationRecipes.length, inspirationIndex]);
+      picked = inspirationRecipes[Math.floor(Math.random() * inspirationRecipes.length)];
+    } while (picked.id === inspirationIdRef.current && inspirationRecipes.length > 1);
+    inspirationIdRef.current = picked.id;
+    setShuffleCount(c => c + 1);
+  }, [inspirationRecipes]);
 
   const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
   const nextMeal = getNextMeal(mealPlan, recipes);

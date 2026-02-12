@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useAllRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
@@ -42,7 +42,8 @@ export const useSelectRecipeState = () => {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState(initialText || '');
-  const [randomSeed, setRandomSeed] = useState(0);
+  const [shuffleCount, setShuffleCount] = useState(0);
+  const randomIdRef = useRef<string | null>(null);
   const [copyWeekOffset, setCopyWeekOffset] = useState(0);
 
   useEffect(() => {
@@ -69,16 +70,25 @@ export const useSelectRecipeState = () => {
     });
   }, [recipes, mealType]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: randomSeed is intentionally used only as a dependency to retrigger this memo
+  // biome-ignore lint/correctness/useExhaustiveDependencies: shuffleCount triggers re-pick intentionally
   const randomRecipe = useMemo(() => {
     if (mealTypeRecipes.length === 0) return null;
-    const index = Math.floor(Math.random() * mealTypeRecipes.length);
-    return mealTypeRecipes[index];
-  }, [mealTypeRecipes, randomSeed]);
+    const existing = mealTypeRecipes.find(r => r.id === randomIdRef.current);
+    if (existing) return existing;
+    const picked = mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+    randomIdRef.current = picked.id;
+    return picked;
+  }, [mealTypeRecipes, shuffleCount]);
 
   const shuffleRandom = useCallback(() => {
-    setRandomSeed(prev => prev + 1);
-  }, []);
+    if (mealTypeRecipes.length <= 1) return;
+    let picked: Recipe;
+    do {
+      picked = mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+    } while (picked.id === randomIdRef.current && mealTypeRecipes.length > 1);
+    randomIdRef.current = picked.id;
+    setShuffleCount(c => c + 1);
+  }, [mealTypeRecipes]);
 
   const targetWeekDates = useMemo(() => {
     const targetDate = new Date(date + 'T00:00:00');
