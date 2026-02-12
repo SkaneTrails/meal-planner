@@ -5,6 +5,8 @@ import { shadows, borderRadius, colors, spacing, fontFamily, fontSize } from '@/
 import { showNotification } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
 
+const FOOTER_BOTTOM_MARGIN = 100;
+
 interface RecipeActionsFooterProps {
   url: string;
   t: TFunction;
@@ -54,7 +56,7 @@ export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFo
         justifyContent: 'center',
         paddingVertical: spacing.md,
         marginTop: spacing.md,
-        marginBottom: 100,
+        marginBottom: FOOTER_BOTTOM_MARGIN,
         backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B',
         borderRadius: borderRadius.sm,
         ...shadows.md,

@@ -3,27 +3,39 @@
  * Organized into sections: Language, Grocery List, etc.
  */
 
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  Switch,
-} from 'react-native';
-import { AnimatedPressable, GradientBackground } from '@/components';
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontSize, fontWeight, fontFamily } from '@/lib/theme';
-import { useSettings, LANGUAGES, type AppLanguage } from '@/lib/settings-context';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import { AnimatedPressable, GradientBackground } from '@/components';
+import { showNotification } from '@/lib/alert';
+import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useUpdateHouseholdLanguage } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
-import { showNotification } from '@/lib/alert';
-import { useAuth } from '@/lib/hooks/use-auth';
-import { useCurrentUser } from '@/lib/hooks/use-admin';
+import {
+  type AppLanguage,
+  LANGUAGES,
+  useSettings,
+} from '@/lib/settings-context';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 const SUGGESTED_ITEMS = [
   'salt',
@@ -57,36 +69,64 @@ const SectionHeader = ({
   iconColor = '#5D4E40',
 }: SectionHeaderProps) => {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
-      <View style={{
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    <View
+      style={{
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: spacing.md,
-      }}>
+        marginBottom: spacing.md,
+      }}
+    >
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: spacing.md,
+        }}
+      >
         <Ionicons name={icon} size={20} color={iconColor} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.text.primary }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontWeight: fontWeight.bold,
+            color: colors.text.primary,
+          }}
+        >
           {title}
         </Text>
-        <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary, marginTop: 2 }}>
+        <Text
+          style={{
+            fontSize: fontSize.sm,
+            color: colors.text.secondary,
+            marginTop: 2,
+          }}
+        >
           {subtitle}
         </Text>
       </View>
     </View>
   );
-}
+};
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
-  const { settings, addItemAtHome, removeItemAtHome, setLanguage, toggleShowHiddenRecipes } = useSettings();
-  const updateHouseholdLanguage = useUpdateHouseholdLanguage(currentUser?.household_id);
+  const {
+    settings,
+    addItemAtHome,
+    removeItemAtHome,
+    setLanguage,
+    toggleShowHiddenRecipes,
+  } = useSettings();
+  const updateHouseholdLanguage = useUpdateHouseholdLanguage(
+    currentUser?.household_id,
+  );
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 
@@ -131,7 +171,7 @@ export default function SettingsScreen() {
   };
 
   const suggestedNotAdded = SUGGESTED_ITEMS.filter(
-    item => !settings.itemsAtHome.includes(item.toLowerCase())
+    (item) => !settings.itemsAtHome.includes(item.toLowerCase()),
   );
 
   const handleLanguageChange = async (language: AppLanguage) => {
@@ -139,7 +179,7 @@ export default function SettingsScreen() {
       await setLanguage(language);
       // Write back to Firestore so other household members get the change
       updateHouseholdLanguage(language).catch(() =>
-        console.warn('Failed to sync language to household settings')
+        console.warn('Failed to sync language to household settings'),
       );
     } catch {
       showNotification(t('common.error'), t('settings.failedToChangeLanguage'));
@@ -148,30 +188,42 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground muted>
-      <View style={{ flex: 1, paddingBottom: 100 }}>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 20, paddingTop: 44, paddingBottom: 40 }}
+          contentContainerStyle={{
+            padding: 20,
+            paddingTop: 44,
+            paddingBottom: 40,
+          }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
           <View style={{ marginBottom: spacing.lg }}>
-            <Text style={{
-              fontSize: fontSize['4xl'],
-              fontFamily: fontFamily.display,
-              color: colors.text.primary,
-              letterSpacing: -0.5,
-              textShadowColor: 'rgba(0, 0, 0, 0.15)',
-              textShadowOffset: { width: 0, height: 1 },
-              textShadowRadius: 2,
-            }}>{t('settings.title')}</Text>
-            <Text style={{
-              fontSize: fontSize.lg,
-              fontFamily: fontFamily.body,
-              color: colors.text.secondary,
-              marginTop: 4,
-            }}>{t('settings.subtitle')}</Text>
+            <Text
+              style={{
+                fontSize: fontSize['4xl'],
+                fontFamily: fontFamily.display,
+                color: colors.text.primary,
+                letterSpacing: -0.5,
+                textShadowColor: 'rgba(0, 0, 0, 0.15)',
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 2,
+              }}
+            >
+              {t('settings.title')}
+            </Text>
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontFamily: fontFamily.body,
+                color: colors.text.secondary,
+                marginTop: 4,
+              }}
+            >
+              {t('settings.subtitle')}
+            </Text>
           </View>
 
           {/* Account Section - Show who's logged in first */}
@@ -183,32 +235,54 @@ export default function SettingsScreen() {
             />
 
             {/* User info card */}
-            <View style={{
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
-              marginBottom: spacing.md,
-              ...shadows.sm,
-            }}>
+            <View
+              style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                marginBottom: spacing.md,
+                ...shadows.sm,
+              }}
+            >
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24,
-                  backgroundColor: colors.bgDark,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: spacing.md,
-                }}>
-                  <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text.dark }}>
+                <View
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 24,
+                    backgroundColor: colors.bgDark,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: spacing.md,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: '600',
+                      color: colors.text.dark,
+                    }}
+                  >
                     {user?.email?.[0]?.toUpperCase() || '?'}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '600',
+                      color: colors.text.dark,
+                    }}
+                  >
                     {user?.displayName || user?.email?.split('@')[0] || 'User'}
                   </Text>
-                  <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 2 }}>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: colors.text.dark + '80',
+                      marginTop: 2,
+                    }}
+                  >
                     {user?.email}
                   </Text>
                 </View>
@@ -254,7 +328,9 @@ export default function SettingsScreen() {
             <AnimatedPressable
               onPress={() => {
                 if (currentUser?.household_id) {
-                  router.push(`/household-settings?id=${currentUser.household_id}`);
+                  router.push(
+                    `/household-settings?id=${currentUser.household_id}`,
+                  );
                 }
               }}
               disabled={userLoading || !currentUser?.household_id}
@@ -267,15 +343,31 @@ export default function SettingsScreen() {
                 backgroundColor: colors.glass.card,
                 borderRadius: borderRadius.md,
                 padding: spacing.lg,
-                opacity: userLoading ? 0.6 : currentUser?.household_id ? 1 : 0.5,
+                opacity: userLoading
+                  ? 0.6
+                  : currentUser?.household_id
+                    ? 1
+                    : 0.5,
                 ...shadows.sm,
               }}
             >
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: colors.text.dark,
+                  }}
+                >
                   {t('settings.householdSettings')}
                 </Text>
-                <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    color: colors.text.dark + '80',
+                    marginTop: 4,
+                  }}
+                >
                   {userLoading
                     ? t('settings.loadingHousehold')
                     : currentUser?.household_id
@@ -284,9 +376,16 @@ export default function SettingsScreen() {
                 </Text>
               </View>
               {userLoading ? (
-                <ActivityIndicator size="small" color={colors.text.dark + '80'} />
+                <ActivityIndicator
+                  size="small"
+                  color={colors.text.dark + '80'}
+                />
               ) : (
-                <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.text.dark + '80'}
+                />
               )}
             </AnimatedPressable>
           </View>
@@ -299,26 +398,51 @@ export default function SettingsScreen() {
               subtitle={t('settings.recipeLibraryDesc')}
             />
 
-            <View style={{
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
-              ...shadows.sm,
-            }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View
+              style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                ...shadows.sm,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
                 <View style={{ flex: 1, marginRight: spacing.md }}>
-                  <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.dark }}>
+                  <Text
+                    style={{
+                      fontSize: fontSize.md,
+                      fontWeight: fontWeight.medium,
+                      color: colors.text.dark,
+                    }}
+                  >
                     {t('settings.showHiddenRecipes')}
                   </Text>
-                  <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', marginTop: 4 }}>
+                  <Text
+                    style={{
+                      fontSize: fontSize.sm,
+                      color: colors.text.dark + '80',
+                      marginTop: 4,
+                    }}
+                  >
                     {t('settings.showHiddenRecipesDesc')}
                   </Text>
                 </View>
                 <Switch
                   value={settings.showHiddenRecipes}
                   onValueChange={toggleShowHiddenRecipes}
-                  trackColor={{ false: colors.bgDark, true: colors.accent + '80' }}
-                  thumbColor={settings.showHiddenRecipes ? colors.accent : colors.bgMid}
+                  trackColor={{
+                    false: colors.bgDark,
+                    true: colors.accent + '80',
+                  }}
+                  thumbColor={
+                    settings.showHiddenRecipes ? colors.accent : colors.bgMid
+                  }
                 />
               </View>
             </View>
@@ -332,12 +456,14 @@ export default function SettingsScreen() {
               subtitle={t('settings.languageDesc')}
             />
 
-            <View style={{
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              overflow: 'hidden',
-              ...shadows.sm,
-            }}>
+            <View
+              style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                overflow: 'hidden',
+                ...shadows.sm,
+              }}
+            >
               {LANGUAGES.map((lang, index) => {
                 const flagUrls: Record<AppLanguage, string> = {
                   en: 'https://flagcdn.com/w80/gb.png',
@@ -346,38 +472,53 @@ export default function SettingsScreen() {
                 };
 
                 return (
-                <Pressable
-                  key={lang.code}
-                  onPress={() => handleLanguageChange(lang.code)}
-                  style={({ pressed }) => ({
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    padding: spacing.md,
-                    backgroundColor: pressed ? colors.bgMid : 'transparent',
-                    borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
-                    borderBottomColor: 'rgba(93, 78, 64, 0.15)',
-                  })}
-                >
-                  <View style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    marginRight: spacing.md,
-                    backgroundColor: '#E8E8E8',
-                  }}>
-                    <Image
-                      source={{ uri: flagUrls[lang.code] }}
-                      style={{ width: 32, height: 32 }}
-                      contentFit="cover"
-                    />
-                  </View>
-                  <Text style={{ flex: 1, fontSize: fontSize.md, color: colors.text.dark }}>{lang.label}</Text>
-                  {settings.language === lang.code && (
-                    <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
-                  )}
-                </Pressable>
-              )})}
+                  <Pressable
+                    key={lang.code}
+                    onPress={() => handleLanguageChange(lang.code)}
+                    style={({ pressed }) => ({
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      padding: spacing.md,
+                      backgroundColor: pressed ? colors.bgMid : 'transparent',
+                      borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
+                      borderBottomColor: 'rgba(93, 78, 64, 0.15)',
+                    })}
+                  >
+                    <View
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        overflow: 'hidden',
+                        marginRight: spacing.md,
+                        backgroundColor: '#E8E8E8',
+                      }}
+                    >
+                      <Image
+                        source={{ uri: flagUrls[lang.code] }}
+                        style={{ width: 32, height: 32 }}
+                        contentFit="cover"
+                      />
+                    </View>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: fontSize.md,
+                        color: colors.text.dark,
+                      }}
+                    >
+                      {lang.label}
+                    </Text>
+                    {settings.language === lang.code && (
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color="#6B8E6B"
+                      />
+                    )}
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
 
@@ -392,17 +533,30 @@ export default function SettingsScreen() {
 
             {/* Current items - show first */}
             {settings.itemsAtHome.length > 0 && (
-              <View style={{
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.md,
-                marginBottom: spacing.md,
-                ...shadows.sm,
-              }}>
-                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.sm }}>
-                  {t('settings.yourItems', { count: settings.itemsAtHome.length })}
+              <View
+                style={{
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.md,
+                  marginBottom: spacing.md,
+                  ...shadows.sm,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.xs,
+                    fontWeight: fontWeight.semibold,
+                    color: colors.text.dark + '80',
+                    marginBottom: spacing.sm,
+                  }}
+                >
+                  {t('settings.yourItems', {
+                    count: settings.itemsAtHome.length,
+                  })}
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                <View
+                  style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}
+                >
                   {settings.itemsAtHome.map((item) => (
                     <Pressable
                       key={item}
@@ -410,17 +564,29 @@ export default function SettingsScreen() {
                       style={({ pressed }) => ({
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: pressed ? colors.errorBg : colors.bgDark,
+                        backgroundColor: pressed
+                          ? colors.errorBg
+                          : colors.bgDark,
                         paddingHorizontal: spacing.sm,
                         paddingVertical: spacing.xs,
                         borderRadius: borderRadius.full,
                         gap: 4,
                       })}
                     >
-                      <Text style={{ fontSize: fontSize.sm, color: colors.text.dark, textTransform: 'capitalize' }}>
+                      <Text
+                        style={{
+                          fontSize: fontSize.sm,
+                          color: colors.text.dark,
+                          textTransform: 'capitalize',
+                        }}
+                      >
                         {item}
                       </Text>
-                      <Ionicons name="close-circle" size={14} color={colors.text.dark + '60'} />
+                      <Ionicons
+                        name="close-circle"
+                        size={14}
+                        color={colors.text.dark + '60'}
+                      />
                     </Pressable>
                   ))}
                 </View>
@@ -428,14 +594,16 @@ export default function SettingsScreen() {
             )}
 
             {/* Add new item input - second */}
-            <View style={{
-              flexDirection: 'row',
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              padding: 4,
-              marginBottom: spacing.md,
-              ...shadows.sm,
-            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: 4,
+                marginBottom: spacing.md,
+                ...shadows.sm,
+              }}
+            >
               <TextInput
                 style={{
                   flex: 1,
@@ -455,7 +623,9 @@ export default function SettingsScreen() {
                 onPress={handleAddItem}
                 disabled={!newItem.trim()}
                 style={({ pressed }) => ({
-                  backgroundColor: newItem.trim() ? colors.primary : colors.bgDark,
+                  backgroundColor: newItem.trim()
+                    ? colors.primary
+                    : colors.bgDark,
                   borderRadius: borderRadius.sm,
                   padding: spacing.sm,
                   opacity: pressed ? 0.8 : 1,
@@ -464,23 +634,36 @@ export default function SettingsScreen() {
                 <Ionicons
                   name="add"
                   size={20}
-                  color={newItem.trim() ? colors.white : colors.text.inverse + '60'}
+                  color={
+                    newItem.trim() ? colors.white : colors.text.inverse + '60'
+                  }
                 />
               </Pressable>
             </View>
 
             {/* Suggested items - third */}
             {suggestedNotAdded.length > 0 && (
-              <View style={{
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.md,
-                ...shadows.sm,
-              }}>
-                <Text style={{ fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.dark + '80', marginBottom: spacing.sm }}>
+              <View
+                style={{
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.md,
+                  ...shadows.sm,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.xs,
+                    fontWeight: fontWeight.semibold,
+                    color: colors.text.dark + '80',
+                    marginBottom: spacing.sm,
+                  }}
+                >
                   {t('settings.suggestions')}
                 </Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                <View
+                  style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}
+                >
                   {suggestedNotAdded.map((item) => (
                     <Pressable
                       key={item}
@@ -488,7 +671,9 @@ export default function SettingsScreen() {
                       style={({ pressed }) => ({
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: pressed ? colors.successBg : 'transparent',
+                        backgroundColor: pressed
+                          ? colors.successBg
+                          : 'transparent',
                         paddingHorizontal: spacing.sm,
                         paddingVertical: spacing.xs,
                         borderRadius: borderRadius.full,
@@ -498,8 +683,18 @@ export default function SettingsScreen() {
                         gap: 4,
                       })}
                     >
-                      <Ionicons name="add" size={14} color={colors.text.dark + '80'} />
-                      <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', textTransform: 'capitalize' }}>
+                      <Ionicons
+                        name="add"
+                        size={14}
+                        color={colors.text.dark + '80'}
+                      />
+                      <Text
+                        style={{
+                          fontSize: fontSize.sm,
+                          color: colors.text.dark + '80',
+                          textTransform: 'capitalize',
+                        }}
+                      >
                         {item}
                       </Text>
                     </Pressable>
@@ -510,29 +705,50 @@ export default function SettingsScreen() {
 
             {/* Empty state - only show when no items */}
             {settings.itemsAtHome.length === 0 && (
-              <View style={{
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.lg,
-                alignItems: 'center',
-                marginTop: spacing.sm,
-                ...shadows.sm,
-              }}>
-                <View style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24,
-                  backgroundColor: colors.bgDark,
+              <View
+                style={{
+                  backgroundColor: colors.glass.card,
+                  borderRadius: borderRadius.md,
+                  padding: spacing.lg,
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: spacing.sm,
-                }}>
-                  <Ionicons name="basket-outline" size={24} color={colors.text.dark} />
+                  marginTop: spacing.sm,
+                  ...shadows.sm,
+                }}
+              >
+                <View
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 24,
+                    backgroundColor: colors.bgDark,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: spacing.sm,
+                  }}
+                >
+                  <Ionicons
+                    name="basket-outline"
+                    size={24}
+                    color={colors.text.dark}
+                  />
                 </View>
-                <Text style={{ fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.text.dark, marginBottom: 2 }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    fontWeight: fontWeight.semibold,
+                    color: colors.text.dark,
+                    marginBottom: 2,
+                  }}
+                >
                   {t('settings.noItemsYet')}
                 </Text>
-                <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', textAlign: 'center' }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.sm,
+                    color: colors.text.dark + '80',
+                    textAlign: 'center',
+                  }}
+                >
                   {t('settings.addItemsHint')}
                 </Text>
               </View>
@@ -562,14 +778,30 @@ export default function SettingsScreen() {
                 }}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: '600',
+                      color: colors.text.dark,
+                    }}
+                  >
                     {t('settings.adminDashboard')}
                   </Text>
-                  <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: colors.text.dark + '80',
+                      marginTop: 4,
+                    }}
+                  >
                     {t('settings.adminDashboardDesc')}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.text.dark + '80'}
+                />
               </AnimatedPressable>
             </View>
           )}
@@ -582,18 +814,55 @@ export default function SettingsScreen() {
               subtitle={t('settings.aboutDesc')}
             />
 
-            <View style={{
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
-              ...shadows.sm,
-            }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
-                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>{t('settings.version')}</Text>
-                <Text style={{ fontSize: fontSize.md, color: colors.text.dark, fontWeight: fontWeight.medium }}>1.0.0</Text>
+            <View
+              style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                ...shadows.sm,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: spacing.md,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    color: colors.text.dark + '80',
+                  }}
+                >
+                  {t('settings.version')}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    color: colors.text.dark,
+                    fontWeight: fontWeight.medium,
+                  }}
+                >
+                  1.0.0
+                </Text>
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>{t('settings.madeWith')}</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    color: colors.text.dark + '80',
+                  }}
+                >
+                  {t('settings.madeWith')}
+                </Text>
                 <Text style={{ fontSize: fontSize.md }}>❤️</Text>
               </View>
             </View>
