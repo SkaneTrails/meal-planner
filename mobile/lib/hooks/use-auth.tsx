@@ -20,6 +20,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -248,17 +249,13 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     }
   }, [user]);
 
+  const contextValue = useMemo<AuthContextType>(
+    () => ({ user, loading, error, signIn, signOut, getIdToken }),
+    [user, loading, error, signIn, signOut, getIdToken],
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        signIn,
-        signOut,
-        getIdToken,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
