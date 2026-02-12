@@ -3,7 +3,7 @@
 import re
 from datetime import datetime
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal, cast
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field, field_validator
 
@@ -28,6 +28,26 @@ def _sanitize_text(text: str, max_length: int) -> str:
     """Strip control characters and truncate to max length."""
     cleaned = _CONTROL_CHAR_RE.sub("", text)
     return cleaned[:max_length]
+
+
+def _coerce_ingredient(item: object) -> str:
+    """Coerce a single ingredient to a plain string.
+
+    Gemini sometimes returns structured dicts like
+    ``{"item": "Salt", "quantity": "1 tsp", "unit": ""}``
+    instead of flat strings.  This flattens them so Pydantic
+    validation on ``list[str]`` never fails.
+    """
+    if isinstance(item, str):
+        return item
+    if isinstance(item, dict):
+        d = cast("dict[str, Any]", item)
+        quantity = str(d.get("quantity", "")).strip()
+        unit = str(d.get("unit", "")).strip()
+        name = str(d.get("item") or d.get("name", "")).strip()
+        parts = [p for p in (quantity, unit, name) if p]
+        return " ".join(parts) if parts else str(item)
+    return str(item)
 
 
 class DietLabel(str, Enum):
@@ -136,6 +156,14 @@ class RecipeBase(BaseModel):
         default="household", description="'household' = private, 'shared' = visible to all"
     )
     created_by: str | None = Field(default=None, description="Email of user who created the recipe")
+
+    @field_validator("ingredients", mode="before")
+    @classmethod
+    def coerce_ingredient_items(cls, v: list[object]) -> list[str]:
+        """Coerce structured ingredient dicts from Gemini into plain strings."""
+        if not isinstance(v, list):
+            return v  # type: ignore[return-value]
+        return [_coerce_ingredient(item) for item in v]
 
     @field_validator("ingredients", mode="after")
     @classmethod

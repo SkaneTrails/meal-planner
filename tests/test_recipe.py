@@ -229,3 +229,62 @@ class TestRecipeInputValidation:
         assert len(recipe.ingredients) == 4
         assert len(recipe.instructions) == 2
         assert recipe.ingredients[0] == "200g spaghetti"
+
+
+class TestIngredientCoercion:
+    """Tests for before-mode ingredient coercion (dict → string)."""
+
+    def test_dict_ingredients_coerced_to_strings(self) -> None:
+        """Gemini-style structured dicts should be flattened to strings."""
+        recipe = RecipeCreate(
+            title="Test",
+            url="https://example.com",
+            ingredients=[
+                {"item": "Fennel", "quantity": "1.75", "unit": "lbs"},
+                {"item": "Olive oil", "quantity": "2", "unit": "tbsp"},
+            ],
+        )
+        assert recipe.ingredients == ["1.75 lbs Fennel", "2 tbsp Olive oil"]
+
+    def test_dict_ingredient_with_name_key(self) -> None:
+        """Dicts using 'name' instead of 'item' should also be handled."""
+        recipe = RecipeCreate(
+            title="Test", url="https://example.com", ingredients=[{"name": "Salt", "quantity": "1", "unit": "tsp"}]
+        )
+        assert recipe.ingredients == ["1 tsp Salt"]
+
+    def test_dict_ingredient_missing_quantity(self) -> None:
+        """Dicts without quantity should still produce a valid string."""
+        recipe = RecipeCreate(
+            title="Test", url="https://example.com", ingredients=[{"item": "Salt", "unit": "", "quantity": ""}]
+        )
+        assert recipe.ingredients == ["Salt"]
+
+    def test_mixed_string_and_dict_ingredients(self) -> None:
+        """A mix of strings and dicts should all be coerced to strings."""
+        recipe = RecipeCreate(
+            title="Test",
+            url="https://example.com",
+            ingredients=["200g spaghetti", {"item": "Pancetta", "quantity": "100", "unit": "g"}, "2 eggs"],
+        )
+        assert recipe.ingredients == ["200g spaghetti", "100 g Pancetta", "2 eggs"]
+
+    def test_numeric_ingredient_coerced(self) -> None:
+        """Non-string, non-dict items (e.g. int) should be str-coerced."""
+        recipe = RecipeCreate(title="Test", url="https://example.com", ingredients=[42])
+        assert recipe.ingredients == ["42"]
+
+    def test_string_ingredients_pass_through(self) -> None:
+        """Plain string ingredients should pass through unchanged."""
+        recipe = RecipeCreate(title="Test", url="https://example.com", ingredients=["1 cup flour", "2 eggs"])
+        assert recipe.ingredients == ["1 cup flour", "2 eggs"]
+
+    def test_recipe_model_also_coerces(self) -> None:
+        """The Recipe model (used by _doc_to_recipe) should also coerce dicts."""
+        recipe = Recipe(
+            id="test",
+            title="Test",
+            url="https://example.com",
+            ingredients=[{"item": "Fennel", "quantity": "1", "unit": "lb"}],
+        )
+        assert recipe.ingredients == ["1 lb Fennel"]
