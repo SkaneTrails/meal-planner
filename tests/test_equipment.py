@@ -1,6 +1,7 @@
 """Tests for the equipment catalog and prompt generation."""
 
 import pytest
+from pydantic import ValidationError
 
 from api.models.equipment import (
     EQUIPMENT_CATALOG,
@@ -176,6 +177,14 @@ class TestSettingsEquipmentField:
     def test_update_model_accepts_valid_keys(self) -> None:
         update = HouseholdSettingsUpdate(equipment=["air_fryer", "sous_vide"])
         assert update.equipment == ["air_fryer", "sous_vide"]
+
+    def test_update_model_rejects_non_list_dict(self) -> None:
+        with pytest.raises((ValidationError, TypeError)):
+            HouseholdSettingsUpdate(equipment={"air_fryer": True})
+
+    def test_update_model_rejects_non_list_string(self) -> None:
+        with pytest.raises((ValidationError, TypeError)):
+            HouseholdSettingsUpdate(equipment="air_fryer")
 
     def test_update_model_allows_none(self) -> None:
         update = HouseholdSettingsUpdate()

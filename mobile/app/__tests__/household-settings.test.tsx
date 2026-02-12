@@ -35,11 +35,11 @@ const mockSettingsData = {
   language: 'sv',
   dietary: {
     seafood_ok: true,
-    meat: 'all' as const,
+    meat: 'none' as const,
     minced_meat: 'meat' as const,
     dairy: 'regular' as const,
-    chicken_alternative: null,
-    meat_alternative: null,
+    chicken_alternative: 'tofu',
+    meat_alternative: 'tempeh',
   },
   equipment: ['air_fryer', 'convection_oven', 'grill_function'],
 };
@@ -112,6 +112,7 @@ describe('Household Settings screen', () => {
     it('disables all text inputs', async () => {
       await renderScreen();
       const inputs = screen.queryAllByRole('textbox');
+      expect(inputs.length).toBeGreaterThan(0);
       for (const input of inputs) {
         expect((input as HTMLInputElement).disabled).toBe(true);
       }

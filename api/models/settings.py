@@ -108,5 +108,6 @@ class HouseholdSettingsUpdate(BaseModel):
         if v is None:
             return None
         if not isinstance(v, list):
-            return None
+            msg = "equipment must be a list of strings or null"
+            raise TypeError(msg)
         return validate_equipment_keys(v)
