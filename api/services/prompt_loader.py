@@ -3,15 +3,18 @@ Prompt Loader - Assembles system prompts from modular files.
 
 The prompt system is split into:
 - core/ - General instructions that apply to all users
-- user/ - User-specific preferences (dietary, equipment)
+- user/ - User-specific preferences (dietary)
 - locales/ - Language/country-specific formatting (measurements, products, brands)
+- equipment - Dynamic prompt section generated from household equipment selection
 
 Usage:
     from api.services.prompt_loader import load_system_prompt
-    prompt = load_system_prompt("sv")
+    prompt = load_system_prompt("sv", equipment=["air_fryer", "convection_oven"])
 """
 
 from pathlib import Path
+
+from api.models.equipment import get_equipment_prompt
 
 # Map language codes to full names for the language template
 LANGUAGE_NAMES: dict[str, str] = {"sv": "Swedish", "en": "English", "it": "Italian"}
@@ -50,11 +53,11 @@ def load_core_prompts() -> str:
 
 
 def load_user_prompts(language: str = DEFAULT_LANGUAGE) -> str:
-    """Load user-specific prompt files (dietary, equipment) with language template rendering."""
+    """Load user-specific prompt files (dietary) with language template rendering."""
     prompts_dir = get_prompts_dir() / "user"
     language_name = LANGUAGE_NAMES.get(language, language.capitalize())
 
-    files = ["language.md", "dietary.md", "equipment.md"]
+    files = ["language.md", "dietary.md"]
 
     parts = []
     for filename in files:
@@ -77,21 +80,23 @@ def load_locale_prompt(language: str = DEFAULT_LANGUAGE) -> str:
     return load_prompt_file(locale_file)
 
 
-def load_system_prompt(language: str = DEFAULT_LANGUAGE) -> str:
+def load_system_prompt(language: str = DEFAULT_LANGUAGE, *, equipment: list[str] | None = None) -> str:
     """
     Assemble the complete system prompt from all parts.
 
     Args:
         language: Language code (e.g., "sv", "en", "it") for locale-specific rules.
+        equipment: List of equipment keys from the household's settings.
 
     Returns:
-        Complete system prompt string combining core, locale, and user prompts.
+        Complete system prompt string combining core, locale, user, and equipment prompts.
     """
     core = load_core_prompts()
     locale = load_locale_prompt(language)
     user = load_user_prompts(language)
+    equipment_section = get_equipment_prompt(equipment or [])
 
-    parts = [p for p in (core, locale, user) if p]
+    parts = [p for p in (core, locale, user, equipment_section) if p]
 
     if not parts:
         prompts_dir = get_prompts_dir()
@@ -110,13 +115,6 @@ def validate_prompts() -> dict[str, bool]:
     """
     prompts_dir = get_prompts_dir()
 
-    expected_files = [
-        "core/base.md",
-        "core/formatting.md",
-        "core/rules.md",
-        "locales/sv.md",
-        "user/dietary.md",
-        "user/equipment.md",
-    ]
+    expected_files = ["core/base.md", "core/formatting.md", "core/rules.md", "locales/sv.md", "user/dietary.md"]
 
     return {f: (prompts_dir / f).exists() for f in expected_files}

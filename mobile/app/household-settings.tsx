@@ -185,6 +185,21 @@ const RadioGroup = <T extends string>({
   );
 };
 
+/**
+ * Equipment categories with their item keys.
+ * Mirrors the API catalog in api/models/equipment.py.
+ * To add equipment: add the key here + add i18n translations.
+ */
+const EQUIPMENT_CATEGORIES = [
+  {
+    key: 'appliances',
+    items: ['air_fryer', 'stand_mixer', 'food_processor', 'immersion_blender', 'pressure_cooker', 'slow_cooker', 'sous_vide', 'pasta_machine', 'pizza_oven'],
+  },
+  { key: 'oven_features', items: ['convection_oven', 'grill_function', 'steam_oven'] },
+  { key: 'cookware', items: ['dutch_oven', 'cast_iron_skillet', 'wok', 'pizza_stone'] },
+  { key: 'tools', items: ['probe_thermometer', 'outdoor_grill', 'kitchen_torch'] },
+] as const;
+
 const DEFAULT_SETTINGS: HouseholdSettings = {
   household_size: 2,
   default_servings: 2,
@@ -197,13 +212,7 @@ const DEFAULT_SETTINGS: HouseholdSettings = {
     chicken_alternative: null,
     meat_alternative: null,
   },
-  equipment: {
-    airfryer: false,
-    airfryer_model: null,
-    airfryer_capacity_liters: null,
-    convection_oven: true,
-    grill_function: true,
-  },
+  equipment: [],
 };
 
 export default function HouseholdSettingsScreen() {
@@ -317,10 +326,7 @@ export default function HouseholdSettingsScreen() {
           ...DEFAULT_SETTINGS.dietary,
           ...(remoteSettings.dietary ?? {}),
         },
-        equipment: {
-          ...DEFAULT_SETTINGS.equipment,
-          ...(remoteSettings.equipment ?? {}),
-        },
+        equipment: Array.isArray(remoteSettings.equipment) ? remoteSettings.equipment : [],
       });
     }
   }, [remoteSettings]);
@@ -359,13 +365,12 @@ export default function HouseholdSettingsScreen() {
     setHasChanges(true);
   };
 
-  const updateEquipment = <K extends keyof HouseholdSettings['equipment']>(
-    key: K,
-    value: HouseholdSettings['equipment'][K],
-  ) => {
+  const toggleEquipment = (key: string) => {
     setSettings((prev) => ({
       ...prev,
-      equipment: { ...prev.equipment, [key]: value },
+      equipment: prev.equipment.includes(key)
+        ? prev.equipment.filter((k) => k !== key)
+        : [...prev.equipment, key],
     }));
     setHasChanges(true);
   };
@@ -1221,6 +1226,71 @@ export default function HouseholdSettingsScreen() {
                 subtitle={t('householdSettings.equipment.subtitle')}
               />
 
+              {/* Selected equipment */}
+              {settings.equipment.length > 0 && (
+                <View
+                  style={{
+                    backgroundColor: colors.glass.card,
+                    borderRadius: borderRadius.lg,
+                    padding: spacing.lg,
+                    marginBottom: spacing.md,
+                    ...shadows.sm,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: fontSize.xs,
+                      fontWeight: fontWeight.semibold,
+                      color: colors.text.inverse + '80',
+                      marginBottom: spacing.sm,
+                    }}
+                  >
+                    {t('householdSettings.equipment.yourEquipment', {
+                      count: settings.equipment.length,
+                    })}
+                  </Text>
+                  <View
+                    style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}
+                  >
+                    {settings.equipment.map((item) => (
+                      <Pressable
+                        key={item}
+                        onPress={() => canEdit && toggleEquipment(item)}
+                        disabled={!canEdit}
+                        style={({ pressed }) => ({
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          backgroundColor: pressed
+                            ? colors.errorBg
+                            : colors.bgDark,
+                          paddingHorizontal: spacing.sm,
+                          paddingVertical: spacing.xs,
+                          borderRadius: borderRadius.full,
+                          gap: 4,
+                        })}
+                      >
+                        <Text
+                          style={{
+                            fontSize: fontSize.sm,
+                            color: colors.text.inverse,
+                          }}
+                        >
+                          {t(`householdSettings.equipment.items.${item}`)}
+                        </Text>
+                        {canEdit && (
+                          <Ionicons
+                            name="close-circle"
+                            size={14}
+                            color={colors.text.inverse + '60'}
+                          />
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {/* Available equipment grouped by category */}
               <View
                 style={{
                   backgroundColor: colors.glass.card,
@@ -1229,155 +1299,70 @@ export default function HouseholdSettingsScreen() {
                   ...shadows.sm,
                 }}
               >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: spacing.lg,
-                  }}
-                >
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontWeight: fontWeight.medium,
-                        color: colors.text.inverse,
-                      }}
-                    >
-                      {t('householdSettings.equipment.airfryer')}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                      }}
-                    >
-                      {t('householdSettings.equipment.airfryerDesc')}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.equipment.airfryer}
-                    onValueChange={(value) =>
-                      updateEquipment('airfryer', value)
-                    }
-                    disabled={!canEdit}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                  />
-                </View>
-
-                {settings.equipment.airfryer && (
-                  <View
-                    style={{
-                      backgroundColor: colors.bgLight,
-                      borderRadius: borderRadius.md,
-                      padding: spacing.md,
-                      marginBottom: spacing.lg,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                        marginBottom: spacing.sm,
-                      }}
-                    >
-                      {t('householdSettings.equipment.model')}
-                    </Text>
-                    <TextInput
-                      value={settings.equipment.airfryer_model ?? ''}
-                      onChangeText={(value) =>
-                        updateEquipment('airfryer_model', value || null)
-                      }
-                      editable={canEdit}
-                      placeholder={t(
-                        'householdSettings.equipment.modelPlaceholder',
-                      )}
-                      style={{
-                        backgroundColor: colors.white,
-                        borderRadius: borderRadius.md,
-                        padding: spacing.md,
-                        fontSize: fontSize.md,
-                        color: colors.text.inverse,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                      }}
-                    />
-                  </View>
-                )}
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: spacing.lg,
-                  }}
-                >
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontWeight: fontWeight.medium,
-                        color: colors.text.inverse,
-                      }}
-                    >
-                      {t('householdSettings.equipment.convectionOven')}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                      }}
-                    >
-                      {t('householdSettings.equipment.convectionDesc')}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.equipment.convection_oven}
-                    onValueChange={(value) =>
-                      updateEquipment('convection_oven', value)
-                    }
-                    disabled={!canEdit}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <View>
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontWeight: fontWeight.medium,
-                        color: colors.text.inverse,
-                      }}
-                    >
-                      {t('householdSettings.equipment.grillFunction')}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: fontSize.sm,
-                        color: colors.text.inverse + '80',
-                      }}
-                    >
-                      {t('householdSettings.equipment.grillDesc')}
-                    </Text>
-                  </View>
-                  <Switch
-                    value={settings.equipment.grill_function}
-                    onValueChange={(value) =>
-                      updateEquipment('grill_function', value)
-                    }
-                    disabled={!canEdit}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                  />
-                </View>
+                {EQUIPMENT_CATEGORIES.map(({ key, items }) => {
+                  const available = items.filter(
+                    (item) => !settings.equipment.includes(item),
+                  );
+                  if (available.length === 0) return null;
+                  return (
+                    <View key={key} style={{ marginBottom: spacing.lg }}>
+                      <Text
+                        style={{
+                          fontSize: fontSize.xs,
+                          fontWeight: fontWeight.semibold,
+                          color: colors.text.inverse + '80',
+                          marginBottom: spacing.sm,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {t(`householdSettings.equipment.categories.${key}`)}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                          gap: 6,
+                        }}
+                      >
+                        {available.map((item) => (
+                          <Pressable
+                            key={item}
+                            onPress={() => canEdit && toggleEquipment(item)}
+                            disabled={!canEdit}
+                            style={({ pressed }) => ({
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              backgroundColor: pressed
+                                ? colors.successBg
+                                : 'transparent',
+                              paddingHorizontal: spacing.sm,
+                              paddingVertical: spacing.xs,
+                              borderRadius: borderRadius.full,
+                              borderWidth: 1,
+                              borderColor: colors.text.inverse + '30',
+                              borderStyle: 'dashed',
+                              gap: 4,
+                            })}
+                          >
+                            <Ionicons
+                              name="add"
+                              size={14}
+                              color={colors.text.inverse + '80'}
+                            />
+                            <Text
+                              style={{
+                                fontSize: fontSize.sm,
+                                color: colors.text.inverse + '80',
+                              }}
+                            >
+                              {t(`householdSettings.equipment.items.${item}`)}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                  );
+                })}
               </View>
             </View>
           </ScrollView>

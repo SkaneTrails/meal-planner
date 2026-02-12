@@ -173,7 +173,7 @@ describe('useHouseholdSettings', () => {
       default_servings: 4,
       language: 'sv',
       dietary: { seafood_ok: true, meat: 'all', minced_meat: 'meat', dairy: 'regular' },
-      equipment: { airfryer: false, convection_oven: true, grill_function: false },
+      equipment: ['convection_oven'],
     });
   });
 
@@ -273,7 +273,7 @@ describe('useUpdateHouseholdSettings', () => {
       default_servings: 4,
       language: 'en',
       dietary: { seafood_ok: true, meat: 'all', minced_meat: 'meat', dairy: 'regular' },
-      equipment: { airfryer: false, convection_oven: true, grill_function: false },
+      equipment: ['convection_oven'],
     });
   });
 
