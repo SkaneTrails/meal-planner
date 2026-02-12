@@ -3,7 +3,7 @@
 import re
 from datetime import datetime
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal, cast
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field, field_validator
 
@@ -28,6 +28,40 @@ def _sanitize_text(text: str, max_length: int) -> str:
     """Strip control characters and truncate to max length."""
     cleaned = _CONTROL_CHAR_RE.sub("", text)
     return cleaned[:max_length]
+
+
+def flatten_ingredient_dict(data: dict[str, Any]) -> str:
+    """Flatten a structured ingredient dict into a single string.
+
+    Args:
+        data: A mapping that may contain keys like ``quantity``, ``unit``,
+            ``item``, or ``name`` representing a single ingredient.
+
+    Returns:
+        A human-readable ingredient string built from the known fields.
+        Returns an empty string if no relevant fields are present.
+    """
+    quantity = str(data.get("quantity", "") or "").strip()
+    unit = str(data.get("unit", "") or "").strip()
+    name = str(data.get("item") or data.get("name") or "").strip()
+    parts = [part for part in (quantity, unit, name) if part]
+    return " ".join(parts)
+
+
+def _coerce_ingredient(item: object) -> str:
+    """Coerce a single ingredient to a plain string.
+
+    Gemini sometimes returns structured dicts like
+    ``{"item": "Salt", "quantity": "1 tsp", "unit": ""}""
+    instead of flat strings.  This flattens them so Pydantic
+    validation on ``list[str]`` never fails.
+    """
+    if isinstance(item, str):
+        return item
+    if isinstance(item, dict):
+        data = cast("dict[str, Any]", item)
+        return flatten_ingredient_dict(data) or str(item)
+    return str(item)
 
 
 class DietLabel(str, Enum):
@@ -136,6 +170,14 @@ class RecipeBase(BaseModel):
         default="household", description="'household' = private, 'shared' = visible to all"
     )
     created_by: str | None = Field(default=None, description="Email of user who created the recipe")
+
+    @field_validator("ingredients", mode="before")
+    @classmethod
+    def coerce_ingredient_items(cls, v: Any) -> Any:
+        """Coerce structured ingredient dicts from Gemini into plain strings."""
+        if not isinstance(v, list):
+            return v
+        return [_coerce_ingredient(item) for item in v]
 
     @field_validator("ingredients", mode="after")
     @classmethod
