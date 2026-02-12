@@ -153,7 +153,12 @@ export const useUpdateHouseholdSettings = () => {
   >({
     mutationFn: ({ householdId, settings }) =>
       api.updateHouseholdSettings(householdId, settings),
-    onSuccess: (_, { householdId }) => {
+    onSuccess: (_, { householdId, settings }) => {
+      // Optimistically update the cache so UI reflects immediately (e.g. language switch)
+      queryClient.setQueryData<HouseholdSettings>(
+        adminKeys.settings(householdId),
+        (old) => (old ? { ...old, ...settings } : undefined),
+      );
       queryClient.invalidateQueries({
         queryKey: adminKeys.settings(householdId),
       });

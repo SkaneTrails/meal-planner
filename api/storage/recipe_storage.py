@@ -89,6 +89,10 @@ def find_recipe_by_url(url: str) -> Recipe | None:
     """
     Find a recipe by its URL.
 
+    Uses a two-step strategy:
+    1. Exact URL match via Firestore query
+    2. Normalized URL match via indexed ``normalized_url`` field
+
     Args:
         url: The recipe URL to search for.
 
@@ -101,20 +105,24 @@ def find_recipe_by_url(url: str) -> Recipe | None:
     db = get_firestore_client()
     normalized = normalize_url(url)
 
-    # Search for exact URL match
+    # Step 1: exact URL match
     docs = db.collection(RECIPES_COLLECTION).where(filter=FieldFilter("url", "==", url)).limit(1).stream()
 
     for doc in docs:
         data = doc.to_dict()
         return _doc_to_recipe(doc.id, data)
 
-    # Also check normalized URLs (in case stored URL differs slightly)
-    from api.storage.recipe_queries import get_all_recipes  # pragma: no cover
-
-    all_recipes = get_all_recipes()  # pragma: no cover
-    for recipe in all_recipes:  # pragma: no cover
-        if normalize_url(recipe.url) == normalized:  # pragma: no cover
-            return recipe  # pragma: no cover
+    # Step 2: normalized URL match (handles trailing slashes, case differences)
+    if normalized:
+        docs = (
+            db.collection(RECIPES_COLLECTION)
+            .where(filter=FieldFilter("normalized_url", "==", normalized))
+            .limit(1)
+            .stream()
+        )
+        for doc in docs:
+            data = doc.to_dict()
+            return _doc_to_recipe(doc.id, data)
 
     return None
 
@@ -186,6 +194,7 @@ def save_recipe(
     data = {
         "title": recipe.title,
         "url": recipe.url,
+        "normalized_url": normalize_url(recipe.url),
         "ingredients": recipe.ingredients,
         "instructions": recipe.instructions,
         "image_url": recipe.image_url,
@@ -206,6 +215,8 @@ def save_recipe(
         "household_id": household_id,
         "visibility": recipe.visibility if hasattr(recipe, "visibility") else "household",
         "created_by": created_by,
+        # Explicit default so Firestore WHERE hidden==false matches new recipes
+        "hidden": False,
     }
 
     # Add enhancement fields if present
@@ -279,6 +290,11 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
             update_data[field_name] = value.value if hasattr(value, "value") else value
         else:
             update_data[field_name] = value
+
+    # Keep normalized_url in sync when URL changes
+    if "url" in update_data:
+        url_value = update_data["url"]
+        update_data["normalized_url"] = normalize_url(str(url_value)) if url_value else ""
 
     doc_ref.update(update_data)
 

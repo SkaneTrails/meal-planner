@@ -32,8 +32,24 @@ def _get_firebase_app() -> firebase_admin.App:  # pragma: no cover
 # Security scheme for Bearer token
 security = HTTPBearer(auto_error=False)
 
+_PRODUCTION_BYPASS_MSG = "Auth bypass (SKIP_AUTH/SKIP_ALLOWLIST) is not allowed in production"
 
-async def get_current_user(  # pragma: no cover
+
+def _guard_production_bypass(flag_name: str) -> None:
+    """Block dev-only auth bypass flags from running in Cloud Run.
+
+    Cloud Run always sets K_SERVICE. If we detect it, the bypass flag
+    was set by mistake — fail hard to prevent an open auth door.
+
+    Raises:
+        RuntimeError: If the bypass flag is active in a Cloud Run environment.
+    """
+    if os.getenv("K_SERVICE"):
+        msg = f"{_PRODUCTION_BYPASS_MSG} ({flag_name})"
+        raise RuntimeError(msg)
+
+
+async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
 ) -> AuthenticatedUser | None:
     """
@@ -44,6 +60,7 @@ async def get_current_user(  # pragma: no cover
     """
     # Skip token validation in development mode - return a dev user if token provided
     if os.getenv("SKIP_AUTH", "").lower() == "true":
+        _guard_production_bypass("SKIP_AUTH")
         if credentials is not None:
             # Return a placeholder user - require_auth will replace with full dev user
             return AuthenticatedUser(uid="dev-user", email="dev@localhost", name="Dev User", picture=None)
@@ -98,6 +115,7 @@ async def require_auth(
     """
     # Skip auth in development mode
     if os.getenv("SKIP_AUTH", "").lower() == "true":
+        _guard_production_bypass("SKIP_AUTH")
         return AuthenticatedUser(
             uid="dev-user",
             email="dev@localhost",
@@ -137,6 +155,7 @@ async def _resolve_user_access(user: AuthenticatedUser) -> AuthenticatedUser | N
     """
     # Skip access check in development mode
     if os.getenv("SKIP_ALLOWLIST", "").lower() == "true":
+        _guard_production_bypass("SKIP_ALLOWLIST")
         return AuthenticatedUser(
             uid=user.uid,
             email=user.email,
