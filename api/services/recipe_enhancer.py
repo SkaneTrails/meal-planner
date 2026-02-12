@@ -14,6 +14,7 @@ import warnings
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Never
 
+from api.models.recipe import flatten_ingredient_dict
 from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
 from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
 
@@ -104,11 +105,7 @@ def _normalize_ingredients(ingredients: list[Any]) -> list[str]:
         if isinstance(ing, str):
             result.append(ing)
         elif isinstance(ing, dict):
-            quantity = str(ing.get("quantity", "")).strip()
-            unit = str(ing.get("unit", "")).strip()
-            item = str(ing.get("item") or ing.get("name", "")).strip()
-            parts = [p for p in (quantity, unit, item) if p]
-            result.append(" ".join(parts) if parts else str(ing))
+            result.append(flatten_ingredient_dict(ing) or str(ing))
         else:
             result.append(str(ing))
     return result
