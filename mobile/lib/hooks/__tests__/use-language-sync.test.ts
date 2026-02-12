@@ -30,7 +30,7 @@ describe('useLanguageSync', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseSettings.mockReturnValue({
-      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: vi.fn(),
       addItemAtHome: vi.fn(),
@@ -38,13 +38,14 @@ describe('useLanguageSync', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
   });
 
   it('syncs language from Firestore when it differs from local', async () => {
     const mockSetLanguage = vi.fn();
     mockUseSettings.mockReturnValue({
-      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: mockSetLanguage,
       addItemAtHome: vi.fn(),
@@ -52,6 +53,7 @@ describe('useLanguageSync', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
     mockApi.getHouseholdSettings.mockResolvedValue({
       household_size: 2,
@@ -73,7 +75,7 @@ describe('useLanguageSync', () => {
   it('does NOT sync when languages already match', async () => {
     const mockSetLanguage = vi.fn();
     mockUseSettings.mockReturnValue({
-      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: mockSetLanguage,
       addItemAtHome: vi.fn(),
@@ -81,6 +83,7 @@ describe('useLanguageSync', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
     mockApi.getHouseholdSettings.mockResolvedValue({
       household_size: 2,
@@ -103,7 +106,7 @@ describe('useLanguageSync', () => {
   it('ignores unsupported language values from Firestore', async () => {
     const mockSetLanguage = vi.fn();
     mockUseSettings.mockReturnValue({
-      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: mockSetLanguage,
       addItemAtHome: vi.fn(),
@@ -111,6 +114,7 @@ describe('useLanguageSync', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
     mockApi.getHouseholdSettings.mockResolvedValue({
       household_size: 2,

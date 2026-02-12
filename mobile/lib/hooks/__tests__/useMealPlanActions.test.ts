@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { createQueryWrapper } from '@/test/helpers';
+import { createQueryWrapper, mockRecipe } from '@/test/helpers';
 import type { Recipe } from '@/lib/types';
 
 // PanResponder is not available in jsdom — mock the react-native module partially
@@ -31,19 +31,14 @@ const mockMealPlan = {
 };
 
 const mockRecipes: Recipe[] = [
-  {
+  mockRecipe({
     id: 'recipe-1',
     title: 'Chicken Curry',
     ingredients: ['chicken', 'curry paste'],
     instructions: ['Cook chicken', 'Add curry'],
-    tags: [],
-    servings: 4,
     visibility: 'household',
     household_id: 'h1',
-    created_at: '2026-01-01',
-    thumb_up_count: 0,
-    thumb_down_count: 0,
-  } as Recipe,
+  }),
 ];
 
 const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);

@@ -69,7 +69,7 @@ export const useHomeScreenData = () => {
   const router = useRouter();
   const { recipes, totalCount, isLoading: recipesLoading, refetch: refetchRecipes } = useAllRecipes();
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
-  const { checkedItems, selectedMealKeys, customItems, refreshFromStorage } = useGroceryState();
+  const { checkedItems, selectedMealKeys, customItems, refreshFromApi } = useGroceryState();
   const { isItemAtHome } = useSettings();
   const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
@@ -82,13 +82,13 @@ export const useHomeScreenData = () => {
   const handleRefresh = useCallback(() => {
     refetchRecipes();
     refetchMealPlan();
-    refreshFromStorage();
-  }, [refetchRecipes, refetchMealPlan, refreshFromStorage]);
+    refreshFromApi();
+  }, [refetchRecipes, refetchMealPlan, refreshFromApi]);
 
   const groceryItemsCount = useMemo(() => {
     if (!mealPlan || selectedMealKeys.length === 0) {
-      return customItems.filter(name =>
-        !checkedItems.has(name) && !isItemAtHome(name)
+      return customItems.filter(item =>
+        !checkedItems.has(item.name) && !isItemAtHome(item.name)
       ).length;
     }
 
@@ -111,7 +111,7 @@ export const useHomeScreenData = () => {
       });
     });
 
-    customItems.forEach(name => ingredientNames.add(name));
+    customItems.forEach(item => ingredientNames.add(item.name));
 
     let uncheckedCount = 0;
     ingredientNames.forEach(name => {

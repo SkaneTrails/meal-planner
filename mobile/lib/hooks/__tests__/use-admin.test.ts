@@ -45,7 +45,7 @@ const mockApi = vi.mocked(api);
 describe('useHouseholds', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.getHouseholds.mockResolvedValue([{ id: 'h1', name: 'Test' }]);
+    mockApi.getHouseholds.mockResolvedValue([{ id: 'h1', name: 'Test', created_by: 'test@example.com' }]);
   });
 
   it('fetches households when enabled is true', async () => {
@@ -132,7 +132,7 @@ describe('useCurrentUser', () => {
 describe('useHousehold', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.getHousehold.mockResolvedValue({ id: 'h1', name: 'Test House' });
+    mockApi.getHousehold.mockResolvedValue({ id: 'h1', name: 'Test House', created_by: 'test@example.com' });
   });
 
   it('fetches a household by ID', async () => {
@@ -150,7 +150,7 @@ describe('useHouseholdMembers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockApi.getHouseholdMembers.mockResolvedValue([
-      { email: 'a@test.com', role: 'admin' },
+      { email: 'a@test.com', role: 'admin', household_id: 'h1', display_name: null },
     ]);
   });
 
@@ -170,7 +170,10 @@ describe('useHouseholdSettings', () => {
     vi.clearAllMocks();
     mockApi.getHouseholdSettings.mockResolvedValue({
       household_size: 4,
+      default_servings: 4,
       language: 'sv',
+      dietary: { seafood_ok: true, meat: 'all', minced_meat: 'meat', dairy: 'regular' },
+      equipment: { airfryer: false, convection_oven: true, grill_function: false },
     });
   });
 
@@ -188,7 +191,7 @@ describe('useHouseholdSettings', () => {
 describe('useCreateHousehold', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.createHousehold.mockResolvedValue({ id: 'new-h', name: 'New House' });
+    mockApi.createHousehold.mockResolvedValue({ id: 'new-h', name: 'New House', created_by: 'test@example.com' });
   });
 
   it('creates a household', async () => {
@@ -211,6 +214,8 @@ describe('useAddMember', () => {
     mockApi.addHouseholdMember.mockResolvedValue({
       email: 'new@test.com',
       role: 'member',
+      household_id: 'h1',
+      display_name: null,
     });
   });
 
@@ -265,7 +270,10 @@ describe('useUpdateHouseholdSettings', () => {
     vi.clearAllMocks();
     mockApi.updateHouseholdSettings.mockResolvedValue({
       household_size: 6,
+      default_servings: 4,
       language: 'en',
+      dietary: { seafood_ok: true, meat: 'all', minced_meat: 'meat', dairy: 'regular' },
+      equipment: { airfryer: false, convection_oven: true, grill_function: false },
     });
   });
 
