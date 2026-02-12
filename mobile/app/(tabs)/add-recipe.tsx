@@ -10,7 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { GradientBackground } from '@/components';
+import { EnhancingOverlay, GradientBackground } from '@/components';
 import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
@@ -332,6 +332,10 @@ export default function AddRecipeScreen() {
         </ScrollView>
 
         <EnhancementSummaryModal actions={actions} />
+        <EnhancingOverlay
+          visible={isPending && enhanceWithAI}
+          message={t('addRecipe.importingEnhancing')}
+        />
       </GradientBackground>
     </KeyboardAvoidingView>
   );

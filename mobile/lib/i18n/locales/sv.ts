@@ -179,6 +179,7 @@ const sv: Translations = {
     enhanceSuccess: 'Recept förbättrat',
     enhanceSuccessMessage: 'Receptet har förbättrats av AI',
     enhanceFailed: 'Kunde inte förbättra receptet',
+    enhancing: 'Förbättrar receptet med AI...',
     addToMealPlan: 'Lägg till i matsedel',
     thisWeek: 'Denna vecka',
     nextWeek: 'Nästa vecka',
