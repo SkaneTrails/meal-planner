@@ -30,23 +30,37 @@ def _sanitize_text(text: str, max_length: int) -> str:
     return cleaned[:max_length]
 
 
+def flatten_ingredient_dict(data: dict[str, Any]) -> str:
+    """Flatten a structured ingredient dict into a single string.
+
+    Args:
+        data: A mapping that may contain keys like ``quantity``, ``unit``,
+            ``item``, or ``name`` representing a single ingredient.
+
+    Returns:
+        A human-readable ingredient string built from the known fields.
+        Returns an empty string if no relevant fields are present.
+    """
+    quantity = str(data.get("quantity", "") or "").strip()
+    unit = str(data.get("unit", "") or "").strip()
+    name = str(data.get("item") or data.get("name") or "").strip()
+    parts = [part for part in (quantity, unit, name) if part]
+    return " ".join(parts)
+
+
 def _coerce_ingredient(item: object) -> str:
     """Coerce a single ingredient to a plain string.
 
     Gemini sometimes returns structured dicts like
-    ``{"item": "Salt", "quantity": "1 tsp", "unit": ""}``
+    ``{"item": "Salt", "quantity": "1 tsp", "unit": ""}""
     instead of flat strings.  This flattens them so Pydantic
     validation on ``list[str]`` never fails.
     """
     if isinstance(item, str):
         return item
     if isinstance(item, dict):
-        d = cast("dict[str, Any]", item)
-        quantity = str(d.get("quantity", "")).strip()
-        unit = str(d.get("unit", "")).strip()
-        name = str(d.get("item") or d.get("name", "")).strip()
-        parts = [p for p in (quantity, unit, name) if p]
-        return " ".join(parts) if parts else str(item)
+        data = cast("dict[str, Any]", item)
+        return flatten_ingredient_dict(data) or str(item)
     return str(item)
 
 
@@ -159,10 +173,10 @@ class RecipeBase(BaseModel):
 
     @field_validator("ingredients", mode="before")
     @classmethod
-    def coerce_ingredient_items(cls, v: list[object]) -> list[str]:
+    def coerce_ingredient_items(cls, v: Any) -> Any:
         """Coerce structured ingredient dicts from Gemini into plain strings."""
         if not isinstance(v, list):
-            return v  # type: ignore[return-value]
+            return v
         return [_coerce_ingredient(item) for item in v]
 
     @field_validator("ingredients", mode="after")

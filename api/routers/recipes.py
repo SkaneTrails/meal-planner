@@ -592,7 +592,7 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
 
     except EnhancementError as e:  # pragma: no cover
         logger.exception("Failed to enhance recipe_id=%s", recipe_id)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Enhancement failed") from e
 
     except Exception as e:  # pragma: no cover
         logger.exception("Unexpected error enhancing recipe_id=%s", recipe_id)
