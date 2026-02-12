@@ -75,7 +75,7 @@ async def get_meal_plan(
     """
     resolved_id = _resolve_household(user, household_id)
     meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(user_id=resolved_id, meals=meals, notes=notes)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
 
 
 @router.put("")
@@ -113,7 +113,7 @@ async def update_meal_plan(
 
     # Return updated meal plan
     meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(user_id=resolved_id, meals=meals, notes=notes)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
 
 
 @router.post("/meals")
@@ -134,7 +134,7 @@ async def update_single_meal(
         meal_plan_storage.update_meal(resolved_id, request.date, request.meal_type, request.value)
 
     meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(user_id=resolved_id, meals=meals, notes=notes)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
 
 
 @router.post("/notes")
@@ -151,7 +151,7 @@ async def update_single_note(
     meal_plan_storage.update_day_note(resolved_id, request.date, request.note)
 
     meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(user_id=resolved_id, meals=meals, notes=notes)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)

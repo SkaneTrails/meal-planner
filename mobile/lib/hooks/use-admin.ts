@@ -26,6 +26,8 @@ const adminKeys = {
     [...adminKeys.all, 'settings', householdId] as const,
   itemsAtHome: (householdId: string) =>
     [...adminKeys.all, 'itemsAtHome', householdId] as const,
+  favorites: (householdId: string) =>
+    [...adminKeys.all, 'favorites', householdId] as const,
 };
 
 /**
@@ -151,7 +153,12 @@ export const useUpdateHouseholdSettings = () => {
   >({
     mutationFn: ({ householdId, settings }) =>
       api.updateHouseholdSettings(householdId, settings),
-    onSuccess: (_, { householdId }) => {
+    onSuccess: (_, { householdId, settings }) => {
+      // Optimistically update the cache so UI reflects immediately (e.g. language switch)
+      queryClient.setQueryData<HouseholdSettings>(
+        adminKeys.settings(householdId),
+        (old) => (old ? { ...old, ...settings } : undefined),
+      );
       queryClient.invalidateQueries({
         queryKey: adminKeys.settings(householdId),
       });
@@ -224,6 +231,52 @@ export const useRemoveItemAtHome = () => {
     onSuccess: (data, { householdId }) => {
       // Update the cache directly with the new list
       queryClient.setQueryData(adminKeys.itemsAtHome(householdId), data);
+    },
+  });
+}
+
+// --- Favorite Recipes Hooks ---
+
+interface FavoriteRecipeResponse {
+  favorite_recipes: string[];
+}
+
+/**
+ * Get the household's favorite recipe IDs.
+ */
+export const useFavoriteRecipes = (householdId: string | null | undefined) => {
+  return useQuery<FavoriteRecipeResponse>({
+    queryKey: adminKeys.favorites(householdId ?? ''),
+    queryFn: () => api.getFavoriteRecipes(householdId!),
+    enabled: !!householdId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
+ * Add a recipe to the household's favorites.
+ */
+export const useAddFavoriteRecipe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<FavoriteRecipeResponse, Error, { householdId: string; recipeId: string }>({
+    mutationFn: ({ householdId, recipeId }) => api.addFavoriteRecipe(householdId, recipeId),
+    onSuccess: (data, { householdId }) => {
+      queryClient.setQueryData(adminKeys.favorites(householdId), data);
+    },
+  });
+}
+
+/**
+ * Remove a recipe from the household's favorites.
+ */
+export const useRemoveFavoriteRecipe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<FavoriteRecipeResponse, Error, { householdId: string; recipeId: string }>({
+    mutationFn: ({ householdId, recipeId }) => api.removeFavoriteRecipe(householdId, recipeId),
+    onSuccess: (data, { householdId }) => {
+      queryClient.setQueryData(adminKeys.favorites(householdId), data);
     },
   });
 }

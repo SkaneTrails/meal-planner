@@ -20,7 +20,6 @@ import { AnimatedPressable, GradientBackground } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useUpdateHouseholdLanguage } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
 import {
   type AppLanguage,
@@ -124,9 +123,6 @@ export default function SettingsScreen() {
     setLanguage,
     toggleShowHiddenRecipes,
   } = useSettings();
-  const updateHouseholdLanguage = useUpdateHouseholdLanguage(
-    currentUser?.household_id,
-  );
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 
@@ -177,10 +173,6 @@ export default function SettingsScreen() {
   const handleLanguageChange = async (language: AppLanguage) => {
     try {
       await setLanguage(language);
-      // Write back to Firestore so other household members get the change
-      updateHouseholdLanguage(language).catch(() =>
-        console.warn('Failed to sync language to household settings'),
-      );
     } catch {
       showNotification(t('common.error'), t('settings.failedToChangeLanguage'));
     }

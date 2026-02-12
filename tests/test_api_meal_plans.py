@@ -74,7 +74,7 @@ class TestGetMealPlan:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["user_id"] == "test_household"
+        assert data["household_id"] == "test_household"
         assert data["meals"] == {}
         assert data["notes"] == {}
 
@@ -105,7 +105,7 @@ class TestGetMealPlan:
 
             assert response.status_code == 200
             data = response.json()
-            assert data["user_id"] == "test-household"
+            assert data["household_id"] == "test-household"
 
     def test_get_meal_plan_regular_user_no_household(self, client_regular_no_household: TestClient) -> None:
         """Regular user without household gets 403."""
