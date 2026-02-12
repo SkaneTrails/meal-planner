@@ -116,3 +116,15 @@ class ItemAtHomeResponse(BaseModel):
     """Response containing the updated items-at-home list."""
 
     items_at_home: list[str]
+
+
+class FavoriteRecipeAdd(BaseModel):
+    """Request to add a recipe to favorites."""
+
+    recipe_id: str = Field(..., min_length=1, max_length=200, description="Recipe ID to add to favorites")
+
+
+class FavoriteRecipeResponse(BaseModel):
+    """Response containing the updated favorite recipes list."""
+
+    favorite_recipes: list[str]

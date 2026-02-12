@@ -31,11 +31,11 @@ class PlannedMeal(BaseModel):
 
 
 class MealPlan(BaseModel):
-    """A user's meal plan with all planned meals and notes."""
+    """A household's meal plan with all planned meals and notes."""
 
     model_config = ConfigDict(from_attributes=True)
 
-    user_id: str = Field(..., description="User identifier")
+    household_id: str = Field(..., description="Household identifier")
     meals: dict[str, str] = Field(default_factory=dict, description="Map of date_mealtype to recipe_id or custom:text")
     notes: dict[str, str] = Field(default_factory=dict, description="Map of date to note text")
 

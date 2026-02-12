@@ -11,6 +11,8 @@ from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
 from api.models.admin import (
     CurrentUserResponse,
+    FavoriteRecipeAdd,
+    FavoriteRecipeResponse,
     HouseholdCreate,
     HouseholdResponse,
     HouseholdUpdate,
@@ -327,6 +329,58 @@ async def remove_item_at_home(
     try:
         items = household_storage.remove_item_at_home(household_id, item)
         return ItemAtHomeResponse(items_at_home=items)
+    except ValueError as e:
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg) from e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg) from e
+
+
+# --- Favorite Recipes Endpoints ---
+
+
+@router.get("/households/{household_id}/favorites")
+async def get_favorite_recipes(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str
+) -> FavoriteRecipeResponse:
+    """Get favorite recipes for a household. Superuser or household member."""
+    _require_member_or_superuser(user, household_id)
+
+    household = household_storage.get_household(household_id)
+    if household is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
+
+    favorites = household_storage.get_favorite_recipes(household_id)
+    return FavoriteRecipeResponse(favorite_recipes=favorites)
+
+
+@router.post("/households/{household_id}/favorites")
+async def add_favorite_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, request: FavoriteRecipeAdd
+) -> FavoriteRecipeResponse:
+    """Add a recipe to household favorites. Superuser or household member."""
+    _require_member_or_superuser(user, household_id)
+
+    try:
+        favorites = household_storage.add_favorite_recipe(household_id, request.recipe_id)
+        return FavoriteRecipeResponse(favorite_recipes=favorites)
+    except ValueError as e:
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg) from e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg) from e
+
+
+@router.delete("/households/{household_id}/favorites/{recipe_id}")
+async def remove_favorite_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, recipe_id: str
+) -> FavoriteRecipeResponse:
+    """Remove a recipe from household favorites. Superuser or household member."""
+    _require_member_or_superuser(user, household_id)
+
+    try:
+        favorites = household_storage.remove_favorite_recipe(household_id, recipe_id)
+        return FavoriteRecipeResponse(favorite_recipes=favorites)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():

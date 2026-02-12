@@ -768,3 +768,124 @@ class TestRemoveItemAtHome:
             response = member_client.delete("/admin/households/test_household/items-at-home/olive%20oil")
 
         assert response.status_code == 200
+
+
+class TestGetFavoriteRecipes:
+    """Tests for GET /admin/households/{household_id}/favorites endpoint."""
+
+    def test_member_can_get_favorites(self, member_client: TestClient) -> None:
+        """Household member should be able to get favorite recipes."""
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "test_household"}),
+            patch("api.routers.admin.household_storage.get_favorite_recipes", return_value=["recipe-1", "recipe-2"]),
+        ):
+            response = member_client.get("/admin/households/test_household/favorites")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["favorite_recipes"] == ["recipe-1", "recipe-2"]
+
+    def test_superuser_can_get_favorites(self, superuser_client: TestClient) -> None:
+        """Superuser should be able to get favorites for any household."""
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "other_household"}),
+            patch("api.routers.admin.household_storage.get_favorite_recipes", return_value=[]),
+        ):
+            response = superuser_client.get("/admin/households/other_household/favorites")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["favorite_recipes"] == []
+
+    def test_member_cannot_get_other_household(self, member_client: TestClient) -> None:
+        """Member cannot get favorites for a different household."""
+        response = member_client.get("/admin/households/other_household/favorites")
+        assert response.status_code == 403
+
+    def test_household_not_found(self, member_client: TestClient) -> None:
+        """Should return 404 when household doesn't exist."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=None):
+            response = member_client.get("/admin/households/test_household/favorites")
+
+        assert response.status_code == 404
+
+
+class TestAddFavoriteRecipe:
+    """Tests for POST /admin/households/{household_id}/favorites endpoint."""
+
+    def test_member_can_add_favorite(self, member_client: TestClient) -> None:
+        """Household member should be able to add a favorite."""
+        with patch(
+            "api.routers.admin.household_storage.add_favorite_recipe", return_value=["recipe-1", "recipe-2"]
+        ) as mock_add:
+            response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": "recipe-2"})
+
+        assert response.status_code == 200
+        mock_add.assert_called_once_with("test_household", "recipe-2")
+        data = response.json()
+        assert data["favorite_recipes"] == ["recipe-1", "recipe-2"]
+
+    def test_superuser_can_add_favorite(self, superuser_client: TestClient) -> None:
+        """Superuser should be able to add a favorite to any household."""
+        with patch("api.routers.admin.household_storage.add_favorite_recipe", return_value=["recipe-1"]):
+            response = superuser_client.post(
+                "/admin/households/other_household/favorites", json={"recipe_id": "recipe-1"}
+            )
+
+        assert response.status_code == 200
+
+    def test_member_cannot_add_to_other_household(self, member_client: TestClient) -> None:
+        """Member cannot add favorite to a different household."""
+        response = member_client.post("/admin/households/other_household/favorites", json={"recipe_id": "recipe-1"})
+        assert response.status_code == 403
+
+    def test_empty_recipe_id_rejected(self, member_client: TestClient) -> None:
+        """Empty recipe_id should be rejected by validation."""
+        response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": ""})
+        assert response.status_code == 422
+
+    def test_household_not_found(self, member_client: TestClient) -> None:
+        """Should return 404 when household doesn't exist."""
+        with patch(
+            "api.routers.admin.household_storage.add_favorite_recipe", side_effect=ValueError("Household not found")
+        ):
+            response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": "recipe-1"})
+
+        assert response.status_code == 404
+
+
+class TestRemoveFavoriteRecipe:
+    """Tests for DELETE /admin/households/{household_id}/favorites/{recipe_id} endpoint."""
+
+    def test_member_can_remove_favorite(self, member_client: TestClient) -> None:
+        """Household member should be able to remove a favorite."""
+        with patch(
+            "api.routers.admin.household_storage.remove_favorite_recipe", return_value=["recipe-1"]
+        ) as mock_remove:
+            response = member_client.delete("/admin/households/test_household/favorites/recipe-2")
+
+        assert response.status_code == 200
+        mock_remove.assert_called_once_with("test_household", "recipe-2")
+        data = response.json()
+        assert data["favorite_recipes"] == ["recipe-1"]
+
+    def test_superuser_can_remove_favorite(self, superuser_client: TestClient) -> None:
+        """Superuser should be able to remove a favorite from any household."""
+        with patch("api.routers.admin.household_storage.remove_favorite_recipe", return_value=[]):
+            response = superuser_client.delete("/admin/households/other_household/favorites/recipe-1")
+
+        assert response.status_code == 200
+
+    def test_member_cannot_remove_from_other_household(self, member_client: TestClient) -> None:
+        """Member cannot remove favorite from a different household."""
+        response = member_client.delete("/admin/households/other_household/favorites/recipe-1")
+        assert response.status_code == 403
+
+    def test_household_not_found(self, member_client: TestClient) -> None:
+        """Should return 404 when household doesn't exist."""
+        with patch(
+            "api.routers.admin.household_storage.remove_favorite_recipe", side_effect=ValueError("Household not found")
+        ):
+            response = member_client.delete("/admin/households/test_household/favorites/recipe-1")
+
+        assert response.status_code == 404

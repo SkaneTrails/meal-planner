@@ -145,7 +145,7 @@ export interface PlannedMeal {
 }
 
 export interface MealPlan {
-  user_id: string;
+  household_id: string;
   meals: Record<string, string>; // date_mealtype -> recipe_id or custom:text
   notes: Record<string, string>; // date -> note text
 }
@@ -296,6 +296,7 @@ export interface HouseholdSettings {
   default_servings: number;
   language: string;
   items_at_home?: string[];
+  favorite_recipes?: string[];
   dietary: DietarySettings;
   equipment: EquipmentSettings;
 }

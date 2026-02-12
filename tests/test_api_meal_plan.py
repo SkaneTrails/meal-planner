@@ -39,21 +39,23 @@ class TestMealPlan:
 
     def test_empty_meal_plan(self) -> None:
         """Should create empty meal plan."""
-        plan = MealPlan(user_id="user1")
-        assert plan.user_id == "user1"
+        plan = MealPlan(household_id="household1")
+        assert plan.household_id == "household1"
         assert plan.meals == {}
         assert plan.notes == {}
 
     def test_meal_plan_with_meals(self) -> None:
         """Should store meals in correct format."""
-        plan = MealPlan(user_id="user1", meals={"2025-01-15_breakfast": "recipe1", "2025-01-15_dinner": "custom:Pizza"})
+        plan = MealPlan(
+            household_id="household1", meals={"2025-01-15_breakfast": "recipe1", "2025-01-15_dinner": "custom:Pizza"}
+        )
         assert plan.meals["2025-01-15_breakfast"] == "recipe1"
         assert plan.meals["2025-01-15_dinner"] == "custom:Pizza"
 
     def test_get_meals_for_day(self) -> None:
         """Should return all meals for a specific day."""
         plan = MealPlan(
-            user_id="user1",
+            household_id="household1",
             meals={
                 "2025-01-15_breakfast": "recipe1",
                 "2025-01-15_lunch": "recipe2",
@@ -72,7 +74,7 @@ class TestMealPlan:
 
     def test_get_meals_for_day_handles_custom(self) -> None:
         """Should correctly parse custom meals."""
-        plan = MealPlan(user_id="user1", meals={"2025-01-15_dinner": "custom:Homemade Pizza"})
+        plan = MealPlan(household_id="household1", meals={"2025-01-15_dinner": "custom:Homemade Pizza"})
         meals = plan.get_meals_for_day(date(2025, 1, 15))
         assert len(meals) == 1
         assert meals[0].recipe_id is None
@@ -80,14 +82,14 @@ class TestMealPlan:
 
     def test_get_meals_for_day_empty(self) -> None:
         """Should return empty list for day with no meals."""
-        plan = MealPlan(user_id="user1", meals={"2025-01-15_lunch": "recipe1"})
+        plan = MealPlan(household_id="household1", meals={"2025-01-15_lunch": "recipe1"})
         meals = plan.get_meals_for_day(date(2025, 1, 16))
         assert meals == []
 
     def test_get_meals_by_type(self) -> None:
         """Should return all meals of a specific type."""
         plan = MealPlan(
-            user_id="user1",
+            household_id="household1",
             meals={"2025-01-15_dinner": "recipe1", "2025-01-16_dinner": "recipe2", "2025-01-15_lunch": "recipe3"},
         )
         dinners = plan.get_meals_by_type(MealType.DINNER)
@@ -96,12 +98,12 @@ class TestMealPlan:
 
     def test_get_meals_by_type_empty(self) -> None:
         """Should return empty list for type with no meals."""
-        plan = MealPlan(user_id="user1", meals={"2025-01-15_lunch": "recipe1"})
+        plan = MealPlan(household_id="household1", meals={"2025-01-15_lunch": "recipe1"})
         dinners = plan.get_meals_by_type(MealType.DINNER)
         assert dinners == []
 
     def test_notes_storage(self) -> None:
         """Should store notes by date."""
-        plan = MealPlan(user_id="user1", notes={"2025-01-15": "Work from home", "2025-01-16": "Office day"})
+        plan = MealPlan(household_id="household1", notes={"2025-01-15": "Work from home", "2025-01-16": "Office day"})
         assert plan.notes["2025-01-15"] == "Work from home"
         assert plan.notes["2025-01-16"] == "Office day"

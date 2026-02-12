@@ -66,6 +66,7 @@ class HouseholdSettings(BaseModel):
     items_at_home: list[str] = Field(
         default_factory=list, description="Ingredients always at home (excluded from grocery lists)"
     )
+    favorite_recipes: list[str] = Field(default_factory=list, description="Recipe IDs favorited by the household")
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
     equipment: EquipmentSettings = Field(default_factory=EquipmentSettings)
