@@ -13,14 +13,13 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
-  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { hasError: false, error: null };
+  state: ErrorBoundaryState = { hasError: false };
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+  static getDerivedStateFromError(_error: Error): ErrorBoundaryState {
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
@@ -31,7 +30,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (Platform.OS === 'web') {
       window.location.reload();
     } else {
-      this.setState({ hasError: false, error: null });
+      this.setState({ hasError: false });
     }
   };
 
@@ -62,7 +61,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           style={{
             fontSize: fontSize.xl,
             fontFamily: fontFamily.displayBold,
-            color: colors.text.primary,
+            color: colors.text.inverse,
             textAlign: 'center',
             marginBottom: spacing.md,
           }}
@@ -73,7 +72,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           style={{
             fontSize: fontSize.sm,
             fontFamily: fontFamily.body,
-            color: colors.text.secondary,
+            color: colors.gray[600],
             textAlign: 'center',
             marginBottom: spacing['2xl'],
             lineHeight: fontSize.sm * 1.5,
@@ -84,7 +83,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <Pressable
           onPress={this.handleReload}
           style={{
-            backgroundColor: colors.text.primary,
+            backgroundColor: colors.primary,
             paddingHorizontal: spacing['2xl'],
             paddingVertical: spacing.md,
             borderRadius: borderRadius.full,
@@ -92,7 +91,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         >
           <Text
             style={{
-              color: '#FFFFFF',
+              color: colors.white,
               fontSize: fontSize.md,
               fontFamily: fontFamily.bodyMedium,
             }}
