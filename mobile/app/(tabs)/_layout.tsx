@@ -12,7 +12,6 @@ import React from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useLanguageSync } from '@/lib/hooks/use-language-sync';
 import { useTranslation } from '@/lib/i18n';
 import { colors } from '@/lib/theme';
 
@@ -66,8 +65,6 @@ export default function TabLayout() {
     isLoading: userLoading,
     isError,
   } = useCurrentUser({ enabled: !loading && !!user });
-
-  useLanguageSync(currentUser?.household_id);
 
   if (loading) {
     return (

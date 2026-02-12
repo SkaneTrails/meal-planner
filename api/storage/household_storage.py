@@ -406,3 +406,88 @@ def get_items_at_home(household_id: str) -> list[str]:
     if settings is None:
         return []
     return settings.get("items_at_home", [])
+
+
+def get_favorite_recipes(household_id: str) -> list[str]:
+    """Get the household's favorite recipe IDs.
+
+    Returns empty list if household has no settings or doesn't exist.
+    """
+    settings = get_household_settings(household_id)
+    if settings is None:
+        return []
+    return settings.get("favorite_recipes", [])
+
+
+def add_favorite_recipe(household_id: str, recipe_id: str) -> list[str]:
+    """Add a recipe to the household's favorites.
+
+    Returns the updated list of favorite recipe IDs.
+    Uses a Firestore transaction to ensure atomic read-modify-write.
+    """
+    db = _get_db()
+
+    recipe_id = recipe_id.strip()
+    if not recipe_id:
+        msg = "Recipe ID cannot be empty"
+        raise ValueError(msg)
+
+    household_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
+    settings_ref = household_ref.collection("settings").document("config")
+
+    @firestore.transactional  # type: ignore[misc]
+    def update_in_transaction(transaction: Transaction) -> list[str]:
+        household_doc = household_ref.get(transaction=transaction)
+        if not household_doc.exists:  # type: ignore[union-attr]
+            msg = "Household not found"
+            raise ValueError(msg)
+
+        settings_doc = settings_ref.get(transaction=transaction)
+        current_favorites: list[str] = []
+        if settings_doc.exists:  # type: ignore[union-attr]
+            data = settings_doc.to_dict() or {}  # type: ignore[union-attr]
+            current_favorites = list(data.get("favorite_recipes", []))
+
+        if recipe_id not in current_favorites:
+            current_favorites.append(recipe_id)
+
+        transaction.set(settings_ref, {"favorite_recipes": current_favorites}, merge=True)
+        return current_favorites
+
+    transaction = db.transaction()
+    return update_in_transaction(transaction)
+
+
+def remove_favorite_recipe(household_id: str, recipe_id: str) -> list[str]:
+    """Remove a recipe from the household's favorites.
+
+    Returns the updated list of favorite recipe IDs.
+    Uses a Firestore transaction to ensure atomic read-modify-write.
+    """
+    db = _get_db()
+
+    recipe_id = recipe_id.strip()
+
+    household_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
+    settings_ref = household_ref.collection("settings").document("config")
+
+    @firestore.transactional  # type: ignore[misc]
+    def update_in_transaction(transaction: Transaction) -> list[str]:
+        household_doc = household_ref.get(transaction=transaction)
+        if not household_doc.exists:  # type: ignore[union-attr]
+            msg = "Household not found"
+            raise ValueError(msg)
+
+        settings_doc = settings_ref.get(transaction=transaction)
+        current_favorites: list[str] = []
+        if settings_doc.exists:  # type: ignore[union-attr]
+            data = settings_doc.to_dict() or {}  # type: ignore[union-attr]
+            current_favorites = list(data.get("favorite_recipes", []))
+
+        current_favorites = [r for r in current_favorites if r != recipe_id]
+
+        transaction.set(settings_ref, {"favorite_recipes": current_favorites}, merge=True)
+        return current_favorites
+
+    transaction = db.transaction()
+    return update_in_transaction(transaction)

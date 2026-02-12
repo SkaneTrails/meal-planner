@@ -87,16 +87,23 @@ vi.mock('@/lib/settings-context', () => ({
   useSettings: vi.fn(() => ({
     settings: {
       language: 'en',
-      alwaysAtHome: [],
       itemsAtHome: [],
+      favoriteRecipes: [],
+      showHiddenRecipes: false,
     },
     setLanguage: vi.fn(),
     addItemAtHome: vi.fn(),
     removeItemAtHome: vi.fn(),
+    isItemAtHome: vi.fn(() => false),
+    toggleFavorite: vi.fn(),
+    isFavorite: vi.fn(() => false),
+    toggleShowHiddenRecipes: vi.fn(),
+    isLoading: false,
   })),
   LANGUAGES: [
-    { code: 'en', name: 'English' },
-    { code: 'sv', name: 'Svenska' },
+    { code: 'en', label: 'English', flag: '🇬🇧' },
+    { code: 'sv', label: 'Svenska', flag: '🇸🇪' },
+    { code: 'it', label: 'Italiano', flag: '🇮🇹' },
   ],
 }));
 

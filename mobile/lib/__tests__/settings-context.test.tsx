@@ -1,13 +1,14 @@
 /**
- * Tests for SettingsProvider — verifies local settings state management.
+ * Tests for SettingsProvider — verifies settings state management.
  *
  * Real logic tested:
- * - addItemAtHome: normalizes to lowercase, trims whitespace, deduplicates, sorts alphabetically
+ * - addItemAtHome: normalizes to lowercase, trims whitespace
  * - removeItemAtHome: normalizes before matching
  * - isItemAtHome: partial substring matching (both directions)
- * - setLanguage: persists language choice
- * - toggleFavorite: adds/removes recipe IDs
- * - isFavorite: checks membership
+ * - setLanguage: writes to cloud via household settings
+ * - toggleFavorite: adds/removes recipe IDs via cloud
+ * - isFavorite: checks membership from cloud data
+ * - toggleShowHiddenRecipes: persists locally
  * - useSettings: throws when used outside provider
  */
 
@@ -32,15 +33,20 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
-// Mock items-at-home state for cloud sync
+// Cloud state
 let mockItemsAtHome: string[] = [];
-const mockAddItem = vi.fn();
-const mockRemoveItem = vi.fn();
+let mockFavoriteRecipes: string[] = [];
+let mockHouseholdLanguage = 'en';
 
 // Store mock implementations that can be reconfigured
 const mockUseItemsAtHome = vi.fn();
 const mockUseAddItemAtHome = vi.fn();
 const mockUseRemoveItemAtHome = vi.fn();
+const mockUseFavoriteRecipes = vi.fn();
+const mockUseAddFavoriteRecipe = vi.fn();
+const mockUseRemoveFavoriteRecipe = vi.fn();
+const mockUseHouseholdSettings = vi.fn();
+const mockUseUpdateHouseholdSettings = vi.fn();
 
 vi.mock('@/lib/hooks/use-admin', () => ({
   useCurrentUser: vi.fn(() => ({
@@ -50,10 +56,14 @@ vi.mock('@/lib/hooks/use-admin', () => ({
   useItemsAtHome: (...args: unknown[]) => mockUseItemsAtHome(...args),
   useAddItemAtHome: (...args: unknown[]) => mockUseAddItemAtHome(...args),
   useRemoveItemAtHome: (...args: unknown[]) => mockUseRemoveItemAtHome(...args),
+  useFavoriteRecipes: (...args: unknown[]) => mockUseFavoriteRecipes(...args),
+  useAddFavoriteRecipe: (...args: unknown[]) => mockUseAddFavoriteRecipe(...args),
+  useRemoveFavoriteRecipe: (...args: unknown[]) => mockUseRemoveFavoriteRecipe(...args),
+  useHouseholdSettings: (...args: unknown[]) => mockUseHouseholdSettings(...args),
+  useUpdateHouseholdSettings: (...args: unknown[]) => mockUseUpdateHouseholdSettings(...args),
 }));
 
 // Unmock @/lib/settings-context so we test the real implementation
-// (setup.ts has a global mock for useSettings)
 vi.unmock('@/lib/settings-context');
 
 // Must import AFTER mocks are set up
@@ -81,46 +91,70 @@ const createSettingsWrapper = () => {
 describe('SettingsProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Clear mock storage
     for (const key of Object.keys(mockStorage)) {
       delete mockStorage[key];
     }
-    // Reset cloud items at home state
     mockItemsAtHome = [];
+    mockFavoriteRecipes = [];
+    mockHouseholdLanguage = 'en';
 
-    // Configure mock hooks to read current mockItemsAtHome value
-    // Note: useItemsAtHome returns the current value of mockItemsAtHome at call time
     mockUseItemsAtHome.mockImplementation(() => ({
       data: { items_at_home: mockItemsAtHome },
       isLoading: false,
     }));
 
-    // For mutations, we update mockItemsAtHome and then trigger a re-render
-    // by having React Query setQueryData behavior simulated
-    mockUseAddItemAtHome.mockImplementation(() => {
-      // Return a fresh mutateAsync each time to pick up current mockItemsAtHome
-      return {
-        mutate: mockAddItem,
-        mutateAsync: async (params: { householdId: string; item: string }) => {
-          const normalized = params.item.toLowerCase().trim();
-          if (normalized && !mockItemsAtHome.includes(normalized)) {
-            mockItemsAtHome = [...mockItemsAtHome, normalized].sort();
-          }
-          return { items_at_home: mockItemsAtHome };
-        },
-      };
-    });
+    mockUseAddItemAtHome.mockImplementation(() => ({
+      mutateAsync: async (params: { householdId: string; item: string }) => {
+        const normalized = params.item.toLowerCase().trim();
+        if (normalized && !mockItemsAtHome.includes(normalized)) {
+          mockItemsAtHome = [...mockItemsAtHome, normalized].sort();
+        }
+        return { items_at_home: mockItemsAtHome };
+      },
+    }));
 
-    mockUseRemoveItemAtHome.mockImplementation(() => {
-      return {
-        mutate: mockRemoveItem,
-        mutateAsync: async (params: { householdId: string; item: string }) => {
-          const normalized = params.item.toLowerCase().trim();
-          mockItemsAtHome = mockItemsAtHome.filter(i => i !== normalized);
-          return { items_at_home: mockItemsAtHome };
-        },
-      };
-    });
+    mockUseRemoveItemAtHome.mockImplementation(() => ({
+      mutateAsync: async (params: { householdId: string; item: string }) => {
+        const normalized = params.item.toLowerCase().trim();
+        mockItemsAtHome = mockItemsAtHome.filter(i => i !== normalized);
+        return { items_at_home: mockItemsAtHome };
+      },
+    }));
+
+    mockUseFavoriteRecipes.mockImplementation(() => ({
+      data: { favorite_recipes: mockFavoriteRecipes },
+      isLoading: false,
+    }));
+
+    mockUseAddFavoriteRecipe.mockImplementation(() => ({
+      mutateAsync: async (params: { householdId: string; recipeId: string }) => {
+        if (!mockFavoriteRecipes.includes(params.recipeId)) {
+          mockFavoriteRecipes = [...mockFavoriteRecipes, params.recipeId];
+        }
+        return { favorite_recipes: mockFavoriteRecipes };
+      },
+    }));
+
+    mockUseRemoveFavoriteRecipe.mockImplementation(() => ({
+      mutateAsync: async (params: { householdId: string; recipeId: string }) => {
+        mockFavoriteRecipes = mockFavoriteRecipes.filter(r => r !== params.recipeId);
+        return { favorite_recipes: mockFavoriteRecipes };
+      },
+    }));
+
+    mockUseHouseholdSettings.mockImplementation(() => ({
+      data: { language: mockHouseholdLanguage },
+      isLoading: false,
+    }));
+
+    mockUseUpdateHouseholdSettings.mockImplementation(() => ({
+      mutateAsync: async (params: { householdId: string; settings: { language?: string } }) => {
+        if (params.settings.language) {
+          mockHouseholdLanguage = params.settings.language;
+        }
+        return { language: mockHouseholdLanguage };
+      },
+    }));
   });
 
   it('starts with default settings', async () => {
@@ -131,17 +165,15 @@ describe('SettingsProvider', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.settings.itemsAtHome).toEqual([]);
-    expect(result.current.settings.language).toBe('en');
     expect(result.current.settings.favoriteRecipes).toEqual([]);
+    expect(result.current.settings.language).toBe('en');
+    expect(result.current.settings.showHiddenRecipes).toBe(false);
   });
 
-  it('loads persisted settings from AsyncStorage', async () => {
-    // itemsAtHome is now loaded from cloud, not AsyncStorage
+  it('loads cloud settings', async () => {
     mockItemsAtHome = ['salt', 'pepper'];
-    mockStorage['@meal_planner_settings'] = JSON.stringify({
-      language: 'sv',
-      favoriteRecipes: ['recipe-1'],
-    });
+    mockFavoriteRecipes = ['recipe-1'];
+    mockHouseholdLanguage = 'sv';
 
     const { result } = renderHook(() => useSettings(), {
       wrapper: createSettingsWrapper(),
@@ -150,13 +182,12 @@ describe('SettingsProvider', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.settings.itemsAtHome).toEqual(['salt', 'pepper']);
-    expect(result.current.settings.language).toBe('sv');
     expect(result.current.settings.favoriteRecipes).toEqual(['recipe-1']);
+    expect(result.current.settings.language).toBe('sv');
   });
 
-  it('merges partial persisted settings with defaults', async () => {
-    // Only language was saved — other fields should get defaults
-    mockStorage['@meal_planner_settings'] = JSON.stringify({ language: 'it' });
+  it('loads showHiddenRecipes from AsyncStorage', async () => {
+    mockStorage['@meal_planner_settings'] = JSON.stringify({ showHiddenRecipes: true });
 
     const { result } = renderHook(() => useSettings(), {
       wrapper: createSettingsWrapper(),
@@ -164,17 +195,25 @@ describe('SettingsProvider', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.settings.language).toBe('it');
-    expect(result.current.settings.itemsAtHome).toEqual([]);
-    expect(result.current.settings.favoriteRecipes).toEqual([]);
+    expect(result.current.settings.showHiddenRecipes).toBe(true);
+  });
+
+  it('falls back to en for unsupported language', async () => {
+    mockHouseholdLanguage = 'fr';
+
+    const { result } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.settings.language).toBe('en');
   });
 
   describe('addItemAtHome', () => {
     it('normalizes to lowercase and trims whitespace', async () => {
-      // Track what the mutation was called with
       let capturedItem: string | undefined;
       mockUseAddItemAtHome.mockImplementation(() => ({
-        mutate: vi.fn(),
         mutateAsync: async (params: { householdId: string; item: string }) => {
           capturedItem = params.item;
           return { items_at_home: [params.item] };
@@ -190,77 +229,12 @@ describe('SettingsProvider', () => {
         await result.current.addItemAtHome('  Olive Oil  ');
       });
 
-      // The settings context normalizes before calling the mutation
       expect(capturedItem).toBe('olive oil');
     });
 
-    it('deduplicates items', async () => {
-      // Track mutation calls
-      const mutationCalls: string[] = [];
-      mockUseAddItemAtHome.mockImplementation(() => ({
-        mutate: vi.fn(),
-        mutateAsync: async (params: { householdId: string; item: string }) => {
-          mutationCalls.push(params.item);
-          // Simulate deduplication in mock (this happens on server)
-          const normalized = params.item.toLowerCase().trim();
-          if (!mockItemsAtHome.includes(normalized)) {
-            mockItemsAtHome = [...mockItemsAtHome, normalized].sort();
-          }
-          return { items_at_home: mockItemsAtHome };
-        },
-      }));
-
-      const { result } = renderHook(() => useSettings(), {
-        wrapper: createSettingsWrapper(),
-      });
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-      await act(async () => {
-        await result.current.addItemAtHome('salt');
-      });
-      await act(async () => {
-        await result.current.addItemAtHome('Salt');
-      });
-
-      // Both calls should be made (deduplication happens on server)
-      expect(mutationCalls).toEqual(['salt', 'salt']);
-    });
-
-    it('sorts items alphabetically', async () => {
-      // Track mutation calls
-      const mutationCalls: string[] = [];
-      mockUseAddItemAtHome.mockImplementation(() => ({
-        mutate: vi.fn(),
-        mutateAsync: async (params: { householdId: string; item: string }) => {
-          mutationCalls.push(params.item);
-          return { items_at_home: [] };
-        },
-      }));
-
-      const { result } = renderHook(() => useSettings(), {
-        wrapper: createSettingsWrapper(),
-      });
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-      await act(async () => {
-        await result.current.addItemAtHome('pepper');
-      });
-      await act(async () => {
-        await result.current.addItemAtHome('butter');
-      });
-      await act(async () => {
-        await result.current.addItemAtHome('salt');
-      });
-
-      // Verify all three items were added (sorting happens on server)
-      expect(mutationCalls).toEqual(['pepper', 'butter', 'salt']);
-    });
-
     it('ignores empty/whitespace-only input', async () => {
-      // Track mutation calls
       const mutationCalls: string[] = [];
       mockUseAddItemAtHome.mockImplementation(() => ({
-        mutate: vi.fn(),
         mutateAsync: async (params: { householdId: string; item: string }) => {
           mutationCalls.push(params.item);
           return { items_at_home: [] };
@@ -276,24 +250,20 @@ describe('SettingsProvider', () => {
         await result.current.addItemAtHome('   ');
       });
 
-      // Empty/whitespace input should not call the mutation
       expect(mutationCalls).toEqual([]);
     });
   });
 
   describe('removeItemAtHome', () => {
     it('removes an existing item (case-insensitive via normalization)', async () => {
-      // Track what the mutation was called with
       let capturedItem: string | undefined;
       mockUseRemoveItemAtHome.mockImplementation(() => ({
-        mutate: vi.fn(),
         mutateAsync: async (params: { householdId: string; item: string }) => {
           capturedItem = params.item;
           return { items_at_home: [] };
         },
       }));
 
-      // Set initial cloud state
       mockItemsAtHome = ['butter', 'salt'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -305,14 +275,12 @@ describe('SettingsProvider', () => {
         await result.current.removeItemAtHome('Salt');
       });
 
-      // The settings context normalizes before calling the mutation
       expect(capturedItem).toBe('salt');
     });
   });
 
   describe('isItemAtHome', () => {
     it('returns true for exact match', async () => {
-      // Set initial cloud state
       mockItemsAtHome = ['salt', 'olive oil'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -324,7 +292,6 @@ describe('SettingsProvider', () => {
     });
 
     it('matches when grocery item contains a home item', async () => {
-      // Set initial cloud state
       mockItemsAtHome = ['salt'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -332,12 +299,10 @@ describe('SettingsProvider', () => {
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      // "sea salt" contains "salt"
       expect(result.current.isItemAtHome('sea salt')).toBe(true);
     });
 
     it('matches when home item contains the grocery item', async () => {
-      // Set initial cloud state
       mockItemsAtHome = ['olive oil'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -345,12 +310,10 @@ describe('SettingsProvider', () => {
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      // "oil" is contained within "olive oil"
       expect(result.current.isItemAtHome('oil')).toBe(true);
     });
 
     it('returns false for non-matching item', async () => {
-      // Set initial cloud state
       mockItemsAtHome = ['salt'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -363,7 +326,15 @@ describe('SettingsProvider', () => {
   });
 
   describe('setLanguage', () => {
-    it('updates the language setting', async () => {
+    it('updates the household language setting in cloud', async () => {
+      let capturedLanguage: string | undefined;
+      mockUseUpdateHouseholdSettings.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; settings: { language?: string } }) => {
+          capturedLanguage = params.settings.language;
+          return { language: params.settings.language };
+        },
+      }));
+
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
@@ -373,12 +344,20 @@ describe('SettingsProvider', () => {
         await result.current.setLanguage('it');
       });
 
-      expect(result.current.settings.language).toBe('it');
+      expect(capturedLanguage).toBe('it');
     });
   });
 
   describe('toggleFavorite', () => {
-    it('adds a recipe to favorites', async () => {
+    it('adds a recipe to favorites via cloud', async () => {
+      let capturedRecipeId: string | undefined;
+      mockUseAddFavoriteRecipe.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; recipeId: string }) => {
+          capturedRecipeId = params.recipeId;
+          return { favorite_recipes: [params.recipeId] };
+        },
+      }));
+
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
@@ -388,13 +367,19 @@ describe('SettingsProvider', () => {
         await result.current.toggleFavorite('recipe-abc');
       });
 
-      expect(result.current.isFavorite('recipe-abc')).toBe(true);
+      expect(capturedRecipeId).toBe('recipe-abc');
     });
 
     it('removes a recipe from favorites when toggled again', async () => {
-      mockStorage['@meal_planner_settings'] = JSON.stringify({
-        favoriteRecipes: ['recipe-abc'],
-      });
+      mockFavoriteRecipes = ['recipe-abc'];
+
+      let capturedRecipeId: string | undefined;
+      mockUseRemoveFavoriteRecipe.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; recipeId: string }) => {
+          capturedRecipeId = params.recipeId;
+          return { favorite_recipes: [] };
+        },
+      }));
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
@@ -407,34 +392,36 @@ describe('SettingsProvider', () => {
         await result.current.toggleFavorite('recipe-abc');
       });
 
-      expect(result.current.isFavorite('recipe-abc')).toBe(false);
+      expect(capturedRecipeId).toBe('recipe-abc');
+    });
+  });
+
+  describe('toggleShowHiddenRecipes', () => {
+    it('toggles the showHiddenRecipes setting locally', async () => {
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.settings.showHiddenRecipes).toBe(false);
+
+      await act(async () => {
+        await result.current.toggleShowHiddenRecipes();
+      });
+
+      expect(result.current.settings.showHiddenRecipes).toBe(true);
     });
   });
 });
 
 describe('useSettings', () => {
   it('throws when used outside SettingsProvider', () => {
-    // renderHook catches the error at React boundary level, so we check via error result
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // In React 19 + testing library, throwing in render is captured differently
-    let hookError: Error | undefined;
-    try {
-      renderHook(() => {
-        try {
-          return useSettings();
-        } catch (e) {
-          hookError = e as Error;
-          throw e;
-        }
-      });
-    } catch {
-      // Expected — React error boundary
-    }
+    expect(() => {
+      renderHook(() => useSettings());
+    }).toThrow('useSettings must be used within a SettingsProvider');
 
-    expect(hookError?.message).toContain(
-      'useSettings must be used within a SettingsProvider',
-    );
     spy.mockRestore();
   });
 });
