@@ -283,14 +283,6 @@ export interface DietarySettings {
   meat_alternative?: string | null;
 }
 
-export interface EquipmentSettings {
-  airfryer: boolean;
-  airfryer_model?: string | null;
-  airfryer_capacity_liters?: number | null;
-  convection_oven: boolean;
-  grill_function: boolean;
-}
-
 export interface HouseholdSettings {
   household_size: number;
   default_servings: number;
@@ -298,5 +290,5 @@ export interface HouseholdSettings {
   items_at_home?: string[];
   favorite_recipes?: string[];
   dietary: DietarySettings;
-  equipment: EquipmentSettings;
+  equipment: string[];
 }

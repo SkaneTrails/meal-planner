@@ -54,22 +54,34 @@ MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 _HTTP_422 = 422
 
 
-def _get_household_language(household_id: str) -> str:
-    """Read the household's configured language, defaulting to Swedish."""
+def _get_household_config(household_id: str) -> tuple[str, list[str]]:
+    """Read the household's language and equipment settings.
+
+    Returns:
+        Tuple of (language, equipment_keys).
+    """
     from api.storage.household_storage import get_household_settings
 
-    settings = get_household_settings(household_id)
-    return (settings or {}).get("language", DEFAULT_LANGUAGE)
+    settings = get_household_settings(household_id) or {}
+    language = settings.get("language", DEFAULT_LANGUAGE)
+    equipment_raw = settings.get("equipment", [])
+    equipment = equipment_raw if isinstance(equipment_raw, list) else []
+    return language, equipment
 
 
 def _try_enhance(
-    saved_recipe: Recipe, *, household_id: str, created_by: str, language: str = DEFAULT_LANGUAGE
+    saved_recipe: Recipe,
+    *,
+    household_id: str,
+    created_by: str,
+    language: str = DEFAULT_LANGUAGE,
+    equipment: list[str] | None = None,
 ) -> Recipe:  # pragma: no cover
     """Attempt AI enhancement on a saved recipe, returning original on failure."""
     from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
 
     try:
-        enhanced_data = do_enhance(saved_recipe.model_dump(), language=language)
+        enhanced_data = do_enhance(saved_recipe.model_dump(), language=language, equipment=equipment)
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, saved_recipe)
 
         return recipe_storage.save_recipe(
@@ -214,8 +226,10 @@ async def scrape_recipe(
     saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
-        language = _get_household_language(household_id)
-        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email, language=language)
+        language, equipment = _get_household_config(household_id)
+        saved_recipe = _try_enhance(
+            saved_recipe, household_id=household_id, created_by=user.email, language=language, equipment=equipment
+        )
 
     return saved_recipe
 
@@ -359,8 +373,10 @@ async def parse_recipe(
     saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
-        language = _get_household_language(household_id)
-        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email, language=language)
+        language, equipment = _get_household_config(household_id)
+        saved_recipe = _try_enhance(
+            saved_recipe, household_id=household_id, created_by=user.email, language=language, equipment=equipment
+        )
 
     return saved_recipe
 
@@ -570,10 +586,10 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             )
         target_recipe = copied
 
-    language = _get_household_language(household_id)
+    language, equipment = _get_household_config(household_id)
 
     try:  # pragma: no cover
-        enhanced_data = do_enhance(target_recipe.model_dump(), language=language)
+        enhanced_data = do_enhance(target_recipe.model_dump(), language=language, equipment=equipment)
         enhanced_recipe = build_recipe_create_from_enhanced(enhanced_data, target_recipe)
 
         return recipe_storage.save_recipe(

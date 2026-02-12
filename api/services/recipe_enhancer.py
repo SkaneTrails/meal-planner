@@ -147,7 +147,11 @@ def _flatten_metadata(enhanced: dict[str, Any]) -> None:
 
 
 def enhance_recipe(
-    recipe: dict[str, Any], *, model: str = DEFAULT_MODEL, language: str = DEFAULT_LANGUAGE
+    recipe: dict[str, Any],
+    *,
+    model: str = DEFAULT_MODEL,
+    language: str = DEFAULT_LANGUAGE,
+    equipment: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     Enhance a recipe using Gemini AI.
@@ -156,6 +160,7 @@ def enhance_recipe(
         recipe: Original recipe dict with title, ingredients, instructions
         model: Gemini model to use (default: gemini-2.5-flash)
         language: Language code for locale-specific rules (default: sv)
+        equipment: List of equipment keys from household settings
 
     Returns:
         Enhanced recipe dict with improved ingredients, instructions, tips
@@ -164,7 +169,7 @@ def enhance_recipe(
         EnhancementError: If enhancement fails
     """
     client = get_genai_client()
-    system_prompt = load_system_prompt(language)
+    system_prompt = load_system_prompt(language, equipment=equipment)
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
 

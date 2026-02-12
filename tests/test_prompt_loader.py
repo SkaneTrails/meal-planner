@@ -3,8 +3,6 @@
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from api.services.prompt_loader import (
     DEFAULT_LANGUAGE,
     LANGUAGE_NAMES,
@@ -114,18 +112,16 @@ class TestLoadUserPrompts:
         assert isinstance(result, str)
 
     def test_loads_user_prompt_files(self, tmp_path: Path) -> None:
-        """Should load content from user prompt files."""
+        """Should load content from user prompt files (dietary only, equipment is dynamic)."""
         user_dir = tmp_path / "config" / "prompts" / "user"
         user_dir.mkdir(parents=True)
 
         (user_dir / "dietary.md").write_text("Dietary preferences", encoding="utf-8")
-        (user_dir / "equipment.md").write_text("Kitchen equipment", encoding="utf-8")
 
         with patch("api.services.prompt_loader.get_prompts_dir", return_value=tmp_path / "config" / "prompts"):
             result = load_user_prompts()
 
         assert "Dietary preferences" in result
-        assert "Kitchen equipment" in result
 
     def test_renders_language_template_swedish(self, tmp_path: Path) -> None:
         """Should render {language_name} as Swedish for sv."""
@@ -206,7 +202,7 @@ class TestLoadSystemPrompt:
         assert isinstance(result, str)
 
     def test_combines_core_locale_and_user_prompts(self, tmp_path: Path) -> None:
-        """Should combine core, locale, and user prompts with separators."""
+        """Should combine core, locale, user, and equipment prompts with separators."""
         prompts_dir = tmp_path / "config" / "prompts"
         (prompts_dir / "core").mkdir(parents=True)
         (prompts_dir / "locales").mkdir(parents=True)
@@ -222,10 +218,11 @@ class TestLoadSystemPrompt:
         assert "Core content" in result
         assert "Swedish locale" in result
         assert "User content" in result
-        assert result.count("---") == 2
+        assert "Kitchen Equipment" in result
+        assert result.count("---") == 3
 
     def test_omits_locale_when_missing(self, tmp_path: Path) -> None:
-        """Should work without locale file (only core + user)."""
+        """Should work without locale file (core + user + equipment)."""
         prompts_dir = tmp_path / "config" / "prompts"
         (prompts_dir / "core").mkdir(parents=True)
         (prompts_dir / "user").mkdir(parents=True)
@@ -238,7 +235,7 @@ class TestLoadSystemPrompt:
 
         assert "Core content" in result
         assert "User content" in result
-        assert result.count("---") == 1
+        assert result.count("---") == 2
 
     def test_passes_language_to_user_prompts(self, tmp_path: Path) -> None:
         """Should pass language code for template rendering."""
@@ -254,15 +251,41 @@ class TestLoadSystemPrompt:
 
         assert "Output in English" in result
 
-    def test_raises_when_no_prompt_files_found(self, tmp_path: Path) -> None:
-        """Should raise FileNotFoundError when prompts directory is missing."""
+    def test_returns_equipment_only_when_no_prompt_files(self, tmp_path: Path) -> None:
+        """Should still return equipment prompt even when prompts directory is missing."""
         empty_dir = tmp_path / "missing" / "prompts"
 
-        with (
-            patch("api.services.prompt_loader.get_prompts_dir", return_value=empty_dir),
-            pytest.raises(FileNotFoundError, match="No prompt files found"),
-        ):
-            load_system_prompt()
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=empty_dir):
+            result = load_system_prompt()
+
+        assert "Kitchen Equipment" in result
+
+    def test_equipment_param_included_in_prompt(self, tmp_path: Path) -> None:
+        """Should include selected equipment hints in the system prompt."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("Core", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("en", equipment=["air_fryer", "wok"])
+
+        assert "Air fryer" in result
+        assert "Wok" in result
+
+    def test_no_equipment_shows_standard_kitchen(self, tmp_path: Path) -> None:
+        """Should show standard kitchen message when no equipment selected."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("Core", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("en", equipment=[])
+
+        assert "Standard kitchen only" in result
 
 
 class TestValidatePrompts:
@@ -277,14 +300,7 @@ class TestValidatePrompts:
         """Should check all expected prompt files."""
         result = validate_prompts()
 
-        expected_keys = [
-            "core/base.md",
-            "core/formatting.md",
-            "core/rules.md",
-            "locales/sv.md",
-            "user/dietary.md",
-            "user/equipment.md",
-        ]
+        expected_keys = ["core/base.md", "core/formatting.md", "core/rules.md", "locales/sv.md", "user/dietary.md"]
         for key in expected_keys:
             assert key in result
 
