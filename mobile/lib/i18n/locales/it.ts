@@ -181,6 +181,7 @@ const it: Translations = {
     enhanceSuccess: 'Ricetta migliorata',
     enhanceSuccessMessage: "La ricetta è stata migliorata dall'AI",
     enhanceFailed: 'Impossibile migliorare la ricetta',
+    enhancing: 'Miglioramento della ricetta con AI...',
     addToMealPlan: 'Aggiungi al menu',
     thisWeek: 'Questa settimana',
     nextWeek: 'Prossima settimana',
