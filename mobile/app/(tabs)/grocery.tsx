@@ -230,7 +230,6 @@ export default function GroceryScreen() {
     const allItems = [...generatedItems, ...customItems];
 
     return {
-      user_id: 'default',
       items: allItems.map((item) => ({
         ...item,
         checked: checkedItems.has(item.name),

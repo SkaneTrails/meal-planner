@@ -16,6 +16,10 @@ interface ItemAtHomeResponse {
   items_at_home: string[];
 }
 
+interface FavoriteRecipeResponse {
+  favorite_recipes: string[];
+}
+
 export const adminApi = {
   getCurrentUser: (): Promise<CurrentUser> => {
     return apiRequest<CurrentUser>('/admin/me');
@@ -93,6 +97,25 @@ export const adminApi = {
   removeItemAtHome: (householdId: string, item: string): Promise<ItemAtHomeResponse> => {
     return apiRequest<ItemAtHomeResponse>(
       `/admin/households/${householdId}/items-at-home/${encodeURIComponent(item)}`,
+      { method: 'DELETE' },
+    );
+  },
+
+  // Favorite recipes
+  getFavoriteRecipes: (householdId: string): Promise<FavoriteRecipeResponse> => {
+    return apiRequest<FavoriteRecipeResponse>(`/admin/households/${householdId}/favorites`);
+  },
+
+  addFavoriteRecipe: (householdId: string, recipeId: string): Promise<FavoriteRecipeResponse> => {
+    return apiRequest<FavoriteRecipeResponse>(
+      `/admin/households/${householdId}/favorites`,
+      { method: 'POST', body: JSON.stringify({ recipe_id: recipeId }) },
+    );
+  },
+
+  removeFavoriteRecipe: (householdId: string, recipeId: string): Promise<FavoriteRecipeResponse> => {
+    return apiRequest<FavoriteRecipeResponse>(
+      `/admin/households/${householdId}/favorites/${encodeURIComponent(recipeId)}`,
       { method: 'DELETE' },
     );
   },

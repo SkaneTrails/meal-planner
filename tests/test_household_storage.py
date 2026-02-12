@@ -12,11 +12,13 @@ from api.storage.household_storage import (
     SUPERUSERS_COLLECTION,
     Household,
     HouseholdMember,
+    add_favorite_recipe,
     add_item_at_home,
     add_member,
     add_superuser,
     create_household,
     delete_household,
+    get_favorite_recipes,
     get_household,
     get_household_settings,
     get_items_at_home,
@@ -25,6 +27,7 @@ from api.storage.household_storage import (
     is_superuser,
     list_all_households,
     list_household_members,
+    remove_favorite_recipe,
     remove_item_at_home,
     remove_member,
     remove_superuser,
@@ -727,3 +730,180 @@ class TestGetItemsAtHome:
         result = get_items_at_home("household-1")
 
         assert result == ["salt", "pepper", "oil"]
+
+
+class TestGetFavoriteRecipes:
+    """Tests for get_favorite_recipes function."""
+
+    def test_returns_empty_list_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        result = get_favorite_recipes("nonexistent")
+
+        assert result == []
+
+    def test_returns_empty_list_when_no_settings(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = False
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value.get.return_value = mock_settings_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = get_favorite_recipes("household-1")
+
+        assert result == []
+
+    def test_returns_favorites_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"favorite_recipes": ["recipe-1", "recipe-2"]}
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value.get.return_value = mock_settings_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = get_favorite_recipes("household-1")
+
+        assert result == ["recipe-1", "recipe-2"]
+
+
+class TestAddFavoriteRecipe:
+    """Tests for add_favorite_recipe function."""
+
+    def test_raises_error_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        with pytest.raises(ValueError, match="Household not found"):
+            add_favorite_recipe("nonexistent", "recipe-1")
+
+    def test_raises_error_for_empty_recipe_id(self, mock_db) -> None:
+        with pytest.raises(ValueError, match="Recipe ID cannot be empty"):
+            add_favorite_recipe("household-1", "   ")
+
+    def test_adds_recipe_to_empty_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = False
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        mock_transaction = MagicMock()
+        mock_db.transaction.return_value = mock_transaction
+
+        result = add_favorite_recipe("household-1", "recipe-1")
+
+        assert result == ["recipe-1"]
+        mock_transaction.set.assert_called_once_with(mock_settings_ref, {"favorite_recipes": ["recipe-1"]}, merge=True)
+
+    def test_adds_recipe_to_existing_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"favorite_recipes": ["recipe-1"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = add_favorite_recipe("household-1", "recipe-2")
+
+        assert result == ["recipe-1", "recipe-2"]
+
+    def test_does_not_add_duplicate(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"favorite_recipes": ["recipe-1", "recipe-2"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = add_favorite_recipe("household-1", "recipe-1")
+
+        assert result == ["recipe-1", "recipe-2"]
+
+
+class TestRemoveFavoriteRecipe:
+    """Tests for remove_favorite_recipe function."""
+
+    def test_raises_error_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        with pytest.raises(ValueError, match="Household not found"):
+            remove_favorite_recipe("nonexistent", "recipe-1")
+
+    def test_removes_recipe_from_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"favorite_recipes": ["recipe-1", "recipe-2", "recipe-3"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = remove_favorite_recipe("household-1", "recipe-2")
+
+        assert result == ["recipe-1", "recipe-3"]
+
+    def test_no_error_when_recipe_not_present(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"favorite_recipes": ["recipe-1"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = remove_favorite_recipe("household-1", "recipe-99")
+
+        assert result == ["recipe-1"]
