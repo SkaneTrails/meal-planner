@@ -97,6 +97,11 @@ class TestGetEquipmentPrompt:
         result = get_equipment_prompt(["wok"])
         assert result.startswith("## Kitchen Equipment")
 
+    def test_non_string_keys_ignored_without_crash(self) -> None:
+        """Non-string items should be silently skipped, not cause TypeError."""
+        result = get_equipment_prompt(["air_fryer", {"bad": "data"}, 42])
+        assert "Air fryer" in result
+
 
 class TestValidateEquipmentKeys:
     """Tests for validate_equipment_keys."""
@@ -119,6 +124,15 @@ class TestValidateEquipmentKeys:
     def test_error_message_includes_valid_keys(self) -> None:
         with pytest.raises(ValueError, match="air_fryer"):
             validate_equipment_keys(["nope"])
+
+    def test_non_string_keys_raise_value_error(self) -> None:
+        """Non-string items (e.g. dicts from malformed JSON) should raise ValueError, not TypeError."""
+        with pytest.raises(ValueError, match="must be strings"):
+            validate_equipment_keys(["air_fryer", {"key": "value"}])
+
+    def test_non_string_only_raises_value_error(self) -> None:
+        with pytest.raises(ValueError, match="must be strings"):
+            validate_equipment_keys([42, True])
 
 
 class TestSettingsEquipmentField:

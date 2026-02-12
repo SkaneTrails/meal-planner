@@ -163,7 +163,8 @@ def get_equipment_prompt(equipment: list[str]) -> str:
         )
 
     valid_keys = get_valid_equipment_keys()
-    hints = [EQUIPMENT_CATALOG[key]["prompt_hint"] for key in equipment if key in valid_keys]
+    str_keys = [k for k in equipment if isinstance(k, str)]
+    hints = [EQUIPMENT_CATALOG[key]["prompt_hint"] for key in str_keys if key in valid_keys]
 
     if not hints:
         return (
@@ -193,11 +194,16 @@ def validate_equipment_keys(keys: list[Any]) -> list[str]:
         List of valid equipment keys only.
 
     Raises:
-        ValueError: If any key is not in the catalog.
+        ValueError: If any key is not a string or not in the catalog.
     """
+    non_str = [k for k in keys if not isinstance(k, str)]
+    if non_str:
+        msg = f"Equipment keys must be strings. Received non-string values: {', '.join(str(k) for k in non_str)}"
+        raise ValueError(msg)
+
     valid = get_valid_equipment_keys()
     invalid = [k for k in keys if k not in valid]
     if invalid:
-        msg = f"Unknown equipment keys: {', '.join(str(k) for k in invalid)}. Valid keys: {', '.join(sorted(valid))}"
+        msg = f"Unknown equipment keys: {', '.join(invalid)}. Valid keys: {', '.join(sorted(valid))}"
         raise ValueError(msg)
-    return [str(k) for k in keys]
+    return list(keys)
