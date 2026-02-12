@@ -346,11 +346,11 @@ async def get_favorite_recipes(
     """Get favorite recipes for a household. Superuser or household member."""
     _require_member_or_superuser(user, household_id)
 
-    settings = household_storage.get_household_settings(household_id)
-    if settings is None:
+    household = household_storage.get_household(household_id)
+    if household is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 
-    favorites = settings.get("favorite_recipes", [])
+    favorites = household_storage.get_favorite_recipes(household_id)
     return FavoriteRecipeResponse(favorite_recipes=favorites)
 
 
