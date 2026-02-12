@@ -671,3 +671,106 @@ class TestTransferRecipe:
 
         assert response.status_code == 404
         assert "Recipe not found" in response.json()["detail"]
+
+
+class TestGetItemsAtHome:
+    """Tests for GET /admin/households/{household_id}/items-at-home endpoint."""
+
+    def test_member_can_get_items(self, member_client: TestClient) -> None:
+        """Household member should be able to get items at home."""
+        with patch("api.routers.admin.household_storage.get_items_at_home", return_value=["salt", "pepper", "oil"]):
+            response = member_client.get("/admin/households/test_household/items-at-home")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["items_at_home"] == ["salt", "pepper", "oil"]
+
+    def test_superuser_can_get_items(self, superuser_client: TestClient) -> None:
+        """Superuser should be able to get items at home for any household."""
+        with patch("api.routers.admin.household_storage.get_items_at_home", return_value=["garlic"]):
+            response = superuser_client.get("/admin/households/other_household/items-at-home")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["items_at_home"] == ["garlic"]
+
+    def test_member_cannot_get_other_household(self, member_client: TestClient) -> None:
+        """Member cannot get items for a different household."""
+        response = member_client.get("/admin/households/other_household/items-at-home")
+        assert response.status_code == 403
+
+
+class TestAddItemAtHome:
+    """Tests for POST /admin/households/{household_id}/items-at-home endpoint."""
+
+    def test_member_can_add_item(self, member_client: TestClient) -> None:
+        """Household member should be able to add an item."""
+        with patch(
+            "api.routers.admin.household_storage.add_item_at_home", return_value=["oil", "salt"]
+        ) as mock_add:
+            response = member_client.post(
+                "/admin/households/test_household/items-at-home", json={"item": "Salt"}
+            )
+
+        assert response.status_code == 200
+        mock_add.assert_called_once_with("test_household", "Salt")
+        data = response.json()
+        assert data["items_at_home"] == ["oil", "salt"]
+
+    def test_superuser_can_add_item(self, superuser_client: TestClient) -> None:
+        """Superuser should be able to add an item to any household."""
+        with patch("api.routers.admin.household_storage.add_item_at_home", return_value=["pepper"]):
+            response = superuser_client.post(
+                "/admin/households/other_household/items-at-home", json={"item": "pepper"}
+            )
+
+        assert response.status_code == 200
+
+    def test_member_cannot_add_to_other_household(self, member_client: TestClient) -> None:
+        """Member cannot add item to a different household."""
+        response = member_client.post(
+            "/admin/households/other_household/items-at-home", json={"item": "salt"}
+        )
+        assert response.status_code == 403
+
+    def test_empty_item_rejected(self, member_client: TestClient) -> None:
+        """Empty item should be rejected by validation."""
+        response = member_client.post(
+            "/admin/households/test_household/items-at-home", json={"item": ""}
+        )
+        assert response.status_code == 422  # Pydantic validation error
+
+
+class TestRemoveItemAtHome:
+    """Tests for DELETE /admin/households/{household_id}/items-at-home/{item} endpoint."""
+
+    def test_member_can_remove_item(self, member_client: TestClient) -> None:
+        """Household member should be able to remove an item."""
+        with patch(
+            "api.routers.admin.household_storage.remove_item_at_home", return_value=["oil"]
+        ) as mock_remove:
+            response = member_client.delete("/admin/households/test_household/items-at-home/salt")
+
+        assert response.status_code == 200
+        mock_remove.assert_called_once_with("test_household", "salt")
+        data = response.json()
+        assert data["items_at_home"] == ["oil"]
+
+    def test_superuser_can_remove_item(self, superuser_client: TestClient) -> None:
+        """Superuser should be able to remove an item from any household."""
+        with patch("api.routers.admin.household_storage.remove_item_at_home", return_value=[]):
+            response = superuser_client.delete("/admin/households/other_household/items-at-home/pepper")
+
+        assert response.status_code == 200
+
+    def test_member_cannot_remove_from_other_household(self, member_client: TestClient) -> None:
+        """Member cannot remove item from a different household."""
+        response = member_client.delete("/admin/households/other_household/items-at-home/salt")
+        assert response.status_code == 403
+
+    def test_url_encoded_item(self, member_client: TestClient) -> None:
+        """Should handle URL-encoded item names."""
+        with patch("api.routers.admin.household_storage.remove_item_at_home", return_value=[]):
+            response = member_client.delete("/admin/households/test_household/items-at-home/olive%20oil")
+
+        assert response.status_code == 200

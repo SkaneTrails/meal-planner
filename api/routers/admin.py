@@ -14,6 +14,8 @@ from api.models.admin import (
     HouseholdCreate,
     HouseholdResponse,
     HouseholdUpdate,
+    ItemAtHomeAdd,
+    ItemAtHomeResponse,
     MemberAdd,
     MemberResponse,
     RecipeTransfer,
@@ -269,3 +271,45 @@ async def transfer_recipe(
         household_id=recipe.household_id,
         message=f"Recipe transferred to {target_household.name}",
     )
+
+
+# --- Items at Home Endpoints ---
+
+
+@router.get("/households/{household_id}/items-at-home")
+async def get_items_at_home(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str
+) -> ItemAtHomeResponse:
+    """Get items-at-home list for a household. Superuser or household member."""
+    _require_member_or_superuser(user, household_id)
+
+    items = household_storage.get_items_at_home(household_id)
+    return ItemAtHomeResponse(items_at_home=items)
+
+
+@router.post("/households/{household_id}/items-at-home")
+async def add_item_at_home(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, request: ItemAtHomeAdd
+) -> ItemAtHomeResponse:
+    """Add an item to the household's items-at-home list. Superuser or household member."""
+    _require_member_or_superuser(user, household_id)
+
+    try:
+        items = household_storage.add_item_at_home(household_id, request.item)
+        return ItemAtHomeResponse(items_at_home=items)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+
+
+@router.delete("/households/{household_id}/items-at-home/{item}")
+async def remove_item_at_home(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, item: str
+) -> ItemAtHomeResponse:
+    """Remove an item from the household's items-at-home list. Superuser or household member."""
+    _require_member_or_superuser(user, household_id)
+
+    try:
+        items = household_storage.remove_item_at_home(household_id, item)
+        return ItemAtHomeResponse(items_at_home=items)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e

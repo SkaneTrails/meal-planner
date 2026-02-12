@@ -305,3 +305,86 @@ def update_household_settings(household_id: str, settings: dict) -> bool:
 
     settings_ref.set(settings, merge=True)
     return True
+
+
+def add_item_at_home(household_id: str, item: str) -> list[str]:
+    """
+    Add an item to the household's items-at-home list.
+
+    Returns the updated list of items, or raises ValueError if household doesn't exist.
+    Items are normalized to lowercase and duplicates are prevented.
+    """
+    db = _get_db()
+
+    # First check household exists
+    household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    if not household_doc.exists:  # type: ignore[union-attr]
+        raise ValueError("Household not found")
+
+    settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
+
+    # Normalize item
+    normalized_item = item.lower().strip()
+    if not normalized_item:
+        raise ValueError("Item cannot be empty")
+
+    # Get current settings
+    settings_doc = settings_ref.get()
+    current_items: list[str] = []
+    if settings_doc.exists:  # type: ignore[union-attr]
+        data = settings_doc.to_dict() or {}  # type: ignore[union-attr]
+        current_items = data.get("items_at_home", [])
+
+    # Add item if not already present
+    if normalized_item not in current_items:
+        current_items.append(normalized_item)
+        current_items.sort()
+
+    # Update settings
+    settings_ref.set({"items_at_home": current_items}, merge=True)
+    return current_items
+
+
+def remove_item_at_home(household_id: str, item: str) -> list[str]:
+    """
+    Remove an item from the household's items-at-home list.
+
+    Returns the updated list of items, or raises ValueError if household doesn't exist.
+    """
+    db = _get_db()
+
+    # First check household exists
+    household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    if not household_doc.exists:  # type: ignore[union-attr]
+        raise ValueError("Household not found")
+
+    settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
+
+    # Normalize item
+    normalized_item = item.lower().strip()
+
+    # Get current settings
+    settings_doc = settings_ref.get()
+    current_items: list[str] = []
+    if settings_doc.exists:  # type: ignore[union-attr]
+        data = settings_doc.to_dict() or {}  # type: ignore[union-attr]
+        current_items = data.get("items_at_home", [])
+
+    # Remove item if present
+    current_items = [i for i in current_items if i != normalized_item]
+
+    # Update settings
+    settings_ref.set({"items_at_home": current_items}, merge=True)
+    return current_items
+
+
+def get_items_at_home(household_id: str) -> list[str]:
+    """
+    Get the household's items-at-home list.
+
+    Returns empty list if household has no settings or doesn't exist.
+    """
+    settings = get_household_settings(household_id)
+    if settings is None:
+        return []
+    return settings.get("items_at_home", [])
