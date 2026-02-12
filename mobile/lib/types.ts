@@ -295,6 +295,7 @@ export interface HouseholdSettings {
   household_size: number;
   default_servings: number;
   language: string;
+  items_at_home?: string[];
   dietary: DietarySettings;
   equipment: EquipmentSettings;
 }

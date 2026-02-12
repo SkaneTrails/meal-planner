@@ -104,3 +104,15 @@ class CurrentUserResponse(BaseModel):
     role: str
     household_id: str | None = None
     household_name: str | None = None
+
+
+class ItemAtHomeAdd(BaseModel):
+    """Request to add an item to items-at-home list."""
+
+    item: str = Field(..., min_length=1, max_length=100, description="Item name to add")
+
+
+class ItemAtHomeResponse(BaseModel):
+    """Response containing the updated items-at-home list."""
+
+    items_at_home: list[str]

@@ -40,11 +40,7 @@ const buildItem = (overrides: Partial<GroceryItem> = {}): GroceryItem => ({
 });
 
 const buildList = (items: GroceryItem[]): GroceryList => ({
-  id: 'list-1',
-  household_id: 'hh-1',
-  week_start: '2025-01-13',
   items,
-  last_generated: '2025-01-13T10:00:00',
 });
 
 describe('GroceryItemRow', () => {
@@ -72,8 +68,8 @@ describe('GroceryItemRow', () => {
       <GroceryItemRow
         item={buildItem({
           quantity_sources: [
-            { quantity: 200, unit: 'g', recipe_title: 'Recipe A' },
-            { quantity: 150, unit: 'g', recipe_title: 'Recipe B' },
+            { quantity: 200, unit: 'g', recipe: 'Recipe A' },
+            { quantity: 150, unit: 'g', recipe: 'Recipe B' },
           ],
         })}
       />,
@@ -86,8 +82,8 @@ describe('GroceryItemRow', () => {
       <GroceryItemRow
         item={buildItem({
           quantity_sources: [
-            { quantity: 200, unit: 'g', recipe_title: 'R1' },
-            { quantity: 2, unit: 'dl', recipe_title: 'R2' },
+            { quantity: 200, unit: 'g', recipe: 'R1' },
+            { quantity: 2, unit: 'dl', recipe: 'R2' },
           ],
         })}
       />,
@@ -100,8 +96,8 @@ describe('GroceryItemRow', () => {
       <GroceryItemRow
         item={buildItem({
           quantity_sources: [
-            { quantity: 0.5, unit: 'kg', recipe_title: 'R1' },
-            { quantity: 0.3, unit: 'kg', recipe_title: 'R2' },
+            { quantity: 0.5, unit: 'kg', recipe: 'R1' },
+            { quantity: 0.3, unit: 'kg', recipe: 'R2' },
           ],
         })}
       />,

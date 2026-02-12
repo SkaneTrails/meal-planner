@@ -14,6 +14,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Mock AsyncStorage before importing the module under test
 const mockStorage: Record<string, string> = {};
@@ -31,6 +32,26 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
+// Mock items-at-home state for cloud sync
+let mockItemsAtHome: string[] = [];
+const mockAddItem = vi.fn();
+const mockRemoveItem = vi.fn();
+
+// Store mock implementations that can be reconfigured
+const mockUseItemsAtHome = vi.fn();
+const mockUseAddItemAtHome = vi.fn();
+const mockUseRemoveItemAtHome = vi.fn();
+
+vi.mock('@/lib/hooks/use-admin', () => ({
+  useCurrentUser: vi.fn(() => ({
+    data: { uid: 'test-uid', email: 'test@example.com', household_id: 'test-household' },
+    isLoading: false,
+  })),
+  useItemsAtHome: (...args: unknown[]) => mockUseItemsAtHome(...args),
+  useAddItemAtHome: (...args: unknown[]) => mockUseAddItemAtHome(...args),
+  useRemoveItemAtHome: (...args: unknown[]) => mockUseRemoveItemAtHome(...args),
+}));
+
 // Unmock @/lib/settings-context so we test the real implementation
 // (setup.ts has a global mock for useSettings)
 vi.unmock('@/lib/settings-context');
@@ -38,9 +59,22 @@ vi.unmock('@/lib/settings-context');
 // Must import AFTER mocks are set up
 import { SettingsProvider, useSettings } from '@/lib/settings-context';
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, gcTime: 0 },
+      mutations: { retry: false },
+    },
+  });
+
 const createSettingsWrapper = () => {
+  const queryClient = createTestQueryClient();
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return React.createElement(SettingsProvider, null, children);
+    return React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      React.createElement(SettingsProvider, null, children)
+    );
   };
 }
 
@@ -51,6 +85,42 @@ describe('SettingsProvider', () => {
     for (const key of Object.keys(mockStorage)) {
       delete mockStorage[key];
     }
+    // Reset cloud items at home state
+    mockItemsAtHome = [];
+
+    // Configure mock hooks to read current mockItemsAtHome value
+    // Note: useItemsAtHome returns the current value of mockItemsAtHome at call time
+    mockUseItemsAtHome.mockImplementation(() => ({
+      data: { items_at_home: mockItemsAtHome },
+      isLoading: false,
+    }));
+
+    // For mutations, we update mockItemsAtHome and then trigger a re-render
+    // by having React Query setQueryData behavior simulated
+    mockUseAddItemAtHome.mockImplementation(() => {
+      // Return a fresh mutateAsync each time to pick up current mockItemsAtHome
+      return {
+        mutate: mockAddItem,
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          const normalized = params.item.toLowerCase().trim();
+          if (normalized && !mockItemsAtHome.includes(normalized)) {
+            mockItemsAtHome = [...mockItemsAtHome, normalized].sort();
+          }
+          return { items_at_home: mockItemsAtHome };
+        },
+      };
+    });
+
+    mockUseRemoveItemAtHome.mockImplementation(() => {
+      return {
+        mutate: mockRemoveItem,
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          const normalized = params.item.toLowerCase().trim();
+          mockItemsAtHome = mockItemsAtHome.filter(i => i !== normalized);
+          return { items_at_home: mockItemsAtHome };
+        },
+      };
+    });
   });
 
   it('starts with default settings', async () => {
@@ -66,8 +136,9 @@ describe('SettingsProvider', () => {
   });
 
   it('loads persisted settings from AsyncStorage', async () => {
+    // itemsAtHome is now loaded from cloud, not AsyncStorage
+    mockItemsAtHome = ['salt', 'pepper'];
     mockStorage['@meal_planner_settings'] = JSON.stringify({
-      itemsAtHome: ['salt', 'pepper'],
       language: 'sv',
       favoriteRecipes: ['recipe-1'],
     });
@@ -100,6 +171,16 @@ describe('SettingsProvider', () => {
 
   describe('addItemAtHome', () => {
     it('normalizes to lowercase and trims whitespace', async () => {
+      // Track what the mutation was called with
+      let capturedItem: string | undefined;
+      mockUseAddItemAtHome.mockImplementation(() => ({
+        mutate: vi.fn(),
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          capturedItem = params.item;
+          return { items_at_home: [params.item] };
+        },
+      }));
+
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
@@ -109,10 +190,26 @@ describe('SettingsProvider', () => {
         await result.current.addItemAtHome('  Olive Oil  ');
       });
 
-      expect(result.current.settings.itemsAtHome).toContain('olive oil');
+      // The settings context normalizes before calling the mutation
+      expect(capturedItem).toBe('olive oil');
     });
 
     it('deduplicates items', async () => {
+      // Track mutation calls
+      const mutationCalls: string[] = [];
+      mockUseAddItemAtHome.mockImplementation(() => ({
+        mutate: vi.fn(),
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          mutationCalls.push(params.item);
+          // Simulate deduplication in mock (this happens on server)
+          const normalized = params.item.toLowerCase().trim();
+          if (!mockItemsAtHome.includes(normalized)) {
+            mockItemsAtHome = [...mockItemsAtHome, normalized].sort();
+          }
+          return { items_at_home: mockItemsAtHome };
+        },
+      }));
+
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
@@ -125,13 +222,21 @@ describe('SettingsProvider', () => {
         await result.current.addItemAtHome('Salt');
       });
 
-      const count = result.current.settings.itemsAtHome.filter(
-        (i) => i === 'salt',
-      ).length;
-      expect(count).toBe(1);
+      // Both calls should be made (deduplication happens on server)
+      expect(mutationCalls).toEqual(['salt', 'salt']);
     });
 
     it('sorts items alphabetically', async () => {
+      // Track mutation calls
+      const mutationCalls: string[] = [];
+      mockUseAddItemAtHome.mockImplementation(() => ({
+        mutate: vi.fn(),
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          mutationCalls.push(params.item);
+          return { items_at_home: [] };
+        },
+      }));
+
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
@@ -147,14 +252,21 @@ describe('SettingsProvider', () => {
         await result.current.addItemAtHome('salt');
       });
 
-      expect(result.current.settings.itemsAtHome).toEqual([
-        'butter',
-        'pepper',
-        'salt',
-      ]);
+      // Verify all three items were added (sorting happens on server)
+      expect(mutationCalls).toEqual(['pepper', 'butter', 'salt']);
     });
 
     it('ignores empty/whitespace-only input', async () => {
+      // Track mutation calls
+      const mutationCalls: string[] = [];
+      mockUseAddItemAtHome.mockImplementation(() => ({
+        mutate: vi.fn(),
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          mutationCalls.push(params.item);
+          return { items_at_home: [] };
+        },
+      }));
+
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
@@ -164,15 +276,25 @@ describe('SettingsProvider', () => {
         await result.current.addItemAtHome('   ');
       });
 
-      expect(result.current.settings.itemsAtHome).toEqual([]);
+      // Empty/whitespace input should not call the mutation
+      expect(mutationCalls).toEqual([]);
     });
   });
 
   describe('removeItemAtHome', () => {
     it('removes an existing item (case-insensitive via normalization)', async () => {
-      mockStorage['@meal_planner_settings'] = JSON.stringify({
-        itemsAtHome: ['butter', 'salt'],
-      });
+      // Track what the mutation was called with
+      let capturedItem: string | undefined;
+      mockUseRemoveItemAtHome.mockImplementation(() => ({
+        mutate: vi.fn(),
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          capturedItem = params.item;
+          return { items_at_home: [] };
+        },
+      }));
+
+      // Set initial cloud state
+      mockItemsAtHome = ['butter', 'salt'];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
@@ -183,15 +305,15 @@ describe('SettingsProvider', () => {
         await result.current.removeItemAtHome('Salt');
       });
 
-      expect(result.current.settings.itemsAtHome).toEqual(['butter']);
+      // The settings context normalizes before calling the mutation
+      expect(capturedItem).toBe('salt');
     });
   });
 
   describe('isItemAtHome', () => {
     it('returns true for exact match', async () => {
-      mockStorage['@meal_planner_settings'] = JSON.stringify({
-        itemsAtHome: ['salt', 'olive oil'],
-      });
+      // Set initial cloud state
+      mockItemsAtHome = ['salt', 'olive oil'];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
@@ -202,9 +324,8 @@ describe('SettingsProvider', () => {
     });
 
     it('matches when grocery item contains a home item', async () => {
-      mockStorage['@meal_planner_settings'] = JSON.stringify({
-        itemsAtHome: ['salt'],
-      });
+      // Set initial cloud state
+      mockItemsAtHome = ['salt'];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
@@ -216,9 +337,8 @@ describe('SettingsProvider', () => {
     });
 
     it('matches when home item contains the grocery item', async () => {
-      mockStorage['@meal_planner_settings'] = JSON.stringify({
-        itemsAtHome: ['olive oil'],
-      });
+      // Set initial cloud state
+      mockItemsAtHome = ['olive oil'];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
@@ -230,9 +350,8 @@ describe('SettingsProvider', () => {
     });
 
     it('returns false for non-matching item', async () => {
-      mockStorage['@meal_planner_settings'] = JSON.stringify({
-        itemsAtHome: ['salt'],
-      });
+      // Set initial cloud state
+      mockItemsAtHome = ['salt'];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),

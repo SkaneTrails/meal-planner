@@ -63,6 +63,9 @@ class HouseholdSettings(BaseModel):
     default_servings: int = Field(default=2, ge=1, le=20, description="Default number of servings for recipes")
     language: str = Field(default="sv", description="Preferred language for recipes (sv, en, it)")
     ai_features_enabled: bool = Field(default=True, description="Show AI enhancement controls in UI")
+    items_at_home: list[str] = Field(
+        default_factory=list, description="Ingredients always at home (excluded from grocery lists)"
+    )
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
     equipment: EquipmentSettings = Field(default_factory=EquipmentSettings)
@@ -90,7 +93,11 @@ class EquipmentSettingsUpdate(BaseModel):
 
 
 class HouseholdSettingsUpdate(BaseModel):
-    """Partial update for household settings (all fields optional)."""
+    """Partial update for household settings (all fields optional).
+
+    Note: items_at_home is NOT included here - use the dedicated
+    /items-at-home endpoints which handle normalization and deduplication.
+    """
 
     household_size: int | None = Field(default=None, ge=1, le=20)
     default_servings: int | None = Field(default=None, ge=1, le=20)

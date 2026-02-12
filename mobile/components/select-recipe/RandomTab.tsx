@@ -208,7 +208,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
   >
     {(recipe.thumbnail_url || recipe.image_url) && (
       <Image
-        source={{ uri: recipe.thumbnail_url || recipe.image_url }}
+        source={{ uri: (recipe.thumbnail_url || recipe.image_url) ?? undefined }}
         style={{ width: '100%', height: 180 }}
         resizeMode="cover"
       />

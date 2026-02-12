@@ -1,6 +1,8 @@
 /**
- * Settings context for app-wide settings including "items at home" list.
- * Uses AsyncStorage for persistence.
+ * Settings context for app-wide settings.
+ *
+ * - itemsAtHome: Synced with cloud (per-household via API)
+ * - language, favoriteRecipes, showHiddenRecipes: Local storage (per-device via AsyncStorage)
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,8 +12,15 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
+import {
+  useAddItemAtHome,
+  useCurrentUser,
+  useItemsAtHome,
+  useRemoveItemAtHome,
+} from './hooks/use-admin';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
@@ -23,11 +32,14 @@ export const LANGUAGES: { code: AppLanguage; label: string; flag: string }[] = [
   { code: 'it', label: 'Italiano', flag: '🇮🇹' },
 ];
 
-interface Settings {
-  itemsAtHome: string[]; // List of ingredients always at home (won't appear in grocery list)
-  language: AppLanguage; // App language
-  favoriteRecipes: string[]; // List of favorite recipe IDs
-  showHiddenRecipes: boolean; // Show recipes marked with thumbs-down
+interface LocalSettings {
+  language: AppLanguage;
+  favoriteRecipes: string[];
+  showHiddenRecipes: boolean;
+}
+
+interface Settings extends LocalSettings {
+  itemsAtHome: string[]; // Synced from cloud
 }
 
 interface SettingsContextType {
@@ -42,8 +54,7 @@ interface SettingsContextType {
   toggleShowHiddenRecipes: () => Promise<void>;
 }
 
-const defaultSettings: Settings = {
-  itemsAtHome: [],
+const defaultLocalSettings: LocalSettings = {
   language: 'en',
   favoriteRecipes: [],
   showHiddenRecipes: false,
@@ -52,62 +63,84 @@ const defaultSettings: Settings = {
 const SettingsContext = createContext<SettingsContextType | null>(null);
 
 export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
-  const [isLoading, setIsLoading] = useState(true);
+  const [localSettings, setLocalSettings] = useState<LocalSettings>(defaultLocalSettings);
+  const [isLocalLoading, setIsLocalLoading] = useState(true);
 
+  // Cloud state for items at home
+  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
+  const householdId = currentUser?.household_id ?? null;
+  const { data: itemsAtHomeData, isLoading: isItemsLoading } = useItemsAtHome(householdId);
+  const addItemMutation = useAddItemAtHome();
+  const removeItemMutation = useRemoveItemAtHome();
+
+  // Load local settings from AsyncStorage
   useEffect(() => {
-    const loadSettings = async () => {
+    const loadLocalSettings = async () => {
       try {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
-          setSettings({ ...defaultSettings, ...parsed });
+          // Only load local settings fields, not itemsAtHome (now in cloud)
+          setLocalSettings({
+            language: parsed.language ?? defaultLocalSettings.language,
+            favoriteRecipes: parsed.favoriteRecipes ?? defaultLocalSettings.favoriteRecipes,
+            showHiddenRecipes: parsed.showHiddenRecipes ?? defaultLocalSettings.showHiddenRecipes,
+          });
         }
       } catch (error) {
-        console.error('Failed to load settings:', error);
+        console.error('Failed to load local settings:', error);
       } finally {
-        setIsLoading(false);
+        setIsLocalLoading(false);
       }
     };
-    loadSettings();
+    loadLocalSettings();
   }, []);
 
-  const saveSettings = useCallback(async (newSettings: Settings) => {
+  const saveLocalSettings = useCallback(async (newSettings: LocalSettings) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
-      setSettings(newSettings);
+      setLocalSettings(newSettings);
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      console.error('Failed to save local settings:', error);
       throw error;
     }
   }, []);
 
+  // Combined settings object
+  const settings: Settings = useMemo(
+    () => ({
+      ...localSettings,
+      itemsAtHome: itemsAtHomeData?.items_at_home ?? [],
+    }),
+    [localSettings, itemsAtHomeData],
+  );
+
+  const isLoading = isLocalLoading || isUserLoading || isItemsLoading;
+
   const addItemAtHome = useCallback(
     async (item: string) => {
+      if (!householdId) {
+        console.warn('Cannot add item at home: no household');
+        return;
+      }
       const normalizedItem = item.toLowerCase().trim();
       if (!normalizedItem) return;
 
-      const newSettings = {
-        ...settings,
-        itemsAtHome: [
-          ...new Set([...settings.itemsAtHome, normalizedItem]),
-        ].sort(),
-      };
-      await saveSettings(newSettings);
+      await addItemMutation.mutateAsync({ householdId, item: normalizedItem });
     },
-    [settings, saveSettings],
+    [householdId, addItemMutation],
   );
 
   const removeItemAtHome = useCallback(
     async (item: string) => {
+      if (!householdId) {
+        console.warn('Cannot remove item at home: no household');
+        return;
+      }
       const normalizedItem = item.toLowerCase().trim();
-      const newSettings = {
-        ...settings,
-        itemsAtHome: settings.itemsAtHome.filter((i) => i !== normalizedItem),
-      };
-      await saveSettings(newSettings);
+      await removeItemMutation.mutateAsync({ householdId, item: normalizedItem });
     },
-    [settings, saveSettings],
+    [householdId, removeItemMutation],
   );
 
   const isItemAtHome = useCallback(
@@ -125,40 +158,40 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   const setLanguage = useCallback(
     async (language: AppLanguage) => {
       const newSettings = {
-        ...settings,
+        ...localSettings,
         language,
       };
-      await saveSettings(newSettings);
+      await saveLocalSettings(newSettings);
     },
-    [settings, saveSettings],
+    [localSettings, saveLocalSettings],
   );
 
   const toggleFavorite = useCallback(
     async (recipeId: string) => {
-      const isFav = settings.favoriteRecipes.includes(recipeId);
+      const isFav = localSettings.favoriteRecipes.includes(recipeId);
       const newSettings = {
-        ...settings,
+        ...localSettings,
         favoriteRecipes: isFav
-          ? settings.favoriteRecipes.filter((id) => id !== recipeId)
-          : [...settings.favoriteRecipes, recipeId],
+          ? localSettings.favoriteRecipes.filter((id) => id !== recipeId)
+          : [...localSettings.favoriteRecipes, recipeId],
       };
-      await saveSettings(newSettings);
+      await saveLocalSettings(newSettings);
     },
-    [settings, saveSettings],
+    [localSettings, saveLocalSettings],
   );
 
   const isFavorite = useCallback(
-    (recipeId: string) => settings.favoriteRecipes.includes(recipeId),
-    [settings.favoriteRecipes],
+    (recipeId: string) => localSettings.favoriteRecipes.includes(recipeId),
+    [localSettings.favoriteRecipes],
   );
 
   const toggleShowHiddenRecipes = useCallback(async () => {
     const newSettings = {
-      ...settings,
-      showHiddenRecipes: !settings.showHiddenRecipes,
+      ...localSettings,
+      showHiddenRecipes: !localSettings.showHiddenRecipes,
     };
-    await saveSettings(newSettings);
-  }, [settings, saveSettings]);
+    await saveLocalSettings(newSettings);
+  }, [localSettings, saveLocalSettings]);
 
   return (
     <SettingsContext.Provider
