@@ -90,7 +90,7 @@ const it: Translations = {
   },
 
   home: {
-    greeting: 'Buongiorno',  // Default fallback
+    greeting: 'Buongiorno', // Default fallback
     greetingMorning: 'Buongiorno',
     greetingAfternoon: 'Buon pomeriggio',
     greetingEvening: 'Buona sera',
@@ -140,14 +140,16 @@ const it: Translations = {
     noMatchesFound: 'Nessun risultato',
     emptyLibrary: 'Il tuo ricettario è vuoto',
     tryAdjusting: 'Prova a modificare la ricerca o i filtri',
-    startBuilding: 'Inizia a costruire la tua collezione aggiungendo le tue ricette preferite',
+    startBuilding:
+      'Inizia a costruire la tua collezione aggiungendo le tue ricette preferite',
     addFirstRecipe: 'Aggiungi la tua prima ricetta',
   },
 
   recipe: {
     loading: 'Caricamento ricetta...',
     notFound: 'Ricetta non trovata',
-    notFoundMessage: 'Questa ricetta potrebbe essere stata eliminata o spostata',
+    notFoundMessage:
+      'Questa ricetta potrebbe essere stata eliminata o spostata',
     ingredients: 'Ingredienti',
     noIngredients: 'Nessun ingrediente elencato',
     instructions: 'Istruzioni',
@@ -158,22 +160,26 @@ const it: Translations = {
     viewSource: 'Vedi fonte',
     showOriginal: 'Mostra originale',
     showEnhanced: 'Mostra migliorata',
-    reviewBanner: 'Questa ricetta è stata migliorata dall\'AI',
+    reviewBanner: "Questa ricetta è stata migliorata dall'AI",
     reviewBannerDescription: 'Rivedi le modifiche e decidi se mantenerle',
     approveEnhancement: 'Mantieni migliorata',
     rejectEnhancement: 'Usa originale',
     enhancementApproved: 'Miglioramento approvato',
-    enhancementApprovedMessage: 'La versione migliorata verrà mostrata per impostazione predefinita',
+    enhancementApprovedMessage:
+      'La versione migliorata verrà mostrata per impostazione predefinita',
     enhancementRejected: 'Miglioramento rifiutato',
-    enhancementRejectedMessage: 'La versione originale verrà mostrata per impostazione predefinita',
+    enhancementRejectedMessage:
+      'La versione originale verrà mostrata per impostazione predefinita',
     reviewFailed: 'Impossibile salvare la tua revisione',
     cannotReviewEnhancement: 'Impossibile revisionare',
-    cannotReviewEnhancementMessage: 'Copia prima questa ricetta nel tuo nucleo familiare per revisionare il miglioramento.',
+    cannotReviewEnhancementMessage:
+      'Copia prima questa ricetta nel tuo nucleo familiare per revisionare il miglioramento.',
     enhanceRecipe: 'Migliora con AI',
-    enhanceConfirm: 'Usare l\'AI per migliorare questa ricetta con istruzioni migliori, misure precise e consigli di cottura?',
+    enhanceConfirm:
+      "Usare l'AI per migliorare questa ricetta con istruzioni migliori, misure precise e consigli di cottura?",
     enhance: 'Migliora',
     enhanceSuccess: 'Ricetta migliorata',
-    enhanceSuccessMessage: 'La ricetta è stata migliorata dall\'AI',
+    enhanceSuccessMessage: "La ricetta è stata migliorata dall'AI",
     enhanceFailed: 'Impossibile migliorare la ricetta',
     addToMealPlan: 'Aggiungi al menu',
     thisWeek: 'Questa settimana',
@@ -185,11 +191,13 @@ const it: Translations = {
     mealTypeLabel: 'Tipo di pasto',
     visibilityLabel: 'Visibilità',
     household: 'Nucleo familiare',
-    transferDescription: 'Trasferisci questa ricetta a un altro nucleo familiare',
+    transferDescription:
+      'Trasferisci questa ricetta a un altro nucleo familiare',
     timeAndServings: 'Tempo e porzioni',
     tags: 'Tag',
     addTag: 'Aggiungi un tag...',
-    noTags: 'Nessun tag ancora. Aggiungine qualcuno per organizzare le tue ricette!',
+    noTags:
+      'Nessun tag ancora. Aggiungine qualcuno per organizzare le tue ricette!',
     unassigned: 'Non assegnata',
     transferring: 'Trasferimento...',
     imageUrl: 'URL immagine',
@@ -207,14 +215,17 @@ const it: Translations = {
     chooseOption: "Scegli un'opzione",
     takePhoto: 'Scatta foto',
     chooseFromLibrary: 'Scegli dalla libreria',
-    chooseFromLibraryOrUrl: 'Clicca OK per inserire un URL, oppure Annulla per scegliere un file dal computer.',
+    chooseFromLibraryOrUrl:
+      'Clicca OK per inserire un URL, oppure Annulla per scegliere un file dal computer.',
     enterUrl: 'Inserisci URL',
     permissionNeeded: 'Permesso necessario',
-    cameraPermission: 'Il permesso della fotocamera è necessario per scattare foto',
+    cameraPermission:
+      'Il permesso della fotocamera è necessario per scattare foto',
     libraryPermission: 'Il permesso della libreria foto è necessario',
     photoUploaded: 'Foto ricetta caricata!',
     savedLocally: 'Salvato localmente',
-    savedLocallyMessage: 'Foto salvata localmente (caricamento nel cloud fallito)',
+    savedLocallyMessage:
+      'Foto salvata localmente (caricamento nel cloud fallito)',
     failedToUpdatePhoto: 'Impossibile aggiornare la foto',
     photoUpdated: 'Foto ricetta aggiornata!',
     addedToMealPlan: 'Aggiunto!',
@@ -224,7 +235,8 @@ const it: Translations = {
     pleaseWait: 'Attendere',
     loadingAccount: 'Caricamento informazioni account. Riprova tra un momento.',
     cannotRate: 'Impossibile valutare',
-    cannotRateMessage: 'Copia prima questa ricetta nel tuo nucleo familiare per valutarla.',
+    cannotRateMessage:
+      'Copia prima questa ricetta nel tuo nucleo familiare per valutarla.',
     failedToUpdateRating: 'Impossibile aggiornare la valutazione',
     deleteRecipe: 'Elimina ricetta',
     deleteConfirm: 'Sei sicuro di voler eliminare "{{title}}"?',
@@ -235,9 +247,10 @@ const it: Translations = {
     yesDelete: 'Sì, elimina',
     keepIt: 'No, tienila',
     cannotEdit: 'Impossibile modificare',
-    cannotEditMessage: 'Copia prima questa ricetta nel tuo nucleo familiare per modificarla.',
-    couldNotOpenUrl: 'Impossibile aprire l\'URL della ricetta',
-    shareMessage: 'Dai un\'occhiata a questa ricetta: {{title}}\n\n{{url}}',
+    cannotEditMessage:
+      'Copia prima questa ricetta nel tuo nucleo familiare per modificarla.',
+    couldNotOpenUrl: "Impossibile aprire l'URL della ricetta",
+    shareMessage: "Dai un'occhiata a questa ricetta: {{title}}\n\n{{url}}",
     copyToHousehold: 'Copia nel tuo nucleo familiare',
     share: 'Condividi',
   },
@@ -257,7 +270,8 @@ const it: Translations = {
     selectMeals: 'Seleziona pasti',
     selectMealsSubtitle: 'Scegli quali pasti includere nella lista della spesa',
     noMealsSelected: 'Nessun pasto selezionato',
-    noMealsSelectedMessage: 'Seleziona almeno un pasto per creare una lista della spesa.',
+    noMealsSelectedMessage:
+      'Seleziona almeno un pasto per creare una lista della spesa.',
     failedToRemoveMeal: 'Impossibile rimuovere il pasto. Riprova.',
     failedToSaveNote: 'Impossibile salvare la nota. Riprova.',
     failedToSaveSelections: 'Impossibile salvare le selezioni',
@@ -298,20 +312,23 @@ const it: Translations = {
       shuffle: 'Mescola',
       addToPlan: 'Aggiungi al piano',
       noRecipes: 'Nessuna ricetta {{mealType}} ancora',
-      addRecipesHint: 'Aggiungi ricette con il tipo "{{mealType}}" per usare la selezione casuale',
+      addRecipesHint:
+        'Aggiungi ricette con il tipo "{{mealType}}" per usare la selezione casuale',
       servings: '{{count}} porzioni',
       time: '{{count}} min',
     },
     copy: {
       title: 'Copia un pasto dal tuo piano esistente:',
       noMeals: 'Nessun pasto da copiare',
-      planFirst: 'Pianifica prima qualche pasto, poi potrai copiarli in altri giorni',
+      planFirst:
+        'Pianifica prima qualche pasto, poi potrai copiarli in altri giorni',
     },
     empty: {
       noMatches: 'Nessun risultato',
       noRecipes: 'Nessuna ricetta ancora',
       tryDifferent: 'Prova un termine di ricerca diverso',
-      addRecipesFirst: 'Aggiungi prima delle ricette per pianificare i tuoi pasti',
+      addRecipesFirst:
+        'Aggiungi prima delle ricette per pianificare i tuoi pasti',
       addRecipeButton: 'Aggiungi una ricetta',
     },
     clearMeal: 'Cancella questo pasto',
@@ -337,9 +354,11 @@ const it: Translations = {
     addItemPlaceholder: 'Aggiungi un articolo...',
     addButton: 'Aggiungi',
     emptyList: 'La tua lista è vuota',
-    emptyListSubtitle: 'Aggiungi pasti al piano o aggiungi articoli manualmente',
+    emptyListSubtitle:
+      'Aggiungi pasti al piano o aggiungi articoli manualmente',
     clearEntireList: 'Cancellare tutta la lista?',
-    clearEntireListMessage: 'Questo rimuoverà tutti gli articoli dalla lista della spesa.',
+    clearEntireListMessage:
+      'Questo rimuoverà tutti gli articoli dalla lista della spesa.',
     clear: 'Cancella',
     failedToClearList: 'Impossibile cancellare la lista',
     categories: {
@@ -353,14 +372,16 @@ const it: Translations = {
       other: 'Altro',
     },
     noItemsInCategory: 'Nessun articolo ancora',
-    emptyFromMealPlan: 'Aggiungi pasti al piano per generare una lista della spesa',
+    emptyFromMealPlan:
+      'Aggiungi pasti al piano per generare una lista della spesa',
     doneSorting: 'Ordinamento completato',
     sortItems: 'Ordina articoli',
     reorderHintWeb: 'Trascina per riordinare',
     reorderHintMobile: 'Tieni premuto e trascina per riordinare',
     addItemLabel: 'Aggiungi articolo',
     addItemExamplePlaceholder: 'es. Latte, 2 litri',
-    goToMealPlan: 'Vai al Menu settimanale e tocca "Crea lista" per generare la lista della spesa dai pasti pianificati.',
+    goToMealPlan:
+      'Vai al Menu settimanale e tocca "Crea lista" per generare la lista della spesa dai pasti pianificati.',
   },
 
   settings: {
@@ -378,7 +399,7 @@ const it: Translations = {
     itemsAtHome: 'Articoli a casa',
     itemsAtHomeDesc: 'Non appariranno nella lista della spesa',
     yourItems: 'I tuoi articoli ({{count}})',
-    addItemPlaceholder: 'Aggiungi un articolo (es. sale, olio d\'oliva)',
+    addItemPlaceholder: "Aggiungi un articolo (es. sale, olio d'oliva)",
     suggestions: 'Suggerimenti',
     noItemsYet: 'Nessun articolo ancora',
     addItemsHint: 'Aggiungi articoli che hai sempre a casa',
@@ -397,12 +418,21 @@ const it: Translations = {
     recipeLibrary: 'Libreria Ricette',
     recipeLibraryDesc: 'Gestisci la tua collezione di ricette',
     showHiddenRecipes: 'Mostra Ricette Nascoste',
-    showHiddenRecipesDesc: 'Includi le ricette che hai segnato con il pollice in giù',
+    showHiddenRecipesDesc:
+      'Includi le ricette che hai segnato con il pollice in giù',
+    membersSection: 'Membri',
+    membersSectionDesc: 'Persone nel tuo nucleo familiare',
+    addMemberPlaceholder: 'Indirizzo email',
+    memberAdded: 'Membro aggiunto',
+    memberRemoved: 'Membro rimosso',
+    removeMemberConfirm: 'Rimuovere {{name}} dal tuo nucleo familiare?',
+    cannotRemoveSelf: 'Non puoi rimuovere te stesso',
   },
 
   admin: {
     accessRequired: 'Accesso admin richiesto',
-    accessRequiredMessage: 'Hai bisogno dei permessi di superutente per accedere a questa area.',
+    accessRequiredMessage:
+      'Hai bisogno dei permessi di superutente per accedere a questa area.',
     title: 'Admin',
     subtitle: 'Pannello superutente',
     loggedInAs: 'Connesso come',
@@ -451,13 +481,16 @@ const it: Translations = {
     addMore: 'Aggiungi altre',
     importFailed: 'Importazione fallita',
     importFailedDefault: 'Impossibile importare la ricetta',
-    siteBlocked: '{{host}} blocca l\'importazione automatica. Prova ad aggiungere la ricetta manualmente copiando gli ingredienti e le istruzioni dal sito web.',
-    siteNotSupported: '{{host}} non è supportato per l\'importazione automatica. Prova ad aggiungere la ricetta manualmente copiando gli ingredienti e le istruzioni dal sito web.',
+    siteBlocked:
+      "{{host}} blocca l'importazione automatica. Prova ad aggiungere la ricetta manualmente copiando gli ingredienti e le istruzioni dal sito web.",
+    siteNotSupported:
+      "{{host}} non è supportato per l'importazione automatica. Prova ad aggiungere la ricetta manualmente copiando gli ingredienti e le istruzioni dal sito web.",
     createFailed: 'Creazione fallita',
     createFailedDefault: 'Impossibile creare la ricetta',
     // Manual form
     manualTitle: 'Crea ricetta',
-    manualDescription: 'Compila i dettagli per creare una nuova ricetta manualmente.',
+    manualDescription:
+      'Compila i dettagli per creare una nuova ricetta manualmente.',
     recipeTitle: 'Titolo ricetta',
     titlePlaceholder: 'es. Pasta Carbonara',
     titleRequired: 'Inserisci un titolo per la ricetta',
@@ -465,7 +498,8 @@ const it: Translations = {
     ingredients: 'Ingredienti',
     ingredientsPlaceholder: 'Un ingrediente per riga\nes. 200g pasta\n4 uova',
     instructions: 'Istruzioni',
-    instructionsPlaceholder: 'Un passaggio per riga\nes. Porta a ebollizione l\'acqua\nCuoci la pasta per 10 minuti',
+    instructionsPlaceholder:
+      "Un passaggio per riga\nes. Porta a ebollizione l'acqua\nCuoci la pasta per 10 minuti",
     imageOptional: 'Immagine (opzionale)',
     addImage: 'Aggiungi immagine',
     creating: 'Creazione...',
@@ -483,7 +517,8 @@ const it: Translations = {
     appName: 'Aroma',
     tagline: 'Cucina con intenzione.',
     continueWithGoogle: 'Continua con Google',
-    syncMessage: 'Accedi per sincronizzare le tue ricette su tutti i dispositivi',
+    syncMessage:
+      'Accedi per sincronizzare le tue ricette su tutti i dispositivi',
   },
 
   noAccess: {

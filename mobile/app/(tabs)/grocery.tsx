@@ -3,28 +3,45 @@
  * Layout matches Streamlit app design.
  */
 
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { borderRadius, colors, spacing, fontSize, letterSpacing, fontWeight, fontFamily } from '@/lib/theme';
-import { useMealPlan, useAllRecipes, useGroceryState } from '@/lib/hooks';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Text, TextInput, View } from 'react-native';
+import {
+  AnimatedPressable,
+  GradientBackground,
+  GroceryListSkeleton,
+  GroceryListView,
+} from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
-import { useSettings } from '@/lib/settings-context';
+import { useAllRecipes, useGroceryState, useMealPlan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { AnimatedPressable, GroceryListView, GradientBackground, GroceryListSkeleton } from '@/components';
-import { scaleIngredient, normalizeIngredientName, parseIngredient } from '@/lib/utils/ingredientParser';
+import { useSettings } from '@/lib/settings-context';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  letterSpacing,
+  spacing,
+} from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
+import {
+  normalizeIngredientName,
+  parseIngredient,
+  scaleIngredient,
+} from '@/lib/utils/ingredientParser';
 
 export default function GroceryScreen() {
   const router = useRouter();
-  const { checkedItems, setCheckedItems, clearChecked, refreshFromStorage } = useGroceryState();
+  const { checkedItems, setCheckedItems, clearChecked } = useGroceryState();
   const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
@@ -39,9 +56,12 @@ export default function GroceryScreen() {
   const { data: mealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
 
-  const filterOutItemsAtHome = useCallback((itemName: string) => {
-    return isItemAtHome(itemName);
-  }, [isItemAtHome]);
+  const filterOutItemsAtHome = useCallback(
+    (itemName: string) => {
+      return isItemAtHome(itemName);
+    },
+    [isItemAtHome],
+  );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -82,7 +102,7 @@ export default function GroceryScreen() {
       };
 
       loadData();
-    }, []) // Empty deps - only run once on mount/focus
+    }, []), // Empty deps - only run once on mount/focus
   );
 
   // Fallback: ensure loading state is cleared even if useFocusEffect doesn't fire
@@ -97,9 +117,18 @@ export default function GroceryScreen() {
   }, [isLoading, hasLoadedOnce]);
 
   // Memoize serialized values to prevent infinite loops
-  const mealPlanMealsJson = useMemo(() => JSON.stringify(mealPlan?.meals || {}), [mealPlan?.meals]);
-  const mealServingsJson = useMemo(() => JSON.stringify(mealServings), [mealServings]);
-  const selectedMealKeysStr = useMemo(() => selectedMealKeys.join(','), [selectedMealKeys]);
+  const mealPlanMealsJson = useMemo(
+    () => JSON.stringify(mealPlan?.meals || {}),
+    [mealPlan?.meals],
+  );
+  const mealServingsJson = useMemo(
+    () => JSON.stringify(mealServings),
+    [mealServings],
+  );
+  const selectedMealKeysStr = useMemo(
+    () => selectedMealKeys.join(','),
+    [selectedMealKeys],
+  );
 
   const prevGeneratedItemsLengthRef = useRef(0);
   prevGeneratedItemsLengthRef.current = generatedItems.length;
@@ -118,9 +147,9 @@ export default function GroceryScreen() {
     // Helper to strip step references like "(steg 2)", "(step 3)", "till stekning", "till smör", etc.
     const stripStepReference = (text: string): string => {
       return text
-        .replace(/\s*\(steg\s*\d+\)\s*$/i, '')  // (steg 2)
-        .replace(/\s*\(step\s*\d+\)\s*$/i, '')  // (step 2)
-        .replace(/\s+till\s+\w+$/i, '')          // till stekning, till smör, etc.
+        .replace(/\s*\(steg\s*\d+\)\s*$/i, '') // (steg 2)
+        .replace(/\s*\(step\s*\d+\)\s*$/i, '') // (step 2)
+        .replace(/\s+till\s+\w+$/i, '') // till stekning, till smör, etc.
         .trim();
     };
 
@@ -135,9 +164,10 @@ export default function GroceryScreen() {
       const recipeServings = recipe.servings || 2;
       const multiplier = requestedServings / recipeServings;
 
-      const sourceLabel = multiplier !== 1
-        ? `${recipe.title} (×${requestedServings})`
-        : recipe.title;
+      const sourceLabel =
+        multiplier !== 1
+          ? `${recipe.title} (×${requestedServings})`
+          : recipe.title;
 
       recipe.ingredients.forEach((ingredient) => {
         const cleanedIngredient = stripStepReference(ingredient);
@@ -177,13 +207,22 @@ export default function GroceryScreen() {
 
     const items = Array.from(ingredientsMap.values());
     setGeneratedItems(items);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mealPlanMealsJson, recipes.length, selectedMealKeysStr, mealServingsJson]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    mealPlanMealsJson,
+    recipes.length,
+    selectedMealKeysStr,
+    mealServingsJson,
+  ]);
 
   useEffect(() => {
     if (!isLoading) {
-      AsyncStorage.setItem('grocery_custom_items', JSON.stringify(customItems))
-        .catch((error) => console.error('[Grocery] Error saving custom items:', error));
+      AsyncStorage.setItem(
+        'grocery_custom_items',
+        JSON.stringify(customItems),
+      ).catch((error) =>
+        console.error('[Grocery] Error saving custom items:', error),
+      );
     }
   }, [customItems, isLoading]);
 
@@ -239,7 +278,7 @@ export default function GroceryScreen() {
       [
         { text: t('common.cancel'), style: 'cancel' },
         { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-      ]
+      ],
     );
   };
 
@@ -265,14 +304,16 @@ export default function GroceryScreen() {
   const checkedCount = checkedItems.size;
 
   const hiddenAtHomeCount = useMemo(() => {
-    return groceryListWithChecked.items.filter(item => isItemAtHome(item.name)).length;
+    return groceryListWithChecked.items.filter((item) =>
+      isItemAtHome(item.name),
+    ).length;
   }, [groceryListWithChecked.items, isItemAtHome]);
 
   const itemsToBuy = totalItems - hiddenAtHomeCount;
   // Checked items that are not at home (for progress display)
   const checkedItemsToBuy = useMemo(() => {
-    return groceryListWithChecked.items.filter(item =>
-      !isItemAtHome(item.name) && checkedItems.has(item.name)
+    return groceryListWithChecked.items.filter(
+      (item) => !isItemAtHome(item.name) && checkedItems.has(item.name),
     ).length;
   }, [groceryListWithChecked.items, isItemAtHome, checkedItems]);
 
@@ -281,21 +322,32 @@ export default function GroceryScreen() {
     return (
       <GradientBackground neutral>
         <View style={{ flex: 1 }}>
-          <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
-            <Text style={{
-              fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.display,
-              color: '#3D3D3D',
-              letterSpacing: letterSpacing.tight,
-              textAlign: 'center',
-            }}>{t('grocery.title')}</Text>
-            <Text style={{
-              fontSize: fontSize.md,
-              fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.6)',
-              marginTop: 2,
-              textAlign: 'center',
-            }}>{t('grocery.thisWeeksShopping')}</Text>
+          <View
+            style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
+          >
+            <Text
+              style={{
+                fontSize: fontSize['3xl'],
+                fontFamily: fontFamily.displayBold,
+                fontWeight: '700',
+                color: '#3D3D3D',
+                letterSpacing: letterSpacing.tight,
+                textAlign: 'center',
+              }}
+            >
+              {t('grocery.title')}
+            </Text>
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontFamily: fontFamily.body,
+                color: 'rgba(93, 78, 64, 0.6)',
+                marginTop: 2,
+                textAlign: 'center',
+              }}
+            >
+              {t('grocery.thisWeeksShopping')}
+            </Text>
           </View>
           <GroceryListSkeleton />
         </View>
@@ -305,218 +357,326 @@ export default function GroceryScreen() {
 
   return (
     <GradientBackground neutral>
-      <View style={{ flex: 1, paddingBottom: 100 }}>
-      {/* Header with title */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{
-          fontSize: fontSize['3xl'],
-          fontFamily: fontFamily.display,
-          color: '#3D3D3D',
-          letterSpacing: letterSpacing.tight,
-          textAlign: 'center',
-        }}>{t('grocery.title')}</Text>
-        <Text style={{
-          fontSize: fontSize.md,
-          fontFamily: fontFamily.body,
-          color: 'rgba(93, 78, 64, 0.6)',
-          marginTop: 2,
-          textAlign: 'center',
-        }}>{t('grocery.thisWeeksShopping')}</Text>
-      </View>
+      <View style={{ flex: 1, paddingBottom: 70 }}>
+        {/* Header with title */}
+        <View
+          style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
+        >
+          <Text
+            style={{
+              fontSize: fontSize['3xl'],
+              fontFamily: fontFamily.displayBold,
+              fontWeight: '700',
+              color: '#3D3D3D',
+              letterSpacing: letterSpacing.tight,
+              textAlign: 'center',
+            }}
+          >
+            {t('grocery.title')}
+          </Text>
+          <Text
+            style={{
+              fontSize: fontSize.md,
+              fontFamily: fontFamily.body,
+              color: 'rgba(93, 78, 64, 0.6)',
+              marginTop: 2,
+              textAlign: 'center',
+            }}
+          >
+            {t('grocery.thisWeeksShopping')}
+          </Text>
+        </View>
 
-      {/* Stats and controls */}
-      <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>
-        {/* Stats card - off-white surface for stacking effect */}
-        <View style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: borderRadius.md,
-          padding: spacing.md,
-          marginBottom: spacing.sm,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.06,
-          shadowRadius: 4,
-          elevation: 2,
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.7)' }}>{t('grocery.thisWeeksShopping')}</Text>
-              {/* Progress text - stronger hierarchy, emotional anchor */}
-              <Text style={{
-                fontSize: 22,
-                fontWeight: '700',
-                color: '#3D3D3D',
-                marginTop: 4,
-              }}>
-                {itemsToBuy === 0
-                  ? t('grocery.noItemsYet')
-                  : t('grocery.itemsProgress', { checked: checkedItemsToBuy, total: itemsToBuy })}
-              </Text>
-            </View>
-
-            <View style={{ flexDirection: 'row', gap: 6 }}>
-              {/* Add Item button - PRIMARY action */}
-              <AnimatedPressable
-                onPress={() => setShowAddItem(!showAddItem)}
-                hoverScale={1.08}
-                pressScale={0.95}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                  borderRadius: 10,
-                  backgroundColor: '#6B8E6B',
-                }}
-              >
-                <Ionicons name={showAddItem ? 'close' : 'add'} size={18} color="#FFFFFF" />
-              </AnimatedPressable>
-
-              {/* Clear All button - secondary, lower opacity */}
-              {totalItems > 0 && (
-                <AnimatedPressable
-                  onPress={handleClearAll}
-                  hoverScale={1.08}
-                  pressScale={0.95}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 10,
-                    paddingVertical: 8,
-                    borderRadius: 10,
-                    backgroundColor: 'rgba(93, 78, 64, 0.08)',
-                  }}
-                >
-                  <Ionicons name="trash-outline" size={16} color="rgba(93, 78, 64, 0.5)" />
-                </AnimatedPressable>
-              )}
-
-              {/* Reset checked button - secondary, lower opacity */}
-              {checkedCount > 0 && (
-                <AnimatedPressable
-                  onPress={handleClearChecked}
-                  hoverScale={1.08}
-                  pressScale={0.95}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 10,
-                    paddingVertical: 8,
-                    borderRadius: 10,
-                    backgroundColor: 'rgba(93, 78, 64, 0.08)',
-                  }}
-                >
-                  <Ionicons name="refresh" size={16} color="rgba(93, 78, 64, 0.5)" />
-                </AnimatedPressable>
-              )}
-            </View>
-          </View>
-
-          {/* Progress bar - thicker with rounded ends */}
-          {itemsToBuy > 0 && (
-            <View style={{ marginTop: 14 }}>
-              <View style={{ height: 6, backgroundColor: 'rgba(107, 142, 107, 0.15)', borderRadius: 3, overflow: 'hidden' }}>
-                <View
-                  style={{ height: '100%', backgroundColor: '#6B8E6B', borderRadius: 3, width: `${(checkedItemsToBuy / itemsToBuy) * 100}%` }}
-                />
-              </View>
-            </View>
-          )}
-
-          {/* Items at home indicator */}
-          {hiddenAtHomeCount > 0 && (
-            <AnimatedPressable
-              onPress={() => router.push('/settings')}
-              hoverScale={1.02}
-              pressScale={0.98}
+        {/* Stats and controls */}
+        <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>
+          {/* Stats card - off-white surface for stacking effect */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: borderRadius.md,
+              padding: spacing.md,
+              marginBottom: spacing.sm,
+              shadowColor: '#000',
+              shadowOffset: { width: 1, height: 1 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginTop: 10,
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                backgroundColor: 'rgba(107, 142, 107, 0.15)',
-                borderRadius: 8,
-                gap: 6,
+                justifyContent: 'space-between',
               }}
             >
-              <Ionicons name="home-outline" size={14} color="#6B8E6B" />
-              <Text style={{ fontSize: 12, color: '#5A7A5A', flex: 1, fontWeight: '500' }}>
-                {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.sm,
+                    color: 'rgba(93, 78, 64, 0.7)',
+                  }}
+                >
+                  {t('grocery.thisWeeksShopping')}
+                </Text>
+                {/* Progress text - stronger hierarchy, emotional anchor */}
+                <Text
+                  style={{
+                    fontSize: 17,
+                    fontWeight: '600',
+                    color: '#3D3D3D',
+                    marginTop: 4,
+                  }}
+                >
+                  {itemsToBuy === 0
+                    ? t('grocery.noItemsYet')
+                    : t('grocery.itemsProgress', {
+                        checked: checkedItemsToBuy,
+                        total: itemsToBuy,
+                      })}
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', gap: 6 }}>
+                {/* Add Item button - PRIMARY action */}
+                <AnimatedPressable
+                  onPress={() => setShowAddItem(!showAddItem)}
+                  hoverScale={1.08}
+                  pressScale={0.95}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 10,
+                    backgroundColor: '#6B8E6B',
+                  }}
+                >
+                  <Ionicons
+                    name={showAddItem ? 'close' : 'add'}
+                    size={18}
+                    color="#FFFFFF"
+                  />
+                </AnimatedPressable>
+
+                {/* Clear All button - secondary, lower opacity */}
+                {totalItems > 0 && (
+                  <AnimatedPressable
+                    onPress={handleClearAll}
+                    hoverScale={1.08}
+                    pressScale={0.95}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 10,
+                      paddingVertical: 8,
+                      borderRadius: 10,
+                      backgroundColor: 'rgba(93, 78, 64, 0.08)',
+                    }}
+                  >
+                    <Ionicons
+                      name="trash-outline"
+                      size={16}
+                      color="rgba(93, 78, 64, 0.5)"
+                    />
+                  </AnimatedPressable>
+                )}
+
+                {/* Reset checked button - secondary, lower opacity */}
+                {checkedCount > 0 && (
+                  <AnimatedPressable
+                    onPress={handleClearChecked}
+                    hoverScale={1.08}
+                    pressScale={0.95}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 10,
+                      paddingVertical: 8,
+                      borderRadius: 10,
+                      backgroundColor: 'rgba(93, 78, 64, 0.08)',
+                    }}
+                  >
+                    <Ionicons
+                      name="refresh"
+                      size={16}
+                      color="rgba(93, 78, 64, 0.5)"
+                    />
+                  </AnimatedPressable>
+                )}
+              </View>
+            </View>
+
+            {/* Progress bar - thicker with rounded ends */}
+            {itemsToBuy > 0 && (
+              <View style={{ marginTop: 14 }}>
+                <View
+                  style={{
+                    height: 6,
+                    backgroundColor: 'rgba(107, 142, 107, 0.15)',
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <View
+                    style={{
+                      height: '100%',
+                      backgroundColor: '#6B8E6B',
+                      borderRadius: 3,
+                      width: `${(checkedItemsToBuy / itemsToBuy) * 100}%`,
+                    }}
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* Items at home indicator */}
+            {hiddenAtHomeCount > 0 && (
+              <AnimatedPressable
+                onPress={() => router.push('/settings')}
+                hoverScale={1.02}
+                pressScale={0.98}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 10,
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  backgroundColor: 'rgba(107, 142, 107, 0.15)',
+                  borderRadius: 8,
+                  gap: 6,
+                }}
+              >
+                <Ionicons name="home-outline" size={14} color="#6B8E6B" />
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: '#5A7A5A',
+                    flex: 1,
+                    fontWeight: '500',
+                  }}
+                >
+                  {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
+                </Text>
+                <Ionicons name="chevron-forward" size={14} color="#3D7A3D" />
+              </AnimatedPressable>
+            )}
+          </View>
+
+          {/* Add item input - clean card on neutral surface */}
+          {showAddItem && (
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: borderRadius.md,
+                padding: spacing.md,
+                shadowColor: '#000',
+                shadowOffset: { width: 1, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 3,
+                elevation: 1,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: fontFamily.bodySemibold,
+                  color: 'rgba(93, 78, 64, 0.7)',
+                  marginBottom: 8,
+                }}
+              >
+                {t('grocery.addItemLabel')}
               </Text>
-              <Ionicons name="chevron-forward" size={14} color="#3D7A3D" />
-            </AnimatedPressable>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+              >
+                <TextInput
+                  style={{
+                    flex: 1,
+                    backgroundColor: 'rgba(93, 78, 64, 0.06)',
+                    borderRadius: borderRadius.sm,
+                    paddingHorizontal: 12,
+                    paddingVertical: 10,
+                    fontSize: 14,
+                    color: '#3D3D3D',
+                  }}
+                  placeholder={t('grocery.addItemExamplePlaceholder')}
+                  placeholderTextColor="#A09080"
+                  value={newItemText}
+                  onChangeText={setNewItemText}
+                  onSubmitEditing={handleAddItem}
+                  autoFocus
+                />
+                <AnimatedPressable
+                  onPress={handleAddItem}
+                  disabled={!newItemText.trim()}
+                  hoverScale={1.05}
+                  pressScale={0.95}
+                  disableAnimation={!newItemText.trim()}
+                  style={{
+                    backgroundColor: newItemText.trim()
+                      ? '#6B8E6B'
+                      : 'rgba(200, 190, 180, 0.5)',
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: borderRadius.sm,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontFamily: fontFamily.bodySemibold,
+                      color: colors.white,
+                    }}
+                  >
+                    {t('grocery.addButton')}
+                  </Text>
+                </AnimatedPressable>
+              </View>
+            </View>
           )}
         </View>
 
-        {/* Add item input - clean card on neutral surface */}
-        {showAddItem && (
-          <View style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: borderRadius.md,
-            padding: spacing.md,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.04,
-            shadowRadius: 3,
-            elevation: 1,
-          }}>
-            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.7)', marginBottom: 8 }}>{t('grocery.addItemLabel')}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <TextInput
-                style={{
-                  flex: 1,
-                  backgroundColor: 'rgba(93, 78, 64, 0.06)',
-                  borderRadius: borderRadius.sm,
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
-                  fontSize: 14,
-                  color: '#3D3D3D',
-                }}
-                placeholder={t('grocery.addItemExamplePlaceholder')}
-                placeholderTextColor="#A09080"
-                value={newItemText}
-                onChangeText={setNewItemText}
-                onSubmitEditing={handleAddItem}
-                autoFocus
-              />
-              <AnimatedPressable
-                onPress={handleAddItem}
-                disabled={!newItemText.trim()}
-                hoverScale={1.05}
-                pressScale={0.95}
-                disableAnimation={!newItemText.trim()}
-                style={{
-                  backgroundColor: newItemText.trim() ? '#6B8E6B' : 'rgba(200, 190, 180, 0.5)',
-                  paddingHorizontal: 16,
-                  paddingVertical: 10,
-                  borderRadius: borderRadius.sm,
-                }}
-              >
-                <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('grocery.addButton')}</Text>
-              </AnimatedPressable>
-            </View>
+        {/* Grocery list */}
+        {totalItems > 0 ? (
+          <GroceryListView
+            groceryList={groceryListWithChecked}
+            onItemToggle={handleItemToggle}
+            filterOutItems={filterOutItemsAtHome}
+          />
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 32,
+            }}
+          >
+            <Text
+              style={{
+                color: '#5D4E40',
+                fontSize: 18,
+                fontFamily: fontFamily.bodySemibold,
+                textAlign: 'center',
+              }}
+            >
+              {t('grocery.emptyList')}
+            </Text>
+            <Text
+              style={{
+                color: 'rgba(93, 78, 64, 0.7)',
+                fontSize: 15,
+                marginTop: 8,
+                textAlign: 'center',
+                lineHeight: 22,
+                maxWidth: 280,
+              }}
+            >
+              {t('grocery.goToMealPlan')}
+            </Text>
           </View>
         )}
-      </View>
-
-      {/* Grocery list */}
-      {totalItems > 0 ? (
-        <GroceryListView
-          groceryList={groceryListWithChecked}
-          onItemToggle={handleItemToggle}
-          filterOutItems={filterOutItemsAtHome}
-        />
-      ) : (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <Text style={{ color: '#5D4E40', fontSize: 18, fontFamily: fontFamily.bodySemibold, textAlign: 'center' }}>
-            {t('grocery.emptyList')}
-          </Text>
-          <Text style={{ color: 'rgba(93, 78, 64, 0.7)', fontSize: 15, marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280 }}>
-            {t('grocery.goToMealPlan')}
-          </Text>
-        </View>
-      )}
       </View>
     </GradientBackground>
   );

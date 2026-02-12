@@ -57,10 +57,10 @@ export const FilledMealSlot = ({
           resizeMode="cover"
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: '#2D2D2D' }}>
+          <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#2D2D2D' }}>
             {title}
           </Text>
-          <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.7)', marginTop: 2 }}>
+          <Text style={{ fontSize: 11, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.7)', marginTop: 2 }}>
             {label}
           </Text>
         </View>
