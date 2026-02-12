@@ -174,7 +174,6 @@ See `firestore.instructions.md` for the full recipe document schema. Key points:
 - `created_at` required for queries
 - `instructions` must be `list[str]`, not a single string
 - Enhanced recipes have `enhanced=True` and original data preserved in `original` nested field
-- Enhancement scripts MUST use `.update()` (merge), NEVER `.set()` (overwrite)
 
 ### Skills (AI Agent Instructions)
 
@@ -207,14 +206,10 @@ For local development setup, environment configuration, and troubleshooting, see
 
 ## Code Style
 
-See `pyproject.toml` for tool configurations.
+See `pyproject.toml` for tool configurations. Style guides in `*.instructions.md` load automatically per file type.
 
-- **Ruff** for linting/formatting
-- Test files must match `test_*.py` pattern
 - **Self-documenting code**: Avoid inline comments - code should be readable without them
-- **Test coverage**: All API code must be tested (see TDD section for requirements)
-- **Dataclasses**: Use dataclasses for models with `@dataclass` decorator
-- **Type hints**: Use modern Python type hints (`list[str]` not `List[str]`)
+- **Test coverage**: All API code must be tested (see Test Requirements below)
 
 ## Test Requirements
 
@@ -241,20 +236,6 @@ Before committing changes that add new functionality:
 
 **Exceptions:** Terraform, config files, pure UI styling.
 
-## Key Patterns & Conventions
-
-### Recipe Scraping
-
-- Uses `recipe-scrapers` library which supports 400+ recipe websites
-- Always handle scraping errors gracefully - return `None` if scraping fails
-- Extract: title, ingredients, instructions, image_url, servings, prep_time, cook_time
-
-### Data Models
-
-- Use Python dataclasses for all models
-- Default mutable fields with `field(default_factory=list)`
-- Add computed properties for derived values (e.g., `total_time_calculated`)
-
 ## When Making Changes
 
 1. Create feature branch: `git switch -c feat/feature-name`
@@ -266,7 +247,4 @@ Before committing changes that add new functionality:
 
 ## Recipe Enhancement
 
-AI-powered recipe enhancement using Gemini. See `recipe-improvement` skill for:
-- Prompt structure and loading
-- CLI enhancement tools
-- Key rules enforced
+AI-powered recipe enhancement using Gemini. See `recipe-improvement` skill for prompt structure, CLI tools, and rules.
