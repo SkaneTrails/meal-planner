@@ -5,336 +5,183 @@ description: GCP secrets, .env setup, starting servers, and troubleshooting loca
 
 # Local Development Setup
 
-Instructions for setting up and running the Meal Planner app locally.
+Get the Meal Planner app running locally with minimal manual work.
 
-## ⚠️ FIRST: Check Environment Setup
+## Prerequisites
 
-**Before starting any local development, ALWAYS check if `mobile/.env.development` exists:**
+- **gcloud CLI** — authenticated with project access
+- **UV** — Python package manager (`pip install uv`)
+- **Node.js** + **pnpm** — for mobile app (`npm install -g pnpm`)
 
-```bash
-# Check if the file exists
-ls mobile/.env.development
-```
+## GCP Project ID
 
-**If the file does NOT exist:**
-
-1. **Ask the user** for the GCP project ID
-2. **Verify gcloud authentication**: `gcloud auth list`
-3. **Create the file** by fetching secrets:
-
-```bash
-PROJECT=<project-id-from-user>
-
-cat > mobile/.env.development << EOF
-# Development environment variables
-EXPO_PUBLIC_API_URL=http://localhost:8000
-
-# Firebase Configuration
-EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY --project=$PROJECT)
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=${PROJECT}.firebaseapp.com
-EXPO_PUBLIC_FIREBASE_PROJECT_ID=$PROJECT
-EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=${PROJECT}.firebasestorage.app
-EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID --project=$PROJECT)
-EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID --project=$PROJECT)
-
-# Google OAuth Client ID
-EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id --project=$PROJECT)
-EOF
-
-echo "Created mobile/.env.development"
-```
-
-4. **Verify the file** has actual values (not error messages)
+Stored in `infra/environments/dev/terraform.tfvars` (gitignored). Ask the user if not available.
 
 ---
 
-## ⚠️ Backend Environment Setup
+## Step 1: GCP Authentication
 
-**Check if `.env` exists in the project root with required variables:**
+ADC from `gcloud auth application-default login` causes `CONSUMER_INVALID` errors. **Service account impersonation is required.**
 
-```bash
-# Check if the file exists
-ls .env
+### Automated (recommended)
+
+```powershell
+# Windows
+.\scripts\setup-local-dev.ps1 -ProjectId <PROJECT_ID>
 ```
 
-**If missing or incomplete, create/update it:**
+```bash
+# macOS/Linux
+./scripts/setup-local-dev.sh <PROJECT_ID>
+```
+
+The script creates the `local-dev` service account via Terraform, grants impersonation, configures ADC, and updates `.env`.
+
+### Manual (if script fails)
+
+```bash
+cd infra/environments/dev && terraform apply
+gcloud iam service-accounts add-iam-policy-binding \
+  local-dev@<PROJECT_ID>.iam.gserviceaccount.com \
+  --member="user:<YOUR_EMAIL>" \
+  --role="roles/iam.serviceAccountTokenCreator" \
+  --project=<PROJECT_ID>
+gcloud auth application-default login \
+  --impersonate-service-account=local-dev@<PROJECT_ID>.iam.gserviceaccount.com
+```
+
+Tokens expire after 1 hour — re-run the `gcloud auth application-default login` command above to refresh.
+
+The service account has: `roles/datastore.user`, `roles/storage.objectUser`, `roles/secretmanager.secretAccessor`.
+
+---
+
+## Step 2: Environment Files
+
+### Root `.env` (API backend)
 
 ```bash
 PROJECT=<project-id-from-user>
 
 cat > .env << EOF
-# GCP project ID for Firestore (REQUIRED - prevents using wrong gcloud default project)
 GOOGLE_CLOUD_PROJECT=$PROJECT
-
-# Gemini API key for recipe enhancement (optional - only for recipe_enhancer.py)
 GOOGLE_API_KEY=$(gcloud secrets versions access latest --secret=gemini-api-key --project=$PROJECT)
-
-# Recipe scraping Cloud Function URL (REQUIRED)
 SCRAPE_FUNCTION_URL=https://scrape-recipe-vt7bvshx5q-ew.a.run.app
-
-# Google Cloud Storage bucket for recipe images (REQUIRED)
 GCS_BUCKET_NAME=${PROJECT}-recipe-images
-
-# CORS allowed origins for local development (REQUIRED)
 ALLOWED_ORIGINS=http://localhost:8081,http://localhost:8085,http://localhost:19006,http://localhost:3000
-
-# Skip Firebase authentication for local development
 SKIP_AUTH=true
 EOF
 
 echo "Created .env"
 ```
 
-**Important**: `GOOGLE_CLOUD_PROJECT` is required to ensure Firestore connects to the correct project.
+`GOOGLE_API_KEY` is optional (only needed for recipe enhancement).
+
+### `mobile/.env.development` (mobile app)
+
+```bash
+PROJECT=<project-id-from-user>
+
+cat > mobile/.env.development << EOF
+EXPO_PUBLIC_API_URL=http://localhost:8000
+EXPO_PUBLIC_FIREBASE_API_KEY=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_API_KEY --project=$PROJECT)
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=${PROJECT}.firebaseapp.com
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=$PROJECT
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=${PROJECT}.firebasestorage.app
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID --project=$PROJECT)
+EXPO_PUBLIC_FIREBASE_APP_ID=$(gcloud secrets versions access latest --secret=github_EXPO_PUBLIC_FIREBASE_APP_ID --project=$PROJECT)
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=$(gcloud secrets versions access latest --secret=meal-planner_oauth_client_id --project=$PROJECT)
+EOF
+
+echo "Created mobile/.env.development"
+```
+
+Verify the file has actual values, not error messages.
+
+### Dev mode (no Firebase auth)
+
+Omit `EXPO_PUBLIC_FIREBASE_API_KEY` and `EXPO_PUBLIC_FIREBASE_APP_ID` from `mobile/.env.development`. The app detects missing config (`isFirebaseConfigured` in `mobile/lib/firebase.ts`) and uses mock user `dev@localhost`.
 
 ---
 
-## ⚠️ GCP Service Account Setup (Required for Firestore Access)
+## Step 3: Start Services
 
-ADC (Application Default Credentials) from `gcloud auth application-default login` uses an OAuth client that may not be authorized for the project's Firestore API (causing `CONSUMER_INVALID` errors). **Service account impersonation is required for local development.**
-
-### Automated Setup (Recommended)
-
-Run the setup script which handles everything:
+**Before starting, check if services are already running** — avoid duplicate listeners:
 
 ```powershell
-# PowerShell (Windows)
-.\scripts\setup-local-dev.ps1 -ProjectId <PROJECT_ID>
-```
-
-```bash
-# Bash (macOS/Linux)
-./scripts/setup-local-dev.sh <PROJECT_ID>
-```
-
-The script will:
-1. Run `terraform apply` to create the `local-dev` service account (if it doesn't exist)
-2. Grant your user account permission to impersonate the service account
-3. Configure ADC to use impersonation (no key files on disk!)
-4. Update `.env` with the correct project ID
-
-### Why Impersonation Instead of Key Files?
-
-| Key Files | Impersonation |
-| --------- | ------------- |
-| Long-lived credentials on disk | Short-lived tokens (1 hour) |
-| Must rotate manually | Automatic token refresh |
-| Can be accidentally committed | Nothing to commit |
-| Proliferates keys in GCP | No keys created |
-
-### Manual Setup (if script fails)
-
-**1. Apply Terraform** (creates service account):
-```bash
-cd infra/environments/dev
-terraform apply
-```
-
-**2. Grant impersonation permission:**
-```bash
-gcloud iam service-accounts add-iam-policy-binding \
-  local-dev@<PROJECT_ID>.iam.gserviceaccount.com \
-  --member="user:YOUR_EMAIL@example.com" \
-  --role="roles/iam.serviceAccountTokenCreator" \
-  --project=<PROJECT_ID>
-```
-
-**3. Configure ADC with impersonation:**
-```bash
-gcloud auth application-default login \
-  --impersonate-service-account=local-dev@<PROJECT_ID>.iam.gserviceaccount.com
-```
-
-### Service Account Permissions
-
-The `local-dev` service account has:
-- `roles/datastore.user` - Firestore read/write access
-- `roles/storage.objectUser` - GCS bucket access (recipe images)
-- `roles/secretmanager.secretAccessor` - Read secrets
-
-### Refreshing Credentials
-
-Impersonation tokens last 1 hour. If you get auth errors after a while:
-```bash
-gcloud auth application-default login \
-  --impersonate-service-account=local-dev@<PROJECT_ID>.iam.gserviceaccount.com
-```
-
----
-
-## ⚠️ IMPORTANT: Running the App for Debugging
-
-**Before starting services, check if they're already running:**
-
-```bash
-# Check if API is running (port 8000)
-curl -s http://localhost:8000/health && echo "API already running" || echo "API not running"
-
-# Check if Expo is running (port 8081)
-curl -s http://localhost:8081 && echo "Expo already running" || echo "Expo not running"
-```
-
-```powershell
-# Windows PowerShell - check ports
 netstat -ano | findstr :8000   # API
 netstat -ano | findstr :8081   # Expo
 ```
 
-**Only start services that are NOT already running:**
-
-1. **API server** (for data): `uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload`
-2. **Mobile app** (Expo): `cd mobile && npx expo start --web`
-
-Or use the combined script (bash): `./scripts/run-dev.sh`
-
-The mobile app requires the API to be running for all data operations (recipes, meal plans, grocery lists).
-
----
-
-## Finding the GCP Project ID
-
-The project ID is stored in `infra/environments/dev/terraform.tfvars` (gitignored). Ask the user if not available.
-
-## Prerequisites
-
-1. **gcloud CLI** authenticated with access to the GCP project
-2. **UV** (Python package manager)
-3. **Node.js** (for mobile app)
-
-## Quick Start
-
-### 1. Backend (FastAPI)
+### API (Terminal 1)
 
 ```bash
-# Install dependencies
 uv sync
-
-# Start API server
 uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The API will be available at `http://localhost:8000`.
-
-### 2. Mobile App (Expo)
-
-Ensure `mobile/.env.development` exists (see "FIRST: Check Environment Setup" above).
-
-Then start the app:
+### Mobile (Terminal 2)
 
 ```bash
 cd mobile
 pnpm install
-npx expo start --web    # For web debugging
-npx expo start --lan    # For mobile device (Expo Go)
-```
-
-To test against the production API instead of local:
-```bash
-# In mobile/.env.development, change to Cloud Run URL:
-EXPO_PUBLIC_API_URL=https://<service>-<hash>-<region>.a.run.app
-# Get the actual URL from: gcloud run services describe meal-planner-api --region=<region> --format='value(status.url)'
-```
-
-### 3. Both Services Together (Bash/macOS/Linux only)
-
-```bash
-./scripts/run-dev.sh
-```
-
-### 4. Windows Quick Start
-
-```powershell
-# Terminal 1: API
-cd c:\git\meal-planner
-uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
-
-# Terminal 2: Mobile
-cd c:\git\meal-planner\mobile
-pnpm install
 npx expo start --web --port 8081
 ```
 
-## Secret Manager Secrets
+The mobile app requires the API for all data operations.
 
-These secrets are used by GitHub Actions for CI/CD deployments and can be used locally to populate `.env.development`.
+### Production API target
 
-| Secret Name | Purpose |
-| ----------- | ------- |
-| `github_EXPO_PUBLIC_API_URL` | Production API URL for Firebase Hosting deploy |
-| `github_EXPO_PUBLIC_FIREBASE_API_KEY` | Firebase Web API key |
-| `github_EXPO_PUBLIC_FIREBASE_APP_ID` | Firebase Web App ID |
-| `github_EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Firebase sender ID |
-| `meal-planner_oauth_client_id` | Google OAuth client ID (for sign-in) |
-| `meal-planner_oauth_client_secret` | Google OAuth client secret |
-| `meal-planner-database-name` | Firestore database name |
-| `meal-planner-project-id` | GCP project ID |
-| `firestore-database-name` | Firestore database name (duplicate) |
-| `firestore-location-id` | Firestore location |
-| `firestore-project-id` | Firestore project ID |
-| `gemini-api-key` | Gemini API key (for recipe enhancement scripts) |
+To test mobile against Cloud Run instead of local API, set in `mobile/.env.development`:
 
-## Dev Mode (Without Firebase Auth)
-
-If you want to test without real Google authentication, remove or comment out the Firebase credentials in `.env.development`:
-
-```bash
-# Comment out these lines in mobile/.env.development:
-# EXPO_PUBLIC_FIREBASE_API_KEY=...
-# EXPO_PUBLIC_FIREBASE_APP_ID=...
+```
+EXPO_PUBLIC_API_URL=https://<service>-<hash>-<region>.a.run.app
 ```
 
-The app checks `isFirebaseConfigured` in `mobile/lib/firebase.ts` and will use a mock user (`dev@localhost`) when Firebase isn't configured.
+---
+
+## Step 4: Verify Setup
+
+### API tests (pytest)
+
+```bash
+uv run pytest                                    # All tests
+uv run pytest --cov=api --cov-report=term-missing # With coverage
+uv run pytest tests/test_recipe_storage.py -v     # Single file
+```
+
+### Mobile tests (Vitest)
+
+```bash
+cd mobile
+pnpm test              # All tests
+pnpm test -- --run     # CI mode (no watch)
+pnpm test <pattern>    # Filter by filename
+```
+
+Note: Windows uses `forks` pool automatically (configured in `vitest.config.ts`).
+
+### Linting
+
+```bash
+uv run ruff check      # Python lint
+uv run ruff format     # Python format
+cd mobile && pnpm exec prettier --check .  # TypeScript/TSX format
+```
+
+---
 
 ## Troubleshooting
 
-### "Permission denied" on gcloud secrets
-
-Make sure you're authenticated with an account that has access:
-
-```bash
-gcloud auth login
-gcloud config set project <project-id>
-```
-
-### Firebase auth/invalid-api-key error
-
-The `.env.development` file is missing or has incorrect Firebase credentials. Check that the file exists and has valid values for `EXPO_PUBLIC_FIREBASE_API_KEY` and `EXPO_PUBLIC_FIREBASE_APP_ID`.
-
-### API not reachable from mobile
-
-1. Ensure the API is running on `0.0.0.0` (not `127.0.0.1`)
-2. Use your machine's LAN IP in `EXPO_PUBLIC_API_URL`
-3. Check that both devices are on the same network
-
-### CONSUMER_INVALID error on Firestore API
-
-This error occurs when using ADC from `gcloud auth application-default login`:
-
-```
-google.api_core.exceptions.PermissionDenied: 403 Permission denied on resource project...
-[reason: "CONSUMER_INVALID"]
-```
-
-**Solution**: Use service account impersonation instead of plain ADC. See "GCP Service Account Setup" section above.
-
-The issue is that gcloud's OAuth client ID is not authorized for the project's Firestore API. Service account impersonation bypasses this OAuth client issue.
-
-### Port already in use
-
-```bash
-# macOS/Linux
-pkill -f "uvicorn"
-pkill -f "expo"
-pkill -f "node.*metro"
-```
-
-```powershell
-# Windows PowerShell
-Get-Process | Where-Object { $_.ProcessName -match "node|python" } | Stop-Process -Force
-# Or find specific port:
-netstat -ano | findstr :8000
-taskkill /PID <pid> /F
-```
+| Problem | Fix |
+|---------|-----|
+| `CONSUMER_INVALID` on Firestore | ADC not using impersonation — re-run setup script |
+| "Permission denied" on secrets | `gcloud auth login` + `gcloud config set project <id>` |
+| Firebase `auth/invalid-api-key` | Check `mobile/.env.development` has real values, not error text |
+| Impersonation token expired | Re-run `gcloud auth application-default login --impersonate-service-account=...` |
+| Metro ESM URL scheme error (Windows) | Known Node 20+ issue — use CI for mobile builds, web dev works |
+| API not reachable from mobile | Ensure API runs on `0.0.0.0` (not `127.0.0.1`), use LAN IP in `EXPO_PUBLIC_API_URL` |
+| Port already in use | `netstat -ano \| findstr :8000` then `taskkill /PID <pid> /F` (Windows) |
 
 ---
 
