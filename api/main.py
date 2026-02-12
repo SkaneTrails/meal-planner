@@ -1,7 +1,7 @@
 """FastAPI application entry point."""
 
 import os
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
@@ -39,7 +39,7 @@ app.include_router(admin.router, prefix="/api/v1")
 
 
 @app.middleware("http")
-async def security_headers(request: Request, call_next: Callable) -> Response:  # type: ignore[type-arg]
+async def security_headers(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
     """Add standard security headers to every response."""
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"

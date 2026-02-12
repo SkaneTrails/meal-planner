@@ -291,7 +291,8 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
 
     # Keep normalized_url in sync when URL changes
     if "url" in update_data:
-        update_data["normalized_url"] = normalize_url(str(update_data["url"]))
+        url_value = update_data["url"]
+        update_data["normalized_url"] = normalize_url(str(url_value)) if url_value else ""
 
     doc_ref.update(update_data)
 
