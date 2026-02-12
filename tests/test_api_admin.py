@@ -705,12 +705,8 @@ class TestAddItemAtHome:
 
     def test_member_can_add_item(self, member_client: TestClient) -> None:
         """Household member should be able to add an item."""
-        with patch(
-            "api.routers.admin.household_storage.add_item_at_home", return_value=["oil", "salt"]
-        ) as mock_add:
-            response = member_client.post(
-                "/admin/households/test_household/items-at-home", json={"item": "Salt"}
-            )
+        with patch("api.routers.admin.household_storage.add_item_at_home", return_value=["oil", "salt"]) as mock_add:
+            response = member_client.post("/admin/households/test_household/items-at-home", json={"item": "Salt"})
 
         assert response.status_code == 200
         mock_add.assert_called_once_with("test_household", "Salt")
@@ -720,24 +716,18 @@ class TestAddItemAtHome:
     def test_superuser_can_add_item(self, superuser_client: TestClient) -> None:
         """Superuser should be able to add an item to any household."""
         with patch("api.routers.admin.household_storage.add_item_at_home", return_value=["pepper"]):
-            response = superuser_client.post(
-                "/admin/households/other_household/items-at-home", json={"item": "pepper"}
-            )
+            response = superuser_client.post("/admin/households/other_household/items-at-home", json={"item": "pepper"})
 
         assert response.status_code == 200
 
     def test_member_cannot_add_to_other_household(self, member_client: TestClient) -> None:
         """Member cannot add item to a different household."""
-        response = member_client.post(
-            "/admin/households/other_household/items-at-home", json={"item": "salt"}
-        )
+        response = member_client.post("/admin/households/other_household/items-at-home", json={"item": "salt"})
         assert response.status_code == 403
 
     def test_empty_item_rejected(self, member_client: TestClient) -> None:
         """Empty item should be rejected by validation."""
-        response = member_client.post(
-            "/admin/households/test_household/items-at-home", json={"item": ""}
-        )
+        response = member_client.post("/admin/households/test_household/items-at-home", json={"item": ""})
         assert response.status_code == 422  # Pydantic validation error
 
 
@@ -746,9 +736,7 @@ class TestRemoveItemAtHome:
 
     def test_member_can_remove_item(self, member_client: TestClient) -> None:
         """Household member should be able to remove an item."""
-        with patch(
-            "api.routers.admin.household_storage.remove_item_at_home", return_value=["oil"]
-        ) as mock_remove:
+        with patch("api.routers.admin.household_storage.remove_item_at_home", return_value=["oil"]) as mock_remove:
             response = member_client.delete("/admin/households/test_household/items-at-home/salt")
 
         assert response.status_code == 200

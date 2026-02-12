@@ -319,14 +319,16 @@ def add_item_at_home(household_id: str, item: str) -> list[str]:
     # First check household exists
     household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
     if not household_doc.exists:  # type: ignore[union-attr]
-        raise ValueError("Household not found")
+        msg = "Household not found"
+        raise ValueError(msg)
 
     settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
 
     # Normalize item
     normalized_item = item.lower().strip()
     if not normalized_item:
-        raise ValueError("Item cannot be empty")
+        msg = "Item cannot be empty"
+        raise ValueError(msg)
 
     # Get current settings
     settings_doc = settings_ref.get()
@@ -356,7 +358,8 @@ def remove_item_at_home(household_id: str, item: str) -> list[str]:
     # First check household exists
     household_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
     if not household_doc.exists:  # type: ignore[union-attr]
-        raise ValueError("Household not found")
+        msg = "Household not found"
+        raise ValueError(msg)
 
     settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
 

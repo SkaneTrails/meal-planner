@@ -64,8 +64,7 @@ class HouseholdSettings(BaseModel):
     language: str = Field(default="sv", description="Preferred language for recipes (sv, en, it)")
     ai_features_enabled: bool = Field(default=True, description="Show AI enhancement controls in UI")
     items_at_home: list[str] = Field(
-        default_factory=list,
-        description="Ingredients always at home (excluded from grocery lists)",
+        default_factory=list, description="Ingredients always at home (excluded from grocery lists)"
     )
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
@@ -101,8 +100,7 @@ class HouseholdSettingsUpdate(BaseModel):
     language: str | None = None
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
     items_at_home: list[str] | None = Field(
-        default=None,
-        description="Ingredients always at home (excluded from grocery lists)",
+        default=None, description="Ingredients always at home (excluded from grocery lists)"
     )
 
     dietary: DietarySettingsUpdate | None = None
