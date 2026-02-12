@@ -678,7 +678,10 @@ class TestGetItemsAtHome:
 
     def test_member_can_get_items(self, member_client: TestClient) -> None:
         """Household member should be able to get items at home."""
-        with patch("api.routers.admin.household_storage.get_items_at_home", return_value=["salt", "pepper", "oil"]):
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "test_household"}),
+            patch("api.routers.admin.household_storage.get_items_at_home", return_value=["salt", "pepper", "oil"]),
+        ):
             response = member_client.get("/admin/households/test_household/items-at-home")
 
         assert response.status_code == 200
@@ -687,7 +690,10 @@ class TestGetItemsAtHome:
 
     def test_superuser_can_get_items(self, superuser_client: TestClient) -> None:
         """Superuser should be able to get items at home for any household."""
-        with patch("api.routers.admin.household_storage.get_items_at_home", return_value=["garlic"]):
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "other_household"}),
+            patch("api.routers.admin.household_storage.get_items_at_home", return_value=["garlic"]),
+        ):
             response = superuser_client.get("/admin/households/other_household/items-at-home")
 
         assert response.status_code == 200

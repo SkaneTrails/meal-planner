@@ -531,6 +531,7 @@ class TestAddItemAtHome:
         mock_settings_doc.exists = False  # No settings yet
 
         mock_settings_ref = MagicMock()
+        # Support both transaction-based and direct gets
         mock_settings_ref.get.return_value = mock_settings_doc
 
         mock_doc_ref = MagicMock()
@@ -538,10 +539,15 @@ class TestAddItemAtHome:
         mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
         mock_db.collection.return_value.document.return_value = mock_doc_ref
 
+        # Mock transaction
+        mock_transaction = MagicMock()
+        mock_db.transaction.return_value = mock_transaction
+
         result = add_item_at_home("household-1", "Salt")
 
         assert result == ["salt"]
-        mock_settings_ref.set.assert_called_once_with({"items_at_home": ["salt"]}, merge=True)
+        # With transactions, we call transaction.set() instead of settings_ref.set()
+        mock_transaction.set.assert_called_once_with(mock_settings_ref, {"items_at_home": ["salt"]}, merge=True)
 
     def test_adds_item_to_existing_list(self, mock_db) -> None:
         mock_household_doc = MagicMock()

@@ -93,15 +93,16 @@ class EquipmentSettingsUpdate(BaseModel):
 
 
 class HouseholdSettingsUpdate(BaseModel):
-    """Partial update for household settings (all fields optional)."""
+    """Partial update for household settings (all fields optional).
+
+    Note: items_at_home is NOT included here - use the dedicated
+    /items-at-home endpoints which handle normalization and deduplication.
+    """
 
     household_size: int | None = Field(default=None, ge=1, le=20)
     default_servings: int | None = Field(default=None, ge=1, le=20)
     language: str | None = None
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
-    items_at_home: list[str] | None = Field(
-        default=None, description="Ingredients always at home (excluded from grocery lists)"
-    )
 
     dietary: DietarySettingsUpdate | None = None
     equipment: EquipmentSettingsUpdate | None = None

@@ -23,8 +23,10 @@ const adminKeys = {
   members: (householdId: string) =>
     [...adminKeys.all, 'members', householdId] as const,
   settings: (householdId: string) =>
-    [...adminKeys.all, 'settings', householdId] as const,  itemsAtHome: (householdId: string) =>
-    [...adminKeys.all, 'itemsAtHome', householdId] as const,};
+    [...adminKeys.all, 'settings', householdId] as const,
+  itemsAtHome: (householdId: string) =>
+    [...adminKeys.all, 'itemsAtHome', householdId] as const,
+};
 
 /**
  * Get current user info including role and household.

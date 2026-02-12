@@ -276,12 +276,25 @@ async def transfer_recipe(
 # --- Items at Home Endpoints ---
 
 
+class HouseholdNotFoundError(ValueError):
+    """Raised when a household is not found."""
+
+
+class ItemValidationError(ValueError):
+    """Raised when an item fails validation (e.g., empty)."""
+
+
 @router.get("/households/{household_id}/items-at-home")
 async def get_items_at_home(
     user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str
 ) -> ItemAtHomeResponse:
     """Get items-at-home list for a household. Superuser or household member."""
     _require_member_or_superuser(user, household_id)
+
+    # Check household exists first
+    household = household_storage.get_household(household_id)
+    if household is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 
     items = household_storage.get_items_at_home(household_id)
     return ItemAtHomeResponse(items_at_home=items)
@@ -298,7 +311,10 @@ async def add_item_at_home(
         items = household_storage.add_item_at_home(household_id, request.item)
         return ItemAtHomeResponse(items_at_home=items)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg) from e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg) from e
 
 
 @router.delete("/households/{household_id}/items-at-home/{item}")
@@ -312,4 +328,7 @@ async def remove_item_at_home(
         items = household_storage.remove_item_at_home(household_id, item)
         return ItemAtHomeResponse(items_at_home=items)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg) from e
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg) from e
