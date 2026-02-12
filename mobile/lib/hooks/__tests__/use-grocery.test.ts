@@ -21,7 +21,17 @@ describe('useGroceryList', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockApi.getGroceryList.mockResolvedValue({
-      items: [{ name: 'milk', quantity: '1L' }],
+      items: [
+        {
+          name: 'milk',
+          quantity: '1L',
+          unit: null,
+          category: 'dairy',
+          checked: false,
+          recipe_sources: [],
+          quantity_sources: [],
+        },
+      ],
     });
   });
 

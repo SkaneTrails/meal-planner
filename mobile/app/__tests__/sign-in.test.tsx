@@ -14,7 +14,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
 // Track what Redirect renders
-const mockRedirect = vi.fn(() => null);
+const mockRedirect = vi.fn((_props: any) => null);
 vi.mock('expo-router', async () => ({
   useRouter: () => ({ push: vi.fn(), back: vi.fn(), replace: vi.fn() }),
   useLocalSearchParams: () => ({}),

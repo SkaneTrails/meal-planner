@@ -12,17 +12,20 @@ from api.storage.household_storage import (
     SUPERUSERS_COLLECTION,
     Household,
     HouseholdMember,
+    add_item_at_home,
     add_member,
     add_superuser,
     create_household,
     delete_household,
     get_household,
     get_household_settings,
+    get_items_at_home,
     get_user_membership,
     household_name_exists,
     is_superuser,
     list_all_households,
     list_household_members,
+    remove_item_at_home,
     remove_member,
     remove_superuser,
     update_household,
@@ -499,3 +502,228 @@ class TestUpdateHouseholdSettings:
 
         assert result is True
         mock_settings_ref.set.assert_called_once_with({"language": "sv"}, merge=True)
+
+
+class TestAddItemAtHome:
+    """Tests for add_item_at_home function."""
+
+    def test_raises_error_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        with pytest.raises(ValueError, match="Household not found"):
+            add_item_at_home("nonexistent", "salt")
+
+    def test_raises_error_for_empty_item(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_household_doc
+
+        with pytest.raises(ValueError, match="Item cannot be empty"):
+            add_item_at_home("household-1", "   ")
+
+    def test_adds_item_to_empty_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = False  # No settings yet
+
+        mock_settings_ref = MagicMock()
+        # Support both transaction-based and direct gets
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        # Mock transaction
+        mock_transaction = MagicMock()
+        mock_db.transaction.return_value = mock_transaction
+
+        result = add_item_at_home("household-1", "Salt")
+
+        assert result == ["salt"]
+        # With transactions, we call transaction.set() instead of settings_ref.set()
+        mock_transaction.set.assert_called_once_with(mock_settings_ref, {"items_at_home": ["salt"]}, merge=True)
+
+    def test_adds_item_to_existing_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"items_at_home": ["oil", "pepper"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = add_item_at_home("household-1", "Salt")
+
+        # Should be sorted alphabetically
+        assert result == ["oil", "pepper", "salt"]
+
+    def test_does_not_add_duplicate(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"items_at_home": ["pepper", "salt"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = add_item_at_home("household-1", "SALT")  # Different case
+
+        # Should not add duplicate (normalized to lowercase)
+        assert result == ["pepper", "salt"]
+
+    def test_normalizes_item_to_lowercase(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = False
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = add_item_at_home("household-1", "  Olive Oil  ")
+
+        assert result == ["olive oil"]
+
+
+class TestRemoveItemAtHome:
+    """Tests for remove_item_at_home function."""
+
+    def test_raises_error_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        with pytest.raises(ValueError, match="Household not found"):
+            remove_item_at_home("nonexistent", "salt")
+
+    def test_removes_item_from_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"items_at_home": ["oil", "pepper", "salt"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = remove_item_at_home("household-1", "pepper")
+
+        assert result == ["oil", "salt"]
+
+    def test_removes_item_case_insensitive(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"items_at_home": ["salt"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = remove_item_at_home("household-1", "SALT")
+
+        assert result == []
+
+    def test_no_error_when_item_not_present(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"items_at_home": ["oil"]}
+
+        mock_settings_ref = MagicMock()
+        mock_settings_ref.get.return_value = mock_settings_doc
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value = mock_settings_ref
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = remove_item_at_home("household-1", "salt")
+
+        assert result == ["oil"]
+
+
+class TestGetItemsAtHome:
+    """Tests for get_items_at_home function."""
+
+    def test_returns_empty_list_for_nonexistent_household(self, mock_db) -> None:
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_db.collection.return_value.document.return_value.get.return_value = mock_doc
+
+        result = get_items_at_home("nonexistent")
+
+        assert result == []
+
+    def test_returns_empty_list_when_no_settings(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = False
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value.get.return_value = mock_settings_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = get_items_at_home("household-1")
+
+        assert result == []
+
+    def test_returns_items_list(self, mock_db) -> None:
+        mock_household_doc = MagicMock()
+        mock_household_doc.exists = True
+
+        mock_settings_doc = MagicMock()
+        mock_settings_doc.exists = True
+        mock_settings_doc.to_dict.return_value = {"items_at_home": ["salt", "pepper", "oil"]}
+
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_household_doc
+        mock_doc_ref.collection.return_value.document.return_value.get.return_value = mock_settings_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        result = get_items_at_home("household-1")
+
+        assert result == ["salt", "pepper", "oil"]

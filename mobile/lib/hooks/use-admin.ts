@@ -24,6 +24,8 @@ const adminKeys = {
     [...adminKeys.all, 'members', householdId] as const,
   settings: (householdId: string) =>
     [...adminKeys.all, 'settings', householdId] as const,
+  itemsAtHome: (householdId: string) =>
+    [...adminKeys.all, 'itemsAtHome', householdId] as const,
 };
 
 /**
@@ -174,6 +176,54 @@ export const useTransferRecipe = () => {
       // Invalidate the recipe query to refresh the data
       queryClient.invalidateQueries({ queryKey: ['recipe', recipeId] });
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
+    },
+  });
+}
+
+// --- Items at Home Hooks ---
+
+interface ItemAtHomeResponse {
+  items_at_home: string[];
+}
+
+/**
+ * Get the household's items-at-home list.
+ */
+export const useItemsAtHome = (householdId: string | null | undefined) => {
+  return useQuery<ItemAtHomeResponse>({
+    queryKey: adminKeys.itemsAtHome(householdId ?? ''),
+    queryFn: () => api.getItemsAtHome(householdId!),
+    enabled: !!householdId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+}
+
+/**
+ * Add an item to the household's items-at-home list.
+ */
+export const useAddItemAtHome = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ItemAtHomeResponse, Error, { householdId: string; item: string }>({
+    mutationFn: ({ householdId, item }) => api.addItemAtHome(householdId, item),
+    onSuccess: (data, { householdId }) => {
+      // Update the cache directly with the new list
+      queryClient.setQueryData(adminKeys.itemsAtHome(householdId), data);
+    },
+  });
+}
+
+/**
+ * Remove an item from the household's items-at-home list.
+ */
+export const useRemoveItemAtHome = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ItemAtHomeResponse, Error, { householdId: string; item: string }>({
+    mutationFn: ({ householdId, item }) => api.removeItemAtHome(householdId, item),
+    onSuccess: (data, { householdId }) => {
+      // Update the cache directly with the new list
+      queryClient.setQueryData(adminKeys.itemsAtHome(householdId), data);
     },
   });
 }

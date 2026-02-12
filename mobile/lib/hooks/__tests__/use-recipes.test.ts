@@ -10,7 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { createQueryWrapper, createTestQueryClient } from '@/test/helpers';
+import { createQueryWrapper, createTestQueryClient, mockRecipe } from '@/test/helpers';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
@@ -44,8 +44,8 @@ describe('useRecipes', () => {
     vi.clearAllMocks();
     mockApi.getRecipes.mockResolvedValue({
       items: [
-        { id: '1', title: 'Pasta' },
-        { id: '2', title: 'Soup' },
+        mockRecipe({ id: '1', title: 'Pasta' }),
+        mockRecipe({ id: '2', title: 'Soup' }),
       ],
       total_count: 2,
       next_cursor: null,
@@ -66,7 +66,7 @@ describe('useRecipes', () => {
 
   it('exposes total_count from first page', async () => {
     mockApi.getRecipes.mockResolvedValue({
-      items: [{ id: '1', title: 'Pasta' }],
+      items: [mockRecipe({ id: '1', title: 'Pasta' })],
       total_count: 75,
       next_cursor: 'abc',
       has_more: true,
@@ -85,7 +85,7 @@ describe('useRecipes', () => {
 describe('useRecipe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.getRecipe.mockResolvedValue({ id: 'abc', title: 'Pasta' });
+    mockApi.getRecipe.mockResolvedValue(mockRecipe({ id: 'abc', title: 'Pasta' }));
   });
 
   it('fetches a recipe when id is provided', async () => {
@@ -124,7 +124,7 @@ describe('useUpdateRecipe', () => {
   });
 
   it('calls updateRecipe with id and updates', async () => {
-    const updatedRecipe = { id: 'abc', title: 'Updated Pasta' };
+    const updatedRecipe = mockRecipe({ id: 'abc', title: 'Updated Pasta' });
     mockApi.updateRecipe.mockResolvedValue(updatedRecipe);
 
     const { result } = renderHook(() => useUpdateRecipe(), {
@@ -153,11 +153,11 @@ describe('useDeleteRecipe', () => {
     mockApi.deleteRecipe.mockResolvedValue(undefined);
 
     const queryClient = createTestQueryClient();
-    queryClient.setQueryData(['recipes', 'detail', 'abc'], {
+    queryClient.setQueryData(['recipes', 'detail', 'abc'], mockRecipe({
       id: 'abc',
       title: 'Pasta',
-    });
-    queryClient.setQueryData(['recipes', 'list'], [{ id: 'abc', title: 'Pasta' }]);
+    }));
+    queryClient.setQueryData(['recipes', 'list'], [mockRecipe({ id: 'abc', title: 'Pasta' })]);
 
     const wrapper = ({ children }: { children: React.ReactNode }) =>
       React.createElement(QueryClientProvider, { client: queryClient }, children);
@@ -177,10 +177,10 @@ describe('useDeleteRecipe', () => {
 describe('useCreateRecipe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.createRecipe.mockResolvedValue({
+    mockApi.createRecipe.mockResolvedValue(mockRecipe({
       id: 'new-1',
       title: 'New Recipe',
-    });
+    }));
   });
 
   it('creates a recipe and calls the API', async () => {
@@ -203,10 +203,10 @@ describe('useCreateRecipe', () => {
 describe('useScrapeRecipe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.scrapeRecipe.mockResolvedValue({
+    mockApi.scrapeRecipe.mockResolvedValue(mockRecipe({
       id: 'scraped-1',
       title: 'Scraped Recipe',
-    });
+    }));
   });
 
   it('scrapes a recipe from URL', async () => {

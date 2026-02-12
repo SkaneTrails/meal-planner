@@ -18,7 +18,7 @@ describe('useTranslation', () => {
   beforeEach(() => {
     // Default: English
     mockUseSettings.mockReturnValue({
-      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: vi.fn(),
       addItemAtHome: vi.fn(),
@@ -26,6 +26,7 @@ describe('useTranslation', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
   });
 
@@ -66,7 +67,7 @@ describe('useTranslation', () => {
 
   it('returns Swedish strings when language is sv', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: vi.fn(),
       addItemAtHome: vi.fn(),
@@ -74,6 +75,7 @@ describe('useTranslation', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
 
     const { result } = renderHook(() => useTranslation());
@@ -83,7 +85,7 @@ describe('useTranslation', () => {
 
   it('returns Italian strings when language is it', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: vi.fn(),
       addItemAtHome: vi.fn(),
@@ -91,6 +93,7 @@ describe('useTranslation', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
 
     const { result } = renderHook(() => useTranslation());
@@ -100,7 +103,7 @@ describe('useTranslation', () => {
 
   it('falls back to English for an unknown language', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'xx' as any, itemsAtHome: [], favoriteRecipes: [] },
+      settings: { language: 'xx' as any, itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
       isLoading: false,
       setLanguage: vi.fn(),
       addItemAtHome: vi.fn(),
@@ -108,6 +111,7 @@ describe('useTranslation', () => {
       isItemAtHome: vi.fn(() => false),
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
+      toggleShowHiddenRecipes: vi.fn(),
     });
 
     const { result } = renderHook(() => useTranslation());

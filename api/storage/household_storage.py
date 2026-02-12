@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from google.cloud import firestore
+from google.cloud.firestore_v1.transaction import Transaction
 
 from api.storage.firestore_client import get_firestore_client
 
@@ -305,3 +306,103 @@ def update_household_settings(household_id: str, settings: dict) -> bool:
 
     settings_ref.set(settings, merge=True)
     return True
+
+
+def add_item_at_home(household_id: str, item: str) -> list[str]:
+    """
+    Add an item to the household's items-at-home list.
+
+    Returns the updated list of items, or raises ValueError if household doesn't exist.
+    Items are normalized to lowercase and duplicates are prevented.
+    Uses a Firestore transaction to ensure atomic read-modify-write.
+    """
+    db = _get_db()
+
+    # Normalize item before transaction
+    normalized_item = item.lower().strip()
+    if not normalized_item:
+        msg = "Item cannot be empty"
+        raise ValueError(msg)
+
+    household_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
+    settings_ref = household_ref.collection("settings").document("config")
+
+    @firestore.transactional  # type: ignore[misc]
+    def update_in_transaction(transaction: Transaction) -> list[str]:
+        # Check household exists
+        household_doc = household_ref.get(transaction=transaction)
+        if not household_doc.exists:  # type: ignore[union-attr]
+            msg = "Household not found"
+            raise ValueError(msg)
+
+        # Get current settings
+        settings_doc = settings_ref.get(transaction=transaction)
+        current_items: list[str] = []
+        if settings_doc.exists:  # type: ignore[union-attr]
+            data = settings_doc.to_dict() or {}  # type: ignore[union-attr]
+            current_items = list(data.get("items_at_home", []))
+
+        # Add item if not already present
+        if normalized_item not in current_items:
+            current_items.append(normalized_item)
+            current_items.sort()
+
+        # Update settings
+        transaction.set(settings_ref, {"items_at_home": current_items}, merge=True)
+        return current_items
+
+    transaction = db.transaction()
+    return update_in_transaction(transaction)
+
+
+def remove_item_at_home(household_id: str, item: str) -> list[str]:
+    """
+    Remove an item from the household's items-at-home list.
+
+    Returns the updated list of items, or raises ValueError if household doesn't exist.
+    Uses a Firestore transaction to ensure atomic read-modify-write.
+    """
+    db = _get_db()
+
+    # Normalize item before transaction
+    normalized_item = item.lower().strip()
+
+    household_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
+    settings_ref = household_ref.collection("settings").document("config")
+
+    @firestore.transactional  # type: ignore[misc]
+    def update_in_transaction(transaction: Transaction) -> list[str]:
+        # Check household exists
+        household_doc = household_ref.get(transaction=transaction)
+        if not household_doc.exists:  # type: ignore[union-attr]
+            msg = "Household not found"
+            raise ValueError(msg)
+
+        # Get current settings
+        settings_doc = settings_ref.get(transaction=transaction)
+        current_items: list[str] = []
+        if settings_doc.exists:  # type: ignore[union-attr]
+            data = settings_doc.to_dict() or {}  # type: ignore[union-attr]
+            current_items = list(data.get("items_at_home", []))
+
+        # Remove item if present
+        current_items = [i for i in current_items if i != normalized_item]
+
+        # Update settings
+        transaction.set(settings_ref, {"items_at_home": current_items}, merge=True)
+        return current_items
+
+    transaction = db.transaction()
+    return update_in_transaction(transaction)
+
+
+def get_items_at_home(household_id: str) -> list[str]:
+    """
+    Get the household's items-at-home list.
+
+    Returns empty list if household has no settings or doesn't exist.
+    """
+    settings = get_household_settings(household_id)
+    if settings is None:
+        return []
+    return settings.get("items_at_home", [])
