@@ -1,9 +1,10 @@
 """FastAPI application entry point."""
 
 import os
+from collections.abc import Callable
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import admin, grocery, meal_plans, recipes
@@ -35,6 +36,17 @@ app.include_router(recipes.router, prefix="/api/v1")
 app.include_router(meal_plans.router, prefix="/api/v1")
 app.include_router(grocery.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next: Callable) -> Response:  # type: ignore[type-arg]
+    """Add standard security headers to every response."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
 
 
 @app.get("/health")
