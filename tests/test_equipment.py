@@ -29,8 +29,8 @@ class TestEquipmentCatalog:
             assert meta["category"] in EQUIPMENT_CATEGORIES, f"{key} has unknown category {meta['category']}"
 
     def test_catalog_has_expected_count(self) -> None:
-        """Catalog should have 15 items."""
-        assert len(EQUIPMENT_CATALOG) == 15
+        """Catalog should have 19 items."""
+        assert len(EQUIPMENT_CATALOG) == 19
 
     def test_every_category_has_at_least_one_item(self) -> None:
         """Each defined category should have at least one equipment item."""

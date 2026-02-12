@@ -71,6 +71,22 @@ EQUIPMENT_CATALOG: dict[str, dict[str, str]] = {
             "temperatures and consistent results. Finish with a quick sear."
         ),
     },
+    "pasta_machine": {
+        "category": "appliances",
+        "prompt_hint": (
+            "Pasta machine (roller) available — use for fresh pasta sheets, "
+            "fettuccine, tagliatelle. Specify thickness settings (e.g. setting 6 for "
+            "tagliatelle, setting 8-9 for lasagne). Include resting and drying times."
+        ),
+    },
+    "pizza_oven": {
+        "category": "appliances",
+        "prompt_hint": (
+            "Dedicated pizza oven available (reaches 400-500°C). Bake time "
+            "60-90 seconds. Use high-hydration dough, 00 flour recommended. "
+            "Turn pizza halfway through. Completely replaces standard oven for pizza."
+        ),
+    },
     # ── Oven features ──────────────────────────────────────────────
     "convection_oven": {
         "category": "oven_features",
@@ -114,7 +130,23 @@ EQUIPMENT_CATALOG: dict[str, dict[str, str]] = {
             "Cook in small batches to maintain temperature. Add aromatics last."
         ),
     },
+    "pizza_stone": {
+        "category": "cookware",
+        "prompt_hint": (
+            "Pizza stone/baking steel available — preheat at max oven temp "
+            "for 45-60 min. Place pizza/bread directly on stone for crisp base. "
+            "Also great for flatbreads and naan."
+        ),
+    },
     # ── Tools ──────────────────────────────────────────────────────
+    "outdoor_grill": {
+        "category": "tools",
+        "prompt_hint": (
+            "Outdoor grill (charcoal or gas) available — use for proteins, "
+            "vegetables, and pizza. Provide direct vs indirect heat zones, "
+            "lid-on vs lid-off guidance, and internal temperatures."
+        ),
+    },
     "probe_thermometer": {
         "category": "tools",
         "prompt_hint": (
