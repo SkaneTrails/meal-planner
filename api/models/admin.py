@@ -123,6 +123,15 @@ class FavoriteRecipeAdd(BaseModel):
 
     recipe_id: str = Field(..., min_length=1, max_length=200, description="Recipe ID to add to favorites")
 
+    @field_validator("recipe_id")
+    @classmethod
+    def validate_recipe_id(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            msg = "Recipe ID cannot be empty"
+            raise ValueError(msg)
+        return v
+
 
 class FavoriteRecipeResponse(BaseModel):
     """Response containing the updated favorite recipes list."""

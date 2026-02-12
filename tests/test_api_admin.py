@@ -775,9 +775,9 @@ class TestGetFavoriteRecipes:
 
     def test_member_can_get_favorites(self, member_client: TestClient) -> None:
         """Household member should be able to get favorite recipes."""
-        with patch(
-            "api.routers.admin.household_storage.get_household_settings",
-            return_value={"favorite_recipes": ["recipe-1", "recipe-2"]},
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "test_household"}),
+            patch("api.routers.admin.household_storage.get_favorite_recipes", return_value=["recipe-1", "recipe-2"]),
         ):
             response = member_client.get("/admin/households/test_household/favorites")
 
@@ -787,7 +787,10 @@ class TestGetFavoriteRecipes:
 
     def test_superuser_can_get_favorites(self, superuser_client: TestClient) -> None:
         """Superuser should be able to get favorites for any household."""
-        with patch("api.routers.admin.household_storage.get_household_settings", return_value={}):
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "other_household"}),
+            patch("api.routers.admin.household_storage.get_favorite_recipes", return_value=[]),
+        ):
             response = superuser_client.get("/admin/households/other_household/favorites")
 
         assert response.status_code == 200
@@ -800,8 +803,8 @@ class TestGetFavoriteRecipes:
         assert response.status_code == 403
 
     def test_household_not_found(self, member_client: TestClient) -> None:
-        """Should return 404 when household has no settings."""
-        with patch("api.routers.admin.household_storage.get_household_settings", return_value=None):
+        """Should return 404 when household doesn't exist."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=None):
             response = member_client.get("/admin/households/test_household/favorites")
 
         assert response.status_code == 404
@@ -839,6 +842,11 @@ class TestAddFavoriteRecipe:
     def test_empty_recipe_id_rejected(self, member_client: TestClient) -> None:
         """Empty recipe_id should be rejected by validation."""
         response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": ""})
+        assert response.status_code == 422
+
+    def test_whitespace_only_recipe_id_rejected(self, member_client: TestClient) -> None:
+        """Whitespace-only recipe_id should be rejected by validation."""
+        response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": "   "})
         assert response.status_code == 422
 
     def test_household_not_found(self, member_client: TestClient) -> None:

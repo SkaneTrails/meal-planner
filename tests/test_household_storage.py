@@ -860,6 +860,10 @@ class TestAddFavoriteRecipe:
 class TestRemoveFavoriteRecipe:
     """Tests for remove_favorite_recipe function."""
 
+    def test_raises_error_for_empty_recipe_id(self, mock_db) -> None:
+        with pytest.raises(ValueError, match="Recipe ID cannot be empty"):
+            remove_favorite_recipe("household-1", "   ")
+
     def test_raises_error_for_nonexistent_household(self, mock_db) -> None:
         mock_doc = MagicMock()
         mock_doc.exists = False

@@ -153,15 +153,22 @@ export const useUpdateHouseholdSettings = () => {
   >({
     mutationFn: ({ householdId, settings }) =>
       api.updateHouseholdSettings(householdId, settings),
-    onSuccess: (_, { householdId, settings }) => {
-      // Optimistically update the cache so UI reflects immediately (e.g. language switch)
+    onMutate: async ({ householdId, settings }) => {
+      await queryClient.cancelQueries({ queryKey: adminKeys.settings(householdId) });
+      const previous = queryClient.getQueryData<HouseholdSettings>(adminKeys.settings(householdId));
       queryClient.setQueryData<HouseholdSettings>(
         adminKeys.settings(householdId),
         (old) => (old ? { ...old, ...settings } : undefined),
       );
-      queryClient.invalidateQueries({
-        queryKey: adminKeys.settings(householdId),
-      });
+      return { previous, householdId };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous !== undefined) {
+        queryClient.setQueryData(adminKeys.settings(context.householdId), context.previous);
+      }
+    },
+    onSettled: (_, _err, { householdId }) => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.settings(householdId) });
     },
   });
 }

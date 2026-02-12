@@ -467,6 +467,9 @@ def remove_favorite_recipe(household_id: str, recipe_id: str) -> list[str]:
     db = _get_db()
 
     recipe_id = recipe_id.strip()
+    if not recipe_id:
+        msg = "Recipe ID cannot be empty"
+        raise ValueError(msg)
 
     household_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id)
     settings_ref = household_ref.collection("settings").document("config")
