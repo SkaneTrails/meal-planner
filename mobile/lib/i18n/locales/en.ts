@@ -185,6 +185,7 @@ const en = {
     enhanceSuccess: 'Recipe enhanced',
     enhanceSuccessMessage: 'The recipe has been improved by AI',
     enhanceFailed: 'Could not enhance recipe',
+    enhancing: 'Enhancing recipe with AI...',
     addToMealPlan: 'Add to Meal Plan',
     thisWeek: 'This Week',
     nextWeek: 'Next Week',
