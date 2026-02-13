@@ -49,6 +49,8 @@ export const useSelectRecipeState = () => {
   useEffect(() => {
     if (mode) setActiveTab(mode);
     if (mode !== 'quick' || !initialText) setCustomText('');
+    // Reset search query when entering picker to ensure clean state
+    setSearchQuery('');
   }, [mode, initialText]);
 
   useEffect(() => {

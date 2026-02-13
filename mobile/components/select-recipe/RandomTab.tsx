@@ -73,33 +73,6 @@ export const RandomTab = ({ state }: RandomTabProps) => {
         {/* Action buttons */}
         <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
           <Pressable
-            onPress={shuffleRandom}
-            style={({ pressed }) => ({
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.sm,
-              backgroundColor: pressed
-                ? colors.glass.medium
-                : colors.glass.card,
-              ...shadows.sm,
-            })}
-          >
-            <Ionicons name="shuffle" size={20} color={colors.text.inverse} />
-            <Text
-              style={{
-                marginLeft: spacing.sm,
-                fontSize: fontSize.lg,
-                fontWeight: '600',
-                color: colors.text.inverse,
-              }}
-            >
-              {t('selectRecipe.random.shuffle')}
-            </Text>
-          </Pressable>
-          <Pressable
             onPress={() => handleSelectRecipe(randomRecipe.id)}
             disabled={setMeal.isPending}
             style={({ pressed }) => ({
@@ -109,7 +82,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               justifyContent: 'center',
               paddingVertical: spacing.md,
               borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B',
+              backgroundColor: pressed ? '#6B5B4B' : '#7A6858',
               ...shadows.md,
             })}
           >
@@ -123,6 +96,35 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               }}
             >
               {t('selectRecipe.random.addToPlan')}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={shuffleRandom}
+            disabled={setMeal.isPending}
+            style={({ pressed }) => ({
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: spacing.md,
+              borderRadius: borderRadius.sm,
+              backgroundColor: pressed
+                ? colors.glass.medium
+                : colors.glass.card,
+              opacity: setMeal.isPending ? 0.5 : 1,
+              ...shadows.sm,
+            })}
+          >
+            <Ionicons name="shuffle" size={20} color={colors.text.inverse} />
+            <Text
+              style={{
+                marginLeft: spacing.sm,
+                fontSize: fontSize.lg,
+                fontWeight: '600',
+                color: colors.text.inverse,
+              }}
+            >
+              {t('selectRecipe.random.shuffle')}
             </Text>
           </Pressable>
         </View>

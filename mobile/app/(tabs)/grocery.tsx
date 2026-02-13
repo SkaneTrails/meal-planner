@@ -296,7 +296,7 @@ export default function GroceryScreen() {
 
     setCustomItems((prev) => [...prev, newItem]);
     setNewItemText('');
-    setShowAddItem(false);
+    // Keep input visible for rapid entry - user can close with X button
   };
 
   const totalItems = generatedItems.length + customItems.length;
@@ -541,23 +541,23 @@ export default function GroceryScreen() {
                   marginTop: 10,
                   paddingVertical: 6,
                   paddingHorizontal: 10,
-                  backgroundColor: 'rgba(107, 142, 107, 0.15)',
+                  backgroundColor: 'rgba(139, 115, 85, 0.15)',
                   borderRadius: 8,
                   gap: 6,
                 }}
               >
-                <Ionicons name="home-outline" size={14} color="#6B8E6B" />
+                <Ionicons name="home-outline" size={14} color="#8B7355" />
                 <Text
                   style={{
                     fontSize: 12,
-                    color: '#5A7A5A',
+                    color: '#6B5B4B',
                     flex: 1,
                     fontWeight: '500',
                   }}
                 >
                   {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
                 </Text>
-                <Ionicons name="chevron-forward" size={14} color="#3D7A3D" />
+                <Ionicons name="chevron-forward" size={14} color="#5D4E40" />
               </AnimatedPressable>
             )}
           </View>
@@ -604,6 +604,8 @@ export default function GroceryScreen() {
                   value={newItemText}
                   onChangeText={setNewItemText}
                   onSubmitEditing={handleAddItem}
+                  blurOnSubmit={false}
+                  returnKeyType="done"
                   autoFocus
                 />
                 <AnimatedPressable

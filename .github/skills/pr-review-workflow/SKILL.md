@@ -135,12 +135,44 @@ Reply with reasoning, then resolve the thread. Do not leave threads open.
 
 ---
 
-## 5. Creating PRs (PowerShell)
+## 5. Creating PRs and Issues
 
-NEVER pass backtick-containing text via `--body` — PowerShell interprets backticks as escape characters.
+### Avoiding Terminal Escaping Issues
 
-```powershell
-# Write body to temp file (use create_file tool), then:
-gh pr create --title "feat: ..." --body-file tmp_pr_body.md
-Remove-Item tmp_pr_body.md
+NEVER use heredocs (`<< 'EOF'`) in terminal commands — they corrupt with multi-line content.
+NEVER pass backtick-containing text via `--body` — PowerShell uses backticks as escape characters and many shells treat backticks specially; for portability, use `--body-file` instead.
+
+**Correct approach:**
+1. Use `create_file` tool to write body to `/tmp/` file
+2. Use `--body-file` flag to reference the file
+3. Set `GH_PAGER=""` to disable pager (prevents "alternate buffer" issues)
+
+### Creating Issues
+
+```bash
+# 1. Create body file using create_file tool (not terminal heredoc)
+# 2. Then run:
+GH_PAGER="" gh issue create \
+  --repo OWNER/REPO \
+  --title "feat: Short description" \
+  --body-file /tmp/issue-body.md \
+  --label "enhancement,area: mobile" 2>&1
+```
+
+### Creating PRs
+
+```bash
+# Same pattern as issues:
+GH_PAGER="" gh pr create \
+  --title "feat: Short description" \
+  --body-file /tmp/pr-body.md 2>&1
+```
+
+### Listing Issues/PRs
+
+Always disable pager to avoid "alternate buffer" output:
+
+```bash
+GH_PAGER="" gh issue list --limit 10 2>&1
+GH_PAGER="" gh pr list --limit 10 2>&1
 ```
