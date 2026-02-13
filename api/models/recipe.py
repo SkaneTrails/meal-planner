@@ -357,3 +357,16 @@ class EnhancementReviewRequest(BaseModel):
     """Request body for reviewing an AI enhancement."""
 
     action: EnhancementReviewAction = Field(..., description="'approve' to show enhanced, 'reject' to show original")
+
+
+class RecipePreview(BaseModel):
+    """Preview of a scraped recipe before saving.
+
+    Contains the original scraped data and optionally the AI-enhanced version.
+    The client can review both versions and choose which to save.
+    """
+
+    original: RecipeCreate = Field(..., description="Original scraped recipe data")
+    enhanced: RecipeCreate | None = Field(default=None, description="AI-enhanced version (if enhance=true)")
+    changes_made: list[str] = Field(default_factory=list, description="List of AI enhancement changes")
+    image_url: str | None = Field(default=None, description="Original image URL from the recipe")

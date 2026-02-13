@@ -8,6 +8,8 @@ import type {
   Recipe,
   RecipeCreate,
   RecipeParseRequest,
+  RecipePreview,
+  RecipePreviewRequest,
   RecipeScrapeRequest,
   RecipeUpdate,
 } from '../types';
@@ -90,6 +92,14 @@ export const recipeApi = {
         body: JSON.stringify(request),
       });
     }
+  },
+
+  previewRecipe: async (url: string, html: string, enhance: boolean = true): Promise<RecipePreview> => {
+    const request: RecipePreviewRequest = { url, html, enhance };
+    return apiRequest<RecipePreview>('/recipes/preview', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
   },
 
   updateRecipe: (id: string, updates: RecipeUpdate): Promise<Recipe> => {

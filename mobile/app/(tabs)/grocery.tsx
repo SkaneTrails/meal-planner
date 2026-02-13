@@ -45,6 +45,7 @@ export default function GroceryScreen() {
   const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
+  const [showClearMenu, setShowClearMenu] = useState(false);
   const [selectedMealKeys, setSelectedMealKeys] = useState<string[]>([]);
   const [mealServings, setMealServings] = useState<Record<string, number>>({}); // key -> servings
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
@@ -252,7 +253,6 @@ export default function GroceryScreen() {
   };
 
   const handleClearAll = async () => {
-    // Cross-platform confirmation
     const doClear = async () => {
       try {
         await Promise.all([
@@ -265,6 +265,7 @@ export default function GroceryScreen() {
         setGeneratedItems([]);
         setSelectedMealKeys([]);
         clearChecked();
+        setShowClearMenu(false);
       } catch (error) {
         console.error('[Grocery] Error clearing data:', error);
         showNotification(t('common.error'), t('grocery.failedToClearList'));
@@ -274,6 +275,65 @@ export default function GroceryScreen() {
     showAlert(
       t('grocery.clearEntireList'),
       t('grocery.clearEntireListMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      ],
+    );
+  };
+
+  const handleClearMealPlanItems = async () => {
+    const doClear = async () => {
+      try {
+        await Promise.all([
+          AsyncStorage.removeItem('grocery_selected_meals'),
+          AsyncStorage.removeItem('grocery_meal_servings'),
+        ]);
+        const customNames = new Set(customItems.map((i) => i.name));
+        const newChecked = new Set(
+          [...checkedItems].filter((name) => customNames.has(name)),
+        );
+        setCheckedItems(newChecked);
+        setGeneratedItems([]);
+        setSelectedMealKeys([]);
+        setMealServings({});
+        setShowClearMenu(false);
+      } catch (error) {
+        console.error('[Grocery] Error clearing meal plan items:', error);
+        showNotification(t('common.error'), t('grocery.failedToClearList'));
+      }
+    };
+
+    showAlert(
+      t('grocery.clearMealPlanItems'),
+      t('grocery.clearMealPlanItemsMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      ],
+    );
+  };
+
+  const handleClearManualItems = async () => {
+    const doClear = async () => {
+      try {
+        await AsyncStorage.removeItem('grocery_custom_items');
+        const generatedNames = new Set(generatedItems.map((i) => i.name));
+        const newChecked = new Set(
+          [...checkedItems].filter((name) => generatedNames.has(name)),
+        );
+        setCheckedItems(newChecked);
+        setCustomItems([]);
+        setShowClearMenu(false);
+      } catch (error) {
+        console.error('[Grocery] Error clearing manual items:', error);
+        showNotification(t('common.error'), t('grocery.failedToClearList'));
+      }
+    };
+
+    showAlert(
+      t('grocery.clearManualItems'),
+      t('grocery.clearManualItemsMessage'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
@@ -439,7 +499,10 @@ export default function GroceryScreen() {
               <View style={{ flexDirection: 'row', gap: 6 }}>
                 {/* Add Item button - PRIMARY action */}
                 <AnimatedPressable
-                  onPress={() => setShowAddItem(!showAddItem)}
+                  onPress={() => {
+                    setShowAddItem(!showAddItem);
+                    setShowClearMenu(false);
+                  }}
                   hoverScale={1.08}
                   pressScale={0.95}
                   style={{
@@ -458,10 +521,13 @@ export default function GroceryScreen() {
                   />
                 </AnimatedPressable>
 
-                {/* Clear All button - secondary, lower opacity */}
+                {/* Clear button - secondary, toggles menu */}
                 {totalItems > 0 && (
                   <AnimatedPressable
-                    onPress={handleClearAll}
+                    onPress={() => {
+                      setShowClearMenu(!showClearMenu);
+                      setShowAddItem(false);
+                    }}
                     hoverScale={1.08}
                     pressScale={0.95}
                     style={{
@@ -470,11 +536,13 @@ export default function GroceryScreen() {
                       paddingHorizontal: 10,
                       paddingVertical: 8,
                       borderRadius: 10,
-                      backgroundColor: 'rgba(93, 78, 64, 0.08)',
+                      backgroundColor: showClearMenu
+                        ? 'rgba(93, 78, 64, 0.15)'
+                        : 'rgba(93, 78, 64, 0.08)',
                     }}
                   >
                     <Ionicons
-                      name="trash-outline"
+                      name={showClearMenu ? 'close' : 'trash-outline'}
                       size={16}
                       color="rgba(93, 78, 64, 0.5)"
                     />
@@ -505,6 +573,78 @@ export default function GroceryScreen() {
                 )}
               </View>
             </View>
+
+            {/* Clear menu - shows when trash icon is toggled */}
+            {showClearMenu && (
+              <View
+                style={{
+                  marginTop: spacing.sm,
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: spacing.xs,
+                }}
+              >
+                <AnimatedPressable
+                  onPress={handleClearMealPlanItems}
+                  hoverScale={1.02}
+                  pressScale={0.98}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    borderRadius: borderRadius.md,
+                    backgroundColor: 'rgba(93, 78, 64, 0.08)',
+                    gap: spacing.xs,
+                  }}
+                >
+                  <Ionicons name="calendar-outline" size={14} color="rgba(93, 78, 64, 0.7)" />
+                  <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.8)' }}>
+                    {t('grocery.clearMealPlanItems')}
+                  </Text>
+                </AnimatedPressable>
+
+                <AnimatedPressable
+                  onPress={handleClearManualItems}
+                  hoverScale={1.02}
+                  pressScale={0.98}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    borderRadius: borderRadius.md,
+                    backgroundColor: 'rgba(93, 78, 64, 0.08)',
+                    gap: spacing.xs,
+                  }}
+                >
+                  <Ionicons name="create-outline" size={14} color="rgba(93, 78, 64, 0.7)" />
+                  <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.8)' }}>
+                    {t('grocery.clearManualItems')}
+                  </Text>
+                </AnimatedPressable>
+
+                <AnimatedPressable
+                  onPress={handleClearAll}
+                  hoverScale={1.02}
+                  pressScale={0.98}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.sm,
+                    borderRadius: borderRadius.md,
+                    backgroundColor: 'rgba(180, 80, 70, 0.1)',
+                    gap: spacing.xs,
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={14} color="rgba(180, 80, 70, 0.8)" />
+                  <Text style={{ fontSize: fontSize.sm, color: 'rgba(180, 80, 70, 0.9)' }}>
+                    {t('grocery.clearEntireList')}
+                  </Text>
+                </AnimatedPressable>
+              </View>
+            )}
 
             {/* Progress bar - thicker with rounded ends */}
             {itemsToBuy > 0 && (

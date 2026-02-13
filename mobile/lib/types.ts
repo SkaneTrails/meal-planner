@@ -126,6 +126,19 @@ export interface RecipeParseRequest {
   html: string;
 }
 
+export interface RecipePreviewRequest {
+  url: string;
+  html: string;
+  enhance?: boolean;
+}
+
+export interface RecipePreview {
+  original: RecipeCreate;
+  enhanced: RecipeCreate | null;
+  changes_made: string[];
+  image_url: string | null;
+}
+
 export interface PaginatedRecipeList {
   items: Recipe[];
   total_count: number | null;

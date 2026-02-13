@@ -352,6 +352,12 @@ const sv: Translations = {
       'Lägg till måltider i din plan eller lägg till varor manuellt',
     clearEntireList: 'Rensa hela listan?',
     clearEntireListMessage: 'Detta tar bort alla varor från din inköpslista.',
+    clearMealPlanItems: 'Rensa måltidsvaror',
+    clearMealPlanItemsMessage:
+      'Detta tar bort alla varor från recept i din måltidsplan.',
+    clearManualItems: 'Rensa manuella varor',
+    clearManualItemsMessage:
+      'Detta tar bort alla manuellt tillagda varor.',
     clear: 'Rensa',
     failedToClearList: 'Kunde inte rensa listan',
     categories: {

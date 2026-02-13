@@ -361,6 +361,12 @@ const en = {
     clearEntireList: 'Clear Entire List?',
     clearEntireListMessage:
       'This will remove all items from your grocery list.',
+    clearMealPlanItems: 'Clear Meal Plan Items',
+    clearMealPlanItemsMessage:
+      'This will remove all items from recipes in your meal plan.',
+    clearManualItems: 'Clear Manual Items',
+    clearManualItemsMessage:
+      'This will remove all manually added items.',
     clear: 'Clear',
     failedToClearList: 'Failed to clear list',
     categories: {
