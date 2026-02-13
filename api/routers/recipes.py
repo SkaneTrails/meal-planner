@@ -22,6 +22,7 @@ from api.models.recipe import (
     Recipe,
     RecipeCreate,
     RecipeParseRequest,
+    RecipePreview,
     RecipeScrapeRequest,
     RecipeUpdate,
 )
@@ -191,6 +192,79 @@ async def create_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)
     """
     household_id = require_household(user)
     return recipe_storage.save_recipe(recipe, household_id=household_id, created_by=user.email)
+
+
+@router.post("/preview", status_code=status.HTTP_200_OK)
+async def preview_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    request: RecipeParseRequest,
+    *,
+    enhance: Annotated[bool, Query(description="Include AI-enhanced version")] = False,
+) -> RecipePreview:
+    """Preview a scraped recipe without saving it.
+
+    Parses the recipe from client-provided HTML and returns a preview.
+    Optionally includes an AI-enhanced version for comparison.
+    The client can then POST to /recipes to save the chosen version.
+    """
+    household_id = require_household(user)
+    url = str(request.url)
+    html = request.html
+    logger.info("[preview_recipe] Received request for URL: %s, HTML length: %d", url, len(html))
+
+    existing = recipe_storage.find_recipe_by_url(url)
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={"message": "Recipe from this URL already exists", "recipe_id": existing.id},
+        )
+
+    parse_result = await _send_html_to_cloud_function(url, html)
+
+    if isinstance(parse_result, _ParseError):
+        raise HTTPException(
+            status_code=_HTTP_422, detail={"message": parse_result.message, "reason": parse_result.reason}
+        )
+
+    if parse_result is None:
+        raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
+
+    scraped_data = parse_result
+    original_create = build_recipe_create_from_scraped(scraped_data)
+    image_url = original_create.image_url
+
+    enhanced_create = None
+    changes_made: list[str] = []
+
+    if enhance:
+        language, equipment = _get_household_config(household_id)
+        enhanced_data = _try_enhance_preview(original_create, language=language, equipment=equipment)
+        if enhanced_data is not None:
+            enhanced_create = enhanced_data["recipe"]
+            changes_made = enhanced_data.get("changes_made", [])
+
+    return RecipePreview(
+        original=original_create, enhanced=enhanced_create, changes_made=changes_made, image_url=image_url
+    )
+
+
+def _try_enhance_preview(
+    recipe_create: RecipeCreate, *, language: str = DEFAULT_LANGUAGE, equipment: list[str] | None = None
+) -> dict | None:
+    """Attempt AI enhancement for preview mode, returning None on failure."""
+    from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
+
+    try:
+        recipe_dict = recipe_create.model_dump()
+        enhanced_data = do_enhance(recipe_dict, language=language, equipment=equipment)
+        enhanced_create = build_recipe_create_from_enhanced(enhanced_data, recipe_create)
+        return {"recipe": enhanced_create, "changes_made": enhanced_data.get("changes_made", [])}
+    except EnhancementError as e:
+        logger.warning("Enhancement preview failed: %s", e)
+        return None
+    except Exception:
+        logger.exception("Unexpected error during enhancement preview")
+        return None
 
 
 @router.post("/scrape", status_code=status.HTTP_201_CREATED)
