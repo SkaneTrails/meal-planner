@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { shadows, borderRadius, fontSize, fontFamily, letterSpacing } from '@/lib/theme';
 import { AnimatedPressable } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
+import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
@@ -22,7 +23,7 @@ export const StatsCards = ({ recipesCount, plannedMealsCount, plannedMealsPercen
   return (
     <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
       <StatCard icon="book-outline" value={recipesCount} label={t('home.stats.recipes')} iconColor="#8B7355" onPress={() => router.push('/recipes')} />
-      <StatCard icon="calendar-outline" value={`${plannedMealsPercentage}%`} subtitle={`${plannedMealsCount}/14`} label={t('home.stats.planned')} iconColor="#8B7355" onPress={() => router.push('/meal-plan')} />
+      <StatCard icon="calendar-outline" value={`${plannedMealsPercentage}%`} subtitle={`${plannedMealsCount}/${WEEKLY_TRACKABLE_MEALS}`} label={t('home.stats.planned')} iconColor="#8B7355" onPress={() => router.push('/meal-plan')} />
       <StatCard icon="cart-outline" value={groceryItemsCount} label={t('home.stats.toBuy')} iconColor="#8B7355" onPress={() => router.push('/grocery')} />
     </View>
   );

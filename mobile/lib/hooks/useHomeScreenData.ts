@@ -6,6 +6,9 @@ import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import type { Recipe } from '@/lib/types';
 
+/** 7 days x 2 tracked meals (lunch + dinner) = 14 slots per week. */
+export const WEEKLY_TRACKABLE_MEALS = 14;
+
 const getNextMeal = (
   mealPlan: { meals?: Record<string, string> } | undefined,
   recipes: Recipe[],
@@ -160,7 +163,10 @@ export const useHomeScreenData = () => {
       return weekDateStrs.has(dateStr);
     }).length;
   }, [mealPlan?.meals, weekStart]);
-  const plannedMealsPercentage = Math.round((plannedMealsCount / 14) * 100);
+  const plannedMealsPercentage = Math.min(
+    100,
+    Math.round((plannedMealsCount / WEEKLY_TRACKABLE_MEALS) * 100),
+  );
   const nextMeal = getNextMeal(mealPlan, recipes);
 
   const handleImportRecipe = useCallback(() => {
