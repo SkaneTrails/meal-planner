@@ -255,7 +255,7 @@ const NextMealCard = ({
       hoverScale={1.01}
       pressScale={0.99}
       style={{
-        backgroundColor: 'rgba(255,255,255,0.92)',
+        backgroundColor: colors.glass.card,
         borderRadius: borderRadius.md,
         padding: 14,
         flexDirection: 'row',

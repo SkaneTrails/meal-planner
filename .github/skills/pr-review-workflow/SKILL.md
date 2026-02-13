@@ -140,7 +140,7 @@ Reply with reasoning, then resolve the thread. Do not leave threads open.
 ### Avoiding Terminal Escaping Issues
 
 NEVER use heredocs (`<< 'EOF'`) in terminal commands — they corrupt with multi-line content.
-NEVER pass backtick-containing text via `--body` — PowerShell/zsh interpret backticks as escape characters.
+NEVER pass backtick-containing text via `--body` — PowerShell uses backticks as escape characters and many shells treat backticks specially; for portability, use `--body-file` instead.
 
 **Correct approach:**
 1. Use `create_file` tool to write body to `/tmp/` file

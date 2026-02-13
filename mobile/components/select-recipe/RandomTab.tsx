@@ -100,6 +100,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
           </Pressable>
           <Pressable
             onPress={shuffleRandom}
+            disabled={setMeal.isPending}
             style={({ pressed }) => ({
               flex: 1,
               flexDirection: 'row',
@@ -110,6 +111,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               backgroundColor: pressed
                 ? colors.glass.medium
                 : colors.glass.card,
+              opacity: setMeal.isPending ? 0.5 : 1,
               ...shadows.sm,
             })}
           >
