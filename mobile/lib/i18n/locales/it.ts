@@ -531,6 +531,16 @@ const it: Translations = {
       addMore: 'Aggiungi altre',
       viewRecipe: 'Vedi ricetta',
     },
+    recipeExists: 'Una ricetta da questo URL esiste già nella tua collezione',
+  },
+
+  reviewRecipe: {
+    version: 'Versione',
+    original: 'Originale',
+    enhanced: 'Migliorata',
+    aiImprovements: 'Miglioramenti AI',
+    saveRecipe: 'Salva ricetta',
+    steps: 'passaggi',
   },
 
   signIn: {

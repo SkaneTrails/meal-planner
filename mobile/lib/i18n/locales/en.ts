@@ -533,6 +533,17 @@ const en = {
       addMore: 'Add More',
       viewRecipe: 'View Recipe',
     },
+    recipeExists: 'A recipe from this URL already exists in your collection',
+  },
+
+  // ── Review recipe screen ──────────────────────────────────────────
+  reviewRecipe: {
+    version: 'Version',
+    original: 'Original',
+    enhanced: 'Enhanced',
+    aiImprovements: 'AI Improvements',
+    saveRecipe: 'Save Recipe',
+    steps: 'steps',
   },
 
   // ── Sign-in screen ────────────────────────────────────────────────

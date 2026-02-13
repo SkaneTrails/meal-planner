@@ -522,6 +522,16 @@ const sv: Translations = {
       addMore: 'Lägg till fler',
       viewRecipe: 'Visa recept',
     },
+    recipeExists: 'Ett recept från denna URL finns redan i din samling',
+  },
+
+  reviewRecipe: {
+    version: 'Version',
+    original: 'Original',
+    enhanced: 'Förbättrad',
+    aiImprovements: 'AI-förbättringar',
+    saveRecipe: 'Spara recept',
+    steps: 'steg',
   },
 
   signIn: {

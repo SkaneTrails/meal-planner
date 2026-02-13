@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useScrapeRecipe, useCreateRecipe, useImagePicker } from '@/lib/hooks';
+import { useScrapeRecipe, useCreateRecipe, useImagePicker, usePreviewRecipe } from '@/lib/hooks';
 import { api, ApiClientError } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -40,6 +40,10 @@ export const useAddRecipeActions = () => {
 
   const scrapeRecipe = useScrapeRecipe();
   const createRecipe = useCreateRecipe();
+  const previewRecipe = usePreviewRecipe();
+
+  // State for preview loading
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   const isValidUrl = (text: string) => {
     try {
@@ -56,28 +60,38 @@ export const useAddRecipeActions = () => {
       return;
     }
 
-    try {
-      const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
-      setImportedRecipe(recipe);
+    setIsLoadingPreview(true);
 
-      if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
-        setShowSummaryModal(true);
-      } else {
-        showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
-          {
-            text: t('addRecipe.viewRecipe'),
-            style: 'cancel',
-            onPress: () => {
-              router.back();
-              router.push(`/recipe/${recipe.id}`);
-            },
-          },
-          {
-            text: t('addRecipe.addMore'),
-            onPress: () => setUrl(''),
-          },
-        ]);
+    try {
+      // Step 1: Fetch HTML client-side (avoids IP blocking on server)
+      const htmlResponse = await fetch(url, {
+        headers: {
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
+        },
+      });
+
+      if (!htmlResponse.ok) {
+        throw new ApiClientError(
+          `Failed to fetch recipe page: ${htmlResponse.status}`,
+          htmlResponse.status,
+        );
       }
+
+      const html = await htmlResponse.text();
+
+      // Step 2: Call preview endpoint (parses without saving)
+      const preview = await previewRecipe.mutateAsync({
+        url,
+        html,
+        enhance: enhanceWithAI,
+      });
+
+      // Step 3: Navigate to review screen with preview data
+      router.push({
+        pathname: '/review-recipe',
+        params: { preview: JSON.stringify(preview) },
+      });
     } catch (err) {
       if (err instanceof ApiClientError && err.reason === 'blocked') {
         const host = extractHostname(url);
@@ -91,10 +105,18 @@ export const useAddRecipeActions = () => {
           t('addRecipe.importFailed'),
           t('addRecipe.siteNotSupported', { host }),
         );
+      } else if (err instanceof ApiClientError && err.status === 409) {
+        // Recipe already exists
+        showNotification(
+          t('addRecipe.importFailed'),
+          t('addRecipe.recipeExists'),
+        );
       } else {
         const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
         showNotification(t('addRecipe.importFailed'), message);
       }
+    } finally {
+      setIsLoadingPreview(false);
     }
   };
 
@@ -184,7 +206,7 @@ export const useAddRecipeActions = () => {
     setUrl('');
   };
 
-  const isPending = scrapeRecipe.isPending || createRecipe.isPending;
+  const isPending = scrapeRecipe.isPending || createRecipe.isPending || previewRecipe.isPending || isLoadingPreview;
 
   return {
     t,
