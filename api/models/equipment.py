@@ -25,8 +25,11 @@ EQUIPMENT_CATALOG: dict[str, dict[str, str]] = {
     "air_fryer": {
         "category": "appliances",
         "prompt_hint": (
-            "Air fryer available — use for proteins, root vegetables, "
-            "breaded items. No preheat needed. ~4 L capacity per batch."
+            "Air fryer available — NEVER preheat (heats instantly). "
+            "~4 L basket capacity. Only use when ALL food fits in a single batch. "
+            "If it requires multiple batches, prefer the oven — first batch goes "
+            "cold while the second cooks. Best for: small quantities of proteins, "
+            "root vegetables, breaded items."
         ),
     },
     "stand_mixer": {
@@ -208,11 +211,18 @@ def get_equipment_prompt(equipment: list[str]) -> str:
     lines = "\n".join(f"- {hint}" for hint in hints)
     return (
         "## Kitchen Equipment\n\n"
-        "The household has the following equipment in addition to standard stovetop and oven:\n\n"
+        "Available (in addition to stovetop and oven):\n\n"
         f"{lines}\n\n"
-        "Optimize recipes to use this equipment where it genuinely improves "
-        "the dish. Evaluate each component independently — use the best tool "
-        "for each element. Do NOT suggest equipment not listed above."
+        "Actively consider EVERY listed item above — not just the air fryer. "
+        "For each recipe component, pick the tool that produces the best result "
+        "(e.g. wok for stir-fries, cast iron for searing, probe thermometer for "
+        "doneness). Use multiple tools in parallel when it saves time or improves "
+        "quality. For split proteins, cook each with the best tool. "
+        "When both oven and air fryer can handle a component, use the OVEN as "
+        "default (larger capacity, reliable for 4-portion quantities) and offer "
+        "the air fryer as a 💡 ALTERNATIV tip for when the quantity fits in one "
+        "batch. "
+        "Do NOT suggest unlisted equipment."
     )
 
 

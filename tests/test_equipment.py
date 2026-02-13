@@ -78,7 +78,7 @@ class TestGetEquipmentPrompt:
     def test_single_item_included_in_prompt(self) -> None:
         result = get_equipment_prompt(["air_fryer"])
         assert "Air fryer" in result
-        assert "Do NOT suggest equipment not listed" in result
+        assert "unlisted equipment" in result
 
     def test_multiple_items_all_included(self) -> None:
         result = get_equipment_prompt(["air_fryer", "wok", "probe_thermometer"])

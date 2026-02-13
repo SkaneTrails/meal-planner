@@ -25,156 +25,61 @@ Use standard sizes from the locale configuration when exact amounts are unknown.
 
 ## Ingredient ordering
 
-Organize ingredients in this order:
-
-1. **Chicken, Quorn, fish, seafood** (main ingredients)
-2. **Vegetables & root vegetables**
-3. **Carbohydrates** (pasta, rice, potatoes, bread)
-4. **Dairy** (yogurt, cream, cheese)
-5. **Oils & fats**
-6. **Spices & seasonings** (ALWAYS LAST)
-
-### Spices last
-
-All spices are grouped at the end of the ingredient list:
-
-- Dried spices
-- Fresh herbs
-- Salt, pepper
-- Broth/bouillon
+Order ingredients by **when they are first used** in the instructions. Exception: **spices and seasonings always LAST** (dried spices, fresh herbs, salt, pepper, bouillon), even if used early. Multi-use ingredients appear at the position of their first use.
 
 ## Ingredient duplication — CRITICAL
 
-**NEVER COMBINE INGREDIENTS INTO ONE LINE.**
-**NEVER MERGE EXISTING SEPARATE LINES.**
+If an ingredient is used multiple times, list EACH use as a separate line with its purpose. NEVER merge separate uses into one combined line.
 
-If the recipe already has separate lines for the same ingredient (e.g., "20 g Cheese (for gratin)" and "50 g Cheese (for topping)"), KEEP THEM SEPARATE. NEVER merge them.
+- ✅ "½ tsk Salt (till pasta)" + "½ tsk Salt (till kyckling)" — separate lines
+- ❌ "1 tsk Salt" — combined, loses context
 
-If salt, oil, butter, cheese, or any other ingredient is used multiple times in the recipe, LIST EACH USE SEPARATELY:
+**Exception — same physical item:** Different preparations of ONE item (zest + juice + wedges from one citron) stay as a single line: "2 Ekologisk citron (zest, saft och klyftor)"
 
-✅ CORRECT:
+**Salt/pepper limit:** Max **2 lines each**. If used in 3+ places, combine the minor uses.
 
-- ½ tsk Salt (for pasta water)
-- ½ tsk Salt (for the chicken)
-- Salt (finishing, to taste)
-- 1 msk Rapeseed oil (for frying)
-- 1 msk Olive oil (for serving)
-- 20 g Cheese (for gratin)
-- 50 g Cheese (for topping)
+**Quantity conservation:** When splitting an ingredient, the total MUST equal the original. If unsure, keep it on one line.
 
-❌ WRONG — combining into one line:
+## Instruction format — CRITICAL
 
-- 1 tsk Salt
-- 2 msk Oil
-- 70 g Cheese
+### Step count guidance
 
-WHY: Each addition has a specific purpose. Keeping them separate makes the recipe reproducible.
+**Keep instructions concise.** Most recipes need 6-8 cooking steps. 💡 lines (TIP/ALTERNATIVE/EXTRA) do NOT count — they are rendered separately by the app. Avoid splitting simple actions into separate steps, but don't artificially merge steps just to reduce count.
 
-### Quantity conservation — CRITICAL
+### Header-only steps are FORBIDDEN
 
-When splitting an ingredient into multiple uses, the **total quantity MUST equal the original**.
+Every instruction element MUST contain actionable cooking directions. A timeline marker, phase label, or short header alone is NOT a valid step — merge it into the next step.
 
-| Original   | ✅ CORRECT split                                   | ❌ WRONG (quantity lost)                           |
-| ---------- | -------------------------------------------------- | -------------------------------------------------- |
-| 2 msk oil  | 1 msk oil (for frying) + 1 msk oil (for mushrooms) | ½ msk oil (frying) + ½ msk oil (mushrooms) = 1 msk |
-| 1 tsk salt | ½ tsk salt (stew) + ½ tsk salt (mash)              | Salt (stew) + Salt (mash) — no amounts             |
+- ❌ `"⏱️ 5 min: Tillaga kyckling."` then `"Pensla kycklingen med rapsolja..."` → two steps for one action
+- ✅ `"⏱️ 5 min: Pensla kycklingen med 1 msk rapsolja. Tillaga i airfryer på 180°C..."` → merged
 
-NEVER reduce the total when splitting. If unsure, keep the ingredient on a single line.
+**Self-check:** If any element is ≤10 words with no cooking verb (heat, fry, stir, mix, cut, pour), merge it into the next step.
 
-## Instruction format
+### Simple recipes (default)
 
-### For simple recipes
+Clear sequential steps. Use this unless the recipe qualifies for timeline.
 
-Write instructions as clear numbered steps.
+**Do NOT include step numbers in instruction text.** The JSON array index provides numbering — writing `"1. Skala löken..."` causes double-numbering in the app. Write `"Skala löken..."` instead.
 
-### For complex recipes (parallel cooking, multiple components)
+### TIMELINE format (parallel cooking only)
 
-Use TIMELINE format to coordinate:
+Use **ONLY** when 2+ components cook simultaneously on different appliances (e.g. airfryer + stovetop). Start the longest-running item first.
 
-```
-⏱️ 0 min: [Preparation — what starts first]
-⏱️ 5 min: [Next step]
-⏱️ 15 min: [Parallel activities]
-...
-⏱️ X min: Serve!
-```
+Format: `⏱️ 0 min: [action]` / `⏱️ 5 min: [action]` / ... / `⏱️ X min: Serve!`
 
-### Every step must contain an action — CRITICAL
-
-**NEVER create steps that are just headers or labels.**
-
-❌ WRONG — empty header step:
-
-```json
-[
-  "⏱️ 15 min: Fry the mushrooms.",
-  "Heat oil in a pan. Fry the mushrooms until golden."
-]
-```
-
-✅ CORRECT — header merged with action:
-
-```json
-[
-  "⏱️ 15 min: Heat oil in a pan. Fry the mushrooms until golden, about 3-4 minutes."
-]
-```
-
-Every element in the instructions array MUST contain actionable cooking directions. A timeline marker alone is not a step.
-
-**IMPORTANT:** Each timeline step must be a **separate element** in the instructions array:
-
-```json
-"instructions": [
-  "⏱️ 0 min: Preheat the oven to 175°C. Prepare the vegetables...",
-  "Toss vegetables with oil. Place in oven.",
-  "⏱️ 5 min: Marinate the chicken...",
-  "⏱️ 10 min: Place the chicken in the air fryer...",
-  "⏱️ 35 min: Serve!"
-]
-```
-
-❌ WRONG: All steps in a single string with newlines
-✅ CORRECT: Each step as a separate array element
-
-Use timeline when:
-
-- Oven + air fryer are used simultaneously
-- Chicken and Quorn are cooked separately
-- Multiple components that need coordination
-- Total cooking time > 20 min
+Do NOT use timeline for sequential cooking, even if total time > 20 min.
 
 ### Inline tips with 💡
 
-Actionable tips (alternatives, extra flavor, technique suggestions) should be **separate elements** in the instructions array, placed directly after the step they belong to:
+Tips are **separate elements** in the instructions array, placed after the step they relate to. The app renders them with distinct styling, so they MUST start with 💡.
 
-```json
-"instructions": [
-  "Peel the pumpkin and cut into pieces. Drizzle with oil.",
-  "💡 ALTERNATIVE: Use Hokkaido pumpkin — the skin is edible.",
-  "⏱️ 5 min: Place in oven..."
-]
-```
+Formats: `💡 ALTERNATIVE:` (swaps) / `💡 EXTRA:` (flavor) / `💡 TIP:` (technique)
 
-**Format:**
+- ❌ Embedded in step: `"Peel the pumpkin... 💡 TIP: Use Hokkaido..."` — must be its own element
+- ❌ Explanation: `"💡 ALTERNATIV: Gräddfil finns inte laktosfri..."` — put rationale in `changes_made`
+- ✅ Actionable: `"💡 TIP: Smaka av med extra citronjuice för mer syra."`
 
-- `💡 ALTERNATIVE: ...` for ingredient swaps
-- `💡 EXTRA: ...` for flavor enhancement
-- `💡 TIP: ...` for technique
+### Cooking technique
 
-**IMPORTANT:**
-
-- ❌ WRONG: `"Peel the pumpkin... 💡 ALTERNATIVE: Use Hokkaido..."` (embedded in step)
-- ✅ CORRECT: Tip on its own line, after the step it belongs to
-
-**Why separate?** The app renders tips with distinct styling (green background), which only works when the element starts with 💡.
-
-### Cooking technique — high heat for searing
-
-When searing, browning, or caramelizing (mushrooms, meat, onions for color):
-
-- **Always specify HIGH heat** — medium heat won't achieve a proper Maillard reaction
-- Mushrooms: "High heat, 3-4 minutes, until golden" — NOT "medium-high heat"
-- Searing meat: "High heat, 2 minutes per side" — NOT "medium heat"
-
-The exception is sweating/softening vegetables (onions for base, garlic) — those use medium heat.
+- **Searing/browning/caramelizing** → always HIGH heat (Maillard reaction requires it)
+- **Sweating/softening** (onions for base, garlic) → medium heat
