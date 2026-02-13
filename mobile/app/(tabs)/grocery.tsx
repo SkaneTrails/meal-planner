@@ -296,7 +296,7 @@ export default function GroceryScreen() {
 
     setCustomItems((prev) => [...prev, newItem]);
     setNewItemText('');
-    setShowAddItem(false);
+    // Keep input visible for rapid entry - user can close with X button
   };
 
   const totalItems = generatedItems.length + customItems.length;
@@ -604,6 +604,8 @@ export default function GroceryScreen() {
                   value={newItemText}
                   onChangeText={setNewItemText}
                   onSubmitEditing={handleAddItem}
+                  blurOnSubmit={false}
+                  returnKeyType="done"
                   autoFocus
                 />
                 <AnimatedPressable
