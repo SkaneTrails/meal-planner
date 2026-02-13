@@ -40,6 +40,7 @@ export default function HomeScreen() {
     setShowAddModal,
     groceryItemsCount,
     plannedMealsCount,
+    plannedMealsPercentage,
     nextMeal,
     inspirationRecipes,
     inspirationRecipe,
@@ -81,6 +82,7 @@ export default function HomeScreen() {
         <StatsCards
           recipesCount={totalCount}
           plannedMealsCount={plannedMealsCount}
+          plannedMealsPercentage={plannedMealsPercentage}
           groceryItemsCount={groceryItemsCount}
           t={t}
         />

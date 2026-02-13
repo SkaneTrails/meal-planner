@@ -150,7 +150,12 @@ export const useHomeScreenData = () => {
     setShuffleCount(c => c + 1);
   }, [inspirationRecipes]);
 
-  const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
+  const plannedMealsCount = mealPlan?.meals
+    ? Object.keys(mealPlan.meals).filter(
+        (key) => key.endsWith('_lunch') || key.endsWith('_dinner'),
+      ).length
+    : 0;
+  const plannedMealsPercentage = Math.round((plannedMealsCount / 14) * 100);
   const nextMeal = getNextMeal(mealPlan, recipes);
 
   const handleImportRecipe = useCallback(() => {
@@ -174,6 +179,7 @@ export const useHomeScreenData = () => {
     setShowAddModal,
     groceryItemsCount,
     plannedMealsCount,
+    plannedMealsPercentage,
     nextMeal,
     inspirationRecipes,
     inspirationRecipe,

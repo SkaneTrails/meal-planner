@@ -11,17 +11,18 @@ type Data = ReturnType<typeof useHomeScreenData>;
 interface StatsCardsProps {
   recipesCount: Data['recipes']['length'];
   plannedMealsCount: Data['plannedMealsCount'];
+  plannedMealsPercentage: Data['plannedMealsPercentage'];
   groceryItemsCount: Data['groceryItemsCount'];
   t: Data['t'];
 }
 
-export const StatsCards = ({ recipesCount, plannedMealsCount, groceryItemsCount, t }: StatsCardsProps) => {
+export const StatsCards = ({ recipesCount, plannedMealsCount, plannedMealsPercentage, groceryItemsCount, t }: StatsCardsProps) => {
   const router = useRouter();
 
   return (
     <View style={{ flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 16 }}>
       <StatCard icon="book-outline" value={recipesCount} label={t('home.stats.recipes')} iconColor="#8B7355" onPress={() => router.push('/recipes')} />
-      <StatCard icon="calendar-outline" value={plannedMealsCount} label={t('home.stats.planned')} iconColor="#8B7355" onPress={() => router.push('/meal-plan')} />
+      <StatCard icon="calendar-outline" value={`${plannedMealsPercentage}%`} subtitle={`${plannedMealsCount}/14`} label={t('home.stats.planned')} iconColor="#8B7355" onPress={() => router.push('/meal-plan')} />
       <StatCard icon="cart-outline" value={groceryItemsCount} label={t('home.stats.toBuy')} iconColor="#8B7355" onPress={() => router.push('/grocery')} />
     </View>
   );
@@ -29,13 +30,14 @@ export const StatsCards = ({ recipesCount, plannedMealsCount, groceryItemsCount,
 
 interface StatCardProps {
   icon: keyof typeof Ionicons.glyphMap;
-  value: number;
+  value: number | string;
+  subtitle?: string;
   label: string;
   iconColor: string;
   onPress: () => void;
 }
 
-const StatCard = ({ icon, value, label, iconColor, onPress }: StatCardProps) => (
+const StatCard = ({ icon, value, subtitle, label, iconColor, onPress }: StatCardProps) => (
   <AnimatedPressable
     onPress={onPress}
     hoverScale={1.03}
@@ -56,10 +58,20 @@ const StatCard = ({ icon, value, label, iconColor, onPress }: StatCardProps) => 
       fontFamily: fontFamily.bodySemibold,
       color: '#5D4E40',
       letterSpacing: letterSpacing.tight,
-      marginBottom: 2,
+      marginBottom: subtitle ? 0 : 2,
     }}>
       {value}
     </Text>
+    {subtitle && (
+      <Text style={{
+        fontSize: fontSize.xs,
+        fontFamily: fontFamily.body,
+        color: '#8B7355',
+        marginBottom: 2,
+      }}>
+        {subtitle}
+      </Text>
+    )}
     <Text style={{
       fontSize: fontSize.xs,
       color: '#8B7355',

@@ -79,11 +79,15 @@ export default function RecipesScreen() {
 
   const filteredRecipes = useMemo(() => {
     let result = recipes.filter((recipe) => {
+      const query = searchQuery.toLowerCase();
       const matchesSearch =
         searchQuery === '' ||
-        recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        recipe.title.toLowerCase().includes(query) ||
         recipe.tags.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase()),
+          tag.toLowerCase().includes(query),
+        ) ||
+        recipe.ingredients.some((ingredient) =>
+          ingredient.toLowerCase().includes(query),
         );
       const matchesDiet = !dietFilter || recipe.diet_label === dietFilter;
       const matchesMeal =
