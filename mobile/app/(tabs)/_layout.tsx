@@ -247,28 +247,7 @@ export default function TabLayout() {
           href: null, // Hide from tab bar - accessed via Settings page
         }}
       />
-      {/* Hidden screens that still show tab bar */}
-      <Tabs.Screen
-        name="recipe/[id]"
-        options={{
-          href: null, // Hide from tab bar
-          title: t('tabs.recipe'),
-        }}
-      />
-      <Tabs.Screen
-        name="add-recipe"
-        options={{
-          href: null, // Hide from tab bar
-          title: t('tabs.addRecipe'),
-        }}
-      />
-      <Tabs.Screen
-        name="select-recipe"
-        options={{
-          href: null, // Hide from tab bar
-          title: t('tabs.selectRecipe'),
-        }}
-      />
+
     </Tabs>
   );
 }

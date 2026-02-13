@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { borderRadius, colors, spacing, fontFamily, fontSize } from '@/lib/theme';
 import { BottomSheetModal } from '@/components';
-import { isPastDate } from '@/lib/utils/dateFormatter';
+import { isPastDate, toBcp47 } from '@/lib/utils/dateFormatter';
 import { MEAL_TYPES } from './recipe-detail-constants';
 import type { MealType } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
@@ -13,6 +13,7 @@ interface PlanMealModalProps {
   recipeTitle: string;
   weekDates: Date[];
   weekOffset: number;
+  language: string;
   t: TFunction;
   onClose: () => void;
   onSetWeekOffset: (offset: number) => void;
@@ -26,6 +27,7 @@ export const PlanMealModal = ({
   recipeTitle,
   weekDates,
   weekOffset,
+  language,
   t,
   onClose,
   onSetWeekOffset,
@@ -67,8 +69,8 @@ export const PlanMealModal = ({
       {weekDates.map((date) => {
         const isToday = date.toDateString() === new Date().toDateString();
         const isPast = isPastDate(date);
-        const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
-        const monthDay = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        const dayName = date.toLocaleDateString(toBcp47(language), { weekday: 'short' });
+        const monthDay = date.toLocaleDateString(toBcp47(language), { month: 'short', day: 'numeric' });
 
         return (
           <View key={date.toISOString()} style={{ marginBottom: spacing.lg, opacity: isPast ? 0.4 : 1 }}>

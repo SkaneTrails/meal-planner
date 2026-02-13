@@ -43,7 +43,19 @@ export const FilledMealSlot = ({
       }}
     >
       <Pressable
-        onPress={() => recipe ? router.push(`/recipe/${recipe.id}`) : onMealPress(date, mealType, 'library')}
+        onPress={() => {
+          if (recipe) {
+            router.push(`/recipe/${recipe.id}`);
+          } else if (customText) {
+            const dateStr = formatDateLocal(date);
+            router.push({
+              pathname: '/select-recipe',
+              params: { date: dateStr, mealType, mode: 'quick', initialText: customText },
+            });
+          } else {
+            onMealPress(date, mealType, 'library');
+          }
+        }}
         style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
       >
         <Image
@@ -65,31 +77,6 @@ export const FilledMealSlot = ({
           </Text>
         </View>
       </Pressable>
-
-      {customText && !recipe && (
-        <AnimatedPressable
-          onPress={() => {
-            const dateStr = formatDateLocal(date);
-            router.push({
-              pathname: '/select-recipe',
-              params: { date: dateStr, mealType, mode: 'quick', initialText: customText },
-            });
-          }}
-          hoverScale={1.1}
-          pressScale={0.9}
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 14,
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginLeft: 8,
-          }}
-        >
-          <Ionicons name="create-outline" size={16} color="#5D4E40" />
-        </AnimatedPressable>
-      )}
 
       <AnimatedPressable
         onPress={() => onRemove(date, mealType, title, label)}

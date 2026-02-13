@@ -6,6 +6,7 @@ import { hapticLight } from '@/lib/haptics';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
+import { useSettings } from '@/lib/settings-context';
 import { DAY_SECTION_HEIGHT, showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
 import type { MealType, Recipe } from '@/lib/types';
 import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
@@ -13,6 +14,7 @@ import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants'
 export const useMealPlanActions = () => {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { weekStart } = useSettings();
   const { saveSelections } = useGroceryState();
 
   const MEAL_TYPES: MealTypeOption[] = useMemo(() => [
@@ -41,8 +43,8 @@ export const useMealPlanActions = () => {
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
-  const weekDates = useMemo(() => getWeekDatesArray(weekOffset), [weekOffset]);
-  const groceryWeekDates = useMemo(() => getWeekDatesArray(groceryWeekOffset), [groceryWeekOffset]);
+  const weekDates = useMemo(() => getWeekDatesArray(weekOffset, weekStart), [weekOffset, weekStart]);
+  const groceryWeekDates = useMemo(() => getWeekDatesArray(groceryWeekOffset, weekStart), [groceryWeekOffset, weekStart]);
 
   const todayIndex = useMemo(() => {
     const today = new Date();

@@ -52,6 +52,7 @@ class HouseholdSettings(BaseModel):
     household_size: int = Field(default=2, ge=1, le=20, description="Number of people in household")
     default_servings: int = Field(default=2, ge=1, le=20, description="Default number of servings for recipes")
     language: str = Field(default="sv", description="Preferred language for recipes (sv, en, it)")
+    week_start: str = Field(default="monday", description="Day the week starts on (monday or saturday)")
     ai_features_enabled: bool = Field(default=True, description="Show AI enhancement controls in UI")
     items_at_home: list[str] = Field(
         default_factory=list, description="Ingredients always at home (excluded from grocery lists)"
@@ -96,6 +97,7 @@ class HouseholdSettingsUpdate(BaseModel):
     household_size: int | None = Field(default=None, ge=1, le=20)
     default_servings: int | None = Field(default=None, ge=1, le=20)
     language: str | None = None
+    week_start: str | None = None
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
 
     dietary: DietarySettingsUpdate | None = None

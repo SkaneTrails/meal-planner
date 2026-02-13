@@ -421,6 +421,10 @@ const it: Translations = {
     showHiddenRecipes: 'Mostra Ricette Nascoste',
     showHiddenRecipesDesc:
       'Includi le ricette che hai segnato con il pollice in giù',
+    weekStart: 'Inizio Settimana',
+    weekStartDesc: 'Scegli quando inizia la tua settimana di pianificazione',
+    weekStartMonday: 'Lunedì',
+    weekStartSaturday: 'Sabato',
     membersSection: 'Membri',
     membersSectionDesc: 'Persone nel tuo nucleo familiare',
     addMemberPlaceholder: 'Indirizzo email',
