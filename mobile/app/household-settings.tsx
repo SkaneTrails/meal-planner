@@ -20,9 +20,11 @@ import { showAlert, showNotification } from '@/lib/alert';
 import {
   useAddMember,
   useCurrentUser,
+  useHousehold,
   useHouseholdMembers,
   useHouseholdSettings,
   useRemoveMember,
+  useRenameHousehold,
   useUpdateHouseholdSettings,
 } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -242,6 +244,11 @@ export default function HouseholdSettingsScreen() {
     'member',
   );
 
+  const { data: household } = useHousehold(householdId ?? '');
+  const renameHousehold = useRenameHousehold();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
+
   // Options for dropdowns (inside component for i18n)
   const MEAT_OPTIONS: {
     value: MeatPreference;
@@ -373,6 +380,30 @@ export default function HouseholdSettingsScreen() {
         : [...prev.equipment, key],
     }));
     setHasChanges(true);
+  };
+
+  const handleStartEditName = () => {
+    setEditedName(household?.name ?? '');
+    setIsEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = editedName.trim();
+    if (!trimmed || !householdId || trimmed === household?.name) {
+      setIsEditingName(false);
+      return;
+    }
+
+    try {
+      await renameHousehold.mutateAsync({ id: householdId, name: trimmed });
+      setIsEditingName(false);
+      showNotification(t('householdSettings.general.nameUpdated'));
+    } catch (error) {
+      showNotification(
+        t('common.error'),
+        error instanceof Error ? error.message : String(error),
+      );
+    }
   };
 
   const handleAddMember = async () => {
@@ -622,6 +653,7 @@ export default function HouseholdSettingsScreen() {
                   ...shadows.sm,
                 }}
               >
+                {/* Household Name */}
                 <View style={{ marginBottom: spacing.lg }}>
                   <Text
                     style={{
@@ -630,74 +662,84 @@ export default function HouseholdSettingsScreen() {
                       marginBottom: spacing.xs,
                     }}
                   >
-                    {t('householdSettings.general.householdSize')}
+                    {t('householdSettings.general.nameLabel')}
                   </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Pressable
-                      onPress={() =>
-                        settings.household_size > 1 &&
-                        updateField(
-                          'household_size',
-                          settings.household_size - 1,
-                        )
-                      }
-                      disabled={!canEdit}
-                      style={({ pressed }) => ({
-                        width: 40,
-                        height: 40,
-                        borderRadius: 20,
-                        backgroundColor: pressed
-                          ? colors.bgDark
-                          : colors.bgLight,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: canEdit ? 1 : 0.4,
-                      })}
-                    >
-                      <Ionicons
-                        name="remove"
-                        size={20}
-                        color={colors.text.inverse}
+                  {isEditingName ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                      <TextInput
+                        value={editedName}
+                        onChangeText={setEditedName}
+                        autoFocus
+                        maxLength={100}
+                        onSubmitEditing={handleSaveName}
+                        style={{
+                          flex: 1,
+                          fontSize: fontSize.lg,
+                          fontWeight: fontWeight.bold,
+                          color: colors.text.inverse,
+                          backgroundColor: colors.bgLight,
+                          borderRadius: borderRadius.md,
+                          paddingHorizontal: spacing.md,
+                          paddingVertical: spacing.sm,
+                        }}
                       />
-                    </Pressable>
-                    <Text
-                      style={{
-                        fontSize: fontSize['2xl'],
-                        fontWeight: fontWeight.bold,
-                        color: colors.text.inverse,
-                        minWidth: 60,
-                        textAlign: 'center',
-                      }}
-                    >
-                      {settings.household_size}
-                    </Text>
+                      <Pressable
+                        onPress={handleSaveName}
+                        disabled={renameHousehold.isPending}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          backgroundColor: colors.accent,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          opacity: renameHousehold.isPending ? 0.6 : 1,
+                        }}
+                      >
+                        {renameHousehold.isPending ? (
+                          <ActivityIndicator color="white" size="small" />
+                        ) : (
+                          <Ionicons name="checkmark" size={20} color="white" />
+                        )}
+                      </Pressable>
+                      <Pressable
+                        onPress={() => setIsEditingName(false)}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          backgroundColor: colors.bgLight,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Ionicons name="close" size={20} color={colors.text.inverse} />
+                      </Pressable>
+                    </View>
+                  ) : (
                     <Pressable
-                      onPress={() =>
-                        updateField(
-                          'household_size',
-                          settings.household_size + 1,
-                        )
-                      }
-                      disabled={!canEdit}
-                      style={({ pressed }) => ({
-                        width: 40,
-                        height: 40,
-                        borderRadius: 20,
-                        backgroundColor: pressed
-                          ? colors.bgDark
-                          : colors.bgLight,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: canEdit ? 1 : 0.4,
-                      })}
+                      onPress={canEdit ? handleStartEditName : undefined}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
                     >
-                      <Ionicons
-                        name="add"
-                        size={20}
-                        color={colors.text.inverse}
-                      />
+                      <Text
+                        style={{
+                          fontSize: fontSize.lg,
+                          fontWeight: fontWeight.bold,
+                          color: colors.text.inverse,
+                          flex: 1,
+                        }}
+                      >
+                        {household?.name ?? '—'}
+                      </Text>
+                      {canEdit && (
+                        <Ionicons
+                          name="create-outline"
+                          size={18}
+                          color={colors.text.inverse + '60'}
+                        />
+                      )}
                     </Pressable>
-                  </View>
+                  )}
                 </View>
 
                 <View>

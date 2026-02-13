@@ -40,6 +40,18 @@ export default function RecipesScreen() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const { isFavorite } = useSettings();
 
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSearchQuery('');
+        setDietFilter(null);
+        setMealFilters([]);
+        setSortBy('newest');
+        setShowFavoritesOnly(false);
+      };
+    }, []),
+  );
+
   const SORT_OPTIONS = [
     { value: 'newest', label: t('labels.sort.newest') },
     { value: 'oldest', label: t('labels.sort.oldest') },
@@ -49,17 +61,6 @@ export default function RecipesScreen() {
   const [showSortPicker, setShowSortPicker] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        setSearchQuery('');
-        setDietFilter(null);
-        setMealFilters([]);
-        setShowFavoritesOnly(false);
-      };
-    }, []),
-  );
 
   const {
     data,

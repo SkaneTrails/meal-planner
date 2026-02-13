@@ -533,7 +533,9 @@ const sv: Translations = {
     general: {
       title: 'Allmänt',
       subtitle: 'Grundläggande hushållsinformation',
-      householdSize: 'Hushållsstorlek',
+      nameLabel: 'Hushållets namn',
+      nameUpdated: 'Hushållets namn har uppdaterats',
+
       defaultServings: 'Standardportioner',
     },
     dietary: {
