@@ -175,16 +175,16 @@ const Header = ({
         hoverScale={1.08}
         pressScale={0.95}
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          backgroundColor: colors.glass.card,
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
           alignItems: 'center',
           justifyContent: 'center',
           ...shadows.sm,
         }}
       >
-        <Ionicons name="settings-outline" size={22} color="#5D4E40" />
+        <Ionicons name="settings-outline" size={24} color={colors.white} />
       </AnimatedPressable>
     </View>
   </View>
@@ -255,7 +255,7 @@ const NextMealCard = ({
       hoverScale={1.01}
       pressScale={0.99}
       style={{
-        backgroundColor: 'rgba(255,255,255,0.92)',
+        backgroundColor: colors.glass.card,
         borderRadius: borderRadius.md,
         padding: 14,
         flexDirection: 'row',

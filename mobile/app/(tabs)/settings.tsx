@@ -520,7 +520,6 @@ export default function SettingsScreen() {
               icon="home"
               title={t('settings.itemsAtHome')}
               subtitle={t('settings.itemsAtHomeDesc')}
-              iconColor="#6B8E6B"
             />
 
             {/* Current items - show first */}

@@ -522,6 +522,7 @@ export const RecipeContent = ({
 
       <RecipeEnhancedInfo
         recipe={recipe}
+        showOriginal={showOriginal}
         showAiChanges={showAiChanges}
         t={t}
         onToggleAiChanges={onToggleAiChanges}
