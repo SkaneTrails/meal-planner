@@ -26,7 +26,7 @@ export const RecipeEnhancedInfo = ({
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => (
   <>
-    {recipe.enhanced && recipe.tips && (
+    {recipe.enhanced && recipe.show_enhanced && recipe.tips && (
       <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
         <View
           style={{
@@ -88,6 +88,7 @@ export const RecipeEnhancedInfo = ({
     )}
 
     {recipe.enhanced &&
+      recipe.show_enhanced &&
       recipe.changes_made &&
       recipe.changes_made.length > 0 && (
         <View

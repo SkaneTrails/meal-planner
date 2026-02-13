@@ -73,6 +73,32 @@ export const RandomTab = ({ state }: RandomTabProps) => {
         {/* Action buttons */}
         <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
           <Pressable
+            onPress={() => handleSelectRecipe(randomRecipe.id)}
+            disabled={setMeal.isPending}
+            style={({ pressed }) => ({
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: spacing.md,
+              borderRadius: borderRadius.sm,
+              backgroundColor: pressed ? '#6B5B4B' : '#7A6858',
+              ...shadows.md,
+            })}
+          >
+            <Ionicons name="checkmark-circle" size={20} color={colors.white} />
+            <Text
+              style={{
+                marginLeft: spacing.sm,
+                fontSize: fontSize.lg,
+                fontWeight: '600',
+                color: colors.white,
+              }}
+            >
+              {t('selectRecipe.random.addToPlan')}
+            </Text>
+          </Pressable>
+          <Pressable
             onPress={shuffleRandom}
             style={({ pressed }) => ({
               flex: 1,
@@ -97,32 +123,6 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               }}
             >
               {t('selectRecipe.random.shuffle')}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => handleSelectRecipe(randomRecipe.id)}
-            disabled={setMeal.isPending}
-            style={({ pressed }) => ({
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B',
-              ...shadows.md,
-            })}
-          >
-            <Ionicons name="checkmark-circle" size={20} color={colors.white} />
-            <Text
-              style={{
-                marginLeft: spacing.sm,
-                fontSize: fontSize.lg,
-                fontWeight: '600',
-                color: colors.white,
-              }}
-            >
-              {t('selectRecipe.random.addToPlan')}
             </Text>
           </Pressable>
         </View>

@@ -175,16 +175,16 @@ const Header = ({
         hoverScale={1.08}
         pressScale={0.95}
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          backgroundColor: colors.glass.card,
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: 'rgba(93, 78, 64, 0.15)',
           alignItems: 'center',
           justifyContent: 'center',
           ...shadows.sm,
         }}
       >
-        <Ionicons name="settings-outline" size={22} color="#5D4E40" />
+        <Ionicons name="settings-outline" size={24} color="#3D3D3D" />
       </AnimatedPressable>
     </View>
   </View>
