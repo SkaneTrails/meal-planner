@@ -231,6 +231,34 @@ export const RecipeContent = ({
             </Text>
           </View>
         )}
+        {recipe.visibility && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.92)',
+              paddingHorizontal: spacing.md,
+              paddingVertical: spacing.sm,
+              borderRadius: 20,
+              gap: spacing.xs,
+            }}
+          >
+            <Ionicons
+              name={recipe.visibility === 'shared' ? 'globe-outline' : 'lock-closed-outline'}
+              size={14}
+              color={colors.text.inverse}
+            />
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontFamily: fontFamily.bodySemibold,
+                color: colors.text.inverse,
+              }}
+            >
+              {t(`labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}` as 'labels.visibility.shared')}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Time and servings - compact */}

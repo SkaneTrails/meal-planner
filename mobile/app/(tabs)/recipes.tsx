@@ -3,7 +3,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Platform,
@@ -49,17 +49,6 @@ export default function RecipesScreen() {
   const [showSortPicker, setShowSortPicker] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        setSearchQuery('');
-        setDietFilter(null);
-        setMealFilters([]);
-        setShowFavoritesOnly(false);
-      };
-    }, []),
-  );
 
   const {
     data,
