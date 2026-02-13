@@ -29,6 +29,7 @@ export default function SelectRecipeScreen() {
   } = state;
 
   const renderActiveTab = () => {
+    if (mode === 'extras') return <LibraryTab state={state} />;
     if (mode === 'quick' || activeTab === 'quick')
       return <QuickMealTab state={state} />;
     if (activeTab === 'library') return <LibraryTab state={state} />;
@@ -36,11 +37,21 @@ export default function SelectRecipeScreen() {
     return <CopyMealTab state={state} />;
   };
 
+  // Different header for extras mode
+  const headerTitle = mode === 'extras'
+    ? t('mealPlan.extras.selectTitle')
+    : formattedDate;
+  const headerSubtitle = mode === 'extras'
+    ? t('mealPlan.extras.selectSubtitle')
+    : `${t('selectRecipe.choosingFor')} ${MEAL_TYPE_LABELS[mealType]?.toLowerCase() || ''}`;
+
   return (
     <>
       <Stack.Screen
         options={{
-          title: `${MEAL_TYPE_LABELS[mealType]} - ${formattedDate}`,
+          title: mode === 'extras'
+            ? t('mealPlan.extras.headerTitle')
+            : `${MEAL_TYPE_LABELS[mealType]} - ${formattedDate}`,
         }}
       />
 
@@ -58,7 +69,7 @@ export default function SelectRecipeScreen() {
               textAlign: 'center',
             }}
           >
-            {formattedDate}
+            {headerTitle}
           </Text>
           <Text
             style={{
@@ -69,8 +80,7 @@ export default function SelectRecipeScreen() {
               textAlign: 'center',
             }}
           >
-            {t('selectRecipe.choosingFor')}{' '}
-            {MEAL_TYPE_LABELS[mealType].toLowerCase()}
+            {headerSubtitle}
           </Text>
         </View>
 

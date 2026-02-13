@@ -38,6 +38,9 @@ class MealPlan(BaseModel):
     household_id: str = Field(..., description="Household identifier")
     meals: dict[str, str] = Field(default_factory=dict, description="Map of date_mealtype to recipe_id or custom:text")
     notes: dict[str, str] = Field(default_factory=dict, description="Map of date to note text")
+    extras: list[str] = Field(
+        default_factory=list, description="Recipe IDs for 'Other' section (breakfast, desserts, etc.)"
+    )
 
     def get_meals_for_day(self, day: date) -> list[PlannedMeal]:
         """Get all meals planned for a specific day."""
@@ -87,3 +90,4 @@ class MealPlanUpdate(BaseModel):
     notes: dict[str, str | None] = Field(
         default_factory=dict, description="Map of date to note text, or None to delete"
     )
+    extras: list[str] | None = Field(None, description="Recipe IDs for 'Other' section (replaces entire list)")

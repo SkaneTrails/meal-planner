@@ -15,12 +15,22 @@ interface LibraryTabProps {
 export const LibraryTab = ({ state }: LibraryTabProps) => {
   const {
     t,
+    mode,
     searchQuery,
     setSearchQuery,
     filteredRecipes,
     handleSelectRecipe,
+    handleAddToExtras,
     router,
   } = state;
+
+  const onRecipePress = (recipeId: string) => {
+    if (mode === 'extras') {
+      handleAddToExtras(recipeId);
+    } else {
+      handleSelectRecipe(recipeId);
+    }
+  };
 
   return (
     <>
@@ -74,7 +84,7 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
           <RecipeCard
             recipe={item}
             compact
-            onPress={() => handleSelectRecipe(item.id)}
+            onPress={() => onRecipePress(item.id)}
           />
         )}
         contentContainerStyle={{ padding: 20, paddingBottom: 100 }}

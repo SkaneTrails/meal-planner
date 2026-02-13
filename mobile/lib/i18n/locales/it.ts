@@ -291,6 +291,16 @@ const it: Translations = {
       travel: '✈️ Viaggio',
       party: '🎉 Festa',
     },
+    extras: {
+      headerTitle: 'Altro',
+      add: 'Aggiungi',
+      emptyState: 'Aggiungi ricette per qualsiasi momento',
+      selectTitle: 'Scegli ricetta',
+      selectSubtitle: 'Aggiungi a Altro',
+      alreadyAdded: 'Già aggiunto',
+      alreadyAddedMessage: 'Questa ricetta è già nella sezione Altro',
+      failedToAdd: 'Impossibile aggiungere la ricetta',
+    },
   },
 
   selectRecipe: {

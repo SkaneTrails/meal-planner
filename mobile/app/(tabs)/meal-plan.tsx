@@ -13,6 +13,7 @@ import {
 import { AnimatedPressable, GradientBackground } from '@/components';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
+import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
 import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
@@ -67,6 +68,9 @@ export default function MealPlanScreen() {
     handleChangeServings,
     handleCreateGroceryList,
     openGroceryModal,
+    getExtrasRecipes,
+    handleAddExtra,
+    handleRemoveExtra,
   } = useMealPlanActions();
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -212,6 +216,14 @@ export default function MealPlanScreen() {
                   </View>
                 );
               })}
+
+              {/* Other/Extras section */}
+              <ExtrasSection
+                recipes={getExtrasRecipes()}
+                t={t}
+                onAddExtra={handleAddExtra}
+                onRemoveExtra={handleRemoveExtra}
+              />
 
               {/* Skapa lista button at end of list */}
               <AnimatedPressable

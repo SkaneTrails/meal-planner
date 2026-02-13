@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAllRecipes, useSetMeal, useRemoveMeal, useMealPlan } from '@/lib/hooks';
+import { useAllRecipes, useSetMeal, useRemoveMeal, useMealPlan, useUpdateExtras } from '@/lib/hooks';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
@@ -19,7 +19,7 @@ export const useSelectRecipeState = () => {
   const { date, mealType, mode, initialText } = useLocalSearchParams<{
     date: string;
     mealType: MealType;
-    mode?: 'library' | 'copy' | 'quick' | 'random';
+    mode?: 'library' | 'copy' | 'quick' | 'random' | 'extras';
     initialText?: string;
   }>();
   const router = useRouter();
@@ -28,6 +28,7 @@ export const useSelectRecipeState = () => {
   const { data: mealPlan } = useMealPlan();
   const setMeal = useSetMeal();
   const removeMeal = useRemoveMeal();
+  const updateExtras = useUpdateExtras();
   const { t, language } = useTranslation();
 
   const MEAL_TYPE_LABELS: Record<MealType, string> = useMemo(() => ({
@@ -171,6 +172,20 @@ export const useSelectRecipeState = () => {
     }
   };
 
+  const handleAddToExtras = async (recipeId: string) => {
+    try {
+      const currentExtras = mealPlan?.extras || [];
+      if (currentExtras.includes(recipeId)) {
+        showNotification(t('mealPlan.extras.alreadyAdded'), t('mealPlan.extras.alreadyAddedMessage'));
+        return;
+      }
+      await updateExtras.mutateAsync({ extras: [...currentExtras, recipeId] });
+      router.replace('/(tabs)/meal-plan');
+    } catch {
+      showNotification(t('common.error'), t('mealPlan.extras.failedToAdd'));
+    }
+  };
+
   const formatMealDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
     return d.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' });
@@ -184,7 +199,7 @@ export const useSelectRecipeState = () => {
     customText, setCustomText, handleSetCustomText,
     copyWeekOffset, setCopyWeekOffset, targetWeekDates, existingMeals, formatMealDate,
     formattedDate, bcp47,
-    handleSelectRecipe, handleCopyMeal, handleRemoveMeal,
+    handleSelectRecipe, handleCopyMeal, handleRemoveMeal, handleAddToExtras,
     setMeal, removeMeal,
   };
 };

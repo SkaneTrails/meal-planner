@@ -293,6 +293,17 @@ const en = {
       travel: '✈️ Travel',
       party: '🎉 Party',
     },
+    // Extras (Other) section
+    extras: {
+      headerTitle: 'Other',
+      add: 'Add',
+      emptyState: 'Add recipes for any time',
+      selectTitle: 'Choose Recipe',
+      selectSubtitle: 'Add to Other section',
+      alreadyAdded: 'Already added',
+      alreadyAddedMessage: 'This recipe is already in your Other section',
+      failedToAdd: 'Failed to add recipe',
+    },
   },
 
   // ── Select recipe screen ──────────────────────────────────────────

@@ -42,6 +42,7 @@ const mockRecipes: Recipe[] = [
 ];
 
 const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+const mockUpdateExtrasMutate = vi.fn();
 
 vi.mock('@/lib/hooks', () => ({
   useMealPlan: vi.fn(() => ({
@@ -52,6 +53,7 @@ vi.mock('@/lib/hooks', () => ({
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
   useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
   useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
+  useUpdateExtras: vi.fn(() => ({ mutate: mockUpdateExtrasMutate })),
   useGroceryState: vi.fn(() => ({ saveSelections: mockSaveSelections })),
 }));
 

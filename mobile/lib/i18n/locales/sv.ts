@@ -285,6 +285,16 @@ const sv: Translations = {
       travel: '✈️ Resa',
       party: '🎉 Fest',
     },
+    extras: {
+      headerTitle: 'Övrigt',
+      add: 'Lägg till',
+      emptyState: 'Lägg till recept för när som helst',
+      selectTitle: 'Välj recept',
+      selectSubtitle: 'Lägg till i Övrigt',
+      alreadyAdded: 'Redan tillagt',
+      alreadyAddedMessage: 'Detta recept finns redan i Övrigt',
+      failedToAdd: 'Kunde inte lägga till recept',
+    },
   },
 
   selectRecipe: {
