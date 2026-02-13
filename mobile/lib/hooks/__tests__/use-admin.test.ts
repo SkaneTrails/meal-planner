@@ -18,6 +18,7 @@ vi.mock('@/lib/api', () => ({
     getHousehold: vi.fn(),
     getHouseholdMembers: vi.fn(),
     createHousehold: vi.fn(),
+    renameHousehold: vi.fn(),
     addHouseholdMember: vi.fn(),
     removeHouseholdMember: vi.fn(),
     getHouseholdSettings: vi.fn(),
@@ -34,6 +35,7 @@ import {
   useHouseholdMembers,
   useHouseholdSettings,
   useCreateHousehold,
+  useRenameHousehold,
   useAddMember,
   useRemoveMember,
   useUpdateHouseholdSettings,
@@ -205,6 +207,41 @@ describe('useCreateHousehold', () => {
     });
 
     expect(mockApi.createHousehold).toHaveBeenCalledWith({ name: 'New House' });
+  });
+});
+
+describe('useRenameHousehold', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockApi.renameHousehold.mockResolvedValue({ id: 'h1', name: 'Renamed House', created_by: 'test@example.com' });
+  });
+
+  it('renames a household', async () => {
+    const { result } = renderHook(
+      () => useRenameHousehold(),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await act(async () => {
+      await result.current.mutateAsync({ id: 'h1', name: 'Renamed House' });
+    });
+
+    expect(mockApi.renameHousehold).toHaveBeenCalledWith('h1', 'Renamed House');
+  });
+
+  it('handles error when rename fails', async () => {
+    mockApi.renameHousehold.mockRejectedValue(new Error('Rename failed'));
+
+    const { result } = renderHook(
+      () => useRenameHousehold(),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await expect(
+      act(async () => {
+        await result.current.mutateAsync({ id: 'h1', name: 'Bad Name' });
+      }),
+    ).rejects.toThrow('Rename failed');
   });
 });
 

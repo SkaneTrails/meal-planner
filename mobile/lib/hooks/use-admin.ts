@@ -92,6 +92,22 @@ export const useCreateHousehold = () => {
 }
 
 /**
+ * Rename a household.
+ */
+export const useRenameHousehold = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<Household, Error, { id: string; name: string }>({
+    mutationFn: ({ id, name }) => api.renameHousehold(id, name),
+    onSuccess: (_data, { id }) => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.households() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.household(id) });
+      queryClient.invalidateQueries({ queryKey: adminKeys.currentUser() });
+    },
+  });
+}
+
+/**
  * Add a member to a household.
  */
 export const useAddMember = () => {

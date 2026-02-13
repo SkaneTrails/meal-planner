@@ -50,11 +50,13 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 
 vi.mock('@/lib/hooks/use-admin', () => ({
   useCurrentUser: () => ({ data: mockCurrentUserData, isLoading: mockCurrentUserLoading }),
+  useHousehold: () => ({ data: { id: 'household-abc', name: 'Test Household', created_by: 'test@example.com' } }),
   useHouseholdSettings: (...args: any[]) => mockUseHouseholdSettings(...args),
   useUpdateHouseholdSettings: () => ({
     mutateAsync: mockMutateAsync,
     isPending: false,
   }),
+  useRenameHousehold: () => ({ mutateAsync: vi.fn().mockResolvedValue({}), isPending: false }),
   useHouseholdMembers: () => ({ data: [], isLoading: false, refetch: vi.fn() }),
   useAddMember: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useRemoveMember: () => ({ mutateAsync: vi.fn(), isPending: false }),

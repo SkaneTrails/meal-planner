@@ -40,6 +40,13 @@ export const adminApi = {
     return apiRequest<Household>(`/admin/households/${id}`);
   },
 
+  renameHousehold: (id: string, name: string): Promise<Household> => {
+    return apiRequest<Household>(`/admin/households/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ name }),
+    });
+  },
+
   getHouseholdMembers: (householdId: string): Promise<HouseholdMember[]> => {
     return apiRequest<HouseholdMember[]>(`/admin/households/${householdId}/members`);
   },

@@ -546,7 +546,9 @@ const en = {
     general: {
       title: 'General',
       subtitle: 'Basic household information',
-      householdSize: 'Household Size',
+      nameLabel: 'Household Name',
+      nameUpdated: 'Household name updated',
+
       defaultServings: 'Default Servings',
     },
     dietary: {
