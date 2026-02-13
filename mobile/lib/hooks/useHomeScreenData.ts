@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useAllRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
-import { formatDateLocal } from '@/lib/utils/dateFormatter';
+import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import type { Recipe } from '@/lib/types';
 
 const getNextMeal = (
@@ -150,11 +150,16 @@ export const useHomeScreenData = () => {
     setShuffleCount(c => c + 1);
   }, [inspirationRecipes]);
 
-  const plannedMealsCount = mealPlan?.meals
-    ? Object.keys(mealPlan.meals).filter(
-        (key) => key.endsWith('_lunch') || key.endsWith('_dinner'),
-      ).length
-    : 0;
+  const plannedMealsCount = useMemo(() => {
+    if (!mealPlan?.meals) return 0;
+    const weekDates = getWeekDatesArray(0);
+    const weekDateStrs = new Set(weekDates.map(d => formatDateLocal(d)));
+    return Object.keys(mealPlan.meals).filter((key) => {
+      if (!key.endsWith('_lunch') && !key.endsWith('_dinner')) return false;
+      const dateStr = key.replace(/_(lunch|dinner)$/, '');
+      return weekDateStrs.has(dateStr);
+    }).length;
+  }, [mealPlan?.meals]);
   const plannedMealsPercentage = Math.round((plannedMealsCount / 14) * 100);
   const nextMeal = getNextMeal(mealPlan, recipes);
 
