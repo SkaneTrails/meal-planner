@@ -360,6 +360,12 @@ const it: Translations = {
     clearEntireList: 'Cancellare tutta la lista?',
     clearEntireListMessage:
       'Questo rimuoverà tutti gli articoli dalla lista della spesa.',
+    clearMealPlanItems: 'Cancella articoli del piano',
+    clearMealPlanItemsMessage:
+      'Questo rimuoverà tutti gli articoli dalle ricette del piano.',
+    clearManualItems: 'Cancella articoli manuali',
+    clearManualItemsMessage:
+      'Questo rimuoverà tutti gli articoli aggiunti manualmente.',
     clear: 'Cancella',
     failedToClearList: 'Impossibile cancellare la lista',
     categories: {
