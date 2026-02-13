@@ -34,6 +34,8 @@ import {
 
 const STORAGE_KEY = '@meal_planner_settings';
 
+import type { WeekStart } from '@/lib/utils/dateFormatter';
+
 export type AppLanguage = 'en' | 'sv' | 'it';
 
 export const LANGUAGES: { code: AppLanguage; label: string; flag: string }[] = [
@@ -50,15 +52,18 @@ interface Settings extends LocalSettings {
   itemsAtHome: string[];
   favoriteRecipes: string[];
   language: AppLanguage;
+  weekStart: WeekStart;
 }
 
 interface SettingsContextType {
   settings: Settings;
+  weekStart: WeekStart;
   isLoading: boolean;
   addItemAtHome: (item: string) => Promise<void>;
   removeItemAtHome: (item: string) => Promise<void>;
   isItemAtHome: (item: string) => boolean;
   setLanguage: (language: AppLanguage) => Promise<void>;
+  setWeekStart: (weekStart: WeekStart) => Promise<void>;
   toggleFavorite: (recipeId: string) => Promise<void>;
   isFavorite: (recipeId: string) => boolean;
   toggleShowHiddenRecipes: () => Promise<void>;
@@ -132,6 +137,10 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     ? cloudLanguage
     : 'en';
 
+  // Resolve week start from household settings
+  const resolvedWeekStart: WeekStart =
+    householdSettings?.week_start === 'saturday' ? 'saturday' : 'monday';
+
   // Combined settings object
   const settings: Settings = useMemo(
     () => ({
@@ -139,8 +148,9 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       itemsAtHome: itemsAtHomeData?.items_at_home ?? [],
       favoriteRecipes: favoritesData?.favorite_recipes ?? [],
       language: resolvedLanguage,
+      weekStart: resolvedWeekStart,
     }),
-    [localSettings, itemsAtHomeData, favoritesData, resolvedLanguage],
+    [localSettings, itemsAtHomeData, favoritesData, resolvedLanguage, resolvedWeekStart],
   );
 
   const isLoading = isLocalLoading || authLoading || isUserLoading || isItemsLoading || isFavoritesLoading || isSettingsLoading;
@@ -197,6 +207,20 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     [householdId, updateSettingsMutation],
   );
 
+  const setWeekStart = useCallback(
+    async (weekStart: WeekStart) => {
+      if (!householdId) {
+        console.warn('Cannot set week start: no household');
+        return;
+      }
+      await updateSettingsMutation.mutateAsync({
+        householdId,
+        settings: { week_start: weekStart },
+      });
+    },
+    [householdId, updateSettingsMutation],
+  );
+
   const toggleFavorite = useCallback(
     async (recipeId: string) => {
       if (!householdId) {
@@ -229,22 +253,26 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   const contextValue = useMemo<SettingsContextType>(
     () => ({
       settings,
+      weekStart: resolvedWeekStart,
       isLoading,
       addItemAtHome,
       removeItemAtHome,
       isItemAtHome,
       setLanguage,
+      setWeekStart,
       toggleFavorite,
       isFavorite,
       toggleShowHiddenRecipes,
     }),
     [
       settings,
+      resolvedWeekStart,
       isLoading,
       addItemAtHome,
       removeItemAtHome,
       isItemAtHome,
       setLanguage,
+      setWeekStart,
       toggleFavorite,
       isFavorite,
       toggleShowHiddenRecipes,

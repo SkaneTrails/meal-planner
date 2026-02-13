@@ -70,7 +70,7 @@ export const useHomeScreenData = () => {
   const { recipes, totalCount, isLoading: recipesLoading, refetch: refetchRecipes } = useAllRecipes();
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const { checkedItems, selectedMealKeys, customItems, refreshFromApi } = useGroceryState();
-  const { isItemAtHome } = useSettings();
+  const { isItemAtHome, weekStart } = useSettings();
   const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -152,14 +152,14 @@ export const useHomeScreenData = () => {
 
   const plannedMealsCount = useMemo(() => {
     if (!mealPlan?.meals) return 0;
-    const weekDates = getWeekDatesArray(0);
+    const weekDates = getWeekDatesArray(0, weekStart);
     const weekDateStrs = new Set(weekDates.map(d => formatDateLocal(d)));
     return Object.keys(mealPlan.meals).filter((key) => {
       if (!key.endsWith('_lunch') && !key.endsWith('_dinner')) return false;
       const dateStr = key.replace(/_(lunch|dinner)$/, '');
       return weekDateStrs.has(dateStr);
     }).length;
-  }, [mealPlan?.meals]);
+  }, [mealPlan?.meals, weekStart]);
   const plannedMealsPercentage = Math.round((plannedMealsCount / 14) * 100);
   const nextMeal = getNextMeal(mealPlan, recipes);
 

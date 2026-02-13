@@ -1,13 +1,11 @@
 /**
  * Shared date formatting and week calculation utilities.
  *
- * Week start convention:
- * - meal-plan / select-recipe screens use Monday–Sunday
- * - index / grocery / recipe-detail screens use Saturday–Friday
- * Both are supported via the `weekStart` parameter.
+ * Week start is a household setting (monday or saturday).
+ * All screens read it from SettingsContext via `useSettings().weekStart`.
  */
 
-type WeekStart = 'monday' | 'saturday';
+export type WeekStart = 'monday' | 'saturday';
 
 /**
  * Format a Date as "YYYY-MM-DD" using local timezone (no UTC shift).
