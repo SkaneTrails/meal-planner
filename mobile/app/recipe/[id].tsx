@@ -34,7 +34,7 @@ export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
-  const { isFavorite, toggleFavorite, weekStart } = useSettings();
+  const { isFavorite, toggleFavorite, weekStart, settings } = useSettings();
   const isRecipeFavorite = id ? isFavorite(id) : false;
 
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -357,6 +357,7 @@ export default function RecipeDetailScreen() {
         recipeTitle={recipe.title}
         weekDates={weekDates}
         weekOffset={weekOffset}
+        language={settings.language}
         t={t}
         onClose={() => setShowPlanModal(false)}
         onSetWeekOffset={setWeekOffset}
