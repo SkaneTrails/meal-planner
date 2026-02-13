@@ -118,9 +118,11 @@ export default function SettingsScreen() {
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const {
     settings,
+    weekStart,
     addItemAtHome,
     removeItemAtHome,
     setLanguage,
+    setWeekStart,
     toggleShowHiddenRecipes,
   } = useSettings();
   const { t } = useTranslation();
@@ -437,6 +439,56 @@ export default function SettingsScreen() {
                   }
                 />
               </View>
+            </View>
+          </View>
+
+          {/* Meal Planning Section - Week Start */}
+          <View style={{ marginBottom: spacing['2xl'] }}>
+            <SectionHeader
+              icon="calendar"
+              title={t('settings.weekStart')}
+              subtitle={t('settings.weekStartDesc')}
+            />
+
+            <View
+              style={{
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                overflow: 'hidden',
+                ...shadows.sm,
+              }}
+            >
+              {(['monday', 'saturday'] as const).map((day, index) => (
+                <Pressable
+                  key={day}
+                  onPress={() => setWeekStart(day)}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: spacing.md,
+                    backgroundColor: pressed ? colors.bgMid : 'transparent',
+                    borderBottomWidth: index === 0 ? 1 : 0,
+                    borderBottomColor: 'rgba(93, 78, 64, 0.15)',
+                  })}
+                >
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontSize: fontSize.md,
+                      color: colors.text.dark,
+                    }}
+                  >
+                    {t(day === 'monday' ? 'settings.weekStartMonday' : 'settings.weekStartSaturday')}
+                  </Text>
+                  {weekStart === day && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={20}
+                      color="#6B8E6B"
+                    />
+                  )}
+                </Pressable>
+              ))}
             </View>
           </View>
 

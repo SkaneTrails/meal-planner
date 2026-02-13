@@ -287,6 +287,7 @@ export interface HouseholdSettings {
   household_size: number;
   default_servings: number;
   language: string;
+  week_start?: 'monday' | 'saturday';
   items_at_home?: string[];
   favorite_recipes?: string[];
   dietary: DietarySettings;

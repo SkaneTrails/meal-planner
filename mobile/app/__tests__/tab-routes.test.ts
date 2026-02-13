@@ -18,17 +18,13 @@ const ALLOWED_ROUTE_FILES = new Set([
   '_layout.tsx',
   'index.tsx',
   'recipes.tsx',
-  'add-recipe.tsx',
   'meal-plan.tsx',
   'grocery.tsx',
   'settings.tsx',
   'admin.tsx',
-  'select-recipe.tsx',
 ]);
 
-const ALLOWED_SUBDIRECTORIES: Record<string, string[]> = {
-  recipe: ['[id].tsx'],
-};
+const ALLOWED_SUBDIRECTORIES: Record<string, string[]> = {};
 
 describe('tab route structure', () => {
   it('should only contain allowed route files at the top level', () => {

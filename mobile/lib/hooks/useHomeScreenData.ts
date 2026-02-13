@@ -3,8 +3,11 @@ import { useRouter } from 'expo-router';
 import { useAllRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
 import { useSettings } from '@/lib/settings-context';
 import { useTranslation } from '@/lib/i18n';
-import { formatDateLocal } from '@/lib/utils/dateFormatter';
+import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import type { Recipe } from '@/lib/types';
+
+/** 7 days x 2 tracked meals (lunch + dinner) = 14 slots per week. */
+export const WEEKLY_TRACKABLE_MEALS = 14;
 
 const getNextMeal = (
   mealPlan: { meals?: Record<string, string> } | undefined,
@@ -70,7 +73,7 @@ export const useHomeScreenData = () => {
   const { recipes, totalCount, isLoading: recipesLoading, refetch: refetchRecipes } = useAllRecipes();
   const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
   const { checkedItems, selectedMealKeys, customItems, refreshFromApi } = useGroceryState();
-  const { isItemAtHome } = useSettings();
+  const { isItemAtHome, weekStart } = useSettings();
   const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -150,7 +153,20 @@ export const useHomeScreenData = () => {
     setShuffleCount(c => c + 1);
   }, [inspirationRecipes]);
 
-  const plannedMealsCount = mealPlan?.meals ? Object.keys(mealPlan.meals).length : 0;
+  const plannedMealsCount = useMemo(() => {
+    if (!mealPlan?.meals) return 0;
+    const weekDates = getWeekDatesArray(0, weekStart);
+    const weekDateStrs = new Set(weekDates.map(d => formatDateLocal(d)));
+    return Object.keys(mealPlan.meals).filter((key) => {
+      if (!key.endsWith('_lunch') && !key.endsWith('_dinner')) return false;
+      const dateStr = key.replace(/_(lunch|dinner)$/, '');
+      return weekDateStrs.has(dateStr);
+    }).length;
+  }, [mealPlan?.meals, weekStart]);
+  const plannedMealsPercentage = Math.min(
+    100,
+    Math.round((plannedMealsCount / WEEKLY_TRACKABLE_MEALS) * 100),
+  );
   const nextMeal = getNextMeal(mealPlan, recipes);
 
   const handleImportRecipe = useCallback(() => {
@@ -174,6 +190,7 @@ export const useHomeScreenData = () => {
     setShowAddModal,
     groceryItemsCount,
     plannedMealsCount,
+    plannedMealsPercentage,
     nextMeal,
     inspirationRecipes,
     inspirationRecipe,

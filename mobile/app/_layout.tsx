@@ -103,6 +103,18 @@ export default function RootLayout() {
                   name="(tabs)"
                   options={{ headerShown: false, animation: 'fade' }}
                 />
+                <Stack.Screen
+                  name="recipe/[id]"
+                  options={{ headerShown: false, animation: 'slide_from_right' }}
+                />
+                <Stack.Screen
+                  name="select-recipe"
+                  options={{ headerShown: false, animation: 'slide_from_right' }}
+                />
+                <Stack.Screen
+                  name="add-recipe"
+                  options={{ headerShown: false, animation: 'slide_from_right' }}
+                />
               </Stack>
             </GroceryProvider>
           </SettingsProvider>
