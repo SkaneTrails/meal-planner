@@ -196,13 +196,6 @@ export const RecipeCard = ({
                   </Text>
                 </View>
               )}
-              {recipe.visibility && (
-                <Ionicons
-                  name={recipe.visibility === 'shared' ? 'globe-outline' : 'lock-closed-outline'}
-                  size={13}
-                  color="rgba(93, 78, 64, 0.5)"
-                />
-              )}
             </View>
           </View>
           <Ionicons
@@ -263,30 +256,6 @@ export const RecipeCard = ({
               height: 60,
             }}
           />
-
-          {/* Visibility icon - top left */}
-          {recipe.visibility && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 10,
-                left: 10,
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                width: 28,
-                height: 28,
-                borderRadius: 14,
-                alignItems: 'center',
-                justifyContent: 'center',
-                ...shadows.sm,
-              }}
-            >
-              <Ionicons
-                name={recipe.visibility === 'shared' ? 'globe-outline' : 'lock-closed-outline'}
-                size={14}
-                color="#8B7355"
-              />
-            </View>
-          )}
 
           {/* Favorite heart icon - top right, subtle */}
           {showFavorite && (

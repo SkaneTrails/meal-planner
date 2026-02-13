@@ -545,7 +545,7 @@ const it: Translations = {
       subtitle: 'Informazioni di base sul nucleo familiare',
       nameLabel: 'Nome nucleo familiare',
       nameUpdated: 'Nome del nucleo familiare aggiornato',
-      householdSize: 'Dimensione nucleo familiare',
+
       defaultServings: 'Porzioni predefinite',
     },
     dietary: {

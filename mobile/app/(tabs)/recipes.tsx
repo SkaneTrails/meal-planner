@@ -3,7 +3,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Platform,
@@ -39,6 +39,18 @@ export default function RecipesScreen() {
   const [sortBy, setSortBy] = useState('newest');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const { isFavorite } = useSettings();
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setSearchQuery('');
+        setDietFilter(null);
+        setMealFilters([]);
+        setSortBy('newest');
+        setShowFavoritesOnly(false);
+      };
+    }, []),
+  );
 
   const SORT_OPTIONS = [
     { value: 'newest', label: t('labels.sort.newest') },
