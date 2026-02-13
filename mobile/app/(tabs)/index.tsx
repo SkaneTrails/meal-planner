@@ -178,13 +178,13 @@ const Header = ({
           width: 44,
           height: 44,
           borderRadius: 22,
-          backgroundColor: 'rgba(93, 78, 64, 0.15)',
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
           alignItems: 'center',
           justifyContent: 'center',
           ...shadows.sm,
         }}
       >
-        <Ionicons name="settings-outline" size={24} color="#3D3D3D" />
+        <Ionicons name="settings-outline" size={24} color={colors.white} />
       </AnimatedPressable>
     </View>
   </View>

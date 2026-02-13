@@ -14,6 +14,7 @@ import type { Recipe } from '@/lib/types';
 
 interface RecipeEnhancedInfoProps {
   recipe: Recipe;
+  showOriginal: boolean;
   showAiChanges: boolean;
   t: TFunction;
   onToggleAiChanges: () => void;
@@ -21,12 +22,13 @@ interface RecipeEnhancedInfoProps {
 
 export const RecipeEnhancedInfo = ({
   recipe,
+  showOriginal,
   showAiChanges,
   t,
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => (
   <>
-    {recipe.enhanced && recipe.show_enhanced && recipe.tips && (
+    {recipe.enhanced && !showOriginal && recipe.tips && (
       <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
         <View
           style={{
@@ -88,7 +90,7 @@ export const RecipeEnhancedInfo = ({
     )}
 
     {recipe.enhanced &&
-      recipe.show_enhanced &&
+      !showOriginal &&
       recipe.changes_made &&
       recipe.changes_made.length > 0 && (
         <View
