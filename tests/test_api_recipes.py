@@ -804,6 +804,66 @@ class TestParseRecipe:
         assert response.status_code == 201
 
 
+class TestPreviewRecipe:
+    """Tests for POST /recipes/preview endpoint."""
+
+    def test_returns_200_with_original_preview(self, client: TestClient) -> None:
+        """Should return preview without saving the recipe."""
+        scraped_data = {
+            "title": "Preview Recipe",
+            "url": "https://example.com/preview",
+            "ingredients": ["flour", "sugar"],
+            "instructions": ["Mix", "Bake"],
+            "image_url": "https://example.com/image.jpg",
+        }
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 200
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = scraped_data
+        mock_cf_response.raise_for_status = MagicMock()
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipes.recipe_storage.save_recipe") as mock_save,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post(
+                "/recipes/preview",
+                json={
+                    "url": "https://example.com/preview",
+                    "html": "<html><head><title>Recipe</title></head><body><div class='recipe'>"
+                    + "x" * 100
+                    + "</div></body></html>",
+                },
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["original"]["title"] == "Preview Recipe"
+        assert data["enhanced"] is None
+        assert data["changes_made"] == []
+        assert data["image_url"] == "https://example.com/image.jpg"
+        mock_save.assert_not_called()
+
+    def test_returns_409_when_recipe_exists(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should return 409 when recipe URL already exists."""
+        with patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
+            response = client.post(
+                "/recipes/preview",
+                json={"url": "https://example.com/existing", "html": "<html>" + "x" * 100 + "</html>"},
+            )
+
+        assert response.status_code == 409
+        assert "already exists" in response.json()["detail"]["message"]
+
+
 class TestUpdateRecipe:
     """Tests for PUT /recipes/{recipe_id} endpoint."""
 

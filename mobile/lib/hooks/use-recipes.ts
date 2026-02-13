@@ -6,7 +6,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import { useSettings } from '../settings-context';
-import type { EnhancementReviewAction, PaginatedRecipeList, Recipe, RecipeCreate, RecipeUpdate } from '../types';
+import type { EnhancementReviewAction, PaginatedRecipeList, Recipe, RecipeCreate, RecipePreview, RecipeUpdate } from '../types';
 
 // Query keys
 export const recipeKeys = {
@@ -125,6 +125,16 @@ export const useScrapeRecipe = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
+  });
+}
+
+/**
+ * Hook to preview a recipe from URL/HTML without saving.
+ * Returns both original and AI-enhanced versions for comparison.
+ */
+export const usePreviewRecipe = () => {
+  return useMutation<RecipePreview, Error, { url: string; html: string; enhance?: boolean }>({
+    mutationFn: ({ url, html, enhance = true }) => api.previewRecipe(url, html, enhance),
   });
 }
 

@@ -285,9 +285,18 @@ export default function GroceryScreen() {
   const handleClearMealPlanItems = async () => {
     const doClear = async () => {
       try {
-        await AsyncStorage.removeItem('grocery_selected_meals');
+        await Promise.all([
+          AsyncStorage.removeItem('grocery_selected_meals'),
+          AsyncStorage.removeItem('grocery_meal_servings'),
+        ]);
+        const customNames = new Set(customItems.map((i) => i.name));
+        const newChecked = new Set(
+          [...checkedItems].filter((name) => customNames.has(name)),
+        );
+        setCheckedItems(newChecked);
         setGeneratedItems([]);
         setSelectedMealKeys([]);
+        setMealServings({});
         setShowClearMenu(false);
       } catch (error) {
         console.error('[Grocery] Error clearing meal plan items:', error);
@@ -309,6 +318,11 @@ export default function GroceryScreen() {
     const doClear = async () => {
       try {
         await AsyncStorage.removeItem('grocery_custom_items');
+        const generatedNames = new Set(generatedItems.map((i) => i.name));
+        const newChecked = new Set(
+          [...checkedItems].filter((name) => generatedNames.has(name)),
+        );
+        setCheckedItems(newChecked);
         setCustomItems([]);
         setShowClearMenu(false);
       } catch (error) {
@@ -485,7 +499,10 @@ export default function GroceryScreen() {
               <View style={{ flexDirection: 'row', gap: 6 }}>
                 {/* Add Item button - PRIMARY action */}
                 <AnimatedPressable
-                  onPress={() => setShowAddItem(!showAddItem)}
+                  onPress={() => {
+                    setShowAddItem(!showAddItem);
+                    setShowClearMenu(false);
+                  }}
                   hoverScale={1.08}
                   pressScale={0.95}
                   style={{
@@ -507,7 +524,10 @@ export default function GroceryScreen() {
                 {/* Clear button - secondary, toggles menu */}
                 {totalItems > 0 && (
                   <AnimatedPressable
-                    onPress={() => setShowClearMenu(!showClearMenu)}
+                    onPress={() => {
+                      setShowClearMenu(!showClearMenu);
+                      setShowAddItem(false);
+                    }}
                     hoverScale={1.08}
                     pressScale={0.95}
                     style={{
