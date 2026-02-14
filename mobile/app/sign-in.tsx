@@ -123,8 +123,13 @@ export default function SignInScreen() {
                 fontFamily: fontFamily.body,
               }}
             >
-              {t(`signIn.${error}` as 'signIn.signInFailed') ||
-                t('signIn.somethingWentWrong')}
+              {(() => {
+                const translationKey = `signIn.${error}`;
+                const translated = t(translationKey);
+                return translated === translationKey
+                  ? t('signIn.somethingWentWrong')
+                  : translated;
+              })()}
             </Text>
           </View>
         )}

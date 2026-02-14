@@ -93,7 +93,7 @@ export const GroceryItemRow = ({
               padding: 8,
               marginRight: 4,
               opacity: pressed ? 0.6 : 1,
-              ...(Platform.OS === 'web' ? { cursor: 'grab' } : undefined),
+              ...(Platform.OS === 'web' && { cursor: 'grab' }),
             }) as ViewStyle
           }
         >
