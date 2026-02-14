@@ -42,6 +42,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Never work directly on main** - Always create a feature branch for changes
 - **Before editing Copilot config** - read `copilot-self-improvement` skill before modifying `copilot-instructions.md`, `*.instructions.md`, skills, or `copilot-references.md`
 - **After pulling from main** - check `git diff HEAD@{1} --name-only` for changes to `.github/copilot-instructions.md`, `.github/skills/**`, `*.instructions.md`, `.github/agents/**`, or `.copilot-tasks.md`. If any changed, re-read them before continuing work — they may contain updated instructions, new skills, or task state changes from another session
+- **Never use `--no-verify`** - NEVER pass `--no-verify` or `-n` to `git commit` or `git push`. Pre-commit hooks exist for a reason — bypassing them lets broken code, lint violations, and security issues slip through. If hooks fail, fix the underlying issue
 - **Before committing** - quick security scan: grep staged files for API keys (`AIzaSy`, `sk-`, `ghp_`), emails (`@gmail.com`, `@outlook.com`), project IDs. If found, read `security` skill before proceeding
 - **Update `.copilot-tasks.md` as you work** - mark tasks complete immediately, don't batch updates
 - **Use existing scripts first** - before writing inline Python or ad-hoc commands, check `tools/` and `scripts/` and skill documentation for existing tools that do what you need (e.g., `recipe_manager.py` for Firestore recipe operations)
