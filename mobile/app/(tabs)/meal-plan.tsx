@@ -217,6 +217,28 @@ export default function MealPlanScreen() {
                 );
               })}
 
+              {/* Separator line before Others */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginVertical: 16,
+                  marginHorizontal: 8,
+                }}
+              >
+                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(93, 78, 64, 0.2)' }} />
+                <View
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: 'rgba(93, 78, 64, 0.3)',
+                    marginHorizontal: 12,
+                  }}
+                />
+                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(93, 78, 64, 0.2)' }} />
+              </View>
+
               {/* Other/Extras section */}
               <ExtrasSection
                 recipes={getExtrasRecipes()}

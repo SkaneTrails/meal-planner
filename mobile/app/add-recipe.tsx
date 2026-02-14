@@ -234,13 +234,13 @@ export default function AddRecipeScreen() {
             onPress={handleImport}
             disabled={!url || isPending}
             style={({ pressed }) => ({
-              paddingVertical: spacing.md,
+              paddingVertical: spacing.lg,
               borderRadius: borderRadius.md,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor:
-                url && !isPending ? colors.primary : colors.gray[300],
+                url && !isPending ? '#5D4E40' : colors.gray[300],
               opacity: pressed ? 0.9 : 1,
               ...shadows.md,
             })}
@@ -287,12 +287,12 @@ export default function AddRecipeScreen() {
           </Pressable>
 
           {/* Or add manually link */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: spacing.xl }}>
-            <View style={{ flex: 1, height: 1, backgroundColor: colors.gray[300] }} />
-            <Text style={{ color: colors.gray[500], fontSize: fontSize.sm, marginHorizontal: spacing.md }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: spacing['2xl'] }}>
+            <View style={{ flex: 1, height: 2, backgroundColor: 'rgba(93, 78, 64, 0.25)' }} />
+            <Text style={{ color: '#5D4E40', fontSize: fontSize.md, fontWeight: '500', marginHorizontal: spacing.lg }}>
               {t('common.or')}
             </Text>
-            <View style={{ flex: 1, height: 1, backgroundColor: colors.gray[300] }} />
+            <View style={{ flex: 1, height: 2, backgroundColor: 'rgba(93, 78, 64, 0.25)' }} />
           </View>
 
           <Pressable
@@ -301,21 +301,21 @@ export default function AddRecipeScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              paddingVertical: spacing.md,
+              paddingVertical: spacing.lg,
               paddingHorizontal: spacing.lg,
               borderRadius: borderRadius.md,
-              backgroundColor: pressed ? colors.glass.card : 'transparent',
-              borderWidth: 1,
-              borderColor: colors.gray[400],
+              backgroundColor: pressed ? 'rgba(93, 78, 64, 0.15)' : 'rgba(93, 78, 64, 0.08)',
+              borderWidth: 2,
+              borderColor: 'rgba(93, 78, 64, 0.3)',
             })}
           >
-            <Ionicons name="create-outline" size={20} color={colors.text.inverse} />
+            <Ionicons name="create-outline" size={20} color="#5D4E40" />
             <Text
               style={{
                 marginLeft: spacing.sm,
-                color: colors.text.inverse,
+                color: '#5D4E40',
                 fontSize: fontSize.lg,
-                fontWeight: '500',
+                fontWeight: '600',
               }}
             >
               {t('home.addRecipe.manualEntry')}
