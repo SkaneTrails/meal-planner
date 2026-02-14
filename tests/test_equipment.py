@@ -100,7 +100,7 @@ class TestGetEquipmentPrompt:
 
     def test_non_string_keys_ignored_without_crash(self) -> None:
         """Non-string items should be silently skipped, not cause TypeError."""
-        result = get_equipment_prompt(["air_fryer", {"bad": "data"}, 42])
+        result = get_equipment_prompt(["air_fryer", {"bad": "data"}, 42])  # ty: ignore[invalid-argument-type]
         assert "Air fryer" in result
 
 
@@ -144,7 +144,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=["air_fryer", "wok"],
         )
         assert settings.equipment == ["air_fryer", "wok"]
@@ -154,7 +154,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=[],
         )
         assert settings.equipment == []
@@ -165,8 +165,8 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},
-            equipment={"airfryer": True, "convection_oven": True},
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            equipment={"airfryer": True, "convection_oven": True},  # ty: ignore[invalid-argument-type]
         )
         assert settings.equipment == []
 
@@ -180,11 +180,11 @@ class TestSettingsEquipmentField:
 
     def test_update_model_rejects_non_list_dict(self) -> None:
         with pytest.raises((ValidationError, TypeError)):
-            HouseholdSettingsUpdate(equipment={"air_fryer": True})
+            HouseholdSettingsUpdate(equipment={"air_fryer": True})  # ty: ignore[invalid-argument-type]
 
     def test_update_model_rejects_non_list_string(self) -> None:
         with pytest.raises((ValidationError, TypeError)):
-            HouseholdSettingsUpdate(equipment="air_fryer")
+            HouseholdSettingsUpdate(equipment="air_fryer")  # ty: ignore[invalid-argument-type]
 
     def test_update_model_allows_none(self) -> None:
         update = HouseholdSettingsUpdate()

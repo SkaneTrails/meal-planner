@@ -1,6 +1,7 @@
 """Tests for api/routers/recipes.py."""
 
 import json
+from collections.abc import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
@@ -19,7 +20,7 @@ app.include_router(router)
 
 
 @pytest.fixture
-def client() -> TestClient:
+def client() -> Generator[TestClient]:
     """Create test client with mocked auth (user with household)."""
     from api.auth.firebase import require_auth
 
@@ -37,7 +38,7 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def superuser_client() -> TestClient:
+def superuser_client() -> Generator[TestClient]:
     """Create test client with mocked auth (superuser with household)."""
     from api.auth.firebase import require_auth
 

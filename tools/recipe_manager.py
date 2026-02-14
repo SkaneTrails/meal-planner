@@ -397,11 +397,11 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     db = get_db(_project)
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()
 
-    if not doc.exists:
+    if not doc.exists:  # ty: ignore[possibly-missing-attribute]
         print(f"\u274c Recipe not found: {recipe_id}")
         return
 
-    data = doc.to_dict()
+    data = doc.to_dict()  # ty: ignore[possibly-missing-attribute]
     if not data:
         print(f"\u274c Recipe data is empty: {recipe_id}")
         return
