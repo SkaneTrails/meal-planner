@@ -41,13 +41,13 @@ export const RecipeEnhancedInfo = ({
               width: 36,
               height: 36,
               borderRadius: 18,
-              backgroundColor: 'rgba(93, 78, 64, 0.12)',
+              backgroundColor: colors.ai.iconBg,
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: spacing.md,
             }}
           >
-            <Ionicons name="bulb-outline" size={18} color="#5D4037" />
+            <Ionicons name="bulb-outline" size={18} color={colors.ai.primary} />
           </View>
           <Text
             style={{
@@ -119,13 +119,13 @@ export const RecipeEnhancedInfo = ({
                 width: 36,
                 height: 36,
                 borderRadius: 18,
-                backgroundColor: 'rgba(93, 78, 64, 0.12)',
+                backgroundColor: colors.ai.iconBg,
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: spacing.md,
               }}
             >
-              <Ionicons name="sparkles" size={18} color="#2D6A5A" />
+              <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
             </View>
             <Text
               style={{
@@ -169,7 +169,7 @@ export const RecipeEnhancedInfo = ({
                   <Ionicons
                     name="checkmark-circle"
                     size={18}
-                    color="#2D6A5A"
+                    color={colors.ai.primary}
                     style={{ marginRight: spacing.sm, marginTop: 2 }}
                   />
                   <Text

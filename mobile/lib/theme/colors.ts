@@ -47,7 +47,7 @@ export const lightColors = {
     muted: 'rgba(255, 255, 255, 0.6)',
     light: 'rgba(255, 255, 255, 0.4)',
     inverse: '#2D2D2D',
-    dark: '#2D2D2D',
+    dark: '#5D4E40',
   },
   border: 'rgba(255, 255, 255, 0.2)',
   borderLight: 'rgba(255, 255, 255, 0.1)',
@@ -83,6 +83,16 @@ export const lightColors = {
     dark: 'rgba(255, 255, 255, 0.65)',
     card: 'rgba(255, 255, 255, 0.85)',
     border: 'rgba(0, 0, 0, 0.04)',
+  },
+
+  // AI enhancement theming — unified terracotta palette
+  ai: {
+    primary: '#C4704B',
+    primaryDark: '#A85D3B',
+    bg: 'rgba(196, 112, 75, 0.08)',
+    bgPressed: 'rgba(196, 112, 75, 0.18)',
+    muted: 'rgba(196, 112, 75, 0.5)',
+    iconBg: 'rgba(196, 112, 75, 0.12)',
   },
 } as const;
 

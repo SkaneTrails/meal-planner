@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, colors, fontFamily, fontSize, spacing } from '@/lib/theme';
 
 interface OriginalEnhancedToggleProps {
   showOriginal: boolean;
@@ -70,14 +70,14 @@ export const OriginalEnhancedToggle = ({
       <Ionicons
         name="sparkles"
         size={16}
-        color={showOriginal ? 'rgba(45, 106, 90, 0.5)' : '#2D6A5A'}
+        color={showOriginal ? colors.ai.muted : colors.ai.primary}
         style={{ marginRight: spacing.xs }}
       />
       <Text
         style={{
           fontSize: fontSize.md,
           fontFamily: showOriginal ? fontFamily.body : fontFamily.bodySemibold,
-          color: showOriginal ? 'rgba(45, 106, 90, 0.5)' : '#2D6A5A',
+          color: showOriginal ? colors.ai.muted : colors.ai.primary,
         }}
       >
         {t('recipe.showEnhanced')}

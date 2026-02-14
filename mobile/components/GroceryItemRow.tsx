@@ -85,14 +85,12 @@ export const GroceryItemRow = ({
     >
       {showReorder && (
         <Pressable
-          onLongPress={Platform.OS !== 'web' ? drag : undefined}
-          onPressIn={Platform.OS === 'web' ? drag : undefined}
-          delayLongPress={100}
+          onPressIn={drag}
           style={({ pressed }) =>
             ({
-              padding: 8,
-              marginRight: 4,
-              opacity: pressed ? 0.6 : 1,
+              padding: 14,
+              marginRight: 2,
+              opacity: pressed ? 0.5 : 1,
               ...(Platform.OS === 'web' && { cursor: 'grab' }),
             }) as ViewStyle
           }
