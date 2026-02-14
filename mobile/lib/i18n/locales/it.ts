@@ -555,6 +555,10 @@ const it: Translations = {
     continueWithGoogle: 'Continua con Google',
     syncMessage:
       'Accedi per sincronizzare le tue ricette su tutti i dispositivi',
+    signInFailed: 'Accesso non riuscito. Riprova.',
+    signOutFailed: 'Disconnessione non riuscita. Riprova.',
+    noIdToken: "Autenticazione non riuscita. Controlla le impostazioni del tuo account Google.",
+    somethingWentWrong: 'Qualcosa è andato storto. Riprova.',
   },
 
   noAccess: {

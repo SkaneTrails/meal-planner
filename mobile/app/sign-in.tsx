@@ -19,7 +19,9 @@ export default function SignInScreen() {
     try {
       await signOut();
     } catch (err) {
-      console.error('Failed to sign out', err);
+      if (__DEV__) {
+        console.error('Failed to sign out', err);
+      }
     }
   };
 
@@ -84,7 +86,7 @@ export default function SignInScreen() {
             marginBottom: spacing.xl,
             width: '100%',
           }}>
-            <Text style={{ color: colors.error, textAlign: 'center', fontSize: fontSize.lg, fontFamily: fontFamily.body }}>{error}</Text>
+            <Text style={{ color: colors.error, textAlign: 'center', fontSize: fontSize.lg, fontFamily: fontFamily.body }}>{t(`signIn.${error}` as 'signIn.signInFailed') || t('signIn.somethingWentWrong')}</Text>
           </View>
         )}
 

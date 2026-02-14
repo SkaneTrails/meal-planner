@@ -113,7 +113,9 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
           });
         }
       } catch (error) {
-        console.error('Failed to load local settings:', error);
+        if (__DEV__) {
+          console.error('Failed to load local settings:', error);
+        }
       } finally {
         setIsLocalLoading(false);
       }
@@ -126,7 +128,9 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
       setLocalSettings(newSettings);
     } catch (error) {
-      console.error('Failed to save local settings:', error);
+      if (__DEV__) {
+        console.error('Failed to save local settings:', error);
+      }
       throw error;
     }
   }, []);

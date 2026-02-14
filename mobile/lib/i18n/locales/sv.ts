@@ -545,6 +545,10 @@ const sv: Translations = {
     tagline: 'Laga mat med intention.',
     continueWithGoogle: 'Fortsätt med Google',
     syncMessage: 'Logga in för att synka dina recept mellan enheter',
+    signInFailed: 'Inloggningen misslyckades. Försök igen.',
+    signOutFailed: 'Utloggningen misslyckades. Försök igen.',
+    noIdToken: 'Autentiseringen misslyckades. Kontrollera dina Google-kontoinställningar.',
+    somethingWentWrong: 'Något gick fel. Försök igen.',
   },
 
   noAccess: {

@@ -95,7 +95,9 @@ export default function GroceryScreen() {
             setMealServings({});
           }
         } catch (error) {
-          console.error('[Grocery] Error loading data:', error);
+          if (__DEV__) {
+            console.error('[Grocery] Error loading data:', error);
+          }
         } finally {
           setIsLoading(false);
           setHasLoadedOnce(true);
@@ -222,7 +224,7 @@ export default function GroceryScreen() {
         'grocery_custom_items',
         JSON.stringify(customItems),
       ).catch((error) =>
-        console.error('[Grocery] Error saving custom items:', error),
+        __DEV__ && console.error('[Grocery] Error saving custom items:', error),
       );
     }
   }, [customItems, isLoading]);
@@ -267,7 +269,9 @@ export default function GroceryScreen() {
         clearChecked();
         setShowClearMenu(false);
       } catch (error) {
-        console.error('[Grocery] Error clearing data:', error);
+        if (__DEV__) {
+          console.error('[Grocery] Error clearing data:', error);
+        }
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
     };

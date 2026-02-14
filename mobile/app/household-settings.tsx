@@ -419,10 +419,10 @@ export default function HouseholdSettingsScreen() {
       refetchMembers();
       showNotification(t('settings.memberAdded'));
     } catch (error) {
-      showNotification(
-        t('common.error'),
-        error instanceof Error ? error.message : t('admin.failedToAddMember'),
-      );
+      if (__DEV__) {
+        console.error('Failed to add member:', error);
+      }
+      showNotification(t('common.error'), t('admin.failedToAddMember'));
     }
   };
 
@@ -452,11 +452,12 @@ export default function HouseholdSettingsScreen() {
               refetchMembers();
               showNotification(t('settings.memberRemoved'));
             } catch (error) {
+              if (__DEV__) {
+                console.error('Failed to remove member:', error);
+              }
               showNotification(
                 t('common.error'),
-                error instanceof Error
-                  ? error.message
-                  : t('admin.failedToRemoveMember'),
+                t('admin.failedToRemoveMember'),
               );
             }
           },

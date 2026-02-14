@@ -114,11 +114,12 @@ export default function AdminScreen() {
       setNewHouseholdName('');
       refetchHouseholds();
     } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to create household:', error);
+      }
       showNotification(
         t('common.error'),
-        error instanceof Error
-          ? error.message
-          : t('admin.failedToCreateHousehold'),
+        t('admin.failedToCreateHousehold'),
       );
     }
   };
@@ -513,9 +514,12 @@ const HouseholdDetailModal = ({
       setNewMemberEmail('');
       refetch();
     } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to add member:', error);
+      }
       showNotification(
         t('common.error'),
-        error instanceof Error ? error.message : t('admin.failedToAddMember'),
+        t('admin.failedToAddMember'),
       );
     }
   };
@@ -540,11 +544,12 @@ const HouseholdDetailModal = ({
               });
               refetch();
             } catch (error) {
+              if (__DEV__) {
+                console.error('Failed to remove member:', error);
+              }
               showNotification(
                 t('common.error'),
-                error instanceof Error
-                  ? error.message
-                  : t('admin.failedToRemoveMember'),
+                t('admin.failedToRemoveMember'),
               );
             }
           },

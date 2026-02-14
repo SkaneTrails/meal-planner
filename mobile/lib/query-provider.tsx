@@ -40,6 +40,10 @@ export async function persistQueryCache(): Promise<void> {
         return false;
       }
 
+      if (resource === 'admin' && type === 'currentUser') {
+        return false;
+      }
+
       return true;
     })
     .map((query) => ({
