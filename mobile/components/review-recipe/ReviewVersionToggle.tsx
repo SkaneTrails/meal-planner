@@ -75,7 +75,7 @@ export const ReviewVersionToggle = ({
           paddingVertical: spacing.md,
           borderRadius: borderRadius.sm,
           backgroundColor:
-            selectedTab === 'enhanced' ? colors.accent : 'transparent',
+            selectedTab === 'enhanced' ? colors.ai.primary : 'transparent',
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'center',
@@ -85,7 +85,7 @@ export const ReviewVersionToggle = ({
         <Ionicons
           name="sparkles"
           size={16}
-          color={selectedTab === 'enhanced' ? colors.white : colors.accent}
+          color={selectedTab === 'enhanced' ? colors.white : colors.ai.primary}
         />
         <Text
           style={{
