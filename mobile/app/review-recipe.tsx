@@ -22,6 +22,7 @@ import {
 } from '@/components/recipe-detail/recipe-detail-constants';
 import { useCreateRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
+import { showNotification } from '@/lib/alert';
 import {
   borderRadius,
   colors,
@@ -80,8 +81,8 @@ export default function ReviewRecipeScreen() {
       const saved = await createRecipe.mutateAsync(recipeToSave);
       router.back();
       router.push(`/recipe/${saved.id}`);
-    } catch (error) {
-      // Error handling is done by mutation's onError or we can show toast
+    } catch {
+      showNotification(t('common.error'), t('addRecipe.createFailed'));
     }
   };
 

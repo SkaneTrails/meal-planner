@@ -66,6 +66,7 @@ export const useSelectRecipeState = () => {
   }, [recipes, searchQuery]);
 
   const mealTypeRecipes = useMemo(() => {
+    if (!mealType) return recipes;
     const allowedLabels = MEAL_TYPE_TO_LABEL[mealType] || ['meal'];
     return recipes.filter((recipe) => {
       if (recipe.meal_label) return allowedLabels.includes(recipe.meal_label);
@@ -94,6 +95,7 @@ export const useSelectRecipeState = () => {
   }, [mealTypeRecipes]);
 
   const targetWeekDates = useMemo(() => {
+    if (!date) return { start: '', end: '', mondayDate: new Date(), sundayDate: new Date() };
     const targetDate = new Date(date + 'T00:00:00');
     const targetDay = targetDate.getDay();
     const daysSinceMonday = (targetDay + 6) % 7;
@@ -126,9 +128,11 @@ export const useSelectRecipeState = () => {
   }, [mealPlan, recipes, date, mealType, targetWeekDates]);
 
   const bcp47 = toBcp47(language);
-  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString(bcp47, {
-    weekday: 'long', month: 'short', day: 'numeric',
-  });
+  const formattedDate = date
+    ? new Date(date + 'T00:00:00').toLocaleDateString(bcp47, {
+        weekday: 'long', month: 'short', day: 'numeric',
+      })
+    : '';
 
   const handleSelectRecipe = async (recipeId: string) => {
     try {

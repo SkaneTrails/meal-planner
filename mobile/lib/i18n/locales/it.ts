@@ -299,7 +299,9 @@ const it: Translations = {
       selectSubtitle: 'Aggiungi a Altro',
       alreadyAdded: 'Già aggiunto',
       alreadyAddedMessage: 'Questa ricetta è già nella sezione Altro',
-      failedToAdd: 'Impossibile aggiungere la ricetta',      removeMessage: 'Rimuovere "{{title}}" da Altro?',    },
+      failedToAdd: 'Impossibile aggiungere la ricetta',
+      removeMessage: 'Rimuovere "{{title}}" da Altro?',
+    },
   },
 
   selectRecipe: {
