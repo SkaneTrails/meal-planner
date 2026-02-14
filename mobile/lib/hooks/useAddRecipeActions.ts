@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useScrapeRecipe, useCreateRecipe, useImagePicker, usePreviewRecipe } from '@/lib/hooks';
+import { useScrapeRecipe, useCreateRecipe, useImagePicker, usePreviewRecipe, useReviewEnhancement } from '@/lib/hooks';
 import { api, ApiClientError } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -41,6 +41,7 @@ export const useAddRecipeActions = () => {
   const scrapeRecipe = useScrapeRecipe();
   const createRecipe = useCreateRecipe();
   const previewRecipe = usePreviewRecipe();
+  const reviewEnhancement = useReviewEnhancement();
 
   // State for preview loading
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
@@ -217,6 +218,30 @@ export const useAddRecipeActions = () => {
     setImageUrl('');
   });
 
+  const handleAcceptEnhancement = async () => {
+    if (!importedRecipe) return;
+    try {
+      await reviewEnhancement.mutateAsync({ id: importedRecipe.id, action: 'approve' });
+      setShowSummaryModal(false);
+      router.back();
+      router.push(`/recipe/${importedRecipe.id}`);
+    } catch {
+      showNotification(t('common.error'), t('addRecipe.enhanced.reviewFailed'));
+    }
+  };
+
+  const handleRejectEnhancement = async () => {
+    if (!importedRecipe) return;
+    try {
+      await reviewEnhancement.mutateAsync({ id: importedRecipe.id, action: 'reject' });
+      setShowSummaryModal(false);
+      router.back();
+      router.push(`/recipe/${importedRecipe.id}`);
+    } catch {
+      showNotification(t('common.error'), t('addRecipe.enhanced.reviewFailed'));
+    }
+  };
+
   const handleViewRecipe = () => {
     setShowSummaryModal(false);
     if (importedRecipe) {
@@ -231,7 +256,8 @@ export const useAddRecipeActions = () => {
     setUrl('');
   };
 
-  const isPending = scrapeRecipe.isPending || createRecipe.isPending || previewRecipe.isPending || isLoadingPreview;
+  const isPending = scrapeRecipe.isPending || createRecipe.isPending || previewRecipe.isPending || isLoadingPreview || reviewEnhancement.isPending;
+  const isReviewPending = reviewEnhancement.isPending;
 
   return {
     t,
@@ -269,6 +295,9 @@ export const useAddRecipeActions = () => {
     importedRecipe,
     handleViewRecipe,
     handleAddAnother,
+    handleAcceptEnhancement,
+    handleRejectEnhancement,
     isPending,
+    isReviewPending,
   };
 };

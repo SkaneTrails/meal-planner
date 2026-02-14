@@ -11,7 +11,7 @@ interface EnhancementSummaryModalProps {
 }
 
 export const EnhancementSummaryModal = ({ actions }: EnhancementSummaryModalProps) => {
-  const { t, showSummaryModal, setShowSummaryModal, importedRecipe, handleViewRecipe, handleAddAnother } = actions;
+  const { t, showSummaryModal, setShowSummaryModal, importedRecipe, handleAcceptEnhancement, handleRejectEnhancement, isReviewPending } = actions;
 
   return (
     <Modal
@@ -70,27 +70,34 @@ export const EnhancementSummaryModal = ({ actions }: EnhancementSummaryModalProp
           {/* Buttons */}
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             <Pressable
-              onPress={handleAddAnother}
+              onPress={handleRejectEnhancement}
+              disabled={isReviewPending}
               style={({ pressed }) => ({
                 flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md,
-                backgroundColor: colors.glass.light, alignItems: 'center', opacity: pressed ? 0.9 : 1,
+                backgroundColor: colors.glass.light, alignItems: 'center',
+                opacity: pressed || isReviewPending ? 0.7 : 1,
+                borderWidth: 1, borderColor: colors.gray[300],
               })}
             >
               <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse }}>
-                {t('addRecipe.enhanced.addMore')}
+                {t('addRecipe.enhanced.useOriginal')}
               </Text>
             </Pressable>
             <Pressable
-              onPress={handleViewRecipe}
+              onPress={handleAcceptEnhancement}
+              disabled={isReviewPending}
               style={({ pressed }) => ({
                 flex: 1, paddingVertical: spacing.md, borderRadius: borderRadius.md,
-                backgroundColor: colors.primary, alignItems: 'center',
-                opacity: pressed ? 0.9 : 1, ...shadows.sm,
+                backgroundColor: colors.accent, alignItems: 'center',
+                opacity: pressed || isReviewPending ? 0.7 : 1, ...shadows.sm,
               })}
             >
-              <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
-                {t('addRecipe.enhanced.viewRecipe')}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="sparkles" size={16} color={colors.white} style={{ marginRight: 6 }} />
+                <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.white }}>
+                  {t('addRecipe.enhanced.keepAI')}
+                </Text>
+              </View>
             </Pressable>
           </View>
         </View>
