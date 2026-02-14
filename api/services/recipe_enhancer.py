@@ -67,9 +67,11 @@ def _format_recipe_text(recipe: dict[str, Any]) -> str:
     ingredients = recipe.get("ingredients", [])
     instructions = recipe.get("instructions", [])
     instructions_text = "\n".join(instructions) if isinstance(instructions, list) else instructions
+    servings = recipe.get("servings")
+    servings_line = f"\nOriginal servings: {servings}" if servings else ""
 
     return f"""
-Title: {recipe.get("title", "Unknown")}
+Title: {recipe.get("title", "Unknown")}{servings_line}
 
 Ingredients:
 {chr(10).join(f"- {ing}" for ing in ingredients)}
@@ -152,6 +154,8 @@ def enhance_recipe(
     model: str = DEFAULT_MODEL,
     language: str = DEFAULT_LANGUAGE,
     equipment: list[str] | None = None,
+    target_servings: int = 4,
+    people_count: int = 2,
 ) -> dict[str, Any]:
     """
     Enhance a recipe using Gemini AI.
@@ -161,6 +165,8 @@ def enhance_recipe(
         model: Gemini model to use (default: gemini-2.5-flash)
         language: Language code for locale-specific rules (default: sv)
         equipment: List of equipment keys from household settings
+        target_servings: Number of servings to scale recipes to (from household settings)
+        people_count: Number of people in the household (from household settings)
 
     Returns:
         Enhanced recipe dict with improved ingredients, instructions, tips
@@ -169,7 +175,9 @@ def enhance_recipe(
         EnhancementError: If enhancement fails
     """
     client = get_genai_client()
-    system_prompt = load_system_prompt(language, equipment=equipment)
+    system_prompt = load_system_prompt(
+        language, equipment=equipment, target_servings=target_servings, people_count=people_count
+    )
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
 
@@ -178,7 +186,7 @@ def enhance_recipe(
             model=model,
             contents=recipe_text,
             config=types.GenerateContentConfig(
-                system_instruction=system_prompt, temperature=0.3, response_mime_type="application/json"
+                system_instruction=system_prompt, temperature=0.2, response_mime_type="application/json"
             ),
         )
 

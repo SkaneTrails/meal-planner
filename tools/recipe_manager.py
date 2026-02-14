@@ -19,6 +19,8 @@ Usage (CLI — bypasses interactive menu):
     uv run python tools/recipe_manager.py --project <project_id> enhanced <recipe_id>
     uv run python tools/recipe_manager.py --project <project_id> skip <recipe_id>
     uv run python tools/recipe_manager.py --project <project_id> status
+    uv run python tools/recipe_manager.py --project <project_id> reenhance <recipe_id> --household <id>
+    uv run python tools/recipe_manager.py --project <project_id> reenhance <recipe_id> --household <id> --apply
 
 Interactive menu (for humans):
     uv run python tools/recipe_manager.py --project <project_id>
@@ -62,6 +64,36 @@ def save_progress(progress: dict) -> None:
     """Save progress tracking data."""
     PROGRESS_FILE.parent.mkdir(parents=True, exist_ok=True)
     PROGRESS_FILE.write_text(json.dumps(progress, indent=2))
+
+
+REVIEW_FILE = Path("data/enhanced_recipes_review.json")
+
+
+def _update_review_file(recipe_id: str) -> None:
+    """Mark a recipe as reviewed in the local review tracking file."""
+    if not REVIEW_FILE.exists():
+        return
+    try:
+        review_data = json.loads(REVIEW_FILE.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return
+
+    recipes = review_data.get("recipes", [])
+    for recipe in recipes:
+        if recipe.get("id") == recipe_id:
+            recipe["enhancement_reviewed"] = True
+            break
+
+    reviewed = sum(1 for r in recipes if r.get("enhancement_reviewed"))
+    total = review_data.get("total")
+    if not isinstance(total, int) or total < len(recipes):
+        total = len(recipes)
+
+    review_data["total"] = total
+    review_data["reviewed"] = reviewed
+    review_data["pending"] = max(total - reviewed, 0)
+    REVIEW_FILE.write_text(json.dumps(review_data, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"   Review file updated ({reviewed}/{total} reviewed)")
 
 
 # ---------------------------------------------------------------------------
@@ -341,6 +373,134 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
     mark_processed(recipe_id)
 
 
+def _load_household_config(household_id: str) -> dict:
+    """Load household settings (equipment, language, dietary) from Firestore."""
+    db = get_db(_project)
+    config_ref = db.collection("households").document(household_id).collection("settings").document("config")
+    doc = config_ref.get()
+    if not doc.exists:
+        print(f"\u274c Household config not found: {household_id}")
+        return {}
+    return doc.to_dict() or {}
+
+
+def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | None = None, apply: bool = False) -> None:
+    """Re-enhance a recipe from its original data using current prompts.
+
+    Reads the `original` snapshot from Firestore, loads household config
+    (equipment + language), calls Gemini, and displays the result.
+    Dry-run by default — use --apply to write back to Firestore.
+    """
+    from api.services.recipe_enhancer import enhance_recipe
+
+    db = get_db(_project)
+    doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()
+
+    if not doc.exists:
+        print(f"\u274c Recipe not found: {recipe_id}")
+        return
+
+    data = doc.to_dict()
+    if not data:
+        print(f"\u274c Recipe data is empty: {recipe_id}")
+        return
+
+    original = data.get("original")
+    if not original:
+        print(f"\u274c No original snapshot found for: {recipe_id}")
+        print("   Cannot re-enhance without original data.")
+        return
+
+    config = _load_household_config(household_id)
+    if not config:
+        return
+
+    equipment_raw = config.get("equipment", [])
+    equipment = equipment_raw if isinstance(equipment_raw, list) else []
+    language = config.get("language", "sv") or "sv"
+    target_servings = max(int(config.get("target_servings", 4) or 4), 1)
+    people_count = max(int(config.get("people_count", 2) or 2), 1)
+
+    print(f"\n\U0001f504 Re-enhancing: {original.get('title', recipe_id)}")
+    print(f"   Household: {household_id}")
+    print(f"   Language: {language}")
+    print(f"   Equipment: {len(equipment)} items")
+    print(f"   Servings: {target_servings} ({people_count} people)")
+    print(f"   Mode: {'APPLY' if apply else 'DRY RUN'}")
+
+    def _print_recipe_section(label: str, recipe_data: dict) -> None:
+        ings = recipe_data.get("ingredients", [])
+        steps = recipe_data.get("instructions", [])
+        print(f"\n{'=' * 80}")
+        print(f"{label}: {recipe_data.get('title', '?')}")
+        print(f"Servings: {recipe_data.get('servings', '?')}")
+        print(f"{'=' * 80}")
+        print(f"\n--- INGREDIENTS ({len(ings)}) ---")
+        for i, ing in enumerate(ings, 1):
+            print(f"  {i}. {ing}")
+        print(f"\n--- INSTRUCTIONS ({len(steps)}) ---")
+        for i, step in enumerate(steps, 1):
+            print(f"  {i}. {step}")
+        if recipe_data.get("tips"):
+            print(f"\n--- TIPS ---\n  {recipe_data['tips']}")
+
+    _print_recipe_section("ORIGINAL", original)
+
+    current_ings = data.get("ingredients", [])
+    current_steps = data.get("instructions", [])
+    if current_ings != original.get("ingredients", []):
+        current_view = {
+            "title": data.get("title"),
+            "servings": data.get("servings"),
+            "ingredients": current_ings,
+            "instructions": current_steps,
+            "tips": data.get("tips"),
+        }
+        _print_recipe_section("CURRENT ENHANCED", current_view)
+    else:
+        print("\n(No previous enhancement — current equals original)")
+
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).parent.parent / ".env")
+
+    enhanced = enhance_recipe(
+        original, language=language, equipment=equipment, target_servings=target_servings, people_count=people_count
+    )
+
+    _print_recipe_section("RE-ENHANCED", enhanced)
+
+    if enhanced.get("changes_made"):
+        print(f"\n--- CHANGES ({len(enhanced['changes_made'])}) ---")
+        for change in enhanced["changes_made"]:
+            print(f"  \u2022 {change}")
+
+    dest = Path(output_path) if output_path else Path(f"data/reenhanced_{recipe_id[:8]}.json")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+
+    for key, value in enhanced.items():
+        if hasattr(value, "isoformat"):
+            enhanced[key] = value.isoformat()
+
+    dest.write_text(json.dumps(enhanced, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\n\U0001f4be Saved to {dest}")
+
+    if apply:
+        for legacy in ("improved", "original_id", "enhanced_from"):
+            enhanced.pop(legacy, None)
+        update_recipe(recipe_id, enhanced)
+
+        doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+        doc_ref.update({"enhancement_reviewed": True, "show_enhanced": True})
+        print("\u2705 Marked as reviewed and approved")
+
+        _update_review_file(recipe_id)
+
+        print(f"\u2705 Applied to Firestore: {recipe_id}")
+    else:
+        print("\n   Dry run — use --apply to write to Firestore")
+
+
 def upload_from_file(recipe_id: str, file_path: str) -> None:
     """Upload an enhanced recipe from a JSON file, preserving the original.
 
@@ -513,6 +673,12 @@ def _build_parser() -> argparse.ArgumentParser:
     p_upload.add_argument("recipe_id")
     p_upload.add_argument("file_path")
 
+    p_reenhance = sub.add_parser("reenhance", help="Re-enhance recipe from original data via Gemini")
+    p_reenhance.add_argument("recipe_id")
+    p_reenhance.add_argument("--household", required=True, help="Household ID for equipment/language config")
+    p_reenhance.add_argument("--output", default=None, help="Output file path (default: data/reenhanced_<id>.json)")
+    p_reenhance.add_argument("--apply", action="store_true", help="Write result to Firestore (default: dry run)")
+
     return parser
 
 
@@ -550,6 +716,8 @@ def _dispatch(args: argparse.Namespace) -> None:
             print(f"\u274c Invalid JSON: {updates_json}")
     elif args.command == "upload":
         upload_from_file(args.recipe_id, args.file_path)
+    elif args.command == "reenhance":
+        reenhance_recipe(args.recipe_id, args.household, output_path=args.output, apply=args.apply)
 
 
 def main() -> None:

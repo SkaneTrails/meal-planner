@@ -141,7 +141,7 @@ Enhance this recipe according to the rules:
             model=DEFAULT_MODEL,
             contents=recipe_text,
             config=types.GenerateContentConfig(
-                system_instruction=system_prompt, response_mime_type="application/json", temperature=0.3
+                system_instruction=system_prompt, response_mime_type="application/json", temperature=0.1
             ),
         )
     except TimeoutError as e:

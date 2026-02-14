@@ -1,159 +1,126 @@
 # Locale: Swedish (Sweden)
 
-## Output language
-
-**All recipe text MUST be written in Swedish.**
-
-This includes: title, ingredients, instructions, tips, tags, category, cuisine, and changes_made.
-
-The JSON keys and field names are always in English — only the VALUES are in Swedish.
+**All recipe text in Swedish.** JSON keys stay English, only values in Swedish.
 
 ## Swedish measurements — CRITICAL
 
-**NEVER use ¼ tsk or 1/4 tsk — use krm instead!**
+**NEVER use ¼ tsk — use krm instead!** (½ tsk is OK)
 
-| ❌ WRONG       | ✅ CORRECT     |
-| -------------- | -------------- |
-| ¼ tsk salt     | 1 krm salt     |
-| 1/4 tsk pepper | 1 krm pepper   |
-| ¼ tsk turmeric | 1 krm turmeric |
+- **krm** (~1 ml) / **tsk** (5 ml) / **msk** (15 ml) / **dl** (100 ml)
+- Prefer: krm < tsk < msk < dl (never raw ml for cookable amounts)
+- Round to practical measures (12.5 ml → 1 msk, 7.5 ml → 1½ tsk)
+- Non-spice volume ingredients: include weight — "2 dl Ris (160 g)"
+- Vague amounts: "a pinch" → "2 krm" (never "nypa")
 
-**½ tsk is OK** — only fractions smaller than ½ should be replaced with krm.
+### Bouillon
 
-- **krm** (~1 ml) for small amounts — NEVER "1/4 tsk" or "¼ tsk"
-- **tsk** (5 ml) for medium amounts
-- **msk** (15 ml) for larger amounts
+Unitless bouillon values are **grams** (not count): "4 Buljong" = 4 g ≈ 1 tärning. Scale grams, convert to tärningar.
 
-### Measurement preference order
+## Swedish dairy products
 
-**Always prefer:** krm < tsk < msk < dl over ml for amounts.
+NEVER substitute one dairy type for another — only add "(laktosfri)".
 
-### Practical rounding
+| Original            | ✅ Correct                                 | ❌ Wrong           |
+| ------------------- | ------------------------------------------ | ------------------ |
+| Gräddfil (30%)      | 60% crème fraîche + 40% grädde (laktosfri) | Crème fraîche only |
+| Crème fraîche (34%) | Crème fraîche (laktosfri)                  | Gräddfil           |
+| Grädde / vispgrädde | Grädde (laktosfri)                         | Crème fraîche      |
+| Mjölk               | Mjölk (laktosfri)                          | Havredryck         |
+| Kesella / Kvarg     | Kvarg (laktosfri)                          | Crème fraîche      |
+| Turkisk yoghurt     | Turkisk yoghurt (laktosfri)                | Crème fraîche      |
 
-NEVER use fractional milliliters. Round to the nearest practical measure:
+**Gräddfil is not available lactose-free** — replace with crème fraîche (laktosfri) + grädde (laktosfri), 60/40 ratio.
 
-| Impractical | → Practical                    |
-| ----------- | ------------------------------ |
-| 12.5 ml     | 1 msk (15 ml) or 2 tsk (10 ml) |
-| 37.5 ml     | 2½ msk or 3 msk                |
-| 7.5 ml      | 1½ tsk ✓ or 2 tsk              |
+## Equipment & soy sauce
 
-### Volume with weight
+- Write **"airfryer"** (one word, Swedish convention)
+- Soy sauce: "Japansk soja (t.ex. Kikkoman)" or "ljus soja" — not just "sojasås"
 
-For non-spice ingredients in volume measures, include weight in parentheses.
-
-**Exceptions:**
-
-- Spices (krm, tsk, msk) — no weight needed
-- Liquids (water, milk, broth) — 1 liter ≈ 1 kg
-
-**Examples:**
-
-- "2 dl Ris (160 g)"
-- "3 dl Havregryn (90 g)"
-- "1 dl Mjöl (60 g)"
-- "2 dl Linser (180 g)"
-- "1½ dl Socker (150 g)"
-
-### Vague amounts — Swedish conversions
-
-- "A pinch of pepper" → "2 krm Svartpeppar" (use krm, never "nypa")
-
-## Swedish dairy products — preserve product type
-
-NEVER substitute one dairy product for a different type — only add "(laktosfri)" where needed.
-
-| Original                    | ✅ Correct                                 | ❌ Wrong                       |
-| --------------------------- | ------------------------------------------ | ------------------------------ |
-| Gräddfil/syrad grädde (30%) | 60% crème fraîche + 40% grädde (laktosfri) | Crème fraîche only, cream only |
-| Crème fraîche (34%)         | Crème fraîche (laktosfri)                  | Gräddfil, grädde               |
-| Gräddfil (12%)              | Gräddfil (laktosfri)                       | Crème fraîche                  |
-| Grädde / vispgrädde         | Grädde (laktosfri)                         | Crème fraîche                  |
-| Mjölk                       | Mjölk (laktosfri)                          | Havredryck                     |
-| Kesella / Kvarg             | Kvarg (laktosfri)                          | Crème fraîche                  |
-| Turkisk yoghurt             | Turkisk yoghurt (laktosfri)                | Crème fraîche                  |
-
-**Gräddfil vs Crème fraîche:**
-
-- Gräddfil (syrad grädde, 30%): Pourable, perfect for sauces and stews without thickening
-- Crème fraîche (34%): Thicker, firmer, used as dollop or in cold dishes
-
-They are NOT interchangeable in original form. **Gräddfil is not available lactose-free** — replace with:
-
-- 2½ dl gräddfil → 1½ dl crème fraîche (laktosfri) + 1 dl grädde (laktosfri)
-- Mix together before use for the right consistency.
-
-## Soy sauce (Swedish convention)
-
-- Write "Japansk soja (t.ex. Kikkoman)" or "ljus soja" — NOT just "sojasås"
-- Chinese dark soy is different and not interchangeable
-
-## HelloFresh spices (Swedish market)
+## HelloFresh spice blends
 
 ALWAYS replace HelloFresh blends with individual spices as separate ingredients.
 
-Example — 4 g Milda Mahal becomes:
+**Conversion:** Note gram amount → convert to tsk (2-3 g ≈ 1 tsk, 4-5 g ≈ 1½-2 tsk, 6-8 g ≈ 2-3 tsk) → distribute per ratio below → list each spice separately.
 
-- 1 tsk Garam masala
-- ½ tsk Spiskummin
-- ½ tsk Koriander (malen)
-- 1 krm Gurkmeja
+Add tip: "Blanda kryddorna (ersätter HelloFresh [blend name])" — only when recipe actually contains a blend.
 
-Mention in tips: "Blanda kryddorna (ersätter HelloFresh Milda Mahal)"
+For 2+ blends with shared spices: combine identical spices into one line with total amount.
 
-### Common HelloFresh blends
+### HelloFresh / Nordic blends
 
-| Blend                 | Replacement                                                                                                |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Panamat**           | 2 paprika, 1 spiskummin, 1 svartpeppar, ½ kryddpeppar, 1 vitlökspulver, 1 lökpulver, ½ timjan, ½ oregano   |
-| **Milda Mahal**       | 2 garam masala, 1 spiskummin, 1 koriander (malen), ½ gurkmeja                                              |
-| **Tex-Mex**           | 2 spiskummin, 2 paprika, 1 chilipulver, 1 vitlökspulver, 1 lökpulver, ½ oregano                            |
-| **Ay Cajun-ba**       | 2 tsk paprika + 1 tsk vitlökspulver + ½ tsk chilipulver + ½ tsk spiskummin + ¼ tsk cayenne + ¼ tsk oregano |
-| **Hello Sunrise**     | ½ tsk gurkmeja + ½ tsk ingefära (malen) + ¼ tsk koriander (malen) + 1 krm kanel                            |
-| **Medelhavets Pärla** | 1 tsk torkad tomat (krossad) + ½ tsk oregano + ½ tsk rosmarin + ½ tsk vitlökspulver                        |
+| Blend           | Ratio (parts)                                                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Panamat**     | 2 paprika, 1 spiskummin, 1 svartpeppar, ½ kryddpeppar, 1 vitlökspulver, 1 lökpulver, ½ timjan (torkad), ½ oregano (torkad)           |
+| **Berbere**     | 3 paprika, 1 cayenne, ½ koriander (malen), ¼ ingefära, ⅛ kardemumma, ⅛ bockhornsklöver                                               |
+| **Tunisian**    | 4 kummin (malen), 4 koriander (malen), 4 rökt paprika, 4 gurkmeja, 4 chilipulver, 4 vitlökspulver, 1 cayenne, 1 kanel, 1 svartpeppar |
+| **Jorden Runt** | 1 tsk paprika + ½ tsk kummin + ½ tsk koriander + ¼ tsk chili + 1 krm kryddpeppar                                                     |
+
+### Middle Eastern / Mediterranean
+
+| Blend             | Ratio (parts)                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
+| **Shawarma**      | 2 gurkmeja, 2 spiskummin, 1 koriander (torkad), 1 vitlökspulver, 1 paprika, ½ kryddpeppar, ½ svartpeppar |
+| **Turkish**       | 2 spiskummin, 2 vitlökspulver, 1 koriander (malen), ¼ kryddpeppar, ¼ chiliflingor                        |
+| **Mediterranean** | 2 oregano (torkad), 1 mynta (torkad), 1 sumak, 1 koriander (malen)                                       |
+
+### Mexican / Tex-Mex
+
+| Blend         | Ratio (parts)                                                                                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tex-Mex**   | 2 spiskummin, 2 paprika, 1 chilipulver, 1 vitlökspulver, 1 lökpulver, ½ oregano, ½ svartpeppar                                                                                                       |
+| **Fajita**    | 4 paprika, 1 lökpulver, 1 vitlökspulver, 1 chilipulver, 1 spiskummin, 1 oregano                                                                                                                      |
+| **Mexican**   | 2 chilipulver, 1 oregano, 1 rökt paprika, 1 spiskummin                                                                                                                                               |
+| **Southwest** | 4 vitlökspulver, 2 spiskummin, 2 chilipulver                                                                                                                                                         |
+| **Enchilada** | 1 msk chilipulver, 1 msk paprika, 2 tsk spiskummin, 2 tsk farinsocker, 2 tsk salt, 1½ tsk lökpulver, 1½ tsk vitlökspulver, 1½ tsk oregano, 1 tsk koriander (malen), 1 tsk svartpeppar, ¼ tsk cayenne |
+| **Cajun**     | 2 paprika, 2 lökpulver, 1 vitlökspulver, 1 oregano (torkad), 1 timjan (torkad), ½ basilika (torkad), ½ cayenne                                                                                       |
+
+### Italian / European
+
+| Blend                                 | Ratio (parts)                                                                                              |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Vitlöksflört**                      | 1 tsk vitlökspulver + ½ tsk italienska örter + 1 krm citronskal                                            |
+| **Medelhavsdröm / Medelhavets Pärla** | 1 tsk torkad tomat (krossad) + ½ tsk oregano + ½ tsk rosmarin + ½ tsk vitlökspulver                        |
+| **Hello Sunrise**                     | 1 tsk paprika + ½ tsk oregano + ½ tsk basilika + ½ tsk vitlökspulver                                       |
+| **Tuscan Heat**                       | 4 basilika (torkad), 2 rosmarin (torkad), 2 oregano (torkad), 2 vitlökspulver, 1 cayenne, 1 fänkål (malen) |
+| **Italian**                           | 1 vitlökspulver, 1 oregano, 1 basilika, 1 svartpeppar, 1 persilja                                          |
+| **Herbes de Provence**                | 1 kyndel, 1 timjan, 1 rosmarin, 1 basilika, 1 dragon, 1 lavendelblommor                                    |
+
+### Asian
+
+| Blend                | Ratio (parts)                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Ginger Ninja**     | 1 tsk ingefära (malen) + ½ tsk vitlökspulver + ¼ tsk gurkmeja + 1 krm koriander (malen) + 1 krm svartpeppar                          |
+| **Moo Shu**          | 1 ingefära (malen), 1 vitlökspulver                                                                                                  |
+| **Milda Mahal**      | 2 garam masala, 1 spiskummin, 1 koriander (malen), ½ gurkmeja                                                                        |
+| **Thai Seven Spice** | 2½ tsk vita sesamfrön, 1 tsk chiliflingor, 1 tsk koriander (malen), 1 tsk lökpulver, ½ tsk vitlökspulver, ¼ tsk kanel, ⅛ tsk cayenne |
+| **Indian**           | Malen koriander, malen spiskummin, garam masala, gurkmeja, malen senap, salt, peppar (lika delar)                                    |
+
+### BBQ / American
+
+| Blend                      | Ratio (parts)                                                                                                                                                                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Ay Cajun-ba**            | 2 tsk paprika + 1 tsk vitlökspulver + ½ tsk chilipulver + ½ tsk spiskummin + 1 krm cayenne + 1 krm oregano                                                                                                                                   |
+| **Mamas Favorit**          | 1 tsk paprika + ½ tsk oregano + ½ tsk basilika + ½ tsk salvia + ½ tsk vitlökspulver                                                                                                                                                          |
+| **Smoky BBQ**              | 8 rökt paprika, 6 socker, 2 vitlökspulver, 1 senap (torr), 1 spiskummin, 1 ingefära (malen), ½ svartpeppar                                                                                                                                   |
+| **All American**           | 1 msk spiskummin, 1 msk cayenne, 1 msk lökpulver, 1 msk rökt paprika, 2 tsk vitlökspulver, 1 tsk koriander (malen), 1 tsk salt, 1 tsk persilja, ½ tsk svartpeppar, ½ tsk senap (torr), ½ tsk chiliflingor, 1 krm kryddpeppar, 1 krm nejlikor |
+| **Blackening**             | 3 tsk rökt paprika, 1½ tsk vitlökspulver, ½ tsk vitpeppar, ½ tsk svartpeppar, ¼ tsk timjan, ¼ tsk oregano, ⅛ tsk cayenne                                                                                                                     |
+| **Smoky Cinnamon Paprika** | 1 nejlikor (malen), 8 lökpulver, 8 kanel (malen), 6 rökt paprika, 16 senapspulver, 24 söt paprika, 24 socker                                                                                                                                 |
 
 ## HelloFresh portion markers
 
-HelloFresh recipes (common in Sweden) often contain portion markers:
+Extract the 4P value as the baseline, then scale to `{target_servings}` servings. Remove all markers from output.
 
-- `[X | Y]` format: First value is 2P, second is 4P
-- `[X, 2P]` format: Value is for 2 portions
+- `[3 dl | 6 dl]` → 6 dl
+- `[1/2 package, 2P]` → 1 förpackning
+- `[1 msk | 2 msk]` → 2 msk
 
-**ALWAYS extract and use the 4-PORTION (4P) value:**
+## Packages — standard Swedish sizes
 
-| Original                | → Convert to  |
-| ----------------------- | ------------- |
-| `water [3 dl \| 6 dl]`  | 6 dl vatten   |
-| `salt [½ tsk \| 1 tsk]` | 1 tsk salt    |
-| `[1/2 package, 2P]`     | 1 förpackning |
-| `lime [1/2 pc, 2P]`     | 1 st lime     |
-| `[1 msk \| 2 msk]`      | 2 msk         |
-
-**Remove all portion markers from the final result.**
-
-## Packages and containers — standard Swedish sizes
-
-ALWAYS replace "förpackning", "burk", "paket" with actual measurements:
-
-- "1 förpackning Krossade tomater" → "400 g Krossade tomater"
-- "1 paket Pasta" → "400 g Pasta"
-- "1 förpackning Matlagningsgrädde" → "2 dl Matlagningsgrädde"
-- "1 burk Kokosmjölk" → "400 ml Kokosmjölk"
-- "1 paket Tofu" → "300 g Tofu"
-
-If exact amount is unknown, use standard Swedish sizes:
-
-- Pasta: 400 g
-- Krossade tomater: 400 g
-- Grädde/crème fraîche: 2 dl
-- Kokosmjölk: 400 ml
-- Ris: 150–200 g
+Replace "förpackning/burk/paket" with actual amounts: krossade tomater 400 g, pasta 400 g, grädde 2 dl, kokosmjölk 400 ml, tofu 300 g.
 
 ## Swedish ingredient availability
 
-When suggesting alternatives or substitutions, use ingredients commonly found in Swedish grocery stores (ICA, Coop, Willys, Hemköp):
-
-- **Vegetarian protein**: Quorn, Oumph, Hälsans Kök — NOT Beyond Meat, Impossible
-- **Cooking oil**: Rapsolja (rapeseed oil) is the standard neutral oil — NOT canola, vegetable oil
-- **Butter**: Smör — standard for finishing; use margarin for regular frying
-- **Broth/stock**: Buljong (tärning eller fond) — use Swedish brand names if clarifying
+- **Vegetarian protein**: Quorn, Oumph, Hälsans Kök (NOT Beyond Meat, Impossible)
+- **Cooking oil**: Rapsolja (not canola, vegetable oil)
+- **Butter**: Smör for finishing; margarin for frying
+- **Broth**: Buljong (tärning eller fond)

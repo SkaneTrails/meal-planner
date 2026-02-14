@@ -80,13 +80,21 @@ def load_locale_prompt(language: str = DEFAULT_LANGUAGE) -> str:
     return load_prompt_file(locale_file)
 
 
-def load_system_prompt(language: str = DEFAULT_LANGUAGE, *, equipment: list[str] | None = None) -> str:
+def load_system_prompt(
+    language: str = DEFAULT_LANGUAGE,
+    *,
+    equipment: list[str] | None = None,
+    target_servings: int = 4,
+    people_count: int = 2,
+) -> str:
     """
     Assemble the complete system prompt from all parts.
 
     Args:
         language: Language code (e.g., "sv", "en", "it") for locale-specific rules.
         equipment: List of equipment keys from the household's settings.
+        target_servings: Number of servings to scale recipes to (from household settings).
+        people_count: Number of people in the household (from household settings).
 
     Returns:
         Complete system prompt string combining core, locale, user, and equipment prompts.
@@ -103,7 +111,16 @@ def load_system_prompt(language: str = DEFAULT_LANGUAGE, *, equipment: list[str]
         msg = f"No prompt files found — prompts directory may be missing: {prompts_dir}"
         raise FileNotFoundError(msg)
 
-    return "\n\n---\n\n".join(parts)
+    prompt = "\n\n---\n\n".join(parts)
+
+    safe_servings = max(target_servings, 1)
+    safe_people = max(people_count, 1)
+    per_person = safe_servings / safe_people
+    servings_per_person = int(per_person) if per_person == int(per_person) else round(per_person, 1)
+
+    prompt = prompt.replace("{target_servings}", str(safe_servings))
+    prompt = prompt.replace("{people_count}", str(safe_people))
+    return prompt.replace("{servings_per_person}", str(servings_per_person))
 
 
 def validate_prompts() -> dict[str, bool]:

@@ -89,6 +89,10 @@ lint.per-file-ignores."api/routers/**/*.py" = [
   "FBT002", # Boolean default positional argument (FastAPI Query parameters)
 ]
 
+lint.per-file-ignores."api/services/recipe_enhancer.py" = [
+  "PLR0913", # enhance_recipe has many params from household config passthrough
+]
+
 lint.per-file-ignores."scripts/**/*.py" = [
   "ANN201",  # Missing return type annotation ok in CLI scripts
   "C901",    # Complex functions ok in CLI scripts (main, process_batch)
@@ -115,6 +119,7 @@ lint.per-file-ignores."tools/**/*.py" = [
   "C901",    # Complex functions ok in CLI tools (interactive menus)
   "PERF401", # List comprehension optimization not needed for Firestore iteration
   "PLR0912", # Too many branches ok in CLI argument parsing
+  "PLR0915", # Too many statements ok in CLI tools
   "PLR2004", # Magic numbers ok in CLI tools
 ]
 

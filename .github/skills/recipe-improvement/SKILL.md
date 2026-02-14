@@ -147,10 +147,11 @@ Before finalizing any improvement, verify ALL of these:
 
 1. **No fractions < ½ tsk** — use krm instead (❌ `¼ tsk` → ✅ `1 krm`)
 2. **Ingredient accounting** — every ingredient in the list appears in instructions, none omitted or moved without justification
-3. **Original intent preserved** — which items are cooked vs raw, combined vs separate, intended texture
-4. **Dairy identity preserved** — never substitute dairy types (syrad grädde ≠ grädde, gräddfil ≠ crème fraîche). Only add "(laktosfri)" suffix
-5. **Timing sanity** — total cooking time makes sense after staggering
-6. **Cross-reference** — trace each ingredient: list → instructions → final dish
+3. **Ingredient order** — listed in the order they are first used in the instructions (spices always last)
+4. **Original intent preserved** — which items are cooked vs raw, combined vs separate, intended texture
+5. **Dairy identity preserved** — never substitute dairy types (syrad grädde ≠ grädde, gräddfil ≠ crème fraîche). Only add "(laktosfri)" suffix
+6. **Timing sanity** — total cooking time makes sense after staggering
+7. **Cross-reference** — trace each ingredient: list → instructions → final dish
 
 ### Instruction Formatting
 

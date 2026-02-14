@@ -6,7 +6,7 @@ Provides batch fetch, household-scoped listing, and cursor-based pagination.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from google.cloud.firestore_v1 import FieldFilter
 
@@ -251,7 +251,7 @@ def get_recipes_paginated(
 
     cursor_doc = None
     if cursor:
-        cursor_doc = db.collection(RECIPES_COLLECTION).document(cursor).get()
+        cursor_doc = cast("Any", db.collection(RECIPES_COLLECTION).document(cursor).get())
         if not cursor_doc.exists:
             cursor_doc = None
 
