@@ -91,7 +91,7 @@ export default function HomeScreen() {
           t={t}
           onPress={() => {
             hapticLight();
-            setShowAddModal(true);
+            router.push('/add-recipe');
           }}
         />
 

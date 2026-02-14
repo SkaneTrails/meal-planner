@@ -286,6 +286,42 @@ export default function AddRecipeScreen() {
             )}
           </Pressable>
 
+          {/* Or add manually link */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: spacing.xl }}>
+            <View style={{ flex: 1, height: 1, backgroundColor: colors.gray[300] }} />
+            <Text style={{ color: colors.gray[500], fontSize: fontSize.sm, marginHorizontal: spacing.md }}>
+              {t('common.or')}
+            </Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: colors.gray[300] }} />
+          </View>
+
+          <Pressable
+            onPress={() => actions.router.push({ pathname: '/add-recipe', params: { manual: 'true' } })}
+            style={({ pressed }) => ({
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: spacing.md,
+              paddingHorizontal: spacing.lg,
+              borderRadius: borderRadius.md,
+              backgroundColor: pressed ? colors.glass.card : 'transparent',
+              borderWidth: 1,
+              borderColor: colors.gray[400],
+            })}
+          >
+            <Ionicons name="create-outline" size={20} color={colors.text.inverse} />
+            <Text
+              style={{
+                marginLeft: spacing.sm,
+                color: colors.text.inverse,
+                fontSize: fontSize.lg,
+                fontWeight: '500',
+              }}
+            >
+              {t('home.addRecipe.manualEntry')}
+            </Text>
+          </Pressable>
+
           {/* Supported sites */}
           <View style={{ marginTop: spacing['3xl'] }}>
             <Text

@@ -294,6 +294,7 @@ const sv: Translations = {
       alreadyAdded: 'Redan tillagt',
       alreadyAddedMessage: 'Detta recept finns redan i Övrigt',
       failedToAdd: 'Kunde inte lägga till recept',
+      removeMessage: 'Ta bort "{{title}}" från Övrigt?',
     },
   },
 

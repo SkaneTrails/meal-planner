@@ -274,15 +274,16 @@ export const useMealPlanActions = () => {
 
   const handleRemoveExtra = useCallback((recipeId: string, title: string) => {
     showConfirmDelete(
-      t,
-      title,
-      t('mealPlan.extras.headerTitle'),
+      t('common.remove'),
+      t('mealPlan.extras.removeMessage', { title }),
       () => {
         hapticLight();
         const currentExtras = mealPlan?.extras || [];
         const newExtras = currentExtras.filter(id => id !== recipeId);
         updateExtras.mutate({ extras: newExtras });
-      }
+      },
+      t('common.cancel'),
+      t('mealPlan.removeMealConfirm'),
     );
   }, [mealPlan, updateExtras, t]);
 

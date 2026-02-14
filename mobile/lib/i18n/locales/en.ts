@@ -303,6 +303,7 @@ const en = {
       alreadyAdded: 'Already added',
       alreadyAddedMessage: 'This recipe is already in your Other section',
       failedToAdd: 'Failed to add recipe',
+      removeMessage: 'Remove "{{title}}" from Other?',
     },
   },
 

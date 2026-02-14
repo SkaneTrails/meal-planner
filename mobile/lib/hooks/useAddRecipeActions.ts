@@ -63,35 +63,60 @@ export const useAddRecipeActions = () => {
     setIsLoadingPreview(true);
 
     try {
-      // Step 1: Fetch HTML client-side (avoids IP blocking on server)
-      const htmlResponse = await fetch(url, {
-        headers: {
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
-        },
-      });
+      // Step 1: Try client-side fetch (avoids IP blocking on server)
+      let html: string | null = null;
+      try {
+        const htmlResponse = await fetch(url, {
+          headers: {
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
+          },
+        });
 
-      if (!htmlResponse.ok) {
-        throw new ApiClientError(
-          `Failed to fetch recipe page: ${htmlResponse.status}`,
-          htmlResponse.status,
-        );
+        if (htmlResponse.ok) {
+          html = await htmlResponse.text();
+        }
+      } catch {
+        // CORS or network error - will fall back to server-side
       }
 
-      const html = await htmlResponse.text();
+      if (html) {
+        // Step 2a: Call preview endpoint (parses without saving)
+        const preview = await previewRecipe.mutateAsync({
+          url,
+          html,
+          enhance: enhanceWithAI,
+        });
 
-      // Step 2: Call preview endpoint (parses without saving)
-      const preview = await previewRecipe.mutateAsync({
-        url,
-        html,
-        enhance: enhanceWithAI,
-      });
+        // Step 3: Navigate to review screen with preview data
+        router.push({
+          pathname: '/review-recipe',
+          params: { preview: JSON.stringify(preview) },
+        });
+      } else {
+        // Step 2b: Fall back to server-side scraping (saves immediately)
+        const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
+        setImportedRecipe(recipe);
 
-      // Step 3: Navigate to review screen with preview data
-      router.push({
-        pathname: '/review-recipe',
-        params: { preview: JSON.stringify(preview) },
-      });
+        if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
+          setShowSummaryModal(true);
+        } else {
+          showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
+            {
+              text: t('addRecipe.viewRecipe'),
+              style: 'cancel',
+              onPress: () => {
+                router.back();
+                router.push(`/recipe/${recipe.id}`);
+              },
+            },
+            {
+              text: t('addRecipe.addMore'),
+              onPress: () => setUrl(''),
+            },
+          ]);
+        }
+      }
     } catch (err) {
       if (err instanceof ApiClientError && err.reason === 'blocked') {
         const host = extractHostname(url);
@@ -210,6 +235,7 @@ export const useAddRecipeActions = () => {
 
   return {
     t,
+    router,
     isManualMode,
     url,
     setUrl,

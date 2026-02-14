@@ -25,16 +25,12 @@ export const ExtrasSection = ({
     <View
       style={{
         marginBottom: 16,
-        backgroundColor: 'rgba(255, 255, 255, 0.92)',
+        backgroundColor: 'rgba(245, 240, 235, 0.95)',
         borderRadius: 18,
         padding: 14,
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.04)',
-        shadowColor: '#000',
-        shadowOffset: { width: 2, height: 6 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-        elevation: 4,
+        borderWidth: 1.5,
+        borderColor: 'rgba(93, 78, 64, 0.15)',
+        borderStyle: 'dashed',
       }}
     >
       {/* Header */}
@@ -47,13 +43,14 @@ export const ExtrasSection = ({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Ionicons name="star-outline" size={18} color="#5D4E40" style={{ marginRight: 6 }} />
+          <Ionicons name="bookmark-outline" size={18} color="#8B7355" style={{ marginRight: 6 }} />
           <Text
             style={{
               fontSize: fontSize.lg,
               fontFamily: fontFamily.displayBold,
               fontWeight: '600',
-              color: '#3D3D3D',
+              color: '#5D4E40',
+              fontStyle: 'italic',
             }}
           >
             {t('mealPlan.extras.headerTitle')}
