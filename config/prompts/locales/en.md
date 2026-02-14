@@ -151,7 +151,8 @@ Standard UK package sizes:
 
 When suggesting alternatives or substitutions, use ingredients commonly found in UK supermarkets (Tesco, Sainsbury's, Asda, Morrisons, Waitrose, Co-op):
 
-- **Vegetarian protein**: Quorn, tofu, tempeh, pulses — widely available
+- **Vegetarian protein**: Quorn, Oumph, tofu, tempeh, pulses, soy mince — widely available
+- **Mince types** (all → soy mince when dietary rules apply): mixed mince, beef mince, pork mince, chicken mince, lamb mince
 - **Cheese**: Cheddar, Red Leicester, Stilton, plus European imports (Parmesan, mozzarella, etc.)
 - **Fresh herbs**: Parsley, coriander, basil, thyme, rosemary — fresh herbs sold in small pots or packets
 - **Asian ingredients**: Available in larger supermarkets or Asian grocers
@@ -183,3 +184,30 @@ Use UK spelling throughout:
 - Gramme or gram (both acceptable, "gram" more common now)
 - Honour (not honor)
 - Analyse (not analyze)
+
+## Protein substitution — UK products
+
+### Chicken alternative: Quorn
+
+- Quorn fillets, Quorn pieces, or Quorn strips (match the form of the original meat!)
+- **Cooking**: Pan-fry with **butter** and rapeseed oil on high heat — Quorn is very lean and dries out in the air fryer. Best method: 1 tbsp butter + 1 tbsp rapeseed oil, quick high-heat sear. The butter adds flavour and richness that lean Quorn needs. If air fryer is absolutely necessary: brush with oil first, max 6-8 min at 180°C
+- **Sold plain**: Quorn fillets/pieces are NOT pre-marinated. If the original meat is marinated (e.g. BBQ chicken), list the Quorn as plain and add a note in the instructions to season or briefly marinate it separately
+
+### Red meat alternative: Oumph!
+
+- **Oumph! The Chunk** for steaks, roasts, chunks
+- **Pulled Oumph!** for pulled/shredded dishes
+- **Oumph! Kebab** for kebab/döner-style dishes
+- NEVER use Quorn for beef, pork, or lamb substitution
+
+### Mince replacement
+
+- All mince types (mixed mince, beef mince, pork mince, chicken mince, lamb mince) → **soy mince**
+- **Examples**:
+  - 500 g mixed mince → 500 g soy mince ✅ (NOT 250 g mixed mince + 250 g Oumph ❌)
+  - 400 g beef mince → 400 g soy mince ✅
+  - 300 g chicken mince → 300 g soy mince ✅
+
+### Lactose-free — UK products
+
+Use "lactose-free" prefix for dairy that needs substituting: lactose-free double cream, lactose-free milk, lactose-free crème fraîche.

@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from recipe_enhancer import enhance_recipe, get_recipe
+from recipe_enhancer import enhance_recipe, get_recipe  # ty: ignore[unresolved-import]
 
 RECIPES = [
     ("0JqDxNKLTNJscYPIvWT6", "Vegetarisk pulled bean bowl"),

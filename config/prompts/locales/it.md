@@ -147,7 +147,8 @@ Standard Italian package sizes:
 
 When suggesting alternatives or substitutions, use ingredients commonly found in Italian supermarkets (Esselunga, Coop, Conad, Carrefour):
 
-- **Vegetarian protein**: Tofu, seitan, legumi (ceci, lenticchie, fagioli) — prefer whole-food proteins; Quorn also available in larger stores
+- **Vegetarian protein**: Tofu, seitan, legumi (ceci, lenticchie, fagioli), granulare/macinato di soia — prefer whole-food proteins; Garden Gourmet widely available; Quorn in larger stores
+- **Mince types** (all → macinato di soia when dietary rules apply): macinato misto, macinato di manzo, macinato di maiale, macinato di pollo, macinato di agnello
 - **Cheese**: Parmigiano Reggiano, Grana Padano, pecorino, mozzarella — use proper Italian names
 - **Fresh herbs**: Basilico, prezzemolo, rosmarino, salvia, origano fresco
 - **Pantry staples**: Use Italian product names (es. "farina 00" not "all-purpose flour")
@@ -165,3 +166,34 @@ If source contains portion markers like `[X | Y]`:
 | `[1 package, 2P]`       | 2 confezioni         |
 
 **Remove all portion markers from the final result.**
+
+## Protein substitution — Italian products
+
+> **Note:** Italy's plant-based meat market is less developed than Northern Europe. Prefer brands with wide supermarket distribution (Esselunga, Coop, Conad, Carrefour). When a specific brand is unavailable, use the generic Italian category name.
+
+### Chicken alternative: Garden Gourmet / Quorn
+
+- **Primary**: Garden Gourmet Sensational (filetti, pezzi, strisce) — Nestlé brand, widely available in Italian supermarkets
+- **Secondary**: Quorn filetti, Quorn pezzi — available in larger stores
+- **Generic fallback**: "pezzi vegetali tipo pollo" or "filetti vegetali" if neither brand is available
+- **Cooking**: Pan-fry with **burro** and olio di semi on high heat — plant-based fillets are lean and dry out in the air fryer. Best method: 1 cucchiaio burro + 1 cucchiaio olio di semi, quick high-heat sear
+- **Sold plain**: NOT pre-marinated. If the original meat is marinated, list the alternative as plain and add a note in the instructions to season or briefly marinate it separately
+
+### Red meat alternative
+
+- **Garden Gourmet Sensational** burger/macinato for patty or chunk-style dishes
+- **Beyond Meat** — available in most larger Italian supermarkets (Beyond Burger, Beyond Sausage)
+- **Generic fallback**: "spezzatino vegetale" for chunks, "straccetti vegetali" for pulled/shredded
+- NEVER use chicken alternative (Quorn/Garden Gourmet fillets) for beef, pork, or lamb substitution
+
+### Mince replacement
+
+- All mince types (macinato misto, macinato di manzo, macinato di maiale, macinato di pollo, macinato di agnello) → **macinato di soia / granulare di soia**
+- **Examples**:
+  - 500 g macinato misto → 500 g macinato di soia ✅ (NOT 250 g macinato misto + 250 g Beyond ❌)
+  - 400 g macinato di manzo → 400 g macinato di soia ✅
+  - 300 g macinato di pollo → 300 g macinato di soia ✅
+
+### Lactose-free — Italian products
+
+Use "(senza lattosio)" suffix for dairy that needs substituting: panna fresca (senza lattosio), latte (senza lattosio), crème fraîche (senza lattosio).

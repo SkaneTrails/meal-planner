@@ -1064,7 +1064,7 @@ class TestHouseholdConfig:
     def test_reads_valid_settings(self) -> None:
         """Should use provided values when valid."""
         config = HouseholdConfig(
-            {"language": "en", "equipment": ["air_fryer"], "target_servings": 6, "people_count": 3}
+            {"language": "en", "equipment": ["air_fryer"], "default_servings": 6, "household_size": 3}
         )
         assert config.language == "en"
         assert config.equipment == ["air_fryer"]
@@ -1073,37 +1073,37 @@ class TestHouseholdConfig:
 
     def test_coerces_string_to_int(self) -> None:
         """Should coerce string numbers from Firestore."""
-        config = HouseholdConfig({"target_servings": "6", "people_count": "3"})
+        config = HouseholdConfig({"default_servings": "6", "household_size": "3"})
         assert config.target_servings == 6
         assert config.people_count == 3
 
     def test_coerces_float_to_int(self) -> None:
         """Should coerce float values from Firestore."""
-        config = HouseholdConfig({"target_servings": 4.0, "people_count": 2.5})
+        config = HouseholdConfig({"default_servings": 4.0, "household_size": 2.5})
         assert config.target_servings == 4
         assert config.people_count == 2
 
     def test_null_falls_back_to_default(self) -> None:
         """Should fall back to defaults for None values."""
-        config = HouseholdConfig({"target_servings": None, "people_count": None})
+        config = HouseholdConfig({"default_servings": None, "household_size": None})
         assert config.target_servings == 4
         assert config.people_count == 2
 
     def test_boolean_falls_back_to_default(self) -> None:
         """Should treat boolean values as invalid and use defaults."""
-        config = HouseholdConfig({"target_servings": True, "people_count": False})
+        config = HouseholdConfig({"default_servings": True, "household_size": False})
         assert config.target_servings == 4
         assert config.people_count == 2
 
     def test_invalid_string_falls_back_to_default(self) -> None:
         """Should fall back for non-numeric strings."""
-        config = HouseholdConfig({"target_servings": "many", "people_count": "few"})
+        config = HouseholdConfig({"default_servings": "many", "household_size": "few"})
         assert config.target_servings == 4
         assert config.people_count == 2
 
     def test_enforces_minimum_of_one(self) -> None:
         """Should enforce minimum value of 1."""
-        config = HouseholdConfig({"target_servings": 0, "people_count": -1})
+        config = HouseholdConfig({"default_servings": 0, "household_size": -1})
         assert config.target_servings == 1
         assert config.people_count == 1
 

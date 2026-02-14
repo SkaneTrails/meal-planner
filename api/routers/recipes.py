@@ -59,11 +59,14 @@ class HouseholdConfig:
     """Household settings for recipe enhancement."""
 
     def __init__(self, settings: dict) -> None:
+        from api.services.dietary_prompt_builder import DietaryConfig
+
         self.language: str = settings.get("language", DEFAULT_LANGUAGE)
         equipment_raw = settings.get("equipment", [])
         self.equipment: list[str] = equipment_raw if isinstance(equipment_raw, list) else []
-        self.target_servings: int = self._coerce_positive_int(settings.get("target_servings"), default=4, min_value=1)
-        self.people_count: int = self._coerce_positive_int(settings.get("people_count"), default=2, min_value=1)
+        self.target_servings: int = self._coerce_positive_int(settings.get("default_servings"), default=4, min_value=1)
+        self.people_count: int = self._coerce_positive_int(settings.get("household_size"), default=2, min_value=1)
+        self.dietary: DietaryConfig = DietaryConfig.from_firestore(settings.get("dietary"))
 
     @staticmethod
     def _coerce_positive_int(value: object, *, default: int, min_value: int) -> int:
@@ -81,7 +84,8 @@ def _get_household_config(household_id: str) -> HouseholdConfig:
     """Read the household's enhancement settings.
 
     Returns:
-        HouseholdConfig with language, equipment, target_servings, and people_count.
+        HouseholdConfig with language, equipment, target_servings,
+        people_count, and dietary preferences.
     """
     from api.storage.household_storage import get_household_settings
 
@@ -102,6 +106,7 @@ def _try_enhance(
             equipment=config.equipment,
             target_servings=config.target_servings,
             people_count=config.people_count,
+            dietary=config.dietary,
         )
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, saved_recipe)
 
@@ -270,12 +275,14 @@ async def preview_recipe(
 
 def _try_enhance_preview(recipe_create: RecipeCreate, *, config: HouseholdConfig | None = None) -> dict | None:
     """Attempt AI enhancement for preview mode, returning None on failure."""
+    from api.services.dietary_prompt_builder import DietaryConfig
     from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
 
     language = config.language if config else DEFAULT_LANGUAGE
     equipment = config.equipment if config else []
     target_servings = config.target_servings if config else 4
     people_count = config.people_count if config else 2
+    dietary = config.dietary if config else DietaryConfig()
 
     try:
         recipe_dict = recipe_create.model_dump()
@@ -285,6 +292,7 @@ def _try_enhance_preview(recipe_create: RecipeCreate, *, config: HouseholdConfig
             equipment=equipment,
             target_servings=target_servings,
             people_count=people_count,
+            dietary=dietary,
         )
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, recipe_create)
         return {"recipe": enhanced_create, "changes_made": enhanced_data.get("changes_made", [])}
@@ -694,6 +702,7 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             equipment=config.equipment,
             target_servings=config.target_servings,
             people_count=config.people_count,
+            dietary=config.dietary,
         )
         enhanced_recipe = build_recipe_create_from_enhanced(enhanced_data, target_recipe)
 

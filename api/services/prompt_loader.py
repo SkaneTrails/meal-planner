@@ -3,7 +3,7 @@ Prompt Loader - Assembles system prompts from modular files.
 
 The prompt system is split into:
 - core/ - General instructions that apply to all users
-- user/ - User-specific preferences (dietary)
+- user/ - Language preference (static) + dietary preferences (dynamic from Firestore)
 - locales/ - Language/country-specific formatting (measurements, products, brands)
 - equipment - Dynamic prompt section generated from household equipment selection
 
@@ -12,9 +12,12 @@ Usage:
     prompt = load_system_prompt("sv", equipment=["air_fryer", "convection_oven"])
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from api.models.equipment import get_equipment_prompt
+from api.services.dietary_prompt_builder import DietaryConfig, render_dietary_template
 
 # Map language codes to full names for the language template
 LANGUAGE_NAMES: dict[str, str] = {"sv": "Swedish", "en": "English", "it": "Italian"}
@@ -52,19 +55,27 @@ def load_core_prompts() -> str:
     return "\n\n".join(parts)
 
 
-def load_user_prompts(language: str = DEFAULT_LANGUAGE) -> str:
-    """Load user-specific prompt files (dietary) with language template rendering."""
+def load_user_prompts(language: str = DEFAULT_LANGUAGE, *, dietary: DietaryConfig | None = None) -> str:
+    """Build user-specific prompts: language directive + dietary preferences.
+
+    The language directive is loaded from a static file.  Dietary preferences
+    are loaded from ``user/dietary.md`` and rendered through the conditional
+    template engine using the household's Firestore config.
+    """
     prompts_dir = get_prompts_dir() / "user"
     language_name = LANGUAGE_NAMES.get(language, language.capitalize())
 
-    files = ["language.md", "dietary.md"]
+    parts: list[str] = []
 
-    parts = []
-    for filename in files:
-        content = load_prompt_file(prompts_dir / filename)
-        if content:
-            content = content.replace("{language_name}", language_name)
-            parts.append(content)
+    language_content = load_prompt_file(prompts_dir / "language.md")
+    if language_content:
+        parts.append(language_content.replace("{language_name}", language_name))
+
+    dietary_template = load_prompt_file(prompts_dir / "dietary.md")
+    if dietary_template:
+        dietary_section = render_dietary_template(dietary_template, dietary or DietaryConfig())
+        if dietary_section.strip():
+            parts.append(dietary_section)
 
     return "\n\n".join(parts)
 
@@ -86,6 +97,7 @@ def load_system_prompt(
     equipment: list[str] | None = None,
     target_servings: int = 4,
     people_count: int = 2,
+    dietary: DietaryConfig | None = None,
 ) -> str:
     """
     Assemble the complete system prompt from all parts.
@@ -95,13 +107,14 @@ def load_system_prompt(
         equipment: List of equipment keys from the household's settings.
         target_servings: Number of servings to scale recipes to (from household settings).
         people_count: Number of people in the household (from household settings).
+        dietary: Dietary preferences from household Firestore settings.
 
     Returns:
         Complete system prompt string combining core, locale, user, and equipment prompts.
     """
     core = load_core_prompts()
     locale = load_locale_prompt(language)
-    user = load_user_prompts(language)
+    user = load_user_prompts(language, dietary=dietary)
     equipment_section = get_equipment_prompt(equipment or [])
 
     parts = [p for p in (core, locale, user, equipment_section) if p]
@@ -132,6 +145,13 @@ def validate_prompts() -> dict[str, bool]:
     """
     prompts_dir = get_prompts_dir()
 
-    expected_files = ["core/base.md", "core/formatting.md", "core/rules.md", "locales/sv.md", "user/dietary.md"]
+    expected_files = [
+        "core/base.md",
+        "core/formatting.md",
+        "core/rules.md",
+        "locales/sv.md",
+        "user/language.md",
+        "user/dietary.md",
+    ]
 
     return {f: (prompts_dir / f).exists() for f in expected_files}

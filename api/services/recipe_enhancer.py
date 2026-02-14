@@ -21,6 +21,8 @@ from api.services.recipe_sanitizer import sanitize_recipe_for_enhancement
 if TYPE_CHECKING:
     from google import genai as genai_module
 
+    from api.services.dietary_prompt_builder import DietaryConfig
+
 # Check for google-genai availability
 # WORKAROUND: google-genai uses _UnionGenericAlias which is deprecated in Python 3.14+
 # See: https://github.com/googleapis/python-genai/issues - needs upstream fix
@@ -156,6 +158,7 @@ def enhance_recipe(
     equipment: list[str] | None = None,
     target_servings: int = 4,
     people_count: int = 2,
+    dietary: DietaryConfig | None = None,
 ) -> dict[str, Any]:
     """
     Enhance a recipe using Gemini AI.
@@ -167,6 +170,7 @@ def enhance_recipe(
         equipment: List of equipment keys from household settings
         target_servings: Number of servings to scale recipes to (from household settings)
         people_count: Number of people in the household (from household settings)
+        dietary: Dietary preferences from household Firestore settings
 
     Returns:
         Enhanced recipe dict with improved ingredients, instructions, tips
@@ -176,7 +180,7 @@ def enhance_recipe(
     """
     client = get_genai_client()
     system_prompt = load_system_prompt(
-        language, equipment=equipment, target_servings=target_servings, people_count=people_count
+        language, equipment=equipment, target_servings=target_servings, people_count=people_count, dietary=dietary
     )
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
