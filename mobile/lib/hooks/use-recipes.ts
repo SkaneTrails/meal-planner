@@ -2,11 +2,23 @@
  * React Query hooks for recipes.
  */
 
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import { useSettings } from '../settings-context';
-import type { EnhancementReviewAction, PaginatedRecipeList, Recipe, RecipeCreate, RecipePreview, RecipeUpdate } from '../types';
+import type {
+  EnhancementReviewAction,
+  PaginatedRecipeList,
+  Recipe,
+  RecipeCreate,
+  RecipePreview,
+  RecipeUpdate,
+} from '../types';
 
 // Query keys
 export const recipeKeys = {
@@ -14,10 +26,10 @@ export const recipeKeys = {
   lists: () => [...recipeKeys.all, 'list'] as const,
   list: (search?: string, showHidden?: boolean) =>
     [...recipeKeys.lists(), { search, showHidden }] as const,
-  allRecipes: (showHidden?: boolean) => [...recipeKeys.all, 'all', { showHidden }] as const,
+  allRecipes: (showHidden?: boolean) =>
+    [...recipeKeys.all, 'all', { showHidden }] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
-  detail: (id: string) =>
-    [...recipeKeys.details(), id] as const,
+  detail: (id: string) => [...recipeKeys.details(), id] as const,
 };
 
 /**
@@ -32,7 +44,12 @@ export const useRecipes = (search?: string) => {
   return useInfiniteQuery<PaginatedRecipeList>({
     queryKey: recipeKeys.list(search, showHidden),
     queryFn: async ({ pageParam }) => {
-      return api.getRecipes(search, pageParam as string | undefined, undefined, showHidden);
+      return api.getRecipes(
+        search,
+        pageParam as string | undefined,
+        undefined,
+        showHidden,
+      );
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) =>
@@ -53,7 +70,12 @@ export const useAllRecipes = () => {
   const query = useInfiniteQuery<PaginatedRecipeList>({
     queryKey: recipeKeys.allRecipes(showHidden),
     queryFn: async ({ pageParam }) => {
-      return api.getRecipes(undefined, pageParam as string | undefined, undefined, showHidden);
+      return api.getRecipes(
+        undefined,
+        pageParam as string | undefined,
+        undefined,
+        showHidden,
+      );
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) =>
@@ -91,7 +113,7 @@ export const useRecipe = (id: string) => {
     queryFn: () => api.getRecipe(id),
     enabled: !!id,
   });
-}
+};
 
 /**
  * Hook to create a new recipe.
@@ -106,7 +128,7 @@ export const useCreateRecipe = () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
-}
+};
 
 /**
  * Hook to scrape a recipe from URL.
@@ -126,17 +148,22 @@ export const useScrapeRecipe = () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
-}
+};
 
 /**
  * Hook to preview a recipe from URL/HTML without saving.
  * Returns both original and AI-enhanced versions for comparison.
  */
 export const usePreviewRecipe = () => {
-  return useMutation<RecipePreview, Error, { url: string; html: string; enhance?: boolean }>({
-    mutationFn: ({ url, html, enhance = true }) => api.previewRecipe(url, html, enhance),
+  return useMutation<
+    RecipePreview,
+    Error,
+    { url: string; html: string; enhance?: boolean }
+  >({
+    mutationFn: ({ url, html, enhance = true }) =>
+      api.previewRecipe(url, html, enhance),
   });
-}
+};
 
 /**
  * Hook to update a recipe.
@@ -145,19 +172,14 @@ export const useUpdateRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      updates,
-    }: {
-      id: string;
-      updates: RecipeUpdate;
-    }) => api.updateRecipe(id, updates),
+    mutationFn: ({ id, updates }: { id: string; updates: RecipeUpdate }) =>
+      api.updateRecipe(id, updates),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
-}
+};
 
 /**
  * Hook to delete a recipe.
@@ -174,7 +196,7 @@ export const useDeleteRecipe = () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
-}
+};
 
 /**
  * Hook to review (approve/reject) an AI enhancement.
@@ -195,7 +217,7 @@ export const useReviewEnhancement = () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
-}
+};
 
 /**
  * Hook to trigger AI enhancement on an existing recipe.
@@ -210,4 +232,4 @@ export const useEnhanceRecipe = () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
   });
-}
+};

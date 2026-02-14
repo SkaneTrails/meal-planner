@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -239,8 +238,7 @@ export default function AddRecipeScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor:
-                url && !isPending ? '#5D4E40' : colors.gray[300],
+              backgroundColor: url && !isPending ? '#5D4E40' : colors.gray[300],
               opacity: pressed ? 0.9 : 1,
               ...shadows.md,
             })}
@@ -287,16 +285,46 @@ export default function AddRecipeScreen() {
           </Pressable>
 
           {/* Or add manually link */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: spacing['2xl'] }}>
-            <View style={{ flex: 1, height: 2, backgroundColor: 'rgba(93, 78, 64, 0.25)' }} />
-            <Text style={{ color: '#5D4E40', fontSize: fontSize.md, fontWeight: '500', marginHorizontal: spacing.lg }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginVertical: spacing['2xl'],
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                height: 2,
+                backgroundColor: 'rgba(93, 78, 64, 0.25)',
+              }}
+            />
+            <Text
+              style={{
+                color: '#5D4E40',
+                fontSize: fontSize.md,
+                fontWeight: '500',
+                marginHorizontal: spacing.lg,
+              }}
+            >
               {t('common.or')}
             </Text>
-            <View style={{ flex: 1, height: 2, backgroundColor: 'rgba(93, 78, 64, 0.25)' }} />
+            <View
+              style={{
+                flex: 1,
+                height: 2,
+                backgroundColor: 'rgba(93, 78, 64, 0.25)',
+              }}
+            />
           </View>
 
           <Pressable
-            onPress={() => actions.router.push({ pathname: '/add-recipe', params: { manual: 'true' } })}
+            onPress={() =>
+              actions.router.push({
+                pathname: '/add-recipe',
+                params: { manual: 'true' },
+              })
+            }
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
@@ -304,7 +332,9 @@ export default function AddRecipeScreen() {
               paddingVertical: spacing.lg,
               paddingHorizontal: spacing.lg,
               borderRadius: borderRadius.md,
-              backgroundColor: pressed ? 'rgba(93, 78, 64, 0.15)' : 'rgba(93, 78, 64, 0.08)',
+              backgroundColor: pressed
+                ? 'rgba(93, 78, 64, 0.15)'
+                : 'rgba(93, 78, 64, 0.08)',
               borderWidth: 2,
               borderColor: 'rgba(93, 78, 64, 0.3)',
             })}

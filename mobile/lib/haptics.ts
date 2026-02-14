@@ -13,7 +13,7 @@ export const hapticLight = () => {
   if (Platform.OS !== 'web') {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   }
-}
+};
 
 /**
  * Medium haptic feedback for confirmations.
@@ -22,7 +22,7 @@ export const hapticMedium = () => {
   if (Platform.OS !== 'web') {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
   }
-}
+};
 
 /**
  * Heavy haptic feedback for important actions.
@@ -31,7 +31,7 @@ export const hapticHeavy = () => {
   if (Platform.OS !== 'web') {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
   }
-}
+};
 
 /**
  * Success haptic feedback.
@@ -42,7 +42,7 @@ export const hapticSuccess = () => {
       () => {},
     );
   }
-}
+};
 
 /**
  * Warning haptic feedback.
@@ -53,7 +53,7 @@ export const hapticWarning = () => {
       () => {},
     );
   }
-}
+};
 
 /**
  * Error haptic feedback.
@@ -64,7 +64,7 @@ export const hapticError = () => {
       () => {},
     );
   }
-}
+};
 
 /**
  * Selection haptic feedback (very light, good for toggles).
@@ -73,4 +73,4 @@ export const hapticSelection = () => {
   if (Platform.OS !== 'web') {
     Haptics.selectionAsync().catch(() => {});
   }
-}
+};

@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   return <AuthProviderImpl>{children}</AuthProviderImpl>;
-}
+};
 
 const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -132,9 +132,11 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       }
       handlingUnauthorizedRef.current = true;
 
-      firebaseSignOut(auth!).catch((err) =>
-        console.warn('Sign-out failed during unauthorized handling', err),
-      );
+      firebaseSignOut(auth!).catch((err) => {
+        if (__DEV__) {
+          console.warn('Sign-out failed during unauthorized handling', err);
+        }
+      });
 
       let title: string;
       let message: string;
@@ -147,7 +149,8 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
           'Your account is not part of any household. Please contact an administrator to be added.';
       } else {
         title = 'Authentication Error';
-        message = 'There was a problem with your session. Please sign in again.';
+        message =
+          'There was a problem with your session. Please sign in again.';
       }
 
       if (Platform.OS === 'web') {
@@ -186,13 +189,13 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       const { id_token, access_token } = response.params;
 
       if (!id_token) {
-        console.error(
-          'No id_token in response. Received:',
-          Object.keys(response.params),
-        );
-        setError(
-          'Authentication failed: No ID token received. Check OAuth configuration.',
-        );
+        if (__DEV__) {
+          console.error(
+            'No id_token in response. Received:',
+            Object.keys(response.params),
+          );
+        }
+        setError('noIdToken');
         return;
       }
 
@@ -203,8 +206,10 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
           setError(null);
         })
         .catch((err) => {
-          console.error('signInWithCredential error:', err);
-          setError(err.message);
+          if (__DEV__) {
+            console.error('signInWithCredential error:', err);
+          }
+          setError('signInFailed');
         });
     } else if (response?.type === 'error') {
       setError(response.error?.message || 'Sign-in failed');
@@ -220,12 +225,12 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
         await promptAsync();
       }
     } catch (err) {
-      console.error('signIn error:', err);
-      const errorMessage =
-        err instanceof Error ? err.message : 'Sign-in failed';
-      // Don't show error for user-cancelled popups
+      if (__DEV__) {
+        console.error('signIn error:', err);
+      }
+      const errorMessage = err instanceof Error ? err.message : '';
       if (!errorMessage.includes('popup-closed-by-user')) {
-        setError(errorMessage);
+        setError('signInFailed');
       }
     }
   }, [promptAsync, googleProvider]);
@@ -234,8 +239,8 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     try {
       await firebaseSignOut(auth!);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign-out failed');
+    } catch (_err) {
+      setError('signOutFailed');
     }
   }, []);
 
@@ -244,7 +249,9 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     try {
       return await user.getIdToken();
     } catch (err) {
-      console.error('Failed to get ID token:', err);
+      if (__DEV__) {
+        console.error('Failed to get ID token:', err);
+      }
       return null;
     }
   }, [user]);
@@ -255,11 +262,9 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
-}
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -267,4 +272,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

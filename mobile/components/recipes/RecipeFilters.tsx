@@ -2,13 +2,13 @@
  * Search bar and filter chips for the recipes screen.
  */
 
-import React from 'react';
-import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, fontSize, fontFamily } from '@/lib/theme';
+import type React from 'react';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
+import { borderRadius, colors, fontFamily, fontSize } from '@/lib/theme';
 import type { DietLabel } from '@/lib/types';
 
 interface SearchBarProps {
@@ -33,20 +33,27 @@ export const SearchBar = ({
   t,
 }: SearchBarProps) => (
   <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
-    <View style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.92)',
-      borderRadius: borderRadius.md,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      borderWidth: 1,
-      borderColor: 'rgba(0, 0, 0, 0.05)',
-    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.92)',
+        borderRadius: borderRadius.md,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.05)',
+      }}
+    >
       <Ionicons name="search" size={18} color="#8B7355" />
       <TextInput
         ref={searchInputRef}
-        style={{ flex: 1, fontSize: fontSize.md, color: '#5D4E40', marginLeft: 10 }}
+        style={{
+          flex: 1,
+          fontSize: fontSize.md,
+          color: '#5D4E40',
+          marginLeft: 10,
+        }}
         placeholder={t('recipes.searchPlaceholder')}
         placeholderTextColor="#8B7355"
         value={searchQuery}
@@ -61,7 +68,13 @@ export const SearchBar = ({
       )}
       {isSearchFocused && (
         <Pressable onPress={onClear} style={{ marginLeft: 8 }}>
-          <Text style={{ fontSize: 15, color: '#7A6858', fontFamily: fontFamily.bodyMedium }}>
+          <Text
+            style={{
+              fontSize: 15,
+              color: '#7A6858',
+              fontFamily: fontFamily.bodyMedium,
+            }}
+          >
             {t('common.cancel')}
           </Text>
         </Pressable>
@@ -105,20 +118,31 @@ export const FilterChips = ({
     >
       {/* All chip */}
       <AnimatedPressable
-        onPress={() => { hapticLight(); onDietChange(null); }}
+        onPress={() => {
+          hapticLight();
+          onDietChange(null);
+        }}
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
-          backgroundColor: !dietFilter && !showFavoritesOnly ? '#5D4E40' : 'rgba(232, 222, 212, 0.7)',
+          paddingHorizontal: 12,
+          paddingVertical: 5,
+          borderRadius: 14,
+          backgroundColor:
+            !dietFilter && !showFavoritesOnly
+              ? '#5D4E40'
+              : 'rgba(232, 222, 212, 0.7)',
           borderWidth: !dietFilter && !showFavoritesOnly ? 0 : 1,
           borderColor: 'rgba(139, 115, 85, 0.3)',
         }}
       >
-        <Text style={{
-          fontSize: 13, fontFamily: fontFamily.bodySemibold,
-          color: !dietFilter && !showFavoritesOnly ? colors.white : '#5D4E40',
-        }}>
+        <Text
+          style={{
+            fontSize: 13,
+            fontFamily: fontFamily.bodySemibold,
+            color: !dietFilter && !showFavoritesOnly ? colors.white : '#5D4E40',
+          }}
+        >
           {t('labels.diet.all')}
         </Text>
       </AnimatedPressable>
@@ -127,22 +151,33 @@ export const FilterChips = ({
       {DIET_CHIPS.map(({ diet, emoji, activeColor }) => (
         <AnimatedPressable
           key={diet}
-          onPress={() => { hapticLight(); onDietChange(dietFilter === diet ? null : diet); }}
+          onPress={() => {
+            hapticLight();
+            onDietChange(dietFilter === diet ? null : diet);
+          }}
           hoverScale={1.05}
           pressScale={0.95}
           style={{
-            paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
-            backgroundColor: dietFilter === diet ? activeColor : 'rgba(232, 222, 212, 0.7)',
+            paddingHorizontal: 12,
+            paddingVertical: 5,
+            borderRadius: 14,
+            backgroundColor:
+              dietFilter === diet ? activeColor : 'rgba(232, 222, 212, 0.7)',
             borderWidth: dietFilter === diet ? 0 : 1,
             borderColor: 'rgba(139, 115, 85, 0.3)',
-            flexDirection: 'row', alignItems: 'center', gap: 5,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 5,
           }}
         >
           <Text style={{ fontSize: 13 }}>{emoji}</Text>
-          <Text style={{
-            fontSize: 13, fontFamily: fontFamily.bodySemibold,
-            color: dietFilter === diet ? colors.white : '#5D4E40',
-          }}>
+          <Text
+            style={{
+              fontSize: 13,
+              fontFamily: fontFamily.bodySemibold,
+              color: dietFilter === diet ? colors.white : '#5D4E40',
+            }}
+          >
             {t(`labels.diet.${diet}`)}
           </Text>
         </AnimatedPressable>
@@ -150,15 +185,24 @@ export const FilterChips = ({
 
       {/* Favorites chip */}
       <AnimatedPressable
-        onPress={() => { hapticLight(); onFavoritesToggle(); }}
+        onPress={() => {
+          hapticLight();
+          onFavoritesToggle();
+        }}
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
-          backgroundColor: showFavoritesOnly ? '#C75050' : 'rgba(232, 222, 212, 0.7)',
+          paddingHorizontal: 12,
+          paddingVertical: 5,
+          borderRadius: 14,
+          backgroundColor: showFavoritesOnly
+            ? '#C75050'
+            : 'rgba(232, 222, 212, 0.7)',
           borderWidth: showFavoritesOnly ? 0 : 1,
           borderColor: 'rgba(139, 115, 85, 0.3)',
-          flexDirection: 'row', alignItems: 'center', gap: 5,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 5,
         }}
       >
         <Ionicons
@@ -166,28 +210,45 @@ export const FilterChips = ({
           size={15}
           color={showFavoritesOnly ? colors.white : '#C75050'}
         />
-        <Text style={{
-          fontSize: 13, fontFamily: fontFamily.bodySemibold,
-          color: showFavoritesOnly ? colors.white : '#5D4E40',
-        }}>
+        <Text
+          style={{
+            fontSize: 13,
+            fontFamily: fontFamily.bodySemibold,
+            color: showFavoritesOnly ? colors.white : '#5D4E40',
+          }}
+        >
           {t('recipes.favorites')}
         </Text>
       </AnimatedPressable>
 
       {/* Sort chip */}
       <AnimatedPressable
-        onPress={() => { hapticLight(); onSortPress(); }}
+        onPress={() => {
+          hapticLight();
+          onSortPress();
+        }}
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 12, paddingVertical: 5, borderRadius: 14,
+          paddingHorizontal: 12,
+          paddingVertical: 5,
+          borderRadius: 14,
           backgroundColor: 'rgba(232, 222, 212, 0.7)',
-          borderWidth: 1, borderColor: 'rgba(139, 115, 85, 0.3)',
-          flexDirection: 'row', alignItems: 'center', gap: 5,
+          borderWidth: 1,
+          borderColor: 'rgba(139, 115, 85, 0.3)',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 5,
         }}
       >
         <Ionicons name="funnel-outline" size={13} color="#5D4E40" />
-                <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#5D4E40' }}>
+        <Text
+          style={{
+            fontSize: 13,
+            fontFamily: fontFamily.bodySemibold,
+            color: '#5D4E40',
+          }}
+        >
           {sortOptions.find((o) => o.value === sortBy)?.label}
         </Text>
       </AnimatedPressable>

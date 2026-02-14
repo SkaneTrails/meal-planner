@@ -32,20 +32,77 @@ const UNICODE_FRACTIONS: Record<string, string> = {
 // Common units (metric, imperial, Swedish)
 const UNITS = new Set([
   // Volume - metric
-  'ml', 'milliliter', 'milliliters', 'l', 'liter', 'liters', 'dl', 'deciliter', 'deciliters', 'cl',
+  'ml',
+  'milliliter',
+  'milliliters',
+  'l',
+  'liter',
+  'liters',
+  'dl',
+  'deciliter',
+  'deciliters',
+  'cl',
   // Volume - imperial
-  'tsp', 'teaspoon', 'teaspoons', 'tbsp', 'tablespoon', 'tablespoons', 'cup', 'cups',
+  'tsp',
+  'teaspoon',
+  'teaspoons',
+  'tbsp',
+  'tablespoon',
+  'tablespoons',
+  'cup',
+  'cups',
   // Weight - metric
-  'g', 'gram', 'grams', 'kg', 'kilogram', 'kilograms', 'mg',
+  'g',
+  'gram',
+  'grams',
+  'kg',
+  'kilogram',
+  'kilograms',
+  'mg',
   // Weight - imperial
-  'oz', 'ounce', 'ounces', 'lb', 'lbs', 'pound', 'pounds',
+  'oz',
+  'ounce',
+  'ounces',
+  'lb',
+  'lbs',
+  'pound',
+  'pounds',
   // Count/pieces
-  'piece', 'pieces', 'slice', 'slices', 'clove', 'cloves', 'head', 'heads', 'bunch', 'bunches',
-  'sprig', 'sprigs', 'stalk', 'stalks', 'can', 'cans', 'jar', 'jars', 'package', 'packages',
+  'piece',
+  'pieces',
+  'slice',
+  'slices',
+  'clove',
+  'cloves',
+  'head',
+  'heads',
+  'bunch',
+  'bunches',
+  'sprig',
+  'sprigs',
+  'stalk',
+  'stalks',
+  'can',
+  'cans',
+  'jar',
+  'jars',
+  'package',
+  'packages',
   // Size descriptors
-  'small', 'medium', 'large', 'handful', 'handfuls', 'pinch', 'pinches',
+  'small',
+  'medium',
+  'large',
+  'handful',
+  'handfuls',
+  'pinch',
+  'pinches',
   // Swedish units
-  'msk', 'tsk', 'krm', 'st', 'port', 'portioner',
+  'msk',
+  'tsk',
+  'krm',
+  'st',
+  'port',
+  'portioner',
 ]);
 
 /**
@@ -63,14 +120,14 @@ function parseFraction(text: string): number | null {
 
   // Try direct float parse
   const direct = parseFloat(normalized);
-  if (!isNaN(direct) && !normalized.includes('/')) {
+  if (!Number.isNaN(direct) && !normalized.includes('/')) {
     return direct;
   }
 
   // Try simple fraction like "1/2"
   if (normalized.includes('/') && !normalized.includes(' ')) {
     const [num, denom] = normalized.split('/').map(Number);
-    if (!isNaN(num) && !isNaN(denom) && denom !== 0) {
+    if (!Number.isNaN(num) && !Number.isNaN(denom) && denom !== 0) {
       return num / denom;
     }
   }
@@ -110,7 +167,9 @@ export function formatQuantity(qty: number): string {
   const fracRounded = Math.round(frac * 100) / 100;
 
   if (fractionMap[fracRounded]) {
-    return whole > 0 ? `${whole} ${fractionMap[fracRounded]}` : fractionMap[fracRounded];
+    return whole > 0
+      ? `${whole} ${fractionMap[fracRounded]}`
+      : fractionMap[fracRounded];
   }
 
   // Round to 1 decimal
@@ -169,7 +228,10 @@ export function parseIngredient(text: string): ParsedIngredient {
 /**
  * Scale an ingredient by a multiplier and return the formatted string.
  */
-export function scaleIngredient(ingredient: string, multiplier: number): string {
+export function scaleIngredient(
+  ingredient: string,
+  multiplier: number,
+): string {
   if (multiplier === 1) return ingredient;
 
   const parsed = parseIngredient(ingredient);

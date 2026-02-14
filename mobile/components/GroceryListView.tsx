@@ -2,15 +2,14 @@
  * Grocery list with checked sorting and drag-and-drop reordering.
  */
 
-import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useState } from 'react';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
+  type RenderItemParams,
   ScaleDecorator,
-  RenderItemParams,
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { hapticSelection } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
@@ -22,12 +21,18 @@ interface GroceryListViewProps {
   onReorder?: (items: GroceryItem[]) => void;
 }
 
-export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onReorder }: GroceryListViewProps) => {
+export const GroceryListView = ({
+  groceryList,
+  onItemToggle,
+  filterOutItems,
+  onReorder,
+}: GroceryListViewProps) => {
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
-    () => new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
+    () =>
+      new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
   );
 
   const filteredItems = filterOutItems
@@ -45,9 +50,10 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
     [checkedItems],
   );
 
-  const displayItems = reorderMode && orderedItems.length > 0
-    ? orderedItems
-    : sortByChecked(filteredItems);
+  const displayItems =
+    reorderMode && orderedItems.length > 0
+      ? orderedItems
+      : sortByChecked(filteredItems);
 
   const handleItemToggle = useCallback(
     (itemName: string, checked: boolean) => {
@@ -95,21 +101,47 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
 
   if (displayItems.length === 0) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-        <View style={{
-          width: 80, height: 80, borderRadius: 24,
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          alignItems: 'center', justifyContent: 'center', marginBottom: 20,
-        }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 32,
+        }}
+      >
+        <View
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: 24,
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 20,
+          }}
+        >
           <Ionicons name="cart-outline" size={40} color="#5D4E40" />
         </View>
-        <Text style={{ color: '#5D4E40', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+        <Text
+          style={{
+            color: '#5D4E40',
+            fontSize: 18,
+            fontWeight: '600',
+            textAlign: 'center',
+          }}
+        >
           {t('grocery.noItemsYet')}
         </Text>
-        <Text style={{
-          color: 'rgba(93, 78, 64, 0.7)', fontSize: 15,
-          marginTop: 8, textAlign: 'center', lineHeight: 22, maxWidth: 280,
-        }}>
+        <Text
+          style={{
+            color: 'rgba(93, 78, 64, 0.7)',
+            fontSize: 15,
+            marginTop: 8,
+            textAlign: 'center',
+            lineHeight: 22,
+            maxWidth: 280,
+          }}
+        >
           {t('grocery.emptyFromMealPlan')}
         </Text>
       </View>
@@ -122,9 +154,16 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
         <Pressable
           onPress={handleToggleReorder}
           style={{
-            flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start',
-            backgroundColor: reorderMode ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.6)',
-            paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, gap: 4,
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'flex-start',
+            backgroundColor: reorderMode
+              ? 'rgba(255, 255, 255, 0.95)'
+              : 'rgba(255, 255, 255, 0.6)',
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+            gap: 4,
           }}
         >
           <Ionicons
@@ -140,10 +179,14 @@ export const GroceryListView = ({ groceryList, onItemToggle, filterOutItems, onR
 
       {reorderMode ? (
         <View style={{ flex: 1, paddingHorizontal: 20 }}>
-          <Text style={{
-            fontSize: 12, color: 'rgba(93, 78, 64, 0.7)',
-            marginBottom: 10, fontStyle: 'italic',
-          }}>
+          <Text
+            style={{
+              fontSize: 12,
+              color: 'rgba(93, 78, 64, 0.7)',
+              marginBottom: 10,
+              fontStyle: 'italic',
+            }}
+          >
             {Platform.OS === 'web'
               ? t('grocery.reorderHintWeb')
               : t('grocery.reorderHintMobile')}

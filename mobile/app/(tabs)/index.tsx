@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import React from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import {
   AnimatedPressable,
@@ -159,7 +158,7 @@ const Header = ({
             textShadowRadius: 2,
           }}
         >
-          {t(`home.${greetingKey}` as any)}
+          {t(`home.${greetingKey}`)}
         </Text>
         <Text
           style={{
@@ -305,7 +304,7 @@ const NextMealCard = ({
             }}
           >
             {nextMeal
-              ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}` as any)}`
+              ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
               : t('home.nextUp.noMealPlanned')}
           </Text>
         </View>

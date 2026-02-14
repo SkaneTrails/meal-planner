@@ -91,7 +91,10 @@ export const formatDayHeader = (
   const isToday = date.toDateString() === today.toDateString();
   const bcp47 = toBcp47(locale);
   const dayName = date.toLocaleDateString(bcp47, { weekday: 'long' });
-  const monthDay = date.toLocaleDateString(bcp47, { month: 'short', day: 'numeric' });
+  const monthDay = date.toLocaleDateString(bcp47, {
+    month: 'short',
+    day: 'numeric',
+  });
   return isToday ? `${todayLabel} · ${monthDay}` : `${dayName} · ${monthDay}`;
 };
 

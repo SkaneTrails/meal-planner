@@ -54,6 +54,14 @@ vi.mock('@/components', () => ({
       'data-testid': `chip-${label}`,
     }, label);
   },
+  SectionHeader: ({ title }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': `section-${title}` }, title);
+  },
+  RadioGroup: ({ value, onChange }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': `radio-${value}` });
+  },
 }));
 
 // Mock @/lib/alert

@@ -41,7 +41,7 @@ export const useCurrentUser = (options?: { enabled?: boolean }) => {
     retry: false, // Don't retry on 403
     enabled: options?.enabled ?? true,
   });
-}
+};
 
 /**
  * Get all households (superuser only).
@@ -53,7 +53,7 @@ export const useHouseholds = (options?: { enabled?: boolean }) => {
     retry: false,
     enabled: options?.enabled ?? true,
   });
-}
+};
 
 /**
  * Get a specific household by ID.
@@ -64,7 +64,7 @@ export const useHousehold = (id: string) => {
     queryFn: () => api.getHousehold(id),
     enabled: Boolean(id),
   });
-}
+};
 
 /**
  * Get members of a household.
@@ -75,7 +75,7 @@ export const useHouseholdMembers = (householdId: string) => {
     queryFn: () => api.getHouseholdMembers(householdId),
     enabled: Boolean(householdId),
   });
-}
+};
 
 /**
  * Create a new household.
@@ -89,7 +89,7 @@ export const useCreateHousehold = () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.households() });
     },
   });
-}
+};
 
 /**
  * Rename a household.
@@ -105,7 +105,7 @@ export const useRenameHousehold = () => {
       queryClient.invalidateQueries({ queryKey: adminKeys.currentUser() });
     },
   });
-}
+};
 
 /**
  * Add a member to a household.
@@ -126,7 +126,7 @@ export const useAddMember = () => {
       });
     },
   });
-}
+};
 
 /**
  * Remove a member from a household.
@@ -143,7 +143,7 @@ export const useRemoveMember = () => {
       });
     },
   });
-}
+};
 
 /**
  * Get household settings.
@@ -154,7 +154,7 @@ export const useHouseholdSettings = (householdId: string | null) => {
     queryFn: () => api.getHouseholdSettings(householdId!),
     enabled: !!householdId,
   });
-}
+};
 
 /**
  * Update household settings.
@@ -165,13 +165,18 @@ export const useUpdateHouseholdSettings = () => {
   return useMutation<
     HouseholdSettings,
     Error,
-    { householdId: string; settings: Partial<HouseholdSettings> }
+    { householdId: string; settings: Partial<HouseholdSettings> },
+    { previous?: HouseholdSettings; householdId: string }
   >({
     mutationFn: ({ householdId, settings }) =>
       api.updateHouseholdSettings(householdId, settings),
     onMutate: async ({ householdId, settings }) => {
-      await queryClient.cancelQueries({ queryKey: adminKeys.settings(householdId) });
-      const previous = queryClient.getQueryData<HouseholdSettings>(adminKeys.settings(householdId));
+      await queryClient.cancelQueries({
+        queryKey: adminKeys.settings(householdId),
+      });
+      const previous = queryClient.getQueryData<HouseholdSettings>(
+        adminKeys.settings(householdId),
+      );
       queryClient.setQueryData<HouseholdSettings>(
         adminKeys.settings(householdId),
         (old) => (old ? { ...old, ...settings } : undefined),
@@ -180,14 +185,19 @@ export const useUpdateHouseholdSettings = () => {
     },
     onError: (_err, _vars, context) => {
       if (context?.previous !== undefined) {
-        queryClient.setQueryData(adminKeys.settings(context.householdId), context.previous);
+        queryClient.setQueryData(
+          adminKeys.settings(context.householdId),
+          context.previous,
+        );
       }
     },
     onSettled: (_, _err, { householdId }) => {
-      queryClient.invalidateQueries({ queryKey: adminKeys.settings(householdId) });
+      queryClient.invalidateQueries({
+        queryKey: adminKeys.settings(householdId),
+      });
     },
   });
-}
+};
 
 /**
  * Transfer a recipe to a different household (superuser only).
@@ -208,7 +218,7 @@ export const useTransferRecipe = () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
     },
   });
-}
+};
 
 // --- Items at Home Hooks ---
 
@@ -226,7 +236,7 @@ export const useItemsAtHome = (householdId: string | null | undefined) => {
     enabled: !!householdId,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
-}
+};
 
 /**
  * Add an item to the household's items-at-home list.
@@ -234,14 +244,18 @@ export const useItemsAtHome = (householdId: string | null | undefined) => {
 export const useAddItemAtHome = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<ItemAtHomeResponse, Error, { householdId: string; item: string }>({
+  return useMutation<
+    ItemAtHomeResponse,
+    Error,
+    { householdId: string; item: string }
+  >({
     mutationFn: ({ householdId, item }) => api.addItemAtHome(householdId, item),
     onSuccess: (data, { householdId }) => {
       // Update the cache directly with the new list
       queryClient.setQueryData(adminKeys.itemsAtHome(householdId), data);
     },
   });
-}
+};
 
 /**
  * Remove an item from the household's items-at-home list.
@@ -249,14 +263,19 @@ export const useAddItemAtHome = () => {
 export const useRemoveItemAtHome = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<ItemAtHomeResponse, Error, { householdId: string; item: string }>({
-    mutationFn: ({ householdId, item }) => api.removeItemAtHome(householdId, item),
+  return useMutation<
+    ItemAtHomeResponse,
+    Error,
+    { householdId: string; item: string }
+  >({
+    mutationFn: ({ householdId, item }) =>
+      api.removeItemAtHome(householdId, item),
     onSuccess: (data, { householdId }) => {
       // Update the cache directly with the new list
       queryClient.setQueryData(adminKeys.itemsAtHome(householdId), data);
     },
   });
-}
+};
 
 // --- Favorite Recipes Hooks ---
 
@@ -274,7 +293,7 @@ export const useFavoriteRecipes = (householdId: string | null | undefined) => {
     enabled: !!householdId,
     staleTime: 5 * 60 * 1000,
   });
-}
+};
 
 /**
  * Add a recipe to the household's favorites.
@@ -282,13 +301,18 @@ export const useFavoriteRecipes = (householdId: string | null | undefined) => {
 export const useAddFavoriteRecipe = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<FavoriteRecipeResponse, Error, { householdId: string; recipeId: string }>({
-    mutationFn: ({ householdId, recipeId }) => api.addFavoriteRecipe(householdId, recipeId),
+  return useMutation<
+    FavoriteRecipeResponse,
+    Error,
+    { householdId: string; recipeId: string }
+  >({
+    mutationFn: ({ householdId, recipeId }) =>
+      api.addFavoriteRecipe(householdId, recipeId),
     onSuccess: (data, { householdId }) => {
       queryClient.setQueryData(adminKeys.favorites(householdId), data);
     },
   });
-}
+};
 
 /**
  * Remove a recipe from the household's favorites.
@@ -296,10 +320,15 @@ export const useAddFavoriteRecipe = () => {
 export const useRemoveFavoriteRecipe = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<FavoriteRecipeResponse, Error, { householdId: string; recipeId: string }>({
-    mutationFn: ({ householdId, recipeId }) => api.removeFavoriteRecipe(householdId, recipeId),
+  return useMutation<
+    FavoriteRecipeResponse,
+    Error,
+    { householdId: string; recipeId: string }
+  >({
+    mutationFn: ({ householdId, recipeId }) =>
+      api.removeFavoriteRecipe(householdId, recipeId),
     onSuccess: (data, { householdId }) => {
       queryClient.setQueryData(adminKeys.favorites(householdId), data);
     },
   });
-}
+};

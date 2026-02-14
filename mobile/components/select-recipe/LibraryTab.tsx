@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';

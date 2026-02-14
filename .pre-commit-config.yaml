@@ -89,7 +89,7 @@ repos:
     hooks:
       - id: pnpm-sync-mobile
         name: pnpm sync (mobile)
-        entry: bash -c "cd mobile && pnpm install --frozen-lockfile --prefer-offline --silent"
+        entry: pnpm -C mobile install --frozen-lockfile --prefer-offline --silent
         language: system
         always_run: true
         pass_filenames: false
@@ -114,7 +114,7 @@ repos:
     hooks:
       - id: tsc-mobile
         name: TypeScript (mobile)
-        entry: bash -c "test -d mobile/node_modules && cd mobile && pnpm exec tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo || echo 'Skipping - run pnpm install in mobile/ first'"
+        entry: pnpm -C mobile exec tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo
         language: system
         files: ^mobile/.*\.(ts|tsx)$
         pass_filenames: false
@@ -124,7 +124,7 @@ repos:
     hooks:
       - id: biome
         name: Biome (mobile)
-        entry: bash -c "test -d mobile/node_modules && cd mobile && pnpm exec biome check || echo 'Skipping - run pnpm install in mobile/ first'"
+        entry: pnpm -C mobile exec biome check
         language: system
         files: ^mobile/.*\.(ts|tsx|js|jsx|json|css)$
         pass_filenames: false

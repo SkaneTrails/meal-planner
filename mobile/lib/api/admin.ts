@@ -48,17 +48,25 @@ export const adminApi = {
   },
 
   getHouseholdMembers: (householdId: string): Promise<HouseholdMember[]> => {
-    return apiRequest<HouseholdMember[]>(`/admin/households/${householdId}/members`);
+    return apiRequest<HouseholdMember[]>(
+      `/admin/households/${householdId}/members`,
+    );
   },
 
-  addHouseholdMember: (householdId: string, data: MemberAdd): Promise<HouseholdMember> => {
+  addHouseholdMember: (
+    householdId: string,
+    data: MemberAdd,
+  ): Promise<HouseholdMember> => {
     return apiRequest<HouseholdMember>(
       `/admin/households/${householdId}/members`,
       { method: 'POST', body: JSON.stringify(data) },
     );
   },
 
-  removeHouseholdMember: (householdId: string, email: string): Promise<void> => {
+  removeHouseholdMember: (
+    householdId: string,
+    email: string,
+  ): Promise<void> => {
     return apiRequest<void>(
       `/admin/households/${householdId}/members/${encodeURIComponent(email)}`,
       { method: 'DELETE' },
@@ -66,7 +74,9 @@ export const adminApi = {
   },
 
   getHouseholdSettings: (householdId: string): Promise<HouseholdSettings> => {
-    return apiRequest<HouseholdSettings>(`/admin/households/${householdId}/settings`);
+    return apiRequest<HouseholdSettings>(
+      `/admin/households/${householdId}/settings`,
+    );
   },
 
   updateHouseholdSettings: (
@@ -82,26 +92,44 @@ export const adminApi = {
   transferRecipe: (
     recipeId: string,
     targetHouseholdId: string,
-  ): Promise<{ id: string; title: string; household_id: string; message: string }> => {
-    return apiRequest<{ id: string; title: string; household_id: string; message: string }>(
-      `/admin/recipes/${recipeId}/transfer`,
-      { method: 'POST', body: JSON.stringify({ target_household_id: targetHouseholdId }) },
-    );
+  ): Promise<{
+    id: string;
+    title: string;
+    household_id: string;
+    message: string;
+  }> => {
+    return apiRequest<{
+      id: string;
+      title: string;
+      household_id: string;
+      message: string;
+    }>(`/admin/recipes/${recipeId}/transfer`, {
+      method: 'POST',
+      body: JSON.stringify({ target_household_id: targetHouseholdId }),
+    });
   },
 
   // Items at home
   getItemsAtHome: (householdId: string): Promise<ItemAtHomeResponse> => {
-    return apiRequest<ItemAtHomeResponse>(`/admin/households/${householdId}/items-at-home`);
+    return apiRequest<ItemAtHomeResponse>(
+      `/admin/households/${householdId}/items-at-home`,
+    );
   },
 
-  addItemAtHome: (householdId: string, item: string): Promise<ItemAtHomeResponse> => {
+  addItemAtHome: (
+    householdId: string,
+    item: string,
+  ): Promise<ItemAtHomeResponse> => {
     return apiRequest<ItemAtHomeResponse>(
       `/admin/households/${householdId}/items-at-home`,
       { method: 'POST', body: JSON.stringify({ item }) },
     );
   },
 
-  removeItemAtHome: (householdId: string, item: string): Promise<ItemAtHomeResponse> => {
+  removeItemAtHome: (
+    householdId: string,
+    item: string,
+  ): Promise<ItemAtHomeResponse> => {
     return apiRequest<ItemAtHomeResponse>(
       `/admin/households/${householdId}/items-at-home/${encodeURIComponent(item)}`,
       { method: 'DELETE' },
@@ -109,18 +137,28 @@ export const adminApi = {
   },
 
   // Favorite recipes
-  getFavoriteRecipes: (householdId: string): Promise<FavoriteRecipeResponse> => {
-    return apiRequest<FavoriteRecipeResponse>(`/admin/households/${householdId}/favorites`);
+  getFavoriteRecipes: (
+    householdId: string,
+  ): Promise<FavoriteRecipeResponse> => {
+    return apiRequest<FavoriteRecipeResponse>(
+      `/admin/households/${householdId}/favorites`,
+    );
   },
 
-  addFavoriteRecipe: (householdId: string, recipeId: string): Promise<FavoriteRecipeResponse> => {
+  addFavoriteRecipe: (
+    householdId: string,
+    recipeId: string,
+  ): Promise<FavoriteRecipeResponse> => {
     return apiRequest<FavoriteRecipeResponse>(
       `/admin/households/${householdId}/favorites`,
       { method: 'POST', body: JSON.stringify({ recipe_id: recipeId }) },
     );
   },
 
-  removeFavoriteRecipe: (householdId: string, recipeId: string): Promise<FavoriteRecipeResponse> => {
+  removeFavoriteRecipe: (
+    householdId: string,
+    recipeId: string,
+  ): Promise<FavoriteRecipeResponse> => {
     return apiRequest<FavoriteRecipeResponse>(
       `/admin/households/${householdId}/favorites/${encodeURIComponent(recipeId)}`,
       { method: 'DELETE' },

@@ -26,4 +26,4 @@ export const useGroceryList = (options?: GroceryListOptions) => {
     queryKey: groceryKeys.list(options),
     queryFn: () => api.getGroceryList(options),
   });
-}
+};

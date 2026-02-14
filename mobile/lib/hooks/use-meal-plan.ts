@@ -26,7 +26,7 @@ export const useMealPlan = () => {
     queryKey: mealPlanKeys.detail(),
     queryFn: () => api.getMealPlan(),
   });
-}
+};
 
 /**
  * Hook to update the meal plan (batch update).
@@ -40,7 +40,7 @@ export const useUpdateMealPlan = () => {
       queryClient.setQueryData(mealPlanKeys.detail(), data);
     },
   });
-}
+};
 
 /**
  * Hook to update a single meal.
@@ -54,7 +54,7 @@ export const useUpdateMeal = () => {
       queryClient.setQueryData(mealPlanKeys.detail(), data);
     },
   });
-}
+};
 
 /**
  * Hook to update a day note.
@@ -72,7 +72,7 @@ export const useUpdateNote = () => {
       queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });
-}
+};
 
 /**
  * Hook to clear the meal plan.
@@ -86,7 +86,7 @@ export const useClearMealPlan = () => {
       queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });
-}
+};
 
 /**
  * Hook to set a meal (recipe or custom text).
@@ -117,7 +117,7 @@ export const useSetMeal = () => {
       queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });
-}
+};
 
 /**
  * Hook to remove a meal from the plan.
@@ -137,7 +137,7 @@ export const useRemoveMeal = () => {
       queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });
-}
+};
 
 /**
  * Hook to update the extras (Other) section.
@@ -154,4 +154,4 @@ export const useUpdateExtras = () => {
       queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });
-}
+};

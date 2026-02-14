@@ -305,6 +305,7 @@ const sv: Translations = {
       random: '🎲 Slumpa',
       quick: '✏️ Snabb',
       copy: '📋 Kopiera',
+      extras: '📌 Övrigt',
     },
     quick: {
       title: 'Snabb måltid',
@@ -367,8 +368,7 @@ const sv: Translations = {
     clearMealPlanItemsMessage:
       'Detta tar bort alla varor från recept i din måltidsplan.',
     clearManualItems: 'Rensa manuella varor',
-    clearManualItemsMessage:
-      'Detta tar bort alla manuellt tillagda varor.',
+    clearManualItemsMessage: 'Detta tar bort alla manuellt tillagda varor.',
     clear: 'Rensa',
     failedToClearList: 'Kunde inte rensa listan',
     categories: {
@@ -545,6 +545,11 @@ const sv: Translations = {
     tagline: 'Laga mat med intention.',
     continueWithGoogle: 'Fortsätt med Google',
     syncMessage: 'Logga in för att synka dina recept mellan enheter',
+    signInFailed: 'Inloggningen misslyckades. Försök igen.',
+    signOutFailed: 'Utloggningen misslyckades. Försök igen.',
+    noIdToken:
+      'Autentiseringen misslyckades. Kontrollera dina Google-kontoinställningar.',
+    somethingWentWrong: 'Något gick fel. Försök igen.',
   },
 
   noAccess: {

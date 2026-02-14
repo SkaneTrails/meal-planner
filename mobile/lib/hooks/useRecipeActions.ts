@@ -1,14 +1,29 @@
-import { Share } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Share } from 'react-native';
 import { showAlert, showNotification } from '@/lib/alert';
-import { useDeleteRecipe, useUpdateRecipe, useSetMeal, useCurrentUser, useImagePicker, useReviewEnhancement, useEnhanceRecipe } from '@/lib/hooks';
+import { hapticLight, hapticSuccess, hapticWarning } from '@/lib/haptics';
+import {
+  useCurrentUser,
+  useDeleteRecipe,
+  useEnhanceRecipe,
+  useImagePicker,
+  useReviewEnhancement,
+  useSetMeal,
+  useUpdateRecipe,
+} from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
+import type {
+  DietLabel,
+  EnhancementReviewAction,
+  MealLabel,
+  MealType,
+  Recipe,
+  RecipeVisibility,
+} from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
-import { hapticLight, hapticSuccess, hapticWarning } from '@/lib/haptics';
-import type { MealType, Recipe, DietLabel, MealLabel, RecipeVisibility, EnhancementReviewAction } from '@/lib/types';
-import { useState } from 'react';
 
 interface EditUpdates {
   dietLabel: DietLabel | null;
@@ -20,7 +35,10 @@ interface EditUpdates {
   visibility: RecipeVisibility;
 }
 
-export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefined) => {
+export const useRecipeActions = (
+  id: string | undefined,
+  recipe: Recipe | undefined,
+) => {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const isAuthReady = !authLoading && !!user;
@@ -42,7 +60,9 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   const { data: households } = useHouseholds({ enabled: isSuperuser });
   const transferRecipe = useTransferRecipe();
 
-  const isOwned = currentUser ? recipe?.household_id === currentUser.household_id : undefined;
+  const isOwned = currentUser
+    ? recipe?.household_id === currentUser.household_id
+    : undefined;
   const canEdit = isOwned === true;
 
   const saveImage = async (localUri: string) => {
@@ -56,8 +76,14 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     } catch (err) {
       console.warn('Upload failed, saving local URI:', err);
       try {
-        await updateRecipe.mutateAsync({ id: id!, updates: { image_url: localUri } });
-        showNotification(t('recipe.savedLocally'), t('recipe.savedLocallyMessage'));
+        await updateRecipe.mutateAsync({
+          id: id!,
+          updates: { image_url: localUri },
+        });
+        showNotification(
+          t('recipe.savedLocally'),
+          t('recipe.savedLocallyMessage'),
+        );
       } catch {
         showNotification(t('common.error'), t('recipe.failedToUpdatePhoto'));
       }
@@ -92,10 +118,25 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     if (!id) return;
     hapticSuccess();
     try {
-      await setMeal.mutateAsync({ date: formatDateLocal(date), mealType, recipeId: id });
+      await setMeal.mutateAsync({
+        date: formatDateLocal(date),
+        mealType,
+        recipeId: id,
+      });
       setShowPlanModal(false);
       const localizedMealType = t(`selectRecipe.mealTypeLabels.${mealType}`);
-      showNotification(t('recipe.addedToMealPlan'), t('recipe.addedToMealPlanMessage', { title: recipe?.title ?? '', mealType: localizedMealType, date: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) }));
+      showNotification(
+        t('recipe.addedToMealPlan'),
+        t('recipe.addedToMealPlanMessage', {
+          title: recipe?.title ?? '',
+          mealType: localizedMealType,
+          date: date.toLocaleDateString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }),
+        }),
+      );
     } catch {
       showNotification(t('common.error'), t('recipe.failedToAddToMealPlan'));
     }
@@ -104,7 +145,11 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
   const handleClearMeal = async (date: Date, mealType: MealType) => {
     hapticLight();
     try {
-      await setMeal.mutateAsync({ date: formatDateLocal(date), mealType, recipeId: undefined });
+      await setMeal.mutateAsync({
+        date: formatDateLocal(date),
+        mealType,
+        recipeId: undefined,
+      });
     } catch {
       showNotification(t('common.error'), t('recipe.failedToClearMeal'));
     }
@@ -156,7 +201,10 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
         // Hide (and clear approval if approved)
         await updateRecipe.mutateAsync({
           id,
-          updates: { hidden: true, ...(recipe.rating !== null && { rating: null }) },
+          updates: {
+            hidden: true,
+            ...(recipe.rating !== null && { rating: null }),
+          },
         });
       }
     } catch {
@@ -166,16 +214,25 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
 
   const handleDelete = () => {
     if (!id) return;
-    showAlert(t('recipe.deleteRecipe'), t('recipe.deleteConfirm', { title: recipe?.title ?? '' }), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('common.delete'),
-        style: 'destructive',
-        onPress: async () => {
-          try { await deleteRecipe.mutateAsync(id); router.back(); } catch { showNotification(t('common.error'), t('recipe.failedToDelete')); }
+    showAlert(
+      t('recipe.deleteRecipe'),
+      t('recipe.deleteConfirm', { title: recipe?.title ?? '' }),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteRecipe.mutateAsync(id);
+              router.back();
+            } catch {
+              showNotification(t('common.error'), t('recipe.failedToDelete'));
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   const handleShare = async () => {
@@ -183,7 +240,10 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     try {
       await Share.share({
         title: recipe.title,
-        message: t('recipe.shareMessage', { title: recipe.title, url: recipe.url || '' }),
+        message: t('recipe.shareMessage', {
+          title: recipe.title,
+          url: recipe.url || '',
+        }),
         url: recipe.url,
       });
     } catch {
@@ -196,8 +256,8 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
     try {
       const tagsArray = updates.tags
         .split(',')
-        .map(tag => tag.trim().toLowerCase().replace(/^#/, ''))
-        .filter(tag => tag.length > 0);
+        .map((tag) => tag.trim().toLowerCase().replace(/^#/, ''))
+        .filter((tag) => tag.length > 0);
       await updateRecipe.mutateAsync({
         id,
         updates: {
@@ -219,25 +279,38 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
 
   const handleTransferRecipe = async (targetHouseholdId: string) => {
     if (!id || !recipe) return;
-    const targetHousehold = households?.find(h => h.id === targetHouseholdId);
+    const targetHousehold = households?.find((h) => h.id === targetHouseholdId);
     if (!targetHousehold) return;
-    showAlert(t('recipe.transferRecipe'), t('recipe.transferConfirm', { title: recipe.title, household: targetHousehold.name }), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('recipe.transfer'),
-        onPress: async () => {
-          try {
-            await transferRecipe.mutateAsync({ recipeId: id, targetHouseholdId });
-            setShowEditModal(false);
-            hapticSuccess();
-            showNotification(t('recipe.transferred'), t('recipe.transferredTo', { household: targetHousehold.name }));
-          } catch {
-            hapticWarning();
-            showNotification(t('common.error'), t('recipe.failedToTransfer'));
-          }
+    showAlert(
+      t('recipe.transferRecipe'),
+      t('recipe.transferConfirm', {
+        title: recipe.title,
+        household: targetHousehold.name,
+      }),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('recipe.transfer'),
+          onPress: async () => {
+            try {
+              await transferRecipe.mutateAsync({
+                recipeId: id,
+                targetHouseholdId,
+              });
+              setShowEditModal(false);
+              hapticSuccess();
+              showNotification(
+                t('recipe.transferred'),
+                t('recipe.transferredTo', { household: targetHousehold.name }),
+              );
+            } catch {
+              hapticWarning();
+              showNotification(t('common.error'), t('recipe.failedToTransfer'));
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   const handleReviewEnhancement = async (action: EnhancementReviewAction) => {
@@ -247,16 +320,25 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
       return;
     }
     if (recipe.household_id !== currentUser.household_id) {
-      showNotification(t('recipe.cannotReviewEnhancement'), t('recipe.cannotReviewEnhancementMessage'));
+      showNotification(
+        t('recipe.cannotReviewEnhancement'),
+        t('recipe.cannotReviewEnhancementMessage'),
+      );
       return;
     }
     try {
       await reviewEnhancement.mutateAsync({ id, action });
       hapticSuccess();
       if (action === 'approve') {
-        showNotification(t('recipe.enhancementApproved'), t('recipe.enhancementApprovedMessage'));
+        showNotification(
+          t('recipe.enhancementApproved'),
+          t('recipe.enhancementApprovedMessage'),
+        );
       } else {
-        showNotification(t('recipe.enhancementRejected'), t('recipe.enhancementRejectedMessage'));
+        showNotification(
+          t('recipe.enhancementRejected'),
+          t('recipe.enhancementRejectedMessage'),
+        );
       }
     } catch {
       hapticWarning();
@@ -280,7 +362,10 @@ export const useRecipeActions = (id: string | undefined, recipe: Recipe | undefi
           try {
             await enhanceRecipe.mutateAsync(id);
             hapticSuccess();
-            showNotification(t('recipe.enhanceSuccess'), t('recipe.enhanceSuccessMessage'));
+            showNotification(
+              t('recipe.enhanceSuccess'),
+              t('recipe.enhanceSuccessMessage'),
+            );
           } catch {
             hapticWarning();
             showNotification(t('common.error'), t('recipe.enhanceFailed'));

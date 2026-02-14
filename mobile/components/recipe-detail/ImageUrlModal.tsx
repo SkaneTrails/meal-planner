@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, Modal } from 'react-native';
-import { borderRadius, colors, spacing, fontFamily, fontSize } from '@/lib/theme';
+import { useEffect, useState } from 'react';
+import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 
 interface ImageUrlModalProps {
   visible: boolean;
@@ -33,12 +39,42 @@ export const ImageUrlModal = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: spacing.xl }}>
-        <View style={{ backgroundColor: colors.white, borderRadius: borderRadius.lg, padding: spacing.xl, width: '100%', maxWidth: 400 }}>
-          <Text style={{ fontSize: fontSize['2xl'], fontFamily: fontFamily.bodySemibold, color: colors.text.inverse, marginBottom: spacing.sm }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: spacing.xl,
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: colors.white,
+            borderRadius: borderRadius.lg,
+            padding: spacing.xl,
+            width: '100%',
+            maxWidth: 400,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: fontSize['2xl'],
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.text.inverse,
+              marginBottom: spacing.sm,
+            }}
+          >
             {t('recipe.imageUrl')}
           </Text>
-          <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.body, color: colors.gray[500], marginBottom: spacing.lg }}>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.body,
+              color: colors.gray[500],
+              marginBottom: spacing.lg,
+            }}
+          >
             {t('recipe.imageUrlPrompt')}
           </Text>
           <TextInput
@@ -60,7 +96,13 @@ export const ImageUrlModal = ({
               marginBottom: spacing.lg,
             }}
           />
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.md }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              gap: spacing.md,
+            }}
+          >
             <Pressable
               onPress={onClose}
               style={({ pressed }) => ({
@@ -70,7 +112,15 @@ export const ImageUrlModal = ({
                 backgroundColor: pressed ? colors.gray[100] : 'transparent',
               })}
             >
-              <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium, color: colors.gray[500] }}>{t('common.cancel')}</Text>
+              <Text
+                style={{
+                  fontSize: fontSize.xl,
+                  fontFamily: fontFamily.bodyMedium,
+                  color: colors.gray[500],
+                }}
+              >
+                {t('common.cancel')}
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -86,7 +136,15 @@ export const ImageUrlModal = ({
                 backgroundColor: pressed ? colors.primaryDark : colors.primary,
               })}
             >
-              <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium, color: colors.white }}>{t('common.save')}</Text>
+              <Text
+                style={{
+                  fontSize: fontSize.xl,
+                  fontFamily: fontFamily.bodyMedium,
+                  color: colors.white,
+                }}
+              >
+                {t('common.save')}
+              </Text>
             </Pressable>
           </View>
         </View>

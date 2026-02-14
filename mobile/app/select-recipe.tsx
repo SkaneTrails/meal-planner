@@ -1,6 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
-import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { GradientBackground } from '@/components';
 import { CopyMealTab } from '@/components/select-recipe/CopyMealTab';
@@ -38,20 +36,21 @@ export default function SelectRecipeScreen() {
   };
 
   // Different header for extras mode
-  const headerTitle = mode === 'extras'
-    ? t('mealPlan.extras.selectTitle')
-    : formattedDate;
-  const headerSubtitle = mode === 'extras'
-    ? t('mealPlan.extras.selectSubtitle')
-    : `${t('selectRecipe.choosingFor')} ${MEAL_TYPE_LABELS[mealType]?.toLowerCase() || ''}`;
+  const headerTitle =
+    mode === 'extras' ? t('mealPlan.extras.selectTitle') : formattedDate;
+  const headerSubtitle =
+    mode === 'extras'
+      ? t('mealPlan.extras.selectSubtitle')
+      : `${t('selectRecipe.choosingFor')} ${MEAL_TYPE_LABELS[mealType]?.toLowerCase() || ''}`;
 
   return (
     <>
       <Stack.Screen
         options={{
-          title: mode === 'extras'
-            ? t('mealPlan.extras.headerTitle')
-            : `${MEAL_TYPE_LABELS[mealType]} - ${formattedDate}`,
+          title:
+            mode === 'extras'
+              ? t('mealPlan.extras.headerTitle')
+              : `${MEAL_TYPE_LABELS[mealType]} - ${formattedDate}`,
         }}
       />
 
@@ -97,6 +96,7 @@ export default function SelectRecipeScreen() {
               random: t('selectRecipe.tabs.random'),
               quick: t('selectRecipe.tabs.quick'),
               copy: t('selectRecipe.tabs.copy'),
+              extras: t('selectRecipe.tabs.extras'),
             }}
           />
         )}

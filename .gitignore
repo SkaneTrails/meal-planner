@@ -82,9 +82,6 @@ infra/**/access/allowed_users.txt
 # credentials.json
 # key.json
 
-# Docker
-.dockerignore
-
 # Logs
 *.log
 .mypy_cache/

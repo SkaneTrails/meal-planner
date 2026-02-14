@@ -1,7 +1,8 @@
 import { showAlert } from '@/lib/alert';
 import type { MealType } from '@/lib/types';
 
-export const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
+export const PLACEHOLDER_IMAGE =
+  'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=200';
 
 /** Approximate height of each day section (header + 2 meal cards) for scroll positioning */
 export const DAY_SECTION_HEIGHT = 180;

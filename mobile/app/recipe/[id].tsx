@@ -4,26 +4,24 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { BouncingLoader, EnhancingOverlay, GradientBackground } from '@/components';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { EnhancingOverlay, GradientBackground } from '@/components';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
 import { PlanMealModal } from '@/components/recipe-detail/PlanMealModal';
 import { RecipeContent } from '@/components/recipe-detail/RecipeContent';
 import { RecipeHero } from '@/components/recipe-detail/RecipeHero';
+import {
+  RecipeLoading,
+  RecipeNotFound,
+} from '@/components/recipe-detail/RecipeLoadingStates';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
-import {
-  borderRadius,
-  colors,
-  fontFamily,
-  fontSize,
-  spacing,
-} from '@/lib/theme';
+import { colors, spacing } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
@@ -104,110 +102,11 @@ export default function RecipeDetailScreen() {
   };
 
   if (isLoading) {
-    return (
-      <GradientBackground
-        structured
-        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-      >
-        <View
-          style={{
-            width: 64,
-            height: 64,
-            backgroundColor: 'rgba(255, 255, 255, 0.85)',
-            borderRadius: 16,
-            alignItems: 'center',
-            justifyContent: 'center',
-            shadowColor: '#000',
-            shadowOffset: { width: 2, height: 4 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 3,
-          }}
-        >
-          <BouncingLoader size={12} />
-        </View>
-      </GradientBackground>
-    );
+    return <RecipeLoading />;
   }
 
   if (error || !recipe) {
-    return (
-      <GradientBackground
-        structured
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: spacing.xl,
-        }}
-      >
-        <View
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            borderRadius: 20,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: spacing.lg,
-            shadowColor: '#000',
-            shadowOffset: { width: 2, height: 4 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 3,
-          }}
-        >
-          <Ionicons
-            name="alert-circle-outline"
-            size={40}
-            color="rgba(93, 78, 64, 0.6)"
-          />
-        </View>
-        <Text
-          style={{
-            color: '#3D3D3D',
-            fontSize: fontSize['2xl'],
-            fontFamily: fontFamily.displayBold,
-            textAlign: 'center',
-          }}
-        >
-          {t('recipe.notFound')}
-        </Text>
-        <Text
-          style={{
-            color: 'rgba(93, 78, 64, 0.7)',
-            fontSize: fontSize.md,
-            fontFamily: fontFamily.body,
-            marginTop: spacing.sm,
-            textAlign: 'center',
-          }}
-        >
-          {t('recipe.notFoundMessage')}
-        </Text>
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => ({
-            marginTop: spacing.xl,
-            paddingHorizontal: 24,
-            paddingVertical: spacing.md,
-            backgroundColor: pressed
-              ? 'rgba(122, 104, 88, 0.2)'
-              : 'rgba(122, 104, 88, 0.12)',
-            borderRadius: borderRadius.sm,
-          })}
-        >
-          <Text
-            style={{
-              color: '#5D4E40',
-              fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
-            }}
-          >
-            {t('common.goBack')}
-          </Text>
-        </Pressable>
-      </GradientBackground>
-    );
+    return <RecipeNotFound t={t} onGoBack={() => router.back()} />;
   }
 
   const totalTime =

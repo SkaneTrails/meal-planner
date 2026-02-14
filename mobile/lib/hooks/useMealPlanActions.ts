@@ -1,15 +1,25 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { Animated, PanResponder, type ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useMealPlan, useAllRecipes, useUpdateNote, useRemoveMeal, useUpdateExtras, useGroceryState } from '@/lib/hooks';
-import { hapticLight } from '@/lib/haptics';
-import { showNotification } from '@/lib/alert';
-import { useTranslation } from '@/lib/i18n';
-import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
-import { useSettings } from '@/lib/settings-context';
-import { DAY_SECTION_HEIGHT, showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
-import type { MealType, Recipe } from '@/lib/types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, PanResponder, type ScrollView } from 'react-native';
 import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
+import {
+  DAY_SECTION_HEIGHT,
+  showConfirmDelete,
+} from '@/components/meal-plan/meal-plan-constants';
+import { showNotification } from '@/lib/alert';
+import { hapticLight } from '@/lib/haptics';
+import {
+  useAllRecipes,
+  useGroceryState,
+  useMealPlan,
+  useRemoveMeal,
+  useUpdateExtras,
+  useUpdateNote,
+} from '@/lib/hooks';
+import { useTranslation } from '@/lib/i18n';
+import { useSettings } from '@/lib/settings-context';
+import type { MealType, Recipe } from '@/lib/types';
+import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export const useMealPlanActions = () => {
   const router = useRouter();
@@ -17,19 +27,25 @@ export const useMealPlanActions = () => {
   const { weekStart } = useSettings();
   const { saveSelections } = useGroceryState();
 
-  const MEAL_TYPES: MealTypeOption[] = useMemo(() => [
-    { type: 'lunch', label: t('labels.mealTime.lunch') },
-    { type: 'dinner', label: t('labels.mealTime.dinner') },
-  ], [t]);
+  const MEAL_TYPES: MealTypeOption[] = useMemo(
+    () => [
+      { type: 'lunch', label: t('labels.mealTime.lunch') },
+      { type: 'dinner', label: t('labels.mealTime.dinner') },
+    ],
+    [t],
+  );
 
-  const NOTE_SUGGESTIONS = useMemo(() => [
-    t('mealPlan.dayLabels.office'),
-    t('mealPlan.dayLabels.home'),
-    t('mealPlan.dayLabels.gym'),
-    t('mealPlan.dayLabels.dinnerOut'),
-    t('mealPlan.dayLabels.travel'),
-    t('mealPlan.dayLabels.party'),
-  ], [t]);
+  const NOTE_SUGGESTIONS = useMemo(
+    () => [
+      t('mealPlan.dayLabels.office'),
+      t('mealPlan.dayLabels.home'),
+      t('mealPlan.dayLabels.gym'),
+      t('mealPlan.dayLabels.dinnerOut'),
+      t('mealPlan.dayLabels.travel'),
+      t('mealPlan.dayLabels.party'),
+    ],
+    [t],
+  );
 
   const [weekOffset, setWeekOffset] = useState(0);
   const [showGroceryModal, setShowGroceryModal] = useState(false);
@@ -43,12 +59,20 @@ export const useMealPlanActions = () => {
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
-  const weekDates = useMemo(() => getWeekDatesArray(weekOffset, weekStart), [weekOffset, weekStart]);
-  const groceryWeekDates = useMemo(() => getWeekDatesArray(groceryWeekOffset, weekStart), [groceryWeekOffset, weekStart]);
+  const weekDates = useMemo(
+    () => getWeekDatesArray(weekOffset, weekStart),
+    [weekOffset, weekStart],
+  );
+  const groceryWeekDates = useMemo(
+    () => getWeekDatesArray(groceryWeekOffset, weekStart),
+    [groceryWeekOffset, weekStart],
+  );
 
   const todayIndex = useMemo(() => {
     const today = new Date();
-    return weekDates.findIndex(date => date.toDateString() === today.toDateString());
+    return weekDates.findIndex(
+      (date) => date.toDateString() === today.toDateString(),
+    );
   }, [weekDates]);
 
   const {
@@ -69,102 +93,155 @@ export const useMealPlanActions = () => {
     return map;
   }, [recipes]);
 
-  const getNoteForDate = useCallback((date: Date): string | null => {
-    if (!mealPlan?.notes) return null;
-    const dateStr = formatDateLocal(date);
-    return mealPlan.notes[dateStr] || null;
-  }, [mealPlan]);
+  const getNoteForDate = useCallback(
+    (date: Date): string | null => {
+      if (!mealPlan?.notes) return null;
+      const dateStr = formatDateLocal(date);
+      return mealPlan.notes[dateStr] || null;
+    },
+    [mealPlan],
+  );
 
-  const getMealForSlot = useCallback((date: Date, mealType: MealType): { recipe?: Recipe; customText?: string } | null => {
-    if (!mealPlan?.meals) return null;
-    const dateStr = formatDateLocal(date);
-    const key = `${dateStr}_${mealType}`;
-    const value = mealPlan.meals[key];
-    if (!value) return null;
-    if (value.startsWith('custom:')) {
-      return { customText: value.slice(7) };
-    }
-    const recipe = recipeMap[value];
-    return recipe ? { recipe } : { customText: value };
-  }, [mealPlan, recipeMap]);
+  const getMealForSlot = useCallback(
+    (
+      date: Date,
+      mealType: MealType,
+    ): { recipe?: Recipe; customText?: string } | null => {
+      if (!mealPlan?.meals) return null;
+      const dateStr = formatDateLocal(date);
+      const key = `${dateStr}_${mealType}`;
+      const value = mealPlan.meals[key];
+      if (!value) return null;
+      if (value.startsWith('custom:')) {
+        return { customText: value.slice(7) };
+      }
+      const recipe = recipeMap[value];
+      return recipe ? { recipe } : { customText: value };
+    },
+    [mealPlan, recipeMap],
+  );
 
-  const handleScroll = useCallback((scrollY: number) => {
-    if (todayIndex < 0) return;
-    const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
-    const tolerance = DAY_SECTION_HEIGHT / 2;
-    const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
+  const handleScroll = useCallback(
+    (scrollY: number) => {
+      if (todayIndex < 0) return;
+      const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
+      const tolerance = DAY_SECTION_HEIGHT / 2;
+      const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
 
-    if (!isNearToday && !showJumpButton) {
-      setShowJumpButton(true);
-      Animated.spring(jumpButtonOpacity, { toValue: 1, useNativeDriver: true }).start();
-    } else if (isNearToday && showJumpButton) {
-      Animated.timing(jumpButtonOpacity, { toValue: 0, duration: 200, useNativeDriver: true })
-        .start(() => setShowJumpButton(false));
-    }
-  }, [todayIndex, showJumpButton, jumpButtonOpacity]);
+      if (!isNearToday && !showJumpButton) {
+        setShowJumpButton(true);
+        Animated.spring(jumpButtonOpacity, {
+          toValue: 1,
+          useNativeDriver: true,
+        }).start();
+      } else if (isNearToday && showJumpButton) {
+        Animated.timing(jumpButtonOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start(() => setShowJumpButton(false));
+      }
+    },
+    [todayIndex, showJumpButton, jumpButtonOpacity],
+  );
 
   const jumpToToday = useCallback(() => {
     if (weekOffset !== 0) {
       setWeekOffset(0);
     } else if (todayIndex >= 0 && scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: todayIndex * DAY_SECTION_HEIGHT, animated: true });
+      scrollViewRef.current.scrollTo({
+        y: todayIndex * DAY_SECTION_HEIGHT,
+        animated: true,
+      });
     }
   }, [weekOffset, todayIndex]);
 
   useEffect(() => {
     if (todayIndex >= 0 && scrollViewRef.current) {
       setTimeout(() => {
-        scrollViewRef.current?.scrollTo({ y: todayIndex * DAY_SECTION_HEIGHT, animated: false });
+        scrollViewRef.current?.scrollTo({
+          y: todayIndex * DAY_SECTION_HEIGHT,
+          animated: false,
+        });
       }, 100);
     }
-  }, [todayIndex, weekOffset]);
+  }, [todayIndex]);
 
   const swipeThreshold = 50;
-  const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gs) => {
-      const isHorizontalSwipe = Math.abs(gs.dx) > Math.abs(gs.dy) * 2;
-      return isHorizontalSwipe && Math.abs(gs.dx) > 10;
-    },
-    onPanResponderMove: (_, gs) => {
-      swipeTranslateX.setValue(gs.dx * 0.3);
-    },
-    onPanResponderRelease: (_, gs) => {
-      const springBack = () => Animated.spring(swipeTranslateX, { toValue: 0, useNativeDriver: true, tension: 100, friction: 12 }).start();
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, gs) => {
+          const isHorizontalSwipe = Math.abs(gs.dx) > Math.abs(gs.dy) * 2;
+          return isHorizontalSwipe && Math.abs(gs.dx) > 10;
+        },
+        onPanResponderMove: (_, gs) => {
+          swipeTranslateX.setValue(gs.dx * 0.3);
+        },
+        onPanResponderRelease: (_, gs) => {
+          const springBack = () =>
+            Animated.spring(swipeTranslateX, {
+              toValue: 0,
+              useNativeDriver: true,
+              tension: 100,
+              friction: 12,
+            }).start();
 
-      if (gs.dx > swipeThreshold) {
-        hapticLight();
-        Animated.timing(swipeTranslateX, { toValue: 100, duration: 150, useNativeDriver: true }).start(() => {
-          setWeekOffset(prev => prev - 1);
-          swipeTranslateX.setValue(-100);
-          springBack();
-        });
-      } else if (gs.dx < -swipeThreshold) {
-        hapticLight();
-        Animated.timing(swipeTranslateX, { toValue: -100, duration: 150, useNativeDriver: true }).start(() => {
-          setWeekOffset(prev => prev + 1);
-          swipeTranslateX.setValue(100);
-          springBack();
-        });
-      } else {
-        springBack();
-      }
-    },
-    onPanResponderTerminate: () => {
-      Animated.spring(swipeTranslateX, { toValue: 0, useNativeDriver: true, tension: 100, friction: 12 }).start();
-    },
-  }), [swipeTranslateX]);
+          if (gs.dx > swipeThreshold) {
+            hapticLight();
+            Animated.timing(swipeTranslateX, {
+              toValue: 100,
+              duration: 150,
+              useNativeDriver: true,
+            }).start(() => {
+              setWeekOffset((prev) => prev - 1);
+              swipeTranslateX.setValue(-100);
+              springBack();
+            });
+          } else if (gs.dx < -swipeThreshold) {
+            hapticLight();
+            Animated.timing(swipeTranslateX, {
+              toValue: -100,
+              duration: 150,
+              useNativeDriver: true,
+            }).start(() => {
+              setWeekOffset((prev) => prev + 1);
+              swipeTranslateX.setValue(100);
+              springBack();
+            });
+          } else {
+            springBack();
+          }
+        },
+        onPanResponderTerminate: () => {
+          Animated.spring(swipeTranslateX, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 12,
+          }).start();
+        },
+      }),
+    [swipeTranslateX],
+  );
 
-  const handleStartEditNote = useCallback((date: Date) => {
-    const dateStr = formatDateLocal(date);
-    setEditingNoteDate(dateStr);
-    setNoteText(getNoteForDate(date) || '');
-  }, [getNoteForDate]);
+  const handleStartEditNote = useCallback(
+    (date: Date) => {
+      const dateStr = formatDateLocal(date);
+      setEditingNoteDate(dateStr);
+      setNoteText(getNoteForDate(date) || '');
+    },
+    [getNoteForDate],
+  );
 
   const handleSaveNote = useCallback(() => {
     if (editingNoteDate) {
       updateNote.mutate(
         { date: editingNoteDate, note: noteText.trim() },
-        { onError: () => showNotification(t('common.error'), t('mealPlan.failedToSaveNote')) },
+        {
+          onError: () =>
+            showNotification(t('common.error'), t('mealPlan.failedToSaveNote')),
+        },
       );
       setEditingNoteDate(null);
       setNoteText('');
@@ -176,60 +253,85 @@ export const useMealPlanActions = () => {
     setNoteText('');
   }, []);
 
-  const handleAddTag = useCallback((tag: string) => {
-    const currentTags = noteText.split(' ').filter(t => t.trim());
-    if (currentTags.includes(tag)) {
-      setNoteText(currentTags.filter(t => t !== tag).join(' '));
-    } else {
-      setNoteText([...currentTags, tag].join(' '));
-    }
-  }, [noteText]);
-
-  const handleMealPress = useCallback((date: Date, mealType: MealType, mode?: 'library' | 'copy' | 'quick' | 'random') => {
-    const dateStr = formatDateLocal(date);
-    router.push({
-      pathname: '/select-recipe',
-      params: { date: dateStr, mealType, mode: mode || 'library' },
-    });
-  }, [router]);
-
-  const handleRemoveMeal = useCallback((date: Date, mealType: MealType, title: string, label: string) => {
-    const dateStr = formatDateLocal(date);
-    showConfirmDelete(
-      t('common.remove'),
-      t('mealPlan.removeMealTitle', { title, meal: label.toLowerCase() }),
-      () => {
-        removeMeal.mutate(
-          { date: dateStr, mealType },
-          { onError: () => showNotification(t('common.error'), t('mealPlan.failedToRemoveMeal')) },
-        );
-      },
-      t('common.cancel'),
-      t('mealPlan.removeMealConfirm'),
-    );
-  }, [removeMeal, t]);
-
-  const handleToggleMeal = useCallback((date: Date, mealType: MealType, recipeServings?: number) => {
-    const dateStr = formatDateLocal(date);
-    const key = `${dateStr}_${mealType}`;
-    setSelectedMeals(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(key)) {
-        newSet.delete(key);
-        setMealServings(prevServings => {
-          const { [key]: _, ...rest } = prevServings;
-          return rest;
-        });
+  const handleAddTag = useCallback(
+    (tag: string) => {
+      const currentTags = noteText.split(' ').filter((t) => t.trim());
+      if (currentTags.includes(tag)) {
+        setNoteText(currentTags.filter((t) => t !== tag).join(' '));
       } else {
-        newSet.add(key);
-        setMealServings(prevServings => ({ ...prevServings, [key]: recipeServings || 2 }));
+        setNoteText([...currentTags, tag].join(' '));
       }
-      return newSet;
-    });
-  }, []);
+    },
+    [noteText],
+  );
+
+  const handleMealPress = useCallback(
+    (
+      date: Date,
+      mealType: MealType,
+      mode?: 'library' | 'copy' | 'quick' | 'random',
+    ) => {
+      const dateStr = formatDateLocal(date);
+      router.push({
+        pathname: '/select-recipe',
+        params: { date: dateStr, mealType, mode: mode || 'library' },
+      });
+    },
+    [router],
+  );
+
+  const handleRemoveMeal = useCallback(
+    (date: Date, mealType: MealType, title: string, label: string) => {
+      const dateStr = formatDateLocal(date);
+      showConfirmDelete(
+        t('common.remove'),
+        t('mealPlan.removeMealTitle', { title, meal: label.toLowerCase() }),
+        () => {
+          removeMeal.mutate(
+            { date: dateStr, mealType },
+            {
+              onError: () =>
+                showNotification(
+                  t('common.error'),
+                  t('mealPlan.failedToRemoveMeal'),
+                ),
+            },
+          );
+        },
+        t('common.cancel'),
+        t('mealPlan.removeMealConfirm'),
+      );
+    },
+    [removeMeal, t],
+  );
+
+  const handleToggleMeal = useCallback(
+    (date: Date, mealType: MealType, recipeServings?: number) => {
+      const dateStr = formatDateLocal(date);
+      const key = `${dateStr}_${mealType}`;
+      setSelectedMeals((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(key)) {
+          newSet.delete(key);
+          setMealServings((prevServings) => {
+            const { [key]: _, ...rest } = prevServings;
+            return rest;
+          });
+        } else {
+          newSet.add(key);
+          setMealServings((prevServings) => ({
+            ...prevServings,
+            [key]: recipeServings || 2,
+          }));
+        }
+        return newSet;
+      });
+    },
+    [],
+  );
 
   const handleChangeServings = useCallback((key: string, delta: number) => {
-    setMealServings(prev => {
+    setMealServings((prev) => {
       const current = prev[key] || 2;
       const newValue = Math.max(1, Math.min(12, current + delta));
       return { ...prev, [key]: newValue };
@@ -238,7 +340,10 @@ export const useMealPlanActions = () => {
 
   const handleCreateGroceryList = useCallback(async () => {
     if (selectedMeals.size === 0) {
-      showNotification(t('mealPlan.noMealsSelected'), t('mealPlan.noMealsSelectedMessage'));
+      showNotification(
+        t('mealPlan.noMealsSelected'),
+        t('mealPlan.noMealsSelectedMessage'),
+      );
       return;
     }
     try {
@@ -260,7 +365,7 @@ export const useMealPlanActions = () => {
   const getExtrasRecipes = useCallback((): Recipe[] => {
     if (!mealPlan?.extras || mealPlan.extras.length === 0) return [];
     return mealPlan.extras
-      .map(id => recipeMap[id])
+      .map((id) => recipeMap[id])
       .filter((r): r is Recipe => r !== undefined);
   }, [mealPlan, recipeMap]);
 
@@ -272,38 +377,69 @@ export const useMealPlanActions = () => {
     });
   }, [router]);
 
-  const handleRemoveExtra = useCallback((recipeId: string, title: string) => {
-    showConfirmDelete(
-      t('common.remove'),
-      t('mealPlan.extras.removeMessage', { title }),
-      () => {
-        hapticLight();
-        const currentExtras = mealPlan?.extras || [];
-        const newExtras = currentExtras.filter(id => id !== recipeId);
-        updateExtras.mutate({ extras: newExtras });
-      },
-      t('common.cancel'),
-      t('mealPlan.removeMealConfirm'),
-    );
-  }, [mealPlan, updateExtras, t]);
+  const handleRemoveExtra = useCallback(
+    (recipeId: string, title: string) => {
+      showConfirmDelete(
+        t('common.remove'),
+        t('mealPlan.extras.removeMessage', { title }),
+        () => {
+          hapticLight();
+          const currentExtras = mealPlan?.extras || [];
+          const newExtras = currentExtras.filter((id) => id !== recipeId);
+          updateExtras.mutate({ extras: newExtras });
+        },
+        t('common.cancel'),
+        t('mealPlan.removeMealConfirm'),
+      );
+    },
+    [mealPlan, updateExtras, t],
+  );
 
   return {
-    t, language,
-    MEAL_TYPES, NOTE_SUGGESTIONS,
-    mealPlan, mealPlanLoading, recipes,
-    weekDates, groceryWeekDates, todayIndex,
+    t,
+    language,
+    MEAL_TYPES,
+    NOTE_SUGGESTIONS,
+    mealPlan,
+    mealPlanLoading,
+    recipes,
+    weekDates,
+    groceryWeekDates,
+    todayIndex,
     recipeMap,
-    weekOffset, setWeekOffset,
-    showGroceryModal, setShowGroceryModal,
-    groceryWeekOffset, setGroceryWeekOffset,
-    selectedMeals, mealServings,
-    showJumpButton, editingNoteDate, noteText, setNoteText,
-    scrollViewRef, jumpButtonOpacity, swipeTranslateX, panResponder,
-    handleScroll, jumpToToday, refetchMealPlan,
-    getNoteForDate, getMealForSlot,
-    handleStartEditNote, handleSaveNote, handleCancelEditNote, handleAddTag,
-    handleMealPress, handleRemoveMeal,
-    handleToggleMeal, handleChangeServings, handleCreateGroceryList, openGroceryModal,
-    getExtrasRecipes, handleAddExtra, handleRemoveExtra,
+    weekOffset,
+    setWeekOffset,
+    showGroceryModal,
+    setShowGroceryModal,
+    groceryWeekOffset,
+    setGroceryWeekOffset,
+    selectedMeals,
+    mealServings,
+    showJumpButton,
+    editingNoteDate,
+    noteText,
+    setNoteText,
+    scrollViewRef,
+    jumpButtonOpacity,
+    swipeTranslateX,
+    panResponder,
+    handleScroll,
+    jumpToToday,
+    refetchMealPlan,
+    getNoteForDate,
+    getMealForSlot,
+    handleStartEditNote,
+    handleSaveNote,
+    handleCancelEditNote,
+    handleAddTag,
+    handleMealPress,
+    handleRemoveMeal,
+    handleToggleMeal,
+    handleChangeServings,
+    handleCreateGroceryList,
+    openGroceryModal,
+    getExtrasRecipes,
+    handleAddExtra,
+    handleRemoveExtra,
   };
 };

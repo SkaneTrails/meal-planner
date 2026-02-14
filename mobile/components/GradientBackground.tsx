@@ -4,13 +4,23 @@
  * - Animated: Floating color orbs with smooth curved movement (for sign-in/no-access)
  */
 
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Animated, Easing, Dimensions, ImageBackground, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  ImageBackground,
+  Platform,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const BACKGROUND_IMAGE = require('@/assets/images/background.png');
+const _BACKGROUND_IMAGE = require('@/assets/images/background.png');
 const BACKGROUND_GRADIENT = require('@/assets/images/bck_b.png');
 
 interface GradientBackgroundProps {
@@ -150,17 +160,34 @@ const FloatingOrb = ({
       }}
     />
   );
-}
+};
 
-export const GradientBackground = ({ children, style, animated = false, muted = false, structured = false, neutral = false }: GradientBackgroundProps) => {
+export const GradientBackground = ({
+  children,
+  style,
+  animated = false,
+  muted = false,
+  structured = false,
+  neutral = false,
+}: GradientBackgroundProps) => {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
-  const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+  const _isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 
   // Neutral variant: warm beige-grey solid surface for grocery list
   if (neutral) {
     return (
-      <View style={[styles.container, style, { width: windowWidth, height: windowHeight, backgroundColor: '#EBE4DB' }]}>
+      <View
+        style={[
+          styles.container,
+          style,
+          {
+            width: windowWidth,
+            height: windowHeight,
+            backgroundColor: '#EBE4DB',
+          },
+        ]}
+      >
         {children}
       </View>
     );
@@ -169,10 +196,20 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
   // Muted variant for settings - uses gradient background image with darker overlay
   if (muted) {
     return (
-      <View style={[styles.container, style, { width: windowWidth, height: windowHeight, overflow: 'hidden' }]}>
+      <View
+        style={[
+          styles.container,
+          style,
+          { width: windowWidth, height: windowHeight, overflow: 'hidden' },
+        ]}
+      >
         <ImageBackground
           source={BACKGROUND_GRADIENT}
-          style={{ width: windowWidth, height: windowHeight + 200, marginTop: -100 }}
+          style={{
+            width: windowWidth,
+            height: windowHeight + 200,
+            marginTop: -100,
+          }}
           resizeMode="cover"
         >
           {/* Darker overlay for settings */}
@@ -185,19 +222,27 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
             ]}
           />
         </ImageBackground>
-        <View style={[StyleSheet.absoluteFill]}>
-          {children}
-        </View>
+        <View style={[StyleSheet.absoluteFill]}>{children}</View>
       </View>
     );
   }
 
   if (!animated) {
     return (
-      <View style={[styles.container, style, { width: windowWidth, height: windowHeight, overflow: 'hidden' }]}>
+      <View
+        style={[
+          styles.container,
+          style,
+          { width: windowWidth, height: windowHeight, overflow: 'hidden' },
+        ]}
+      >
         <ImageBackground
           source={BACKGROUND_GRADIENT}
-          style={{ width: windowWidth, height: windowHeight + 200, marginTop: -100 }}
+          style={{
+            width: windowWidth,
+            height: windowHeight + 200,
+            marginTop: -100,
+          }}
           resizeMode="cover"
         >
           {/* Brighten the image slightly for main page */}
@@ -232,20 +277,60 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
             </>
           )}
         </ImageBackground>
-        <View style={[StyleSheet.absoluteFill]}>
-          {children}
-        </View>
+        <View style={[StyleSheet.absoluteFill]}>{children}</View>
       </View>
     );
   }
 
   const orbs = [
-    { color: '#E8D0C0', size: SCREEN_WIDTH * 0.8, x: -SCREEN_WIDTH * 0.2, y: -SCREEN_HEIGHT * 0.1, duration: 20000, delay: 0 },
-    { color: '#6B8E6B', size: SCREEN_WIDTH * 0.5, x: SCREEN_WIDTH * 0.5, y: SCREEN_HEIGHT * 0.15, duration: 22000, delay: 3000 },
-    { color: '#D4A080', size: SCREEN_WIDTH * 0.7, x: SCREEN_WIDTH * 0.4, y: SCREEN_HEIGHT * 0.6, duration: 25000, delay: 2000 },
-    { color: '#5A7A5A', size: SCREEN_WIDTH * 0.45, x: SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.35, duration: 18000, delay: 1000 },
-    { color: '#E0B090', size: SCREEN_WIDTH * 0.55, x: SCREEN_WIDTH * 0.6, y: SCREEN_HEIGHT * 0.1, duration: 22000, delay: 3000 },
-    { color: '#C88060', size: SCREEN_WIDTH * 0.55, x: -SCREEN_WIDTH * 0.1, y: SCREEN_HEIGHT * 0.7, duration: 24000, delay: 1500 },
+    {
+      color: '#E8D0C0',
+      size: SCREEN_WIDTH * 0.8,
+      x: -SCREEN_WIDTH * 0.2,
+      y: -SCREEN_HEIGHT * 0.1,
+      duration: 20000,
+      delay: 0,
+    },
+    {
+      color: '#6B8E6B',
+      size: SCREEN_WIDTH * 0.5,
+      x: SCREEN_WIDTH * 0.5,
+      y: SCREEN_HEIGHT * 0.15,
+      duration: 22000,
+      delay: 3000,
+    },
+    {
+      color: '#D4A080',
+      size: SCREEN_WIDTH * 0.7,
+      x: SCREEN_WIDTH * 0.4,
+      y: SCREEN_HEIGHT * 0.6,
+      duration: 25000,
+      delay: 2000,
+    },
+    {
+      color: '#5A7A5A',
+      size: SCREEN_WIDTH * 0.45,
+      x: SCREEN_WIDTH * 0.1,
+      y: SCREEN_HEIGHT * 0.35,
+      duration: 18000,
+      delay: 1000,
+    },
+    {
+      color: '#E0B090',
+      size: SCREEN_WIDTH * 0.55,
+      x: SCREEN_WIDTH * 0.6,
+      y: SCREEN_HEIGHT * 0.1,
+      duration: 22000,
+      delay: 3000,
+    },
+    {
+      color: '#C88060',
+      size: SCREEN_WIDTH * 0.55,
+      x: -SCREEN_WIDTH * 0.1,
+      y: SCREEN_HEIGHT * 0.7,
+      duration: 24000,
+      delay: 1500,
+    },
   ];
 
   return (
@@ -287,7 +372,7 @@ export const GradientBackground = ({ children, style, animated = false, muted = 
       {children}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

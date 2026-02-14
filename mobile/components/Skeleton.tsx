@@ -61,7 +61,7 @@ export const Skeleton = ({
       ]}
     />
   );
-}
+};
 
 interface RecipeCardSkeletonProps {
   cardSize?: number;
@@ -83,7 +83,7 @@ export const RecipeCardSkeleton = ({
       </View>
     </View>
   );
-}
+};
 
 interface RecipeListSkeletonProps {
   count?: number;
@@ -103,7 +103,7 @@ export const RecipeListSkeleton = ({
       ))}
     </View>
   );
-}
+};
 
 export const StatCardSkeleton = () => {
   return (
@@ -119,7 +119,7 @@ export const StatCardSkeleton = () => {
       />
     </View>
   );
-}
+};
 
 export const HomeScreenSkeleton = () => {
   return (
@@ -153,7 +153,7 @@ export const HomeScreenSkeleton = () => {
       </View>
     </View>
   );
-}
+};
 
 export const GroceryItemSkeleton = () => {
   return (
@@ -165,13 +165,15 @@ export const GroceryItemSkeleton = () => {
       </View>
     </View>
   );
-}
+};
 
 interface GroceryListSkeletonProps {
   count?: number;
 }
 
-export const GroceryListSkeleton = ({ count = 8 }: GroceryListSkeletonProps) => {
+export const GroceryListSkeleton = ({
+  count = 8,
+}: GroceryListSkeletonProps) => {
   return (
     <View style={styles.groceryContainer}>
       {/* Stats card skeleton */}
@@ -200,7 +202,7 @@ export const GroceryListSkeleton = ({ count = 8 }: GroceryListSkeletonProps) => 
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   cardContainer: {

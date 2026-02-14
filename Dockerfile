@@ -1,42 +1,27 @@
-# Meal Planner API - Production Dockerfile
-# Multi-stage build for smaller image size
-
 # Stage 1: Build dependencies
 FROM python:3.14-slim@sha256:486b8092bfb12997e10d4920897213a06563449c951c5506c2a2cfaf591c599f AS builder
-
-# Install uv for fast dependency resolution
-# Pinned to digest for supply-chain security
 COPY --from=ghcr.io/astral-sh/uv@sha256:94a23af2d50e97b87b522d3cea24aaf8a1faedec1344c952767434f69585cbf9 /uv /usr/local/bin/uv
-
 WORKDIR /app
-
-# Copy dependency files
 COPY pyproject.toml uv.lock ./
-
-# Create virtual environment and install from lockfile (production deps only)
 RUN uv sync --frozen --no-dev --no-install-project
 
 # Stage 2: Runtime image
 FROM python:3.14-slim@sha256:486b8092bfb12997e10d4920897213a06563449c951c5506c2a2cfaf591c599f AS runtime
 
+RUN groupadd --system appuser && useradd --system --gid appuser appuser
+
 WORKDIR /app
-
-# Copy virtual environment from builder
 COPY --from=builder /app/.venv /app/.venv
-
-# Set PATH to use venv
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
-
-# Copy application code and configuration
 COPY api/ ./api/
 COPY config/ ./config/
 
-# Cloud Run sets PORT environment variable
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
 ENV PORT=8080
 EXPOSE 8080
 
-# Health check (removed - Cloud Run does its own probes)
-
-# Run the application
 CMD ["python", "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080"]

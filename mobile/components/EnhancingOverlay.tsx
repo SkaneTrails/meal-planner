@@ -4,7 +4,6 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
 import {
   borderRadius,
@@ -19,7 +18,10 @@ interface EnhancingOverlayProps {
   message: string;
 }
 
-export const EnhancingOverlay = ({ visible, message }: EnhancingOverlayProps) => (
+export const EnhancingOverlay = ({
+  visible,
+  message,
+}: EnhancingOverlayProps) => (
   <Modal
     visible={visible}
     transparent

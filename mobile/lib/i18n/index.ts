@@ -11,10 +11,10 @@
 import { useCallback, useMemo } from 'react';
 import type { AppLanguage } from '@/lib/settings-context';
 import { useSettings } from '@/lib/settings-context';
-import en from './locales/en';
-import sv from './locales/sv';
-import it from './locales/it';
 import type { Translations } from './locales/en';
+import en from './locales/en';
+import it from './locales/it';
+import sv from './locales/sv';
 
 const locales: Record<AppLanguage, Translations> = { en, sv, it };
 
@@ -23,14 +23,14 @@ const locales: Record<AppLanguage, Translations> = { en, sv, it };
  * value in the given translations object.  Returns `undefined` when the
  * path does not exist.
  */
-const resolve = (obj: unknown, path: string): string | undefined  => {
+const resolve = (obj: unknown, path: string): string | undefined => {
   let current: unknown = obj;
   for (const segment of path.split('.')) {
     if (current == null || typeof current !== 'object') return undefined;
     current = (current as Record<string, unknown>)[segment];
   }
   return typeof current === 'string' ? current : undefined;
-}
+};
 
 /**
  * Replace `{{variable}}` placeholders with the corresponding values from
@@ -39,12 +39,12 @@ const resolve = (obj: unknown, path: string): string | undefined  => {
 const interpolate = (
   template: string,
   params?: Record<string, string | number>,
-): string  => {
+): string => {
   if (!params) return template;
   return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) =>
     params[key] != null ? String(params[key]) : `{{${key}}}`,
   );
-}
+};
 
 /**
  * The translate function type returned by `useTranslation()`.
@@ -86,4 +86,4 @@ export const useTranslation = () => {
   );
 
   return { t, language };
-}
+};

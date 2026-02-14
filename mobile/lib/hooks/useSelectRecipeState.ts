@@ -1,10 +1,16 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAllRecipes, useSetMeal, useRemoveMeal, useMealPlan, useUpdateExtras } from '@/lib/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { showNotification } from '@/lib/alert';
+import {
+  useAllRecipes,
+  useMealPlan,
+  useRemoveMeal,
+  useSetMeal,
+  useUpdateExtras,
+} from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
 import type { MealType, Recipe } from '@/lib/types';
+import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
 
 const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   breakfast: ['breakfast'],
@@ -13,7 +19,7 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   snack: ['dessert', 'drink'],
 };
 
-export type TabType = 'library' | 'copy' | 'random' | 'quick';
+export type TabType = 'library' | 'copy' | 'random' | 'quick' | 'extras';
 
 export const useSelectRecipeState = () => {
   const { date, mealType, mode, initialText } = useLocalSearchParams<{
@@ -31,15 +37,24 @@ export const useSelectRecipeState = () => {
   const updateExtras = useUpdateExtras();
   const { t, language } = useTranslation();
 
-  const MEAL_TYPE_LABELS: Record<MealType, string> = useMemo(() => ({
-    breakfast: t('selectRecipe.mealTypeLabels.breakfast'),
-    lunch: t('selectRecipe.mealTypeLabels.lunch'),
-    dinner: t('selectRecipe.mealTypeLabels.dinner'),
-    snack: t('selectRecipe.mealTypeLabels.snack'),
-  }), [t]);
+  const MEAL_TYPE_LABELS: Record<MealType, string> = useMemo(
+    () => ({
+      breakfast: t('selectRecipe.mealTypeLabels.breakfast'),
+      lunch: t('selectRecipe.mealTypeLabels.lunch'),
+      dinner: t('selectRecipe.mealTypeLabels.dinner'),
+      snack: t('selectRecipe.mealTypeLabels.snack'),
+    }),
+    [t],
+  );
 
   const [activeTab, setActiveTab] = useState<TabType>(
-    mode === 'copy' ? 'copy' : mode === 'random' ? 'random' : mode === 'quick' ? 'quick' : 'library'
+    mode === 'copy'
+      ? 'copy'
+      : mode === 'random'
+        ? 'random'
+        : mode === 'quick'
+          ? 'quick'
+          : 'library',
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [customText, setCustomText] = useState(initialText || '');
@@ -61,7 +76,7 @@ export const useSelectRecipeState = () => {
   const filteredRecipes = useMemo(() => {
     if (searchQuery === '') return recipes;
     return recipes.filter((recipe) =>
-      recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
+      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [recipes, searchQuery]);
 
@@ -77,9 +92,10 @@ export const useSelectRecipeState = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: shuffleCount triggers re-pick intentionally
   const randomRecipe = useMemo(() => {
     if (mealTypeRecipes.length === 0) return null;
-    const existing = mealTypeRecipes.find(r => r.id === randomIdRef.current);
+    const existing = mealTypeRecipes.find((r) => r.id === randomIdRef.current);
     if (existing) return existing;
-    const picked = mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+    const picked =
+      mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
     randomIdRef.current = picked.id;
     return picked;
   }, [mealTypeRecipes, shuffleCount]);
@@ -88,14 +104,21 @@ export const useSelectRecipeState = () => {
     if (mealTypeRecipes.length <= 1) return;
     let picked: Recipe;
     do {
-      picked = mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+      picked =
+        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
     } while (picked.id === randomIdRef.current && mealTypeRecipes.length > 1);
     randomIdRef.current = picked.id;
-    setShuffleCount(c => c + 1);
+    setShuffleCount((c) => c + 1);
   }, [mealTypeRecipes]);
 
   const targetWeekDates = useMemo(() => {
-    if (!date) return { start: '', end: '', mondayDate: new Date(), sundayDate: new Date() };
+    if (!date)
+      return {
+        start: '',
+        end: '',
+        mondayDate: new Date(),
+        sundayDate: new Date(),
+      };
     const targetDate = new Date(date + 'T00:00:00');
     const targetDay = targetDate.getDay();
     const daysSinceMonday = (targetDay + 6) % 7;
@@ -103,21 +126,38 @@ export const useSelectRecipeState = () => {
     monday.setDate(targetDate.getDate() - daysSinceMonday + copyWeekOffset * 7);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-    return { start: formatDateLocal(monday), end: formatDateLocal(sunday), mondayDate: monday, sundayDate: sunday };
+    return {
+      start: formatDateLocal(monday),
+      end: formatDateLocal(sunday),
+      mondayDate: monday,
+      sundayDate: sunday,
+    };
   }, [date, copyWeekOffset]);
 
   const existingMeals = useMemo(() => {
     if (!mealPlan?.meals) return [];
-    const recipeMap = new Map(recipes.map(r => [r.id, r]));
-    const meals: { key: string; date: string; mealType: string; recipe?: Recipe; customText?: string }[] = [];
+    const recipeMap = new Map(recipes.map((r) => [r.id, r]));
+    const meals: {
+      key: string;
+      date: string;
+      mealType: string;
+      recipe?: Recipe;
+      customText?: string;
+    }[] = [];
 
     Object.entries(mealPlan.meals).forEach(([key, value]) => {
       const [dateStr, type] = key.split('_');
       if (key === `${date}_${mealType}`) return;
-      if (dateStr < targetWeekDates.start || dateStr > targetWeekDates.end) return;
+      if (dateStr < targetWeekDates.start || dateStr > targetWeekDates.end)
+        return;
 
       if (value.startsWith('custom:')) {
-        meals.push({ key, date: dateStr, mealType: type, customText: value.slice(7) });
+        meals.push({
+          key,
+          date: dateStr,
+          mealType: type,
+          customText: value.slice(7),
+        });
       } else {
         const recipe = recipeMap.get(value);
         if (recipe) meals.push({ key, date: dateStr, mealType: type, recipe });
@@ -130,7 +170,9 @@ export const useSelectRecipeState = () => {
   const bcp47 = toBcp47(language);
   const formattedDate = date
     ? new Date(date + 'T00:00:00').toLocaleDateString(bcp47, {
-        weekday: 'long', month: 'short', day: 'numeric',
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
       })
     : '';
 
@@ -146,7 +188,11 @@ export const useSelectRecipeState = () => {
   const handleSetCustomText = async () => {
     if (!customText.trim()) return;
     try {
-      await setMeal.mutateAsync({ date, mealType, customText: customText.trim() });
+      await setMeal.mutateAsync({
+        date,
+        mealType,
+        customText: customText.trim(),
+      });
       setCustomText('');
       router.replace('/(tabs)/meal-plan');
     } catch {
@@ -154,12 +200,19 @@ export const useSelectRecipeState = () => {
     }
   };
 
-  const handleCopyMeal = async (recipeId?: string, customTextValue?: string) => {
+  const handleCopyMeal = async (
+    recipeId?: string,
+    customTextValue?: string,
+  ) => {
     try {
       if (recipeId) {
         await setMeal.mutateAsync({ date, mealType, recipeId });
       } else if (customTextValue) {
-        await setMeal.mutateAsync({ date, mealType, customText: customTextValue });
+        await setMeal.mutateAsync({
+          date,
+          mealType,
+          customText: customTextValue,
+        });
       }
       router.replace('/(tabs)/meal-plan');
     } catch {
@@ -180,7 +233,10 @@ export const useSelectRecipeState = () => {
     try {
       const currentExtras = mealPlan?.extras || [];
       if (currentExtras.includes(recipeId)) {
-        showNotification(t('mealPlan.extras.alreadyAdded'), t('mealPlan.extras.alreadyAddedMessage'));
+        showNotification(
+          t('mealPlan.extras.alreadyAdded'),
+          t('mealPlan.extras.alreadyAddedMessage'),
+        );
         return;
       }
       await updateExtras.mutateAsync({ extras: [...currentExtras, recipeId] });
@@ -192,18 +248,44 @@ export const useSelectRecipeState = () => {
 
   const formatMealDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString(bcp47, { weekday: 'short', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(bcp47, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   return {
-    t, language, date, mealType, mode, router,
-    MEAL_TYPE_LABELS, activeTab, setActiveTab,
-    searchQuery, setSearchQuery, filteredRecipes,
-    randomRecipe, mealTypeRecipes, shuffleRandom,
-    customText, setCustomText, handleSetCustomText,
-    copyWeekOffset, setCopyWeekOffset, targetWeekDates, existingMeals, formatMealDate,
-    formattedDate, bcp47,
-    handleSelectRecipe, handleCopyMeal, handleRemoveMeal, handleAddToExtras,
-    setMeal, removeMeal,
+    t,
+    language,
+    date,
+    mealType,
+    mode,
+    router,
+    MEAL_TYPE_LABELS,
+    activeTab,
+    setActiveTab,
+    searchQuery,
+    setSearchQuery,
+    filteredRecipes,
+    randomRecipe,
+    mealTypeRecipes,
+    shuffleRandom,
+    customText,
+    setCustomText,
+    handleSetCustomText,
+    copyWeekOffset,
+    setCopyWeekOffset,
+    targetWeekDates,
+    existingMeals,
+    formatMealDate,
+    formattedDate,
+    bcp47,
+    handleSelectRecipe,
+    handleCopyMeal,
+    handleRemoveMeal,
+    handleAddToExtras,
+    setMeal,
+    removeMeal,
   };
 };

@@ -1,0 +1,61 @@
+# Git & GitHub
+.git/
+.gitignore
+.github/
+
+# Python dev tooling
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.*
+*.env
+
+# Directories not needed in image
+data/
+docs/
+functions/
+infra/
+mobile/
+scripts/
+tests/
+tools/
+
+# Build artifacts & docs
+*.log
+.DS_Store
+Dockerfile
+.dockerignore
+LICENSE
+README.md
+CONTRIBUTING.md
+
+# Config not needed in image
+.pre-commit-config.yaml
+.copilot-tasks.md
+.tmp_git_*.sh
+renovate.json

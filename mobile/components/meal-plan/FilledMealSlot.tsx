@@ -1,12 +1,11 @@
-import React from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { fontFamily } from '@/lib/theme';
+import { useRouter } from 'expo-router';
+import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
+import { fontFamily } from '@/lib/theme';
+import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
-import type { MealType, Recipe } from '@/lib/types';
 
 interface FilledMealSlotProps {
   date: Date;
@@ -14,8 +13,17 @@ interface FilledMealSlotProps {
   label: string;
   recipe?: Recipe;
   customText?: string;
-  onRemove: (date: Date, mealType: MealType, title: string, label: string) => void;
-  onMealPress: (date: Date, mealType: MealType, mode: 'library' | 'copy' | 'quick' | 'random') => void;
+  onRemove: (
+    date: Date,
+    mealType: MealType,
+    title: string,
+    label: string,
+  ) => void;
+  onMealPress: (
+    date: Date,
+    mealType: MealType,
+    mode: 'library' | 'copy' | 'quick' | 'random',
+  ) => void;
 }
 
 export const FilledMealSlot = ({
@@ -29,7 +37,8 @@ export const FilledMealSlot = ({
 }: FilledMealSlotProps) => {
   const router = useRouter();
   const title = recipe?.title || customText || '';
-  const imageUrl = recipe?.thumbnail_url || recipe?.image_url || PLACEHOLDER_IMAGE;
+  const imageUrl =
+    recipe?.thumbnail_url || recipe?.image_url || PLACEHOLDER_IMAGE;
 
   return (
     <View
@@ -50,7 +59,12 @@ export const FilledMealSlot = ({
             const dateStr = formatDateLocal(date);
             router.push({
               pathname: '/select-recipe',
-              params: { date: dateStr, mealType, mode: 'quick', initialText: customText },
+              params: {
+                date: dateStr,
+                mealType,
+                mode: 'quick',
+                initialText: customText,
+              },
             });
           } else {
             onMealPress(date, mealType, 'library');
@@ -69,10 +83,23 @@ export const FilledMealSlot = ({
           resizeMode="cover"
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#2D2D2D' }}>
+          <Text
+            style={{
+              fontSize: 13,
+              fontFamily: fontFamily.bodySemibold,
+              color: '#2D2D2D',
+            }}
+          >
             {title}
           </Text>
-          <Text style={{ fontSize: 11, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.7)', marginTop: 2 }}>
+          <Text
+            style={{
+              fontSize: 11,
+              fontFamily: fontFamily.body,
+              color: 'rgba(93, 78, 64, 0.7)',
+              marginTop: 2,
+            }}
+          >
             {label}
           </Text>
         </View>

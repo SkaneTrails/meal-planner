@@ -3,8 +3,8 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Platform, Pressable, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
 import type { GroceryItem } from '@/lib/types';
 
@@ -93,8 +93,8 @@ export const GroceryItemRow = ({
               padding: 8,
               marginRight: 4,
               opacity: pressed ? 0.6 : 1,
-              cursor: Platform.OS === 'web' ? 'grab' : undefined,
-            }) as any
+              ...(Platform.OS === 'web' && { cursor: 'grab' }),
+            }) as ViewStyle
           }
         >
           <Ionicons

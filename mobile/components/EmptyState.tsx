@@ -1,7 +1,16 @@
-import { View, Text, Pressable, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, fontSize, letterSpacing, borderRadius, iconContainer, shadows, fontFamily } from '@/lib/theme';
 import type { ComponentProps } from 'react';
+import { Pressable, Text, View, type ViewStyle } from 'react-native';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  iconContainer,
+  letterSpacing,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
@@ -18,7 +27,13 @@ interface EmptyStateProps {
   style?: ViewStyle;
 }
 
-const EmptyState = ({ icon, title, subtitle, action, style }: EmptyStateProps) => (
+const EmptyState = ({
+  icon,
+  title,
+  subtitle,
+  action,
+  style,
+}: EmptyStateProps) => (
   <View
     style={[
       {

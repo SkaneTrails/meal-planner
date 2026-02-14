@@ -8,17 +8,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import {
+  Animated,
+  type GestureResponderEvent,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import {
-  colors,
-  fontFamily,
-  fontSize,
-  fontWeight,
-  shadows,
-} from '@/lib/theme';
+import { colors, fontFamily, fontSize, fontWeight, shadows } from '@/lib/theme';
 import type { DietLabel, Recipe } from '@/lib/types';
 
 const PLACEHOLDER_BLURHASH = 'L5PZfS~q.8-;_3t7xuIU00og?bD%';
@@ -79,7 +79,7 @@ export const RecipeCard = ({
     }).start();
   };
 
-  const handleToggleFavorite = (e: any) => {
+  const handleToggleFavorite = (e: GestureResponderEvent) => {
     e.stopPropagation();
     hapticLight();
     toggleFavorite(recipe.id);
@@ -181,7 +181,14 @@ export const RecipeCard = ({
                   }}
                 >
                   <Ionicons name="sparkles" size={11} color="#E8A87C" />
-                  <Text style={{ fontSize: 11, fontWeight: '600', color: '#D4956A', marginLeft: 3 }}>
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      fontWeight: '600',
+                      color: '#D4956A',
+                      marginLeft: 3,
+                    }}
+                  >
                     AI
                   </Text>
                 </View>
@@ -291,7 +298,14 @@ export const RecipeCard = ({
               }}
             >
               <Ionicons name="sparkles" size={12} color={colors.white} />
-              <Text style={{ fontSize: 10, fontWeight: '600', color: colors.white, marginLeft: 3 }}>
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '600',
+                  color: colors.white,
+                  marginLeft: 3,
+                }}
+              >
                 AI
               </Text>
             </View>

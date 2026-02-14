@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  letterSpacing,
+  spacing,
+} from '@/lib/theme';
 
 interface TagEditorProps {
   editTags: string;
@@ -17,7 +24,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
     const tag = newTag.trim().toLowerCase().replace(/^#/, '');
     const existingTags = editTags
       .split(',')
-      .map(t => t.trim().toLowerCase().replace(/^#/, ''))
+      .map((t) => t.trim().toLowerCase().replace(/^#/, ''))
       .filter(Boolean);
     if (tag && !existingTags.includes(tag)) {
       setEditTags(editTags ? `${editTags}, ${tag}` : tag);
@@ -28,18 +35,33 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
   const handleRemoveTag = (tagToRemove: string) => {
     const tagsArray = editTags
       .split(',')
-      .map(t => t.trim())
-      .filter(t => t.toLowerCase() !== tagToRemove.toLowerCase());
+      .map((t) => t.trim())
+      .filter((t) => t.toLowerCase() !== tagToRemove.toLowerCase());
     setEditTags(tagsArray.join(', '));
   };
 
   return (
     <View style={{ marginBottom: spacing.xl }}>
-      <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
+      <Text
+        style={{
+          fontSize: fontSize.lg,
+          fontFamily: fontFamily.bodySemibold,
+          color: colors.gray[500],
+          marginBottom: spacing.sm,
+          textTransform: 'uppercase',
+          letterSpacing: letterSpacing.wide,
+        }}
+      >
         {t('recipe.tags')}
       </Text>
 
-      <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: spacing.sm,
+          marginBottom: spacing.md,
+        }}
+      >
         <TextInput
           value={newTag}
           onChangeText={setNewTag}
@@ -65,19 +87,29 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
           onPress={handleAddTag}
           disabled={!newTag.trim()}
           style={({ pressed }) => ({
-            backgroundColor: newTag.trim() ? (pressed ? colors.primaryDark : colors.primary) : colors.gray[200],
+            backgroundColor: newTag.trim()
+              ? pressed
+                ? colors.primaryDark
+                : colors.primary
+              : colors.gray[200],
             paddingHorizontal: spacing.lg,
             borderRadius: borderRadius.md,
             alignItems: 'center',
             justifyContent: 'center',
           })}
         >
-          <Ionicons name="add" size={24} color={newTag.trim() ? colors.white : colors.gray[400]} />
+          <Ionicons
+            name="add"
+            size={24}
+            color={newTag.trim() ? colors.white : colors.gray[400]}
+          />
         </Pressable>
       </View>
 
       {editTags ? (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+        <View
+          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
+        >
           {editTags.split(',').map((tag) => {
             const trimmedTag = tag.trim();
             if (!trimmedTag) return null;
@@ -94,7 +126,14 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                   borderRadius: borderRadius.lg,
                 }}
               >
-                <Text style={{ fontSize: fontSize.md, fontFamily: fontFamily.bodyMedium, color: colors.white, marginRight: spacing.xs }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    fontFamily: fontFamily.bodyMedium,
+                    color: colors.white,
+                    marginRight: spacing.xs,
+                  }}
+                >
                   #{trimmedTag}
                 </Text>
                 <Pressable
@@ -103,7 +142,9 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                     width: 20,
                     height: 20,
                     borderRadius: 10,
-                    backgroundColor: pressed ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.2)',
+                    backgroundColor: pressed
+                      ? 'rgba(255,255,255,0.3)'
+                      : 'rgba(255,255,255,0.2)',
                     alignItems: 'center',
                     justifyContent: 'center',
                   })}
@@ -115,7 +156,14 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
           })}
         </View>
       ) : (
-        <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.body, color: colors.gray[400], fontStyle: 'italic' }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.body,
+            color: colors.gray[400],
+            fontStyle: 'italic',
+          }}
+        >
           {t('recipe.noTags')}
         </Text>
       )}

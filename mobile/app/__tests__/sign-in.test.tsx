@@ -95,11 +95,11 @@ describe('SignIn screen', () => {
   });
 
   it('displays error message when auth error occurs', async () => {
-    mockAuthState.error = 'Authentication failed';
+    mockAuthState.error = 'signInFailed';
 
     await renderScreen();
 
-    expect(screen.getByText('Authentication failed')).toBeTruthy();
+    expect(screen.getByText('Sign-in failed. Please try again.')).toBeTruthy();
   });
 
   it('shows app branding', async () => {

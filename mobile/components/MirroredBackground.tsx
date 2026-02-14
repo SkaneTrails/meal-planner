@@ -4,8 +4,15 @@
  * of the next (mirrored). This eliminates visible seams on long pages.
  */
 
-import React from 'react';
-import { View, Image, StyleSheet, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
+import type React from 'react';
+import {
+  Image,
+  type ImageSourcePropType,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 
 interface MirroredBackgroundProps {
   /** The image to tile */
@@ -58,7 +65,7 @@ export const MirroredBackground = ({
       {children}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
