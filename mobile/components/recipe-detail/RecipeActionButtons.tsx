@@ -83,7 +83,7 @@ export const RecipeActionButtons = ({
         <Ionicons
           name="sparkles"
           size={20}
-          color={isEnhancing ? colors.gray[400] : '#7C3AED'}
+          color={isEnhancing ? colors.gray[400] : colors.ai.primary}
         />
       </AnimatedPressable>
     )}

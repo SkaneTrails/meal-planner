@@ -35,7 +35,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
           marginBottom: spacing.md,
         }}
       >
-        <Ionicons name="sparkles" size={18} color={colors.accent} />
+        <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
         <Text
           style={{
             marginLeft: spacing.sm,

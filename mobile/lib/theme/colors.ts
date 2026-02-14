@@ -47,7 +47,7 @@ export const lightColors = {
     muted: 'rgba(255, 255, 255, 0.6)',
     light: 'rgba(255, 255, 255, 0.4)',
     inverse: '#2D2D2D',
-    dark: '#2D2D2D',
+    dark: '#5D4E40',
   },
   border: 'rgba(255, 255, 255, 0.2)',
   borderLight: 'rgba(255, 255, 255, 0.1)',
@@ -83,6 +83,18 @@ export const lightColors = {
     dark: 'rgba(255, 255, 255, 0.65)',
     card: 'rgba(255, 255, 255, 0.85)',
     border: 'rgba(0, 0, 0, 0.04)',
+  },
+
+  // AI enhancement theming — unified sage green palette
+  ai: {
+    primary: '#6B8E6B',
+    primaryDark: '#567056',
+    bg: 'rgba(107, 142, 107, 0.08)',
+    bgPressed: 'rgba(107, 142, 107, 0.18)',
+    muted: 'rgba(107, 142, 107, 0.5)',
+    iconBg: 'rgba(107, 142, 107, 0.12)',
+    light: 'rgba(107, 142, 107, 0.15)',
+    badge: 'rgba(107, 142, 107, 0.95)',
   },
 } as const;
 

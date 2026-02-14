@@ -6,7 +6,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 
 interface EnhancementReviewBannerProps {
   t: TFunction;
@@ -24,11 +30,11 @@ export const EnhancementReviewBanner = ({
   <View
     style={{
       marginTop: spacing.lg,
-      backgroundColor: 'rgba(45, 106, 90, 0.08)',
+      backgroundColor: colors.ai.bg,
       borderRadius: borderRadius.lg,
       padding: spacing.lg,
       borderLeftWidth: 4,
-      borderLeftColor: '#2D6A5A',
+      borderLeftColor: colors.ai.primary,
     }}
   >
     <View
@@ -41,14 +47,14 @@ export const EnhancementReviewBanner = ({
       <Ionicons
         name="sparkles"
         size={20}
-        color="#2D6A5A"
+        color={colors.ai.primary}
         style={{ marginRight: spacing.sm }}
       />
       <Text
         style={{
           fontSize: fontSize.xl,
           fontFamily: fontFamily.bodySemibold,
-          color: '#2D6A5A',
+          color: colors.ai.primary,
           flex: 1,
         }}
       >
@@ -78,23 +84,21 @@ export const EnhancementReviewBanner = ({
           justifyContent: 'center',
           paddingVertical: spacing.md,
           borderRadius: borderRadius.md,
-          backgroundColor: pressed
-            ? 'rgba(45, 106, 90, 0.2)'
-            : 'rgba(45, 106, 90, 0.12)',
+          backgroundColor: pressed ? colors.ai.bgPressed : colors.ai.iconBg,
           opacity: isSubmitting ? 0.5 : 1,
         })}
       >
         <Ionicons
           name="checkmark-circle"
           size={18}
-          color="#2D6A5A"
+          color={colors.ai.primary}
           style={{ marginRight: spacing.xs }}
         />
         <Text
           style={{
             fontSize: fontSize.md,
             fontFamily: fontFamily.bodySemibold,
-            color: '#2D6A5A',
+            color: colors.ai.primary,
           }}
         >
           {t('recipe.approveEnhancement')}
