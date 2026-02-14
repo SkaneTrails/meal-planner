@@ -536,6 +536,7 @@ const en = {
       useOriginal: 'Use Original',
       keepAI: 'Keep AI',
       reviewFailed: 'Could not save your choice. Please try again.',
+      noChangesListed: 'Recipe optimized with AI improvements.',
     },
     recipeExists: 'A recipe from this URL already exists in your collection',
   },

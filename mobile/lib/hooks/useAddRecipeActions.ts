@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useScrapeRecipe, useCreateRecipe, useImagePicker, usePreviewRecipe, useReviewEnhancement } from '@/lib/hooks';
+import { useScrapeRecipe, useCreateRecipe, useImagePicker, useReviewEnhancement } from '@/lib/hooks';
 import { api, ApiClientError } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -40,11 +40,7 @@ export const useAddRecipeActions = () => {
 
   const scrapeRecipe = useScrapeRecipe();
   const createRecipe = useCreateRecipe();
-  const previewRecipe = usePreviewRecipe();
   const reviewEnhancement = useReviewEnhancement();
-
-  // State for preview loading
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   const isValidUrl = (text: string) => {
     try {
@@ -61,62 +57,29 @@ export const useAddRecipeActions = () => {
       return;
     }
 
-    setIsLoadingPreview(true);
-
     try {
-      // Step 1: Try client-side fetch (avoids IP blocking on server)
-      let html: string | null = null;
-      try {
-        const htmlResponse = await fetch(url, {
-          headers: {
-            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
-          },
-        });
+      // scrapeRecipe handles client-side fetch + server fallback internally
+      const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
+      setImportedRecipe(recipe);
 
-        if (htmlResponse.ok) {
-          html = await htmlResponse.text();
-        }
-      } catch {
-        // CORS or network error - will fall back to server-side
-      }
-
-      if (html) {
-        // Step 2a: Call preview endpoint (parses without saving)
-        const preview = await previewRecipe.mutateAsync({
-          url,
-          html,
-          enhance: enhanceWithAI,
-        });
-
-        // Step 3: Navigate to review screen with preview data
-        router.push({
-          pathname: '/review-recipe',
-          params: { preview: JSON.stringify(preview) },
-        });
+      if (recipe.enhanced) {
+        // Show AI changes modal for user to accept or reject
+        setShowSummaryModal(true);
       } else {
-        // Step 2b: Fall back to server-side scraping (saves immediately)
-        const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
-        setImportedRecipe(recipe);
-
-        if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
-          setShowSummaryModal(true);
-        } else {
-          showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
-            {
-              text: t('addRecipe.viewRecipe'),
-              style: 'cancel',
-              onPress: () => {
-                router.back();
-                router.push(`/recipe/${recipe.id}`);
-              },
+        showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
+          {
+            text: t('addRecipe.viewRecipe'),
+            style: 'cancel',
+            onPress: () => {
+              router.back();
+              router.push(`/recipe/${recipe.id}`);
             },
-            {
-              text: t('addRecipe.addMore'),
-              onPress: () => setUrl(''),
-            },
-          ]);
-        }
+          },
+          {
+            text: t('addRecipe.addMore'),
+            onPress: () => setUrl(''),
+          },
+        ]);
       }
     } catch (err) {
       if (err instanceof ApiClientError && err.reason === 'blocked') {
@@ -132,7 +95,6 @@ export const useAddRecipeActions = () => {
           t('addRecipe.siteNotSupported', { host }),
         );
       } else if (err instanceof ApiClientError && err.status === 409) {
-        // Recipe already exists
         showNotification(
           t('addRecipe.importFailed'),
           t('addRecipe.recipeExists'),
@@ -141,8 +103,6 @@ export const useAddRecipeActions = () => {
         const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
         showNotification(t('addRecipe.importFailed'), message);
       }
-    } finally {
-      setIsLoadingPreview(false);
     }
   };
 
@@ -256,7 +216,7 @@ export const useAddRecipeActions = () => {
     setUrl('');
   };
 
-  const isPending = scrapeRecipe.isPending || createRecipe.isPending || previewRecipe.isPending || isLoadingPreview || reviewEnhancement.isPending;
+  const isPending = scrapeRecipe.isPending || createRecipe.isPending || reviewEnhancement.isPending;
   const isReviewPending = reviewEnhancement.isPending;
 
   return {

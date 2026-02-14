@@ -222,7 +222,7 @@ def save_recipe(
     # Add enhancement fields if present
     if meta.enhanced:
         data["enhanced"] = meta.enhanced
-        data["show_enhanced"] = False
+        data["show_enhanced"] = True
         data["enhancement_reviewed"] = False
     if meta.enhanced_at:
         data["enhanced_at"] = meta.enhanced_at
@@ -246,7 +246,7 @@ def save_recipe(
         enhanced_at=meta.enhanced_at,
         changes_made=meta.changes_made or None,
         original=original_snapshot,
-        show_enhanced=False,
+        show_enhanced=True,
         enhancement_reviewed=False,
         household_id=household_id,
         visibility=visibility_value,  # type: ignore[arg-type]

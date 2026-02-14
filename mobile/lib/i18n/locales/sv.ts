@@ -525,6 +525,7 @@ const sv: Translations = {
       useOriginal: 'Använd original',
       keepAI: 'Behåll AI',
       reviewFailed: 'Kunde inte spara ditt val. Försök igen.',
+      noChangesListed: 'Receptet har optimerats med AI-förbättringar.',
     },
     recipeExists: 'Ett recept från denna URL finns redan i din samling',
   },

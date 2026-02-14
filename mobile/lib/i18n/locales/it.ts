@@ -532,6 +532,7 @@ const it: Translations = {
       useOriginal: 'Usa originale',
       keepAI: 'Mantieni AI',
       reviewFailed: 'Impossibile salvare la scelta. Riprova.',
+      noChangesListed: 'Ricetta ottimizzata con miglioramenti AI.',
     },
     recipeExists: 'Una ricetta da questo URL esiste già nella tua collezione',
   },

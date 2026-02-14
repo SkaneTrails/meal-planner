@@ -48,23 +48,31 @@ export const EnhancementSummaryModal = ({ actions }: EnhancementSummaryModalProp
 
           {/* Changes list */}
           <ScrollView style={{ maxHeight: 300, marginBottom: spacing.xl }}>
-            <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.md }}>
-              {t('addRecipe.enhanced.changesLabel')}
-            </Text>
-            {importedRecipe?.changes_made?.map((change, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.sm,
-                  backgroundColor: colors.successBg, padding: spacing.md, borderRadius: borderRadius.sm,
-                }}
-              >
-                <Ionicons name="checkmark-circle" size={18} color={colors.success} style={{ marginRight: spacing.sm, marginTop: 1 }} />
-                <Text style={{ flex: 1, fontSize: fontSize.lg, color: colors.text.inverse, lineHeight: 22 }}>
-                  {change}
+            {importedRecipe?.changes_made && importedRecipe.changes_made.length > 0 ? (
+              <>
+                <Text style={{ fontSize: fontSize.lg, fontWeight: '600', color: colors.text.inverse, marginBottom: spacing.md }}>
+                  {t('addRecipe.enhanced.changesLabel')}
                 </Text>
-              </View>
-            ))}
+                {importedRecipe.changes_made.map((change, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.sm,
+                      backgroundColor: colors.successBg, padding: spacing.md, borderRadius: borderRadius.sm,
+                    }}
+                  >
+                    <Ionicons name="checkmark-circle" size={18} color={colors.success} style={{ marginRight: spacing.sm, marginTop: 1 }} />
+                    <Text style={{ flex: 1, fontSize: fontSize.lg, color: colors.text.inverse, lineHeight: 22 }}>
+                      {change}
+                    </Text>
+                  </View>
+                ))}
+              </>
+            ) : (
+              <Text style={{ fontSize: fontSize.lg, color: colors.gray[600], fontStyle: 'italic' }}>
+                {t('addRecipe.enhanced.noChangesListed')}
+              </Text>
+            )}
           </ScrollView>
 
           {/* Buttons */}

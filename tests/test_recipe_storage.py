@@ -312,7 +312,7 @@ class TestSaveRecipe:
         call_args = mock_doc_ref.set.call_args[0][0]
         assert call_args["enhanced"] is True
         assert call_args["changes_made"] == ["Added spices", "Fixed instructions"]
-        assert call_args["show_enhanced"] is False
+        assert call_args["show_enhanced"] is True
         assert call_args["enhancement_reviewed"] is False
 
         assert result.enhanced is True
