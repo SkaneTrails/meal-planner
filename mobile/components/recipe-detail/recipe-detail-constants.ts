@@ -1,19 +1,44 @@
-import type { DietLabel, MealLabel, MealType, RecipeVisibility } from '@/lib/types';
+import type {
+  DietLabel,
+  MealLabel,
+  MealType,
+  RecipeVisibility,
+} from '@/lib/types';
 
 export const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
-export const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800';
+export const PLACEHOLDER_IMAGE =
+  'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800';
 
-export const DIET_OPTIONS: { value: DietLabel | null; labelKey: string; emoji: string }[] = [
+export const DIET_OPTIONS: {
+  value: DietLabel | null;
+  labelKey: string;
+  emoji: string;
+}[] = [
   { value: null, labelKey: 'labels.diet.none', emoji: '➖' },
   { value: 'veggie', labelKey: 'labels.diet.veggie', emoji: '🥬' },
   { value: 'fish', labelKey: 'labels.diet.fish', emoji: '🐟' },
   { value: 'meat', labelKey: 'labels.diet.meat', emoji: '🥩' },
 ];
 
-export const VISIBILITY_OPTIONS: { value: RecipeVisibility; labelKey: string; emoji: string; descKey: string }[] = [
-  { value: 'household', labelKey: 'labels.visibility.private', emoji: '🔒', descKey: 'labels.visibility.privateDesc' },
-  { value: 'shared', labelKey: 'labels.visibility.shared', emoji: '🌍', descKey: 'labels.visibility.sharedDesc' },
+export const VISIBILITY_OPTIONS: {
+  value: RecipeVisibility;
+  labelKey: string;
+  emoji: string;
+  descKey: string;
+}[] = [
+  {
+    value: 'household',
+    labelKey: 'labels.visibility.private',
+    emoji: '🔒',
+    descKey: 'labels.visibility.privateDesc',
+  },
+  {
+    value: 'shared',
+    labelKey: 'labels.visibility.shared',
+    emoji: '🌍',
+    descKey: 'labels.visibility.sharedDesc',
+  },
 ];
 
 export const MEAL_OPTIONS: { value: MealLabel | null; labelKey: string }[] = [
@@ -34,7 +59,10 @@ export const MEAL_TYPES: { type: MealType; labelKey: string }[] = [
   { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
 ];
 
-export const DIET_LABELS: Record<DietLabel, { emoji: string; color: string; bgColor: string }> = {
+export const DIET_LABELS: Record<
+  DietLabel,
+  { emoji: string; color: string; bgColor: string }
+> = {
   veggie: { emoji: '🥬', color: '#166534', bgColor: '#DCFCE7' },
   fish: { emoji: '🐟', color: '#1E40AF', bgColor: '#DBEAFE' },
   meat: { emoji: '🥩', color: '#991B1B', bgColor: '#FEE2E2' },

@@ -32,7 +32,11 @@ export const DietarySection = ({
 }: DietarySectionProps) => {
   const { t } = useTranslation();
 
-  const meatOptions: { value: MeatPreference; label: string; description: string }[] = [
+  const meatOptions: {
+    value: MeatPreference;
+    label: string;
+    description: string;
+  }[] = [
     {
       value: 'all',
       label: t('householdSettings.dietary.meatRegular'),
@@ -50,7 +54,11 @@ export const DietarySection = ({
     },
   ];
 
-  const mincedMeatOptions: { value: MincedMeatPreference; label: string; description: string }[] = [
+  const mincedMeatOptions: {
+    value: MincedMeatPreference;
+    label: string;
+    description: string;
+  }[] = [
     {
       value: 'meat',
       label: t('householdSettings.dietary.mincedRegular'),
@@ -68,7 +76,11 @@ export const DietarySection = ({
     },
   ];
 
-  const dairyOptions: { value: DairyPreference; label: string; description: string }[] = [
+  const dairyOptions: {
+    value: DairyPreference;
+    label: string;
+    description: string;
+  }[] = [
     {
       value: 'regular',
       label: t('householdSettings.dietary.dairyRegular'),
@@ -121,7 +133,12 @@ export const DietarySection = ({
             >
               {t('householdSettings.dietary.seafood')}
             </Text>
-            <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+            <Text
+              style={{
+                fontSize: fontSize.sm,
+                color: colors.text.inverse + '80',
+              }}
+            >
               {t('householdSettings.dietary.seafoodDesc')}
             </Text>
           </View>
@@ -135,7 +152,9 @@ export const DietarySection = ({
       </View>
 
       {/* Meat Preference */}
-      <Text style={categoryLabelStyle}>{t('householdSettings.dietary.meatDishes')}</Text>
+      <Text style={categoryLabelStyle}>
+        {t('householdSettings.dietary.meatDishes')}
+      </Text>
       <View style={{ marginBottom: spacing.lg }}>
         <RadioGroup
           options={meatOptions}
@@ -155,12 +174,20 @@ export const DietarySection = ({
             marginBottom: spacing.lg,
           }}
         >
-          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80', marginBottom: spacing.sm }}>
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              color: colors.text.inverse + '80',
+              marginBottom: spacing.sm,
+            }}
+          >
             {t('householdSettings.dietary.chickenAlt')}
           </Text>
           <TextInput
             value={dietary.chicken_alternative ?? ''}
-            onChangeText={(value) => onUpdateDietary('chicken_alternative', value || null)}
+            onChangeText={(value) =>
+              onUpdateDietary('chicken_alternative', value || null)
+            }
             editable={canEdit}
             placeholder={t('householdSettings.dietary.chickenAltPlaceholder')}
             style={textInputStyle}
@@ -177,7 +204,9 @@ export const DietarySection = ({
           </Text>
           <TextInput
             value={dietary.meat_alternative ?? ''}
-            onChangeText={(value) => onUpdateDietary('meat_alternative', value || null)}
+            onChangeText={(value) =>
+              onUpdateDietary('meat_alternative', value || null)
+            }
             editable={canEdit}
             placeholder={t('householdSettings.dietary.meatAltPlaceholder')}
             style={textInputStyle}
@@ -186,7 +215,9 @@ export const DietarySection = ({
       )}
 
       {/* Minced Meat Preference */}
-      <Text style={categoryLabelStyle}>{t('householdSettings.dietary.mincedMeat')}</Text>
+      <Text style={categoryLabelStyle}>
+        {t('householdSettings.dietary.mincedMeat')}
+      </Text>
       <View style={{ marginBottom: spacing.lg }}>
         <RadioGroup
           options={mincedMeatOptions}
@@ -197,7 +228,9 @@ export const DietarySection = ({
       </View>
 
       {/* Dairy Preference */}
-      <Text style={categoryLabelStyle}>{t('householdSettings.dietary.dairy')}</Text>
+      <Text style={categoryLabelStyle}>
+        {t('householdSettings.dietary.dairy')}
+      </Text>
       <RadioGroup
         options={dairyOptions}
         value={dietary.dairy}

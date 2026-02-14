@@ -3,12 +3,11 @@
  * Layout matches Streamlit app design.
  */
 
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import type { MealType, Recipe } from '@/lib/types';
+import { formatDateLocal } from '@/lib/utils/dateFormatter';
 
 interface MealCellProps {
   date: string;
@@ -56,14 +55,20 @@ export const MealCell = ({
         backgroundColor: 'rgba(255, 255, 255, 0.3)',
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
+      >
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
           size={14}
           color={hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'}
         />
         <Text
-          style={{ fontSize: 12, marginLeft: 4, color: hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)' }}
+          style={{
+            fontSize: 12,
+            marginLeft: 4,
+            color: hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
+          }}
         >
           {t(MEAL_TYPE_LABEL_KEYS[mealType])}
         </Text>
@@ -77,13 +82,15 @@ export const MealCell = ({
           {displayText}
         </Text>
       ) : (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <Ionicons name="add" size={20} color="rgba(255, 255, 255, 0.5)" />
         </View>
       )}
     </Pressable>
   );
-}
+};
 
 interface DayColumnProps {
   date: Date;
@@ -110,15 +117,23 @@ export const DayColumn = ({
     <View style={{ flex: 1, marginHorizontal: 4 }}>
       {/* Day header */}
       <View
-        style={{ alignItems: 'center', paddingVertical: 8, marginBottom: 8, borderRadius: 16, backgroundColor: isToday ? '#4A3728' : '#f3f4f6' }}
+        style={{
+          alignItems: 'center',
+          paddingVertical: 8,
+          marginBottom: 8,
+          borderRadius: 16,
+          backgroundColor: isToday ? '#4A3728' : '#f3f4f6',
+        }}
       >
-        <Text
-          style={{ fontSize: 12, color: isToday ? '#fff' : '#4b5563' }}
-        >
+        <Text style={{ fontSize: 12, color: isToday ? '#fff' : '#4b5563' }}>
           {dayName}
         </Text>
         <Text
-          style={{ fontSize: 18, fontWeight: 'bold', color: isToday ? '#fff' : '#4A3728' }}
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: isToday ? '#fff' : '#4A3728',
+          }}
         >
           {dayNumber}
         </Text>
@@ -144,7 +159,14 @@ export const DayColumn = ({
 
       {/* Note indicator */}
       {note && (
-        <View style={{ marginTop: 8, padding: 8, backgroundColor: '#E8D5C4', borderRadius: 16 }}>
+        <View
+          style={{
+            marginTop: 8,
+            padding: 8,
+            backgroundColor: '#E8D5C4',
+            borderRadius: 16,
+          }}
+        >
           <Text style={{ fontSize: 12, color: '#4A3728' }} numberOfLines={2}>
             {note}
           </Text>
@@ -152,4 +174,4 @@ export const DayColumn = ({
       )}
     </View>
   );
-}
+};

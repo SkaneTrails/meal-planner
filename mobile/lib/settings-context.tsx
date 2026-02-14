@@ -19,7 +19,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useAuth } from './hooks/use-auth';
 import {
   useAddFavoriteRecipe,
   useAddItemAtHome,
@@ -31,6 +30,7 @@ import {
   useRemoveItemAtHome,
   useUpdateHouseholdSettings,
 } from './hooks/use-admin';
+import { useAuth } from './hooks/use-auth';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
@@ -77,12 +77,17 @@ const SUPPORTED_LANGUAGES: AppLanguage[] = ['en', 'sv', 'it'];
 
 const isSupportedLanguage = (value: string): value is AppLanguage => {
   return SUPPORTED_LANGUAGES.includes(value as AppLanguage);
-}
+};
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 
-export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [localSettings, setLocalSettings] = useState<LocalSettings>(defaultLocalSettings);
+export const SettingsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [localSettings, setLocalSettings] =
+    useState<LocalSettings>(defaultLocalSettings);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
 
   // Wait for Firebase auth before firing API calls
@@ -90,11 +95,16 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   const isAuthenticated = !authLoading && !!user;
 
   // Cloud state — only fetch when authenticated
-  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser({ enabled: isAuthenticated });
+  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser({
+    enabled: isAuthenticated,
+  });
   const householdId = currentUser?.household_id ?? null;
-  const { data: itemsAtHomeData, isLoading: isItemsLoading } = useItemsAtHome(householdId);
-  const { data: favoritesData, isLoading: isFavoritesLoading } = useFavoriteRecipes(householdId);
-  const { data: householdSettings, isLoading: isSettingsLoading } = useHouseholdSettings(householdId);
+  const { data: itemsAtHomeData, isLoading: isItemsLoading } =
+    useItemsAtHome(householdId);
+  const { data: favoritesData, isLoading: isFavoritesLoading } =
+    useFavoriteRecipes(householdId);
+  const { data: householdSettings, isLoading: isSettingsLoading } =
+    useHouseholdSettings(householdId);
   const addItemMutation = useAddItemAtHome();
   const removeItemMutation = useRemoveItemAtHome();
   const addFavoriteMutation = useAddFavoriteRecipe();
@@ -109,7 +119,9 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
         if (stored) {
           const parsed = JSON.parse(stored);
           setLocalSettings({
-            showHiddenRecipes: parsed.showHiddenRecipes ?? defaultLocalSettings.showHiddenRecipes,
+            showHiddenRecipes:
+              parsed.showHiddenRecipes ??
+              defaultLocalSettings.showHiddenRecipes,
           });
         }
       } catch (error) {
@@ -137,9 +149,8 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
 
   // Resolve language from household settings
   const cloudLanguage = householdSettings?.language;
-  const resolvedLanguage: AppLanguage = (cloudLanguage && isSupportedLanguage(cloudLanguage))
-    ? cloudLanguage
-    : 'en';
+  const resolvedLanguage: AppLanguage =
+    cloudLanguage && isSupportedLanguage(cloudLanguage) ? cloudLanguage : 'en';
 
   // Resolve week start from household settings
   const resolvedWeekStart: WeekStart =
@@ -154,10 +165,22 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       language: resolvedLanguage,
       weekStart: resolvedWeekStart,
     }),
-    [localSettings, itemsAtHomeData, favoritesData, resolvedLanguage, resolvedWeekStart],
+    [
+      localSettings,
+      itemsAtHomeData,
+      favoritesData,
+      resolvedLanguage,
+      resolvedWeekStart,
+    ],
   );
 
-  const isLoading = isLocalLoading || authLoading || isUserLoading || isItemsLoading || isFavoritesLoading || isSettingsLoading;
+  const isLoading =
+    isLocalLoading ||
+    authLoading ||
+    isUserLoading ||
+    isItemsLoading ||
+    isFavoritesLoading ||
+    isSettingsLoading;
 
   const addItemAtHome = useCallback(
     async (item: string) => {
@@ -180,7 +203,10 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
         return;
       }
       const normalizedItem = item.toLowerCase().trim();
-      await removeItemMutation.mutateAsync({ householdId, item: normalizedItem });
+      await removeItemMutation.mutateAsync({
+        householdId,
+        item: normalizedItem,
+      });
     },
     [householdId, removeItemMutation],
   );
@@ -231,7 +257,8 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
         console.warn('Cannot toggle favorite: no household');
         return;
       }
-      const isFav = favoritesData?.favorite_recipes?.includes(recipeId) ?? false;
+      const isFav =
+        favoritesData?.favorite_recipes?.includes(recipeId) ?? false;
       if (isFav) {
         await removeFavoriteMutation.mutateAsync({ householdId, recipeId });
       } else {
@@ -242,7 +269,8 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   );
 
   const isFavorite = useCallback(
-    (recipeId: string) => favoritesData?.favorite_recipes?.includes(recipeId) ?? false,
+    (recipeId: string) =>
+      favoritesData?.favorite_recipes?.includes(recipeId) ?? false,
     [favoritesData],
   );
 
@@ -296,4 +324,4 @@ export const useSettings = () => {
     throw new Error('useSettings must be used within a SettingsProvider');
   }
   return context;
-}
+};

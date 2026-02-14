@@ -3,11 +3,10 @@
  * Lets users approve (keep enhanced) or reject (revert to original).
  */
 
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, spacing, fontFamily, fontSize } from '@/lib/theme';
+import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
+import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
 
 interface EnhancementReviewBannerProps {
   t: TFunction;
@@ -22,32 +21,49 @@ export const EnhancementReviewBanner = ({
   onApprove,
   onReject,
 }: EnhancementReviewBannerProps) => (
-  <View style={{
-    marginTop: spacing.lg,
-    backgroundColor: 'rgba(45, 106, 90, 0.08)',
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    borderLeftWidth: 4,
-    borderLeftColor: '#2D6A5A',
-  }}>
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm }}>
-      <Ionicons name="sparkles" size={20} color="#2D6A5A" style={{ marginRight: spacing.sm }} />
-      <Text style={{
-        fontSize: fontSize.xl,
-        fontFamily: fontFamily.bodySemibold,
-        color: '#2D6A5A',
-        flex: 1,
-      }}>
+  <View
+    style={{
+      marginTop: spacing.lg,
+      backgroundColor: 'rgba(45, 106, 90, 0.08)',
+      borderRadius: borderRadius.lg,
+      padding: spacing.lg,
+      borderLeftWidth: 4,
+      borderLeftColor: '#2D6A5A',
+    }}
+  >
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: spacing.sm,
+      }}
+    >
+      <Ionicons
+        name="sparkles"
+        size={20}
+        color="#2D6A5A"
+        style={{ marginRight: spacing.sm }}
+      />
+      <Text
+        style={{
+          fontSize: fontSize.xl,
+          fontFamily: fontFamily.bodySemibold,
+          color: '#2D6A5A',
+          flex: 1,
+        }}
+      >
         {t('recipe.reviewBanner')}
       </Text>
     </View>
 
-    <Text style={{
-      fontSize: fontSize.md,
-      fontFamily: fontFamily.body,
-      color: 'rgba(93, 78, 64, 0.7)',
-      marginBottom: spacing.lg,
-    }}>
+    <Text
+      style={{
+        fontSize: fontSize.md,
+        fontFamily: fontFamily.body,
+        color: 'rgba(93, 78, 64, 0.7)',
+        marginBottom: spacing.lg,
+      }}
+    >
       {t('recipe.reviewBannerDescription')}
     </Text>
 
@@ -62,16 +78,25 @@ export const EnhancementReviewBanner = ({
           justifyContent: 'center',
           paddingVertical: spacing.md,
           borderRadius: borderRadius.md,
-          backgroundColor: pressed ? 'rgba(45, 106, 90, 0.2)' : 'rgba(45, 106, 90, 0.12)',
+          backgroundColor: pressed
+            ? 'rgba(45, 106, 90, 0.2)'
+            : 'rgba(45, 106, 90, 0.12)',
           opacity: isSubmitting ? 0.5 : 1,
         })}
       >
-        <Ionicons name="checkmark-circle" size={18} color="#2D6A5A" style={{ marginRight: spacing.xs }} />
-        <Text style={{
-          fontSize: fontSize.md,
-          fontFamily: fontFamily.bodySemibold,
-          color: '#2D6A5A',
-        }}>
+        <Ionicons
+          name="checkmark-circle"
+          size={18}
+          color="#2D6A5A"
+          style={{ marginRight: spacing.xs }}
+        />
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.bodySemibold,
+            color: '#2D6A5A',
+          }}
+        >
           {t('recipe.approveEnhancement')}
         </Text>
       </Pressable>
@@ -86,16 +111,25 @@ export const EnhancementReviewBanner = ({
           justifyContent: 'center',
           paddingVertical: spacing.md,
           borderRadius: borderRadius.md,
-          backgroundColor: pressed ? 'rgba(93, 78, 64, 0.15)' : 'rgba(93, 78, 64, 0.08)',
+          backgroundColor: pressed
+            ? 'rgba(93, 78, 64, 0.15)'
+            : 'rgba(93, 78, 64, 0.08)',
           opacity: isSubmitting ? 0.5 : 1,
         })}
       >
-        <Ionicons name="close-circle" size={18} color="#5D4E40" style={{ marginRight: spacing.xs }} />
-        <Text style={{
-          fontSize: fontSize.md,
-          fontFamily: fontFamily.bodySemibold,
-          color: '#5D4E40',
-        }}>
+        <Ionicons
+          name="close-circle"
+          size={18}
+          color="#5D4E40"
+          style={{ marginRight: spacing.xs }}
+        />
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.bodySemibold,
+            color: '#5D4E40',
+          }}
+        >
           {t('recipe.rejectEnhancement')}
         </Text>
       </Pressable>

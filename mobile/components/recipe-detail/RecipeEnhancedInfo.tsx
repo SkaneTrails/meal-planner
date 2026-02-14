@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
@@ -162,7 +161,7 @@ export const RecipeEnhancedInfo = ({
                     flexDirection: 'row',
                     alignItems: 'flex-start',
                     marginBottom:
-                      index < recipe.changes_made!.length - 1 ? spacing.sm : 0,
+                      index < recipe.changes_made?.length - 1 ? spacing.sm : 0,
                   }}
                 >
                   <Ionicons

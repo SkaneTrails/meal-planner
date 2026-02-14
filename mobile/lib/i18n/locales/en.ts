@@ -377,8 +377,7 @@ const en = {
     clearMealPlanItemsMessage:
       'This will remove all items from recipes in your meal plan.',
     clearManualItems: 'Clear Manual Items',
-    clearManualItemsMessage:
-      'This will remove all manually added items.',
+    clearManualItemsMessage: 'This will remove all manually added items.',
     clear: 'Clear',
     failedToClearList: 'Failed to clear list',
     categories: {
@@ -560,7 +559,8 @@ const en = {
     syncMessage: 'Sign in to sync your recipes across devices',
     signInFailed: 'Sign-in failed. Please try again.',
     signOutFailed: 'Sign-out failed. Please try again.',
-    noIdToken: 'Authentication failed. Please check your Google account settings.',
+    noIdToken:
+      'Authentication failed. Please check your Google account settings.',
     somethingWentWrong: 'Something went wrong. Please try again.',
   },
 

@@ -4,7 +4,6 @@
  */
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { GradientBackground } from '@/components';
 import {
@@ -30,7 +29,9 @@ export default function HouseholdSettingsScreen() {
     if (form.userLoading) {
       return (
         <GradientBackground muted>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
             <ActivityIndicator size="large" color={colors.accent} />
           </View>
         </GradientBackground>
@@ -38,7 +39,9 @@ export default function HouseholdSettingsScreen() {
     }
     return (
       <GradientBackground muted>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <Text>{t('householdSettings.invalidHouseholdId')}</Text>
         </View>
       </GradientBackground>
@@ -50,7 +53,9 @@ export default function HouseholdSettingsScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       {form.isLoading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <ActivityIndicator size="large" color={colors.accent} />
         </View>
       ) : (
@@ -65,7 +70,11 @@ export default function HouseholdSettingsScreen() {
 
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={{ padding: spacing.lg, paddingTop: 0, paddingBottom: 120 }}
+            contentContainerStyle={{
+              padding: spacing.lg,
+              paddingTop: 0,
+              paddingBottom: 120,
+            }}
           >
             {!form.canEdit && <ReadOnlyBanner />}
 

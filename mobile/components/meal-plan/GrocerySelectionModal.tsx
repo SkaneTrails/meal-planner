@@ -1,13 +1,16 @@
-import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { fontFamily } from '@/lib/theme';
-import { hapticSuccess } from '@/lib/haptics';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
-import { formatDateLocal, formatWeekRange, formatDayHeader } from '@/lib/utils/dateFormatter';
-import type { MealType, Recipe } from '@/lib/types';
-import type { MealTypeOption } from './meal-plan-constants';
+import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
+import { fontFamily } from '@/lib/theme';
+import type { MealType, Recipe } from '@/lib/types';
+import {
+  formatDateLocal,
+  formatDayHeader,
+  formatWeekRange,
+} from '@/lib/utils/dateFormatter';
+import type { MealTypeOption } from './meal-plan-constants';
 
 interface GrocerySelectionModalProps {
   visible: boolean;
@@ -17,10 +20,17 @@ interface GrocerySelectionModalProps {
   mealTypes: MealTypeOption[];
   selectedMeals: Set<string>;
   mealServings: Record<string, number>;
-  getMealForSlot: (date: Date, mealType: MealType) => { recipe?: Recipe; customText?: string } | null;
+  getMealForSlot: (
+    date: Date,
+    mealType: MealType,
+  ) => { recipe?: Recipe; customText?: string } | null;
   onClose: () => void;
   onCreateGroceryList: () => void;
-  onToggleMeal: (date: Date, mealType: MealType, recipeServings?: number) => void;
+  onToggleMeal: (
+    date: Date,
+    mealType: MealType,
+    recipeServings?: number,
+  ) => void;
   onChangeServings: (key: string, delta: number) => void;
   onPreviousWeek: () => void;
   onNextWeek: () => void;
@@ -49,24 +59,38 @@ export const GrocerySelectionModal = ({
     subtitle={t('mealPlan.selectMealsSubtitle')}
     scrollable={false}
     footer={
-      <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: 'rgba(0, 0, 0, 0.06)' }}>
+      <View
+        style={{
+          padding: 20,
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(0, 0, 0, 0.06)',
+        }}
+      >
         <Pressable
-          onPress={() => { hapticSuccess(); onCreateGroceryList(); }}
+          onPress={() => {
+            hapticSuccess();
+            onCreateGroceryList();
+          }}
           style={({ pressed }) => ({
-            backgroundColor: selectedMeals.size > 0
-              ? pressed ? '#5D4E40' : '#7A6858'
-              : 'rgba(122, 104, 88, 0.2)',
+            backgroundColor:
+              selectedMeals.size > 0
+                ? pressed
+                  ? '#5D4E40'
+                  : '#7A6858'
+                : 'rgba(122, 104, 88, 0.2)',
             paddingVertical: 16,
             borderRadius: 14,
             alignItems: 'center',
           })}
           disabled={selectedMeals.size === 0}
         >
-          <Text style={{
-            fontSize: 17,
-            fontFamily: fontFamily.bodySemibold,
-            color: selectedMeals.size > 0 ? '#fff' : 'rgba(93, 78, 64, 0.5)',
-          }}>
+          <Text
+            style={{
+              fontSize: 17,
+              fontFamily: fontFamily.bodySemibold,
+              color: selectedMeals.size > 0 ? '#fff' : 'rgba(93, 78, 64, 0.5)',
+            }}
+          >
             {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
           </Text>
         </Pressable>
@@ -80,9 +104,13 @@ export const GrocerySelectionModal = ({
       onNextWeek={onNextWeek}
     />
 
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
-      {groceryWeekDates.map(date => {
-        const hasAnyMeal = mealTypes.some(mt => {
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 20 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {groceryWeekDates.map((date) => {
+        const hasAnyMeal = mealTypes.some((mt) => {
           const meal = getMealForSlot(date, mt.type);
           return meal?.recipe || meal?.customText;
         });
@@ -92,12 +120,14 @@ export const GrocerySelectionModal = ({
 
         return (
           <View key={date.toISOString()} style={{ marginBottom: 16 }}>
-            <Text style={{
-              fontSize: 16,
-              fontFamily: fontFamily.bodySemibold,
-              color: isToday ? '#3D3D3D' : 'rgba(93, 78, 64, 0.7)',
-              marginBottom: 10,
-            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fontFamily.bodySemibold,
+                color: isToday ? '#3D3D3D' : 'rgba(93, 78, 64, 0.7)',
+                marginBottom: 10,
+              }}
+            >
               {formatDayHeader(date, language, t('mealPlan.today'))}
             </Text>
             {mealTypes.map(({ type, label }) => {
@@ -119,7 +149,9 @@ export const GrocerySelectionModal = ({
                   isSelected={isSelected}
                   currentServings={currentServings}
                   mealKey={key}
-                  onToggle={() => onToggleMeal(date, type, recipeServings ?? undefined)}
+                  onToggle={() =>
+                    onToggleMeal(date, type, recipeServings ?? undefined)
+                  }
                   onChangeServings={onChangeServings}
                 />
               );
@@ -138,29 +170,66 @@ interface GroceryWeekSelectorProps {
   onNextWeek: () => void;
 }
 
-const GroceryWeekSelector = ({ weekDates, language, onPreviousWeek, onNextWeek }: GroceryWeekSelectorProps) => (
-  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 12, gap: 8 }}>
+const GroceryWeekSelector = ({
+  weekDates,
+  language,
+  onPreviousWeek,
+  onNextWeek,
+}: GroceryWeekSelectorProps) => (
+  <View
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 12,
+      gap: 8,
+    }}
+  >
     <Pressable
       onPress={onPreviousWeek}
       style={({ pressed }) => ({
-        width: 36, height: 36, borderRadius: 18,
-        backgroundColor: pressed ? 'rgba(122, 104, 88, 0.15)' : 'rgba(122, 104, 88, 0.08)',
-        alignItems: 'center', justifyContent: 'center',
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: pressed
+          ? 'rgba(122, 104, 88, 0.15)'
+          : 'rgba(122, 104, 88, 0.08)',
+        alignItems: 'center',
+        justifyContent: 'center',
       })}
     >
       <Ionicons name="chevron-back" size={20} color="#5D4E40" />
     </Pressable>
-    <View style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: 'rgba(122, 104, 88, 0.08)', borderRadius: 14 }}>
-      <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: '#3D3D3D', textAlign: 'center' }}>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: 'rgba(122, 104, 88, 0.08)',
+        borderRadius: 14,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 14,
+          fontFamily: fontFamily.bodySemibold,
+          color: '#3D3D3D',
+          textAlign: 'center',
+        }}
+      >
         {formatWeekRange(weekDates, language)}
       </Text>
     </View>
     <Pressable
       onPress={onNextWeek}
       style={({ pressed }) => ({
-        width: 36, height: 36, borderRadius: 18,
-        backgroundColor: pressed ? 'rgba(122, 104, 88, 0.15)' : 'rgba(122, 104, 88, 0.08)',
-        alignItems: 'center', justifyContent: 'center',
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: pressed
+          ? 'rgba(122, 104, 88, 0.15)'
+          : 'rgba(122, 104, 88, 0.08)',
+        alignItems: 'center',
+        justifyContent: 'center',
       })}
     >
       <Ionicons name="chevron-forward" size={20} color="#5D4E40" />
@@ -187,54 +256,118 @@ const GroceryMealItem = ({
   onToggle,
   onChangeServings,
 }: GroceryMealItemProps) => (
-  <View style={{
-    backgroundColor: isSelected ? 'rgba(107, 142, 107, 0.1)' : 'rgba(0, 0, 0, 0.02)',
-    borderRadius: 14,
-    padding: 14,
-    marginBottom: 8,
-    borderWidth: isSelected ? 1 : 0,
-    borderColor: 'rgba(107, 142, 107, 0.3)',
-  }}>
-    <Pressable onPress={onToggle} style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <View style={{
-        width: 26, height: 26, borderRadius: 8, borderWidth: 2,
-        borderColor: isSelected ? '#6B8E6B' : 'rgba(93, 78, 64, 0.25)',
-        backgroundColor: isSelected ? '#6B8E6B' : 'transparent',
-        alignItems: 'center', justifyContent: 'center', marginRight: 14,
-      }}>
+  <View
+    style={{
+      backgroundColor: isSelected
+        ? 'rgba(107, 142, 107, 0.1)'
+        : 'rgba(0, 0, 0, 0.02)',
+      borderRadius: 14,
+      padding: 14,
+      marginBottom: 8,
+      borderWidth: isSelected ? 1 : 0,
+      borderColor: 'rgba(107, 142, 107, 0.3)',
+    }}
+  >
+    <Pressable
+      onPress={onToggle}
+      style={{ flexDirection: 'row', alignItems: 'center' }}
+    >
+      <View
+        style={{
+          width: 26,
+          height: 26,
+          borderRadius: 8,
+          borderWidth: 2,
+          borderColor: isSelected ? '#6B8E6B' : 'rgba(93, 78, 64, 0.25)',
+          backgroundColor: isSelected ? '#6B8E6B' : 'transparent',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 14,
+        }}
+      >
         {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: '#3D3D3D' }}>{title}</Text>
-        <Text style={{ fontSize: 13, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.6)', marginTop: 2 }}>{label}</Text>
+        <Text
+          style={{
+            fontSize: 15,
+            fontFamily: fontFamily.bodySemibold,
+            color: '#3D3D3D',
+          }}
+        >
+          {title}
+        </Text>
+        <Text
+          style={{
+            fontSize: 13,
+            fontFamily: fontFamily.body,
+            color: 'rgba(93, 78, 64, 0.6)',
+            marginTop: 2,
+          }}
+        >
+          {label}
+        </Text>
       </View>
     </Pressable>
 
     {isSelected && (
-      <View style={{
-        flexDirection: 'row', alignItems: 'center', marginTop: 12, marginLeft: 40,
-        backgroundColor: 'rgba(122, 104, 88, 0.1)', borderRadius: 12, padding: 6, alignSelf: 'flex-start',
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: 12,
+          marginLeft: 40,
+          backgroundColor: 'rgba(122, 104, 88, 0.1)',
+          borderRadius: 12,
+          padding: 6,
+          alignSelf: 'flex-start',
+        }}
+      >
         <Pressable
           onPress={() => onChangeServings(mealKey, -1)}
           style={({ pressed }) => ({
-            width: 30, height: 30, borderRadius: 15,
-            backgroundColor: pressed ? 'rgba(122, 104, 88, 0.2)' : 'rgba(255, 255, 255, 0.8)',
-            alignItems: 'center', justifyContent: 'center',
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+            backgroundColor: pressed
+              ? 'rgba(122, 104, 88, 0.2)'
+              : 'rgba(255, 255, 255, 0.8)',
+            alignItems: 'center',
+            justifyContent: 'center',
           })}
         >
           <Ionicons name="remove" size={18} color="#5D4E40" />
         </Pressable>
-        <View style={{ paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View
+          style={{
+            paddingHorizontal: 14,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 4,
+          }}
+        >
           <Ionicons name="restaurant-outline" size={15} color="#5D4E40" />
-          <Text style={{ fontSize: 15, fontFamily: fontFamily.bodySemibold, color: '#3D3D3D' }}>{currentServings}</Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: fontFamily.bodySemibold,
+              color: '#3D3D3D',
+            }}
+          >
+            {currentServings}
+          </Text>
         </View>
         <Pressable
           onPress={() => onChangeServings(mealKey, 1)}
           style={({ pressed }) => ({
-            width: 30, height: 30, borderRadius: 15,
-            backgroundColor: pressed ? 'rgba(122, 104, 88, 0.2)' : 'rgba(255, 255, 255, 0.8)',
-            alignItems: 'center', justifyContent: 'center',
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+            backgroundColor: pressed
+              ? 'rgba(122, 104, 88, 0.2)'
+              : 'rgba(255, 255, 255, 0.8)',
+            alignItems: 'center',
+            justifyContent: 'center',
           })}
         >
           <Ionicons name="add" size={18} color="#5D4E40" />

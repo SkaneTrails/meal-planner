@@ -57,7 +57,13 @@ export const RecipeLibrarySection = ({
             >
               {t('settings.showHiddenRecipes')}
             </Text>
-            <Text style={{ fontSize: fontSize.sm, color: colors.text.dark + '80', marginTop: 4 }}>
+            <Text
+              style={{
+                fontSize: fontSize.sm,
+                color: colors.text.dark + '80',
+                marginTop: 4,
+              }}
+            >
               {t('settings.showHiddenRecipesDesc')}
             </Text>
           </View>
@@ -78,7 +84,10 @@ interface WeekStartSectionProps {
   onSetWeekStart: (day: 'monday' | 'saturday') => void;
 }
 
-export const WeekStartSection = ({ weekStart, onSetWeekStart }: WeekStartSectionProps) => {
+export const WeekStartSection = ({
+  weekStart,
+  onSetWeekStart,
+}: WeekStartSectionProps) => {
   const { t } = useTranslation();
 
   return (
@@ -110,8 +119,18 @@ export const WeekStartSection = ({ weekStart, onSetWeekStart }: WeekStartSection
               borderBottomColor: 'rgba(93, 78, 64, 0.15)',
             })}
           >
-            <Text style={{ flex: 1, fontSize: fontSize.md, color: colors.text.dark }}>
-              {t(day === 'monday' ? 'settings.weekStartMonday' : 'settings.weekStartSaturday')}
+            <Text
+              style={{
+                flex: 1,
+                fontSize: fontSize.md,
+                color: colors.text.dark,
+              }}
+            >
+              {t(
+                day === 'monday'
+                  ? 'settings.weekStartMonday'
+                  : 'settings.weekStartSaturday',
+              )}
             </Text>
             {weekStart === day && (
               <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
@@ -185,7 +204,13 @@ export const LanguageSection = ({
                 contentFit="cover"
               />
             </View>
-            <Text style={{ flex: 1, fontSize: fontSize.md, color: colors.text.dark }}>
+            <Text
+              style={{
+                flex: 1,
+                fontSize: fontSize.md,
+                color: colors.text.dark,
+              }}
+            >
               {lang.label}
             </Text>
             {currentLanguage === lang.code && (

@@ -84,7 +84,11 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
         }}
       >
         <Ionicons
-          name={recipe.visibility === 'shared' ? 'globe-outline' : 'lock-closed-outline'}
+          name={
+            recipe.visibility === 'shared'
+              ? 'globe-outline'
+              : 'lock-closed-outline'
+          }
           size={14}
           color={colors.text.inverse}
         />
@@ -95,7 +99,9 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
             color: colors.text.inverse,
           }}
         >
-          {t(`labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`)}
+          {t(
+            `labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`,
+          )}
         </Text>
       </View>
     )}

@@ -1,12 +1,11 @@
-import React from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
-import { fontFamily, fontSize, spacing, borderRadius } from '@/lib/theme';
-import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
-import type { Recipe } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
+import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
+import type { Recipe } from '@/lib/types';
+import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
 
 interface ExtrasSectionProps {
   recipes: Recipe[];
@@ -43,7 +42,12 @@ export const ExtrasSection = ({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Ionicons name="bookmark-outline" size={18} color="#8B7355" style={{ marginRight: 6 }} />
+          <Ionicons
+            name="bookmark-outline"
+            size={18}
+            color="#8B7355"
+            style={{ marginRight: 6 }}
+          />
           <Text
             style={{
               fontSize: fontSize.lg,
@@ -99,7 +103,11 @@ export const ExtrasSection = ({
             borderStyle: 'dashed',
           }}
         >
-          <Ionicons name="add-circle-outline" size={20} color="rgba(93, 78, 64, 0.5)" />
+          <Ionicons
+            name="add-circle-outline"
+            size={20}
+            color="rgba(93, 78, 64, 0.5)"
+          />
           <Text
             style={{
               fontSize: fontSize.sm,
@@ -132,7 +140,8 @@ interface ExtraRecipeRowProps {
 
 const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
   const router = useRouter();
-  const imageUrl = recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE;
+  const imageUrl =
+    recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE;
 
   return (
     <View
@@ -160,11 +169,24 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
           resizeMode="cover"
         />
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: '#2D2D2D' }}>
+          <Text
+            style={{
+              fontSize: 13,
+              fontFamily: fontFamily.bodySemibold,
+              color: '#2D2D2D',
+            }}
+          >
             {recipe.title}
           </Text>
           {recipe.total_time && (
-            <Text style={{ fontSize: 11, fontFamily: fontFamily.body, color: 'rgba(93, 78, 64, 0.7)', marginTop: 2 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: fontFamily.body,
+                color: 'rgba(93, 78, 64, 0.7)',
+                marginTop: 2,
+              }}
+            >
               {recipe.total_time} min
             </Text>
           )}

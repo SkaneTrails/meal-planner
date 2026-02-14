@@ -54,7 +54,11 @@ export const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
             ID: {household.id}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={colors.text.inverse + '80'} />
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.text.inverse + '80'}
+        />
       </View>
     </Pressable>
   );

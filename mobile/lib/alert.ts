@@ -28,7 +28,7 @@ export const showAlert = (
   title: string,
   message?: string,
   buttons?: AlertButton[],
-): void  => {
+): void => {
   if (Platform.OS === 'web') {
     if (!buttons || buttons.length === 0) {
       window.alert(message ? `${title}\n\n${message}` : title);
@@ -43,10 +43,13 @@ export const showAlert = (
       return;
     }
 
-    const cancelButton = buttons.find(b => b.style === 'cancel');
-    const actionButton = buttons.find(b => b.style !== 'cancel') || buttons[0];
+    const cancelButton = buttons.find((b) => b.style === 'cancel');
+    const actionButton =
+      buttons.find((b) => b.style !== 'cancel') || buttons[0];
 
-    const confirmed = window.confirm(message ? `${title}\n\n${message}` : title);
+    const confirmed = window.confirm(
+      message ? `${title}\n\n${message}` : title,
+    );
     if (confirmed) {
       actionButton?.onPress?.();
     } else {
@@ -55,14 +58,14 @@ export const showAlert = (
   } else {
     Alert.alert(title, message, buttons);
   }
-}
+};
 
 /**
  * Show a simple notification alert (single OK button).
  */
-export const showNotification = (title: string, message?: string): void  => {
+export const showNotification = (title: string, message?: string): void => {
   showAlert(title, message, [{ text: 'OK' }]);
-}
+};
 
 /**
  * Show a confirmation dialog and return a promise.
@@ -74,11 +77,14 @@ export const showNotification = (title: string, message?: string): void  => {
  *   // User clicked OK
  * }
  */
-export const showConfirm = (title: string, message?: string): Promise<boolean>  => {
-  return new Promise(resolve => {
+export const showConfirm = (
+  title: string,
+  message?: string,
+): Promise<boolean> => {
+  return new Promise((resolve) => {
     showAlert(title, message, [
       { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
       { text: 'OK', onPress: () => resolve(true) },
     ]);
   });
-}
+};

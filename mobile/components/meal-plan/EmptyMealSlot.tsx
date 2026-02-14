@@ -1,20 +1,30 @@
-import React from 'react';
-import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { fontFamily } from '@/lib/theme';
+import type React from 'react';
+import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
-import type { MealType } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
+import { fontFamily } from '@/lib/theme';
+import type { MealType } from '@/lib/types';
 
 interface EmptyMealSlotProps {
   date: Date;
   mealType: MealType;
   label: string;
   t: TFunction;
-  onPress: (date: Date, mealType: MealType, mode: 'library' | 'copy' | 'quick' | 'random') => void;
+  onPress: (
+    date: Date,
+    mealType: MealType,
+    mode: 'library' | 'copy' | 'quick' | 'random',
+  ) => void;
 }
 
-export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSlotProps) => (
+export const EmptyMealSlot = ({
+  date,
+  mealType,
+  label,
+  t,
+  onPress,
+}: EmptyMealSlotProps) => (
   <View
     style={{
       flexDirection: 'row',
@@ -27,24 +37,40 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
   >
     {/* Label section */}
     <View style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}>
-      <View style={{
-        width: 26,
-        height: 26,
-        borderRadius: 13,
-        backgroundColor: 'rgba(93, 78, 64, 0.12)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 8,
-      }}>
+      <View
+        style={{
+          width: 26,
+          height: 26,
+          borderRadius: 13,
+          backgroundColor: 'rgba(93, 78, 64, 0.12)',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 8,
+        }}
+      >
         <Ionicons name="add" size={16} color="rgba(93, 78, 64, 0.6)" />
       </View>
-      <Text style={{ fontSize: 13, fontFamily: fontFamily.bodySemibold, color: 'rgba(93, 78, 64, 0.8)' }}>
+      <Text
+        style={{
+          fontSize: 13,
+          fontFamily: fontFamily.bodySemibold,
+          color: 'rgba(93, 78, 64, 0.8)',
+        }}
+      >
         {label}
       </Text>
     </View>
 
     {/* Actions: Primary (Library) + Secondary icon buttons */}
-    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 6,
+      }}
+    >
       {/* Primary action: Library */}
       <AnimatedPressable
         onPress={() => onPress(date, mealType, 'library')}
@@ -61,7 +87,13 @@ export const EmptyMealSlot = ({ date, mealType, label, t, onPress }: EmptyMealSl
         }}
       >
         <Ionicons name="book-outline" size={13} color="#FFFFFF" />
-        <Text style={{ fontSize: 12, fontFamily: fontFamily.bodySemibold, color: '#FFFFFF' }}>
+        <Text
+          style={{
+            fontSize: 12,
+            fontFamily: fontFamily.bodySemibold,
+            color: '#FFFFFF',
+          }}
+        >
           {t('mealPlan.library')}
         </Text>
       </AnimatedPressable>
@@ -88,7 +120,10 @@ interface SecondaryActionButtonProps {
   onPress: () => void;
 }
 
-const SecondaryActionButton = ({ icon, onPress }: SecondaryActionButtonProps) => (
+const SecondaryActionButton = ({
+  icon,
+  onPress,
+}: SecondaryActionButtonProps) => (
   <AnimatedPressable
     onPress={onPress}
     hoverScale={1.1}

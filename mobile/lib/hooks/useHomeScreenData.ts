@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'expo-router';
-import { useAllRecipes, useMealPlan, useGroceryState } from '@/lib/hooks';
-import { useSettings } from '@/lib/settings-context';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { useAllRecipes, useGroceryState, useMealPlan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
+import { useSettings } from '@/lib/settings-context';
 import type { Recipe } from '@/lib/types';
+import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 /** 7 days x 2 tracked meals (lunch + dinner) = 14 slots per week. */
 export const WEEKLY_TRACKABLE_MEALS = 14;
@@ -34,9 +34,15 @@ const getNextMeal = (
       if (value.startsWith('custom:')) {
         return { title: value.slice(7), isCustom: true, mealType };
       }
-      const recipe = recipes.find(r => r.id === value);
+      const recipe = recipes.find((r) => r.id === value);
       if (recipe) {
-        return { title: recipe.title, imageUrl: recipe.thumbnail_url || recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id };
+        return {
+          title: recipe.title,
+          imageUrl: recipe.thumbnail_url || recipe.image_url || undefined,
+          isCustom: false,
+          mealType,
+          recipeId: recipe.id,
+        };
       }
     }
   }
@@ -49,11 +55,23 @@ const getNextMeal = (
     const value = mealPlan.meals[key];
     if (value) {
       if (value.startsWith('custom:')) {
-        return { title: value.slice(7), isCustom: true, mealType, isTomorrow: true };
+        return {
+          title: value.slice(7),
+          isCustom: true,
+          mealType,
+          isTomorrow: true,
+        };
       }
-      const recipe = recipes.find(r => r.id === value);
+      const recipe = recipes.find((r) => r.id === value);
       if (recipe) {
-        return { title: recipe.title, imageUrl: recipe.thumbnail_url || recipe.image_url || undefined, isCustom: false, mealType, recipeId: recipe.id, isTomorrow: true };
+        return {
+          title: recipe.title,
+          imageUrl: recipe.thumbnail_url || recipe.image_url || undefined,
+          isCustom: false,
+          mealType,
+          recipeId: recipe.id,
+          isTomorrow: true,
+        };
       }
     }
   }
@@ -61,7 +79,10 @@ const getNextMeal = (
   return null;
 };
 
-const getGreetingKey = (): 'greetingMorning' | 'greetingAfternoon' | 'greetingEvening' => {
+const getGreetingKey = ():
+  | 'greetingMorning'
+  | 'greetingAfternoon'
+  | 'greetingEvening' => {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return 'greetingMorning';
   if (hour >= 12 && hour < 18) return 'greetingAfternoon';
@@ -70,9 +91,19 @@ const getGreetingKey = (): 'greetingMorning' | 'greetingAfternoon' | 'greetingEv
 
 export const useHomeScreenData = () => {
   const router = useRouter();
-  const { recipes, totalCount, isLoading: recipesLoading, refetch: refetchRecipes } = useAllRecipes();
-  const { data: mealPlan, isLoading: mealPlanLoading, refetch: refetchMealPlan } = useMealPlan();
-  const { checkedItems, selectedMealKeys, customItems, refreshFromApi } = useGroceryState();
+  const {
+    recipes,
+    totalCount,
+    isLoading: recipesLoading,
+    refetch: refetchRecipes,
+  } = useAllRecipes();
+  const {
+    data: mealPlan,
+    isLoading: mealPlanLoading,
+    refetch: refetchMealPlan,
+  } = useMealPlan();
+  const { checkedItems, selectedMealKeys, customItems, refreshFromApi } =
+    useGroceryState();
   const { isItemAtHome, weekStart } = useSettings();
   const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
@@ -91,23 +122,25 @@ export const useHomeScreenData = () => {
 
   const groceryItemsCount = useMemo(() => {
     if (!mealPlan || selectedMealKeys.length === 0) {
-      return customItems.filter(item =>
-        !checkedItems.has(item.name) && !isItemAtHome(item.name)
+      return customItems.filter(
+        (item) => !checkedItems.has(item.name) && !isItemAtHome(item.name),
       ).length;
     }
 
-    const recipeMap = new Map(recipes.map(r => [r.id, r]));
+    const recipeMap = new Map(recipes.map((r) => [r.id, r]));
     const ingredientNames = new Set<string>();
 
-    selectedMealKeys.forEach(key => {
+    selectedMealKeys.forEach((key) => {
       const recipeId = mealPlan.meals?.[key];
       if (!recipeId || recipeId.startsWith('custom:')) return;
 
       const recipe = recipeMap.get(recipeId);
       if (!recipe) return;
 
-      recipe.ingredients.forEach(ingredient => {
-        const name = ingredient.toLowerCase().trim()
+      recipe.ingredients.forEach((ingredient) => {
+        const name = ingredient
+          .toLowerCase()
+          .trim()
           .replace(/\s*\(steg\s*\d+\)\s*$/i, '')
           .replace(/\s*\(step\s*\d+\)\s*$/i, '')
           .replace(/\s+till\s+\w+$/i, '');
@@ -115,30 +148,43 @@ export const useHomeScreenData = () => {
       });
     });
 
-    customItems.forEach(item => ingredientNames.add(item.name));
+    customItems.forEach((item) => ingredientNames.add(item.name));
 
     let uncheckedCount = 0;
-    ingredientNames.forEach(name => {
+    ingredientNames.forEach((name) => {
       if (!isItemAtHome(name) && !checkedItems.has(name)) {
         uncheckedCount++;
       }
     });
 
     return uncheckedCount;
-  }, [mealPlan, selectedMealKeys, recipes, customItems, checkedItems, isItemAtHome]);
+  }, [
+    mealPlan,
+    selectedMealKeys,
+    recipes,
+    customItems,
+    checkedItems,
+    isItemAtHome,
+  ]);
 
   const inspirationRecipes = useMemo(() => {
     return recipes.filter(
-      (recipe: Recipe) => recipe.meal_label && recipe.meal_label !== 'meal' && recipe.meal_label !== 'grill'
+      (recipe: Recipe) =>
+        recipe.meal_label &&
+        recipe.meal_label !== 'meal' &&
+        recipe.meal_label !== 'grill',
     );
   }, [recipes]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: shuffleCount triggers re-pick intentionally
   const inspirationRecipe = useMemo(() => {
     if (inspirationRecipes.length === 0) return null;
-    const existing = inspirationRecipes.find(r => r.id === inspirationIdRef.current);
+    const existing = inspirationRecipes.find(
+      (r) => r.id === inspirationIdRef.current,
+    );
     if (existing) return existing;
-    const picked = inspirationRecipes[Math.floor(Math.random() * inspirationRecipes.length)];
+    const picked =
+      inspirationRecipes[Math.floor(Math.random() * inspirationRecipes.length)];
     inspirationIdRef.current = picked.id;
     return picked;
   }, [inspirationRecipes, shuffleCount]);
@@ -147,16 +193,22 @@ export const useHomeScreenData = () => {
     if (inspirationRecipes.length <= 1) return;
     let picked: Recipe;
     do {
-      picked = inspirationRecipes[Math.floor(Math.random() * inspirationRecipes.length)];
-    } while (picked.id === inspirationIdRef.current && inspirationRecipes.length > 1);
+      picked =
+        inspirationRecipes[
+          Math.floor(Math.random() * inspirationRecipes.length)
+        ];
+    } while (
+      picked.id === inspirationIdRef.current &&
+      inspirationRecipes.length > 1
+    );
     inspirationIdRef.current = picked.id;
-    setShuffleCount(c => c + 1);
+    setShuffleCount((c) => c + 1);
   }, [inspirationRecipes]);
 
   const plannedMealsCount = useMemo(() => {
     if (!mealPlan?.meals) return 0;
     const weekDates = getWeekDatesArray(0, weekStart);
-    const weekDateStrs = new Set(weekDates.map(d => formatDateLocal(d)));
+    const weekDateStrs = new Set(weekDates.map((d) => formatDateLocal(d)));
     return Object.keys(mealPlan.meals).filter((key) => {
       if (!key.endsWith('_lunch') && !key.endsWith('_dinner')) return false;
       const dateStr = key.replace(/_(lunch|dinner)$/, '');
@@ -171,7 +223,10 @@ export const useHomeScreenData = () => {
 
   const handleImportRecipe = useCallback(() => {
     if (recipeUrl.trim()) {
-      router.push({ pathname: '/add-recipe', params: { url: recipeUrl.trim() } });
+      router.push({
+        pathname: '/add-recipe',
+        params: { url: recipeUrl.trim() },
+      });
       setRecipeUrl('');
     }
   }, [recipeUrl, router]);

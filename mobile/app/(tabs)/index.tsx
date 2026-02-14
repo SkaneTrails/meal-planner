@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import React from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import {
   AnimatedPressable,

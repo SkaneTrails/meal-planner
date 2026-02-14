@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
 import {
   Animated,
   type NativeScrollEvent,
@@ -226,7 +225,13 @@ export default function MealPlanScreen() {
                   marginHorizontal: 8,
                 }}
               >
-                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(93, 78, 64, 0.2)' }} />
+                <View
+                  style={{
+                    flex: 1,
+                    height: 1,
+                    backgroundColor: 'rgba(93, 78, 64, 0.2)',
+                  }}
+                />
                 <View
                   style={{
                     width: 8,
@@ -236,7 +241,13 @@ export default function MealPlanScreen() {
                     marginHorizontal: 12,
                   }}
                 />
-                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(93, 78, 64, 0.2)' }} />
+                <View
+                  style={{
+                    flex: 1,
+                    height: 1,
+                    backgroundColor: 'rgba(93, 78, 64, 0.2)',
+                  }}
+                />
               </View>
 
               {/* Other/Extras section */}

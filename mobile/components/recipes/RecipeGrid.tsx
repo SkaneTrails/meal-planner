@@ -2,12 +2,17 @@
  * Responsive recipe grid with loading skeletons and empty state.
  */
 
-import React from 'react';
-import { View, FlatList, RefreshControl, ActivityIndicator, useWindowDimensions } from 'react-native';
-import { colors } from '@/lib/theme';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { RecipeCard, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { TFunction } from '@/lib/i18n';
+import { colors } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 interface RecipeGridProps {
@@ -72,18 +77,33 @@ export const RecipeGrid = ({
           />
         </View>
       )}
-      contentContainerStyle={{ paddingHorizontal: horizontalPadding, paddingBottom: 100 }}
+      contentContainerStyle={{
+        paddingHorizontal: horizontalPadding,
+        paddingBottom: 100,
+      }}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
       refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={onRefresh} tintColor={colors.white} />
+        <RefreshControl
+          refreshing={isLoading}
+          onRefresh={onRefresh}
+          tintColor={colors.white}
+        />
       }
       ListEmptyComponent={
         <EmptyState
           icon={hasFilters ? 'search' : 'book-outline'}
-          title={hasFilters ? t('recipes.noMatchesFound') : t('recipes.emptyLibrary')}
-          subtitle={hasFilters ? t('recipes.tryAdjusting') : t('recipes.startBuilding')}
-          action={!hasFilters ? { label: t('recipes.addFirstRecipe'), onPress: onAddRecipe } : undefined}
+          title={
+            hasFilters ? t('recipes.noMatchesFound') : t('recipes.emptyLibrary')
+          }
+          subtitle={
+            hasFilters ? t('recipes.tryAdjusting') : t('recipes.startBuilding')
+          }
+          action={
+            !hasFilters
+              ? { label: t('recipes.addFirstRecipe'), onPress: onAddRecipe }
+              : undefined
+          }
         />
       }
       ListFooterComponent={

@@ -7,7 +7,6 @@
 // communication correctly. The expo-web-browser maybeCompleteAuthSession is only
 // needed for native platforms using expo-auth-session.
 
-import { useFonts } from 'expo-font';
 import {
   DMSans_400Regular,
   DMSans_500Medium,
@@ -20,6 +19,7 @@ import {
   PlayfairDisplay_600SemiBold,
   PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -105,15 +105,24 @@ export default function RootLayout() {
                 />
                 <Stack.Screen
                   name="recipe/[id]"
-                  options={{ headerShown: false, animation: 'slide_from_right' }}
+                  options={{
+                    headerShown: false,
+                    animation: 'slide_from_right',
+                  }}
                 />
                 <Stack.Screen
                   name="select-recipe"
-                  options={{ headerShown: false, animation: 'slide_from_right' }}
+                  options={{
+                    headerShown: false,
+                    animation: 'slide_from_right',
+                  }}
                 />
                 <Stack.Screen
                   name="add-recipe"
-                  options={{ headerShown: false, animation: 'slide_from_right' }}
+                  options={{
+                    headerShown: false,
+                    animation: 'slide_from_right',
+                  }}
                 />
               </Stack>
             </GroceryProvider>

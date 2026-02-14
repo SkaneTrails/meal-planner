@@ -1,14 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Modal,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, Modal, Text, View } from 'react-native';
 import { AnimatedPressable, GradientBackground } from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
@@ -33,15 +25,24 @@ interface HouseholdDetailModalProps {
   onClose: () => void;
 }
 
-export const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModalProps) => {
+export const HouseholdDetailModal = ({
+  household,
+  onClose,
+}: HouseholdDetailModalProps) => {
   const { t } = useTranslation();
-  const { data: members, isLoading, refetch } = useHouseholdMembers(household.id);
+  const {
+    data: members,
+    isLoading,
+    refetch,
+  } = useHouseholdMembers(household.id);
   const addMember = useAddMember();
   const removeMember = useRemoveMember();
 
   const [showAddMember, setShowAddMember] = useState(false);
   const [newMemberEmail, setNewMemberEmail] = useState('');
-  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>('member');
+  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>(
+    'member',
+  );
 
   const handleAddMember = async () => {
     if (!newMemberEmail.trim()) return;
@@ -62,7 +63,10 @@ export const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModa
   const handleRemoveMember = (email: string) => {
     showAlert(
       t('admin.removeMember'),
-      t('admin.removeMemberConfirm', { name: email, household: household.name }),
+      t('admin.removeMemberConfirm', {
+        name: email,
+        household: household.name,
+      }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -70,11 +74,17 @@ export const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModa
           style: 'destructive',
           onPress: async () => {
             try {
-              await removeMember.mutateAsync({ householdId: household.id, email });
+              await removeMember.mutateAsync({
+                householdId: household.id,
+                email,
+              });
               refetch();
             } catch (error) {
               if (__DEV__) console.error('Failed to remove member:', error);
-              showNotification(t('common.error'), t('admin.failedToRemoveMember'));
+              showNotification(
+                t('common.error'),
+                t('admin.failedToRemoveMember'),
+              );
             }
           },
         },
@@ -83,7 +93,12 @@ export const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModa
   };
 
   return (
-    <Modal visible={true} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={true}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
       <GradientBackground muted>
         <View style={{ flex: 1 }}>
           <ModalHeader household={household} onClose={onClose} />
@@ -98,11 +113,16 @@ export const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModa
                 data={members || []}
                 keyExtractor={(item) => item.email}
                 renderItem={({ item }) => (
-                  <MemberCard member={item} onRemove={() => handleRemoveMember(item.email)} />
+                  <MemberCard
+                    member={item}
+                    onRemove={() => handleRemoveMember(item.email)}
+                  />
                 )}
                 ListEmptyComponent={
                   <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                    <Text style={{ color: colors.text.muted }}>{t('admin.noMembers')}</Text>
+                    <Text style={{ color: colors.text.muted }}>
+                      {t('admin.noMembers')}
+                    </Text>
                   </View>
                 }
               />
@@ -126,7 +146,13 @@ export const HouseholdDetailModal = ({ household, onClose }: HouseholdDetailModa
   );
 };
 
-const ModalHeader = ({ household, onClose }: { household: Household; onClose: () => void }) => {
+const ModalHeader = ({
+  household,
+  onClose,
+}: {
+  household: Household;
+  onClose: () => void;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -166,7 +192,9 @@ const ModalHeader = ({ household, onClose }: { household: Household; onClose: ()
         >
           {household.name}
         </Text>
-        <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+        <Text
+          style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
+        >
           {t('admin.createdBy', { email: household.created_by })}
         </Text>
       </View>
@@ -209,7 +237,13 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
         }}
       >
         <Ionicons name="person-add" size={16} color="white" />
-        <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
+        <Text
+          style={{
+            color: 'white',
+            fontWeight: fontWeight.medium,
+            marginLeft: 4,
+          }}
+        >
           {t('admin.addMemberButton')}
         </Text>
       </AnimatedPressable>
@@ -217,9 +251,16 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
   );
 };
 
-const MemberCard = ({ member, onRemove }: { member: HouseholdMember; onRemove: () => void }) => {
+const MemberCard = ({
+  member,
+  onRemove,
+}: {
+  member: HouseholdMember;
+  onRemove: () => void;
+}) => {
   const { t } = useTranslation();
-  const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
+  const roleColor =
+    member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
     <View
@@ -236,12 +277,18 @@ const MemberCard = ({ member, onRemove }: { member: HouseholdMember; onRemove: (
     >
       <View style={{ flex: 1 }}>
         <Text
-          style={{ fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.inverse }}
+          style={{
+            fontSize: fontSize.md,
+            fontWeight: fontWeight.medium,
+            color: colors.text.inverse,
+          }}
         >
           {member.display_name || member.email}
         </Text>
         {member.display_name && (
-          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+          <Text
+            style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
+          >
             {member.email}
           </Text>
         )}
@@ -267,7 +314,12 @@ const MemberCard = ({ member, onRemove }: { member: HouseholdMember; onRemove: (
           </Text>
         </View>
       </View>
-      <AnimatedPressable onPress={onRemove} hoverScale={1.1} pressScale={0.9} style={{ padding: spacing.sm }}>
+      <AnimatedPressable
+        onPress={onRemove}
+        hoverScale={1.1}
+        pressScale={0.9}
+        style={{ padding: spacing.sm }}
+      >
         <Ionicons name="trash-outline" size={20} color={colors.error} />
       </AnimatedPressable>
     </View>

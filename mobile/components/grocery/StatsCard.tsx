@@ -125,7 +125,9 @@ interface ItemsAtHomeIndicatorProps {
   hiddenAtHomeCount: number;
 }
 
-const ItemsAtHomeIndicator = ({ hiddenAtHomeCount }: ItemsAtHomeIndicatorProps) => {
+const ItemsAtHomeIndicator = ({
+  hiddenAtHomeCount,
+}: ItemsAtHomeIndicatorProps) => {
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -262,7 +264,10 @@ export const StatsCard = ({
         />
       )}
 
-      <ProgressBar itemsToBuy={itemsToBuy} checkedItemsToBuy={checkedItemsToBuy} />
+      <ProgressBar
+        itemsToBuy={itemsToBuy}
+        checkedItemsToBuy={checkedItemsToBuy}
+      />
 
       <ItemsAtHomeIndicator hiddenAtHomeCount={hiddenAtHomeCount} />
     </View>

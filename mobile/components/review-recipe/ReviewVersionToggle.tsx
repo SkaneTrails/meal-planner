@@ -52,7 +52,8 @@ export const ReviewVersionToggle = ({
           flex: 1,
           paddingVertical: spacing.md,
           borderRadius: borderRadius.sm,
-          backgroundColor: selectedTab === 'original' ? colors.primary : 'transparent',
+          backgroundColor:
+            selectedTab === 'original' ? colors.primary : 'transparent',
           alignItems: 'center',
         }}
       >
@@ -60,7 +61,8 @@ export const ReviewVersionToggle = ({
           style={{
             fontSize: fontSize.lg,
             fontFamily: fontFamily.bodyMedium,
-            color: selectedTab === 'original' ? colors.white : colors.text.inverse,
+            color:
+              selectedTab === 'original' ? colors.white : colors.text.inverse,
           }}
         >
           {t('reviewRecipe.original')}
@@ -72,7 +74,8 @@ export const ReviewVersionToggle = ({
           flex: 1,
           paddingVertical: spacing.md,
           borderRadius: borderRadius.sm,
-          backgroundColor: selectedTab === 'enhanced' ? colors.accent : 'transparent',
+          backgroundColor:
+            selectedTab === 'enhanced' ? colors.accent : 'transparent',
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'center',
@@ -88,7 +91,8 @@ export const ReviewVersionToggle = ({
           style={{
             fontSize: fontSize.lg,
             fontFamily: fontFamily.bodyMedium,
-            color: selectedTab === 'enhanced' ? colors.white : colors.text.inverse,
+            color:
+              selectedTab === 'enhanced' ? colors.white : colors.text.inverse,
           }}
         >
           {t('reviewRecipe.enhanced')}

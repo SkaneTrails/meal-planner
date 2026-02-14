@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { AnimatedPressable, SectionHeader } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
@@ -17,7 +17,11 @@ interface AccountSectionProps {
   onSignOut: () => void;
 }
 
-export const AccountSection = ({ userEmail, displayName, onSignOut }: AccountSectionProps) => {
+export const AccountSection = ({
+  userEmail,
+  displayName,
+  onSignOut,
+}: AccountSectionProps) => {
   const { t } = useTranslation();
 
   return (
@@ -49,15 +53,33 @@ export const AccountSection = ({ userEmail, displayName, onSignOut }: AccountSec
               marginRight: spacing.md,
             }}
           >
-            <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text.dark }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: '600',
+                color: colors.text.dark,
+              }}
+            >
               {userEmail?.[0]?.toUpperCase() || '?'}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '600',
+                color: colors.text.dark,
+              }}
+            >
               {displayName || userEmail?.split('@')[0] || 'User'}
             </Text>
-            <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 2 }}>
+            <Text
+              style={{
+                fontSize: 13,
+                color: colors.text.dark + '80',
+                marginTop: 2,
+              }}
+            >
               {userEmail}
             </Text>
           </View>
@@ -132,10 +154,18 @@ export const HouseholdSettingsLink = ({
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+          <Text
+            style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}
+          >
             {t('settings.householdSettings')}
           </Text>
-          <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
+          <Text
+            style={{
+              fontSize: 13,
+              color: colors.text.dark + '80',
+              marginTop: 4,
+            }}
+          >
             {isLoading
               ? t('settings.loadingHousehold')
               : householdId
@@ -146,7 +176,11 @@ export const HouseholdSettingsLink = ({
         {isLoading ? (
           <ActivityIndicator size="small" color={colors.text.dark + '80'} />
         ) : (
-          <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={colors.text.dark + '80'}
+          />
         )}
       </AnimatedPressable>
     </View>

@@ -75,7 +75,13 @@ export const GeneralSection = ({
             {t('householdSettings.general.nameLabel')}
           </Text>
           {isEditingName ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.sm,
+              }}
+            >
               <TextInput
                 value={editedName}
                 onChangeText={onEditedNameChange}
@@ -129,7 +135,11 @@ export const GeneralSection = ({
           ) : (
             <Pressable
               onPress={canEdit ? onStartEditName : undefined}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.sm,
+              }}
             >
               <Text
                 style={{

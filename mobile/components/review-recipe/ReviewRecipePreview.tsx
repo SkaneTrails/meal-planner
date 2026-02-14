@@ -1,6 +1,13 @@
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, fontSize, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import type { RecipeCreate } from '@/lib/types';
 
 interface ReviewRecipePreviewProps {
@@ -8,7 +15,10 @@ interface ReviewRecipePreviewProps {
   t: TFunction;
 }
 
-export const ReviewRecipePreview = ({ recipe, t }: ReviewRecipePreviewProps) => {
+export const ReviewRecipePreview = ({
+  recipe,
+  t,
+}: ReviewRecipePreviewProps) => {
   const ingredients = recipe.ingredients ?? [];
   const instructions = recipe.instructions ?? [];
 
@@ -45,7 +55,13 @@ export const ReviewRecipePreview = ({ recipe, t }: ReviewRecipePreviewProps) => 
         </Text>
       ))}
       {ingredients.length > 5 && (
-        <Text style={{ fontSize: fontSize.md, color: colors.gray[500], fontStyle: 'italic' }}>
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            color: colors.gray[500],
+            fontStyle: 'italic',
+          }}
+        >
           +{ingredients.length - 5} {t('common.more')}
         </Text>
       )}
@@ -60,7 +76,8 @@ export const ReviewRecipePreview = ({ recipe, t }: ReviewRecipePreviewProps) => 
           marginBottom: spacing.md,
         }}
       >
-        {t('recipe.instructions')} ({instructions.length} {t('reviewRecipe.steps')})
+        {t('recipe.instructions')} ({instructions.length}{' '}
+        {t('reviewRecipe.steps')})
       </Text>
       {instructions.slice(0, 3).map((instruction, index) => (
         <Text
@@ -76,7 +93,13 @@ export const ReviewRecipePreview = ({ recipe, t }: ReviewRecipePreviewProps) => 
         </Text>
       ))}
       {instructions.length > 3 && (
-        <Text style={{ fontSize: fontSize.md, color: colors.gray[500], fontStyle: 'italic' }}>
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            color: colors.gray[500],
+            fontStyle: 'italic',
+          }}
+        >
           +{instructions.length - 3} {t('common.more')}
         </Text>
       )}

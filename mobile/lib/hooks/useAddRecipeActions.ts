@@ -1,10 +1,15 @@
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useScrapeRecipe, useCreateRecipe, useImagePicker, useReviewEnhancement } from '@/lib/hooks';
-import { api, ApiClientError } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
+import { ApiClientError, api } from '@/lib/api';
+import {
+  useCreateRecipe,
+  useImagePicker,
+  useReviewEnhancement,
+  useScrapeRecipe,
+} from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import type { Recipe, DietLabel, MealLabel } from '@/lib/types';
+import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 const extractHostname = (url: string): string => {
   try {
@@ -16,7 +21,10 @@ const extractHostname = (url: string): string => {
 
 export const useAddRecipeActions = () => {
   const router = useRouter();
-  const { url: urlParam, manual: manualParam } = useLocalSearchParams<{ url?: string; manual?: string }>();
+  const { url: urlParam, manual: manualParam } = useLocalSearchParams<{
+    url?: string;
+    manual?: string;
+  }>();
   const isManualMode = manualParam === 'true';
   const { t } = useTranslation();
 
@@ -53,33 +61,43 @@ export const useAddRecipeActions = () => {
 
   const handleImport = async () => {
     if (!isValidUrl(url)) {
-      showNotification(t('addRecipe.invalidUrl'), t('addRecipe.invalidUrlMessage'));
+      showNotification(
+        t('addRecipe.invalidUrl'),
+        t('addRecipe.invalidUrlMessage'),
+      );
       return;
     }
 
     try {
       // scrapeRecipe handles client-side fetch + server fallback internally
-      const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
+      const recipe = await scrapeRecipe.mutateAsync({
+        url,
+        enhance: enhanceWithAI,
+      });
       setImportedRecipe(recipe);
 
       if (recipe.enhanced) {
         // Show AI changes modal for user to accept or reject
         setShowSummaryModal(true);
       } else {
-        showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
-          {
-            text: t('addRecipe.viewRecipe'),
-            style: 'cancel',
-            onPress: () => {
-              router.back();
-              router.push(`/recipe/${recipe.id}`);
+        showAlert(
+          t('addRecipe.done'),
+          t('addRecipe.recipeImported', { title: recipe.title }),
+          [
+            {
+              text: t('addRecipe.viewRecipe'),
+              style: 'cancel',
+              onPress: () => {
+                router.back();
+                router.push(`/recipe/${recipe.id}`);
+              },
             },
-          },
-          {
-            text: t('addRecipe.addMore'),
-            onPress: () => setUrl(''),
-          },
-        ]);
+            {
+              text: t('addRecipe.addMore'),
+              onPress: () => setUrl(''),
+            },
+          ],
+        );
       }
     } catch (err) {
       if (err instanceof ApiClientError && err.reason === 'blocked') {
@@ -88,7 +106,10 @@ export const useAddRecipeActions = () => {
           t('addRecipe.importFailed'),
           t('addRecipe.siteBlocked', { host }),
         );
-      } else if (err instanceof ApiClientError && err.reason === 'not_supported') {
+      } else if (
+        err instanceof ApiClientError &&
+        err.reason === 'not_supported'
+      ) {
         const host = extractHostname(url);
         showNotification(
           t('addRecipe.importFailed'),
@@ -100,7 +121,10 @@ export const useAddRecipeActions = () => {
           t('addRecipe.recipeExists'),
         );
       } else {
-        const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
+        const message =
+          err instanceof Error
+            ? err.message
+            : t('addRecipe.importFailedDefault');
         showNotification(t('addRecipe.importFailed'), message);
       }
     }
@@ -126,7 +150,10 @@ export const useAddRecipeActions = () => {
     }
 
     const parsedServings = servings ? parseInt(servings, 10) : null;
-    if (parsedServings !== null && (isNaN(parsedServings) || parsedServings < 1)) {
+    if (
+      parsedServings !== null &&
+      (Number.isNaN(parsedServings) || parsedServings < 1)
+    ) {
       showNotification(t('common.error'), t('addRecipe.servingsInvalid'));
       return;
     }
@@ -135,8 +162,14 @@ export const useAddRecipeActions = () => {
       const recipe = await createRecipe.mutateAsync({
         title: title.trim(),
         url: '',
-        ingredients: ingredients.split('\n').map(i => i.trim()).filter(Boolean),
-        instructions: instructions.split('\n').map(i => i.trim()).filter(Boolean),
+        ingredients: ingredients
+          .split('\n')
+          .map((i) => i.trim())
+          .filter(Boolean),
+        instructions: instructions
+          .split('\n')
+          .map((i) => i.trim())
+          .filter(Boolean),
         image_url: imageUrl.trim() || null,
         servings: parsedServings,
         prep_time: prepTime ? parseInt(prepTime, 10) : null,
@@ -149,26 +182,34 @@ export const useAddRecipeActions = () => {
         try {
           await api.uploadRecipeImage(recipe.id, selectedImage);
         } catch {
-          showNotification(t('common.error'), t('recipeDetail.imageUploadFailed'));
+          showNotification(
+            t('common.error'),
+            t('recipeDetail.imageUploadFailed'),
+          );
         }
       }
 
-      showAlert(t('addRecipe.done'), t('addRecipe.recipeCreated', { title: recipe.title }), [
-        {
-          text: t('addRecipe.viewRecipe'),
-          style: 'cancel',
-          onPress: () => {
-            router.back();
-            router.push(`/recipe/${recipe.id}`);
+      showAlert(
+        t('addRecipe.done'),
+        t('addRecipe.recipeCreated', { title: recipe.title }),
+        [
+          {
+            text: t('addRecipe.viewRecipe'),
+            style: 'cancel',
+            onPress: () => {
+              router.back();
+              router.push(`/recipe/${recipe.id}`);
+            },
           },
-        },
-        {
-          text: t('addRecipe.addMore'),
-          onPress: resetManualForm,
-        },
-      ]);
+          {
+            text: t('addRecipe.addMore'),
+            onPress: resetManualForm,
+          },
+        ],
+      );
     } catch (err) {
-      const message = err instanceof Error ? err.message : t('addRecipe.createFailedDefault');
+      const message =
+        err instanceof Error ? err.message : t('addRecipe.createFailedDefault');
       showNotification(t('addRecipe.createFailed'), message);
     }
   };
@@ -181,7 +222,10 @@ export const useAddRecipeActions = () => {
   const handleAcceptEnhancement = async () => {
     if (!importedRecipe) return;
     try {
-      await reviewEnhancement.mutateAsync({ id: importedRecipe.id, action: 'approve' });
+      await reviewEnhancement.mutateAsync({
+        id: importedRecipe.id,
+        action: 'approve',
+      });
       setShowSummaryModal(false);
       router.back();
       router.push(`/recipe/${importedRecipe.id}`);
@@ -193,7 +237,10 @@ export const useAddRecipeActions = () => {
   const handleRejectEnhancement = async () => {
     if (!importedRecipe) return;
     try {
-      await reviewEnhancement.mutateAsync({ id: importedRecipe.id, action: 'reject' });
+      await reviewEnhancement.mutateAsync({
+        id: importedRecipe.id,
+        action: 'reject',
+      });
       setShowSummaryModal(false);
       router.back();
       router.push(`/recipe/${importedRecipe.id}`);
@@ -216,7 +263,10 @@ export const useAddRecipeActions = () => {
     setUrl('');
   };
 
-  const isPending = scrapeRecipe.isPending || createRecipe.isPending || reviewEnhancement.isPending;
+  const isPending =
+    scrapeRecipe.isPending ||
+    createRecipe.isPending ||
+    reviewEnhancement.isPending;
   const isReviewPending = reviewEnhancement.isPending;
 
   return {

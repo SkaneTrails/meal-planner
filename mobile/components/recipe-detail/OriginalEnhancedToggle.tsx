@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, spacing, fontFamily, fontSize } from '@/lib/theme';
+import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
+import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
 
 interface OriginalEnhancedToggleProps {
   showOriginal: boolean;
@@ -15,13 +14,15 @@ export const OriginalEnhancedToggle = ({
   t,
   onToggle,
 }: OriginalEnhancedToggleProps) => (
-  <View style={{
-    marginTop: spacing.xl,
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    borderRadius: borderRadius.lg,
-    padding: 4,
-  }}>
+  <View
+    style={{
+      marginTop: spacing.xl,
+      flexDirection: 'row',
+      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      borderRadius: borderRadius.lg,
+      padding: 4,
+    }}
+  >
     <Pressable
       onPress={showOriginal ? undefined : onToggle}
       style={{
@@ -31,7 +32,9 @@ export const OriginalEnhancedToggle = ({
         justifyContent: 'center',
         paddingVertical: spacing.sm,
         borderRadius: borderRadius.md,
-        backgroundColor: showOriginal ? 'rgba(255, 255, 255, 0.85)' : 'transparent',
+        backgroundColor: showOriginal
+          ? 'rgba(255, 255, 255, 0.85)'
+          : 'transparent',
       }}
     >
       <Ionicons
@@ -40,11 +43,13 @@ export const OriginalEnhancedToggle = ({
         color={showOriginal ? '#5D4037' : 'rgba(93, 64, 55, 0.5)'}
         style={{ marginRight: spacing.xs }}
       />
-      <Text style={{
-        fontSize: fontSize.md,
-        fontFamily: showOriginal ? fontFamily.bodySemibold : fontFamily.body,
-        color: showOriginal ? '#5D4037' : 'rgba(93, 64, 55, 0.5)',
-      }}>
+      <Text
+        style={{
+          fontSize: fontSize.md,
+          fontFamily: showOriginal ? fontFamily.bodySemibold : fontFamily.body,
+          color: showOriginal ? '#5D4037' : 'rgba(93, 64, 55, 0.5)',
+        }}
+      >
         {t('recipe.showOriginal')}
       </Text>
     </Pressable>
@@ -57,7 +62,9 @@ export const OriginalEnhancedToggle = ({
         justifyContent: 'center',
         paddingVertical: spacing.sm,
         borderRadius: borderRadius.md,
-        backgroundColor: showOriginal ? 'transparent' : 'rgba(255, 255, 255, 0.85)',
+        backgroundColor: showOriginal
+          ? 'transparent'
+          : 'rgba(255, 255, 255, 0.85)',
       }}
     >
       <Ionicons
@@ -66,11 +73,13 @@ export const OriginalEnhancedToggle = ({
         color={showOriginal ? 'rgba(45, 106, 90, 0.5)' : '#2D6A5A'}
         style={{ marginRight: spacing.xs }}
       />
-      <Text style={{
-        fontSize: fontSize.md,
-        fontFamily: showOriginal ? fontFamily.body : fontFamily.bodySemibold,
-        color: showOriginal ? 'rgba(45, 106, 90, 0.5)' : '#2D6A5A',
-      }}>
+      <Text
+        style={{
+          fontSize: fontSize.md,
+          fontFamily: showOriginal ? fontFamily.body : fontFamily.bodySemibold,
+          color: showOriginal ? 'rgba(45, 106, 90, 0.5)' : '#2D6A5A',
+        }}
+      >
         {t('recipe.showEnhanced')}
       </Text>
     </Pressable>

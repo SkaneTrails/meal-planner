@@ -22,9 +22,8 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const householdId = paramId ?? currentUser?.household_id;
 
-  const { data: remoteSettings, isLoading: settingsLoading } = useHouseholdSettings(
-    householdId ?? null,
-  );
+  const { data: remoteSettings, isLoading: settingsLoading } =
+    useHouseholdSettings(householdId ?? null);
   const isLoading = userLoading || settingsLoading;
   const updateSettings = useUpdateHouseholdSettings();
 
@@ -36,7 +35,9 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
   const addMember = useAddMember();
   const removeMember = useRemoveMember();
   const [newMemberEmail, setNewMemberEmail] = useState('');
-  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>('member');
+  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'member'>(
+    'member',
+  );
 
   const { data: household } = useHousehold(householdId ?? '');
   const renameHousehold = useRenameHousehold();
@@ -45,7 +46,8 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
 
   const canEdit =
     currentUser?.role === 'superuser' ||
-    (currentUser?.role === 'admin' && currentUser?.household_id === householdId);
+    (currentUser?.role === 'admin' &&
+      currentUser?.household_id === householdId);
 
   const [settings, setSettings] = useState<HouseholdSettings>(DEFAULT_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
@@ -59,7 +61,9 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
           ...DEFAULT_SETTINGS.dietary,
           ...(remoteSettings.dietary ?? {}),
         },
-        equipment: Array.isArray(remoteSettings.equipment) ? remoteSettings.equipment : [],
+        equipment: Array.isArray(remoteSettings.equipment)
+          ? remoteSettings.equipment
+          : [],
       });
     }
   }, [remoteSettings]);
@@ -69,7 +73,10 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     try {
       await updateSettings.mutateAsync({ householdId, settings });
       setHasChanges(false);
-      showNotification(t('householdSettings.saved'), t('householdSettings.savedMessage'));
+      showNotification(
+        t('householdSettings.saved'),
+        t('householdSettings.savedMessage'),
+      );
     } catch {
       showNotification(t('common.error'), t('householdSettings.failedToSave'));
     }
@@ -150,7 +157,9 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
 
     showAlert(
       t('admin.removeMember'),
-      t('settings.removeMemberConfirm', { name: member.display_name || member.email }),
+      t('settings.removeMemberConfirm', {
+        name: member.display_name || member.email,
+      }),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -158,12 +167,18 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await removeMember.mutateAsync({ householdId, email: member.email });
+              await removeMember.mutateAsync({
+                householdId,
+                email: member.email,
+              });
               refetchMembers();
               showNotification(t('settings.memberRemoved'));
             } catch (error) {
               if (__DEV__) console.error('Failed to remove member:', error);
-              showNotification(t('common.error'), t('admin.failedToRemoveMember'));
+              showNotification(
+                t('common.error'),
+                t('admin.failedToRemoveMember'),
+              );
             }
           },
         },

@@ -1,5 +1,5 @@
-import { Text, Pressable, type ViewStyle, type TextStyle } from 'react-native';
 import type { ReactNode } from 'react';
+import { Pressable, Text, type TextStyle, type ViewStyle } from 'react-native';
 
 interface FilterChipProps {
   label: string;
@@ -49,7 +49,11 @@ const FilterChip = ({
       paddingHorizontal: 14,
       paddingVertical: 7,
       borderRadius: 16,
-      backgroundColor: selected ? activeColor : pressed ? `${activeColor}10` : 'transparent',
+      backgroundColor: selected
+        ? activeColor
+        : pressed
+          ? `${activeColor}10`
+          : 'transparent',
       borderWidth: 1.5,
       borderColor: selected ? activeColor : inactiveBorderColor,
       flexDirection: 'row',

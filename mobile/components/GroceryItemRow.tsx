@@ -3,8 +3,8 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Platform, Pressable, Text, View, ViewStyle } from 'react-native';
+import { useState } from 'react';
+import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
 import type { GroceryItem } from '@/lib/types';
 

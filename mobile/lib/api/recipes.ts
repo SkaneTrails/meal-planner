@@ -2,6 +2,7 @@
  * Recipe API endpoints: CRUD, scraping, and image upload.
  */
 
+import { Platform } from 'react-native';
 import type {
   EnhancementReviewAction,
   PaginatedRecipeList,
@@ -13,18 +14,30 @@ import type {
   RecipeScrapeRequest,
   RecipeUpdate,
 } from '../types';
-import { Platform } from 'react-native';
-import { API_BASE_URL, API_PREFIX, ApiClientError, apiRequest, getAuthTokenFn } from './client';
+import {
+  API_BASE_URL,
+  API_PREFIX,
+  ApiClientError,
+  apiRequest,
+  getAuthTokenFn,
+} from './client';
 
 export const recipeApi = {
-  getRecipes: (search?: string, cursor?: string, limit?: number, showHidden?: boolean): Promise<PaginatedRecipeList> => {
+  getRecipes: (
+    search?: string,
+    cursor?: string,
+    limit?: number,
+    showHidden?: boolean,
+  ): Promise<PaginatedRecipeList> => {
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (cursor) params.set('cursor', cursor);
     if (limit) params.set('limit', String(limit));
     if (showHidden) params.set('show_hidden', 'true');
     const query = params.toString();
-    return apiRequest<PaginatedRecipeList>(`/recipes${query ? `?${query}` : ''}`);
+    return apiRequest<PaginatedRecipeList>(
+      `/recipes${query ? `?${query}` : ''}`,
+    );
   },
 
   getRecipe: (id: string): Promise<Recipe> => {
@@ -38,7 +51,10 @@ export const recipeApi = {
     });
   },
 
-  scrapeRecipe: async (url: string, enhance: boolean = false): Promise<Recipe> => {
+  scrapeRecipe: async (
+    url: string,
+    enhance: boolean = false,
+  ): Promise<Recipe> => {
     // Validate URL before attempting fetch — TypeError from new URL()
     // should be a hard error, not fall through to server-side scraping.
     let parsed: URL;
@@ -54,7 +70,8 @@ export const recipeApi = {
     try {
       const htmlResponse = await fetch(url, {
         headers: {
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
         },
       });
@@ -94,7 +111,11 @@ export const recipeApi = {
     }
   },
 
-  previewRecipe: async (url: string, html: string, enhance: boolean = true): Promise<RecipePreview> => {
+  previewRecipe: async (
+    url: string,
+    html: string,
+    enhance: boolean = true,
+  ): Promise<RecipePreview> => {
     const request: RecipePreviewRequest = { url, html, enhance };
     return apiRequest<RecipePreview>('/recipes/preview', {
       method: 'POST',
@@ -113,7 +134,10 @@ export const recipeApi = {
     return apiRequest<void>(`/recipes/${id}`, { method: 'DELETE' });
   },
 
-  reviewEnhancement: (id: string, action: EnhancementReviewAction): Promise<Recipe> => {
+  reviewEnhancement: (
+    id: string,
+    action: EnhancementReviewAction,
+  ): Promise<Recipe> => {
     return apiRequest<Recipe>(`/recipes/${id}/enhancement/review`, {
       method: 'POST',
       body: JSON.stringify({ action }),

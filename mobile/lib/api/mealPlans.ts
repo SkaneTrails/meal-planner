@@ -78,7 +78,9 @@ export const groceryApi = {
     });
   },
 
-  patchGroceryState: (body: GroceryListStatePatch): Promise<GroceryListState> => {
+  patchGroceryState: (
+    body: GroceryListStatePatch,
+  ): Promise<GroceryListState> => {
     return apiRequest<GroceryListState>('/grocery/state', {
       method: 'PATCH',
       body: JSON.stringify(body),

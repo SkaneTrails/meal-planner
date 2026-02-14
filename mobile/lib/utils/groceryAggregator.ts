@@ -68,7 +68,7 @@ export const aggregateIngredients = (
         }
         if (parsed.quantity !== null && item.quantity !== null) {
           const existingQty = parseFloat(item.quantity);
-          if (!isNaN(existingQty) && parsed.unit === item.unit) {
+          if (!Number.isNaN(existingQty) && parsed.unit === item.unit) {
             item.quantity = String(existingQty + parsed.quantity);
           }
         }

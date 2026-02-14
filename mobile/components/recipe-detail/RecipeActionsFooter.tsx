@@ -1,9 +1,15 @@
-import React from 'react';
-import { Text, Pressable, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { shadows, borderRadius, colors, spacing, fontFamily, fontSize } from '@/lib/theme';
+import { Linking, Pressable, Text } from 'react-native';
 import { showNotification } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 const FOOTER_BOTTOM_MARGIN = 100;
 
@@ -13,7 +19,11 @@ interface RecipeActionsFooterProps {
   onShowPlanModal: () => void;
 }
 
-export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFooterProps) => (
+export const RecipeActionsFooter = ({
+  url,
+  t,
+  onShowPlanModal,
+}: RecipeActionsFooterProps) => (
   <>
     {url && (
       <Pressable
@@ -42,7 +52,15 @@ export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFo
         }}
       >
         <Ionicons name="link" size={18} color="#5D4E40" />
-        <Text style={{ color: '#5D4E40', marginLeft: spacing.sm, fontSize: fontSize.xl, fontFamily: fontFamily.bodyMedium }} numberOfLines={1}>
+        <Text
+          style={{
+            color: '#5D4E40',
+            marginLeft: spacing.sm,
+            fontSize: fontSize.xl,
+            fontFamily: fontFamily.bodyMedium,
+          }}
+          numberOfLines={1}
+        >
           {t('recipe.viewSource')}
         </Text>
       </Pressable>
@@ -63,7 +81,14 @@ export const RecipeActionsFooter = ({ url, t, onShowPlanModal }: RecipeActionsFo
       })}
     >
       <Ionicons name="calendar" size={20} color={colors.white} />
-      <Text style={{ color: colors.white, marginLeft: spacing.sm, fontSize: fontSize['2xl'], fontFamily: fontFamily.bodySemibold }}>
+      <Text
+        style={{
+          color: colors.white,
+          marginLeft: spacing.sm,
+          fontSize: fontSize['2xl'],
+          fontFamily: fontFamily.bodySemibold,
+        }}
+      >
         {t('recipe.addToMealPlan')}
       </Text>
     </Pressable>

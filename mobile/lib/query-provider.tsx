@@ -57,8 +57,7 @@ export async function persistQueryCache(): Promise<void> {
     // Let AsyncStorage handle quota - catch will handle QuotaExceededError
     await AsyncStorage.setItem(CACHE_KEY, serialized);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : String(error);
+    const message = error instanceof Error ? error.message : String(error);
     const name = error instanceof Error ? error.name : 'UnknownError';
 
     console.warn('Failed to persist query cache', {
@@ -110,6 +109,6 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-}
+};
 
 export { queryClient };

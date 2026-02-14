@@ -4,7 +4,13 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useAllRecipes, useGroceryState, useMealPlan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -71,15 +77,15 @@ export const useGroceryScreen = () => {
     return () => clearTimeout(timeout);
   }, [isLoading, hasLoadedOnce]);
 
-  const mealPlanMealsJson = useMemo(
+  const _mealPlanMealsJson = useMemo(
     () => JSON.stringify(mealPlan?.meals || {}),
     [mealPlan?.meals],
   );
-  const mealServingsJson = useMemo(
+  const _mealServingsJson = useMemo(
     () => JSON.stringify(mealServings),
     [mealServings],
   );
-  const selectedMealKeysStr = useMemo(
+  const _selectedMealKeysStr = useMemo(
     () => selectedMealKeys.join(','),
     [selectedMealKeys],
   );
@@ -103,15 +109,24 @@ export const useGroceryScreen = () => {
     );
     setGeneratedItems(items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mealPlanMealsJson, recipes.length, selectedMealKeysStr, mealServingsJson]);
+  }, [
+    recipes.length,
+    mealPlan.meals,
+    mealPlan,
+    recipes,
+    mealServings,
+    selectedMealKeys,
+  ]);
 
   useEffect(() => {
     if (!isLoading) {
       AsyncStorage.setItem(
         'grocery_custom_items',
         JSON.stringify(customItems),
-      ).catch((error) =>
-        __DEV__ && console.error('[Grocery] Error saving custom items:', error),
+      ).catch(
+        (error) =>
+          __DEV__ &&
+          console.error('[Grocery] Error saving custom items:', error),
       );
     }
   }, [customItems, isLoading]);
@@ -159,10 +174,14 @@ export const useGroceryScreen = () => {
       }
     };
 
-    showAlert(t('grocery.clearEntireList'), t('grocery.clearEntireListMessage'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-    ]);
+    showAlert(
+      t('grocery.clearEntireList'),
+      t('grocery.clearEntireListMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      ],
+    );
   };
 
   const handleClearMealPlanItems = () => {
@@ -188,10 +207,14 @@ export const useGroceryScreen = () => {
       }
     };
 
-    showAlert(t('grocery.clearMealPlanItems'), t('grocery.clearMealPlanItemsMessage'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-    ]);
+    showAlert(
+      t('grocery.clearMealPlanItems'),
+      t('grocery.clearMealPlanItemsMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      ],
+    );
   };
 
   const handleClearManualItems = () => {
@@ -212,10 +235,14 @@ export const useGroceryScreen = () => {
       }
     };
 
-    showAlert(t('grocery.clearManualItems'), t('grocery.clearManualItemsMessage'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-    ]);
+    showAlert(
+      t('grocery.clearManualItems'),
+      t('grocery.clearManualItemsMessage'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      ],
+    );
   };
 
   const handleAddItem = () => {

@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, Text, Pressable, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import type { TFunction } from '@/lib/i18n';
 import { fontFamily } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
-import type { TFunction } from '@/lib/i18n';
 
 interface DayHeaderProps {
   date: Date;
@@ -37,19 +36,44 @@ export const DayHeader = ({
   onToggleTag,
 }: DayHeaderProps) => (
   <>
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: isEditing ? 8 : 12 }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: isEditing ? 8 : 12,
+      }}
+    >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {isToday && (
-          <View style={{ backgroundColor: '#6B8E6B', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginRight: 10 }}>
-            <Text style={{ fontSize: 12, fontFamily: fontFamily.bodyBold, color: '#FFFFFF' }}>{t('mealPlan.today')}</Text>
+          <View
+            style={{
+              backgroundColor: '#6B8E6B',
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: 8,
+              marginRight: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: fontFamily.bodyBold,
+                color: '#FFFFFF',
+              }}
+            >
+              {t('mealPlan.today')}
+            </Text>
           </View>
         )}
-        <Text style={{
-          fontSize: 15,
-          fontFamily: fontFamily.bodySemibold,
-          color: isToday ? '#2D2D2D' : 'rgba(45, 45, 45, 0.75)',
-          letterSpacing: -0.2,
-        }}>
+        <Text
+          style={{
+            fontSize: 15,
+            fontFamily: fontFamily.bodySemibold,
+            color: isToday ? '#2D2D2D' : 'rgba(45, 45, 45, 0.75)',
+            letterSpacing: -0.2,
+          }}
+        >
           {formatDayHeader(date, language, t('mealPlan.today'))}
         </Text>
       </View>
@@ -57,27 +81,38 @@ export const DayHeader = ({
       {!isEditing && (
         <Pressable onPress={onStartEdit}>
           {note ? (
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: 'rgba(107, 142, 107, 0.18)',
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-              borderRadius: 12,
-            }}>
-              <Ionicons name="document-text" size={12} color="#6B8E6B" style={{ marginRight: 4 }} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: 'rgba(107, 142, 107, 0.18)',
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
+            >
+              <Ionicons
+                name="document-text"
+                size={12}
+                color="#6B8E6B"
+                style={{ marginRight: 4 }}
+              />
               <Text style={{ fontSize: 12, color: '#5A7A5A' }}>{note}</Text>
             </View>
           ) : (
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: 'rgba(139, 115, 85, 0.08)',
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-              borderRadius: 12,
-            }}>
-              <Text style={{ fontSize: 12, color: 'rgba(93, 78, 64, 0.5)' }}>{t('mealPlan.addNote')}</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: 'rgba(139, 115, 85, 0.08)',
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: 12,
+              }}
+            >
+              <Text style={{ fontSize: 12, color: 'rgba(93, 78, 64, 0.5)' }}>
+                {t('mealPlan.addNote')}
+              </Text>
             </View>
           )}
         </Pressable>
@@ -118,14 +153,16 @@ const NoteEditor = ({
   onToggleTag,
 }: NoteEditorProps) => (
   <View style={{ marginBottom: 12 }}>
-    <View style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#f9f5f0',
-      borderRadius: 12,
-      padding: 10,
-      gap: 8,
-    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f9f5f0',
+        borderRadius: 12,
+        padding: 10,
+        gap: 8,
+      }}
+    >
       <TextInput
         value={noteText}
         onChangeText={onNoteTextChange}
@@ -134,25 +171,43 @@ const NoteEditor = ({
         autoFocus
       />
       <Pressable onPress={onSave}>
-        <Text style={{ fontSize: 14, fontFamily: fontFamily.bodySemibold, color: '#4A3728' }}>{t('mealPlan.notesSave')}</Text>
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: fontFamily.bodySemibold,
+            color: '#4A3728',
+          }}
+        >
+          {t('mealPlan.notesSave')}
+        </Text>
       </Pressable>
       <Pressable onPress={onCancel}>
-        <Text style={{ fontSize: 14, color: '#9ca3af' }}>{t('mealPlan.notesCancel')}</Text>
+        <Text style={{ fontSize: 14, color: '#9ca3af' }}>
+          {t('mealPlan.notesCancel')}
+        </Text>
       </Pressable>
     </View>
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8 }}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ marginTop: 8 }}
+    >
       <View style={{ flexDirection: 'row', gap: 6 }}>
-        {noteSuggestions.map(suggestion => (
+        {noteSuggestions.map((suggestion) => (
           <Pressable
             key={suggestion}
             onPress={() => onToggleTag(suggestion)}
             style={{
-              backgroundColor: noteText.includes(suggestion) ? '#e8dfd4' : '#fff',
+              backgroundColor: noteText.includes(suggestion)
+                ? '#e8dfd4'
+                : '#fff',
               paddingHorizontal: 12,
               paddingVertical: 6,
               borderRadius: 16,
               borderWidth: 1,
-              borderColor: noteText.includes(suggestion) ? '#4A3728' : '#e5e7eb',
+              borderColor: noteText.includes(suggestion)
+                ? '#4A3728'
+                : '#e5e7eb',
             }}
           >
             <Text style={{ fontSize: 13, color: '#4A3728' }}>{suggestion}</Text>

@@ -4,7 +4,7 @@
  */
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -22,9 +22,9 @@ import {
 import { ReviewAiChanges } from '@/components/review-recipe/ReviewAiChanges';
 import { ReviewRecipePreview } from '@/components/review-recipe/ReviewRecipePreview';
 import { ReviewVersionToggle } from '@/components/review-recipe/ReviewVersionToggle';
+import { showNotification } from '@/lib/alert';
 import { useCreateRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
-import { showNotification } from '@/lib/alert';
 import {
   borderRadius,
   colors,
@@ -34,7 +34,12 @@ import {
   shadows,
   spacing,
 } from '@/lib/theme';
-import type { DietLabel, MealLabel, RecipeCreate, RecipePreview } from '@/lib/types';
+import type {
+  DietLabel,
+  MealLabel,
+  RecipeCreate,
+  RecipePreview,
+} from '@/lib/types';
 
 type VersionTab = 'original' | 'enhanced';
 
@@ -53,14 +58,19 @@ export default function ReviewRecipeScreen() {
     }
   }, [params.preview]);
 
-  const hasEnhanced = preview?.enhanced !== null && preview?.enhanced !== undefined;
-  const [selectedTab, setSelectedTab] = useState<VersionTab>(hasEnhanced ? 'enhanced' : 'original');
+  const hasEnhanced =
+    preview?.enhanced !== null && preview?.enhanced !== undefined;
+  const [selectedTab, setSelectedTab] = useState<VersionTab>(
+    hasEnhanced ? 'enhanced' : 'original',
+  );
   const [dietLabel, setDietLabel] = useState<DietLabel | null>(null);
   const [mealLabel, setMealLabel] = useState<MealLabel | null>(null);
 
   if (!preview) {
     return (
-      <GradientBackground style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <GradientBackground
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+      >
         <Text style={{ color: colors.text.inverse, fontSize: fontSize.xl }}>
           {t('common.error')}
         </Text>
@@ -68,9 +78,10 @@ export default function ReviewRecipeScreen() {
     );
   }
 
-  const selectedRecipe: RecipeCreate = selectedTab === 'enhanced' && preview.enhanced
-    ? preview.enhanced
-    : preview.original;
+  const selectedRecipe: RecipeCreate =
+    selectedTab === 'enhanced' && preview.enhanced
+      ? preview.enhanced
+      : preview.original;
 
   const handleSave = async () => {
     const recipeToSave: RecipeCreate = {
@@ -148,7 +159,9 @@ export default function ReviewRecipeScreen() {
           >
             {t('recipe.dietType')}
           </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+          <View
+            style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
+          >
             {DIET_OPTIONS.map(({ value, labelKey, emoji }) => {
               const isSelected = dietLabel === value;
               return (
@@ -158,12 +171,18 @@ export default function ReviewRecipeScreen() {
                   style={({ pressed }) => ({
                     flexDirection: 'row',
                     alignItems: 'center',
-                    backgroundColor: isSelected ? colors.primary : pressed ? colors.bgMid : colors.glass.card,
+                    backgroundColor: isSelected
+                      ? colors.primary
+                      : pressed
+                        ? colors.bgMid
+                        : colors.glass.card,
                     paddingHorizontal: spacing.md,
                     paddingVertical: spacing.sm,
                     borderRadius: 20,
                     borderWidth: 1,
-                    borderColor: isSelected ? colors.primary : colors.glass.border,
+                    borderColor: isSelected
+                      ? colors.primary
+                      : colors.glass.border,
                   })}
                 >
                   <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
@@ -196,7 +215,9 @@ export default function ReviewRecipeScreen() {
           >
             {t('recipe.mealTypeLabel')}
           </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+          <View
+            style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
+          >
             {MEAL_OPTIONS.map(({ value, labelKey }) => {
               const isSelected = mealLabel === value;
               return (
@@ -204,12 +225,18 @@ export default function ReviewRecipeScreen() {
                   key={labelKey}
                   onPress={() => setMealLabel(value)}
                   style={({ pressed }) => ({
-                    backgroundColor: isSelected ? colors.primary : pressed ? colors.bgMid : colors.glass.card,
+                    backgroundColor: isSelected
+                      ? colors.primary
+                      : pressed
+                        ? colors.bgMid
+                        : colors.glass.card,
                     paddingHorizontal: spacing.md,
                     paddingVertical: spacing.sm,
                     borderRadius: 20,
                     borderWidth: 1,
-                    borderColor: isSelected ? colors.primary : colors.glass.border,
+                    borderColor: isSelected
+                      ? colors.primary
+                      : colors.glass.border,
                   })}
                 >
                   <Text

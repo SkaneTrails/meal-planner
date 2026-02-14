@@ -4,7 +4,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Platform,
   Pressable,
@@ -84,9 +84,7 @@ export default function RecipesScreen() {
       const matchesSearch =
         searchQuery === '' ||
         recipe.title.toLowerCase().includes(query) ||
-        recipe.tags.some((tag) =>
-          tag.toLowerCase().includes(query),
-        ) ||
+        recipe.tags.some((tag) => tag.toLowerCase().includes(query)) ||
         recipe.ingredients.some((ingredient) =>
           ingredient.toLowerCase().includes(query),
         );

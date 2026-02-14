@@ -4,8 +4,14 @@
  */
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
-import { colors, spacing, fontSize, fontFamily, borderRadius } from '@/lib/theme';
+import { Platform, Pressable, Text, View } from 'react-native';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -15,7 +21,10 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   state: ErrorBoundaryState = { hasError: false };
 
   static getDerivedStateFromError(_error: Error): ErrorBoundaryState {

@@ -40,14 +40,26 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}>
+          <Text
+            style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}
+          >
             {t('settings.adminDashboard')}
           </Text>
-          <Text style={{ fontSize: 13, color: colors.text.dark + '80', marginTop: 4 }}>
+          <Text
+            style={{
+              fontSize: 13,
+              color: colors.text.dark + '80',
+              marginTop: 4,
+            }}
+          >
             {t('settings.adminDashboardDesc')}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color={colors.text.dark + '80'} />
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.text.dark + '80'}
+        />
       </AnimatedPressable>
     </View>
   );
@@ -80,11 +92,17 @@ export const AboutSection = () => {
             marginBottom: spacing.md,
           }}
         >
-          <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>
+          <Text
+            style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}
+          >
             {t('settings.version')}
           </Text>
           <Text
-            style={{ fontSize: fontSize.md, color: colors.text.dark, fontWeight: fontWeight.medium }}
+            style={{
+              fontSize: fontSize.md,
+              color: colors.text.dark,
+              fontWeight: fontWeight.medium,
+            }}
           >
             1.0.0
           </Text>
@@ -96,7 +114,9 @@ export const AboutSection = () => {
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}>
+          <Text
+            style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}
+          >
             {t('settings.madeWith')}
           </Text>
           <Text style={{ fontSize: fontSize.md }}>❤️</Text>

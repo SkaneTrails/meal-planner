@@ -44,7 +44,8 @@ const MemberCard = ({
   onRemove: () => void;
 }) => {
   const { t } = useTranslation();
-  const roleColor = member.role === 'admin' ? colors.warning : colors.text.muted;
+  const roleColor =
+    member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
     <View
@@ -59,7 +60,13 @@ const MemberCard = ({
       }}
     >
       <View style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.xs,
+          }}
+        >
           <Text
             style={{
               fontSize: fontSize.md,
@@ -70,13 +77,20 @@ const MemberCard = ({
             {member.display_name || member.email}
           </Text>
           {isSelf && (
-            <Text style={{ fontSize: fontSize.xs, color: colors.text.inverse + '60' }}>
+            <Text
+              style={{
+                fontSize: fontSize.xs,
+                color: colors.text.inverse + '60',
+              }}
+            >
               (you)
             </Text>
           )}
         </View>
         {member.display_name && (
-          <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+          <Text
+            style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
+          >
             {member.email}
           </Text>
         )}
@@ -144,7 +158,13 @@ const AddMemberForm = ({
         ...shadows.sm,
       }}
     >
-      <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: spacing.sm,
+          marginBottom: spacing.sm,
+        }}
+      >
         <TextInput
           value={newMemberEmail}
           onChangeText={onNewMemberEmailChange}
@@ -172,14 +192,16 @@ const AddMemberForm = ({
             style={{
               flex: 1,
               paddingVertical: spacing.xs,
-              backgroundColor: newMemberRole === role ? colors.primary : colors.white,
+              backgroundColor:
+                newMemberRole === role ? colors.primary : colors.white,
               borderRadius: borderRadius.sm,
               alignItems: 'center',
             }}
           >
             <Text
               style={{
-                color: newMemberRole === role ? colors.white : colors.text.inverse,
+                color:
+                  newMemberRole === role ? colors.white : colors.text.inverse,
                 fontWeight: fontWeight.medium,
                 fontSize: fontSize.sm,
               }}
@@ -196,7 +218,9 @@ const AddMemberForm = ({
           pressScale={0.97}
           disableAnimation={!newMemberEmail.trim() || isAddPending}
           style={{
-            backgroundColor: newMemberEmail.trim() ? colors.primary : colors.bgDark,
+            backgroundColor: newMemberEmail.trim()
+              ? colors.primary
+              : colors.bgDark,
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.xs,
             borderRadius: borderRadius.sm,
@@ -212,11 +236,17 @@ const AddMemberForm = ({
               <Ionicons
                 name="person-add"
                 size={14}
-                color={newMemberEmail.trim() ? colors.white : colors.text.inverse + '60'}
+                color={
+                  newMemberEmail.trim()
+                    ? colors.white
+                    : colors.text.inverse + '60'
+                }
               />
               <Text
                 style={{
-                  color: newMemberEmail.trim() ? colors.white : colors.text.inverse + '60',
+                  color: newMemberEmail.trim()
+                    ? colors.white
+                    : colors.text.inverse + '60',
                   fontWeight: fontWeight.medium,
                   fontSize: fontSize.sm,
                 }}
@@ -282,7 +312,9 @@ export const MembersSection = ({
             ...shadows.sm,
           }}
         >
-          <Text style={{ color: colors.text.inverse + '80', fontSize: fontSize.sm }}>
+          <Text
+            style={{ color: colors.text.inverse + '80', fontSize: fontSize.sm }}
+          >
             {t('admin.noMembers')}
           </Text>
         </View>

@@ -1,13 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, TextInput, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { borderRadius, colors, spacing, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { BottomSheetModal } from '@/components';
-import { DIET_OPTIONS, MEAL_OPTIONS, VISIBILITY_OPTIONS } from './recipe-detail-constants';
-import { TagEditor } from './TagEditor';
-import { HouseholdTransfer } from './HouseholdTransfer';
-import type { DietLabel, MealLabel, RecipeVisibility, Recipe, Household } from '@/lib/types';
 import type { TFunction } from '@/lib/i18n';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  letterSpacing,
+  spacing,
+} from '@/lib/theme';
+import type {
+  DietLabel,
+  Household,
+  MealLabel,
+  Recipe,
+  RecipeVisibility,
+} from '@/lib/types';
+import { HouseholdTransfer } from './HouseholdTransfer';
+import {
+  DIET_OPTIONS,
+  MEAL_OPTIONS,
+  VISIBILITY_OPTIONS,
+} from './recipe-detail-constants';
+import { TagEditor } from './TagEditor';
 
 interface EditRecipeModalProps {
   visible: boolean;
@@ -40,13 +63,25 @@ export const EditRecipeModal = ({
   onTransferRecipe,
   onDelete,
 }: EditRecipeModalProps) => {
-  const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(recipe.diet_label);
-  const [editMealLabel, setEditMealLabel] = useState<MealLabel | null>(recipe.meal_label);
-  const [editPrepTime, setEditPrepTime] = useState(recipe.prep_time?.toString() || '');
-  const [editCookTime, setEditCookTime] = useState(recipe.cook_time?.toString() || '');
-  const [editServings, setEditServings] = useState(recipe.servings?.toString() || '');
+  const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(
+    recipe.diet_label,
+  );
+  const [editMealLabel, setEditMealLabel] = useState<MealLabel | null>(
+    recipe.meal_label,
+  );
+  const [editPrepTime, setEditPrepTime] = useState(
+    recipe.prep_time?.toString() || '',
+  );
+  const [editCookTime, setEditCookTime] = useState(
+    recipe.cook_time?.toString() || '',
+  );
+  const [editServings, setEditServings] = useState(
+    recipe.servings?.toString() || '',
+  );
   const [editTags, setEditTags] = useState(recipe.tags.join(', '));
-  const [editVisibility, setEditVisibility] = useState<RecipeVisibility>(recipe.visibility || 'household');
+  const [editVisibility, setEditVisibility] = useState<RecipeVisibility>(
+    recipe.visibility || 'household',
+  );
   const editHouseholdId = recipe.household_id || null;
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
@@ -82,9 +117,20 @@ export const EditRecipeModal = ({
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
           <Pressable
             onPress={onClose}
-            style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm }}
+            style={{
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.sm,
+            }}
           >
-            <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.body, color: colors.gray[500] }}>{t('common.cancel')}</Text>
+            <Text
+              style={{
+                fontSize: fontSize.xl,
+                fontFamily: fontFamily.body,
+                color: colors.gray[500],
+              }}
+            >
+              {t('common.cancel')}
+            </Text>
           </Pressable>
           <Pressable
             onPress={handleSave}
@@ -100,7 +146,15 @@ export const EditRecipeModal = ({
             {isSavingEdit ? (
               <ActivityIndicator size="small" color={colors.white} />
             ) : (
-              <Text style={{ fontSize: fontSize.xl, fontFamily: fontFamily.bodySemibold, color: colors.white }}>{t('common.save')}</Text>
+              <Text
+                style={{
+                  fontSize: fontSize.xl,
+                  fontFamily: fontFamily.bodySemibold,
+                  color: colors.white,
+                }}
+              >
+                {t('common.save')}
+              </Text>
             )}
           </Pressable>
         </View>
@@ -108,10 +162,21 @@ export const EditRecipeModal = ({
     >
       {/* Diet Type */}
       <View style={{ marginBottom: spacing.xl }}>
-        <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodySemibold,
+            color: colors.gray[500],
+            marginBottom: spacing.sm,
+            textTransform: 'uppercase',
+            letterSpacing: letterSpacing.wide,
+          }}
+        >
           {t('recipe.dietType')}
         </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+        <View
+          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
+        >
           {DIET_OPTIONS.map(({ value, labelKey, emoji }) => {
             const isSelected = editDietLabel === value;
             const translatedLabel = t(labelKey);
@@ -122,7 +187,11 @@ export const EditRecipeModal = ({
                 style={({ pressed }) => ({
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: isSelected ? colors.primary : pressed ? colors.bgMid : colors.gray[50],
+                  backgroundColor: isSelected
+                    ? colors.primary
+                    : pressed
+                      ? colors.bgMid
+                      : colors.gray[50],
                   paddingHorizontal: spacing.md,
                   paddingVertical: spacing.sm,
                   borderRadius: 20,
@@ -131,7 +200,13 @@ export const EditRecipeModal = ({
                 })}
               >
                 <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: isSelected ? colors.white : colors.text.inverse }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.lg,
+                    fontFamily: fontFamily.bodyMedium,
+                    color: isSelected ? colors.white : colors.text.inverse,
+                  }}
+                >
                   {translatedLabel}
                 </Text>
               </Pressable>
@@ -142,10 +217,21 @@ export const EditRecipeModal = ({
 
       {/* Meal Type */}
       <View style={{ marginBottom: spacing.xl }}>
-        <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodySemibold,
+            color: colors.gray[500],
+            marginBottom: spacing.sm,
+            textTransform: 'uppercase',
+            letterSpacing: letterSpacing.wide,
+          }}
+        >
           {t('recipe.mealTypeLabel')}
         </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+        <View
+          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
+        >
           {MEAL_OPTIONS.map(({ value, labelKey }) => {
             const isSelected = editMealLabel === value;
             const translatedLabel = t(labelKey);
@@ -154,7 +240,11 @@ export const EditRecipeModal = ({
                 key={labelKey}
                 onPress={() => setEditMealLabel(value)}
                 style={({ pressed }) => ({
-                  backgroundColor: isSelected ? colors.primary : pressed ? colors.bgMid : colors.gray[50],
+                  backgroundColor: isSelected
+                    ? colors.primary
+                    : pressed
+                      ? colors.bgMid
+                      : colors.gray[50],
                   paddingHorizontal: spacing.md,
                   paddingVertical: spacing.sm,
                   borderRadius: 20,
@@ -162,7 +252,13 @@ export const EditRecipeModal = ({
                   borderColor: isSelected ? colors.primary : colors.bgDark,
                 })}
               >
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodyMedium, color: isSelected ? colors.white : colors.text.inverse }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.lg,
+                    fontFamily: fontFamily.bodyMedium,
+                    color: isSelected ? colors.white : colors.text.inverse,
+                  }}
+                >
                   {translatedLabel}
                 </Text>
               </Pressable>
@@ -173,7 +269,16 @@ export const EditRecipeModal = ({
 
       {/* Visibility */}
       <View style={{ marginBottom: spacing.xl }}>
-        <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodySemibold,
+            color: colors.gray[500],
+            marginBottom: spacing.sm,
+            textTransform: 'uppercase',
+            letterSpacing: letterSpacing.wide,
+          }}
+        >
           {t('recipe.visibilityLabel')}
         </Text>
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
@@ -188,7 +293,11 @@ export const EditRecipeModal = ({
                 style={({ pressed }) => ({
                   flex: 1,
                   alignItems: 'center',
-                  backgroundColor: isSelected ? colors.primary : pressed ? colors.bgMid : colors.gray[50],
+                  backgroundColor: isSelected
+                    ? colors.primary
+                    : pressed
+                      ? colors.bgMid
+                      : colors.gray[50],
                   paddingHorizontal: spacing.md,
                   paddingVertical: spacing.md,
                   borderRadius: borderRadius.md,
@@ -196,11 +305,31 @@ export const EditRecipeModal = ({
                   borderColor: isSelected ? colors.primary : colors.bgDark,
                 })}
               >
-                <Text style={{ fontSize: fontSize['3xl'], marginBottom: spacing.xs }}>{emoji}</Text>
-                <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: isSelected ? colors.white : colors.text.inverse }}>
+                <Text
+                  style={{
+                    fontSize: fontSize['3xl'],
+                    marginBottom: spacing.xs,
+                  }}
+                >
+                  {emoji}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: fontSize.lg,
+                    fontFamily: fontFamily.bodySemibold,
+                    color: isSelected ? colors.white : colors.text.inverse,
+                  }}
+                >
                   {translatedLabel}
                 </Text>
-                <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.body, color: isSelected ? colors.bgDark : colors.gray[400], marginTop: 2 }}>
+                <Text
+                  style={{
+                    fontSize: fontSize.sm,
+                    fontFamily: fontFamily.body,
+                    color: isSelected ? colors.bgDark : colors.gray[400],
+                    marginTop: 2,
+                  }}
+                >
                   {translatedDesc}
                 </Text>
               </Pressable>
@@ -222,12 +351,30 @@ export const EditRecipeModal = ({
 
       {/* Time & Servings */}
       <View style={{ marginBottom: spacing.xl }}>
-        <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.gray[500], marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: letterSpacing.wide }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodySemibold,
+            color: colors.gray[500],
+            marginBottom: spacing.sm,
+            textTransform: 'uppercase',
+            letterSpacing: letterSpacing.wide,
+          }}
+        >
           {t('recipe.timeAndServings')}
         </Text>
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>{t('labels.time.prepMin')}</Text>
+            <Text
+              style={{
+                fontSize: fontSize.base,
+                fontFamily: fontFamily.body,
+                color: colors.gray[400],
+                marginBottom: spacing.xs,
+              }}
+            >
+              {t('labels.time.prepMin')}
+            </Text>
             <TextInput
               value={editPrepTime}
               onChangeText={setEditPrepTime}
@@ -249,7 +396,16 @@ export const EditRecipeModal = ({
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>{t('labels.time.cookMin')}</Text>
+            <Text
+              style={{
+                fontSize: fontSize.base,
+                fontFamily: fontFamily.body,
+                color: colors.gray[400],
+                marginBottom: spacing.xs,
+              }}
+            >
+              {t('labels.time.cookMin')}
+            </Text>
             <TextInput
               value={editCookTime}
               onChangeText={setEditCookTime}
@@ -271,7 +427,16 @@ export const EditRecipeModal = ({
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: fontSize.base, fontFamily: fontFamily.body, color: colors.gray[400], marginBottom: spacing.xs }}>{t('labels.time.servings')}</Text>
+            <Text
+              style={{
+                fontSize: fontSize.base,
+                fontFamily: fontFamily.body,
+                color: colors.gray[400],
+                marginBottom: spacing.xs,
+              }}
+            >
+              {t('labels.time.servings')}
+            </Text>
             <TextInput
               value={editServings}
               onChangeText={setEditServings}
@@ -298,7 +463,14 @@ export const EditRecipeModal = ({
       <TagEditor editTags={editTags} setEditTags={setEditTags} t={t} />
 
       {/* Delete Recipe */}
-      <View style={{ marginTop: spacing.xl, paddingTop: spacing.xl, borderTopWidth: 1, borderTopColor: colors.bgDark }}>
+      <View
+        style={{
+          marginTop: spacing.xl,
+          paddingTop: spacing.xl,
+          borderTopWidth: 1,
+          borderTopColor: colors.bgDark,
+        }}
+      >
         <Pressable
           onPress={onDelete}
           style={({ pressed }) => ({
@@ -312,8 +484,19 @@ export const EditRecipeModal = ({
             borderColor: colors.error,
           })}
         >
-          <Ionicons name="trash-outline" size={20} color={colors.error} style={{ marginRight: spacing.sm }} />
-          <Text style={{ fontSize: fontSize.lg, fontFamily: fontFamily.bodySemibold, color: colors.error }}>
+          <Ionicons
+            name="trash-outline"
+            size={20}
+            color={colors.error}
+            style={{ marginRight: spacing.sm }}
+          />
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.error,
+            }}
+          >
             {t('recipe.deleteRecipe')}
           </Text>
         </Pressable>

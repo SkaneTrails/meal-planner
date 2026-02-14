@@ -19,14 +19,22 @@ export const ReadOnlyBanner = () => {
       }}
     >
       <Ionicons name="lock-closed" size={16} color={colors.text.secondary} />
-      <Text style={{ color: colors.text.secondary, fontSize: fontSize.sm, flex: 1 }}>
+      <Text
+        style={{ color: colors.text.secondary, fontSize: fontSize.sm, flex: 1 }}
+      >
         {t('householdSettings.readOnly')}
       </Text>
     </View>
   );
 };
 
-export const BottomSaveBar = ({ isSaving, onSave }: { isSaving: boolean; onSave: () => void }) => {
+export const BottomSaveBar = ({
+  isSaving,
+  onSave,
+}: {
+  isSaving: boolean;
+  onSave: () => void;
+}) => {
   const { t } = useTranslation();
 
   return (

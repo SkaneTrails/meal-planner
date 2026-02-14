@@ -198,7 +198,11 @@ const CurrentItems = ({
             >
               {item}
             </Text>
-            <Ionicons name="close-circle" size={14} color={colors.text.dark + '60'} />
+            <Ionicons
+              name="close-circle"
+              size={14}
+              color={colors.text.dark + '60'}
+            />
           </Pressable>
         ))}
       </View>

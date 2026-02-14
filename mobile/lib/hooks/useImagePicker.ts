@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { Platform } from 'react-native';
-import { showAlert, showNotification, type AlertButton } from '@/lib/alert';
+import { type AlertButton, showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 
 interface ImagePickerOptions {
@@ -26,7 +26,10 @@ const useImagePicker = (
   const launchLibrary = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      showNotification(t('recipe.permissionNeeded'), t('recipe.libraryPermission'));
+      showNotification(
+        t('recipe.permissionNeeded'),
+        t('recipe.libraryPermission'),
+      );
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -43,7 +46,10 @@ const useImagePicker = (
   const launchCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      showNotification(t('recipe.permissionNeeded'), t('recipe.cameraPermission'));
+      showNotification(
+        t('recipe.permissionNeeded'),
+        t('recipe.cameraPermission'),
+      );
       return;
     }
     const result = await ImagePicker.launchCameraAsync({

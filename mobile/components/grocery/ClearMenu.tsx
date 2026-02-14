@@ -40,7 +40,11 @@ export const ClearMenu = ({
           gap: spacing.xs,
         }}
       >
-        <Ionicons name="calendar-outline" size={14} color="rgba(93, 78, 64, 0.7)" />
+        <Ionicons
+          name="calendar-outline"
+          size={14}
+          color="rgba(93, 78, 64, 0.7)"
+        />
         <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.8)' }}>
           {t('grocery.clearMealPlanItems')}
         </Text>
@@ -60,7 +64,11 @@ export const ClearMenu = ({
           gap: spacing.xs,
         }}
       >
-        <Ionicons name="create-outline" size={14} color="rgba(93, 78, 64, 0.7)" />
+        <Ionicons
+          name="create-outline"
+          size={14}
+          color="rgba(93, 78, 64, 0.7)"
+        />
         <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.8)' }}>
           {t('grocery.clearManualItems')}
         </Text>
@@ -80,8 +88,14 @@ export const ClearMenu = ({
           gap: spacing.xs,
         }}
       >
-        <Ionicons name="trash-outline" size={14} color="rgba(180, 80, 70, 0.8)" />
-        <Text style={{ fontSize: fontSize.sm, color: 'rgba(180, 80, 70, 0.9)' }}>
+        <Ionicons
+          name="trash-outline"
+          size={14}
+          color="rgba(180, 80, 70, 0.8)"
+        />
+        <Text
+          style={{ fontSize: fontSize.sm, color: 'rgba(180, 80, 70, 0.9)' }}
+        >
           {t('grocery.clearEntireList')}
         </Text>
       </AnimatedPressable>

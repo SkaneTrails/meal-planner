@@ -1,7 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, fontSize, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 interface ReviewAiChangesProps {
   changes: string[];
@@ -21,7 +28,13 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
         ...shadows.sm,
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: spacing.md,
+        }}
+      >
         <Ionicons name="sparkles" size={18} color={colors.accent} />
         <Text
           style={{

@@ -22,7 +22,9 @@ export const setAuthTokenGetter = (getter: () => Promise<string | null>) => {
   getAuthToken = getter;
 };
 
-export const setOnUnauthorized = (callback: (status: number, hadToken: boolean) => void) => {
+export const setOnUnauthorized = (
+  callback: (status: number, hadToken: boolean) => void,
+) => {
   onUnauthorized = callback;
 };
 
@@ -60,7 +62,8 @@ export const apiRequest = async <T>(
     const token = await getAuthToken();
     if (token) {
       hadToken = true;
-      (defaultHeaders as Record<string, string>).Authorization = `Bearer ${token}`;
+      (defaultHeaders as Record<string, string>).Authorization =
+        `Bearer ${token}`;
     }
   }
 
@@ -73,7 +76,10 @@ export const apiRequest = async <T>(
   });
 
   if (!response.ok) {
-    if ((response.status === 401 || response.status === 403) && onUnauthorized) {
+    if (
+      (response.status === 401 || response.status === 403) &&
+      onUnauthorized
+    ) {
       onUnauthorized(response.status, hadToken);
     }
 

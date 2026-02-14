@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   return <AuthProviderImpl>{children}</AuthProviderImpl>;
-}
+};
 
 const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -149,7 +149,8 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
           'Your account is not part of any household. Please contact an administrator to be added.';
       } else {
         title = 'Authentication Error';
-        message = 'There was a problem with your session. Please sign in again.';
+        message =
+          'There was a problem with your session. Please sign in again.';
       }
 
       if (Platform.OS === 'web') {
@@ -227,8 +228,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       if (__DEV__) {
         console.error('signIn error:', err);
       }
-      const errorMessage =
-        err instanceof Error ? err.message : '';
+      const errorMessage = err instanceof Error ? err.message : '';
       if (!errorMessage.includes('popup-closed-by-user')) {
         setError('signInFailed');
       }
@@ -239,7 +239,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     try {
       await firebaseSignOut(auth!);
       setError(null);
-    } catch (err) {
+    } catch (_err) {
       setError('signOutFailed');
     }
   }, []);
@@ -262,11 +262,9 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
-}
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -274,4 +272,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};

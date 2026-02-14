@@ -3,9 +3,7 @@
  */
 
 import { colors } from './colors';
-import { borderRadius } from './layout';
-import { shadows } from './layout';
-import { spacing } from './layout';
+import { borderRadius, shadows, spacing } from './layout';
 import { fontSize } from './typography';
 
 export const cardStyle = {

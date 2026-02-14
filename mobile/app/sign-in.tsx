@@ -3,13 +3,19 @@
  * Luxurious design matching app theme.
  */
 
-import { View, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Redirect } from 'expo-router';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { GradientBackground } from '../components';
+import { GoogleLogo } from '../components/GoogleLogo';
 import { useAuth } from '../lib/hooks/use-auth';
 import { useTranslation } from '../lib/i18n';
-import { GoogleLogo } from '../components/GoogleLogo';
-import { GradientBackground } from '../components';
-import { fontFamily, fontSize, colors, spacing, borderRadius } from '../lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '../lib/theme';
 
 export default function SignInScreen() {
   const { user, loading, error, signIn, signOut } = useAuth();
@@ -31,7 +37,10 @@ export default function SignInScreen() {
 
   if (loading) {
     return (
-      <GradientBackground animated style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <GradientBackground
+        animated
+        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+      >
         <ActivityIndicator size="large" color={colors.primary} />
         <Pressable
           onPress={handleSignOut}
@@ -43,7 +52,14 @@ export default function SignInScreen() {
             opacity: pressed ? 0.7 : 1,
           })}
         >
-          <Text style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textDecorationLine: 'underline' }}>
+          <Text
+            style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: fontSize.sm,
+              fontFamily: fontFamily.body,
+              textDecorationLine: 'underline',
+            }}
+          >
             {t('signIn.signOut')}
           </Text>
         </Pressable>
@@ -54,39 +70,62 @@ export default function SignInScreen() {
   return (
     <GradientBackground animated style={{ flex: 1 }}>
       {/* Main content - centered */}
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xl }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingHorizontal: spacing.xl,
+        }}
+      >
         {/* Brand Name - elegant typography */}
-        <Text style={{
-          fontSize: 56,
-          fontFamily: fontFamily.displayBold,
-          color: colors.text.primary,
-          letterSpacing: -1,
-          marginBottom: spacing.sm,
-        }}>
+        <Text
+          style={{
+            fontSize: 56,
+            fontFamily: fontFamily.displayBold,
+            color: colors.text.primary,
+            letterSpacing: -1,
+            marginBottom: spacing.sm,
+          }}
+        >
           {t('signIn.appName')}
         </Text>
-        <Text style={{
-          fontFamily: fontFamily.body,
-          color: colors.text.secondary,
-          textAlign: 'center',
-          fontSize: fontSize.xl,
-          letterSpacing: 1,
-          marginBottom: 64,
-        }}>
+        <Text
+          style={{
+            fontFamily: fontFamily.body,
+            color: colors.text.secondary,
+            textAlign: 'center',
+            fontSize: fontSize.xl,
+            letterSpacing: 1,
+            marginBottom: 64,
+          }}
+        >
           {t('signIn.tagline')}
         </Text>
 
         {/* Error Message */}
         {error && (
-          <View style={{
-            backgroundColor: colors.errorBg,
-            borderRadius: borderRadius.md,
-            paddingHorizontal: spacing.lg,
-            paddingVertical: spacing.md,
-            marginBottom: spacing.xl,
-            width: '100%',
-          }}>
-            <Text style={{ color: colors.error, textAlign: 'center', fontSize: fontSize.lg, fontFamily: fontFamily.body }}>{t(`signIn.${error}` as 'signIn.signInFailed') || t('signIn.somethingWentWrong')}</Text>
+          <View
+            style={{
+              backgroundColor: colors.errorBg,
+              borderRadius: borderRadius.md,
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.md,
+              marginBottom: spacing.xl,
+              width: '100%',
+            }}
+          >
+            <Text
+              style={{
+                color: colors.error,
+                textAlign: 'center',
+                fontSize: fontSize.lg,
+                fontFamily: fontFamily.body,
+              }}
+            >
+              {t(`signIn.${error}` as 'signIn.signInFailed') ||
+                t('signIn.somethingWentWrong')}
+            </Text>
           </View>
         )}
 
@@ -94,7 +133,9 @@ export default function SignInScreen() {
         <Pressable
           onPress={signIn}
           style={({ pressed }) => ({
-            backgroundColor: pressed ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.35)',
+            backgroundColor: pressed
+              ? 'rgba(255, 255, 255, 0.45)'
+              : 'rgba(255, 255, 255, 0.35)',
             borderRadius: borderRadius.lg,
             paddingHorizontal: spacing.xl,
             paddingVertical: spacing.lg,
@@ -106,30 +147,58 @@ export default function SignInScreen() {
           })}
         >
           <GoogleLogo size={20} />
-          <Text style={{ color: colors.text.inverse, fontFamily: fontFamily.bodySemibold, fontSize: fontSize.lg, marginLeft: spacing.md }}>
+          <Text
+            style={{
+              color: colors.text.inverse,
+              fontFamily: fontFamily.bodySemibold,
+              fontSize: fontSize.lg,
+              marginLeft: spacing.md,
+            }}
+          >
             {t('signIn.continueWithGoogle')}
           </Text>
         </Pressable>
       </View>
 
       {/* Footer */}
-      <View style={{ paddingBottom: 48, paddingHorizontal: spacing.xl, alignItems: 'center', gap: spacing.md }}>
-        <Text style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textAlign: 'center' }}>
+      <View
+        style={{
+          paddingBottom: 48,
+          paddingHorizontal: spacing.xl,
+          alignItems: 'center',
+          gap: spacing.md,
+        }}
+      >
+        <Text
+          style={{
+            color: 'rgba(255, 255, 255, 0.9)',
+            fontSize: fontSize.sm,
+            fontFamily: fontFamily.body,
+            textAlign: 'center',
+          }}
+        >
           {t('signIn.syncMessage')}
         </Text>
         <Pressable
-            onPress={handleSignOut}
-            style={({ pressed }) => ({
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm,
-              borderRadius: borderRadius.md,
-              opacity: pressed ? 0.7 : 1,
-            })}
+          onPress={handleSignOut}
+          style={({ pressed }) => ({
+            paddingHorizontal: spacing.lg,
+            paddingVertical: spacing.sm,
+            borderRadius: borderRadius.md,
+            opacity: pressed ? 0.7 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontSize: fontSize.sm,
+              fontFamily: fontFamily.body,
+              textDecorationLine: 'underline',
+            }}
           >
-            <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: fontSize.sm, fontFamily: fontFamily.body, textDecorationLine: 'underline' }}>
-              {t('signIn.signOut')}
-            </Text>
-          </Pressable>
+            {t('signIn.signOut')}
+          </Text>
+        </Pressable>
       </View>
     </GradientBackground>
   );

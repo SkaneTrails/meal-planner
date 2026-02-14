@@ -4,7 +4,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { EnhancingOverlay, GradientBackground } from '@/components';
 import { MirroredBackground } from '@/components/MirroredBackground';
@@ -13,7 +13,10 @@ import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
 import { PlanMealModal } from '@/components/recipe-detail/PlanMealModal';
 import { RecipeContent } from '@/components/recipe-detail/RecipeContent';
 import { RecipeHero } from '@/components/recipe-detail/RecipeHero';
-import { RecipeLoading, RecipeNotFound } from '@/components/recipe-detail/RecipeLoadingStates';
+import {
+  RecipeLoading,
+  RecipeNotFound,
+} from '@/components/recipe-detail/RecipeLoadingStates';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';

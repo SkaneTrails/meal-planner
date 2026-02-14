@@ -1,7 +1,7 @@
 import { Text, TextInput, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
 
 interface AddItemCardProps {
   newItemText: string;
@@ -9,7 +9,11 @@ interface AddItemCardProps {
   onSubmit: () => void;
 }
 
-export const AddItemCard = ({ newItemText, onChangeText, onSubmit }: AddItemCardProps) => {
+export const AddItemCard = ({
+  newItemText,
+  onChangeText,
+  onSubmit,
+}: AddItemCardProps) => {
   const { t } = useTranslation();
 
   return (

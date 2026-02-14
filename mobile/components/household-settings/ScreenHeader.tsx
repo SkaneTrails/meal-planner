@@ -18,18 +18,43 @@ interface ScreenHeaderProps {
   onBack: () => void;
 }
 
-export const ScreenHeader = ({ canEdit, hasChanges, isSaving, onSave, onBack }: ScreenHeaderProps) => {
+export const ScreenHeader = ({
+  canEdit,
+  hasChanges,
+  isSaving,
+  onSave,
+  onBack,
+}: ScreenHeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <View style={{ paddingHorizontal: spacing.lg, paddingTop: 44, paddingBottom: spacing.md }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+    <View
+      style={{
+        paddingHorizontal: spacing.lg,
+        paddingTop: 44,
+        paddingBottom: spacing.md,
+      }}
+    >
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Pressable
           onPress={onBack}
-          style={{ flexDirection: 'row', alignItems: 'center', padding: 8, marginLeft: -8 }}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 8,
+            marginLeft: -8,
+          }}
         >
           <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
-          <Text style={{ color: colors.text.primary, fontSize: 17, marginLeft: 2 }}>
+          <Text
+            style={{ color: colors.text.primary, fontSize: 17, marginLeft: 2 }}
+          >
             {t('common.back')}
           </Text>
         </Pressable>
@@ -48,7 +73,9 @@ export const ScreenHeader = ({ canEdit, hasChanges, isSaving, onSave, onBack }: 
             {isSaving ? (
               <ActivityIndicator color="white" size="small" />
             ) : (
-              <Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>
+              <Text
+                style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}
+              >
                 {t('common.save')}
               </Text>
             )}

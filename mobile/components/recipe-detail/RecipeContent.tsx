@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type { TFunction } from '@/lib/i18n';
-import { spacing } from '@/lib/theme';
 import type { EnhancementReviewAction, Recipe } from '@/lib/types';
 import { EnhancementReviewBanner } from './EnhancementReviewBanner';
 import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
@@ -10,8 +9,8 @@ import { RecipeEnhancedInfo } from './RecipeEnhancedInfo';
 import { RecipeIngredientsList } from './RecipeIngredientsList';
 import { RecipeInstructions } from './RecipeInstructions';
 import { RecipeMetaLabels } from './RecipeMetaLabels';
-import { RecipeTimeServings } from './RecipeTimeServings';
 import { RecipeTags } from './RecipeTags';
+import { RecipeTimeServings } from './RecipeTimeServings';
 
 interface RecipeContentProps {
   recipe: Recipe;

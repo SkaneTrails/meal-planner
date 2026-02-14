@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Pressable, View } from 'react-native';
 import { colors, spacing } from '@/lib/theme';
 
 interface ThumbRatingProps {
@@ -11,7 +10,13 @@ interface ThumbRatingProps {
   size?: number;
 }
 
-export const ThumbRating = ({ rating, hidden, onThumbUp, onThumbDown, size = 28 }: ThumbRatingProps) => {
+export const ThumbRating = ({
+  rating,
+  hidden,
+  onThumbUp,
+  onThumbDown,
+  size = 28,
+}: ThumbRatingProps) => {
   const isThumbUp = rating === 5;
   const isThumbDown = hidden;
 
@@ -22,7 +27,11 @@ export const ThumbRating = ({ rating, hidden, onThumbUp, onThumbDown, size = 28 
         style={({ pressed }) => ({
           padding: spacing.sm,
           borderRadius: 20,
-          backgroundColor: isThumbDown ? 'rgba(239, 83, 80, 0.3)' : pressed ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+          backgroundColor: isThumbDown
+            ? 'rgba(239, 83, 80, 0.3)'
+            : pressed
+              ? 'rgba(255, 255, 255, 0.2)'
+              : 'transparent',
         })}
       >
         <Ionicons
@@ -36,7 +45,11 @@ export const ThumbRating = ({ rating, hidden, onThumbUp, onThumbDown, size = 28 
         style={({ pressed }) => ({
           padding: spacing.sm,
           borderRadius: 20,
-          backgroundColor: isThumbUp ? 'rgba(76, 175, 80, 0.3)' : pressed ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+          backgroundColor: isThumbUp
+            ? 'rgba(76, 175, 80, 0.3)'
+            : pressed
+              ? 'rgba(255, 255, 255, 0.2)'
+              : 'transparent',
         })}
       >
         <Ionicons

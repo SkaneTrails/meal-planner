@@ -8,7 +8,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Redirect, Tabs } from 'expo-router';
-import React from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -60,11 +59,9 @@ const TabBarBackground = () => {
 export default function TabLayout() {
   const { user, loading } = useAuth();
   const { t } = useTranslation();
-  const {
-    data: currentUser,
-    isLoading: userLoading,
-    isError,
-  } = useCurrentUser({ enabled: !loading && !!user });
+  const { isLoading: userLoading, isError } = useCurrentUser({
+    enabled: !loading && !!user,
+  });
 
   if (loading) {
     return (
@@ -247,7 +244,6 @@ export default function TabLayout() {
           href: null, // Hide from tab bar - accessed via Settings page
         }}
       />
-
     </Tabs>
   );
 }

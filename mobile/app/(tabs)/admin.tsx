@@ -6,7 +6,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -48,14 +48,18 @@ export default function AdminScreen() {
   } = useHouseholds();
   const createHousehold = useCreateHousehold();
 
-  const [selectedHousehold, setSelectedHousehold] = useState<Household | null>(null);
+  const [selectedHousehold, setSelectedHousehold] = useState<Household | null>(
+    null,
+  );
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newHouseholdName, setNewHouseholdName] = useState('');
 
   if (userLoading) {
     return (
       <GradientBackground muted>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </GradientBackground>
@@ -127,9 +131,15 @@ export default function AdminScreen() {
             data={households || []}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <HouseholdCard household={item} onPress={() => setSelectedHousehold(item)} />
+              <HouseholdCard
+                household={item}
+                onPress={() => setSelectedHousehold(item)}
+              />
             )}
-            contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: 70 }}
+            contentContainerStyle={{
+              paddingHorizontal: spacing.lg,
+              paddingBottom: 70,
+            }}
             refreshControl={
               <RefreshControl
                 refreshing={householdsLoading}
@@ -139,8 +149,14 @@ export default function AdminScreen() {
             }
             ListEmptyComponent={
               <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                <Ionicons name="home-outline" size={48} color={colors.text.muted} />
-                <Text style={{ color: colors.text.muted, marginTop: spacing.md }}>
+                <Ionicons
+                  name="home-outline"
+                  size={48}
+                  color={colors.text.muted}
+                />
+                <Text
+                  style={{ color: colors.text.muted, marginTop: spacing.md }}
+                >
                   {t('admin.noHouseholds')}
                 </Text>
               </View>
@@ -209,7 +225,13 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
         >
           {t('tabs.admin')}
         </Text>
-        <Text style={{ fontSize: fontSize.lg, color: colors.text.secondary, marginTop: 4 }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            color: colors.text.secondary,
+            marginTop: 4,
+          }}
+        >
           {t('admin.subtitle')}
         </Text>
       </View>
@@ -231,15 +253,27 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
         ...shadows.sm,
       }}
     >
-      <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '99' }}>
+      <Text
+        style={{ fontSize: fontSize.sm, color: colors.text.inverse + '99' }}
+      >
         {t('admin.loggedInAs')}
       </Text>
       <Text
-        style={{ fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.inverse }}
+        style={{
+          fontSize: fontSize.lg,
+          fontWeight: fontWeight.medium,
+          color: colors.text.inverse,
+        }}
       >
         {email}
       </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: spacing.xs }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: spacing.xs,
+        }}
+      >
         <View
           style={{
             backgroundColor: colors.success + '20',
@@ -300,7 +334,13 @@ const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
         }}
       >
         <Ionicons name="add" size={18} color="white" />
-        <Text style={{ color: 'white', fontWeight: fontWeight.medium, marginLeft: 4 }}>
+        <Text
+          style={{
+            color: 'white',
+            fontWeight: fontWeight.medium,
+            marginLeft: 4,
+          }}
+        >
           {t('admin.newButton')}
         </Text>
       </AnimatedPressable>

@@ -4,7 +4,6 @@
  */
 
 import { useRouter } from 'expo-router';
-import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { GradientBackground } from '@/components';
 import {
@@ -61,7 +60,11 @@ export default function SettingsScreen() {
       <View style={{ flex: 1, paddingBottom: 70 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 20, paddingTop: 44, paddingBottom: 40 }}
+          contentContainerStyle={{
+            padding: 20,
+            paddingTop: 44,
+            paddingBottom: 40,
+          }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -103,7 +106,9 @@ export default function SettingsScreen() {
             isLoading={userLoading}
             onPress={() => {
               if (currentUser?.household_id) {
-                router.push(`/household-settings?id=${currentUser.household_id}`);
+                router.push(
+                  `/household-settings?id=${currentUser.household_id}`,
+                );
               }
             }}
           />
@@ -113,7 +118,10 @@ export default function SettingsScreen() {
             onToggle={toggleShowHiddenRecipes}
           />
 
-          <WeekStartSection weekStart={weekStart} onSetWeekStart={setWeekStart} />
+          <WeekStartSection
+            weekStart={weekStart}
+            onSetWeekStart={setWeekStart}
+          />
 
           <LanguageSection
             currentLanguage={settings.language}

@@ -49,7 +49,9 @@ const SelectedEquipment = ({
           marginBottom: spacing.sm,
         }}
       >
-        {t('householdSettings.equipment.yourEquipment', { count: equipment.length })}
+        {t('householdSettings.equipment.yourEquipment', {
+          count: equipment.length,
+        })}
       </Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {equipment.map((item) => (
@@ -71,7 +73,11 @@ const SelectedEquipment = ({
               {t(`householdSettings.equipment.items.${item}`)}
             </Text>
             {canEdit && (
-              <Ionicons name="close-circle" size={14} color={colors.text.inverse + '60'} />
+              <Ionicons
+                name="close-circle"
+                size={14}
+                color={colors.text.inverse + '60'}
+              />
             )}
           </Pressable>
         ))}
@@ -135,8 +141,17 @@ const AvailableEquipment = ({
                     gap: 4,
                   })}
                 >
-                  <Ionicons name="add" size={14} color={colors.text.inverse + '80'} />
-                  <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}>
+                  <Ionicons
+                    name="add"
+                    size={14}
+                    color={colors.text.inverse + '80'}
+                  />
+                  <Text
+                    style={{
+                      fontSize: fontSize.sm,
+                      color: colors.text.inverse + '80',
+                    }}
+                  >
                     {t(`householdSettings.equipment.items.${item}`)}
                   </Text>
                 </Pressable>
@@ -164,8 +179,16 @@ export const EquipmentSection = ({
         subtitle={t('householdSettings.equipment.subtitle')}
       />
 
-      <SelectedEquipment equipment={equipment} canEdit={canEdit} onToggle={onToggleEquipment} />
-      <AvailableEquipment equipment={equipment} canEdit={canEdit} onToggle={onToggleEquipment} />
+      <SelectedEquipment
+        equipment={equipment}
+        canEdit={canEdit}
+        onToggle={onToggleEquipment}
+      />
+      <AvailableEquipment
+        equipment={equipment}
+        canEdit={canEdit}
+        onToggle={onToggleEquipment}
+      />
     </View>
   );
 };

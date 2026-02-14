@@ -1,5 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
@@ -54,7 +60,13 @@ export const AddMemberForm = ({
           marginBottom: spacing.md,
         }}
       >
-        <Text style={{ fontSize: fontSize.lg, fontWeight: fontWeight.semibold, color: '#3D3D3D' }}>
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontWeight: fontWeight.semibold,
+            color: '#3D3D3D',
+          }}
+        >
           {t('admin.addMember.title')}
         </Text>
         <Pressable onPress={onClose}>
@@ -88,7 +100,8 @@ export const AddMemberForm = ({
               flex: 1,
               padding: spacing.sm,
               marginRight: role === 'member' ? spacing.sm : 0,
-              backgroundColor: newMemberRole === role ? '#3D3D3D' : colors.white,
+              backgroundColor:
+                newMemberRole === role ? '#3D3D3D' : colors.white,
               borderRadius: borderRadius.md,
               alignItems: 'center',
             }}
@@ -121,7 +134,13 @@ export const AddMemberForm = ({
         {isPending ? (
           <ActivityIndicator color="white" />
         ) : (
-          <Text style={{ color: 'white', fontSize: fontSize.md, fontWeight: fontWeight.semibold }}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: fontSize.md,
+              fontWeight: fontWeight.semibold,
+            }}
+          >
             {t('admin.addMember.button')}
           </Text>
         )}

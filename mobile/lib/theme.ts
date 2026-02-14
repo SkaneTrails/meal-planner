@@ -4,14 +4,21 @@
  */
 
 export { colors, lightColors } from './theme/colors';
-export { fontFamily, fontFamilyWeight, fontSize, fontWeight, letterSpacing, typography } from './theme/typography';
 export {
-  spacing,
-  layout,
-  borderRadius,
-  iconSize,
-  iconContainer,
-  shadows,
   animation,
+  borderRadius,
+  iconContainer,
+  iconSize,
+  layout,
+  shadows,
+  spacing,
 } from './theme/layout';
 export { cardStyle, glassCardStyle, inputStyle } from './theme/styles';
+export {
+  fontFamily,
+  fontFamilyWeight,
+  fontSize,
+  fontWeight,
+  letterSpacing,
+  typography,
+} from './theme/typography';

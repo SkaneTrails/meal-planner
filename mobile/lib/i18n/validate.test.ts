@@ -9,17 +9,17 @@
  * @vitest-environment node
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import en from './locales/en';
-import sv from './locales/sv';
 import itLocale from './locales/it';
+import sv from './locales/sv';
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
 type NestedRecord = { [key: string]: string | NestedRecord };
 
 /** Recursively collect all dot-separated key paths. */
-const collectKeys = (obj: NestedRecord, prefix = ''): string[]  => {
+const collectKeys = (obj: NestedRecord, prefix = ''): string[] => {
   const keys: string[] = [];
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
@@ -30,17 +30,17 @@ const collectKeys = (obj: NestedRecord, prefix = ''): string[]  => {
     }
   }
   return keys;
-}
+};
 
 /** Resolve a dot-path to its string value. */
-const resolve = (obj: NestedRecord, path: string): string | undefined  => {
+const resolve = (obj: NestedRecord, path: string): string | undefined => {
   let current: unknown = obj;
   for (const seg of path.split('.')) {
     if (current == null || typeof current !== 'object') return undefined;
     current = (current as Record<string, unknown>)[seg];
   }
   return typeof current === 'string' ? current : undefined;
-}
+};
 
 // ── Tests ───────────────────────────────────────────────────────────
 

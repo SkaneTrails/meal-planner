@@ -30,4 +30,4 @@ export const GoogleLogo = ({ size = 24 }: GoogleLogoProps) => {
       />
     </Svg>
   );
-}
+};

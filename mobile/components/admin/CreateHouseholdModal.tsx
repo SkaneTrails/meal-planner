@@ -44,7 +44,13 @@ export const CreateHouseholdModal = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, backgroundColor: colors.bgLight, padding: spacing.lg }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.bgLight,
+          padding: spacing.lg,
+        }}
+      >
         <View
           style={{
             flexDirection: 'row',
@@ -53,7 +59,11 @@ export const CreateHouseholdModal = ({
           }}
         >
           <Text
-            style={{ fontSize: fontSize['2xl'], fontWeight: fontWeight.bold, color: '#3D3D3D' }}
+            style={{
+              fontSize: fontSize['2xl'],
+              fontWeight: fontWeight.bold,
+              color: '#3D3D3D',
+            }}
           >
             {t('admin.createHousehold.button')}
           </Text>
@@ -108,7 +118,11 @@ export const CreateHouseholdModal = ({
             <ActivityIndicator color="white" />
           ) : (
             <Text
-              style={{ color: 'white', fontSize: fontSize.lg, fontWeight: fontWeight.semibold }}
+              style={{
+                color: 'white',
+                fontSize: fontSize.lg,
+                fontWeight: fontWeight.semibold,
+              }}
             >
               {t('admin.createHousehold.button')}
             </Text>

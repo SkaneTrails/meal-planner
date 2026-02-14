@@ -3,21 +3,24 @@
  * Provides consistent button feel across the app with scale animations on hover/press.
  */
 
-import React, { useRef, useCallback } from 'react';
+import type React from 'react';
+import { useCallback, useRef } from 'react';
 import {
-  Pressable,
   Animated,
-  PressableProps,
-  ViewStyle,
-  StyleProp,
+  type GestureResponderEvent,
   Platform,
+  Pressable,
+  type PressableProps,
+  type StyleProp,
   StyleSheet,
-  GestureResponderEvent,
+  type ViewStyle,
 } from 'react-native';
 
 interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
   children: React.ReactNode;
-  style?: StyleProp<ViewStyle> | ((state: { pressed: boolean; hovered: boolean }) => StyleProp<ViewStyle>);
+  style?:
+    | StyleProp<ViewStyle>
+    | ((state: { pressed: boolean; hovered: boolean }) => StyleProp<ViewStyle>);
   /** Scale when pressed (default: 0.97) */
   pressScale?: number;
   /** Scale when hovered on web (default: 1.02) */
@@ -64,7 +67,7 @@ export const AnimatedPressable = ({
         }).start();
       }
     },
-    [scaleAnim, animationDuration, disableAnimation]
+    [scaleAnim, animationDuration, disableAnimation],
   );
 
   const handlePressIn = useCallback(
@@ -73,7 +76,7 @@ export const AnimatedPressable = ({
       animateTo(pressScale, true);
       onPressIn?.(event);
     },
-    [animateTo, pressScale, onPressIn]
+    [animateTo, pressScale, onPressIn],
   );
 
   const handlePressOut = useCallback(
@@ -82,7 +85,7 @@ export const AnimatedPressable = ({
       animateTo(isHovered.current ? hoverScale : 1, true);
       onPressOut?.(event);
     },
-    [animateTo, hoverScale, onPressOut]
+    [animateTo, hoverScale, onPressOut],
   );
 
   const handleHoverIn = useCallback(
@@ -93,7 +96,7 @@ export const AnimatedPressable = ({
       }
       onHoverIn?.(event);
     },
-    [animateTo, hoverScale, onHoverIn]
+    [animateTo, hoverScale, onHoverIn],
   );
 
   const handleHoverOut = useCallback(
@@ -104,7 +107,7 @@ export const AnimatedPressable = ({
       }
       onHoverOut?.(event);
     },
-    [animateTo, onHoverOut]
+    [animateTo, onHoverOut],
   );
 
   // Extract flex-related styles that need to be on the Pressable wrapper
@@ -115,8 +118,46 @@ export const AnimatedPressable = ({
     if (!flattened || typeof flattened !== 'object') {
       return {};
     }
-    const { flex, flexGrow, flexShrink, flexBasis, alignSelf, width, height, minWidth, minHeight, maxWidth, maxHeight, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical } = flattened as ViewStyle;
-    return { flex, flexGrow, flexShrink, flexBasis, alignSelf, width, height, minWidth, minHeight, maxWidth, maxHeight, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical };
+    const {
+      flex,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      alignSelf,
+      width,
+      height,
+      minWidth,
+      minHeight,
+      maxWidth,
+      maxHeight,
+      margin,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      marginHorizontal,
+      marginVertical,
+    } = flattened as ViewStyle;
+    return {
+      flex,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      alignSelf,
+      width,
+      height,
+      minWidth,
+      minHeight,
+      maxWidth,
+      maxHeight,
+      margin,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      marginHorizontal,
+      marginVertical,
+    };
   };
 
   const removeFlexStyle = (styleObj: StyleProp<ViewStyle>): ViewStyle => {
@@ -126,7 +167,21 @@ export const AnimatedPressable = ({
       return flattened as ViewStyle;
     }
     // Keep width/height on inner view for proper sizing, only remove flex participation props
-    const { flex, flexGrow, flexShrink, flexBasis, alignSelf, margin, marginTop, marginBottom, marginLeft, marginRight, marginHorizontal, marginVertical, ...rest } = flattened as ViewStyle;
+    const {
+      flex,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      alignSelf,
+      margin,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      marginHorizontal,
+      marginVertical,
+      ...rest
+    } = flattened as ViewStyle;
     return rest as ViewStyle;
   };
 
@@ -141,15 +196,16 @@ export const AnimatedPressable = ({
     >
       {({ pressed }) => {
         const hovered = isHovered.current;
-        const resolvedStyle = typeof style === 'function' ? style({ pressed, hovered }) : style;
-        const innerStyle = typeof style === 'function' ? resolvedStyle : removeFlexStyle(resolvedStyle);
+        const resolvedStyle =
+          typeof style === 'function' ? style({ pressed, hovered }) : style;
+        const innerStyle =
+          typeof style === 'function'
+            ? resolvedStyle
+            : removeFlexStyle(resolvedStyle);
 
         return (
           <Animated.View
-            style={[
-              innerStyle,
-              { transform: [{ scale: scaleAnim }] },
-            ]}
+            style={[innerStyle, { transform: [{ scale: scaleAnim }] }]}
           >
             {children}
           </Animated.View>
@@ -157,6 +213,6 @@ export const AnimatedPressable = ({
       }}
     </Pressable>
   );
-}
+};
 
 export default AnimatedPressable;
