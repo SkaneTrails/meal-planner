@@ -55,34 +55,54 @@ MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 _HTTP_422 = 422
 
 
-def _get_household_config(household_id: str) -> tuple[str, list[str]]:
-    """Read the household's language and equipment settings.
+class HouseholdConfig:
+    """Household settings for recipe enhancement."""
+
+    def __init__(self, settings: dict) -> None:
+        self.language: str = settings.get("language", DEFAULT_LANGUAGE)
+        equipment_raw = settings.get("equipment", [])
+        self.equipment: list[str] = equipment_raw if isinstance(equipment_raw, list) else []
+        self.target_servings: int = self._coerce_positive_int(settings.get("target_servings"), default=4, min_value=1)
+        self.people_count: int = self._coerce_positive_int(settings.get("people_count"), default=2, min_value=1)
+
+    @staticmethod
+    def _coerce_positive_int(value: object, *, default: int, min_value: int) -> int:
+        """Safely coerce a Firestore value to a positive int with fallback."""
+        if isinstance(value, bool) or value is None:
+            return max(default, min_value)
+        try:
+            result = int(value)  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            return max(default, min_value)
+        return max(result, min_value)
+
+
+def _get_household_config(household_id: str) -> HouseholdConfig:
+    """Read the household's enhancement settings.
 
     Returns:
-        Tuple of (language, equipment_keys).
+        HouseholdConfig with language, equipment, target_servings, and people_count.
     """
     from api.storage.household_storage import get_household_settings
 
     settings = get_household_settings(household_id) or {}
-    language = settings.get("language", DEFAULT_LANGUAGE)
-    equipment_raw = settings.get("equipment", [])
-    equipment = equipment_raw if isinstance(equipment_raw, list) else []
-    return language, equipment
+    return HouseholdConfig(settings)
 
 
 def _try_enhance(
-    saved_recipe: Recipe,
-    *,
-    household_id: str,
-    created_by: str,
-    language: str = DEFAULT_LANGUAGE,
-    equipment: list[str] | None = None,
+    saved_recipe: Recipe, *, household_id: str, created_by: str, config: HouseholdConfig
 ) -> Recipe:  # pragma: no cover
     """Attempt AI enhancement on a saved recipe, returning original on failure."""
     from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
 
     try:
-        enhanced_data = do_enhance(saved_recipe.model_dump(), language=language, equipment=equipment)
+        enhanced_data = do_enhance(
+            saved_recipe.model_dump(),
+            language=config.language,
+            equipment=config.equipment,
+            target_servings=config.target_servings,
+            people_count=config.people_count,
+        )
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, saved_recipe)
 
         return recipe_storage.save_recipe(
@@ -237,8 +257,8 @@ async def preview_recipe(
     changes_made: list[str] = []
 
     if enhance:
-        language, equipment = _get_household_config(household_id)
-        enhanced_data = _try_enhance_preview(original_create, language=language, equipment=equipment)
+        config = _get_household_config(household_id)
+        enhanced_data = _try_enhance_preview(original_create, config=config)
         if enhanced_data is not None:
             enhanced_create = enhanced_data["recipe"]
             changes_made = enhanced_data.get("changes_made", [])
@@ -248,15 +268,24 @@ async def preview_recipe(
     )
 
 
-def _try_enhance_preview(
-    recipe_create: RecipeCreate, *, language: str = DEFAULT_LANGUAGE, equipment: list[str] | None = None
-) -> dict | None:
+def _try_enhance_preview(recipe_create: RecipeCreate, *, config: HouseholdConfig | None = None) -> dict | None:
     """Attempt AI enhancement for preview mode, returning None on failure."""
     from api.services.recipe_enhancer import EnhancementError, enhance_recipe as do_enhance
 
+    language = config.language if config else DEFAULT_LANGUAGE
+    equipment = config.equipment if config else []
+    target_servings = config.target_servings if config else 4
+    people_count = config.people_count if config else 2
+
     try:
         recipe_dict = recipe_create.model_dump()
-        enhanced_data = do_enhance(recipe_dict, language=language, equipment=equipment)
+        enhanced_data = do_enhance(
+            recipe_dict,
+            language=language,
+            equipment=equipment,
+            target_servings=target_servings,
+            people_count=people_count,
+        )
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, recipe_create)
         return {"recipe": enhanced_create, "changes_made": enhanced_data.get("changes_made", [])}
     except EnhancementError as e:
@@ -300,10 +329,8 @@ async def scrape_recipe(
     saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
-        language, equipment = _get_household_config(household_id)
-        saved_recipe = _try_enhance(
-            saved_recipe, household_id=household_id, created_by=user.email, language=language, equipment=equipment
-        )
+        config = _get_household_config(household_id)
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email, config=config)
 
     return saved_recipe
 
@@ -447,10 +474,8 @@ async def parse_recipe(
     saved_recipe = await _ingest_recipe_image(saved_recipe, household_id=household_id)
 
     if enhance:  # pragma: no cover
-        language, equipment = _get_household_config(household_id)
-        saved_recipe = _try_enhance(
-            saved_recipe, household_id=household_id, created_by=user.email, language=language, equipment=equipment
-        )
+        config = _get_household_config(household_id)
+        saved_recipe = _try_enhance(saved_recipe, household_id=household_id, created_by=user.email, config=config)
 
     return saved_recipe
 
@@ -660,10 +685,16 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             )
         target_recipe = copied
 
-    language, equipment = _get_household_config(household_id)
+    config = _get_household_config(household_id)
 
     try:  # pragma: no cover
-        enhanced_data = do_enhance(target_recipe.model_dump(), language=language, equipment=equipment)
+        enhanced_data = do_enhance(
+            target_recipe.model_dump(),
+            language=config.language,
+            equipment=config.equipment,
+            target_servings=config.target_servings,
+            people_count=config.people_count,
+        )
         enhanced_recipe = build_recipe_create_from_enhanced(enhanced_data, target_recipe)
 
         return recipe_storage.save_recipe(

@@ -5,7 +5,7 @@ checked items, and custom items. All household members share the same list.
 """
 
 from datetime import UTC, datetime
-from typing import Any, cast
+from typing import Any
 
 from api.storage.firestore_client import GROCERY_LISTS_COLLECTION, get_firestore_client
 
@@ -25,7 +25,7 @@ def load_grocery_state(household_id: str) -> dict[str, Any] | None:  # pragma: n
         Dict with selected_meals, meal_servings, checked_items, custom_items,
         or None if no state exists.
     """
-    doc = cast("Any", _doc_ref(household_id).get())
+    doc = _doc_ref(household_id).get()
     if not doc.exists:
         return None
     return doc.to_dict()
@@ -79,14 +79,14 @@ def update_grocery_state(household_id: str, updates: dict[str, Any]) -> dict[str
         The full updated state, or None if no state existed.
     """
     ref = _doc_ref(household_id)
-    doc = cast("Any", ref.get())
+    doc = ref.get()
     if not doc.exists:
         return None
 
     updates["updated_at"] = datetime.now(tz=UTC)
     ref.update(updates)
 
-    updated_doc = cast("Any", ref.get())
+    updated_doc = ref.get()
     return updated_doc.to_dict()
 
 
@@ -97,7 +97,7 @@ def delete_grocery_state(household_id: str) -> bool:  # pragma: no cover
         True if a document was deleted, False if none existed.
     """
     ref = _doc_ref(household_id)
-    doc = cast("Any", ref.get())
+    doc = ref.get()
     if not doc.exists:
         return False
     ref.delete()
