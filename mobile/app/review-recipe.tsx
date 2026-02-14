@@ -2,7 +2,6 @@
  * Review recipe screen - allows user to preview scraped recipe,
  * set diet/meal type, and choose between original and AI-enhanced versions.
  */
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -20,6 +19,9 @@ import {
   PLACEHOLDER_BLURHASH,
   PLACEHOLDER_IMAGE,
 } from '@/components/recipe-detail/recipe-detail-constants';
+import { ReviewAiChanges } from '@/components/review-recipe/ReviewAiChanges';
+import { ReviewRecipePreview } from '@/components/review-recipe/ReviewRecipePreview';
+import { ReviewVersionToggle } from '@/components/review-recipe/ReviewVersionToggle';
 import { useCreateRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { showNotification } from '@/lib/alert';
@@ -120,132 +122,16 @@ export default function ReviewRecipeScreen() {
 
         {/* Version Toggle (if enhanced available) */}
         {hasEnhanced && (
-          <View style={{ marginBottom: spacing.xl }}>
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                fontFamily: fontFamily.bodySemibold,
-                color: colors.gray[500],
-                marginBottom: spacing.sm,
-                textTransform: 'uppercase',
-                letterSpacing: letterSpacing.wide,
-              }}
-            >
-              {t('reviewRecipe.version')}
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.xs,
-                ...shadows.sm,
-              }}
-            >
-              <Pressable
-                onPress={() => setSelectedTab('original')}
-                style={{
-                  flex: 1,
-                  paddingVertical: spacing.md,
-                  borderRadius: borderRadius.sm,
-                  backgroundColor: selectedTab === 'original' ? colors.primary : 'transparent',
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: fontSize.lg,
-                    fontFamily: fontFamily.bodyMedium,
-                    color: selectedTab === 'original' ? colors.white : colors.text.inverse,
-                  }}
-                >
-                  {t('reviewRecipe.original')}
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setSelectedTab('enhanced')}
-                style={{
-                  flex: 1,
-                  paddingVertical: spacing.md,
-                  borderRadius: borderRadius.sm,
-                  backgroundColor: selectedTab === 'enhanced' ? colors.accent : 'transparent',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: spacing.xs,
-                }}
-              >
-                <Ionicons
-                  name="sparkles"
-                  size={16}
-                  color={selectedTab === 'enhanced' ? colors.white : colors.accent}
-                />
-                <Text
-                  style={{
-                    fontSize: fontSize.lg,
-                    fontFamily: fontFamily.bodyMedium,
-                    color: selectedTab === 'enhanced' ? colors.white : colors.text.inverse,
-                  }}
-                >
-                  {t('reviewRecipe.enhanced')}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
+          <ReviewVersionToggle
+            selectedTab={selectedTab}
+            onSelectTab={setSelectedTab}
+            t={t}
+          />
         )}
 
         {/* AI Changes Summary (when enhanced tab selected) */}
-        {hasEnhanced && selectedTab === 'enhanced' && preview.changes_made.length > 0 && (
-          <View
-            style={{
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
-              marginBottom: spacing.xl,
-              ...shadows.sm,
-            }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md }}>
-              <Ionicons name="sparkles" size={18} color={colors.accent} />
-              <Text
-                style={{
-                  marginLeft: spacing.sm,
-                  fontSize: fontSize.lg,
-                  fontFamily: fontFamily.bodySemibold,
-                  color: colors.text.inverse,
-                }}
-              >
-                {t('reviewRecipe.aiImprovements')}
-              </Text>
-            </View>
-            {preview.changes_made.map((change, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'flex-start',
-                  marginBottom: spacing.sm,
-                }}
-              >
-                <Ionicons
-                  name="checkmark-circle"
-                  size={16}
-                  color={colors.success}
-                  style={{ marginRight: spacing.sm, marginTop: 2 }}
-                />
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: fontSize.md,
-                    color: colors.text.inverse,
-                    lineHeight: 20,
-                  }}
-                >
-                  {change}
-                </Text>
-              </View>
-            ))}
-          </View>
+        {hasEnhanced && selectedTab === 'enhanced' && (
+          <ReviewAiChanges changes={preview.changes_made} t={t} />
         )}
 
         {/* Diet Type Picker */}
@@ -342,74 +228,7 @@ export default function ReviewRecipeScreen() {
         </View>
 
         {/* Recipe Preview (Ingredients + Instructions) */}
-        <View
-          style={{
-            backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.md,
-            padding: spacing.lg,
-            marginBottom: spacing.xl,
-            ...shadows.sm,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
-              color: colors.text.inverse,
-              marginBottom: spacing.md,
-            }}
-          >
-            {t('recipe.ingredients')} ({(selectedRecipe.ingredients ?? []).length})
-          </Text>
-          {(selectedRecipe.ingredients ?? []).slice(0, 5).map((ingredient, index) => (
-            <Text
-              key={index}
-              style={{
-                fontSize: fontSize.md,
-                color: colors.text.inverse,
-                marginBottom: spacing.xs,
-              }}
-            >
-              • {ingredient}
-            </Text>
-          ))}
-          {(selectedRecipe.ingredients ?? []).length > 5 && (
-            <Text style={{ fontSize: fontSize.md, color: colors.gray[500], fontStyle: 'italic' }}>
-              +{(selectedRecipe.ingredients ?? []).length - 5} {t('common.more')}
-            </Text>
-          )}
-
-          <View style={{ height: spacing.lg }} />
-
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
-              color: colors.text.inverse,
-              marginBottom: spacing.md,
-            }}
-          >
-            {t('recipe.instructions')} ({(selectedRecipe.instructions ?? []).length} {t('reviewRecipe.steps')})
-          </Text>
-          {(selectedRecipe.instructions ?? []).slice(0, 3).map((instruction, index) => (
-            <Text
-              key={index}
-              style={{
-                fontSize: fontSize.md,
-                color: colors.text.inverse,
-                marginBottom: spacing.sm,
-              }}
-              numberOfLines={2}
-            >
-              {index + 1}. {instruction}
-            </Text>
-          ))}
-          {(selectedRecipe.instructions ?? []).length > 3 && (
-            <Text style={{ fontSize: fontSize.md, color: colors.gray[500], fontStyle: 'italic' }}>
-              +{(selectedRecipe.instructions ?? []).length - 3} {t('common.more')}
-            </Text>
-          )}
-        </View>
+        <ReviewRecipePreview recipe={selectedRecipe} t={t} />
       </ScrollView>
 
       {/* Save Button */}

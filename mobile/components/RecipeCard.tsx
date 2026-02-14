@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { Animated, GestureResponderEvent, Pressable, Text, View } from 'react-native';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
@@ -79,7 +79,7 @@ export const RecipeCard = ({
     }).start();
   };
 
-  const handleToggleFavorite = (e: any) => {
+  const handleToggleFavorite = (e: GestureResponderEvent) => {
     e.stopPropagation();
     hapticLight();
     toggleFavorite(recipe.id);

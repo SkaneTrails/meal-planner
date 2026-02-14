@@ -92,10 +92,10 @@ const InspirationCard = ({ recipe, t, onPress }: { recipe: Recipe; t: Data['t'];
         {recipe.title}
       </Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 6 }}>
-        {recipe.meal_label && <LabelBadge label={t(`labels.meal.${recipe.meal_label}` as any)} borderColor="rgba(255,255,255,0.5)" />}
+        {recipe.meal_label && <LabelBadge label={t(`labels.meal.${recipe.meal_label}`)} borderColor="rgba(255,255,255,0.5)" />}
         {recipe.diet_label && (
           <LabelBadge
-            label={t(`labels.diet.${recipe.diet_label}` as any)}
+            label={t(`labels.diet.${recipe.diet_label}`)}
             borderColor={
               recipe.diet_label === 'veggie' ? 'rgba(76, 175, 80, 0.7)' :
               recipe.diet_label === 'fish' ? 'rgba(66, 165, 245, 0.7)' : 'rgba(229, 115, 115, 0.7)'

@@ -12,6 +12,7 @@ import {
   StyleProp,
   Platform,
   StyleSheet,
+  GestureResponderEvent,
 } from 'react-native';
 
 interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
@@ -67,7 +68,7 @@ export const AnimatedPressable = ({
   );
 
   const handlePressIn = useCallback(
-    (event: any) => {
+    (event: GestureResponderEvent) => {
       isPressed.current = true;
       animateTo(pressScale, true);
       onPressIn?.(event);
@@ -76,7 +77,7 @@ export const AnimatedPressable = ({
   );
 
   const handlePressOut = useCallback(
-    (event: any) => {
+    (event: GestureResponderEvent) => {
       isPressed.current = false;
       animateTo(isHovered.current ? hoverScale : 1, true);
       onPressOut?.(event);
@@ -85,7 +86,7 @@ export const AnimatedPressable = ({
   );
 
   const handleHoverIn = useCallback(
-    (event: any) => {
+    (event: MouseEvent) => {
       isHovered.current = true;
       if (!isPressed.current) {
         animateTo(hoverScale);
@@ -96,7 +97,7 @@ export const AnimatedPressable = ({
   );
 
   const handleHoverOut = useCallback(
-    (event: any) => {
+    (event: MouseEvent) => {
       isHovered.current = false;
       if (!isPressed.current) {
         animateTo(1);
