@@ -66,7 +66,7 @@ export const RecipeEnhancedInfo = ({
             borderRadius: borderRadius.lg,
             padding: spacing.lg,
             borderLeftWidth: 4,
-            borderLeftColor: '#C4704B',
+            borderLeftColor: colors.ai.primary,
             shadowColor: '#000',
             shadowOffset: { width: 1, height: 2 },
             shadowOpacity: 0.06,

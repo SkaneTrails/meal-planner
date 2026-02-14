@@ -85,14 +85,15 @@ export const lightColors = {
     border: 'rgba(0, 0, 0, 0.04)',
   },
 
-  // AI enhancement theming — unified terracotta palette
+  // AI enhancement theming — unified sage green palette
   ai: {
-    primary: '#C4704B',
-    primaryDark: '#A85D3B',
-    bg: 'rgba(196, 112, 75, 0.08)',
-    bgPressed: 'rgba(196, 112, 75, 0.18)',
-    muted: 'rgba(196, 112, 75, 0.5)',
-    iconBg: 'rgba(196, 112, 75, 0.12)',
+    primary: '#6B8E6B',
+    primaryDark: '#567056',
+    bg: 'rgba(107, 142, 107, 0.08)',
+    bgPressed: 'rgba(107, 142, 107, 0.18)',
+    muted: 'rgba(107, 142, 107, 0.5)',
+    iconBg: 'rgba(107, 142, 107, 0.12)',
+    light: 'rgba(107, 142, 107, 0.15)',
   },
 } as const;
 

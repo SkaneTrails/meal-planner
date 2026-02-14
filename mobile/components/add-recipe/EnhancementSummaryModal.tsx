@@ -70,13 +70,13 @@ export const EnhancementSummaryModal = ({
                 width: iconContainer.lg,
                 height: iconContainer.lg,
                 borderRadius: iconContainer.lg / 2,
-                backgroundColor: colors.accentLight,
+                backgroundColor: colors.ai.light,
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: spacing.md,
               }}
             >
-              <Ionicons name="sparkles" size={22} color={colors.accent} />
+              <Ionicons name="sparkles" size={22} color={colors.ai.primary} />
             </View>
             <View style={{ flex: 1 }}>
               <Text
@@ -194,7 +194,7 @@ export const EnhancementSummaryModal = ({
                 flex: 1,
                 paddingVertical: spacing.md,
                 borderRadius: borderRadius.md,
-                backgroundColor: colors.accent,
+                backgroundColor: colors.ai.primary,
                 alignItems: 'center',
                 opacity: pressed || isReviewPending ? 0.7 : 1,
                 ...shadows.sm,

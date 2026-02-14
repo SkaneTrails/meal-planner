@@ -85,7 +85,8 @@ export const GroceryItemRow = ({
     >
       {showReorder && (
         <Pressable
-          onPressIn={drag}
+          onLongPress={drag}
+          delayLongPress={50}
           style={({ pressed }) =>
             ({
               padding: 14,
