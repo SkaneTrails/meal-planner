@@ -108,7 +108,7 @@ For 2+ blends with shared spices: combine identical spices into one line with to
 
 ## HelloFresh portion markers
 
-Extract the 4P value and set `servings` to 4. Remove all markers from output.
+Extract the 4P value as the baseline, then scale to `{target_servings}` servings. Remove all markers from output.
 
 - `[3 dl | 6 dl]` → 6 dl
 - `[1/2 package, 2P]` → 1 förpackning

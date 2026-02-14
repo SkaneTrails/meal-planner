@@ -287,6 +287,90 @@ class TestLoadSystemPrompt:
 
         assert "Standard kitchen only" in result
 
+    def test_renders_target_servings_placeholder(self, tmp_path: Path) -> None:
+        """Should replace {target_servings} with the given value."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("Scale to {target_servings} servings", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv", target_servings=6)
+
+        assert "Scale to 6 servings" in result
+        assert "{target_servings}" not in result
+
+    def test_renders_people_count_placeholder(self, tmp_path: Path) -> None:
+        """Should replace {people_count} with the given value."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("Household of {people_count} people", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv", people_count=3)
+
+        assert "Household of 3 people" in result
+        assert "{people_count}" not in result
+
+    def test_renders_servings_per_person_even(self, tmp_path: Path) -> None:
+        """Should compute servings_per_person correctly for even division."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("{servings_per_person} each", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv", target_servings=6, people_count=2)
+
+        assert "3 each" in result
+
+    def test_renders_servings_per_person_uneven(self, tmp_path: Path) -> None:
+        """Should handle non-divisible servings/people with rounding."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text("{servings_per_person} each", encoding="utf-8")
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv", target_servings=5, people_count=2)
+
+        assert "2.5 each" in result
+
+    def test_default_values_render_correctly(self, tmp_path: Path) -> None:
+        """Should render defaults (4 servings, 2 people, 2 per person)."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text(
+            "{target_servings}s {people_count}p {servings_per_person}pp", encoding="utf-8"
+        )
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv")
+
+        assert "4s 2p 2pp" in result
+
+    def test_no_leftover_placeholders(self, tmp_path: Path) -> None:
+        """Should not leave any unreplaced placeholders in the output."""
+        prompts_dir = tmp_path / "config" / "prompts"
+        (prompts_dir / "core").mkdir(parents=True)
+        (prompts_dir / "user").mkdir(parents=True)
+
+        (prompts_dir / "core" / "base.md").write_text(
+            "{target_servings} {people_count} {servings_per_person}", encoding="utf-8"
+        )
+
+        with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
+            result = load_system_prompt("sv", target_servings=8, people_count=4)
+
+        assert "{" not in result
+
 
 class TestValidatePrompts:
     """Tests for validate_prompts function."""

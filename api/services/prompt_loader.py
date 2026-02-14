@@ -113,9 +113,13 @@ def load_system_prompt(
 
     prompt = "\n\n---\n\n".join(parts)
 
-    servings_per_person = target_servings // people_count if people_count else target_servings
-    prompt = prompt.replace("{target_servings}", str(target_servings))
-    prompt = prompt.replace("{people_count}", str(people_count))
+    safe_servings = max(target_servings, 1)
+    safe_people = max(people_count, 1)
+    per_person = safe_servings / safe_people
+    servings_per_person = int(per_person) if per_person == int(per_person) else round(per_person, 1)
+
+    prompt = prompt.replace("{target_servings}", str(safe_servings))
+    prompt = prompt.replace("{people_count}", str(safe_people))
     return prompt.replace("{servings_per_person}", str(servings_per_person))
 
 

@@ -73,16 +73,27 @@ def _update_review_file(recipe_id: str) -> None:
     """Mark a recipe as reviewed in the local review tracking file."""
     if not REVIEW_FILE.exists():
         return
-    review_data = json.loads(REVIEW_FILE.read_text(encoding="utf-8"))
-    for recipe in review_data.get("recipes", []):
-        if recipe["id"] == recipe_id:
+    try:
+        review_data = json.loads(REVIEW_FILE.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return
+
+    recipes = review_data.get("recipes", [])
+    for recipe in recipes:
+        if recipe.get("id") == recipe_id:
             recipe["enhancement_reviewed"] = True
             break
-    reviewed = sum(1 for r in review_data.get("recipes", []) if r.get("enhancement_reviewed"))
+
+    reviewed = sum(1 for r in recipes if r.get("enhancement_reviewed"))
+    total = review_data.get("total")
+    if not isinstance(total, int) or total < len(recipes):
+        total = len(recipes)
+
+    review_data["total"] = total
     review_data["reviewed"] = reviewed
-    review_data["pending"] = review_data["total"] - reviewed
+    review_data["pending"] = max(total - reviewed, 0)
     REVIEW_FILE.write_text(json.dumps(review_data, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"   Review file updated ({reviewed}/{review_data['total']} reviewed)")
+    print(f"   Review file updated ({reviewed}/{total} reviewed)")
 
 
 # ---------------------------------------------------------------------------
@@ -404,10 +415,11 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     if not config:
         return
 
-    equipment = config.get("equipment", [])
-    language = config.get("language", "sv")
-    target_servings = config.get("target_servings", 4)
-    people_count = config.get("people_count", 2)
+    equipment_raw = config.get("equipment", [])
+    equipment = equipment_raw if isinstance(equipment_raw, list) else []
+    language = config.get("language", "sv") or "sv"
+    target_servings = max(int(config.get("target_servings", 4) or 4), 1)
+    people_count = max(int(config.get("people_count", 2) or 2), 1)
 
     print(f"\n\U0001f504 Re-enhancing: {original.get('title', recipe_id)}")
     print(f"   Household: {household_id}")
