@@ -6,7 +6,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, fontSize, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 
 interface EnhancementReviewBannerProps {
   t: TFunction;
@@ -78,9 +84,7 @@ export const EnhancementReviewBanner = ({
           justifyContent: 'center',
           paddingVertical: spacing.md,
           borderRadius: borderRadius.md,
-          backgroundColor: pressed
-            ? colors.ai.bgPressed
-            : colors.ai.iconBg,
+          backgroundColor: pressed ? colors.ai.bgPressed : colors.ai.iconBg,
           opacity: isSubmitting ? 0.5 : 1,
         })}
       >
