@@ -6,6 +6,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api';
 import type {
+  ExtrasUpdateRequest,
   MealPlanUpdate,
   MealUpdateRequest,
   NoteUpdateRequest,
@@ -133,6 +134,23 @@ export const useRemoveMeal = () => {
     },
     onError: () => {
       // Refetch to ensure UI is in sync with server on error
+      queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
+    },
+  });
+}
+
+/**
+ * Hook to update the extras (Other) section.
+ */
+export const useUpdateExtras = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: ExtrasUpdateRequest) => api.updateExtras(request),
+    onSuccess: (data) => {
+      queryClient.setQueryData(mealPlanKeys.detail(), data);
+    },
+    onError: () => {
       queryClient.invalidateQueries({ queryKey: mealPlanKeys.detail() });
     },
   });

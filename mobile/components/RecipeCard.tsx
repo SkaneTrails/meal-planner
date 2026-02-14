@@ -169,6 +169,23 @@ export const RecipeCard = ({
                   </Text>
                 </View>
               )}
+              {recipe.enhanced && (
+                <View
+                  style={{
+                    backgroundColor: 'rgba(232, 168, 124, 0.15)',
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 8,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Ionicons name="sparkles" size={11} color="#E8A87C" />
+                  <Text style={{ fontSize: 11, fontWeight: '600', color: '#D4956A', marginLeft: 3 }}>
+                    AI
+                  </Text>
+                </View>
+              )}
               {recipe.rating && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons
@@ -256,6 +273,29 @@ export const RecipeCard = ({
               height: 60,
             }}
           />
+
+          {/* AI Enhanced badge - top left */}
+          {recipe.enhanced && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 10,
+                left: 10,
+                backgroundColor: 'rgba(232, 168, 124, 0.95)',
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+                ...shadows.sm,
+              }}
+            >
+              <Ionicons name="sparkles" size={12} color={colors.white} />
+              <Text style={{ fontSize: 10, fontWeight: '600', color: colors.white, marginLeft: 3 }}>
+                AI
+              </Text>
+            </View>
+          )}
 
           {/* Favorite heart icon - top right, subtle */}
           {showFavorite && (

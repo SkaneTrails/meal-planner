@@ -13,6 +13,7 @@ import {
 import { AnimatedPressable, GradientBackground } from '@/components';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
+import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
 import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
@@ -67,6 +68,9 @@ export default function MealPlanScreen() {
     handleChangeServings,
     handleCreateGroceryList,
     openGroceryModal,
+    getExtrasRecipes,
+    handleAddExtra,
+    handleRemoveExtra,
   } = useMealPlanActions();
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -212,6 +216,36 @@ export default function MealPlanScreen() {
                   </View>
                 );
               })}
+
+              {/* Separator line before Others */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginVertical: 16,
+                  marginHorizontal: 8,
+                }}
+              >
+                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(93, 78, 64, 0.2)' }} />
+                <View
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: 'rgba(93, 78, 64, 0.3)',
+                    marginHorizontal: 12,
+                  }}
+                />
+                <View style={{ flex: 1, height: 1, backgroundColor: 'rgba(93, 78, 64, 0.2)' }} />
+              </View>
+
+              {/* Other/Extras section */}
+              <ExtrasSection
+                recipes={getExtrasRecipes()}
+                t={t}
+                onAddExtra={handleAddExtra}
+                onRemoveExtra={handleRemoveExtra}
+              />
 
               {/* Skapa lista button at end of list */}
               <AnimatedPressable

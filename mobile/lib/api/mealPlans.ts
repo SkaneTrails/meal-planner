@@ -3,6 +3,7 @@
  */
 
 import type {
+  ExtrasUpdateRequest,
   GroceryList,
   GroceryListState,
   GroceryListStatePatch,
@@ -35,6 +36,13 @@ export const mealPlanApi = {
 
   updateNote: (request: NoteUpdateRequest): Promise<MealPlan> => {
     return apiRequest<MealPlan>('/meal-plans/notes', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+  },
+
+  updateExtras: (request: ExtrasUpdateRequest): Promise<MealPlan> => {
+    return apiRequest<MealPlan>('/meal-plans/extras', {
       method: 'POST',
       body: JSON.stringify(request),
     });

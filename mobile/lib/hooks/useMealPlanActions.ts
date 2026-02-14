@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Animated, PanResponder, type ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useMealPlan, useAllRecipes, useUpdateNote, useRemoveMeal, useGroceryState } from '@/lib/hooks';
+import { useMealPlan, useAllRecipes, useUpdateNote, useRemoveMeal, useUpdateExtras, useGroceryState } from '@/lib/hooks';
 import { hapticLight } from '@/lib/haptics';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -59,6 +59,7 @@ export const useMealPlanActions = () => {
   const { recipes } = useAllRecipes();
   const updateNote = useUpdateNote();
   const removeMeal = useRemoveMeal();
+  const updateExtras = useUpdateExtras();
 
   const recipeMap = useMemo(() => {
     const map: Record<string, Recipe> = {};
@@ -256,6 +257,36 @@ export const useMealPlanActions = () => {
     setShowGroceryModal(true);
   }, [weekOffset]);
 
+  const getExtrasRecipes = useCallback((): Recipe[] => {
+    if (!mealPlan?.extras || mealPlan.extras.length === 0) return [];
+    return mealPlan.extras
+      .map(id => recipeMap[id])
+      .filter((r): r is Recipe => r !== undefined);
+  }, [mealPlan, recipeMap]);
+
+  const handleAddExtra = useCallback(() => {
+    hapticLight();
+    router.push({
+      pathname: '/select-recipe',
+      params: { mode: 'extras' },
+    });
+  }, [router]);
+
+  const handleRemoveExtra = useCallback((recipeId: string, title: string) => {
+    showConfirmDelete(
+      t('common.remove'),
+      t('mealPlan.extras.removeMessage', { title }),
+      () => {
+        hapticLight();
+        const currentExtras = mealPlan?.extras || [];
+        const newExtras = currentExtras.filter(id => id !== recipeId);
+        updateExtras.mutate({ extras: newExtras });
+      },
+      t('common.cancel'),
+      t('mealPlan.removeMealConfirm'),
+    );
+  }, [mealPlan, updateExtras, t]);
+
   return {
     t, language,
     MEAL_TYPES, NOTE_SUGGESTIONS,
@@ -273,5 +304,6 @@ export const useMealPlanActions = () => {
     handleStartEditNote, handleSaveNote, handleCancelEditNote, handleAddTag,
     handleMealPress, handleRemoveMeal,
     handleToggleMeal, handleChangeServings, handleCreateGroceryList, openGroceryModal,
+    getExtrasRecipes, handleAddExtra, handleRemoveExtra,
   };
 };

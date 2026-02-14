@@ -31,6 +31,12 @@ class NoteUpdateRequest(BaseModel):
     note: str = Field(..., description="Note text (empty to delete)")
 
 
+class ExtrasUpdateRequest(BaseModel):
+    """Request to update the extras (Other section)."""
+
+    extras: list[str] = Field(..., description="List of recipe IDs for the Other section")
+
+
 def _resolve_household(user: AuthenticatedUser, household_id_override: str | None = None) -> str:
     """Resolve household ID for the request.
 
@@ -74,8 +80,8 @@ async def get_meal_plan(
     Superusers can specify any household_id to view.
     """
     resolved_id = _resolve_household(user, household_id)
-    meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
+    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
 
 
 @router.put("")
@@ -111,9 +117,13 @@ async def update_meal_plan(
     for date_str, note in updates.notes.items():
         meal_plan_storage.update_day_note(resolved_id, date_str, note or "")
 
+    # Process extras updates
+    if updates.extras is not None:
+        meal_plan_storage.update_extras(resolved_id, updates.extras)
+
     # Return updated meal plan
-    meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
+    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
 
 
 @router.post("/meals")
@@ -133,8 +143,8 @@ async def update_single_meal(
     else:
         meal_plan_storage.update_meal(resolved_id, request.date, request.meal_type, request.value)
 
-    meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
+    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
 
 
 @router.post("/notes")
@@ -150,8 +160,8 @@ async def update_single_note(
     resolved_id = _resolve_household(user, household_id)
     meal_plan_storage.update_day_note(resolved_id, request.date, request.note)
 
-    meals, notes = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes)
+    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
@@ -164,4 +174,22 @@ async def clear_meal_plan(
     Superusers can specify household_id to clear any household.
     """
     resolved_id = _resolve_household(user, household_id)
-    meal_plan_storage.save_meal_plan(resolved_id, {}, {})
+    meal_plan_storage.save_meal_plan(resolved_id, {}, {}, [])
+
+
+@router.post("/extras")
+async def update_extras(
+    request: ExtrasUpdateRequest,
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    household_id: Annotated[str | None, Query(description="Household ID (superuser only)")] = None,
+) -> MealPlan:
+    """Update the extras (Other section) with recipe IDs.
+
+    This replaces the entire extras list.
+    Superusers can specify household_id to update any household.
+    """
+    resolved_id = _resolve_household(user, household_id)
+    meal_plan_storage.update_extras(resolved_id, request.extras)
+
+    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)

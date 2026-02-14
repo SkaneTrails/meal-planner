@@ -291,6 +291,17 @@ const it: Translations = {
       travel: '✈️ Viaggio',
       party: '🎉 Festa',
     },
+    extras: {
+      headerTitle: 'Altro',
+      add: 'Aggiungi',
+      emptyState: 'Aggiungi ricette per qualsiasi momento',
+      selectTitle: 'Scegli ricetta',
+      selectSubtitle: 'Aggiungi a Altro',
+      alreadyAdded: 'Già aggiunto',
+      alreadyAddedMessage: 'Questa ricetta è già nella sezione Altro',
+      failedToAdd: 'Impossibile aggiungere la ricetta',
+      removeMessage: 'Rimuovere "{{title}}" da Altro?',
+    },
   },
 
   selectRecipe: {
@@ -520,7 +531,21 @@ const it: Translations = {
       changesLabel: 'Miglioramenti AI:',
       addMore: 'Aggiungi altre',
       viewRecipe: 'Vedi ricetta',
+      useOriginal: 'Usa originale',
+      keepAI: 'Mantieni AI',
+      reviewFailed: 'Impossibile salvare la scelta. Riprova.',
+      noChangesListed: 'Ricetta ottimizzata con miglioramenti AI.',
     },
+    recipeExists: 'Una ricetta da questo URL esiste già nella tua collezione',
+  },
+
+  reviewRecipe: {
+    version: 'Versione',
+    original: 'Originale',
+    enhanced: 'Migliorata',
+    aiImprovements: 'Miglioramenti AI',
+    saveRecipe: 'Salva ricetta',
+    steps: 'passaggi',
   },
 
   signIn: {

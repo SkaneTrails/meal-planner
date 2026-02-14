@@ -51,7 +51,7 @@ async def generate_grocery_list(
     effective_end = end_date if end_date is not None else effective_start + timedelta(days=days - 1)
 
     # Load meal plan
-    meals, _ = meal_plan_storage.load_meal_plan(household_id)
+    meals, _, extras = meal_plan_storage.load_meal_plan(household_id)
 
     # Collect recipe IDs for the date range
     recipe_ids: set[str] = set()
@@ -68,6 +68,10 @@ async def generate_grocery_list(
         # Check date range and skip custom meals
         if effective_start <= meal_date <= effective_end and not value.startswith("custom:"):
             recipe_ids.add(value)
+
+    # Also include extras (Other section) - these are not date-bound
+    for extra_id in extras:
+        recipe_ids.add(extra_id)
 
     # Load recipes and collect ingredients
     grocery_list = GroceryList()

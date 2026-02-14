@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useScrapeRecipe, useCreateRecipe, useImagePicker } from '@/lib/hooks';
+import { useScrapeRecipe, useCreateRecipe, useImagePicker, useReviewEnhancement } from '@/lib/hooks';
 import { api, ApiClientError } from '@/lib/api';
 import { showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
@@ -40,6 +40,7 @@ export const useAddRecipeActions = () => {
 
   const scrapeRecipe = useScrapeRecipe();
   const createRecipe = useCreateRecipe();
+  const reviewEnhancement = useReviewEnhancement();
 
   const isValidUrl = (text: string) => {
     try {
@@ -57,10 +58,12 @@ export const useAddRecipeActions = () => {
     }
 
     try {
+      // scrapeRecipe handles client-side fetch + server fallback internally
       const recipe = await scrapeRecipe.mutateAsync({ url, enhance: enhanceWithAI });
       setImportedRecipe(recipe);
 
-      if (recipe.enhanced && recipe.changes_made && recipe.changes_made.length > 0) {
+      if (recipe.enhanced) {
+        // Show AI changes modal for user to accept or reject
         setShowSummaryModal(true);
       } else {
         showAlert(t('addRecipe.done'), t('addRecipe.recipeImported', { title: recipe.title }), [
@@ -90,6 +93,11 @@ export const useAddRecipeActions = () => {
         showNotification(
           t('addRecipe.importFailed'),
           t('addRecipe.siteNotSupported', { host }),
+        );
+      } else if (err instanceof ApiClientError && err.status === 409) {
+        showNotification(
+          t('addRecipe.importFailed'),
+          t('addRecipe.recipeExists'),
         );
       } else {
         const message = err instanceof Error ? err.message : t('addRecipe.importFailedDefault');
@@ -170,6 +178,30 @@ export const useAddRecipeActions = () => {
     setImageUrl('');
   });
 
+  const handleAcceptEnhancement = async () => {
+    if (!importedRecipe) return;
+    try {
+      await reviewEnhancement.mutateAsync({ id: importedRecipe.id, action: 'approve' });
+      setShowSummaryModal(false);
+      router.back();
+      router.push(`/recipe/${importedRecipe.id}`);
+    } catch {
+      showNotification(t('common.error'), t('addRecipe.enhanced.reviewFailed'));
+    }
+  };
+
+  const handleRejectEnhancement = async () => {
+    if (!importedRecipe) return;
+    try {
+      await reviewEnhancement.mutateAsync({ id: importedRecipe.id, action: 'reject' });
+      setShowSummaryModal(false);
+      router.back();
+      router.push(`/recipe/${importedRecipe.id}`);
+    } catch {
+      showNotification(t('common.error'), t('addRecipe.enhanced.reviewFailed'));
+    }
+  };
+
   const handleViewRecipe = () => {
     setShowSummaryModal(false);
     if (importedRecipe) {
@@ -184,10 +216,12 @@ export const useAddRecipeActions = () => {
     setUrl('');
   };
 
-  const isPending = scrapeRecipe.isPending || createRecipe.isPending;
+  const isPending = scrapeRecipe.isPending || createRecipe.isPending || reviewEnhancement.isPending;
+  const isReviewPending = reviewEnhancement.isPending;
 
   return {
     t,
+    router,
     isManualMode,
     url,
     setUrl,
@@ -221,6 +255,9 @@ export const useAddRecipeActions = () => {
     importedRecipe,
     handleViewRecipe,
     handleAddAnother,
+    handleAcceptEnhancement,
+    handleRejectEnhancement,
     isPending,
+    isReviewPending,
   };
 };

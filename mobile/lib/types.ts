@@ -161,11 +161,13 @@ export interface MealPlan {
   household_id: string;
   meals: Record<string, string>; // date_mealtype -> recipe_id or custom:text
   notes: Record<string, string>; // date -> note text
+  extras: string[]; // recipe IDs for "Other" section
 }
 
 export interface MealPlanUpdate {
   meals?: Record<string, string | null>; // null to delete
   notes?: Record<string, string | null>; // null to delete
+  extras?: string[];
 }
 
 export interface MealUpdateRequest {
@@ -177,6 +179,10 @@ export interface MealUpdateRequest {
 export interface NoteUpdateRequest {
   date: string;
   note: string;
+}
+
+export interface ExtrasUpdateRequest {
+  extras: string[];
 }
 
 // Grocery types

@@ -52,7 +52,7 @@ The `created_at` field is **required** for queries.
     "enhanced": bool,                # True if AI-enhanced
     "enhanced_at": datetime | None,  # When enhancement was performed
     "changes_made": list[str],       # Summary of AI changes
-    "show_enhanced": bool,           # False = show original until user approves
+    "show_enhanced": bool,           # True = show enhanced by default, False after user rejects
     "enhancement_reviewed": bool,    # True after user approves/rejects
 
     # Original scraped data (nested exception — set once on first enhancement)
@@ -74,8 +74,8 @@ The `created_at` field is **required** for queries.
 When a recipe is enhanced, the document structure changes:
 
 1. **Before enhancement**: Top-level fields contain the scraped original data
-2. **On enhancement**: Original data is snapshotted into `original` nested field, enhanced data replaces top-level fields, `show_enhanced=False` (pending review)
-3. **User reviews**: Modal shows diff, user approves (`show_enhanced=True`) or rejects (`show_enhanced=False`)
+2. **On enhancement**: Original data is snapshotted into `original` nested field, enhanced data replaces top-level fields, `show_enhanced=True` (shows AI version immediately)
+3. **User reviews**: Modal shows diff, user keeps AI (`show_enhanced=True`) or reverts to original (`show_enhanced=False`)
 4. **App display**: If `enhanced=True` and `show_enhanced=True` → use top-level fields (enhanced version); if `enhanced=True` and `show_enhanced=False` → use `original` snapshot; if `enhanced=False` or `original` is missing → always use top-level fields
 5. **Interrupted review**: `enhancement_reviewed=False` → modal reappears next view
 

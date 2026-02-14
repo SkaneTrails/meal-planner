@@ -285,6 +285,17 @@ const sv: Translations = {
       travel: '✈️ Resa',
       party: '🎉 Fest',
     },
+    extras: {
+      headerTitle: 'Övrigt',
+      add: 'Lägg till',
+      emptyState: 'Lägg till recept för när som helst',
+      selectTitle: 'Välj recept',
+      selectSubtitle: 'Lägg till i Övrigt',
+      alreadyAdded: 'Redan tillagt',
+      alreadyAddedMessage: 'Detta recept finns redan i Övrigt',
+      failedToAdd: 'Kunde inte lägga till recept',
+      removeMessage: 'Ta bort "{{title}}" från Övrigt?',
+    },
   },
 
   selectRecipe: {
@@ -511,7 +522,21 @@ const sv: Translations = {
       changesLabel: 'AI-förbättringar:',
       addMore: 'Lägg till fler',
       viewRecipe: 'Visa recept',
+      useOriginal: 'Använd original',
+      keepAI: 'Behåll AI',
+      reviewFailed: 'Kunde inte spara ditt val. Försök igen.',
+      noChangesListed: 'Receptet har optimerats med AI-förbättringar.',
     },
+    recipeExists: 'Ett recept från denna URL finns redan i din samling',
+  },
+
+  reviewRecipe: {
+    version: 'Version',
+    original: 'Original',
+    enhanced: 'Förbättrad',
+    aiImprovements: 'AI-förbättringar',
+    saveRecipe: 'Spara recept',
+    steps: 'steg',
   },
 
   signIn: {

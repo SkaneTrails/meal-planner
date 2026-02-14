@@ -293,6 +293,18 @@ const en = {
       travel: '✈️ Travel',
       party: '🎉 Party',
     },
+    // Extras (Other) section
+    extras: {
+      headerTitle: 'Other',
+      add: 'Add',
+      emptyState: 'Add recipes for any time',
+      selectTitle: 'Choose Recipe',
+      selectSubtitle: 'Add to Other section',
+      alreadyAdded: 'Already added',
+      alreadyAddedMessage: 'This recipe is already in your Other section',
+      failedToAdd: 'Failed to add recipe',
+      removeMessage: 'Remove "{{title}}" from Other?',
+    },
   },
 
   // ── Select recipe screen ──────────────────────────────────────────
@@ -521,7 +533,22 @@ const en = {
       changesLabel: 'AI Improvements:',
       addMore: 'Add More',
       viewRecipe: 'View Recipe',
+      useOriginal: 'Use Original',
+      keepAI: 'Keep AI',
+      reviewFailed: 'Could not save your choice. Please try again.',
+      noChangesListed: 'Recipe optimized with AI improvements.',
     },
+    recipeExists: 'A recipe from this URL already exists in your collection',
+  },
+
+  // ── Review recipe screen ──────────────────────────────────────────
+  reviewRecipe: {
+    version: 'Version',
+    original: 'Original',
+    enhanced: 'Enhanced',
+    aiImprovements: 'AI Improvements',
+    saveRecipe: 'Save Recipe',
+    steps: 'steps',
   },
 
   // ── Sign-in screen ────────────────────────────────────────────────
