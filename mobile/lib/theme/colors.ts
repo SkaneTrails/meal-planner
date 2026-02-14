@@ -94,6 +94,7 @@ export const lightColors = {
     muted: 'rgba(107, 142, 107, 0.5)',
     iconBg: 'rgba(107, 142, 107, 0.12)',
     light: 'rgba(107, 142, 107, 0.15)',
+    badge: 'rgba(107, 142, 107, 0.95)',
   },
 } as const;
 

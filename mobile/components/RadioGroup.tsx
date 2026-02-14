@@ -80,7 +80,9 @@ export const RadioGroup = <T extends string>({
                   fontWeight: isSelected
                     ? fontWeight.semibold
                     : fontWeight.normal,
-                  color: colors.text.primary,
+                  color: isSelected
+                    ? colors.text.primary
+                    : colors.text.inverse,
                 }}
               >
                 {option.label}
@@ -88,7 +90,9 @@ export const RadioGroup = <T extends string>({
               <Text
                 style={{
                   fontSize: fontSize.sm,
-                  color: colors.text.secondary,
+                  color: isSelected
+                    ? colors.text.secondary
+                    : colors.text.inverse + '80',
                 }}
               >
                 {option.description}
