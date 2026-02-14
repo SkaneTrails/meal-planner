@@ -109,23 +109,20 @@ const StatCard = ({
         fontFamily: fontFamily.bodySemibold,
         color: '#5D4E40',
         letterSpacing: letterSpacing.tight,
-        marginBottom: subtitle ? 0 : 2,
       }}
     >
       {value}
     </Text>
-    {subtitle && (
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontFamily: fontFamily.body,
-          color: '#8B7355',
-          marginBottom: 2,
-        }}
-      >
-        {subtitle}
-      </Text>
-    )}
+    <Text
+      style={{
+        fontSize: fontSize.xs,
+        fontFamily: fontFamily.body,
+        color: subtitle ? '#8B7355' : 'transparent',
+        marginBottom: 2,
+      }}
+    >
+      {subtitle || ' '}
+    </Text>
     <Text
       style={{
         fontSize: fontSize.xs,
