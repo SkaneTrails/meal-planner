@@ -37,7 +37,7 @@
 
 **How splitting works:** {people_count} people, {target_servings} servings — each person eats {servings_per_person} servings. One eats meat, one eats the vegetarian alternative. After scaling the recipe to the target servings, SPLIT the total protein in half — one half is the meat variant, the other half is the alternative.
 
-- Example: Original has 450 g chicken for 3P. Scaled to {target_servings}P → 600 g total. Split → **300 g chicken + 300 g chicken alternative** ✅
+- Example: Original has 450 g chicken for 3P. Scaled to 4P → 600 g total. Split → **300 g chicken + 300 g chicken alternative** ✅
 - Counter-example: 600 g chicken + 600 g alternative ❌ (doubles the total protein)
 - Counter-example: Original has 400 g tofu → keep 400 g tofu ✅ (do NOT add chicken ❌)
 
