@@ -128,11 +128,11 @@ export const useGroceryScreen = () => {
       AsyncStorage.setItem(
         'grocery_custom_items',
         JSON.stringify(customItems),
-      ).catch(
-        (error) =>
-          __DEV__ &&
-          console.error('[Grocery] Error saving custom items:', error),
-      );
+      ).catch((error) => {
+        if (__DEV__) {
+          console.error('[Grocery] Error saving custom items:', error);
+        }
+      });
     }
   }, [customItems, isLoading]);
 
