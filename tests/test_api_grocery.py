@@ -1,5 +1,6 @@
 """Tests for api/routers/grocery.py."""
 
+from collections.abc import Generator
 from datetime import date
 from unittest.mock import MagicMock, patch
 
@@ -18,7 +19,7 @@ app.include_router(router)
 
 
 @pytest.fixture
-def client() -> TestClient:
+def client() -> Generator[TestClient]:
     """Create test client with mocked auth (user with household)."""
     from api.auth.firebase import require_auth
 
@@ -59,7 +60,7 @@ class TestCategoryKeywords:
 
 
 @pytest.fixture
-def client_no_household() -> TestClient:
+def client_no_household() -> Generator[TestClient]:
     """Create test client with mocked auth (superuser without household)."""
     from api.auth.firebase import require_auth
 

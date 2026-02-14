@@ -239,7 +239,7 @@ class TestIngredientCoercion:
         recipe = RecipeCreate(
             title="Test",
             url="https://example.com",
-            ingredients=[
+            ingredients=[  # ty: ignore[invalid-argument-type]
                 {"item": "Fennel", "quantity": "1.75", "unit": "lbs"},
                 {"item": "Olive oil", "quantity": "2", "unit": "tbsp"},
             ],
@@ -249,14 +249,18 @@ class TestIngredientCoercion:
     def test_dict_ingredient_with_name_key(self) -> None:
         """Dicts using 'name' instead of 'item' should also be handled."""
         recipe = RecipeCreate(
-            title="Test", url="https://example.com", ingredients=[{"name": "Salt", "quantity": "1", "unit": "tsp"}]
+            title="Test",
+            url="https://example.com",
+            ingredients=[{"name": "Salt", "quantity": "1", "unit": "tsp"}],  # ty: ignore[invalid-argument-type]
         )
         assert recipe.ingredients == ["1 tsp Salt"]
 
     def test_dict_ingredient_missing_quantity(self) -> None:
         """Dicts without quantity should still produce a valid string."""
         recipe = RecipeCreate(
-            title="Test", url="https://example.com", ingredients=[{"item": "Salt", "unit": "", "quantity": ""}]
+            title="Test",
+            url="https://example.com",
+            ingredients=[{"item": "Salt", "unit": "", "quantity": ""}],  # ty: ignore[invalid-argument-type]
         )
         assert recipe.ingredients == ["Salt"]
 
@@ -265,13 +269,13 @@ class TestIngredientCoercion:
         recipe = RecipeCreate(
             title="Test",
             url="https://example.com",
-            ingredients=["200g spaghetti", {"item": "Pancetta", "quantity": "100", "unit": "g"}, "2 eggs"],
+            ingredients=["200g spaghetti", {"item": "Pancetta", "quantity": "100", "unit": "g"}, "2 eggs"],  # ty: ignore[invalid-argument-type]
         )
         assert recipe.ingredients == ["200g spaghetti", "100 g Pancetta", "2 eggs"]
 
     def test_numeric_ingredient_coerced(self) -> None:
         """Non-string, non-dict items (e.g. int) should be str-coerced."""
-        recipe = RecipeCreate(title="Test", url="https://example.com", ingredients=[42])
+        recipe = RecipeCreate(title="Test", url="https://example.com", ingredients=[42])  # ty: ignore[invalid-argument-type]
         assert recipe.ingredients == ["42"]
 
     def test_string_ingredients_pass_through(self) -> None:
@@ -285,6 +289,6 @@ class TestIngredientCoercion:
             id="test",
             title="Test",
             url="https://example.com",
-            ingredients=[{"item": "Fennel", "quantity": "1", "unit": "lb"}],
+            ingredients=[{"item": "Fennel", "quantity": "1", "unit": "lb"}],  # ty: ignore[invalid-argument-type]
         )
         assert recipe.ingredients == ["1 lb Fennel"]

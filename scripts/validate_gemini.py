@@ -39,7 +39,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
 # Import the enhance function from recipe_enhancer
 sys.path.insert(0, str(Path(__file__).parent))
-from recipe_enhancer import enhance_recipe, get_recipe
+from recipe_enhancer import enhance_recipe, get_recipe  # ty: ignore[unresolved-import]
 
 
 def get_enhanced_recipes(limit: int | None = None, skip: int = 0) -> list[tuple[str, dict]]:

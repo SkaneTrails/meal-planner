@@ -120,7 +120,39 @@ Replace "förpackning/burk/paket" with actual amounts: krossade tomater 400 g, p
 
 ## Swedish ingredient availability
 
-- **Vegetarian protein**: Quorn, Oumph, Hälsans Kök (NOT Beyond Meat, Impossible)
+- **Vegetarian protein**: Quorn, Oumph, Hälsans Kök, sojafärs (NOT Beyond Meat, Impossible)
+- **Mince types** (all → sojafärs when dietary rules apply): blandfärs, nötfärs, fläskfärs, kycklingfärs, lammfärs
 - **Cooking oil**: Rapsolja (not canola, vegetable oil)
 - **Butter**: Smör for finishing; margarin for frying
 - **Broth**: Buljong (tärning eller fond)
+
+## Protein substitution — Swedish products
+
+### Chicken alternative: Quorn
+
+- Quorn filéer, Quorn bitar, or Quorn strimlor (match the form of the original meat!)
+- **Cooking**: Pan-fry with **smör** and rapsolja on high heat — Quorn is very lean and dries out in the airfryer. Best method: 1 msk smör + 1 msk rapsolja, quick high-heat sear. The butter adds flavor and richness that lean Quorn needs. If airfryer is absolutely necessary: brush with oil first, max 6-8 min at 180°C
+- **Sold plain**: Quorn filéer/bitar are NOT pre-marinated. If the original meat is marinated (e.g. BBQ-marinerad kyckling), list the Quorn as plain and add a note in the instructions to season or briefly marinate it separately
+
+### Red meat alternative: Oumph!
+
+- **Oumph! The Chunk** for steaks, roasts, chunks
+- **Pulled Oumph!** for pulled/shredded dishes
+- **Oumph! Kebab** for kebab/döner-style dishes
+- NEVER use Quorn for beef, pork, or lamb substitution
+- **Examples**:
+  - 400 g nötkött (ryggbiff) → 200 g nötkött + 200 g Oumph! The Chunk ✅ (NOT Quorn ❌)
+  - 400 g fläskkotlett → 200 g fläskkotlett + 200 g Oumph! The Chunk ✅
+  - 400 g lammkotlett → 200 g lammkotlett + 200 g Oumph! The Chunk ✅
+
+### Mince replacement
+
+- All mince types (blandfärs, nötfärs, fläskfärs, kycklingfärs, lammfärs) → **sojafärs**
+- **Examples**:
+  - 500 g blandfärs → 500 g sojafärs ✅ (NOT 250 g blandfärs + 250 g Oumph ❌)
+  - 400 g nötfärs → 400 g sojafärs ✅
+  - 300 g kycklingfärs → 300 g sojafärs ✅
+
+### Lactose-free — Swedish products
+
+**Not exceptions** (DO mark as laktosfri): fetaost, färskost, grädde, mjölk, crème fraîche, kvarg, kesella.

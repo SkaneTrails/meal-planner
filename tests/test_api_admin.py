@@ -1,6 +1,6 @@
 """Tests for api/routers/admin.py."""
 
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable, Coroutine, Generator
 from typing import Any
 from unittest.mock import patch
 
@@ -31,7 +31,7 @@ def _create_mock_auth(
 
 
 @pytest.fixture
-def superuser_client() -> TestClient:
+def superuser_client() -> Generator[TestClient]:
     """Create test client with superuser auth."""
     from api.auth.firebase import require_auth
 
@@ -42,7 +42,7 @@ def superuser_client() -> TestClient:
 
 
 @pytest.fixture
-def admin_client() -> TestClient:
+def admin_client() -> Generator[TestClient]:
     """Create test client with admin auth."""
     from api.auth.firebase import require_auth
 
@@ -53,7 +53,7 @@ def admin_client() -> TestClient:
 
 
 @pytest.fixture
-def member_client() -> TestClient:
+def member_client() -> Generator[TestClient]:
     """Create test client with member auth."""
     from api.auth.firebase import require_auth
 
@@ -570,10 +570,15 @@ class TestTransferRecipe:
 
     def test_superuser_can_transfer(self, superuser_client: TestClient) -> None:
         """Superuser can transfer a recipe to another household."""
+        from datetime import UTC, datetime
+
         from api.models.recipe import Recipe
 
         target_household = Household(
-            id="target_household", name="Target Home", created_at="2024-01-01T00:00:00Z", created_by="test@example.com"
+            id="target_household",
+            name="Target Home",
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
+            created_by="test@example.com",
         )
         transferred_recipe = Recipe(
             id="recipe_123",
@@ -600,10 +605,15 @@ class TestTransferRecipe:
 
     def test_superuser_can_transfer_enhanced(self, superuser_client: TestClient) -> None:
         """Superuser can transfer an enhanced recipe."""
+        from datetime import UTC, datetime
+
         from api.models.recipe import Recipe
 
         target_household = Household(
-            id="target_household", name="Target Home", created_at="2024-01-01T00:00:00Z", created_by="test@example.com"
+            id="target_household",
+            name="Target Home",
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
+            created_by="test@example.com",
         )
         transferred_recipe = Recipe(
             id="recipe_123",
@@ -657,8 +667,13 @@ class TestTransferRecipe:
 
     def test_recipe_not_found(self, superuser_client: TestClient) -> None:
         """Should return 404 if recipe doesn't exist."""
+        from datetime import UTC, datetime
+
         target_household = Household(
-            id="target_household", name="Target Home", created_at="2024-01-01T00:00:00Z", created_by="test@example.com"
+            id="target_household",
+            name="Target Home",
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
+            created_by="test@example.com",
         )
 
         with (

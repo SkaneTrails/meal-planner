@@ -6,6 +6,7 @@ import socket
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any
 from urllib.parse import urlparse
 
 import httpx
@@ -55,7 +56,7 @@ def _resolve_and_check_ips(hostname: str) -> bool:
     """Resolve hostname via DNS and check if any resolved IP is blocked. Returns True if blocked."""
     try:
         addr_info = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)
-        return any(_is_ip_blocked(sockaddr[0]) for *_, sockaddr in addr_info)
+        return any(_is_ip_blocked(str(sockaddr[0])) for *_, sockaddr in addr_info)
     except socket.gaierror:
         # DNS resolution failed - treat as blocked
         return True
@@ -181,7 +182,7 @@ def _try_wild_mode_or_not_supported(html: str, url: str) -> Recipe | ScrapeError
     return _build_recipe(scraper, url)
 
 
-def _build_recipe(scraper: object, url: str) -> Recipe | ScrapeError:
+def _build_recipe(scraper: Any, url: str) -> Recipe | ScrapeError:
     """Extract recipe fields from a scraper instance."""
     try:
         instructions: list[str] = _safe_get(scraper.instructions_list, [])

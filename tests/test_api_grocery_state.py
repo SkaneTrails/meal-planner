@@ -1,5 +1,6 @@
 """Tests for grocery list state endpoints (GET/PUT/PATCH/DELETE /grocery/state)."""
 
+from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
@@ -14,7 +15,7 @@ app.include_router(router)
 
 
 @pytest.fixture
-def client() -> TestClient:
+def client() -> Generator[TestClient]:
     """Create test client with mocked auth (user with household)."""
     from api.auth.firebase import require_auth
 
@@ -30,7 +31,7 @@ def client() -> TestClient:
 
 
 @pytest.fixture
-def client_no_household() -> TestClient:
+def client_no_household() -> Generator[TestClient]:
     """Create test client with mocked auth (no household)."""
     from api.auth.firebase import require_auth
 

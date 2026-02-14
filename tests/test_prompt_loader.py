@@ -384,7 +384,14 @@ class TestValidatePrompts:
         """Should check all expected prompt files."""
         result = validate_prompts()
 
-        expected_keys = ["core/base.md", "core/formatting.md", "core/rules.md", "locales/sv.md", "user/dietary.md"]
+        expected_keys = [
+            "core/base.md",
+            "core/formatting.md",
+            "core/rules.md",
+            "locales/sv.md",
+            "user/language.md",
+            "user/dietary.md",
+        ]
         for key in expected_keys:
             assert key in result
 

@@ -8,9 +8,9 @@ Supports two modes:
 2. Client-side parsing: POST {"url": "...", "html": "..."} - Client provides HTML
 """
 
-import functions_framework
-from flask import Request, jsonify
-from recipe_scraper import ScrapeError, parse_recipe_html, scrape_recipe
+import functions_framework  # ty: ignore[unresolved-import]
+from flask import Request, jsonify  # ty: ignore[unresolved-import]
+from recipe_scraper import ScrapeError, parse_recipe_html, scrape_recipe  # ty: ignore[unresolved-import]
 
 _CORS_HEADERS = {"Access-Control-Allow-Origin": "*"}
 

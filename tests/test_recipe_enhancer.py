@@ -318,7 +318,9 @@ class TestEnhanceRecipe:
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
 
-            mock_prompt.assert_called_once_with(DEFAULT_LANGUAGE, equipment=None, target_servings=4, people_count=2)
+            mock_prompt.assert_called_once_with(
+                DEFAULT_LANGUAGE, equipment=None, target_servings=4, people_count=2, dietary=None
+            )
             mock_client.models.generate_content.assert_called_once()
             call_kwargs = mock_client.models.generate_content.call_args
             assert call_kwargs.kwargs["model"] == DEFAULT_MODEL
@@ -337,7 +339,7 @@ class TestEnhanceRecipe:
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []}, language="en")
 
-            mock_prompt.assert_called_once_with("en", equipment=None, target_servings=4, people_count=2)
+            mock_prompt.assert_called_once_with("en", equipment=None, target_servings=4, people_count=2, dietary=None)
 
     def test_converts_string_instructions_to_list(self) -> None:
         """Should convert string instructions to list."""

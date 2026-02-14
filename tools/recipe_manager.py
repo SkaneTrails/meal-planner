@@ -391,16 +391,17 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     (equipment + language), calls Gemini, and displays the result.
     Dry-run by default — use --apply to write back to Firestore.
     """
+    from api.services.dietary_prompt_builder import DietaryConfig
     from api.services.recipe_enhancer import enhance_recipe
 
     db = get_db(_project)
     doc = db.collection(RECIPES_COLLECTION).document(recipe_id).get()
 
-    if not doc.exists:
+    if not doc.exists:  # ty: ignore[possibly-missing-attribute]
         print(f"\u274c Recipe not found: {recipe_id}")
         return
 
-    data = doc.to_dict()
+    data = doc.to_dict()  # ty: ignore[possibly-missing-attribute]
     if not data:
         print(f"\u274c Recipe data is empty: {recipe_id}")
         return
@@ -418,14 +419,16 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     equipment_raw = config.get("equipment", [])
     equipment = equipment_raw if isinstance(equipment_raw, list) else []
     language = config.get("language", "sv") or "sv"
-    target_servings = max(int(config.get("target_servings", 4) or 4), 1)
-    people_count = max(int(config.get("people_count", 2) or 2), 1)
+    target_servings = max(int(config.get("default_servings", 4) or 4), 1)
+    people_count = max(int(config.get("household_size", 2) or 2), 1)
+    dietary = DietaryConfig.from_firestore(config.get("dietary"))
 
     print(f"\n\U0001f504 Re-enhancing: {original.get('title', recipe_id)}")
     print(f"   Household: {household_id}")
     print(f"   Language: {language}")
     print(f"   Equipment: {len(equipment)} items")
     print(f"   Servings: {target_servings} ({people_count} people)")
+    print(f"   Dietary: meat={dietary.meat_strategy}, dairy={dietary.dairy}")
     print(f"   Mode: {'APPLY' if apply else 'DRY RUN'}")
 
     def _print_recipe_section(label: str, recipe_data: dict) -> None:
@@ -465,7 +468,12 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     load_dotenv(Path(__file__).parent.parent / ".env")
 
     enhanced = enhance_recipe(
-        original, language=language, equipment=equipment, target_servings=target_servings, people_count=people_count
+        original,
+        language=language,
+        equipment=equipment,
+        target_servings=target_servings,
+        people_count=people_count,
+        dietary=dietary,
     )
 
     _print_recipe_section("RE-ENHANCED", enhanced)

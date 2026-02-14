@@ -15,7 +15,7 @@ def _make_recipe(**overrides: object) -> Recipe:
         "servings": 4,
     }
     defaults.update(overrides)
-    return Recipe(**defaults)
+    return Recipe(**defaults)  # ty: ignore[invalid-argument-type]
 
 
 class TestBuildRecipeCreateFromScraped:
