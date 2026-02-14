@@ -43,7 +43,7 @@
     "nativewind": "^4.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-native": "^0.83.0",
+    "react-native": "^0.84.0",
     "react-native-css-interop": "^0.2.1",
     "react-native-draggable-flatlist": "^4.0.3",
     "react-native-gesture-handler": "~2.30.0",
