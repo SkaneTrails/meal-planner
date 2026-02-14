@@ -13,7 +13,9 @@ export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow } from './GroceryItemRow';
 export { GroceryListView } from './GroceryListView';
 export { DayColumn, MealCell } from './MealGrid';
+export { RadioGroup } from './RadioGroup';
 export { RecipeCard } from './RecipeCard';
+export { SectionHeader } from './SectionHeader';
 export {
   GroceryItemSkeleton,
   GroceryListSkeleton,
