@@ -18,9 +18,11 @@ describe('useTranslation', () => {
   beforeEach(() => {
     // Default: English
     mockUseSettings.mockReturnValue({
-      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
+      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday' },
+      weekStart: 'monday',
       isLoading: false,
       setLanguage: vi.fn(),
+      setWeekStart: vi.fn(),
       addItemAtHome: vi.fn(),
       removeItemAtHome: vi.fn(),
       isItemAtHome: vi.fn(() => false),
@@ -67,9 +69,11 @@ describe('useTranslation', () => {
 
   it('returns Swedish strings when language is sv', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
+      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday' },
+      weekStart: 'monday',
       isLoading: false,
       setLanguage: vi.fn(),
+      setWeekStart: vi.fn(),
       addItemAtHome: vi.fn(),
       removeItemAtHome: vi.fn(),
       isItemAtHome: vi.fn(() => false),
@@ -85,9 +89,11 @@ describe('useTranslation', () => {
 
   it('returns Italian strings when language is it', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
+      settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday' },
+      weekStart: 'monday',
       isLoading: false,
       setLanguage: vi.fn(),
+      setWeekStart: vi.fn(),
       addItemAtHome: vi.fn(),
       removeItemAtHome: vi.fn(),
       isItemAtHome: vi.fn(() => false),
@@ -103,9 +109,11 @@ describe('useTranslation', () => {
 
   it('falls back to English for an unknown language', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'xx' as any, itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false },
+      settings: { language: 'xx' as any, itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday' },
+      weekStart: 'monday',
       isLoading: false,
       setLanguage: vi.fn(),
+      setWeekStart: vi.fn(),
       addItemAtHome: vi.fn(),
       removeItemAtHome: vi.fn(),
       isItemAtHome: vi.fn(() => false),

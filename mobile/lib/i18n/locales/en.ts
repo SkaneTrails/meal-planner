@@ -315,6 +315,7 @@ const en = {
       random: '🎲 Random',
       quick: '✏️ Quick',
       copy: '📋 Copy',
+      extras: '📌 Extras',
     },
     quick: {
       title: 'Quick Meal',

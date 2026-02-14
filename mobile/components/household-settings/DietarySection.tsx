@@ -243,7 +243,7 @@ export const DietarySection = ({
 
 const categoryLabelStyle = {
   fontSize: fontSize.sm,
-  fontWeight: fontWeight.semibold as const,
+  fontWeight: fontWeight.semibold,
   color: colors.text.muted,
   marginBottom: spacing.sm,
   textTransform: 'uppercase' as const,

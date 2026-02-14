@@ -165,7 +165,8 @@ export const useUpdateHouseholdSettings = () => {
   return useMutation<
     HouseholdSettings,
     Error,
-    { householdId: string; settings: Partial<HouseholdSettings> }
+    { householdId: string; settings: Partial<HouseholdSettings> },
+    { previous?: HouseholdSettings; householdId: string }
   >({
     mutationFn: ({ householdId, settings }) =>
       api.updateHouseholdSettings(householdId, settings),

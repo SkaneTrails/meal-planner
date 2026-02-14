@@ -80,25 +80,15 @@ describe('i18n locale files', () => {
         }
       });
 
-      it('has no translations > 50% longer than English (for strings ≥ 8 chars)', () => {
-        const tooLong: string[] = [];
-        for (const key of enKeys) {
-          const enVal = resolve(enData, key);
+      it('has no empty translations', () => {
+        const empty = enKeys.filter((key) => {
           const locVal = resolve(data, key);
-          if (!enVal || !locVal || locVal === '' || enVal.length < 8) continue;
-          const ratio = locVal.length / enVal.length;
-          if (ratio > 1.5) {
-            tooLong.push(
-              `  ${key}: ${Math.round((ratio - 1) * 100)}% longer (${locVal.length} vs ${enVal.length})`,
-            );
-          }
-        }
-        if (tooLong.length > 0) {
-          console.warn(
-            `⚠️  [${name}] ${tooLong.length} translation(s) are > 50% longer than English:\n${tooLong.join('\n')}`,
+          return locVal === '';
+        });
+        if (empty.length > 0) {
+          throw new Error(
+            `${empty.length} empty translation(s) in ${name}.ts:\n  ${empty.join('\n  ')}`,
           );
-          // This is a warning, not a hard failure — uncomment to make it strict:
-          // throw new Error(`${tooLong.length} translations too long:\n${tooLong.join('\n')}`);
         }
       });
     });

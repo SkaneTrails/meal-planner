@@ -13,7 +13,7 @@ const stripStepReference = (text: string): string => {
     .trim();
 };
 
-interface RecipeForAggregation {
+export interface RecipeForAggregation {
   id: string;
   title: string;
   ingredients: string[];

@@ -45,7 +45,7 @@ interface RecipeTimeServingsProps {
   prepTime: number | null | undefined;
   cookTime: number | null | undefined;
   totalTime: number | null;
-  servings: string | null | undefined;
+  servings: number | string | null | undefined;
   t: TFunction;
 }
 
@@ -103,7 +103,7 @@ export const RecipeTimeServings = ({
         <TimeStat
           icon="people"
           label={t('labels.time.serves')}
-          value={servings}
+          value={String(servings)}
           showBorder={Boolean(hasAnyTime)}
         />
       ) : null}

@@ -11,6 +11,7 @@ import {
   Platform,
   Pressable,
   type PressableProps,
+  type MouseEvent as RNMouseEvent,
   type StyleProp,
   StyleSheet,
   type ViewStyle,
@@ -89,7 +90,7 @@ export const AnimatedPressable = ({
   );
 
   const handleHoverIn = useCallback(
-    (event: MouseEvent) => {
+    (event: RNMouseEvent) => {
       isHovered.current = true;
       if (!isPressed.current) {
         animateTo(hoverScale);
@@ -100,7 +101,7 @@ export const AnimatedPressable = ({
   );
 
   const handleHoverOut = useCallback(
-    (event: MouseEvent) => {
+    (event: RNMouseEvent) => {
       isHovered.current = false;
       if (!isPressed.current) {
         animateTo(1);

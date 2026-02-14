@@ -96,6 +96,7 @@ export default function SelectRecipeScreen() {
               random: t('selectRecipe.tabs.random'),
               quick: t('selectRecipe.tabs.quick'),
               copy: t('selectRecipe.tabs.copy'),
+              extras: t('selectRecipe.tabs.extras'),
             }}
           />
         )}

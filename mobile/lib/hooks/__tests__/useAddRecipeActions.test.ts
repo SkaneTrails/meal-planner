@@ -58,11 +58,11 @@ vi.mock('@/lib/api', () => ({
   },
   ApiClientError: class ApiClientError extends Error {
     reason?: string;
-    status?: number;
-    constructor(message: string, options?: { reason?: string; status?: number }) {
+    status: number;
+    constructor(message: string, status = 0, reason?: string) {
       super(message);
-      this.reason = options?.reason;
-      this.status = options?.status;
+      this.status = status;
+      this.reason = reason;
     }
   },
 }));
@@ -183,8 +183,7 @@ describe('useAddRecipeActions', () => {
     });
 
     it('shows blocked site error', async () => {
-      const err = new ApiClientError('blocked');
-      err.reason = 'blocked';
+      const err = new ApiClientError('blocked', 0, 'blocked');
       mockScrapeRecipeMutateAsync.mockRejectedValueOnce(err);
       const { result } = render();
       act(() => result.current.setUrl('https://blocked.com/recipe'));
@@ -196,8 +195,7 @@ describe('useAddRecipeActions', () => {
     });
 
     it('shows not-supported site error', async () => {
-      const err = new ApiClientError('not supported');
-      err.reason = 'not_supported';
+      const err = new ApiClientError('not supported', 0, 'not_supported');
       mockScrapeRecipeMutateAsync.mockRejectedValueOnce(err);
       const { result } = render();
       act(() => result.current.setUrl('https://unknown.com/recipe'));
@@ -209,8 +207,7 @@ describe('useAddRecipeActions', () => {
     });
 
     it('shows duplicate recipe error for 409', async () => {
-      const err = new ApiClientError('exists');
-      err.status = 409;
+      const err = new ApiClientError('exists', 409);
       mockScrapeRecipeMutateAsync.mockRejectedValueOnce(err);
       const { result } = render();
       act(() => result.current.setUrl('https://example.com/recipe'));

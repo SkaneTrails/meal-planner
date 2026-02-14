@@ -104,14 +104,19 @@ export const useGroceryScreen = () => {
     const items = aggregateIngredients(
       selectedMealKeys,
       mealPlan.meals,
-      recipes,
+      recipes.map((r) => ({
+        id: r.id,
+        title: r.title,
+        ingredients: r.ingredients,
+        servings: r.servings ?? undefined,
+      })),
       mealServings,
     );
     setGeneratedItems(items);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     recipes.length,
-    mealPlan.meals,
+    mealPlan?.meals,
     mealPlan,
     recipes,
     mealServings,

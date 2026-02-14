@@ -19,7 +19,7 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   snack: ['dessert', 'drink'],
 };
 
-export type TabType = 'library' | 'copy' | 'random' | 'quick';
+export type TabType = 'library' | 'copy' | 'random' | 'quick' | 'extras';
 
 export const useSelectRecipeState = () => {
   const { date, mealType, mode, initialText } = useLocalSearchParams<{

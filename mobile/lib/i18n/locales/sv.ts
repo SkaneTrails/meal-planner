@@ -305,6 +305,7 @@ const sv: Translations = {
       random: '🎲 Slumpa',
       quick: '✏️ Snabb',
       copy: '📋 Kopiera',
+      extras: '📌 Övrigt',
     },
     quick: {
       title: 'Snabb måltid',

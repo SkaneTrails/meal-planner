@@ -12,8 +12,8 @@ import {
 } from '@/lib/theme';
 
 interface AccountSectionProps {
-  userEmail: string | undefined;
-  displayName: string | undefined;
+  userEmail: string | null | undefined;
+  displayName: string | null | undefined;
   onSignOut: () => void;
 }
 
@@ -117,7 +117,7 @@ export const AccountSection = ({
 };
 
 interface HouseholdSettingsLinkProps {
-  householdId: string | undefined;
+  householdId: string | null | undefined;
   isLoading: boolean;
   onPress: () => void;
 }

@@ -311,6 +311,7 @@ const it: Translations = {
       random: '🎲 Casuale',
       quick: '✏️ Veloce',
       copy: '📋 Copia',
+      extras: '📌 Extra',
     },
     quick: {
       title: 'Pasto veloce',

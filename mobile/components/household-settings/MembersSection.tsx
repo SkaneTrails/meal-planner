@@ -22,7 +22,7 @@ interface MembersSectionProps {
   members: HouseholdMember[] | undefined;
   membersLoading: boolean;
   canEdit: boolean;
-  currentUserEmail: string | undefined;
+  currentUserEmail: string | null | undefined;
   newMemberEmail: string;
   onNewMemberEmailChange: (email: string) => void;
   newMemberRole: 'admin' | 'member';

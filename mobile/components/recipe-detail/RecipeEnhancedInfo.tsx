@@ -161,7 +161,9 @@ export const RecipeEnhancedInfo = ({
                     flexDirection: 'row',
                     alignItems: 'flex-start',
                     marginBottom:
-                      index < recipe.changes_made?.length - 1 ? spacing.sm : 0,
+                      index < (recipe.changes_made?.length ?? 0) - 1
+                        ? spacing.sm
+                        : 0,
                   }}
                 >
                   <Ionicons
