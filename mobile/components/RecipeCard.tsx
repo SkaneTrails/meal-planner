@@ -180,7 +180,11 @@ export const RecipeCard = ({
                     alignItems: 'center',
                   }}
                 >
-                  <Ionicons name="sparkles" size={11} color={colors.ai.primary} />
+                  <Ionicons
+                    name="sparkles"
+                    size={11}
+                    color={colors.ai.primary}
+                  />
                   <Text
                     style={{
                       fontSize: 11,
