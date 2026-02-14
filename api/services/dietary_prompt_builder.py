@@ -3,7 +3,8 @@
 Evaluates conditional section markers in dietary.md based on the
 household's Firestore dietary settings.  The actual cooking wisdom
 stays in the markdown template; this module only controls *which*
-sections to include and fills in template variables.
+sections to include, while placeholder variables are resolved later by
+the prompt loader.
 
 Conditional markers use ``<!-- BEGIN:tag -->`` / ``<!-- END:tag -->``
 syntax.  Sections whose tag is not in the active set are stripped.
@@ -44,7 +45,7 @@ class DietaryConfig:
             meat_alternative=dietary.get("meat_alternative") or "oumph",
             minced_meat=dietary.get("minced_meat") or "regular",
             dairy=dietary.get("dairy") or "regular",
-            seafood_ok=bool(dietary.get("seafood_ok", True)),
+            seafood_ok=raw_seafood if isinstance(raw_seafood := dietary.get("seafood_ok"), bool) else True,
         )
 
     def active_sections(self) -> set[str]:

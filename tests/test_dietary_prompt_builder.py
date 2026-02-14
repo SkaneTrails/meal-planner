@@ -50,6 +50,16 @@ class TestDietaryConfigFromFirestore:
         assert cfg.chicken_alternative == "quorn"
         assert cfg.seafood_ok is False
 
+    def test_seafood_ok_none_defaults_to_true(self) -> None:
+        """None/missing seafood_ok should default to True, not False."""
+        cfg = DietaryConfig.from_firestore({"seafood_ok": None})
+        assert cfg.seafood_ok is True
+
+    def test_seafood_ok_non_bool_defaults_to_true(self) -> None:
+        """Non-boolean values (e.g. strings) should fall back to True."""
+        cfg = DietaryConfig.from_firestore({"seafood_ok": "false"})
+        assert cfg.seafood_ok is True
+
     def test_missing_keys_use_defaults(self) -> None:
         cfg = DietaryConfig.from_firestore({"dairy": "lactose_free"})
         assert cfg.meat_strategy == "none"
@@ -252,8 +262,7 @@ class TestRenderDietaryTemplate:
         from pathlib import Path
 
         dietary_path = Path(__file__).parent.parent / "config" / "prompts" / "user" / "dietary.md"
-        if not dietary_path.exists():
-            return
+        assert dietary_path.exists(), f"Template not found: {dietary_path}"
 
         template = dietary_path.read_text(encoding="utf-8")
         cfg = DietaryConfig.from_firestore(
