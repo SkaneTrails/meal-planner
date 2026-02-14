@@ -42,7 +42,7 @@ export const RadioGroup = <T extends string>({
                 ? 'rgba(255, 255, 255, 0.85)'
                 : pressed
                   ? 'rgba(255, 255, 255, 0.15)'
-                  : 'transparent',
+                  : 'rgba(255, 255, 255, 0.06)',
               padding: spacing.md,
               borderRadius: borderRadius.md,
               borderWidth: 1.5,
