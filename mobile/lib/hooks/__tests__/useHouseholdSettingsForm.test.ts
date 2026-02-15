@@ -290,6 +290,7 @@ describe('useHouseholdSettingsForm', () => {
     });
 
     it('shows error when add fails', async () => {
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsyncAddMember.mockRejectedValueOnce(new Error('exists'));
       const { result } = render('h1');
       act(() => result.current.setNewMemberEmail('dup@test.com'));
@@ -298,6 +299,7 @@ describe('useHouseholdSettingsForm', () => {
         'common.error',
         'admin.failedToAddMember',
       );
+      spy.mockRestore();
     });
   });
 
@@ -358,6 +360,7 @@ describe('useHouseholdSettingsForm', () => {
     });
 
     it('shows error when removal fails in confirm callback', async () => {
+      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
       mockMutateAsyncRemoveMember.mockRejectedValueOnce(new Error('fail'));
       const { result } = render('h1');
       act(() =>
@@ -375,6 +378,7 @@ describe('useHouseholdSettingsForm', () => {
         'common.error',
         'admin.failedToRemoveMember',
       );
+      spy.mockRestore();
     });
   });
 

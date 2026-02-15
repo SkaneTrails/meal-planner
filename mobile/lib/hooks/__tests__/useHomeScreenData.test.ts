@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { createQueryWrapper, mockRecipe } from '@/test/helpers';
 import type { Recipe } from '@/lib/types';
 
@@ -237,9 +237,7 @@ describe('useHomeScreenData', () => {
   describe('handleImportRecipe', () => {
     it('navigates to add-recipe with URL param', () => {
       const { result } = render();
-      result.current.setRecipeUrl('https://example.com/recipe');
-      const { result: result2 } = render();
-      result2.current.setRecipeUrl('https://example.com/recipe');
+      act(() => result.current.setRecipeUrl('https://example.com/recipe'));
     });
   });
 
