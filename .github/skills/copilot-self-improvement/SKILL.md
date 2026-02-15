@@ -42,7 +42,7 @@ Every line in `copilot-instructions.md`, `*.instructions.md`, and skills consume
 **Loading frequency matters:**
 
 | File | Loading | Impact |
-|------|---------|--------|
+| ---- | ------- | ------ |
 | `copilot-instructions.md` | Every request | Highest — competes with every interaction |
 | `*.instructions.md` | When editing matching files | Medium — present during file-type work |
 | Skills | On demand | Lowest — only when activated |
@@ -58,7 +58,7 @@ Every line in `copilot-instructions.md`, `*.instructions.md`, and skills consume
 On every invocation, scan `copilot-instructions.md` for content that belongs elsewhere:
 
 | Signal | Destination |
-|--------|-------------|
+| ------ | ----------- |
 | File-extension-specific conventions (`.tf`, `.py`, `.ts`) | `*.instructions.md` |
 | Step-by-step procedures, "how to" sections, decision trees | Skills |
 | URLs to external docs, version-specific info | `copilot-references.md` |
@@ -82,7 +82,7 @@ When detected: check project's pre-commit config / `pyproject.toml` / `tsconfig.
 ## File Architecture
 
 | File | When Loaded | Context Impact | Content |
-|------|-------------|----------------|---------|
+| ---- | ----------- | -------------- | ------- |
 | `copilot-instructions.md` | Every request | High (always present) | Minimal: overview, stack, principles, skill registry |
 | `*.instructions.md` | File pattern match | Medium (during edits) | File-type conventions |
 | Skills (`SKILL.md`) | On demand | Low (only when needed) | Procedures, workflows |
@@ -93,7 +93,7 @@ When detected: check project's pre-commit config / `pyproject.toml` / `tsconfig.
 ### Placement Decision
 
 | Question | Yes → |
-|----------|-------|
+| -------- | ----- |
 | Always needed, fits in <20 lines? | `copilot-instructions.md` |
 | Always needed, >20 lines? | Summarize in instructions, detail in skill |
 | Triggered by file type? | `*.instructions.md` |
@@ -105,7 +105,7 @@ When detected: check project's pre-commit config / `pyproject.toml` / `tsconfig.
 ### Size Guidelines
 
 | File | Guideline | Key Question |
-|------|-----------|--------------|
+| ---- | --------- | ------------ |
 | `copilot-instructions.md` | ~200 lines | Could any content be conditionally loaded? |
 | Skill (SKILL.md) | <500 lines, <5000 tokens | Split refs to `references/`? |
 | `*.instructions.md` | Comprehensive | Is file type common enough to justify? |
@@ -120,7 +120,7 @@ Size is a smell, not a violation. 400 lines of essential content is fine. 150 li
 Read [references/PROCEDURES.md](references/PROCEDURES.md) for structure, registration, and anti-patterns.
 
 | Creating | Must Have |
-|----------|-----------|
+| -------- | --------- |
 | Skill | Clear activation context, registered in `copilot-instructions.md` |
 | Agent | Distinct persona, clear boundaries, handoff definitions |
 
@@ -129,7 +129,7 @@ Read [references/PROCEDURES.md](references/PROCEDURES.md) for structure, registr
 ## Anti-Patterns
 
 | Anti-Pattern | Solution |
-|--------------|----------|
+| ------------ | -------- |
 | Everything in `copilot-instructions.md` | Split per placement decision above |
 | Duplicated content across files | Single source of truth |
 | Procedures in always-loaded instructions | Move to skills |
@@ -148,7 +148,7 @@ On every invocation of this skill:
 3. If found, assess and extract/remove before other work
 
 | Periodic Check | Action |
-|----------------|--------|
+| -------------- | ------ |
 | Stale references | Test 2-3 for relevance |
 | `.copilot-tasks.md` cleanup | After branch merge, remove branch section |
 
@@ -159,7 +159,7 @@ On every invocation of this skill:
 When reviewing skills (on request or during health checks):
 
 | Criterion | Question |
-|-----------|----------|
+| --------- | -------- |
 | Purpose clarity | Immediately clear from name + description? |
 | Audience fit | Written for Copilot, not humans? |
 | Actionable | Specific instructions vs vague principles? |
@@ -174,7 +174,7 @@ When reviewing skills (on request or during health checks):
 ## Knowledge Gaps
 
 | Trigger | Action |
-|---------|--------|
+| ------- | ------ |
 | Uncertain about current syntax/API | Check `copilot-references.md` |
 | User provides corrective link | Add to `copilot-references.md` with category and date |
 | Repeated procedure (3x) | Create a skill |

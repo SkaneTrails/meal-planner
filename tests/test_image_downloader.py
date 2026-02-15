@@ -217,6 +217,15 @@ class TestProcessImage:
         assert Image.open(io.BytesIO(hero_data)).mode == "RGB"
         assert Image.open(io.BytesIO(thumb_data)).mode == "RGB"
 
+    def test_returns_none_on_unexpected_exception(self) -> None:
+        """Should return None and log when create_hero_and_thumbnail raises unexpected error."""
+        image_data = _make_jpeg_bytes()
+
+        with patch("api.services.image_downloader.create_hero_and_thumbnail", side_effect=RuntimeError("disk full")):
+            result = _process_image(image_data, RECIPE_ID)
+
+        assert result is None
+
 
 class TestUploadBothToGcs:
     """Tests for _upload_both_to_gcs."""

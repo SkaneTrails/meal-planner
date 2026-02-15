@@ -35,7 +35,7 @@ If you fix first and log later, you will forget to log. This has happened repeat
 When reading the file, also check:
 
 | Condition | Action |
-|-----------|--------|
+| --------- | ------ |
 | Failure Tracking count ≥ 3 | Promote to permanent docs NOW |
 | Failure Tracking Last seen > 14 days | Offer to prune |
 | Discovered Issues > 5 | "You have N deferred issues. Prioritize or prune?" |

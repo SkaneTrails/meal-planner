@@ -1,8 +1,9 @@
 """Tests for api/services/url_safety.py."""
 
+import socket
 from unittest.mock import patch
 
-from api.services.url_safety import is_safe_url
+from api.services.url_safety import _is_ip_blocked, is_safe_url
 
 
 class TestIsSafeUrl:
@@ -51,3 +52,13 @@ class TestIsSafeUrl:
         """Should block URLs whose DNS resolves to private IPs."""
         with patch("api.services.url_safety._resolve_and_check_ips", return_value=True):
             assert is_safe_url("https://evil.com/photo.jpg") is False
+
+    def test_dns_resolution_failure_blocks_url(self) -> None:
+        """DNS failure should be treated as blocked (fail-closed)."""
+        with patch("api.services.url_safety.socket.getaddrinfo", side_effect=socket.gaierror("DNS failed")):
+            assert is_safe_url("https://nonexistent.example.com/recipe") is False
+
+    def test_is_ip_blocked_returns_false_for_invalid_input(self) -> None:
+        """Non-IP strings should return False (not raise)."""
+        assert _is_ip_blocked("not-an-ip") is False
+        assert _is_ip_blocked("") is False

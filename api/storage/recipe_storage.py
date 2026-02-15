@@ -377,7 +377,7 @@ def review_enhancement(recipe_id: str, *, approve: bool, household_id: str) -> R
 
     data = doc.to_dict()
     if not data:
-        return None
+        return None  # pragma: no cover
 
     # Verify household ownership
     if data.get("household_id") != household_id:

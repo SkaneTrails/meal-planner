@@ -772,6 +772,16 @@ class TestParseRecipe:
         assert detail["reason"] == "not_supported"
         assert "coop.se" in detail["message"]
 
+    def test_returns_409_when_recipe_exists(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should return 409 when recipe URL already exists."""
+        with patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
+            response = client.post(
+                "/recipes/parse", json={"url": "https://example.com/existing", "html": "<html>" + "x" * 100 + "</html>"}
+            )
+
+        assert response.status_code == 409
+        assert "already exists" in response.json()["detail"]["message"]
+
     def test_returns_201_on_successful_parse(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should parse HTML and save recipe on success."""
         scraped_data = {
@@ -809,6 +819,23 @@ class TestParseRecipe:
             )
 
         assert response.status_code == 201
+
+    def test_returns_422_when_cloud_function_returns_none(self, client: TestClient) -> None:
+        """Should return 422 when Cloud Function returns None (network/unexpected error)."""
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes._send_html_to_cloud_function", new_callable=AsyncMock, return_value=None),
+        ):
+            response = client.post(
+                "/recipes/parse",
+                json={
+                    "url": "https://example.com/fail",
+                    "html": "<html><head><title>Fail</title></head><body>" + "x" * 100 + "</body></html>",
+                },
+            )
+
+        assert response.status_code == 422
+        assert "Failed to parse" in response.json()["detail"]
 
 
 class TestPreviewRecipe:
@@ -869,6 +896,53 @@ class TestPreviewRecipe:
 
         assert response.status_code == 409
         assert "already exists" in response.json()["detail"]["message"]
+
+    def test_returns_422_on_parse_error(self, client: TestClient) -> None:
+        """Should return 422 with structured error when Cloud Function returns a parse error."""
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 422
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = {"error": "Could not extract recipe", "reason": "parse_failed"}
+
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post(
+                "/recipes/preview",
+                json={
+                    "url": "https://example.com/bad",
+                    "html": "<html><head><title>Bad</title></head><body>" + "x" * 100 + "</body></html>",
+                },
+            )
+
+        assert response.status_code == 422
+        detail = response.json()["detail"]
+        assert detail["reason"] == "parse_failed"
+        assert "Could not extract recipe" in detail["message"]
+
+    def test_returns_422_when_cloud_function_returns_none(self, client: TestClient) -> None:
+        """Should return 422 when Cloud Function returns None (network/unexpected error)."""
+        with (
+            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipes._send_html_to_cloud_function", new_callable=AsyncMock, return_value=None),
+        ):
+            response = client.post(
+                "/recipes/preview",
+                json={
+                    "url": "https://example.com/fail",
+                    "html": "<html><head><title>Fail</title></head><body>" + "x" * 100 + "</body></html>",
+                },
+            )
+
+        assert response.status_code == 422
+        assert "Failed to parse" in response.json()["detail"]
 
 
 class TestUpdateRecipe:
@@ -991,6 +1065,122 @@ class TestEnhanceRecipe:
             response = client.post("/recipes/nonexistent/enhance")
 
         assert response.status_code == 404
+
+    def test_enhances_owned_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should enhance a recipe owned by the user's household."""
+        enhanced_recipe = Recipe(
+            id="test123",
+            title="Enhanced Carbonara",
+            url="https://example.com/carbonara",
+            household_id="test_household",
+            enhanced=True,
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch(
+                "api.services.recipe_enhancer.enhance_recipe",
+                return_value={"title": "Enhanced Carbonara", "changes_made": ["Improved"]},
+            ),
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=enhanced_recipe),
+            patch("api.routers.recipes.recipe_storage.copy_recipe") as mock_copy,
+        ):
+            response = client.post("/recipes/test123/enhance")
+
+        assert response.status_code == 200
+        assert response.json()["enhanced"] is True
+        mock_copy.assert_not_called()
+
+    def test_copies_shared_recipe_before_enhancing(self, client: TestClient) -> None:
+        """Should copy a shared/legacy recipe before enhancing it."""
+        shared_recipe = Recipe(
+            id="shared123",
+            title="Shared Recipe",
+            url="https://example.com/shared",
+            household_id=None,
+            visibility="shared",
+        )
+        copied_recipe = Recipe(
+            id="copy456", title="Shared Recipe", url="https://example.com/shared", household_id="test_household"
+        )
+        enhanced_recipe = Recipe(
+            id="copy456",
+            title="Enhanced Recipe",
+            url="https://example.com/shared",
+            household_id="test_household",
+            enhanced=True,
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=shared_recipe),
+            patch("api.routers.recipes.recipe_storage.copy_recipe", return_value=copied_recipe) as mock_copy,
+            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch(
+                "api.services.recipe_enhancer.enhance_recipe",
+                return_value={"title": "Enhanced Recipe", "changes_made": ["Improved"]},
+            ),
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=enhanced_recipe),
+        ):
+            response = client.post("/recipes/shared123/enhance")
+
+        assert response.status_code == 200
+        mock_copy.assert_called_once_with("shared123", to_household_id="test_household", copied_by="test@example.com")
+
+    def test_returns_404_for_private_recipe_from_other_household(self, client: TestClient) -> None:
+        """Should return 404 when recipe belongs to another household and is not shared."""
+        private_recipe = Recipe(
+            id="private123",
+            title="Private Recipe",
+            url="https://example.com/private",
+            household_id="other_household",
+            visibility="household",
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=private_recipe):
+            response = client.post("/recipes/private123/enhance")
+
+        assert response.status_code == 404
+
+    def test_returns_503_on_enhancement_config_error(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should return 503 when enhancement configuration is unavailable."""
+        from api.services.recipe_enhancer import EnhancementConfigError
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementConfigError("No API key")),
+        ):
+            response = client.post("/recipes/test123/enhance")
+
+        assert response.status_code == 503
+        assert "No API key" in response.json()["detail"]
+
+    def test_returns_500_on_enhancement_error(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should return 500 when enhancement processing fails."""
+        from api.services.recipe_enhancer import EnhancementError
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementError("Gemini failed")),
+        ):
+            response = client.post("/recipes/test123/enhance")
+
+        assert response.status_code == 500
+        assert "Enhancement failed" in response.json()["detail"]
+
+    def test_returns_500_on_unexpected_error(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should return 500 on unexpected errors during enhancement."""
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.services.recipe_enhancer.enhance_recipe", side_effect=RuntimeError("Unexpected")),
+        ):
+            response = client.post("/recipes/test123/enhance")
+
+        assert response.status_code == 500
+        assert "unexpected error" in response.json()["detail"]
 
 
 class TestReviewEnhancementEndpoint:

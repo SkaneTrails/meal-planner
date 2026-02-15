@@ -123,7 +123,7 @@ jobs:
               '## Terraform Tests — PR Summary',
               '',
               '| Step | Result |',
-              '|------|--------|',
+              '| ---- | ------ |',
               `| Format | ${icon(process.env.FMT_OUTCOME)} |`,
               `| Init | ${icon(process.env.INIT_OUTCOME)} |`,
               `| Validate | ${icon(process.env.VALIDATE_OUTCOME)} |`,
@@ -172,7 +172,7 @@ jobs:
             echo "## Terraform Tests"
             echo ""
             echo "| Step | Result |"
-            echo "|------|--------|"
+            echo "| ---- | ------ |"
             echo "| Format | $(icon "${{ steps.fmt.outcome }}") |"
             echo "| Init | $(icon "${{ steps.init.outcome }}") |"
             echo "| Validate | $(icon "${{ steps.validate.outcome }}") |"

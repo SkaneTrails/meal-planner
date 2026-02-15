@@ -294,6 +294,7 @@ export type MincedMeatPreference = 'meat' | 'soy' | 'split';
 export type DairyPreference = 'regular' | 'lactose_free' | 'dairy_free';
 
 export interface DietarySettings {
+  lactose_free: boolean;
   seafood_ok: boolean;
   meat: MeatPreference;
   minced_meat: MincedMeatPreference;

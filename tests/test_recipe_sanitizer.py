@@ -122,3 +122,14 @@ class TestSanitizeRecipeForEnhancement:
         assert result["instructions"] == recipe["instructions"]
         assert result["tips"] == recipe["tips"]
         assert result["url"] == "https://example.com/recipe"
+
+    def test_handles_recipe_without_text_fields(self) -> None:
+        """Should handle dict with no title/ingredients/instructions (branch coverage)."""
+        recipe = {"url": "https://example.com/recipe", "servings": 4, "created_by": "user@example.com"}
+        result = sanitize_recipe_for_enhancement(recipe)
+        assert "created_by" not in result
+        assert result["url"] == "https://example.com/recipe"
+        assert result["servings"] == 4
+        assert "title" not in result
+        assert "ingredients" not in result
+        assert "instructions" not in result

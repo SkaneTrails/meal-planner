@@ -78,7 +78,7 @@ async def create_household(
     household_id = household_storage.create_household(request.name, user.email)
     household = household_storage.get_household(household_id)
 
-    if household is None:
+    if household is None:  # pragma: no cover
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create household")
 
     return HouseholdResponse(id=household.id, name=household.name, created_by=household.created_by)

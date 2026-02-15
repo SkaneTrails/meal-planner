@@ -4,6 +4,31 @@
 
 import { vi } from 'vitest';
 
+// Suppress known React Native Web warnings that are harmless in jsdom.
+// These fire because RN-specific props (onLongPress, numberOfLines, onPressIn)
+// and nested Pressable→button DOM nesting don't apply outside a real browser.
+const originalConsoleError = console.error;
+const SUPPRESSED_PATTERNS = [
+  'Unknown event handler property',
+  'does not recognize the',
+  'cannot be a descendant of',
+  'cannot contain a nested',
+  'will cause a hydration error',
+];
+console.error = (...args: unknown[]) => {
+  const message = typeof args[0] === 'string' ? args[0] : String(args[0]);
+  if (SUPPRESSED_PATTERNS.some((p) => message.includes(p))) return;
+  originalConsoleError(...args);
+  throw new Error(`Unexpected console.error in test: ${message}`);
+};
+
+const originalConsoleWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  const message = typeof args[0] === 'string' ? args[0] : String(args[0]);
+  originalConsoleWarn(...args);
+  throw new Error(`Unexpected console.warn in test: ${message}`);
+};
+
 // Mock expo-router
 vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({

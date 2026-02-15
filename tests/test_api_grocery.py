@@ -171,6 +171,66 @@ class TestGenerateGroceryList:
         # Should only request the recipe within date range
         mock_batch.assert_called_once_with({"recipe1"})
 
+    def test_skips_malformed_meal_keys(self, client: TestClient) -> None:
+        """Should skip meal keys without underscore separator."""
+        meals = {"badkey": "recipe1", "2025-01-15_dinner": "recipe2"}
+        mock_recipe = MagicMock()
+        mock_recipe.ingredients = ["1 egg"]
+        mock_recipe.title = "Good Recipe"
+
+        with (
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.get_recipes_by_ids", return_value={"recipe2": mock_recipe}),
+            patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
+        ):
+            response = client.get("/grocery")
+
+        assert response.status_code == 200
+        assert len(response.json()["items"]) == 1
+
+    def test_skips_invalid_date_strings(self, client: TestClient) -> None:
+        """Should skip meal keys with unparseable date parts."""
+        meals = {"notadate_dinner": "recipe1"}
+
+        with (
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.get_recipes_by_ids", return_value={}),
+            patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
+        ):
+            response = client.get("/grocery")
+
+        assert response.status_code == 200
+        assert response.json()["items"] == []
+
+    def test_includes_extras(self, client: TestClient) -> None:
+        """Should include extras recipes (Other section) regardless of date."""
+        mock_recipe = MagicMock()
+        mock_recipe.ingredients = ["2 cups flour"]
+        mock_recipe.title = "Extra Recipe"
+
+        with (
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=({}, {}, ["extra1"])),
+            patch("api.routers.grocery.get_recipes_by_ids", return_value={"extra1": mock_recipe}),
+        ):
+            response = client.get("/grocery")
+
+        assert response.status_code == 200
+        assert len(response.json()["items"]) == 1
+
+    def test_skips_missing_recipes(self, client: TestClient) -> None:
+        """Should skip recipe IDs not found in batch fetch."""
+        meals = {"2025-01-15_dinner": "missing_recipe"}
+
+        with (
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.get_recipes_by_ids", return_value={}),
+            patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
+        ):
+            response = client.get("/grocery")
+
+        assert response.status_code == 200
+        assert response.json()["items"] == []
+
 
 class TestDetectCategory:
     """Tests for category detection helper."""

@@ -442,7 +442,7 @@ describe('useSettings', () => {
  * Fix (PR #209): Gate useCurrentUser with { enabled: isAuthenticated }.
  */
 describe('SettingsProvider auth gate', () => {
-  it('disables useCurrentUser when auth is loading', () => {
+  it('disables useCurrentUser when auth is loading', async () => {
     mockUseAuth.mockReturnValue({
       user: null,
       loading: true,
@@ -456,12 +456,14 @@ describe('SettingsProvider auth gate', () => {
       wrapper: createSettingsWrapper(),
     });
 
-    expect(mockUseCurrentUser).toHaveBeenCalledWith(
-      expect.objectContaining({ enabled: false }),
-    );
+    await waitFor(() => {
+      expect(mockUseCurrentUser).toHaveBeenCalledWith(
+        expect.objectContaining({ enabled: false }),
+      );
+    });
   });
 
-  it('disables useCurrentUser when user is null (not signed in)', () => {
+  it('disables useCurrentUser when user is null (not signed in)', async () => {
     mockUseAuth.mockReturnValue({
       user: null,
       loading: false,
@@ -475,12 +477,14 @@ describe('SettingsProvider auth gate', () => {
       wrapper: createSettingsWrapper(),
     });
 
-    expect(mockUseCurrentUser).toHaveBeenCalledWith(
-      expect.objectContaining({ enabled: false }),
-    );
+    await waitFor(() => {
+      expect(mockUseCurrentUser).toHaveBeenCalledWith(
+        expect.objectContaining({ enabled: false }),
+      );
+    });
   });
 
-  it('enables useCurrentUser when authenticated', () => {
+  it('enables useCurrentUser when authenticated', async () => {
     mockUseAuth.mockReturnValue({
       user: { email: 'test@example.com' } as any,
       loading: false,
@@ -494,12 +498,14 @@ describe('SettingsProvider auth gate', () => {
       wrapper: createSettingsWrapper(),
     });
 
-    expect(mockUseCurrentUser).toHaveBeenCalledWith(
-      expect.objectContaining({ enabled: true }),
-    );
+    await waitFor(() => {
+      expect(mockUseCurrentUser).toHaveBeenCalledWith(
+        expect.objectContaining({ enabled: true }),
+      );
+    });
   });
 
-  it('reports loading while auth is resolving', () => {
+  it('reports loading while auth is resolving', async () => {
     mockUseAuth.mockReturnValue({
       user: null,
       loading: true,
@@ -513,6 +519,8 @@ describe('SettingsProvider auth gate', () => {
       wrapper: createSettingsWrapper(),
     });
 
-    expect(result.current.isLoading).toBe(true);
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(true);
+    });
   });
 });

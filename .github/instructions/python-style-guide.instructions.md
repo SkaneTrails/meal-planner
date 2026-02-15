@@ -199,6 +199,41 @@ def parse_ingredients(text: str, servings: int = 4) -> list[str]:
 - Group related tests in classes: `class TestIngredientParser:`
 - Test file naming: `test_*.py`
 
+### Coverage Standards
+
+Every file in `api/` must maintain ≥95% coverage. The overall threshold is enforced by `fail_under` in `pyproject.toml`, but per-file coverage requires manual review of `--cov-report=term-missing` output.
+
+After adding new code, always run:
+
+```bash
+uv run pytest --cov=api --cov-report=term-missing
+```
+
+Check both overall percentage AND individual file percentages. No file gets a pass for "bringing the average down."
+
+### When to Use `# pragma: no cover`
+
+Use pragma for code where tests would only verify mock wiring, not real logic. **Never** use pragma to hide untested business logic.
+
+**Acceptable categories:**
+
+| Category                          | Example                                     | Why                                         |
+| --------------------------------- | ------------------------------------------- | ------------------------------------------- |
+| SDK/service initialization        | Firebase `verify_id_token()` calls          | Testing would only mock the SDK             |
+| External API interaction paths    | Gemini AI enhancement orchestration         | Pure mock-relay, no local logic             |
+| Defensive impossible-state guards | `if result is None` after guaranteed create | Can't trigger without corrupting mock       |
+| Dedup/filter guards in generators | `if id in seen: continue`                   | Requires real Firestore multi-query overlap |
+| Enum/type extraction fallbacks    | `getattr(field, "value", field)`            | Edge case of Firestore SDK internals        |
+
+**Never acceptable:**
+
+| Anti-pattern                            | Do instead                            |
+| --------------------------------------- | ------------------------------------- |
+| Complex branching logic                 | Write tests that exercise each branch |
+| Error handling with user-facing effects | Test the error response               |
+| Data transformation/mapping             | Test input → output                   |
+| Validation logic                        | Test valid and invalid inputs         |
+
 ### Test Structure
 
 - **Arrange-Act-Assert** pattern

@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 const isWindows = process.platform === 'win32';
 
 export default defineConfig({
+  define: {
+    __DEV__: true,
+  },
   test: {
     // Windows requires 'forks' pool — 'threads' causes worker initialization
     // timeouts due to Node.js worker_threads limitations on Windows.
@@ -25,12 +28,14 @@ export default defineConfig({
         '**/*.test.*',
         // Pure types — no runtime code
         'lib/types.ts',
-        // HTTP wrapper — testing mocked fetch calls is pointless
+        // API client wrappers — testing only verifies mocked fetch calls
         'lib/api.ts',
+        'lib/api/**',
         // Firebase config — environment-dependent initialization
         'lib/firebase.ts',
         // Theme constants — static values only
         'lib/theme.ts',
+        'lib/theme/**',
         // Haptic utilities — thin platform-guarded wrappers over expo-haptics
         'lib/haptics.ts',
         // Query provider — singleton QueryClient configuration
@@ -40,11 +45,24 @@ export default defineConfig({
         // Firebase auth integration — depends on Firebase SDK, Google Sign-In,
         // expo-auth-session; would require mocking the entire auth flow
         'lib/hooks/use-auth.tsx',
-        // Tab screens — heavy UI components with minimal testable logic
+        // Screen components — heavy UI with logic delegated to hooks
         'app/\\(tabs\\)/**',
+        'app/add-recipe.tsx',
+        'app/review-recipe.tsx',
+        'app/select-recipe.tsx',
+        'app/recipe/**',
+        // Orchestration hooks — compose already-tested hooks/utils with
+        // AsyncStorage and React state; testing only verifies mock wiring
+        'lib/hooks/useGroceryScreen.ts',
         // Root layout — navigation configuration only
         'app/_layout.tsx',
       ],
+      thresholds: {
+        statements: 80,
+        branches: 70,
+        functions: 70,
+        lines: 80,
+      },
     },
   },
   resolve: {

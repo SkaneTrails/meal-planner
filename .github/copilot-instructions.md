@@ -15,7 +15,7 @@ This file is gitignored (local-only, never committed). Ignoring it loses track o
 ### ⚠️ Two Todo Systems — Do NOT Confuse Them
 
 | | `.copilot-tasks.md` | `manage_todo_list` tool |
-|---|---|---|
+| --- | --- | --- |
 | **Purpose** | Persistent project backlog across conversations | Ephemeral progress tracker within a single session |
 | **Lifetime** | Permanent — local file (gitignored) | Gone when conversation ends |
 | **Content** | Open issues, deferred work, failure tracking | Steps for the current task only |
@@ -216,6 +216,12 @@ See `pyproject.toml` for tool configurations. Style guides in `*.instructions.md
 
 > **🚨 All API and mobile auth/hook changes MUST have corresponding tests.**
 
+### Coverage Standards
+
+- **Overall threshold**: 95% enforced by `fail_under` in `pyproject.toml` — pytest-cov will fail the run if coverage drops below this
+- **Per-file minimum**: Every file in `api/` must have ≥95% coverage — no file gets a pass for "bringing the average down"
+- **`# pragma: no cover`**: Use for code that would only test mock wiring, not real logic (see `python-style-guide.instructions.md` Testing section for categories). Never use pragma to hide untested logic
+
 ### API (pytest)
 - New API endpoints → `tests/test_api_*.py`
 - New service functions → `tests/test_*.py`
@@ -226,14 +232,20 @@ See `pyproject.toml` for tool configurations. Style guides in `*.instructions.md
 ### Mobile (Vitest)
 - Hook logic (conditional fetching, enabled guards) → `mobile/lib/hooks/__tests__/*.test.ts`
 - Auth/role-based behavior (permissions, navigation guards) → `mobile/app/__tests__/*.test.tsx`
+- Utility functions (parsing, aggregation) → `mobile/lib/utils/__tests__/*.test.ts`
 - Test utilities: `mobile/test/helpers.ts` (query wrapper, mock user factory)
-- Run: `cd mobile && pnpm test`
+- **Overall threshold**: 80% stmts / 70% branches enforced by `thresholds` in `vitest.config.ts`
+- **Excluded from coverage**: Screen components, API client wrappers, theme constants, orchestration hooks (see `vitest.config.ts` coverage.exclude)
+- **`createTestQueryClient()` caveat**: Uses `gcTime: 0` — cache entries with no active observer are GC'd immediately. For mutation `onSuccess` cache tests, create a dedicated `QueryClient` without `gcTime: 0`
+- Run: `cd mobile && pnpm test` / `pnpm test:coverage`
 
 ### Pre-Commit Checklist
 Before committing changes that add new functionality:
 - [ ] Storage layer: Do mapping functions (`_doc_to_*`) include the new fields?
 - [ ] Are those mappings tested with explicit assertions?
-- [ ] Does coverage remain ≥90%? (`uv run pytest --cov=api`)
+- [ ] Does API coverage pass? (`uv run pytest --cov=api` — threshold enforced by `pyproject.toml`)
+- [ ] No single API file dropped below 95%? (check `--cov-report=term-missing` output)
+- [ ] Does mobile coverage pass? (`cd mobile && pnpm test:coverage` — thresholds enforced by `vitest.config.ts`)
 
 **Exceptions:** Terraform, config files, pure UI styling.
 

@@ -189,3 +189,26 @@ class TestSettingsEquipmentField:
     def test_update_model_allows_none(self) -> None:
         update = HouseholdSettingsUpdate()
         assert update.equipment is None
+
+    def test_read_model_non_list_non_dict_becomes_empty(self) -> None:
+        """Non-list, non-dict input (e.g. integer) should silently become []."""
+        settings = HouseholdSettings(
+            household_size=2,
+            default_servings=2,
+            language="en",
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            equipment=42,  # ty: ignore[invalid-argument-type]
+        )
+        assert settings.equipment == []
+
+    def test_read_model_keeps_unknown_equipment_keys(self) -> None:
+        """Read model should keep all string keys (lenient) rather than raising on unknowns."""
+        settings = HouseholdSettings(
+            household_size=2,
+            default_servings=2,
+            language="en",
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            equipment=["air_fryer", "magic_wand"],
+        )
+        assert "air_fryer" in settings.equipment
+        assert "magic_wand" in settings.equipment

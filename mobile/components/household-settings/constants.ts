@@ -39,6 +39,7 @@ export const DEFAULT_SETTINGS: HouseholdSettings = {
   default_servings: 2,
   language: 'sv',
   dietary: {
+    lactose_free: false,
     seafood_ok: true,
     meat: 'all',
     minced_meat: 'meat',

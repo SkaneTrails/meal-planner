@@ -21,7 +21,7 @@ Equipment is now **dynamic** — each household selects their available equipmen
 ### Current Catalog (15 items)
 
 | Category | Keys |
-|----------|------|
+| -------- | ---- |
 | Appliances | `air_fryer`, `stand_mixer`, `food_processor`, `immersion_blender`, `pressure_cooker`, `slow_cooker`, `sous_vide` |
 | Oven features | `convection_oven`, `grill_function`, `steam_oven` |
 | Cookware | `dutch_oven`, `cast_iron_skillet`, `wok` |

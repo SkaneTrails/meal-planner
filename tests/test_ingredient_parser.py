@@ -42,6 +42,12 @@ class TestParseFraction:
     def test_parse_empty_string_returns_none(self) -> None:
         assert parse_fraction("") is None
 
+    def test_parse_non_numeric_string_returns_none(self) -> None:
+        assert parse_fraction("abc") is None
+
+    def test_parse_word_with_slash_returns_none(self) -> None:
+        assert parse_fraction("not/a-number") is None
+
 
 class TestFormatQuantity:
     """Tests for format_quantity function."""
@@ -68,6 +74,12 @@ class TestFormatQuantity:
 
     def test_format_decimal(self) -> None:
         assert format_quantity(1.75) == "1 3/4"
+
+    def test_format_non_fraction_decimal_one_digit(self) -> None:
+        assert format_quantity(1.2) == "1.2"
+
+    def test_format_non_fraction_decimal_two_digits(self) -> None:
+        assert format_quantity(1.23) == "1.23"
 
 
 class TestParseIngredient:
@@ -131,6 +143,18 @@ class TestParseIngredient:
         original = "2 cups flour"
         result = parse_ingredient(original)
         assert result.original == original
+
+    def test_parse_empty_string(self) -> None:
+        result = parse_ingredient("")
+        assert result.quantity is None
+        assert result.unit is None
+        assert result.name == ""
+
+    def test_parse_whitespace_only(self) -> None:
+        result = parse_ingredient("   ")
+        assert result.quantity is None
+        assert result.unit is None
+        assert result.name == ""
 
 
 class TestParsedIngredientScale:
