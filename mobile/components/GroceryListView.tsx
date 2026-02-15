@@ -11,6 +11,7 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
+import { layout } from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
 
@@ -197,13 +198,18 @@ export const GroceryListView = ({
             keyExtractor={(item, index) => `${item.name}-${index}`}
             renderItem={renderDraggableItem}
             containerStyle={{ flex: 1 }}
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{
+              paddingBottom: layout.tabBar.contentBottomPadding,
+            }}
           />
         </View>
       ) : (
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: layout.tabBar.contentBottomPadding,
+          }}
           showsVerticalScrollIndicator={false}
         >
           {displayItems.map((item) => (

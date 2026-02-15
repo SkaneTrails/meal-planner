@@ -40,15 +40,13 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground muted>
-      <View
-        style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
-      >
+      <View style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
             padding: 20,
             paddingTop: 44,
-            paddingBottom: 40,
+            paddingBottom: layout.tabBar.contentBottomPadding,
           }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

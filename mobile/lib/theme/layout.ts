@@ -25,7 +25,7 @@ export const layout = {
   tabBar: {
     height: 44,
     bottomOffset: 16,
-    horizontalMargin: 32,
+    horizontalMargin: 20,
     borderRadius: 16,
     /** Padding for scrollable content so it clears the floating bar */
     contentBottomPadding: 76, // height + bottomOffset + safety

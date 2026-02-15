@@ -115,6 +115,7 @@ vi.mock('@/lib/theme', () => ({
     tabBar: {
       bg: 'rgba(235, 228, 219, 0.7)',
       bgFallback: 'rgba(235, 228, 219, 0.92)',
+      bottomFill: '#EBE4DB',
       border: 'rgba(93, 78, 64, 0.1)',
       active: '#5D4E40',
       inactive: '#8B7355',
@@ -131,7 +132,7 @@ vi.mock('@/lib/theme', () => ({
     tabBar: {
       height: 44,
       bottomOffset: 16,
-      horizontalMargin: 32,
+      horizontalMargin: 20,
       borderRadius: 16,
       contentBottomPadding: 76,
     },

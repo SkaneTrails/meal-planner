@@ -89,6 +89,7 @@ export const lightColors = {
   tabBar: {
     bg: 'rgba(235, 228, 219, 0.5)',
     bgFallback: 'rgba(235, 228, 219, 0.85)',
+    bottomFill: '#EBE4DB',
     border: 'rgba(93, 78, 64, 0.1)',
     active: '#5D4E40',
     inactive: '#8B7355',

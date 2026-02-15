@@ -118,6 +118,7 @@ export const FloatingTabBar = () => {
           );
         })}
       </View>
+      <View style={styles.bottomFill} />
     </View>
   );
 };
@@ -125,15 +126,20 @@ export const FloatingTabBar = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: layout.tabBar.bottomOffset,
-    left: layout.tabBar.horizontalMargin,
-    right: layout.tabBar.horizontalMargin,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   bar: {
     flexDirection: 'row',
     height: layout.tabBar.height,
+    marginHorizontal: layout.tabBar.horizontalMargin,
     borderRadius: layout.tabBar.borderRadius,
     ...shadows.md,
+  },
+  bottomFill: {
+    height: layout.tabBar.bottomOffset,
+    backgroundColor: colors.tabBar.bottomFill,
   },
   tabButton: {
     flex: 1,

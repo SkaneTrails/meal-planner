@@ -15,7 +15,7 @@ import {
   StatsCard,
 } from '@/components/grocery';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
-import { layout, spacing } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
 
 export default function GroceryScreen() {
   const {
@@ -55,9 +55,7 @@ export default function GroceryScreen() {
 
   return (
     <GradientBackground neutral>
-      <View
-        style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
-      >
+      <View style={{ flex: 1 }}>
         <GroceryHeader />
 
         <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>
