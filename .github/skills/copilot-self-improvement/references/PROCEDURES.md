@@ -92,7 +92,7 @@ After creating an agent, update `copilot-instructions.md` to register it in the 
 ### Agent Anti-Patterns
 
 | Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
+| ------------ | ------- | -------- |
 | Agent does everything | No clear handoff points | Split by distinct phases |
 | Overlapping agents | Confusion about which to use | Clear boundaries in Role section |
 | No handoff context | Next agent starts blind | Pass summary of decisions made |

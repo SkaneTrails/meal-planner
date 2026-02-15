@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, patch
 import httpx
 import pytest
 
-from api.services.html_fetcher import FetchError, FetchResult, fetch_html
+from api.services.html_fetcher import FetchError, FetchResult, _validate_redirect, fetch_html
 
 _SAFE_URL_PATCH = patch("api.services.html_fetcher.is_safe_url", return_value=True)
 
@@ -163,3 +163,40 @@ class TestFetchHtml:
         assert isinstance(result, FetchError)
         assert result.reason == "fetch_failed"
         assert "5 MB" in result.message
+
+
+@pytest.mark.asyncio
+class TestValidateRedirect:
+    """Tests for _validate_redirect event hook."""
+
+    async def test_blocks_redirect_to_metadata_endpoint(self) -> None:
+        """Should raise when redirect targets cloud metadata."""
+        response = AsyncMock(spec=httpx.Response)
+        response.is_redirect = True
+        response.has_redirect_location = True
+        response.headers = {"location": "http://169.254.169.254/metadata/v1"}
+        response.url = httpx.URL("https://example.com/recipe")
+
+        from api.services.html_fetcher import _UnsafeRedirectError
+
+        with pytest.raises(_UnsafeRedirectError, match="blocked by security policy"):
+            await _validate_redirect(response)
+
+    async def test_allows_safe_redirect(self) -> None:
+        """Should not raise when redirect targets a safe URL."""
+        response = AsyncMock(spec=httpx.Response)
+        response.is_redirect = True
+        response.has_redirect_location = True
+        response.headers = {"location": "https://www.example.com/new-recipe"}
+        response.url = httpx.URL("https://example.com/old-recipe")
+
+        with patch("api.services.html_fetcher.is_safe_url", return_value=True):
+            await _validate_redirect(response)
+
+    async def test_noop_when_not_redirect(self) -> None:
+        """Should do nothing when response is not a redirect."""
+        response = AsyncMock(spec=httpx.Response)
+        response.is_redirect = False
+        response.has_redirect_location = False
+
+        await _validate_redirect(response)

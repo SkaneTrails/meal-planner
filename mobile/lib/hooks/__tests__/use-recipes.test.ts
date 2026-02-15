@@ -25,11 +25,18 @@ vi.mock('@/lib/api', () => ({
   },
 }));
 
+vi.mock('@/lib/settings-context', () => ({
+  useSettings: vi.fn(() => ({
+    settings: { showHiddenRecipes: false },
+  })),
+}));
+
 // Import AFTER mock setup
 import { api } from '@/lib/api';
 import {
   useRecipes,
   useRecipe,
+  useAllRecipes,
   useCreateRecipe,
   useScrapeRecipe,
   useUpdateRecipe,
@@ -240,5 +247,73 @@ describe('useScrapeRecipe', () => {
       'https://example.com/recipe',
       true,
     );
+  });
+});
+
+describe('useAllRecipes', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('flattens pages into a single recipes array', async () => {
+    mockApi.getRecipes.mockResolvedValueOnce({
+      items: [mockRecipe({ id: '1', title: 'Pasta' })],
+      total_count: 2,
+      next_cursor: 'cursor1',
+      has_more: true,
+    });
+    mockApi.getRecipes.mockResolvedValueOnce({
+      items: [mockRecipe({ id: '2', title: 'Soup' })],
+      total_count: 2,
+      next_cursor: null,
+      has_more: false,
+    });
+
+    const { result } = renderHook(() => useAllRecipes(), {
+      wrapper: createQueryWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.recipes).toHaveLength(2));
+    expect(result.current.recipes[0].id).toBe('1');
+    expect(result.current.recipes[1].id).toBe('2');
+    expect(result.current.totalCount).toBe(2);
+  });
+
+  it('auto-fetches next page when has_more is true', async () => {
+    mockApi.getRecipes.mockResolvedValueOnce({
+      items: [mockRecipe({ id: '1', title: 'A' })],
+      total_count: 2,
+      next_cursor: 'c1',
+      has_more: true,
+    });
+    mockApi.getRecipes.mockResolvedValueOnce({
+      items: [mockRecipe({ id: '2', title: 'B' })],
+      total_count: 2,
+      next_cursor: null,
+      has_more: false,
+    });
+
+    const { result } = renderHook(() => useAllRecipes(), {
+      wrapper: createQueryWrapper(),
+    });
+
+    await waitFor(() => expect(mockApi.getRecipes).toHaveBeenCalledTimes(2));
+    expect(result.current.recipes).toHaveLength(2);
+  });
+
+  it('returns empty array when no data', () => {
+    mockApi.getRecipes.mockResolvedValue({
+      items: [],
+      total_count: 0,
+      next_cursor: null,
+      has_more: false,
+    });
+
+    const { result } = renderHook(() => useAllRecipes(), {
+      wrapper: createQueryWrapper(),
+    });
+
+    expect(result.current.recipes).toEqual([]);
+    expect(result.current.totalCount).toBe(0);
   });
 });

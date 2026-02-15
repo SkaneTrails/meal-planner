@@ -79,7 +79,7 @@ Enhanced recipes store **both versions in the same Firestore document**:
 ### 1. Timing and Staggering
 
 | Ingredient Type | When to Add |
-|-----------------|-------------|
+| --------------- | ----------- |
 | Dense vegetables (potatoes, carrots, root veg) | Start first — longest cook time |
 | Onions (roasting) | 10–15 min after root vegetables |
 | Delicate vegetables (broccoli, zucchini, leafy greens) | Add later to avoid mushiness |
@@ -90,7 +90,7 @@ Enhanced recipes store **both versions in the same Firestore document**:
 Evaluate each component independently — don't treat equipment as all-or-nothing.
 
 | Principle | Example |
-|-----------|---------|
+| --------- | ------- |
 | Best tool per component | Fish stays pan-fried (needs fond for sauce), parsnips → airfryer (faster, crispier) |
 | Parallel cooking | Airfryer + stovetop simultaneously saves time |
 | Quality over simplicity | Split cooking if it produces better results |
@@ -129,7 +129,7 @@ Use pantry staples from `household-config.md`:
 **Round to measurable units:**
 
 | Unpractical | → Practical |
-|-------------|-------------|
+| ----------- | ----------- |
 | 12,5 ml | 1 msk (15 ml) |
 | 7,5 ml | 1½ tsk |
 
@@ -184,7 +184,7 @@ Before finalizing any improvement, verify ALL of these:
 ## Anti-Patterns
 
 | ❌ Don't | ✅ Do Instead |
-|----------|---------------|
+| -------- | ------------- |
 | Airfryer for proteins simmering in sauce | Cook in sauce for flavor integration |
 | Hardcode "Quorn" as chicken alternative | Read `household-config.md` for current preference |
 | Copy timing from examples verbatim | Calculate per actual ingredients + equipment |

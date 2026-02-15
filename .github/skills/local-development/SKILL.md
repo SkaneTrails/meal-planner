@@ -174,7 +174,7 @@ cd mobile && pnpm exec prettier --check .  # TypeScript/TSX format
 ## Troubleshooting
 
 | Problem | Fix |
-|---------|-----|
+| ------- | --- |
 | `CONSUMER_INVALID` on Firestore | ADC not using impersonation — re-run setup script |
 | "Permission denied" on secrets | `gcloud auth login` + `gcloud config set project <id>` |
 | Firebase `auth/invalid-api-key` | Check `mobile/.env.development` has real values, not error text |

@@ -449,6 +449,13 @@ class TestRemoveMember:
         assert response.status_code == 400
         assert "Cannot remove yourself" in response.json()["detail"]
 
+    def test_household_not_found(self, superuser_client: TestClient) -> None:
+        """Should return 404 when household doesn't exist."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=None):
+            response = superuser_client.delete("/admin/households/nonexistent/members/member@example.com")
+
+        assert response.status_code == 404
+
 
 class TestGetCurrentUser:
     """Tests for GET /admin/me endpoint."""
@@ -720,6 +727,13 @@ class TestGetItemsAtHome:
         response = member_client.get("/admin/households/other_household/items-at-home")
         assert response.status_code == 403
 
+    def test_household_not_found(self, member_client: TestClient) -> None:
+        """Should return 404 when household doesn't exist."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=None):
+            response = member_client.get("/admin/households/test_household/items-at-home")
+
+        assert response.status_code == 404
+
 
 class TestAddItemAtHome:
     """Tests for POST /admin/households/{household_id}/items-at-home endpoint."""
@@ -750,6 +764,24 @@ class TestAddItemAtHome:
         """Empty item should be rejected by validation."""
         response = member_client.post("/admin/households/test_household/items-at-home", json={"item": ""})
         assert response.status_code == 422  # Pydantic validation error
+
+    def test_household_not_found(self, member_client: TestClient) -> None:
+        """Should return 404 when storage raises ValueError with 'not found'."""
+        with patch(
+            "api.routers.admin.household_storage.add_item_at_home", side_effect=ValueError("Household not found")
+        ):
+            response = member_client.post("/admin/households/test_household/items-at-home", json={"item": "salt"})
+
+        assert response.status_code == 404
+
+    def test_duplicate_item_returns_400(self, member_client: TestClient) -> None:
+        """Should return 400 for non-not-found ValueError (e.g., duplicate)."""
+        with patch(
+            "api.routers.admin.household_storage.add_item_at_home", side_effect=ValueError("Item already exists")
+        ):
+            response = member_client.post("/admin/households/test_household/items-at-home", json={"item": "salt"})
+
+        assert response.status_code == 400
 
 
 class TestRemoveItemAtHome:
@@ -783,6 +815,24 @@ class TestRemoveItemAtHome:
             response = member_client.delete("/admin/households/test_household/items-at-home/olive%20oil")
 
         assert response.status_code == 200
+
+    def test_household_not_found(self, member_client: TestClient) -> None:
+        """Should return 404 when storage raises ValueError with 'not found'."""
+        with patch(
+            "api.routers.admin.household_storage.remove_item_at_home", side_effect=ValueError("Household not found")
+        ):
+            response = member_client.delete("/admin/households/test_household/items-at-home/salt")
+
+        assert response.status_code == 404
+
+    def test_validation_error_returns_400(self, member_client: TestClient) -> None:
+        """Should return 400 for non-not-found ValueError."""
+        with patch(
+            "api.routers.admin.household_storage.remove_item_at_home", side_effect=ValueError("Item not in list")
+        ):
+            response = member_client.delete("/admin/households/test_household/items-at-home/salt")
+
+        assert response.status_code == 400
 
 
 class TestGetFavoriteRecipes:
@@ -873,6 +923,16 @@ class TestAddFavoriteRecipe:
 
         assert response.status_code == 404
 
+    def test_duplicate_recipe_returns_400(self, member_client: TestClient) -> None:
+        """Should return 400 for non-not-found ValueError (e.g., duplicate)."""
+        with patch(
+            "api.routers.admin.household_storage.add_favorite_recipe",
+            side_effect=ValueError("Recipe already in favorites"),
+        ):
+            response = member_client.post("/admin/households/test_household/favorites", json={"recipe_id": "recipe-1"})
+
+        assert response.status_code == 400
+
 
 class TestRemoveFavoriteRecipe:
     """Tests for DELETE /admin/households/{household_id}/favorites/{recipe_id} endpoint."""
@@ -909,3 +969,13 @@ class TestRemoveFavoriteRecipe:
             response = member_client.delete("/admin/households/test_household/favorites/recipe-1")
 
         assert response.status_code == 404
+
+    def test_validation_error_returns_400(self, member_client: TestClient) -> None:
+        """Should return 400 for non-not-found ValueError."""
+        with patch(
+            "api.routers.admin.household_storage.remove_favorite_recipe",
+            side_effect=ValueError("Recipe not in favorites"),
+        ):
+            response = member_client.delete("/admin/households/test_household/favorites/recipe-1")
+
+        assert response.status_code == 400

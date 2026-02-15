@@ -3,6 +3,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from api.services.prompt_loader import (
     DEFAULT_LANGUAGE,
     LANGUAGE_NAMES,
@@ -400,3 +402,19 @@ class TestValidatePrompts:
         result = validate_prompts()
         for value in result.values():
             assert isinstance(value, bool)
+
+
+class TestLoadSystemPromptErrors:
+    """Tests for load_system_prompt error cases."""
+
+    def test_raises_file_not_found_when_no_prompts(self, tmp_path: Path) -> None:
+        """Should raise FileNotFoundError when all prompt files are empty/missing."""
+        empty_prompts_dir = tmp_path / "config" / "prompts"
+        empty_prompts_dir.mkdir(parents=True)
+
+        with (
+            patch("api.services.prompt_loader.get_prompts_dir", return_value=empty_prompts_dir),
+            patch("api.services.prompt_loader.get_equipment_prompt", return_value=""),
+            pytest.raises(FileNotFoundError, match="No prompt files found"),
+        ):
+            load_system_prompt("en")

@@ -151,10 +151,25 @@ if (isAdmin) {
 
 ## Testing
 
+### What to Test
+
 - Component tests: `app/__tests__/*.test.tsx`
 - Hook tests: `lib/hooks/__tests__/*.test.ts`
+- Utility tests: `lib/utils/__tests__/*.test.ts`
 - Use `mobile/test/helpers.ts` (query wrapper, mock user factory)
 - Test: conditional fetching, enabled guards, auth/permission logic, navigation guards
+
+### Coverage Standards
+
+- **Overall threshold**: 80% stmts / 70% branches enforced by `thresholds` in `vitest.config.ts`
+- **Excluded from coverage**: Screen components, API client wrappers, theme constants, Firebase auth, orchestration hooks that only wire already-tested hooks/utils together (see `vitest.config.ts` coverage.exclude for full list)
+- Run coverage: `pnpm test:coverage`
+
+### Test Infrastructure Notes
+
+- **`createTestQueryClient()`** uses `gcTime: 0` for fast cleanup. This means unobserved cache entries (e.g., set via mutation `onSuccess`) are garbage-collected immediately. For tests that assert on `queryClient.getQueryData()` after a mutation, create a dedicated `QueryClient` without `gcTime: 0`
+- **`vi.hoisted()`** is required for constants used inside `vi.mock()` factory functions — the factory is hoisted above variable declarations
+- **`__DEV__`** is defined as `true` in `vitest.config.ts` via `define: { __DEV__: true }`
 
 ```tsx
 import { renderHook, waitFor } from "@testing-library/react";

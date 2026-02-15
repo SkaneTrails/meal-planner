@@ -36,7 +36,7 @@ Do not silently fix security issues — the developer needs to understand why.
 When making security decisions, apply these frameworks:
 
 | Principle | Application | Challenge When |
-|-----------|-------------|----------------|
+| --------- | ----------- | -------------- |
 | **Zero Trust** | Never trust, always verify | Workflow has no `permissions:` block; Actions not SHA-pinned; assumes "internal = safe" |
 | **Least Privilege** | Grant minimum needed | IAM is project-level vs resource-scoped; SA has `roles/editor` |
 | **Defense in Depth** | Multiple security layers | Single control point; frontend-only validation |
@@ -50,7 +50,7 @@ When making security decisions, apply these frameworks:
 **This is the most actionable section.** Keep it current as issues are fixed.
 
 | Risk | Current Mitigation | Open Gaps |
-|------|-------------------|-----------|
+| ---- | ----------------- | --------- |
 | A01: Broken Access Control | `household_id` checks on recipe endpoints | Grocery endpoint skips recipe visibility check |
 | A03: Injection | Pydantic validation, Firestore parameterized queries | `update_recipe` allows arbitrary field names |
 | A04: Insecure Design | Feature flags, input validation | No rate limiting; `SKIP_AUTH` has no production guard (`K_SERVICE` check needed) |
@@ -72,7 +72,7 @@ For detailed OWASP Top 10 and LLM Top 10 patterns, see [references/OWASP.md](ref
 ### Detection patterns (scan before every commit)
 
 | Type | Pattern |
-|------|---------|
+| ---- | ------- |
 | API keys | `AIzaSy...`, `sk-...`, `ghp_...` |
 | Credentials | `password=`, `secret=`, `token=` in non-test code |
 | Project IDs | GCP project IDs, AWS account IDs |
@@ -201,7 +201,7 @@ Roles to watch: `serviceAccountUser`, `storage.objectAdmin`, `secretmanager.secr
 ### Supply Chain
 
 | Layer | This Project |
-|-------|-------------|
+| ----- | ----------- |
 | Lockfiles | `uv.lock`, `pnpm-lock.yaml` with `--frozen` flags |
 | Update quarantine | Renovate `minimumReleaseAge: 3 days` |
 | Auto-merge policy | Minor/patch only — majors require review |

@@ -772,6 +772,16 @@ class TestParseRecipe:
         assert detail["reason"] == "not_supported"
         assert "coop.se" in detail["message"]
 
+    def test_returns_409_when_recipe_exists(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should return 409 when recipe URL already exists."""
+        with patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
+            response = client.post(
+                "/recipes/parse", json={"url": "https://example.com/existing", "html": "<html>" + "x" * 100 + "</html>"}
+            )
+
+        assert response.status_code == 409
+        assert "already exists" in response.json()["detail"]["message"]
+
     def test_returns_201_on_successful_parse(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should parse HTML and save recipe on success."""
         scraped_data = {

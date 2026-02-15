@@ -8,7 +8,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { CurrentUser, UserRole, Recipe } from '@/lib/types';
 
 /**
- * Create a fresh QueryClient for testing (no retries, no cache).
+ * Create a fresh QueryClient for testing (no retries, instant cache GC).
+ *
+ * NOTE: `gcTime: 0` causes immediate garbage collection of cache entries
+ * with no active observers. This is fine for query tests (renderHook creates
+ * an observer), but breaks mutation tests that inspect cache via
+ * `queryClient.getQueryData()` after `onSuccess` — the entry gets GC'd
+ * before the assertion runs. For mutation cache tests, create a dedicated
+ * QueryClient without `gcTime: 0`.
  */
 export const createTestQueryClient = () => {
   return new QueryClient({

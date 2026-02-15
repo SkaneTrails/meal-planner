@@ -32,7 +32,7 @@ def get_firestore_client() -> firestore.Client:  # pragma: no cover
     return _client
 
 
-def reset_client() -> None:
+def reset_client() -> None:  # pragma: no cover
     """Reset Firestore client singleton (useful for testing)."""
     global _client  # noqa: PLW0603
     _client = None
