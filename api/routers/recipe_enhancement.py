@@ -20,7 +20,7 @@ from api.storage.recipe_storage import EnhancementMetadata
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/recipes", tags=["recipes"], dependencies=[Depends(require_auth)])
+router = APIRouter()
 
 
 class HouseholdConfig:

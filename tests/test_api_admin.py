@@ -534,6 +534,20 @@ class TestGetHouseholdSettings:
         assert data["ai_features_enabled"] is True
         assert data["equipment"] == []
 
+    def test_null_dietary_coerced_to_defaults(self, superuser_client: TestClient) -> None:
+        """Should return defaults when Firestore has dietary: null."""
+        with patch(
+            "api.routers.admin.household_storage.get_household_settings",
+            return_value={"household_size": 3, "dietary": None},
+        ):
+            response = superuser_client.get("/admin/households/test/settings")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["household_size"] == 3
+        assert data["dietary"]["seafood_ok"] is True
+        assert data["dietary"]["meat"] == "all"
+
 
 class TestUpdateHouseholdSettings:
     """Tests for PUT /admin/households/{id}/settings endpoint."""

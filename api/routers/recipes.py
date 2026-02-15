@@ -28,15 +28,15 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/recipes", tags=["recipes"], dependencies=[Depends(require_auth)])
 
-# Merge sub-module routes into this router so /api/v1/recipes/* stays unchanged.
-# Import sub-routers AFTER creating `router` to avoid circular imports.
+# Include sub-module routers so /recipes/* stays unchanged.
+# Imported AFTER creating `router` to avoid circular imports.
 from api.routers.recipe_enhancement import router as _enhancement_router  # noqa: E402
 from api.routers.recipe_images import router as _images_router  # noqa: E402
 from api.routers.recipe_scraping import router as _scraping_router  # noqa: E402
 
-for _sub in (_scraping_router, _enhancement_router, _images_router):
-    for route in _sub.routes:
-        router.routes.append(route)
+router.include_router(_scraping_router)
+router.include_router(_enhancement_router)
+router.include_router(_images_router)
 
 # Re-export HouseholdConfig so existing test imports keep working
 __all__ = ["HouseholdConfig", "router"]

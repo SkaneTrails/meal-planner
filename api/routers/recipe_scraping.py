@@ -24,7 +24,7 @@ from api.storage import recipe_storage
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/recipes", tags=["recipes"], dependencies=[Depends(require_auth)])
+router = APIRouter()
 
 _HTTP_422 = 422
 

@@ -2,7 +2,7 @@
 
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from api.models.equipment import validate_equipment_keys
 
@@ -61,6 +61,14 @@ class HouseholdSettings(BaseModel):
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
     equipment: list[str] = Field(default_factory=list, description="Equipment keys from the equipment catalog")
+
+    @model_validator(mode="before")
+    @classmethod
+    def coerce_null_nested(cls, values: dict[str, object]) -> dict[str, object]:
+        """Coerce null nested objects to defaults so Firestore nulls don't cause 500s."""
+        if values.get("dietary") is None:
+            values.pop("dietary", None)
+        return values
 
     @field_validator("equipment", mode="before")
     @classmethod
