@@ -72,17 +72,11 @@ export default function TabLayout() {
       <Tabs.Screen name="grocery" options={{ title: t('tabs.grocery') }} />
       <Tabs.Screen
         name="settings"
-        options={{
-          title: t('tabs.settings'),
-          href: null, // Hide from tab bar - accessed via home screen gear icon
-        }}
+        options={{ title: t('tabs.settings'), href: null }}
       />
       <Tabs.Screen
         name="admin"
-        options={{
-          title: t('tabs.admin'),
-          href: null, // Hide from tab bar - accessed via Settings page
-        }}
+        options={{ title: t('tabs.admin'), href: null }}
       />
     </Tabs>
   );

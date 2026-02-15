@@ -12,7 +12,7 @@ import {
 import { RecipeCard, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { TFunction } from '@/lib/i18n';
-import { colors } from '@/lib/theme';
+import { colors, layout } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 interface RecipeGridProps {
@@ -79,7 +79,8 @@ export const RecipeGrid = ({
       )}
       contentContainerStyle={{
         paddingHorizontal: horizontalPadding,
-        paddingBottom: 100,
+        paddingBottom: layout.tabBar.contentBottomPadding,
+        alignItems: 'center',
       }}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}

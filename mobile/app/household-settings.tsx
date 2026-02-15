@@ -28,7 +28,7 @@ import { showNotification } from '@/lib/alert';
 import { useHouseholdSettingsForm } from '@/lib/hooks/useHouseholdSettingsForm';
 import { useTranslation } from '@/lib/i18n';
 import { type AppLanguage, useSettings } from '@/lib/settings-context';
-import { colors, spacing } from '@/lib/theme';
+import { colors, layout, spacing } from '@/lib/theme';
 
 type SectionKey =
   | 'general'
@@ -117,7 +117,7 @@ export default function HouseholdSettingsScreen() {
             contentContainerStyle={{
               padding: spacing.lg,
               paddingTop: 0,
-              paddingBottom: 120,
+              paddingBottom: layout.tabBar.contentBottomPadding,
             }}
           >
             {!form.canEdit && <ReadOnlyBanner />}

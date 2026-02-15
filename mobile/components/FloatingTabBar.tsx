@@ -1,167 +1,182 @@
 /**
- * Persistent floating tab bar rendered at the root layout level.
- * Whitish glassy acrylic background, visible on all screens.
- * Hidden on sign-in and no-access screens.
+ * Floating tab bar rendered at the root layout level.
+ * Always visible (except on auth screens) with acrylic transparency.
+ * Platform-aware: BlurView on iOS, backdrop-filter on web, opaque fallback on Android.
  */
 
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
+import { borderRadius, colors, layout, shadows } from '@/lib/theme';
 
-interface TabItem {
-  name: string;
-  path: string;
+type TabDef = {
+  route: string;
+  matchPrefixes: string[];
   icon: keyof typeof Ionicons.glyphMap;
-  activeIcon: keyof typeof Ionicons.glyphMap;
+  iconFocused: keyof typeof Ionicons.glyphMap;
   labelKey: string;
-}
+};
 
-const TAB_ITEMS: TabItem[] = [
+const TABS: TabDef[] = [
   {
-    name: 'home',
-    path: '/',
+    route: '/(tabs)',
+    matchPrefixes: ['/(tabs)', '/index'],
     icon: 'home-outline',
-    activeIcon: 'home',
+    iconFocused: 'home',
     labelKey: 'tabs.home',
   },
   {
-    name: 'recipes',
-    path: '/recipes',
+    route: '/(tabs)/recipes',
+    matchPrefixes: ['/(tabs)/recipes', '/recipe/'],
     icon: 'book-outline',
-    activeIcon: 'book',
+    iconFocused: 'book',
     labelKey: 'tabs.recipes',
   },
   {
-    name: 'meal-plan',
-    path: '/meal-plan',
+    route: '/(tabs)/meal-plan',
+    matchPrefixes: ['/(tabs)/meal-plan', '/select-recipe'],
     icon: 'calendar-outline',
-    activeIcon: 'calendar',
+    iconFocused: 'calendar',
     labelKey: 'tabs.mealPlan',
   },
   {
-    name: 'grocery',
-    path: '/grocery',
+    route: '/(tabs)/grocery',
+    matchPrefixes: ['/(tabs)/grocery'],
     icon: 'cart-outline',
-    activeIcon: 'cart',
+    iconFocused: 'cart',
     labelKey: 'tabs.grocery',
   },
 ];
 
-const HIDDEN_PATHS = ['/sign-in', '/no-access'];
+const HIDDEN_ON = ['/sign-in', '/no-access'];
 
-const getActiveTab = (pathname: string): string | null => {
-  if (pathname === '/') return 'home';
-  if (pathname.startsWith('/recipes')) return 'recipes';
-  if (pathname.startsWith('/meal-plan')) return 'meal-plan';
-  if (pathname.startsWith('/grocery')) return 'grocery';
-  return null;
-};
+const isTabActive = (pathname: string, tab: TabDef): boolean =>
+  tab.matchPrefixes.some((prefix) => {
+    if (prefix === '/(tabs)' || prefix === '/index') {
+      return (
+        pathname === '/' || pathname === '/(tabs)' || pathname === '/index'
+      );
+    }
+    return pathname.startsWith(prefix);
+  });
 
 const TabBarBackground = () => {
   if (Platform.OS === 'ios') {
     return (
       <BlurView
-        intensity={50}
+        intensity={40}
         tint="light"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 16,
-          overflow: 'hidden',
-          backgroundColor: 'rgba(255, 255, 255, 0.6)',
-        }}
+        style={[StyleSheet.absoluteFill, styles.blurFill]}
       />
     );
   }
-  return (
-    <View
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        borderRadius: 16,
-        borderWidth: 0.5,
-        borderColor: 'rgba(255, 255, 255, 0.3)',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 4,
-      }}
-    />
-  );
+
+  if (Platform.OS === 'web') {
+    return (
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          styles.webFill,
+          // @ts-expect-error — RN web supports backdropFilter
+          { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' },
+        ]}
+      />
+    );
+  }
+
+  // Android fallback — near-opaque warm beige
+  return <View style={[StyleSheet.absoluteFill, styles.androidFill]} />;
 };
 
 export const FloatingTabBar = () => {
+  const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
 
-  if (HIDDEN_PATHS.some((p) => pathname.startsWith(p))) return null;
-
-  const activeTab = getActiveTab(pathname);
+  // Hide on auth screens or when not logged in
+  if (!user || HIDDEN_ON.includes(pathname)) return null;
 
   return (
-    <View
-      style={{
-        position: 'absolute',
-        bottom: 16,
-        left: 32,
-        right: 32,
-        height: 44,
-        zIndex: 999,
-      }}
-    >
-      <TabBarBackground />
-      <View
-        style={{
-          flexDirection: 'row',
-          height: '100%',
-        }}
-      >
-        {TAB_ITEMS.map((tab) => {
-          const isActive = activeTab === tab.name;
+    <View style={styles.container} pointerEvents="box-none">
+      <View style={styles.bar}>
+        <TabBarBackground />
+        {TABS.map((tab) => {
+          const active = isTabActive(pathname, tab);
           return (
             <Pressable
-              key={tab.name}
-              onPress={() => router.navigate(tab.path as never)}
-              accessibilityLabel={t(tab.labelKey)}
+              key={tab.route}
               accessibilityRole="tab"
-              accessibilityState={{ selected: isActive }}
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              accessibilityLabel={t(tab.labelKey)}
+              accessibilityState={{ selected: active }}
+              onPress={() => router.push(tab.route as never)}
+              style={styles.tabButton}
             >
-              <View
-                style={{
-                  backgroundColor: isActive
-                    ? 'rgba(93, 78, 64, 0.12)'
-                    : 'transparent',
-                  borderRadius: 12,
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                }}
-              >
+              <View style={[styles.iconWrap, active && styles.iconWrapActive]}>
                 <Ionicons
-                  name={isActive ? tab.activeIcon : tab.icon}
+                  name={active ? tab.iconFocused : tab.icon}
                   size={20}
-                  color={isActive ? '#5D4E40' : '#6B5B4B'}
+                  color={active ? colors.tabBar.active : colors.tabBar.inactive}
                 />
               </View>
             </Pressable>
           );
         })}
       </View>
+      <View style={styles.bottomFill} pointerEvents="none" />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  bar: {
+    flexDirection: 'row',
+    height: layout.tabBar.height,
+    marginHorizontal: layout.tabBar.horizontalMargin,
+    borderRadius: layout.tabBar.borderRadius,
+    ...shadows.md,
+  },
+  bottomFill: {
+    height: layout.tabBar.bottomOffset,
+    backgroundColor: colors.tabBar.bottomFill,
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconWrap: {
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  iconWrapActive: {
+    backgroundColor: colors.tabBar.focusBg,
+  },
+  blurFill: {
+    borderRadius: layout.tabBar.borderRadius,
+    overflow: 'hidden',
+    backgroundColor: colors.tabBar.bg,
+  },
+  webFill: {
+    borderRadius: layout.tabBar.borderRadius,
+    backgroundColor: colors.tabBar.bg,
+    borderWidth: 0.5,
+    borderColor: colors.tabBar.border,
+  },
+  androidFill: {
+    borderRadius: layout.tabBar.borderRadius,
+    backgroundColor: colors.tabBar.bgFallback,
+    borderWidth: 0.5,
+    borderColor: colors.tabBar.border,
+  },
+});

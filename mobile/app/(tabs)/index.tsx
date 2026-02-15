@@ -16,6 +16,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  layout,
   letterSpacing,
   shadows,
 } from '@/lib/theme';
@@ -59,7 +60,10 @@ export default function HomeScreen() {
     <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 70, paddingTop: 0 }}
+        contentContainerStyle={{
+          paddingBottom: layout.tabBar.contentBottomPadding,
+          paddingTop: 0,
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isLoading}

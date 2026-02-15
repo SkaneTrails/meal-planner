@@ -55,7 +55,7 @@ export default function GroceryScreen() {
 
   return (
     <GradientBackground neutral>
-      <View style={{ flex: 1, paddingBottom: 70 }}>
+      <View style={{ flex: 1 }}>
         <GroceryHeader />
 
         <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>

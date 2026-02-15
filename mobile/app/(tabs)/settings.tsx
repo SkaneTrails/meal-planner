@@ -18,8 +18,8 @@ import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { useSettings } from '@/lib/settings-context';
-import { colors, fontFamily, fontSize, spacing } from '@/lib/theme';
+import { type AppLanguage, useSettings } from '@/lib/settings-context';
+import { colors, fontFamily, fontSize, layout, spacing } from '@/lib/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -40,13 +40,13 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground muted>
-      <View style={{ flex: 1, paddingBottom: 70 }}>
+      <View style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
             padding: 20,
             paddingTop: 44,
-            paddingBottom: 40,
+            paddingBottom: layout.tabBar.contentBottomPadding,
           }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
