@@ -89,7 +89,7 @@ export default function MealPlanScreen() {
               fontSize: fontSize['3xl'],
               fontFamily: fontFamily.displayBold,
               fontWeight: '700',
-              color: '#3D3D3D',
+              color: colors.content.heading,
               letterSpacing: letterSpacing.tight,
               textAlign: 'center',
             }}
@@ -100,7 +100,7 @@ export default function MealPlanScreen() {
             style={{
               fontSize: fontSize.md,
               fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.6)',
+              color: colors.content.subtitle,
               marginTop: 2,
               textAlign: 'center',
             }}
@@ -161,7 +161,7 @@ export default function MealPlanScreen() {
                       padding: 14,
                       borderWidth: 1,
                       borderColor: isToday
-                        ? 'rgba(93, 78, 64, 0.12)'
+                        ? colors.surface.active
                         : 'rgba(0, 0, 0, 0.04)',
                       shadowColor: '#000',
                       shadowOffset: { width: 2, height: 6 },
@@ -230,7 +230,7 @@ export default function MealPlanScreen() {
                   style={{
                     flex: 1,
                     height: 1,
-                    backgroundColor: 'rgba(93, 78, 64, 0.2)',
+                    backgroundColor: colors.surface.divider,
                   }}
                 />
                 <View
@@ -238,7 +238,7 @@ export default function MealPlanScreen() {
                     width: 8,
                     height: 8,
                     borderRadius: 4,
-                    backgroundColor: 'rgba(93, 78, 64, 0.3)',
+                    backgroundColor: colors.surface.border,
                     marginHorizontal: 12,
                   }}
                 />
@@ -246,7 +246,7 @@ export default function MealPlanScreen() {
                   style={{
                     flex: 1,
                     height: 1,
-                    backgroundColor: 'rgba(93, 78, 64, 0.2)',
+                    backgroundColor: colors.surface.divider,
                   }}
                 />
               </View>
@@ -268,7 +268,7 @@ export default function MealPlanScreen() {
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#7A6858',
+                  backgroundColor: colors.button.primary,
                   paddingVertical: 16,
                   borderRadius: 16,
                   marginTop: 8,
@@ -322,7 +322,7 @@ export default function MealPlanScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: 'rgba(93, 78, 64, 0.85)',
+                backgroundColor: colors.surface.overlay,
                 paddingHorizontal: spacing.lg,
                 paddingVertical: 10,
                 borderRadius: borderRadius.full,

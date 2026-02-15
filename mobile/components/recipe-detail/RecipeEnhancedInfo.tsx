@@ -53,7 +53,7 @@ export const RecipeEnhancedInfo = ({
             style={{
               fontSize: fontSize['3xl'],
               fontFamily: fontFamily.display,
-              color: '#3D3D3D',
+              color: colors.content.heading,
               letterSpacing: letterSpacing.normal,
             }}
           >

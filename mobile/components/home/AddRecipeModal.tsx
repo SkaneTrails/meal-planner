@@ -58,7 +58,7 @@ export const AddRecipeModal = ({
           <Ionicons
             name="link-outline"
             size={18}
-            color="#8B7355"
+            color={colors.content.secondary}
             style={{ marginLeft: 12 }}
           />
           <TextInput
@@ -67,7 +67,7 @@ export const AddRecipeModal = ({
               paddingHorizontal: 10,
               paddingVertical: 12,
               fontSize: fontSize.md,
-              color: '#5D4E40',
+              color: colors.content.body,
             }}
             placeholder={t('home.addRecipe.placeholder')}
             placeholderTextColor="#A89585"
@@ -87,7 +87,7 @@ export const AddRecipeModal = ({
                 ? pressed
                   ? colors.accentDark
                   : colors.accent
-                : 'rgba(93, 78, 64, 0.15)',
+                : colors.surface.pressed,
               borderRadius: borderRadius.sm,
               paddingVertical: 10,
               paddingHorizontal: 14,
@@ -96,7 +96,9 @@ export const AddRecipeModal = ({
           >
             <Text
               style={{
-                color: recipeUrl.trim() ? colors.white : '#8B7355',
+                color: recipeUrl.trim()
+                  ? colors.white
+                  : colors.content.secondary,
                 fontSize: fontSize.sm,
                 fontFamily: fontFamily.bodySemibold,
               }}
@@ -118,7 +120,7 @@ export const AddRecipeModal = ({
         <View style={{ flex: 1, height: 1, backgroundColor: '#D4C5B5' }} />
         <Text
           style={{
-            color: '#8B7355',
+            color: colors.content.secondary,
             fontSize: fontSize.sm,
             marginHorizontal: 12,
           }}
@@ -152,25 +154,37 @@ export const AddRecipeModal = ({
             marginRight: 14,
           }}
         >
-          <Ionicons name="create-outline" size={20} color="#5D4E40" />
+          <Ionicons
+            name="create-outline"
+            size={20}
+            color={colors.content.body}
+          />
         </View>
         <View style={{ flex: 1 }}>
           <Text
             style={{
               fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
-              color: '#5D4E40',
+              color: colors.content.body,
             }}
           >
             {t('home.addRecipe.manualEntry')}
           </Text>
           <Text
-            style={{ fontSize: fontSize.sm, color: '#8B7355', marginTop: 2 }}
+            style={{
+              fontSize: fontSize.sm,
+              color: colors.content.secondary,
+              marginTop: 2,
+            }}
           >
             {t('home.addRecipe.manualEntryDesc')}
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color="#8B7355" />
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={colors.content.secondary}
+        />
       </Pressable>
     </BottomSheetModal>
   );

@@ -38,7 +38,7 @@ export const RecipeInstructions = ({
           width: 36,
           height: 36,
           borderRadius: 18,
-          backgroundColor: 'rgba(93, 78, 64, 0.12)',
+          backgroundColor: colors.surface.active,
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: spacing.md,
@@ -50,7 +50,7 @@ export const RecipeInstructions = ({
         style={{
           fontSize: fontSize['3xl'],
           fontFamily: fontFamily.display,
-          color: '#3D3D3D',
+          color: colors.content.heading,
           letterSpacing: letterSpacing.normal,
         }}
       >

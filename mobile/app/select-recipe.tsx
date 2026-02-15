@@ -9,7 +9,7 @@ import {
   type TabType,
   useSelectRecipeState,
 } from '@/lib/hooks/useSelectRecipeState';
-import { fontFamily, fontSize, layout, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, layout, spacing } from '@/lib/theme';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
 
@@ -66,7 +66,7 @@ export default function SelectRecipeScreen() {
             style={{
               fontSize: fontSize['3xl'],
               fontFamily: fontFamily.display,
-              color: '#3D3D3D',
+              color: colors.content.heading,
               letterSpacing: -0.3,
               textAlign: 'center',
             }}
@@ -77,7 +77,7 @@ export default function SelectRecipeScreen() {
             style={{
               fontSize: fontSize.md,
               fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.6)',
+              color: colors.content.subtitle,
               marginTop: 2,
               textAlign: 'center',
             }}
@@ -125,7 +125,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
       style={{
         flexDirection: 'row',
         gap: 8,
-        backgroundColor: 'rgba(93, 78, 64, 0.06)',
+        backgroundColor: colors.surface.tint,
         borderRadius: 12,
         padding: 4,
       }}
@@ -152,7 +152,10 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
             style={{
               fontSize: fontSize.sm,
               fontFamily: fontFamily.bodySemibold,
-              color: activeTab === tab ? '#3D3D3D' : 'rgba(93, 78, 64, 0.6)',
+              color:
+                activeTab === tab
+                  ? colors.content.heading
+                  : colors.content.subtitle,
             }}
           >
             {labels[tab]}

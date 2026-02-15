@@ -25,7 +25,7 @@ import { colors, layout, spacing } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
-const HEADER_BUTTON_BG = 'rgba(93, 78, 64, 0.75)';
+const HEADER_BUTTON_BG = colors.surface.overlayMedium;
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

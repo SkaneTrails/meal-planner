@@ -48,7 +48,11 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
               marginBottom: spacing.md,
             }}
           >
-            <Ionicons name="create-outline" size={28} color="#6B8E6B" />
+            <Ionicons
+              name="create-outline"
+              size={28}
+              color={colors.ai.primary}
+            />
           </View>
           <Text
             style={{
@@ -65,7 +69,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
               width: 40,
               height: 3,
               borderRadius: 2,
-              backgroundColor: '#6B8E6B',
+              backgroundColor: colors.ai.primary,
               marginTop: spacing.sm,
             }}
           />
@@ -105,8 +109,8 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           style={({ pressed }) => ({
             backgroundColor: customText.trim()
               ? pressed
-                ? '#5A7A5A'
-                : '#6B8E6B'
+                ? colors.ai.primaryDark
+                : colors.ai.primary
               : colors.gray[300],
             borderRadius: borderRadius.md,
             paddingVertical: spacing.lg,
@@ -137,22 +141,22 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           paddingVertical: spacing.md,
           borderRadius: 12,
           backgroundColor: pressed
-            ? 'rgba(93, 78, 64, 0.12)'
-            : 'rgba(93, 78, 64, 0.08)',
+            ? colors.surface.active
+            : colors.surface.hover,
           marginTop: spacing.xl,
         })}
       >
         <Ionicons
           name="trash-outline"
           size={18}
-          color="rgba(93, 78, 64, 0.7)"
+          color={colors.content.tertiary}
         />
         <Text
           style={{
             marginLeft: spacing.sm,
             fontSize: fontSize.lg,
             fontWeight: '600',
-            color: 'rgba(93, 78, 64, 0.7)',
+            color: colors.content.tertiary,
           }}
         >
           {t('selectRecipe.clearMeal')}

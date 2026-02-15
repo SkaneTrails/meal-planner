@@ -3,7 +3,7 @@ import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
-import { fontSize, spacing } from '@/lib/theme';
+import { colors, fontSize, spacing } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 
@@ -50,16 +50,16 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
             elevation: 1,
           }}
         >
-          <Ionicons name="search" size={18} color="rgba(93, 78, 64, 0.5)" />
+          <Ionicons name="search" size={18} color={colors.content.icon} />
           <TextInput
             style={{
               flex: 1,
               marginLeft: spacing.sm,
               fontSize: fontSize.lg,
-              color: '#3D3D3D',
+              color: colors.content.heading,
             }}
             placeholder={t('selectRecipe.searchPlaceholder')}
-            placeholderTextColor="rgba(93, 78, 64, 0.4)"
+            placeholderTextColor={colors.content.placeholder}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -68,7 +68,7 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
               <Ionicons
                 name="close-circle"
                 size={18}
-                color="rgba(93, 78, 64, 0.4)"
+                color={colors.content.placeholder}
               />
             </Pressable>
           )}

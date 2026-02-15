@@ -51,10 +51,10 @@ export const RecipeActionsFooter = ({
           borderRadius: borderRadius.md,
         }}
       >
-        <Ionicons name="link" size={18} color="#5D4E40" />
+        <Ionicons name="link" size={18} color={colors.content.body} />
         <Text
           style={{
-            color: '#5D4E40',
+            color: colors.content.body,
             marginLeft: spacing.sm,
             fontSize: fontSize.xl,
             fontFamily: fontFamily.bodyMedium,
@@ -75,7 +75,7 @@ export const RecipeActionsFooter = ({
         paddingVertical: spacing.md,
         marginTop: spacing.md,
         marginBottom: FOOTER_BOTTOM_MARGIN,
-        backgroundColor: pressed ? '#5A7A5A' : '#6B8E6B',
+        backgroundColor: pressed ? colors.ai.primaryDark : colors.ai.primary,
         borderRadius: borderRadius.sm,
         ...shadows.md,
       })}

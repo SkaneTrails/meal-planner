@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import { fontFamily } from '@/lib/theme';
+import { colors, fontFamily } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
   formatDateLocal,
@@ -75,8 +75,8 @@ export const GrocerySelectionModal = ({
             backgroundColor:
               selectedMeals.size > 0
                 ? pressed
-                  ? '#5D4E40'
-                  : '#7A6858'
+                  ? colors.content.body
+                  : colors.button.primary
                 : 'rgba(122, 104, 88, 0.2)',
             paddingVertical: 16,
             borderRadius: 14,
@@ -88,7 +88,7 @@ export const GrocerySelectionModal = ({
             style={{
               fontSize: 17,
               fontFamily: fontFamily.bodySemibold,
-              color: selectedMeals.size > 0 ? '#fff' : 'rgba(93, 78, 64, 0.5)',
+              color: selectedMeals.size > 0 ? '#fff' : colors.content.icon,
             }}
           >
             {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
@@ -124,7 +124,9 @@ export const GrocerySelectionModal = ({
               style={{
                 fontSize: 16,
                 fontFamily: fontFamily.bodySemibold,
-                color: isToday ? '#3D3D3D' : 'rgba(93, 78, 64, 0.7)',
+                color: isToday
+                  ? colors.content.heading
+                  : colors.content.tertiary,
                 marginBottom: 10,
               }}
             >
@@ -198,7 +200,7 @@ const GroceryWeekSelector = ({
         justifyContent: 'center',
       })}
     >
-      <Ionicons name="chevron-back" size={20} color="#5D4E40" />
+      <Ionicons name="chevron-back" size={20} color={colors.content.body} />
     </Pressable>
     <View
       style={{
@@ -212,7 +214,7 @@ const GroceryWeekSelector = ({
         style={{
           fontSize: 14,
           fontFamily: fontFamily.bodySemibold,
-          color: '#3D3D3D',
+          color: colors.content.heading,
           textAlign: 'center',
         }}
       >
@@ -232,7 +234,7 @@ const GroceryWeekSelector = ({
         justifyContent: 'center',
       })}
     >
-      <Ionicons name="chevron-forward" size={20} color="#5D4E40" />
+      <Ionicons name="chevron-forward" size={20} color={colors.content.body} />
     </Pressable>
   </View>
 );
@@ -278,8 +280,10 @@ const GroceryMealItem = ({
           height: 26,
           borderRadius: 8,
           borderWidth: 2,
-          borderColor: isSelected ? '#6B8E6B' : 'rgba(93, 78, 64, 0.25)',
-          backgroundColor: isSelected ? '#6B8E6B' : 'transparent',
+          borderColor: isSelected
+            ? colors.ai.primary
+            : colors.surface.borderLight,
+          backgroundColor: isSelected ? colors.ai.primary : 'transparent',
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: 14,
@@ -292,7 +296,7 @@ const GroceryMealItem = ({
           style={{
             fontSize: 15,
             fontFamily: fontFamily.bodySemibold,
-            color: '#3D3D3D',
+            color: colors.content.heading,
           }}
         >
           {title}
@@ -301,7 +305,7 @@ const GroceryMealItem = ({
           style={{
             fontSize: 13,
             fontFamily: fontFamily.body,
-            color: 'rgba(93, 78, 64, 0.6)',
+            color: colors.content.subtitle,
             marginTop: 2,
           }}
         >
@@ -336,7 +340,7 @@ const GroceryMealItem = ({
             justifyContent: 'center',
           })}
         >
-          <Ionicons name="remove" size={18} color="#5D4E40" />
+          <Ionicons name="remove" size={18} color={colors.content.body} />
         </Pressable>
         <View
           style={{
@@ -346,12 +350,16 @@ const GroceryMealItem = ({
             gap: 4,
           }}
         >
-          <Ionicons name="restaurant-outline" size={15} color="#5D4E40" />
+          <Ionicons
+            name="restaurant-outline"
+            size={15}
+            color={colors.content.body}
+          />
           <Text
             style={{
               fontSize: 15,
               fontFamily: fontFamily.bodySemibold,
-              color: '#3D3D3D',
+              color: colors.content.heading,
             }}
           >
             {currentServings}
@@ -370,7 +378,7 @@ const GroceryMealItem = ({
             justifyContent: 'center',
           })}
         >
-          <Ionicons name="add" size={18} color="#5D4E40" />
+          <Ionicons name="add" size={18} color={colors.content.body} />
         </Pressable>
       </View>
     )}

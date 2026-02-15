@@ -52,7 +52,7 @@ export const BottomSaveBar = ({
         onPress={onSave}
         disabled={isSaving}
         style={({ pressed }) => ({
-          backgroundColor: pressed ? '#5D4E40' : colors.primary,
+          backgroundColor: pressed ? colors.content.body : colors.primary,
           borderRadius: borderRadius.md,
           paddingVertical: 14,
           alignItems: 'center',

@@ -45,17 +45,17 @@ export const SearchBar = ({
         borderColor: 'rgba(0, 0, 0, 0.05)',
       }}
     >
-      <Ionicons name="search" size={18} color="#8B7355" />
+      <Ionicons name="search" size={18} color={colors.content.secondary} />
       <TextInput
         ref={searchInputRef}
         style={{
           flex: 1,
           fontSize: fontSize.md,
-          color: '#5D4E40',
+          color: colors.content.body,
           marginLeft: 10,
         }}
         placeholder={t('recipes.searchPlaceholder')}
-        placeholderTextColor="#8B7355"
+        placeholderTextColor={colors.content.secondary}
         value={searchQuery}
         onChangeText={onSearchChange}
         onFocus={onFocus}
@@ -71,7 +71,7 @@ export const SearchBar = ({
           <Text
             style={{
               fontSize: 15,
-              color: '#7A6858',
+              color: colors.button.primary,
               fontFamily: fontFamily.bodyMedium,
             }}
           >
@@ -95,7 +95,7 @@ interface FilterChipsProps {
 }
 
 const DIET_CHIPS: { diet: DietLabel; emoji: string; activeColor: string }[] = [
-  { diet: 'veggie', emoji: '🌱', activeColor: '#6B8E6B' },
+  { diet: 'veggie', emoji: '🌱', activeColor: colors.ai.primary },
   { diet: 'fish', emoji: '🐟', activeColor: '#2D7AB8' },
   { diet: 'meat', emoji: '🍗', activeColor: '#B85C38' },
 ];
@@ -130,7 +130,7 @@ export const FilterChips = ({
           borderRadius: 14,
           backgroundColor:
             !dietFilter && !showFavoritesOnly
-              ? '#5D4E40'
+              ? colors.content.body
               : 'rgba(232, 222, 212, 0.7)',
           borderWidth: !dietFilter && !showFavoritesOnly ? 0 : 1,
           borderColor: 'rgba(139, 115, 85, 0.3)',
@@ -140,7 +140,10 @@ export const FilterChips = ({
           style={{
             fontSize: 13,
             fontFamily: fontFamily.bodySemibold,
-            color: !dietFilter && !showFavoritesOnly ? colors.white : '#5D4E40',
+            color:
+              !dietFilter && !showFavoritesOnly
+                ? colors.white
+                : colors.content.body,
           }}
         >
           {t('labels.diet.all')}
@@ -175,7 +178,7 @@ export const FilterChips = ({
             style={{
               fontSize: 13,
               fontFamily: fontFamily.bodySemibold,
-              color: dietFilter === diet ? colors.white : '#5D4E40',
+              color: dietFilter === diet ? colors.white : colors.content.body,
             }}
           >
             {t(`labels.diet.${diet}`)}
@@ -214,7 +217,7 @@ export const FilterChips = ({
           style={{
             fontSize: 13,
             fontFamily: fontFamily.bodySemibold,
-            color: showFavoritesOnly ? colors.white : '#5D4E40',
+            color: showFavoritesOnly ? colors.white : colors.content.body,
           }}
         >
           {t('recipes.favorites')}
@@ -241,12 +244,12 @@ export const FilterChips = ({
           gap: 5,
         }}
       >
-        <Ionicons name="funnel-outline" size={13} color="#5D4E40" />
+        <Ionicons name="funnel-outline" size={13} color={colors.content.body} />
         <Text
           style={{
             fontSize: 13,
             fontFamily: fontFamily.bodySemibold,
-            color: '#5D4E40',
+            color: colors.content.body,
           }}
         >
           {sortOptions.find((o) => o.value === sortBy)?.label}

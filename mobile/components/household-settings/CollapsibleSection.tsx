@@ -17,7 +17,7 @@ interface CollapsibleSectionProps {
 
 export const CollapsibleSection = ({
   icon,
-  iconColor = '#5D4E40',
+  iconColor = colors.content.body,
   title,
   subtitle,
   expanded,

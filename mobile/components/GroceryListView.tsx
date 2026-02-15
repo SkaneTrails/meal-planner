@@ -11,7 +11,7 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
-import { layout } from '@/lib/theme';
+import { colors, layout } from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
 
@@ -121,11 +121,11 @@ export const GroceryListView = ({
             marginBottom: 20,
           }}
         >
-          <Ionicons name="cart-outline" size={40} color="#5D4E40" />
+          <Ionicons name="cart-outline" size={40} color={colors.content.body} />
         </View>
         <Text
           style={{
-            color: '#5D4E40',
+            color: colors.content.body,
             fontSize: 18,
             fontWeight: '600',
             textAlign: 'center',
@@ -135,7 +135,7 @@ export const GroceryListView = ({
         </Text>
         <Text
           style={{
-            color: 'rgba(93, 78, 64, 0.7)',
+            color: colors.content.tertiary,
             fontSize: 15,
             marginTop: 8,
             textAlign: 'center',
@@ -170,9 +170,15 @@ export const GroceryListView = ({
           <Ionicons
             name={reorderMode ? 'checkmark' : 'swap-vertical'}
             size={14}
-            color="#5D4E40"
+            color={colors.content.body}
           />
-          <Text style={{ fontSize: 12, fontWeight: '600', color: '#5D4E40' }}>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '600',
+              color: colors.content.body,
+            }}
+          >
             {reorderMode ? t('grocery.doneSorting') : t('grocery.sortItems')}
           </Text>
         </Pressable>
@@ -183,7 +189,7 @@ export const GroceryListView = ({
           <Text
             style={{
               fontSize: 12,
-              color: 'rgba(93, 78, 64, 0.7)',
+              color: colors.content.tertiary,
               marginBottom: 10,
               fontStyle: 'italic',
             }}

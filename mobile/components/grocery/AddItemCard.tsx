@@ -33,7 +33,7 @@ export const AddItemCard = ({
         style={{
           fontSize: 12,
           fontFamily: fontFamily.bodySemibold,
-          color: 'rgba(93, 78, 64, 0.7)',
+          color: colors.content.tertiary,
           marginBottom: 8,
         }}
       >
@@ -43,12 +43,12 @@ export const AddItemCard = ({
         <TextInput
           style={{
             flex: 1,
-            backgroundColor: 'rgba(93, 78, 64, 0.06)',
+            backgroundColor: colors.surface.tint,
             borderRadius: borderRadius.sm,
             paddingHorizontal: 12,
             paddingVertical: 10,
             fontSize: 14,
-            color: '#3D3D3D',
+            color: colors.content.heading,
           }}
           placeholder={t('grocery.addItemExamplePlaceholder')}
           placeholderTextColor="#A09080"
@@ -67,7 +67,7 @@ export const AddItemCard = ({
           disableAnimation={!newItemText.trim()}
           style={{
             backgroundColor: newItemText.trim()
-              ? '#6B8E6B'
+              ? colors.ai.primary
               : 'rgba(200, 190, 180, 0.5)',
             paddingHorizontal: 16,
             paddingVertical: 10,

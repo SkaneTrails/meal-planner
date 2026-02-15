@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 
 export const GroceryHeader = () => {
   const { t } = useTranslation();
@@ -12,7 +12,7 @@ export const GroceryHeader = () => {
           fontSize: fontSize['3xl'],
           fontFamily: fontFamily.displayBold,
           fontWeight: '700',
-          color: '#3D3D3D',
+          color: colors.content.heading,
           letterSpacing: letterSpacing.tight,
           textAlign: 'center',
         }}
@@ -23,7 +23,7 @@ export const GroceryHeader = () => {
         style={{
           fontSize: fontSize.md,
           fontFamily: fontFamily.body,
-          color: 'rgba(93, 78, 64, 0.6)',
+          color: colors.content.subtitle,
           marginTop: 2,
           textAlign: 'center',
         }}

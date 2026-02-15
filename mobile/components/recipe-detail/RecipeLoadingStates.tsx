@@ -2,7 +2,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { BouncingLoader, GradientBackground } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 
 interface RecipeLoadingProps {
   structured?: boolean;
@@ -67,12 +73,12 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
       <Ionicons
         name="alert-circle-outline"
         size={40}
-        color="rgba(93, 78, 64, 0.6)"
+        color={colors.content.subtitle}
       />
     </View>
     <Text
       style={{
-        color: '#3D3D3D',
+        color: colors.content.heading,
         fontSize: fontSize['2xl'],
         fontFamily: fontFamily.displayBold,
         textAlign: 'center',
@@ -82,7 +88,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
     </Text>
     <Text
       style={{
-        color: 'rgba(93, 78, 64, 0.7)',
+        color: colors.content.tertiary,
         fontSize: fontSize.md,
         fontFamily: fontFamily.body,
         marginTop: spacing.sm,
@@ -105,7 +111,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
     >
       <Text
         style={{
-          color: '#5D4E40',
+          color: colors.content.body,
           fontSize: fontSize.lg,
           fontFamily: fontFamily.bodySemibold,
         }}

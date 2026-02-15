@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, colors, fontSize, spacing } from '@/lib/theme';
 
 interface ClearMenuProps {
   onClearMealPlanItems: () => void;
@@ -36,16 +36,16 @@ export const ClearMenu = ({
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.md,
-          backgroundColor: 'rgba(93, 78, 64, 0.08)',
+          backgroundColor: colors.surface.hover,
           gap: spacing.xs,
         }}
       >
         <Ionicons
           name="calendar-outline"
           size={14}
-          color="rgba(93, 78, 64, 0.7)"
+          color={colors.content.tertiary}
         />
-        <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.8)' }}>
+        <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
           {t('grocery.clearMealPlanItems')}
         </Text>
       </AnimatedPressable>
@@ -60,16 +60,16 @@ export const ClearMenu = ({
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.md,
-          backgroundColor: 'rgba(93, 78, 64, 0.08)',
+          backgroundColor: colors.surface.hover,
           gap: spacing.xs,
         }}
       >
         <Ionicons
           name="create-outline"
           size={14}
-          color="rgba(93, 78, 64, 0.7)"
+          color={colors.content.tertiary}
         />
-        <Text style={{ fontSize: fontSize.sm, color: 'rgba(93, 78, 64, 0.8)' }}>
+        <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
           {t('grocery.clearManualItems')}
         </Text>
       </AnimatedPressable>

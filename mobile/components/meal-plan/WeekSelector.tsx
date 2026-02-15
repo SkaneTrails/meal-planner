@@ -54,7 +54,11 @@ export const WeekSelector = ({
           backgroundColor: 'rgba(255, 255, 255, 0.6)',
         }}
       >
-        <Ionicons name="chevron-back" size={18} color="rgba(93, 78, 64, 0.7)" />
+        <Ionicons
+          name="chevron-back"
+          size={18}
+          color={colors.content.tertiary}
+        />
       </AnimatedPressable>
 
       <View style={{ alignItems: 'center' }}>
@@ -62,7 +66,7 @@ export const WeekSelector = ({
           style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
-            color: 'rgba(93, 78, 64, 0.85)',
+            color: colors.surface.overlay,
           }}
         >
           {formatWeekRange(weekDates, language)}
@@ -104,7 +108,7 @@ export const WeekSelector = ({
         <Ionicons
           name="chevron-forward"
           size={18}
-          color="rgba(93, 78, 64, 0.7)"
+          color={colors.content.tertiary}
         />
       </AnimatedPressable>
     </View>

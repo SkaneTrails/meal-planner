@@ -17,6 +17,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { colors } from '@/lib/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -292,7 +293,7 @@ export const GradientBackground = ({
       delay: 0,
     },
     {
-      color: '#6B8E6B',
+      color: colors.ai.primary,
       size: SCREEN_WIDTH * 0.5,
       x: SCREEN_WIDTH * 0.5,
       y: SCREEN_HEIGHT * 0.15,
@@ -308,7 +309,7 @@ export const GradientBackground = ({
       delay: 2000,
     },
     {
-      color: '#5A7A5A',
+      color: colors.ai.primaryDark,
       size: SCREEN_WIDTH * 0.45,
       x: SCREEN_WIDTH * 0.1,
       y: SCREEN_HEIGHT * 0.35,

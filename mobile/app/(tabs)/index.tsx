@@ -202,7 +202,7 @@ const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => (
       hoverScale={1.02}
       pressScale={0.97}
       style={{
-        backgroundColor: '#7A6858',
+        backgroundColor: colors.button.primary,
         borderRadius: borderRadius.md,
         paddingVertical: 14,
         paddingHorizontal: 20,
@@ -290,7 +290,7 @@ const NextMealCard = ({
                 width: 7,
                 height: 7,
                 borderRadius: 4,
-                backgroundColor: '#6B8E6B',
+                backgroundColor: colors.ai.primary,
                 marginRight: 6,
               }}
             />
@@ -298,7 +298,10 @@ const NextMealCard = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              color: nextMeal && !nextMeal.isTomorrow ? '#5D4E40' : '#8B7355',
+              color:
+                nextMeal && !nextMeal.isTomorrow
+                  ? colors.content.body
+                  : colors.content.secondary,
               fontFamily:
                 nextMeal && !nextMeal.isTomorrow
                   ? fontFamily.bodySemibold
@@ -316,14 +319,18 @@ const NextMealCard = ({
           style={{
             fontSize: fontSize.xl,
             fontFamily: fontFamily.bodySemibold,
-            color: '#5D4E40',
+            color: colors.content.body,
           }}
           numberOfLines={2}
         >
           {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#8B7355" />
+      <Ionicons
+        name="chevron-forward"
+        size={20}
+        color={colors.content.secondary}
+      />
     </AnimatedPressable>
   </View>
 );

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { fontFamily } from '@/lib/theme';
+import { colors, fontFamily } from '@/lib/theme';
 
 export const EmptyGroceryState = () => {
   const { t } = useTranslation();
@@ -16,7 +16,7 @@ export const EmptyGroceryState = () => {
     >
       <Text
         style={{
-          color: '#5D4E40',
+          color: colors.content.body,
           fontSize: 18,
           fontFamily: fontFamily.bodySemibold,
           textAlign: 'center',
@@ -26,7 +26,7 @@ export const EmptyGroceryState = () => {
       </Text>
       <Text
         style={{
-          color: 'rgba(93, 78, 64, 0.7)',
+          color: colors.content.tertiary,
           fontSize: 15,
           marginTop: 8,
           textAlign: 'center',

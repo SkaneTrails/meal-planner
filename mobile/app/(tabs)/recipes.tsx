@@ -20,7 +20,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
 import type { DietLabel, MealLabel } from '@/lib/types';
 
 if (
@@ -144,7 +144,7 @@ export default function RecipesScreen() {
                 fontSize: fontSize['3xl'],
                 fontFamily: fontFamily.displayBold,
                 fontWeight: '700',
-                color: '#3D3D3D',
+                color: colors.content.heading,
                 letterSpacing: letterSpacing.tight,
                 textAlign: 'center',
               }}
@@ -155,7 +155,7 @@ export default function RecipesScreen() {
               style={{
                 fontSize: fontSize.md,
                 fontFamily: fontFamily.body,
-                color: 'rgba(93, 78, 64, 0.6)',
+                color: colors.content.subtitle,
                 marginTop: 2,
                 textAlign: 'center',
               }}
@@ -242,14 +242,18 @@ export default function RecipesScreen() {
               <Text
                 style={{
                   fontSize: 16,
-                  color: '#5D4E40',
+                  color: colors.content.body,
                   fontWeight: sortBy === option.value ? '600' : '400',
                 }}
               >
                 {option.label}
               </Text>
               {sortBy === option.value && (
-                <Ionicons name="checkmark" size={20} color="#7A6858" />
+                <Ionicons
+                  name="checkmark"
+                  size={20}
+                  color={colors.button.primary}
+                />
               )}
             </Pressable>
           ))}

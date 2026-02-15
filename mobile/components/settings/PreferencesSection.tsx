@@ -116,7 +116,7 @@ export const WeekStartSection = ({
               padding: spacing.md,
               backgroundColor: pressed ? colors.bgMid : 'transparent',
               borderBottomWidth: index === 0 ? 1 : 0,
-              borderBottomColor: 'rgba(93, 78, 64, 0.15)',
+              borderBottomColor: colors.surface.pressed,
             })}
           >
             <Text
@@ -133,7 +133,11 @@ export const WeekStartSection = ({
               )}
             </Text>
             {weekStart === day && (
-              <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color={colors.ai.primary}
+              />
             )}
           </Pressable>
         ))}
@@ -176,7 +180,7 @@ export const LanguageSection = ({
             padding: spacing.md,
             backgroundColor: pressed ? colors.bgMid : 'transparent',
             borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
-            borderBottomColor: 'rgba(93, 78, 64, 0.15)',
+            borderBottomColor: colors.surface.pressed,
           })}
         >
           <View
@@ -205,7 +209,11 @@ export const LanguageSection = ({
             {lang.label}
           </Text>
           {currentLanguage === lang.code && (
-            <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
+            <Ionicons
+              name="checkmark-circle"
+              size={20}
+              color={colors.ai.primary}
+            />
           )}
         </Pressable>
       ))}

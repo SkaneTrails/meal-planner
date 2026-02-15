@@ -14,7 +14,7 @@ export const SectionHeader = ({
   icon,
   title,
   subtitle,
-  iconColor = '#5D4E40',
+  iconColor = colors.content.body,
   variant = 'light',
 }: SectionHeaderProps) => {
   const titleColor = variant === 'dark' ? colors.white : colors.text.primary;

@@ -123,7 +123,7 @@ export const RecipeCard = ({
               style={{
                 fontSize: 16,
                 fontFamily: fontFamily.bodyMedium,
-                color: '#3D3D3D',
+                color: colors.content.heading,
                 letterSpacing: -0.2,
                 lineHeight: 22,
               }}
@@ -211,12 +211,12 @@ export const RecipeCard = ({
                   <Ionicons
                     name="time-outline"
                     size={13}
-                    color="rgba(93, 78, 64, 0.5)"
+                    color={colors.content.icon}
                   />
                   <Text
                     style={{
                       fontSize: 13,
-                      color: 'rgba(93, 78, 64, 0.6)',
+                      color: colors.content.subtitle,
                       marginLeft: 4,
                     }}
                   >
@@ -229,7 +229,7 @@ export const RecipeCard = ({
           <Ionicons
             name="chevron-forward"
             size={18}
-            color="rgba(93, 78, 64, 0.3)"
+            color={colors.surface.border}
           />
         </Animated.View>
       </Pressable>
@@ -338,7 +338,9 @@ export const RecipeCard = ({
               <Ionicons
                 name={isRecipeFavorite ? 'heart' : 'heart-outline'}
                 size={16}
-                color={isRecipeFavorite ? colors.white : '#8B7355'}
+                color={
+                  isRecipeFavorite ? colors.white : colors.content.secondary
+                }
               />
             </Pressable>
           )}
@@ -371,11 +373,15 @@ export const RecipeCard = ({
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             {totalTime && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="time-outline" size={13} color="#8B7355" />
+                <Ionicons
+                  name="time-outline"
+                  size={13}
+                  color={colors.content.secondary}
+                />
                 <Text
                   style={{
                     fontSize: fontSize.xs,
-                    color: '#8B7355',
+                    color: colors.content.secondary,
                     marginLeft: 3,
                   }}
                 >
@@ -385,11 +391,15 @@ export const RecipeCard = ({
             )}
             {recipe.servings && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="people-outline" size={13} color="#8B7355" />
+                <Ionicons
+                  name="people-outline"
+                  size={13}
+                  color={colors.content.secondary}
+                />
                 <Text
                   style={{
                     fontSize: fontSize.xs,
-                    color: '#8B7355',
+                    color: colors.content.secondary,
                     marginLeft: 3,
                   }}
                 >

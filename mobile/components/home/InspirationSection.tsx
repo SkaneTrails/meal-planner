@@ -97,7 +97,7 @@ const InspirationHeader = ({
       <Ionicons name="shuffle" size={12} color="rgba(255, 255, 255, 0.8)" />
       <Text
         style={{
-          color: '#5D4E40',
+          color: colors.content.body,
           fontFamily: fontFamily.bodyMedium,
           fontSize: fontSize.xs,
           marginLeft: 4,
