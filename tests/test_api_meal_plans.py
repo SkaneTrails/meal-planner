@@ -195,6 +195,14 @@ class TestUpdateSingleMeal:
         assert response.status_code == 200
         mock_delete.assert_called_once_with("test_household", "2025-01-15", "dinner")
 
+    def test_rejects_invalid_date(self, client: TestClient) -> None:
+        """Should return 422 for malformed date string."""
+        response = client.post(
+            "/meal-plans/meals", json={"date": "not-a-date", "meal_type": "dinner", "value": "recipe1"}
+        )
+
+        assert response.status_code == 422
+
 
 class TestUpdateSingleNote:
     """Tests for POST /meal-plans/notes endpoint."""
@@ -209,6 +217,12 @@ class TestUpdateSingleNote:
 
         assert response.status_code == 200
         mock_note.assert_called_once_with("test_household", "2025-01-15", "busy day")
+
+    def test_rejects_invalid_date(self, client: TestClient) -> None:
+        """Should return 422 for malformed date string."""
+        response = client.post("/meal-plans/notes", json={"date": "not-a-date", "note": "busy day"})
+
+        assert response.status_code == 422
 
 
 class TestClearMealPlan:

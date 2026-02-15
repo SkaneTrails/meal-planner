@@ -295,7 +295,7 @@ class TestScrapeRecipe:
 
     def test_returns_409_when_recipe_exists(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return 409 when recipe URL already exists."""
-        with patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
+        with patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
             response = client.post("/recipes/scrape", json={"url": "https://example.com/existing"})
 
         assert response.status_code == 409
@@ -318,10 +318,10 @@ class TestScrapeRecipe:
         fetch_result = FetchResult(html="<html>recipe</html>", final_url="https://example.com/new")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe),
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -354,10 +354,10 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="Site blocked the request")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe),
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_response
@@ -374,9 +374,9 @@ class TestScrapeRecipe:
         security_error = FetchError(reason="security", message="Redirect to internal IP blocked")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=security_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=security_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.__aenter__.return_value = mock_client
@@ -403,9 +403,9 @@ class TestScrapeRecipe:
         }
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -432,9 +432,9 @@ class TestScrapeRecipe:
         mock_cf_response.json.return_value = {"error": "unsupported.com is not supported", "reason": "not_supported"}
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -483,19 +483,19 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="blocked")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved_with_external),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=saved_with_external),
             patch(
-                "api.routers.recipes.download_and_upload_image",
+                "api.routers.recipe_images.download_and_upload_image",
                 new_callable=AsyncMock,
                 return_value=MagicMock(
                     hero_url="https://storage.googleapis.com/test-bucket/recipes/img_test/hero.jpg",
                     thumbnail_url="https://storage.googleapis.com/test-bucket/recipes/img_test/thumb.jpg",
                 ),
             ),
-            patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated_with_gcs),
+            patch("api.routers.recipe_images.recipe_storage.update_recipe", return_value=updated_with_gcs),
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_response
@@ -536,11 +536,11 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="blocked")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved_recipe),
-            patch("api.routers.recipes.download_and_upload_image", new_callable=AsyncMock, return_value=None),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=saved_recipe),
+            patch("api.routers.recipe_images.download_and_upload_image", new_callable=AsyncMock, return_value=None),
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_response
@@ -564,9 +564,9 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="fetch_failed", message="Failed")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_response
@@ -588,9 +588,9 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="www.ica.se blocked the request (HTTP 403)")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_response
@@ -640,12 +640,12 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="blocked")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe") as mock_save,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe") as mock_save,
             patch(
-                "api.routers.recipes._get_household_config",
+                "api.routers.recipe_scraping._get_household_config",
                 return_value=MagicMock(language="sv", equipment=[], target_servings=4, people_count=2),
             ),
             patch("api.services.recipe_enhancer.get_genai_client") as mock_genai,
@@ -692,12 +692,12 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="blocked")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe),
             patch(
-                "api.routers.recipes._get_household_config",
+                "api.routers.recipe_scraping._get_household_config",
                 return_value=MagicMock(language="sv", equipment=[], target_servings=4, people_count=2),
             ),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementError("API error")),
@@ -719,9 +719,9 @@ class TestScrapeRecipe:
         fetch_error = FetchError(reason="blocked", message="timed out")
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_error),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.side_effect = httpx.TimeoutException("Timeout")
@@ -748,8 +748,8 @@ class TestParseRecipe:
         }
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -774,7 +774,7 @@ class TestParseRecipe:
 
     def test_returns_409_when_recipe_exists(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return 409 when recipe URL already exists."""
-        with patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
+        with patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
             response = client.post(
                 "/recipes/parse", json={"url": "https://example.com/existing", "html": "<html>" + "x" * 100 + "</html>"}
             )
@@ -798,9 +798,9 @@ class TestParseRecipe:
         mock_cf_response.raise_for_status = MagicMock()
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe),
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -823,8 +823,10 @@ class TestParseRecipe:
     def test_returns_422_when_cloud_function_returns_none(self, client: TestClient) -> None:
         """Should return 422 when Cloud Function returns None (network/unexpected error)."""
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes._send_html_to_cloud_function", new_callable=AsyncMock, return_value=None),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch(
+                "api.routers.recipe_scraping._send_html_to_cloud_function", new_callable=AsyncMock, return_value=None
+            ),
         ):
             response = client.post(
                 "/recipes/parse",
@@ -858,9 +860,9 @@ class TestPreviewRecipe:
         mock_cf_response.raise_for_status = MagicMock()
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
-            patch("api.routers.recipes.recipe_storage.save_recipe") as mock_save,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe") as mock_save,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -888,7 +890,7 @@ class TestPreviewRecipe:
 
     def test_returns_409_when_recipe_exists(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return 409 when recipe URL already exists."""
-        with patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
+        with patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=sample_recipe):
             response = client.post(
                 "/recipes/preview",
                 json={"url": "https://example.com/existing", "html": "<html>" + "x" * 100 + "</html>"},
@@ -905,8 +907,8 @@ class TestPreviewRecipe:
         mock_cf_response.json.return_value = {"error": "Could not extract recipe", "reason": "parse_failed"}
 
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
         ):
             mock_client = AsyncMock()
             mock_client.post.return_value = mock_cf_response
@@ -930,8 +932,10 @@ class TestPreviewRecipe:
     def test_returns_422_when_cloud_function_returns_none(self, client: TestClient) -> None:
         """Should return 422 when Cloud Function returns None (network/unexpected error)."""
         with (
-            patch("api.routers.recipes.recipe_storage.find_recipe_by_url", return_value=None),
-            patch("api.routers.recipes._send_html_to_cloud_function", new_callable=AsyncMock, return_value=None),
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch(
+                "api.routers.recipe_scraping._send_html_to_cloud_function", new_callable=AsyncMock, return_value=None
+            ),
         ):
             response = client.post(
                 "/recipes/preview",
@@ -1061,7 +1065,7 @@ class TestEnhanceRecipe:
 
     def test_returns_404_when_recipe_not_found(self, client: TestClient) -> None:
         """Should return 404 when recipe not found."""
-        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=None):
+        with patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=None):
             response = client.post("/recipes/nonexistent/enhance")
 
         assert response.status_code == 404
@@ -1077,14 +1081,14 @@ class TestEnhanceRecipe:
         )
 
         with (
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
-            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_enhancement._get_household_config", return_value=HouseholdConfig({})),
             patch(
                 "api.services.recipe_enhancer.enhance_recipe",
                 return_value={"title": "Enhanced Carbonara", "changes_made": ["Improved"]},
             ),
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=enhanced_recipe),
-            patch("api.routers.recipes.recipe_storage.copy_recipe") as mock_copy,
+            patch("api.routers.recipe_enhancement.recipe_storage.save_recipe", return_value=enhanced_recipe),
+            patch("api.routers.recipe_enhancement.recipe_storage.copy_recipe") as mock_copy,
         ):
             response = client.post("/recipes/test123/enhance")
 
@@ -1113,14 +1117,14 @@ class TestEnhanceRecipe:
         )
 
         with (
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=shared_recipe),
-            patch("api.routers.recipes.recipe_storage.copy_recipe", return_value=copied_recipe) as mock_copy,
-            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=shared_recipe),
+            patch("api.routers.recipe_enhancement.recipe_storage.copy_recipe", return_value=copied_recipe) as mock_copy,
+            patch("api.routers.recipe_enhancement._get_household_config", return_value=HouseholdConfig({})),
             patch(
                 "api.services.recipe_enhancer.enhance_recipe",
                 return_value={"title": "Enhanced Recipe", "changes_made": ["Improved"]},
             ),
-            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=enhanced_recipe),
+            patch("api.routers.recipe_enhancement.recipe_storage.save_recipe", return_value=enhanced_recipe),
         ):
             response = client.post("/recipes/shared123/enhance")
 
@@ -1137,7 +1141,7 @@ class TestEnhanceRecipe:
             visibility="household",
         )
 
-        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=private_recipe):
+        with patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=private_recipe):
             response = client.post("/recipes/private123/enhance")
 
         assert response.status_code == 404
@@ -1147,8 +1151,8 @@ class TestEnhanceRecipe:
         from api.services.recipe_enhancer import EnhancementConfigError
 
         with (
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
-            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_enhancement._get_household_config", return_value=HouseholdConfig({})),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementConfigError("No API key")),
         ):
             response = client.post("/recipes/test123/enhance")
@@ -1161,8 +1165,8 @@ class TestEnhanceRecipe:
         from api.services.recipe_enhancer import EnhancementError
 
         with (
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
-            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_enhancement._get_household_config", return_value=HouseholdConfig({})),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementError("Gemini failed")),
         ):
             response = client.post("/recipes/test123/enhance")
@@ -1173,8 +1177,8 @@ class TestEnhanceRecipe:
     def test_returns_500_on_unexpected_error(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should return 500 on unexpected errors during enhancement."""
         with (
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
-            patch("api.routers.recipes._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipe_enhancement._get_household_config", return_value=HouseholdConfig({})),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=RuntimeError("Unexpected")),
         ):
             response = client.post("/recipes/test123/enhance")
@@ -1198,7 +1202,7 @@ class TestReviewEnhancementEndpoint:
             enhancement_reviewed=True,
         )
 
-        with patch("api.routers.recipes.recipe_storage.review_enhancement", return_value=enhanced_recipe):
+        with patch("api.routers.recipe_enhancement.recipe_storage.review_enhancement", return_value=enhanced_recipe):
             response = client.post("/recipes/recipe123/enhancement/review", json={"action": "approve"})
 
         assert response.status_code == 200
@@ -1218,7 +1222,7 @@ class TestReviewEnhancementEndpoint:
             enhancement_reviewed=True,
         )
 
-        with patch("api.routers.recipes.recipe_storage.review_enhancement", return_value=enhanced_recipe):
+        with patch("api.routers.recipe_enhancement.recipe_storage.review_enhancement", return_value=enhanced_recipe):
             response = client.post("/recipes/recipe123/enhancement/review", json={"action": "reject"})
 
         assert response.status_code == 200
@@ -1228,7 +1232,7 @@ class TestReviewEnhancementEndpoint:
 
     def test_returns_404_when_not_found(self, client: TestClient) -> None:
         """Should return 404 when recipe not found or not enhanced."""
-        with patch("api.routers.recipes.recipe_storage.review_enhancement", return_value=None):
+        with patch("api.routers.recipe_enhancement.recipe_storage.review_enhancement", return_value=None):
             response = client.post("/recipes/nonexistent/enhancement/review", json={"action": "approve"})
 
         assert response.status_code == 404

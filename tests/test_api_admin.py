@@ -493,7 +493,9 @@ class TestGetHouseholdSettings:
             response = superuser_client.get("/admin/households/any_household/settings")
 
         assert response.status_code == 200
-        assert response.json() == settings
+        data = response.json()
+        assert data["household_size"] == 4
+        assert data["language"] == "sv"
 
     def test_member_can_get_own_settings(self, member_client: TestClient) -> None:
         """Member can get settings for their own household."""
@@ -502,7 +504,9 @@ class TestGetHouseholdSettings:
             response = member_client.get("/admin/households/test_household/settings")
 
         assert response.status_code == 200
-        assert response.json() == settings
+        data = response.json()
+        assert data["household_size"] == 2
+        assert data["language"] == "sv"  # default
 
     def test_member_cannot_get_other_settings(self, member_client: TestClient) -> None:
         """Member cannot get settings for another household."""
@@ -518,12 +522,31 @@ class TestGetHouseholdSettings:
         assert response.status_code == 404
 
     def test_empty_settings(self, superuser_client: TestClient) -> None:
-        """Should return empty dict if no settings configured."""
+        """Should return defaults when no settings configured."""
         with patch("api.routers.admin.household_storage.get_household_settings", return_value={}):
             response = superuser_client.get("/admin/households/test/settings")
 
         assert response.status_code == 200
-        assert response.json() == {}
+        data = response.json()
+        assert data["household_size"] == 2
+        assert data["default_servings"] == 2
+        assert data["language"] == "sv"
+        assert data["ai_features_enabled"] is True
+        assert data["equipment"] == []
+
+    def test_null_dietary_coerced_to_defaults(self, superuser_client: TestClient) -> None:
+        """Should return defaults when Firestore has dietary: null."""
+        with patch(
+            "api.routers.admin.household_storage.get_household_settings",
+            return_value={"household_size": 3, "dietary": None},
+        ):
+            response = superuser_client.get("/admin/households/test/settings")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["household_size"] == 3
+        assert data["dietary"]["seafood_ok"] is True
+        assert data["dietary"]["meat"] == "all"
 
 
 class TestUpdateHouseholdSettings:
@@ -539,7 +562,9 @@ class TestUpdateHouseholdSettings:
             response = superuser_client.put("/admin/households/any/settings", json=new_settings)
 
         assert response.status_code == 200
-        assert response.json() == new_settings
+        data = response.json()
+        assert data["household_size"] == 4
+        assert data["language"] == "en"
 
     def test_admin_can_update_own(self, admin_client: TestClient) -> None:
         """Admin can update settings for their own household."""

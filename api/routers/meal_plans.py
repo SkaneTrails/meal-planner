@@ -1,5 +1,6 @@
 """Meal plan API endpoints."""
 
+import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -19,7 +20,7 @@ _MEAL_KEY_PARTS = 2
 class MealUpdateRequest(BaseModel):
     """Request to update a single meal."""
 
-    date: str = Field(..., description="ISO date string (YYYY-MM-DD)")
+    date: datetime.date = Field(..., description="ISO date (YYYY-MM-DD)")
     meal_type: str = Field(..., description="Meal type (breakfast, lunch, dinner, snack)")
     value: str | None = Field(None, description="Recipe ID, 'custom:text', or None to delete")
 
@@ -27,7 +28,7 @@ class MealUpdateRequest(BaseModel):
 class NoteUpdateRequest(BaseModel):
     """Request to update a day note."""
 
-    date: str = Field(..., description="ISO date string (YYYY-MM-DD)")
+    date: datetime.date = Field(..., description="ISO date (YYYY-MM-DD)")
     note: str = Field(..., description="Note text (empty to delete)")
 
 
@@ -138,10 +139,11 @@ async def update_single_meal(
     """
     resolved_id = _resolve_household(user, household_id)
 
+    date_str = request.date.isoformat()
     if request.value is None:
-        meal_plan_storage.delete_meal(resolved_id, request.date, request.meal_type)
+        meal_plan_storage.delete_meal(resolved_id, date_str, request.meal_type)
     else:
-        meal_plan_storage.update_meal(resolved_id, request.date, request.meal_type, request.value)
+        meal_plan_storage.update_meal(resolved_id, date_str, request.meal_type, request.value)
 
     meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
     return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
@@ -158,7 +160,7 @@ async def update_single_note(
     Superusers can specify household_id to update any household.
     """
     resolved_id = _resolve_household(user, household_id)
-    meal_plan_storage.update_day_note(resolved_id, request.date, request.note)
+    meal_plan_storage.update_day_note(resolved_id, request.date.isoformat(), request.note)
 
     meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
     return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)

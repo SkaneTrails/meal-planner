@@ -23,7 +23,7 @@ from api.models.admin import (
     RecipeTransfer,
     TransferResponse,
 )
-from api.models.settings import HouseholdSettingsUpdate  # noqa: TC001 - FastAPI needs at runtime
+from api.models.settings import HouseholdSettings, HouseholdSettingsUpdate
 from api.storage import household_storage, recipe_storage
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -221,7 +221,9 @@ async def get_current_user(user: Annotated[AuthenticatedUser, Depends(require_au
 
 
 @router.get("/households/{household_id}/settings")
-async def get_household_settings(user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str) -> dict:
+async def get_household_settings(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str
+) -> HouseholdSettings:
     """Get settings for a household. Superuser or household member."""
     _require_member_or_superuser(user, household_id)
 
@@ -229,24 +231,23 @@ async def get_household_settings(user: Annotated[AuthenticatedUser, Depends(requ
     if settings is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 
-    return settings
+    return HouseholdSettings(**settings)
 
 
 @router.put("/households/{household_id}/settings")
 async def update_household_settings(
     user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str, settings: "HouseholdSettingsUpdate"
-) -> dict:
+) -> HouseholdSettings:
     """Update settings for a household. Superuser or household admin."""
     _require_admin_or_superuser(user, household_id)
 
-    # Convert to dict for storage, excluding unset fields
     settings_dict = settings.model_dump(exclude_unset=True)
     success = household_storage.update_household_settings(household_id, settings_dict)
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 
-    # Return the updated settings
-    return household_storage.get_household_settings(household_id) or {}
+    updated = household_storage.get_household_settings(household_id) or {}
+    return HouseholdSettings(**updated)
 
 
 # --- Recipe Management Endpoints ---
