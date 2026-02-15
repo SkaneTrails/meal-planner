@@ -286,12 +286,12 @@ const en = {
     addNote: '+ note',
     // Day labels (icons)
     dayLabels: {
-      office: '🏢 Office',
-      home: '🏠 Home',
-      gym: '🏃 Gym',
-      dinnerOut: '🍽️ Dinner out',
-      travel: '✈️ Travel',
-      party: '🎉 Party',
+      office: 'Office',
+      home: 'Home',
+      gym: 'Gym',
+      dinnerOut: 'Dinner out',
+      travel: 'Travel',
+      party: 'Party',
     },
     // Extras (Other) section
     extras: {

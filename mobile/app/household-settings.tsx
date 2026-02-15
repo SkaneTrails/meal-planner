@@ -14,8 +14,10 @@ import {
   ReadOnlyBanner,
   ScreenHeader,
 } from '@/components/household-settings';
+import { ItemsAtHomeSection } from '@/components/settings';
 import { useHouseholdSettingsForm } from '@/lib/hooks/useHouseholdSettingsForm';
 import { useTranslation } from '@/lib/i18n';
+import { useSettings } from '@/lib/settings-context';
 import { colors, spacing } from '@/lib/theme';
 
 export default function HouseholdSettingsScreen() {
@@ -23,6 +25,7 @@ export default function HouseholdSettingsScreen() {
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const form = useHouseholdSettingsForm(paramId);
+  const { settings, addItemAtHome, removeItemAtHome } = useSettings();
 
   if (!form.householdId) {
     if (form.userLoading) {
@@ -116,6 +119,12 @@ export default function HouseholdSettingsScreen() {
               equipment={form.settings.equipment}
               canEdit={form.canEdit}
               onToggleEquipment={form.toggleEquipment}
+            />
+
+            <ItemsAtHomeSection
+              itemsAtHome={settings.itemsAtHome}
+              onAddItem={addItemAtHome}
+              onRemoveItem={removeItemAtHome}
             />
           </ScrollView>
         </View>

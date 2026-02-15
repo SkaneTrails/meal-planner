@@ -284,12 +284,12 @@ const it: Translations = {
     createGroceryList: 'Crea lista della spesa ({{count}} pasti)',
     addNote: '+ nota',
     dayLabels: {
-      office: '🏢 Ufficio',
-      home: '🏠 Casa',
-      gym: '🏃 Palestra',
-      dinnerOut: '🍽️ Cena fuori',
-      travel: '✈️ Viaggio',
-      party: '🎉 Festa',
+      office: 'Ufficio',
+      home: 'Casa',
+      gym: 'Palestra',
+      dinnerOut: 'Cena fuori',
+      travel: 'Viaggio',
+      party: 'Festa',
     },
     extras: {
       headerTitle: 'Altro',

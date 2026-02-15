@@ -11,7 +11,6 @@ import {
   AccountSection,
   AdminSection,
   HouseholdSettingsLink,
-  ItemsAtHomeSection,
   LanguageSection,
   RecipeLibrarySection,
   WeekStartSection,
@@ -30,8 +29,6 @@ export default function SettingsScreen() {
   const {
     settings,
     weekStart,
-    addItemAtHome,
-    removeItemAtHome,
     setLanguage,
     setWeekStart,
     toggleShowHiddenRecipes,
@@ -126,12 +123,6 @@ export default function SettingsScreen() {
           <LanguageSection
             currentLanguage={settings.language}
             onChangeLanguage={handleLanguageChange}
-          />
-
-          <ItemsAtHomeSection
-            itemsAtHome={settings.itemsAtHome}
-            onAddItem={addItemAtHome}
-            onRemoveItem={removeItemAtHome}
           />
 
           {currentUser?.role === 'superuser' && (

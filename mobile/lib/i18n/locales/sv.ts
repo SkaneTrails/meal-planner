@@ -278,12 +278,12 @@ const sv: Translations = {
     createGroceryList: 'Skapa inköpslista ({{count}} måltider)',
     addNote: '+ anteckning',
     dayLabels: {
-      office: '🏢 Kontor',
-      home: '🏠 Hemma',
-      gym: '🏃 Gym',
-      dinnerOut: '🍽️ Ute & äta',
-      travel: '✈️ Resa',
-      party: '🎉 Fest',
+      office: 'Kontor',
+      home: 'Hemma',
+      gym: 'Gym',
+      dinnerOut: 'Ute & äta',
+      travel: 'Resa',
+      party: 'Fest',
     },
     extras: {
       headerTitle: 'Övrigt',

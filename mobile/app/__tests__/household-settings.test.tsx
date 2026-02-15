@@ -112,11 +112,16 @@ describe('Household Settings screen', () => {
       }
     });
 
-    it('disables all text inputs', async () => {
+    it('disables all settings text inputs', async () => {
       await renderScreen();
       const inputs = screen.queryAllByRole('textbox');
       expect(inputs.length).toBeGreaterThan(0);
-      for (const input of inputs) {
+      // Items-at-home input remains interactive for all household members
+      const settingsInputs = inputs.filter(
+        (el) => !(el as HTMLInputElement).placeholder?.includes('salt'),
+      );
+      expect(settingsInputs.length).toBeGreaterThan(0);
+      for (const input of settingsInputs) {
         expect((input as HTMLInputElement).disabled).toBe(true);
       }
     });
