@@ -266,13 +266,10 @@ export default function ReviewRecipeScreen() {
       <View
         style={{
           position: 'absolute',
-          bottom: 0,
+          bottom: layout.tabBar.contentBottomPadding,
           left: 0,
           right: 0,
           padding: spacing.lg,
-          backgroundColor: colors.glass.card,
-          borderTopWidth: 1,
-          borderTopColor: colors.glass.border,
         }}
       >
         <Pressable

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, colors, fontSize, layout, spacing } from '@/lib/theme';
 
 export const ReadOnlyBanner = () => {
   const { t } = useTranslation();
@@ -41,13 +41,9 @@ export const BottomSaveBar = ({
     <View
       style={{
         position: 'absolute',
-        bottom: 76,
+        bottom: layout.tabBar.contentBottomPadding,
         left: 0,
         right: 0,
-        backgroundColor: 'rgba(253, 246, 240, 0.95)',
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(139, 115, 85, 0.2)',
-        borderRadius: borderRadius.lg,
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.md,
       }}

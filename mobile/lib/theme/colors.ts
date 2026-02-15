@@ -87,8 +87,8 @@ export const lightColors = {
 
   // Tab bar — acrylic floating nav
   tabBar: {
-    bg: 'rgba(235, 228, 219, 0.7)',
-    bgFallback: 'rgba(235, 228, 219, 0.92)',
+    bg: 'rgba(235, 228, 219, 0.5)',
+    bgFallback: 'rgba(235, 228, 219, 0.85)',
     border: 'rgba(93, 78, 64, 0.1)',
     active: '#5D4E40',
     inactive: '#8B7355',
