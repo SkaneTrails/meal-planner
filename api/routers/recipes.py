@@ -246,12 +246,12 @@ async def preview_recipe(
 
     parse_result = await _send_html_to_cloud_function(url, html)
 
-    if isinstance(parse_result, _ParseError):  # pragma: no cover
+    if isinstance(parse_result, _ParseError):
         raise HTTPException(
             status_code=_HTTP_422, detail={"message": parse_result.message, "reason": parse_result.reason}
         )
 
-    if parse_result is None:  # pragma: no cover
+    if parse_result is None:
         raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
 
     scraped_data = parse_result
@@ -477,7 +477,7 @@ async def parse_recipe(
         )
 
     if parse_result is None:
-        raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")  # pragma: no cover
+        raise HTTPException(status_code=_HTTP_422, detail=f"Failed to parse recipe from {url}")
 
     scraped_data = parse_result
 
@@ -680,16 +680,16 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     # Check if this is a shared/legacy recipe that needs to be copied first
-    is_owned = recipe.household_id == household_id  # pragma: no cover
-    is_shared_or_legacy = recipe.household_id is None or recipe.visibility == "shared"  # pragma: no cover
+    is_owned = recipe.household_id == household_id
+    is_shared_or_legacy = recipe.household_id is None or recipe.visibility == "shared"
 
-    if not is_owned and not is_shared_or_legacy:  # pragma: no cover
+    if not is_owned and not is_shared_or_legacy:
         # Recipe exists but belongs to another household and is not shared
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     # If shared/legacy and not owned, copy first
-    target_recipe = recipe  # pragma: no cover
-    if not is_owned and is_shared_or_legacy:  # pragma: no cover
+    target_recipe = recipe
+    if not is_owned and is_shared_or_legacy:
         copied = recipe_storage.copy_recipe(recipe_id, to_household_id=household_id, copied_by=user.email)
         if copied is None:  # pragma: no cover
             raise HTTPException(
@@ -697,9 +697,9 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             )
         target_recipe = copied
 
-    config = _get_household_config(household_id)  # pragma: no cover
+    config = _get_household_config(household_id)
 
-    try:  # pragma: no cover
+    try:
         enhanced_data = do_enhance(
             target_recipe.model_dump(),
             language=config.language,
@@ -720,15 +720,15 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             created_by=user.email,
         )
 
-    except EnhancementConfigError as e:  # pragma: no cover
+    except EnhancementConfigError as e:
         logger.warning("Enhancement unavailable for recipe_id=%s: %s", recipe_id, e)
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)) from e
 
-    except EnhancementError as e:  # pragma: no cover
+    except EnhancementError as e:
         logger.exception("Failed to enhance recipe_id=%s", recipe_id)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Enhancement failed") from e
 
-    except Exception as e:  # pragma: no cover
+    except Exception as e:
         logger.exception("Unexpected error enhancing recipe_id=%s", recipe_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Enhancement failed due to an unexpected error"

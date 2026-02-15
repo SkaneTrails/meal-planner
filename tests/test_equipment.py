@@ -201,7 +201,7 @@ class TestSettingsEquipmentField:
         )
         assert settings.equipment == []
 
-    def test_read_model_filters_unknown_equipment_keys(self) -> None:
+    def test_read_model_keeps_unknown_equipment_keys(self) -> None:
         """Read model should keep all string keys (lenient) rather than raising on unknowns."""
         settings = HouseholdSettings(
             household_size=2,

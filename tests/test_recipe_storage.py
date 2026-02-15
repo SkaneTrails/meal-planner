@@ -482,6 +482,36 @@ class TestSaveRecipe:
         assert call_args["diet_label"] == "veggie"
         assert call_args["meal_label"] == "meal"
 
+    def test_saves_enhanced_at_when_provided(self) -> None:
+        """Should include enhanced_at in Firestore write when provided in EnhancementMetadata."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "enhanced_id"
+        mock_existing_doc = MagicMock()
+        mock_existing_doc.exists = True
+        mock_existing_doc.to_dict.return_value = {
+            "title": "Original",
+            "ingredients": [],
+            "instructions": [],
+            "created_at": datetime(2025, 1, 1, tzinfo=UTC),
+        }
+        mock_doc_ref.get.return_value = mock_existing_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        enhanced_at = datetime(2025, 6, 15, 12, 0, 0, tzinfo=UTC)
+        recipe = RecipeCreate(title="Enhanced", url="https://example.com")
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = save_recipe(
+                recipe,
+                recipe_id="enhanced_id",
+                enhancement=EnhancementMetadata(enhanced=True, enhanced_at=enhanced_at, changes_made=["Added spices"]),
+            )
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        assert call_args["enhanced_at"] == enhanced_at
+        assert result.enhanced_at == enhanced_at
+
 
 class TestGetRecipe:
     """Tests for get_recipe function."""
@@ -693,6 +723,52 @@ class TestUpdateRecipe:
         update_data = mock_doc_ref.update.call_args[0][0]
         assert update_data["url"] == "https://new.example.com/recipe/"
         assert update_data["normalized_url"] == "https://new.example.com/recipe"
+
+    def test_converts_diet_label_enum_to_string(self) -> None:
+        """Should convert DietLabel enum to its string value in update data."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "h1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch(
+                "api.storage.recipe_storage.get_recipe",
+                return_value=Recipe(id="doc123", title="Test", url="https://example.com", diet_label=DietLabel.VEGGIE),
+            ),
+        ):
+            update_recipe("doc123", RecipeUpdate(diet_label=DietLabel.VEGGIE), household_id="h1")
+
+        update_data = mock_doc_ref.update.call_args[0][0]
+        assert update_data["diet_label"] == "veggie"
+        assert isinstance(update_data["diet_label"], str)
+
+    def test_converts_meal_label_enum_to_string(self) -> None:
+        """Should convert MealLabel enum to its string value in update data."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "h1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch(
+                "api.storage.recipe_storage.get_recipe",
+                return_value=Recipe(id="doc123", title="Test", url="https://example.com", meal_label=MealLabel.DESSERT),
+            ),
+        ):
+            update_recipe("doc123", RecipeUpdate(meal_label=MealLabel.DESSERT), household_id="h1")
+
+        update_data = mock_doc_ref.update.call_args[0][0]
+        assert update_data["meal_label"] == "dessert"
+        assert isinstance(update_data["meal_label"], str)
 
 
 class TestGetAllRecipes:
@@ -974,6 +1050,96 @@ class TestSearchRecipes:
 
         assert len(result) == 1
         assert result[0].title == "Pasta Hidden"
+
+    def test_keeps_owned_recipes_for_household(self) -> None:
+        """Should include recipes owned by the specified household."""
+        mock_db = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.id = "owned1"
+        mock_doc.to_dict.return_value = {
+            "title": "My Recipe",
+            "url": "https://example.com",
+            "household_id": "hh1",
+            "visibility": "household",
+        }
+
+        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
+            mock_doc
+        ]
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = search_recipes("My", household_id="hh1")
+
+        assert len(result) == 1
+        assert result[0].id == "owned1"
+
+    def test_keeps_shared_recipes_for_household(self) -> None:
+        """Should include shared recipes even from other households."""
+        mock_db = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.id = "shared1"
+        mock_doc.to_dict.return_value = {
+            "title": "Shared Recipe",
+            "url": "https://example.com",
+            "household_id": "other_hh",
+            "visibility": "shared",
+        }
+
+        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
+            mock_doc
+        ]
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = search_recipes("Shared", household_id="hh1")
+
+        assert len(result) == 1
+        assert result[0].id == "shared1"
+
+    def test_excludes_private_recipes_from_other_households(self) -> None:
+        """Should filter out private recipes belonging to other households."""
+        mock_db = MagicMock()
+
+        owned_doc = MagicMock()
+        owned_doc.id = "owned1"
+        owned_doc.to_dict.return_value = {
+            "title": "My Recipe",
+            "url": "https://example.com/mine",
+            "household_id": "hh1",
+            "visibility": "household",
+        }
+
+        private_doc = MagicMock()
+        private_doc.id = "private1"
+        private_doc.to_dict.return_value = {
+            "title": "Private Recipe",
+            "url": "https://example.com/private",
+            "household_id": "other_hh",
+            "visibility": "household",
+        }
+
+        shared_doc = MagicMock()
+        shared_doc.id = "shared1"
+        shared_doc.to_dict.return_value = {
+            "title": "Shared Recipe",
+            "url": "https://example.com/shared",
+            "household_id": "other_hh",
+            "visibility": "shared",
+        }
+
+        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
+            owned_doc,
+            private_doc,
+            shared_doc,
+        ]
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = search_recipes("Recipe", household_id="hh1")
+
+        assert len(result) == 2
+        result_ids = [r.id for r in result]
+        assert "owned1" in result_ids
+        assert "shared1" in result_ids
+        assert "private1" not in result_ids
 
 
 class TestCopyRecipe:

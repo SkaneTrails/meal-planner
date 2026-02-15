@@ -15,7 +15,7 @@ This file is gitignored (local-only, never committed). Ignoring it loses track o
 ### ⚠️ Two Todo Systems — Do NOT Confuse Them
 
 | | `.copilot-tasks.md` | `manage_todo_list` tool |
-| - | - | - |
+| --- | --- | --- |
 | **Purpose** | Persistent project backlog across conversations | Ephemeral progress tracker within a single session |
 | **Lifetime** | Permanent — local file (gitignored) | Gone when conversation ends |
 | **Content** | Open issues, deferred work, failure tracking | Steps for the current task only |
