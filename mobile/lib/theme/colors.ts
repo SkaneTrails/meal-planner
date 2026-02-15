@@ -82,6 +82,7 @@ export const lightColors = {
   // Button colors
   button: {
     primary: '#7A6858',
+    primaryPressed: '#6B5B4B',
     disabled: '#C5B8A8',
   },
 
@@ -132,7 +133,7 @@ export const lightColors = {
   // AI enhancement theming — unified sage green palette
   ai: {
     primary: '#6B8E6B',
-    primaryDark: '#567056',
+    primaryDark: '#5A7A5A',
     bg: 'rgba(107, 142, 107, 0.08)',
     bgPressed: 'rgba(107, 142, 107, 0.18)',
     muted: 'rgba(107, 142, 107, 0.5)',
