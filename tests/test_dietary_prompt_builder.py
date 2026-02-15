@@ -101,6 +101,13 @@ class TestDietaryConfigFromFirestore:
         assert cfg.meat_eaters == 3
         assert cfg.vegetarians == 1
 
+    def test_meat_portions_uses_default_servings_as_portion_base(self) -> None:
+        """default_servings overrides household_size for portion split math."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 1}, household_size=2, default_servings=4)
+        assert cfg.meat_strategy == "split"
+        assert cfg.meat_eaters == 1
+        assert cfg.vegetarians == 3
+
 
 # ---------------------------------------------------------------------------
 # DietaryConfig.active_sections
