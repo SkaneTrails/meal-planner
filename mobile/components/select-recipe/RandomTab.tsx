@@ -81,7 +81,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               justifyContent: 'center',
               paddingVertical: spacing.md,
               borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? '#6B5B4B' : '#7A6858',
+              backgroundColor: pressed ? '#6B5B4B' : colors.button.primary,
               ...shadows.md,
             })}
           >
@@ -155,7 +155,7 @@ const RandomHeader = ({
         marginBottom: spacing.md,
       }}
     >
-      <Ionicons name="dice" size={32} color="#6B8E6B" />
+      <Ionicons name="dice" size={32} color={colors.ai.primary} />
     </View>
     <Text
       style={{
@@ -173,7 +173,7 @@ const RandomHeader = ({
         width: 40,
         height: 3,
         borderRadius: 2,
-        backgroundColor: '#6B8E6B',
+        backgroundColor: colors.ai.primary,
         marginTop: spacing.sm,
       }}
     />

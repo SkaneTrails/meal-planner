@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
-import { fontFamily } from '@/lib/theme';
+import { colors, fontFamily } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
@@ -96,7 +96,7 @@ export const FilledMealSlot = ({
             style={{
               fontSize: 11,
               fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.7)',
+              color: colors.content.tertiary,
               marginTop: 2,
             }}
           >
@@ -113,13 +113,13 @@ export const FilledMealSlot = ({
           width: 28,
           height: 28,
           borderRadius: 14,
-          backgroundColor: 'rgba(93, 78, 64, 0.3)',
+          backgroundColor: colors.surface.border,
           alignItems: 'center',
           justifyContent: 'center',
           marginLeft: 8,
         }}
       >
-        <Ionicons name="close" size={18} color="#5D4E40" />
+        <Ionicons name="close" size={18} color={colors.content.body} />
       </AnimatedPressable>
     </View>
   );

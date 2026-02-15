@@ -3,7 +3,13 @@ import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontFamily, fontSize, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
 
@@ -28,7 +34,7 @@ export const ExtrasSection = ({
         borderRadius: 18,
         padding: 14,
         borderWidth: 1.5,
-        borderColor: 'rgba(93, 78, 64, 0.15)',
+        borderColor: colors.surface.pressed,
         borderStyle: 'dashed',
       }}
     >
@@ -45,7 +51,7 @@ export const ExtrasSection = ({
           <Ionicons
             name="bookmark-outline"
             size={18}
-            color="#8B7355"
+            color={colors.content.secondary}
             style={{ marginRight: 6 }}
           />
           <Text
@@ -53,7 +59,7 @@ export const ExtrasSection = ({
               fontSize: fontSize.lg,
               fontFamily: fontFamily.displayBold,
               fontWeight: '600',
-              color: '#5D4E40',
+              color: colors.content.body,
               fontStyle: 'italic',
             }}
           >
@@ -69,16 +75,16 @@ export const ExtrasSection = ({
             alignItems: 'center',
             paddingHorizontal: spacing.sm,
             paddingVertical: 4,
-            backgroundColor: 'rgba(93, 78, 64, 0.1)',
+            backgroundColor: colors.surface.subtle,
             borderRadius: borderRadius.full,
           }}
         >
-          <Ionicons name="add" size={16} color="#5D4E40" />
+          <Ionicons name="add" size={16} color={colors.content.body} />
           <Text
             style={{
               fontSize: fontSize.sm,
               fontFamily: fontFamily.body,
-              color: '#5D4E40',
+              color: colors.content.body,
               marginLeft: 4,
             }}
           >
@@ -99,20 +105,20 @@ export const ExtrasSection = ({
             borderRadius: 12,
             padding: 16,
             borderWidth: 1,
-            borderColor: 'rgba(93, 78, 64, 0.1)',
+            borderColor: colors.surface.subtle,
             borderStyle: 'dashed',
           }}
         >
           <Ionicons
             name="add-circle-outline"
             size={20}
-            color="rgba(93, 78, 64, 0.5)"
+            color={colors.content.icon}
           />
           <Text
             style={{
               fontSize: fontSize.sm,
               fontFamily: fontFamily.body,
-              color: 'rgba(93, 78, 64, 0.6)',
+              color: colors.content.subtitle,
               marginLeft: 8,
             }}
           >
@@ -183,7 +189,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
               style={{
                 fontSize: 11,
                 fontFamily: fontFamily.body,
-                color: 'rgba(93, 78, 64, 0.7)',
+                color: colors.content.tertiary,
                 marginTop: 2,
               }}
             >
@@ -201,13 +207,13 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
           width: 28,
           height: 28,
           borderRadius: 14,
-          backgroundColor: 'rgba(93, 78, 64, 0.3)',
+          backgroundColor: colors.surface.border,
           alignItems: 'center',
           justifyContent: 'center',
           marginLeft: 8,
         }}
       >
-        <Ionicons name="close" size={18} color="#5D4E40" />
+        <Ionicons name="close" size={18} color={colors.content.body} />
       </AnimatedPressable>
     </View>
   );

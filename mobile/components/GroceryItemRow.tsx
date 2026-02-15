@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
+import { colors } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -99,7 +100,7 @@ export const GroceryItemRow = ({
           <Ionicons
             name="reorder-three"
             size={24}
-            color="rgba(93, 78, 64, 0.6)"
+            color={colors.content.subtitle}
           />
         </Pressable>
       )}
@@ -117,8 +118,8 @@ export const GroceryItemRow = ({
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: 12,
-            backgroundColor: checked ? '#6B8E6B' : 'transparent',
-            borderColor: checked ? '#6B8E6B' : 'rgba(93, 78, 64, 0.3)',
+            backgroundColor: checked ? colors.ai.primary : 'transparent',
+            borderColor: checked ? colors.ai.primary : colors.surface.border,
           }}
         >
           {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
@@ -130,7 +131,7 @@ export const GroceryItemRow = ({
               fontSize: 15,
               fontWeight: '500',
               textDecorationLine: checked ? 'line-through' : 'none',
-              color: checked ? 'rgba(93, 78, 64, 0.6)' : '#5D4E40',
+              color: checked ? colors.content.subtitle : colors.content.body,
             }}
           >
             {quantity ? `${quantity} ${item.name}` : item.name}
@@ -139,7 +140,7 @@ export const GroceryItemRow = ({
             <Text
               style={{
                 fontSize: 12,
-                color: 'rgba(93, 78, 64, 0.7)',
+                color: colors.content.tertiary,
                 marginTop: 3,
               }}
             >

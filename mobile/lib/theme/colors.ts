@@ -52,6 +52,39 @@ export const lightColors = {
   border: 'rgba(255, 255, 255, 0.2)',
   borderLight: 'rgba(255, 255, 255, 0.1)',
 
+  // Content colors — dark text/icons on light backgrounds (warm brown family)
+  content: {
+    heading: '#3D3D3D',
+    body: '#5D4E40',
+    secondary: '#8B7355',
+    strong: 'rgba(93, 78, 64, 0.8)',
+    tertiary: 'rgba(93, 78, 64, 0.7)',
+    subtitle: 'rgba(93, 78, 64, 0.6)',
+    icon: 'rgba(93, 78, 64, 0.5)',
+    placeholder: 'rgba(93, 78, 64, 0.4)',
+    placeholderHex: '#8B735580',
+  },
+
+  // Interactive surface states — warm brown at various opacities
+  surface: {
+    overlay: 'rgba(93, 78, 64, 0.85)',
+    overlayMedium: 'rgba(93, 78, 64, 0.75)',
+    border: 'rgba(93, 78, 64, 0.3)',
+    borderLight: 'rgba(93, 78, 64, 0.25)',
+    divider: 'rgba(93, 78, 64, 0.2)',
+    pressed: 'rgba(93, 78, 64, 0.15)',
+    active: 'rgba(93, 78, 64, 0.12)',
+    subtle: 'rgba(93, 78, 64, 0.1)',
+    hover: 'rgba(93, 78, 64, 0.08)',
+    tint: 'rgba(93, 78, 64, 0.06)',
+  },
+
+  // Button colors
+  button: {
+    primary: '#7A6858',
+    disabled: '#C5B8A8',
+  },
+
   // Refined gray scale
   gray: {
     50: '#FAFAFA',

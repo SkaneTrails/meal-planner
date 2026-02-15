@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Pressable, Text, type TextStyle, type ViewStyle } from 'react-native';
+import { colors } from '@/lib/theme';
 
 interface FilterChipProps {
   label: string;
@@ -7,13 +8,13 @@ interface FilterChipProps {
   onPress: () => void;
   /** Optional leading content (emoji text or icon element) */
   leading?: ReactNode;
-  /** Active background color. Default: '#5D4E40' */
+  /** Active background color. Default: colors.content.body */
   activeColor?: string;
   /** Active text color. Default: '#fff' */
   activeTextColor?: string;
-  /** Inactive text color. Default: '#5D4E40' */
+  /** Inactive text color. Default: colors.content.body */
   inactiveTextColor?: string;
-  /** Inactive border color. Default: '#8B7355' */
+  /** Inactive border color. Default: colors.content.secondary */
   inactiveBorderColor?: string;
   /** Additional container styles */
   style?: ViewStyle;
@@ -36,10 +37,10 @@ const FilterChip = ({
   selected,
   onPress,
   leading,
-  activeColor = '#5D4E40',
+  activeColor = colors.content.body,
   activeTextColor = '#fff',
-  inactiveTextColor = '#5D4E40',
-  inactiveBorderColor = '#8B7355',
+  inactiveTextColor = colors.content.body,
+  inactiveBorderColor = colors.content.secondary,
   style,
   labelStyle,
 }: FilterChipProps) => (

@@ -3,7 +3,7 @@ import type React from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { fontFamily } from '@/lib/theme';
+import { colors, fontFamily } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
 interface EmptyMealSlotProps {
@@ -42,19 +42,19 @@ export const EmptyMealSlot = ({
           width: 26,
           height: 26,
           borderRadius: 13,
-          backgroundColor: 'rgba(93, 78, 64, 0.12)',
+          backgroundColor: colors.surface.active,
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: 8,
         }}
       >
-        <Ionicons name="add" size={16} color="rgba(93, 78, 64, 0.6)" />
+        <Ionicons name="add" size={16} color={colors.content.subtitle} />
       </View>
       <Text
         style={{
           fontSize: 13,
           fontFamily: fontFamily.bodySemibold,
-          color: 'rgba(93, 78, 64, 0.8)',
+          color: colors.content.strong,
         }}
       >
         {label}
@@ -79,7 +79,7 @@ export const EmptyMealSlot = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: '#5D4E40',
+          backgroundColor: colors.content.body,
           paddingHorizontal: 12,
           paddingVertical: 6,
           borderRadius: 10,
@@ -132,11 +132,11 @@ const SecondaryActionButton = ({
       width: 34,
       height: 34,
       borderRadius: 10,
-      backgroundColor: 'rgba(93, 78, 64, 0.12)',
+      backgroundColor: colors.surface.active,
       alignItems: 'center',
       justifyContent: 'center',
     }}
   >
-    <Ionicons name={icon} size={17} color="rgba(93, 78, 64, 0.7)" />
+    <Ionicons name={icon} size={17} color={colors.content.tertiary} />
   </AnimatedPressable>
 );

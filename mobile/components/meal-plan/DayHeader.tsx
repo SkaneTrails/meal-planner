@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { fontFamily } from '@/lib/theme';
+import { colors, fontFamily } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -48,7 +48,7 @@ export const DayHeader = ({
         {isToday && (
           <View
             style={{
-              backgroundColor: '#6B8E6B',
+              backgroundColor: colors.ai.primary,
               paddingHorizontal: 10,
               paddingVertical: 4,
               borderRadius: 8,
@@ -94,10 +94,12 @@ export const DayHeader = ({
               <Ionicons
                 name="reader-outline"
                 size={12}
-                color="#6B8E6B"
+                color={colors.ai.primary}
                 style={{ marginRight: 4 }}
               />
-              <Text style={{ fontSize: 12, color: '#5A7A5A' }}>{note}</Text>
+              <Text style={{ fontSize: 12, color: colors.ai.primaryDark }}>
+                {note}
+              </Text>
             </View>
           ) : (
             <View
@@ -110,7 +112,7 @@ export const DayHeader = ({
                 borderRadius: 12,
               }}
             >
-              <Text style={{ fontSize: 12, color: 'rgba(93, 78, 64, 0.5)' }}>
+              <Text style={{ fontSize: 12, color: colors.content.icon }}>
                 {t('mealPlan.addNote')}
               </Text>
             </View>

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { fontFamily, fontSize, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, spacing } from '@/lib/theme';
 
 interface TimeStatProps {
   icon: 'timer' | 'flame' | 'time' | 'people';
@@ -23,7 +23,7 @@ const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => (
     <Text
       style={{
         fontSize: fontSize.sm,
-        color: '#8B7355',
+        color: colors.content.secondary,
         marginTop: spacing.xs,
       }}
     >

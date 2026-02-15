@@ -271,7 +271,8 @@ export default function AddRecipeScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: url && !isPending ? '#5D4E40' : colors.gray[300],
+              backgroundColor:
+                url && !isPending ? colors.content.body : colors.gray[300],
               opacity: pressed ? 0.9 : 1,
               ...shadows.md,
             })}
@@ -329,12 +330,12 @@ export default function AddRecipeScreen() {
               style={{
                 flex: 1,
                 height: 2,
-                backgroundColor: 'rgba(93, 78, 64, 0.25)',
+                backgroundColor: colors.surface.borderLight,
               }}
             />
             <Text
               style={{
-                color: '#5D4E40',
+                color: colors.content.body,
                 fontSize: fontSize.md,
                 fontWeight: '500',
                 marginHorizontal: spacing.lg,
@@ -346,7 +347,7 @@ export default function AddRecipeScreen() {
               style={{
                 flex: 1,
                 height: 2,
-                backgroundColor: 'rgba(93, 78, 64, 0.25)',
+                backgroundColor: colors.surface.borderLight,
               }}
             />
           </View>
@@ -366,17 +367,21 @@ export default function AddRecipeScreen() {
               paddingHorizontal: spacing.lg,
               borderRadius: borderRadius.md,
               backgroundColor: pressed
-                ? 'rgba(93, 78, 64, 0.15)'
-                : 'rgba(93, 78, 64, 0.08)',
+                ? colors.surface.pressed
+                : colors.surface.hover,
               borderWidth: 2,
-              borderColor: 'rgba(93, 78, 64, 0.3)',
+              borderColor: colors.surface.border,
             })}
           >
-            <Ionicons name="create-outline" size={20} color="#5D4E40" />
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color={colors.content.body}
+            />
             <Text
               style={{
                 marginLeft: spacing.sm,
-                color: '#5D4E40',
+                color: colors.content.body,
                 fontSize: fontSize.lg,
                 fontWeight: '600',
               }}

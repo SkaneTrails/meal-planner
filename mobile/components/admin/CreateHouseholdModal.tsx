@@ -62,13 +62,13 @@ export const CreateHouseholdModal = ({
             style={{
               fontSize: fontSize['2xl'],
               fontWeight: fontWeight.bold,
-              color: '#3D3D3D',
+              color: colors.content.heading,
             }}
           >
             {t('admin.createHousehold.button')}
           </Text>
           <Pressable onPress={onClose}>
-            <Ionicons name="close" size={28} color="#8B7355" />
+            <Ionicons name="close" size={28} color={colors.content.secondary} />
           </Pressable>
         </View>
 
@@ -77,7 +77,7 @@ export const CreateHouseholdModal = ({
             style={{
               fontSize: fontSize.md,
               fontWeight: fontWeight.semibold,
-              color: '#3D3D3D',
+              color: colors.content.heading,
               marginBottom: spacing.sm,
             }}
           >
@@ -87,13 +87,13 @@ export const CreateHouseholdModal = ({
             value={householdName}
             onChangeText={onHouseholdNameChange}
             placeholder={t('admin.createHousehold.namePlaceholder')}
-            placeholderTextColor="#8B735580"
+            placeholderTextColor={colors.content.placeholderHex}
             style={{
               backgroundColor: colors.white,
               borderRadius: borderRadius.lg,
               padding: spacing.md,
               fontSize: fontSize.lg,
-              color: '#3D3D3D',
+              color: colors.content.heading,
               ...shadows.sm,
             }}
             autoFocus
@@ -107,7 +107,9 @@ export const CreateHouseholdModal = ({
           pressScale={0.97}
           disableAnimation={!householdName.trim() || isPending}
           style={{
-            backgroundColor: !householdName.trim() ? '#C5B8A8' : '#5D4E40',
+            backgroundColor: !householdName.trim()
+              ? colors.button.disabled
+              : colors.content.body,
             padding: spacing.md,
             borderRadius: borderRadius.lg,
             marginTop: spacing.xl,

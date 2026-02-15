@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, colors, fontSize, spacing } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
@@ -36,7 +36,7 @@ const ActionButtons = ({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 10,
-        backgroundColor: '#6B8E6B',
+        backgroundColor: colors.ai.primary,
       }}
     >
       <Ionicons
@@ -58,14 +58,14 @@ const ActionButtons = ({
           paddingVertical: 8,
           borderRadius: 10,
           backgroundColor: showClearMenu
-            ? 'rgba(93, 78, 64, 0.15)'
-            : 'rgba(93, 78, 64, 0.08)',
+            ? colors.surface.pressed
+            : colors.surface.hover,
         }}
       >
         <Ionicons
           name={showClearMenu ? 'close' : 'trash-outline'}
           size={16}
-          color="rgba(93, 78, 64, 0.5)"
+          color={colors.content.icon}
         />
       </AnimatedPressable>
     )}
@@ -81,10 +81,10 @@ const ActionButtons = ({
           paddingHorizontal: 10,
           paddingVertical: 8,
           borderRadius: 10,
-          backgroundColor: 'rgba(93, 78, 64, 0.08)',
+          backgroundColor: colors.surface.hover,
         }}
       >
-        <Ionicons name="refresh" size={16} color="rgba(93, 78, 64, 0.5)" />
+        <Ionicons name="refresh" size={16} color={colors.content.icon} />
       </AnimatedPressable>
     )}
   </View>
@@ -111,7 +111,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
         <View
           style={{
             height: '100%',
-            backgroundColor: '#6B8E6B',
+            backgroundColor: colors.ai.primary,
             borderRadius: 3,
             width: `${(checkedItemsToBuy / itemsToBuy) * 100}%`,
           }}
@@ -149,7 +149,11 @@ const ItemsAtHomeIndicator = ({
         gap: 6,
       }}
     >
-      <Ionicons name="home-outline" size={14} color="#8B7355" />
+      <Ionicons
+        name="home-outline"
+        size={14}
+        color={colors.content.secondary}
+      />
       <Text
         style={{
           fontSize: 12,
@@ -160,7 +164,7 @@ const ItemsAtHomeIndicator = ({
       >
         {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
       </Text>
-      <Ionicons name="chevron-forward" size={14} color="#5D4E40" />
+      <Ionicons name="chevron-forward" size={14} color={colors.content.body} />
     </AnimatedPressable>
   );
 };
@@ -223,7 +227,7 @@ export const StatsCard = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              color: 'rgba(93, 78, 64, 0.7)',
+              color: colors.content.tertiary,
             }}
           >
             {t('grocery.thisWeeksShopping')}
@@ -232,7 +236,7 @@ export const StatsCard = ({
             style={{
               fontSize: 17,
               fontWeight: '600',
-              color: '#3D3D3D',
+              color: colors.content.heading,
               marginTop: 4,
             }}
           >

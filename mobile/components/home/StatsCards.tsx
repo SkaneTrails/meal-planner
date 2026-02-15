@@ -6,6 +6,7 @@ import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
+  colors,
   fontFamily,
   fontSize,
   letterSpacing,
@@ -44,7 +45,7 @@ export const StatsCards = ({
         icon="book-outline"
         value={recipesCount}
         label={t('home.stats.recipes')}
-        iconColor="#8B7355"
+        iconColor={colors.content.secondary}
         onPress={() => router.push('/recipes')}
       />
       <StatCard
@@ -52,14 +53,14 @@ export const StatsCards = ({
         value={`${plannedMealsPercentage}%`}
         subtitle={`${plannedMealsCount}/${WEEKLY_TRACKABLE_MEALS}`}
         label={t('home.stats.planned')}
-        iconColor="#8B7355"
+        iconColor={colors.content.secondary}
         onPress={() => router.push('/meal-plan')}
       />
       <StatCard
         icon="cart-outline"
         value={groceryItemsCount}
         label={t('home.stats.toBuy')}
-        iconColor="#8B7355"
+        iconColor={colors.content.secondary}
         onPress={() => router.push('/grocery')}
       />
     </View>
@@ -107,7 +108,7 @@ const StatCard = ({
       style={{
         fontSize: fontSize['3xl'],
         fontFamily: fontFamily.bodySemibold,
-        color: '#5D4E40',
+        color: colors.content.body,
         letterSpacing: letterSpacing.tight,
       }}
     >
@@ -117,7 +118,7 @@ const StatCard = ({
       style={{
         fontSize: fontSize.xs,
         fontFamily: fontFamily.body,
-        color: subtitle ? '#8B7355' : 'transparent',
+        color: subtitle ? colors.content.secondary : 'transparent',
         marginBottom: 2,
       }}
     >
@@ -126,7 +127,7 @@ const StatCard = ({
     <Text
       style={{
         fontSize: fontSize.xs,
-        color: '#8B7355',
+        color: colors.content.secondary,
         letterSpacing: letterSpacing.wide,
         textTransform: 'uppercase',
       }}

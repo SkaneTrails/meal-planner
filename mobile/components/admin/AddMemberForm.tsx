@@ -64,13 +64,13 @@ export const AddMemberForm = ({
           style={{
             fontSize: fontSize.lg,
             fontWeight: fontWeight.semibold,
-            color: '#3D3D3D',
+            color: colors.content.heading,
           }}
         >
           {t('admin.addMember.title')}
         </Text>
         <Pressable onPress={onClose}>
-          <Ionicons name="close" size={24} color="#8B7355" />
+          <Ionicons name="close" size={24} color={colors.content.secondary} />
         </Pressable>
       </View>
 
@@ -78,7 +78,7 @@ export const AddMemberForm = ({
         value={newMemberEmail}
         onChangeText={onEmailChange}
         placeholder={t('admin.addMember.emailPlaceholder')}
-        placeholderTextColor="#8B735580"
+        placeholderTextColor={colors.content.placeholderHex}
         keyboardType="email-address"
         autoCapitalize="none"
         style={{
@@ -86,7 +86,7 @@ export const AddMemberForm = ({
           borderRadius: borderRadius.md,
           padding: spacing.md,
           fontSize: fontSize.md,
-          color: '#3D3D3D',
+          color: colors.content.heading,
           marginBottom: spacing.sm,
         }}
       />
@@ -101,14 +101,15 @@ export const AddMemberForm = ({
               padding: spacing.sm,
               marginRight: role === 'member' ? spacing.sm : 0,
               backgroundColor:
-                newMemberRole === role ? '#3D3D3D' : colors.white,
+                newMemberRole === role ? colors.content.heading : colors.white,
               borderRadius: borderRadius.md,
               alignItems: 'center',
             }}
           >
             <Text
               style={{
-                color: newMemberRole === role ? 'white' : '#3D3D3D',
+                color:
+                  newMemberRole === role ? 'white' : colors.content.heading,
                 fontWeight: fontWeight.medium,
               }}
             >
@@ -125,7 +126,9 @@ export const AddMemberForm = ({
         pressScale={0.97}
         disableAnimation={!newMemberEmail.trim() || isPending}
         style={{
-          backgroundColor: !newMemberEmail.trim() ? '#C5B8A8' : '#3D3D3D',
+          backgroundColor: !newMemberEmail.trim()
+            ? colors.button.disabled
+            : colors.content.heading,
           padding: spacing.md,
           borderRadius: borderRadius.lg,
           alignItems: 'center',

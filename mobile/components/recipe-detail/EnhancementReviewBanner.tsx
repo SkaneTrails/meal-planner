@@ -66,7 +66,7 @@ export const EnhancementReviewBanner = ({
       style={{
         fontSize: fontSize.md,
         fontFamily: fontFamily.body,
-        color: 'rgba(93, 78, 64, 0.7)',
+        color: colors.content.tertiary,
         marginBottom: spacing.lg,
       }}
     >
@@ -116,22 +116,22 @@ export const EnhancementReviewBanner = ({
           paddingVertical: spacing.md,
           borderRadius: borderRadius.md,
           backgroundColor: pressed
-            ? 'rgba(93, 78, 64, 0.15)'
-            : 'rgba(93, 78, 64, 0.08)',
+            ? colors.surface.pressed
+            : colors.surface.hover,
           opacity: isSubmitting ? 0.5 : 1,
         })}
       >
         <Ionicons
           name="close-circle"
           size={18}
-          color="#5D4E40"
+          color={colors.content.body}
           style={{ marginRight: spacing.xs }}
         />
         <Text
           style={{
             fontSize: fontSize.md,
             fontFamily: fontFamily.bodySemibold,
-            color: '#5D4E40',
+            color: colors.content.body,
           }}
         >
           {t('recipe.rejectEnhancement')}
