@@ -16,11 +16,12 @@ import {
 import { BottomSheetModal, GradientBackground } from '@/components';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { colors } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 if (
@@ -152,31 +153,11 @@ export default function RecipesScreen() {
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}
         >
-          <View style={{ marginBottom: 8 }}>
-            <Text
-              style={{
-                fontSize: fontSize['3xl'],
-                fontFamily: fontFamily.displayBold,
-                fontWeight: '700',
-                color: colors.content.heading,
-                letterSpacing: letterSpacing.tight,
-                textAlign: 'center',
-              }}
-            >
-              {t('recipes.title')}
-            </Text>
-            <Text
-              style={{
-                fontSize: fontSize.md,
-                fontFamily: fontFamily.body,
-                color: colors.content.subtitle,
-                marginTop: 2,
-                textAlign: 'center',
-              }}
-            >
-              {t('recipes.collectionCount', { count: totalCount })}
-            </Text>
-          </View>
+          <ScreenTitle
+            title={t('recipes.title')}
+            subtitle={t('recipes.collectionCount', { count: totalCount })}
+            style={{ marginBottom: 8 }}
+          />
         </View>
 
         <SearchBar

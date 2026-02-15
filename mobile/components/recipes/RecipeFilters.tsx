@@ -8,7 +8,13 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, fontSize } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 import type { DietLabel, LibraryScope } from '@/lib/types';
 
 interface SearchBarProps {
@@ -32,17 +38,17 @@ export const SearchBar = ({
   searchInputRef,
   t,
 }: SearchBarProps) => (
-  <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
+  <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}>
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.92)',
+        backgroundColor: colors.glass.light,
         borderRadius: borderRadius.md,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.05)',
+        borderColor: colors.glass.border,
       }}
     >
       <Ionicons name="search" size={18} color={colors.content.secondary} />
@@ -52,7 +58,7 @@ export const SearchBar = ({
           flex: 1,
           fontSize: fontSize.md,
           color: colors.content.body,
-          marginLeft: 10,
+          marginLeft: spacing.sm,
         }}
         placeholder={t('recipes.searchPlaceholder')}
         placeholderTextColor={colors.content.secondary}
@@ -62,15 +68,18 @@ export const SearchBar = ({
         onBlur={onBlur}
       />
       {searchQuery !== '' && (
-        <Pressable onPress={() => onSearchChange('')} style={{ padding: 4 }}>
+        <Pressable
+          onPress={() => onSearchChange('')}
+          style={{ padding: spacing.xs }}
+        >
           <Ionicons name="close-circle" size={18} color={colors.text.muted} />
         </Pressable>
       )}
       {isSearchFocused && (
-        <Pressable onPress={onClear} style={{ marginLeft: 8 }}>
+        <Pressable onPress={onClear} style={{ marginLeft: spacing.sm }}>
           <Text
             style={{
-              fontSize: 15,
+              fontSize: fontSize.xl,
               color: colors.button.primary,
               fontFamily: fontFamily.bodyMedium,
             }}
@@ -98,8 +107,8 @@ interface FilterChipsProps {
 
 const DIET_CHIPS: { diet: DietLabel; emoji: string; activeColor: string }[] = [
   { diet: 'veggie', emoji: '🌱', activeColor: colors.ai.primary },
-  { diet: 'fish', emoji: '🐟', activeColor: '#2D7AB8' },
-  { diet: 'meat', emoji: '🍗', activeColor: '#B85C38' },
+  { diet: 'fish', emoji: '🐟', activeColor: colors.chip.fishActive },
+  { diet: 'meat', emoji: '🍗', activeColor: colors.chip.meatActive },
 ];
 
 export const FilterChips = ({
@@ -114,19 +123,19 @@ export const FilterChips = ({
   onSortPress,
   t,
 }: FilterChipsProps) => (
-  <View style={{ paddingVertical: 8 }}>
+  <View style={{ paddingVertical: spacing.sm }}>
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
+      contentContainerStyle={{ paddingHorizontal: spacing.xl, gap: spacing.sm }}
     >
       {/* Library scope toggle */}
       <View
         style={{
           flexDirection: 'row',
-          borderRadius: 14,
+          borderRadius: borderRadius.sm,
           borderWidth: 1,
-          borderColor: 'rgba(139, 115, 85, 0.3)',
+          borderColor: colors.chip.border,
           overflow: 'hidden',
         }}
       >
@@ -136,8 +145,8 @@ export const FilterChips = ({
             onLibraryScopeChange('all');
           }}
           style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing.xs,
             backgroundColor:
               libraryScope === 'all'
                 ? colors.button.primary
@@ -146,7 +155,7 @@ export const FilterChips = ({
         >
           <Text
             style={{
-              fontSize: 13,
+              fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               color:
                 libraryScope === 'all' ? colors.white : colors.content.body,
@@ -161,8 +170,8 @@ export const FilterChips = ({
             onLibraryScopeChange('mine');
           }}
           style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing.xs,
             backgroundColor:
               libraryScope === 'mine'
                 ? colors.button.primary
@@ -171,7 +180,7 @@ export const FilterChips = ({
         >
           <Text
             style={{
-              fontSize: 13,
+              fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               color:
                 libraryScope === 'mine' ? colors.white : colors.content.body,
@@ -190,20 +199,20 @@ export const FilterChips = ({
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 12,
-          paddingVertical: 5,
-          borderRadius: 14,
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.xs,
+          borderRadius: borderRadius.sm,
           backgroundColor:
             !dietFilter && !showFavoritesOnly
               ? colors.content.body
-              : 'rgba(232, 222, 212, 0.7)',
+              : colors.chip.bg,
           borderWidth: !dietFilter && !showFavoritesOnly ? 0 : 1,
-          borderColor: 'rgba(139, 115, 85, 0.3)',
+          borderColor: colors.chip.border,
         }}
       >
         <Text
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontFamily: fontFamily.bodySemibold,
             color:
               !dietFilter && !showFavoritesOnly
@@ -226,22 +235,21 @@ export const FilterChips = ({
           hoverScale={1.05}
           pressScale={0.95}
           style={{
-            paddingHorizontal: 12,
-            paddingVertical: 5,
-            borderRadius: 14,
-            backgroundColor:
-              dietFilter === diet ? activeColor : 'rgba(232, 222, 212, 0.7)',
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing.xs,
+            borderRadius: borderRadius.sm,
+            backgroundColor: dietFilter === diet ? activeColor : colors.chip.bg,
             borderWidth: dietFilter === diet ? 0 : 1,
-            borderColor: 'rgba(139, 115, 85, 0.3)',
+            borderColor: colors.chip.border,
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 5,
+            gap: spacing.xs,
           }}
         >
-          <Text style={{ fontSize: 13 }}>{emoji}</Text>
+          <Text style={{ fontSize: fontSize.md }}>{emoji}</Text>
           <Text
             style={{
-              fontSize: 13,
+              fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               color: dietFilter === diet ? colors.white : colors.content.body,
             }}
@@ -260,27 +268,27 @@ export const FilterChips = ({
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 12,
-          paddingVertical: 5,
-          borderRadius: 14,
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.xs,
+          borderRadius: borderRadius.sm,
           backgroundColor: showFavoritesOnly
-            ? '#C75050'
-            : 'rgba(232, 222, 212, 0.7)',
+            ? colors.chip.favoriteActive
+            : colors.chip.bg,
           borderWidth: showFavoritesOnly ? 0 : 1,
-          borderColor: 'rgba(139, 115, 85, 0.3)',
+          borderColor: colors.chip.border,
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 5,
+          gap: spacing.xs,
         }}
       >
         <Ionicons
           name={showFavoritesOnly ? 'heart' : 'heart-outline'}
           size={15}
-          color={showFavoritesOnly ? colors.white : '#C75050'}
+          color={showFavoritesOnly ? colors.white : colors.chip.favoriteActive}
         />
         <Text
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontFamily: fontFamily.bodySemibold,
             color: showFavoritesOnly ? colors.white : colors.content.body,
           }}
@@ -298,21 +306,21 @@ export const FilterChips = ({
         hoverScale={1.05}
         pressScale={0.95}
         style={{
-          paddingHorizontal: 12,
-          paddingVertical: 5,
-          borderRadius: 14,
-          backgroundColor: 'rgba(232, 222, 212, 0.7)',
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.xs,
+          borderRadius: borderRadius.sm,
+          backgroundColor: colors.chip.bg,
           borderWidth: 1,
-          borderColor: 'rgba(139, 115, 85, 0.3)',
+          borderColor: colors.chip.border,
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 5,
+          gap: spacing.xs,
         }}
       >
         <Ionicons name="funnel-outline" size={13} color={colors.content.body} />
         <Text
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontFamily: fontFamily.bodySemibold,
             color: colors.content.body,
           }}

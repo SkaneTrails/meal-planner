@@ -1,14 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  colors,
-  fontFamily,
-  fontSize,
-  letterSpacing,
-  spacing,
-} from '@/lib/theme';
+import { borderRadius, colors, spacing } from '@/lib/theme';
 
 interface ScreenHeaderProps {
   canEdit: boolean;
@@ -87,31 +81,12 @@ export const ScreenHeader = ({
           </Pressable>
         )}
       </View>
-      <View style={{ marginTop: spacing.md }}>
-        <Text
-          style={{
-            fontSize: fontSize['4xl'],
-            fontFamily: fontFamily.display,
-            color: colors.text.primary,
-            letterSpacing: letterSpacing.tight,
-            textShadowColor: 'rgba(0, 0, 0, 0.15)',
-            textShadowOffset: { width: 1, height: 1 },
-            textShadowRadius: 2,
-          }}
-        >
-          {t('householdSettings.title')}
-        </Text>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.body,
-            color: colors.text.secondary,
-            marginTop: 4,
-          }}
-        >
-          {t('householdSettings.subtitle')}
-        </Text>
-      </View>
+      <ScreenTitle
+        variant="large"
+        title={t('householdSettings.title')}
+        subtitle={t('householdSettings.subtitle')}
+        style={{ marginTop: spacing.md }}
+      />
     </View>
   );
 };

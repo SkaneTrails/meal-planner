@@ -110,11 +110,27 @@ export const lightColors = {
   info: '#42A5F5',
   infoBg: '#E3F2FD',
 
+  // Chip/filter pill colors
+  chip: {
+    bg: 'rgba(232, 222, 212, 0.7)',
+    border: 'rgba(139, 115, 85, 0.3)',
+    fishActive: '#2D7AB8',
+    meatActive: '#B85C38',
+    favoriteActive: '#C75050',
+  },
+
+  // Shadow colors — baked-in alpha for textShadow (no separate opacity prop)
+  shadow: {
+    text: 'rgba(0, 0, 0, 0.15)',
+  },
+
   // Glass/Blur effects - near-solid surfaces for app-like feel
   glass: {
     light: 'rgba(255, 255, 255, 0.88)',
     medium: 'rgba(255, 255, 255, 0.78)',
     dark: 'rgba(255, 255, 255, 0.65)',
+    subtle: 'rgba(255, 255, 255, 0.6)',
+    faint: 'rgba(255, 255, 255, 0.5)',
     card: 'rgba(255, 255, 255, 0.85)',
     border: 'rgba(0, 0, 0, 0.04)',
   },
