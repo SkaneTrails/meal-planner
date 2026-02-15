@@ -20,6 +20,8 @@ const sv: Translations = {
     search: 'Sök',
     done: 'Klar',
     back: 'Tillbaka',
+    aiDisabledHint:
+      'Aktivera AI i hushållsinställningar för att använda denna funktion',
   },
 
   labels: {
@@ -593,12 +595,12 @@ const sv: Translations = {
     },
     dietary: {
       title: 'Kostpreferenser',
-      subtitle: 'Ställ in hur recept ska anpassas',
+      subtitle: 'Fisk, skaldjur och mejeribegränsningar',
       seafood: 'Fisk & skaldjur',
       seafoodDesc: 'Hushållet äter fisk och skaldjur',
       meatDishes: 'Kötträtter',
-      meatPortionsDesc: 'Hur många i hushållet äter kött?',
-      portionsOf: 'av {{total}} personer',
+      meatPortionsDesc: 'Hur många portioner kan innehålla kött?',
+      portionsOf: 'av {{total}} portioner',
       meatNoneHint: 'Helt vegetariskt — alternativ används',
       chickenAlt: 'Kycklingalternativ (t.ex. Quorn)',
       chickenAltPlaceholder: 't.ex. Quorn',
@@ -618,6 +620,12 @@ const sv: Translations = {
       dairyLactoseFreeDesc: 'Föredra laktosfria alternativ',
       dairyFree: 'Mejerifri',
       dairyFreeDesc: 'Inga mejeriprodukter',
+    },
+    ai: {
+      title: 'AI-förbättringar',
+      subtitle: 'Konfigurera hur AI förbättrar dina recept',
+      enableLabel: 'AI-receptförbättring',
+      enableDesc: 'Förbättra recept automatiskt med smarta förslag',
     },
     equipment: {
       title: 'Köksutrustning',

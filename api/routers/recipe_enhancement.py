@@ -35,7 +35,7 @@ class HouseholdConfig:
         self.target_servings: int = self._coerce_positive_int(settings.get("default_servings"), default=4, min_value=1)
         self.people_count: int = self._coerce_positive_int(settings.get("household_size"), default=2, min_value=1)
         self.dietary: DietaryConfig = DietaryConfig.from_firestore(
-            settings.get("dietary"), household_size=self.people_count
+            settings.get("dietary"), household_size=self.people_count, default_servings=self.target_servings
         )
 
     @staticmethod

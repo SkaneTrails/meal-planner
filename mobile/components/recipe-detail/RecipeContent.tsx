@@ -21,6 +21,7 @@ interface RecipeContentProps {
   canEdit: boolean;
   canEnhance: boolean;
   isEnhancing: boolean;
+  aiEnabled: boolean;
   needsEnhancementReview: boolean;
   isReviewingEnhancement: boolean;
   t: TFunction;
@@ -43,6 +44,7 @@ export const RecipeContent = ({
   canEdit,
   canEnhance,
   isEnhancing,
+  aiEnabled,
   needsEnhancementReview,
   isReviewingEnhancement,
   t,
@@ -90,6 +92,7 @@ export const RecipeContent = ({
         canEdit={canEdit}
         canEnhance={canEnhance}
         isEnhancing={isEnhancing}
+        aiEnabled={aiEnabled}
         t={t}
         onOpenEditModal={onOpenEditModal}
         onShowPlanModal={onShowPlanModal}

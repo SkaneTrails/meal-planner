@@ -21,6 +21,7 @@ const en = {
     search: 'Search',
     done: 'Done',
     back: 'Back',
+    aiDisabledHint: 'Enable AI in household settings to use this feature',
   },
 
   // ── Labels (diet, meal, etc.) ─────────────────────────────────────
@@ -608,12 +609,12 @@ const en = {
     },
     dietary: {
       title: 'Dietary Preferences',
-      subtitle: 'Configure how recipes should be adapted',
+      subtitle: 'Seafood and dairy restrictions',
       seafood: 'Seafood',
       seafoodDesc: 'Household eats fish and shellfish',
       meatDishes: 'Meat Dishes',
-      meatPortionsDesc: 'How many people in the household eat meat?',
-      portionsOf: 'of {{total}} people',
+      meatPortionsDesc: 'How many portions could contain meat?',
+      portionsOf: 'of {{total}} portions',
       meatNoneHint: 'All vegetarian — alternatives will be used',
       chickenAlt: 'Chicken Alternative (e.g., Quorn)',
       chickenAltPlaceholder: 'e.g., Quorn',
@@ -633,6 +634,12 @@ const en = {
       dairyLactoseFreeDesc: 'Prefer lactose-free alternatives',
       dairyFree: 'Dairy-free',
       dairyFreeDesc: 'No dairy products',
+    },
+    ai: {
+      title: 'AI Improvements',
+      subtitle: 'Configure how AI enhances your recipes',
+      enableLabel: 'AI Recipe Enhancement',
+      enableDesc: 'Automatically improve recipes with smart suggestions',
     },
     equipment: {
       title: 'Kitchen Equipment',

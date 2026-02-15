@@ -20,6 +20,8 @@ const it: Translations = {
     search: 'Cerca',
     done: 'Fatto',
     back: 'Indietro',
+    aiDisabledHint:
+      'Abilita AI nelle impostazioni del nucleo familiare per usare questa funzione',
   },
 
   labels: {
@@ -604,12 +606,12 @@ const it: Translations = {
     },
     dietary: {
       title: 'Preferenze dietetiche',
-      subtitle: 'Configura come le ricette devono essere adattate',
+      subtitle: 'Pesce, frutti di mare e restrizioni sui latticini',
       seafood: 'Pesce e frutti di mare',
       seafoodDesc: 'Il nucleo familiare mangia pesce e frutti di mare',
       meatDishes: 'Piatti di carne',
-      meatPortionsDesc: 'Quante persone della famiglia mangiano carne?',
-      portionsOf: 'su {{total}} persone',
+      meatPortionsDesc: 'Quante porzioni possono contenere carne?',
+      portionsOf: 'su {{total}} porzioni',
       meatNoneHint: 'Tutto vegetariano — si usano le alternative',
       chickenAlt: 'Alternativa al pollo (es. Quorn)',
       chickenAltPlaceholder: 'es. Quorn',
@@ -629,6 +631,13 @@ const it: Translations = {
       dairyLactoseFreeDesc: 'Preferire alternative senza lattosio',
       dairyFree: 'Senza latticini',
       dairyFreeDesc: 'Nessun prodotto lattiero-caseario',
+    },
+    ai: {
+      title: 'Miglioramenti AI',
+      subtitle: "Configura come l'AI migliora le tue ricette",
+      enableLabel: 'Miglioramento ricette AI',
+      enableDesc:
+        'Migliora automaticamente le ricette con suggerimenti intelligenti',
     },
     equipment: {
       title: 'Attrezzatura cucina',

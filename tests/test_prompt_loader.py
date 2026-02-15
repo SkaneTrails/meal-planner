@@ -350,8 +350,7 @@ class TestLoadSystemPrompt:
         (prompts_dir / "user").mkdir(parents=True)
 
         (prompts_dir / "core" / "base.md").write_text(
-            "{target_servings}s {people_count}p {servings_per_person}pp {meat_eaters}m {vegetarians}v",
-            encoding="utf-8",
+            "{target_servings}s {people_count}p {servings_per_person}pp {meat_eaters}m {vegetarians}v", encoding="utf-8"
         )
 
         with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
@@ -366,8 +365,7 @@ class TestLoadSystemPrompt:
         (prompts_dir / "user").mkdir(parents=True)
 
         (prompts_dir / "core" / "base.md").write_text(
-            "{target_servings} {people_count} {servings_per_person} {meat_eaters} {vegetarians}",
-            encoding="utf-8",
+            "{target_servings} {people_count} {servings_per_person} {meat_eaters} {vegetarians}", encoding="utf-8"
         )
 
         with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):

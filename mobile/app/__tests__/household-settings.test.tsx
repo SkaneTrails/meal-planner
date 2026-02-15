@@ -66,11 +66,23 @@ vi.mock('@/lib/hooks/use-admin', () => ({
 async function renderScreen() {
   const { default: HouseholdSettingsScreen } = await import('@/app/household-settings');
   const Wrapper = createQueryWrapper();
-  return render(
+  const result = render(
     React.createElement(Wrapper, null,
       React.createElement(HouseholdSettingsScreen)
     ),
   );
+
+  // Expand all collapsed sections so tests can find inputs/switches inside them
+  const sectionTitles = [
+    'General', 'Members', 'Dietary Preferences',
+    'AI Improvements', 'Items at Home', 'Language',
+  ];
+  for (const title of sectionTitles) {
+    const header = screen.queryByText(title);
+    if (header) fireEvent.click(header);
+  }
+
+  return result;
 }
 
 describe('Household Settings screen', () => {

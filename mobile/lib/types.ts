@@ -309,6 +309,7 @@ export interface HouseholdSettings {
   default_servings: number;
   language: string;
   week_start?: 'monday' | 'saturday';
+  ai_features_enabled?: boolean;
   items_at_home?: string[];
   favorite_recipes?: string[];
   dietary: DietarySettings;

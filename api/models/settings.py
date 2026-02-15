@@ -39,7 +39,9 @@ class DietarySettings(BaseModel):
     seafood_ok: bool = Field(default=True, description="Household eats seafood")
     meat: MeatPreference = Field(default=MeatPreference.ALL, description="How to handle meat dishes")
     meat_portions: int = Field(
-        default=MAX_HOUSEHOLD_SIZE, ge=0, le=MAX_HOUSEHOLD_SIZE,
+        default=MAX_HOUSEHOLD_SIZE,
+        ge=0,
+        le=MAX_HOUSEHOLD_SIZE,
         description="How many people in the household eat meat (0 = all vegetarian, max = household_size)",
     )
     minced_meat: MincedMeatPreference = Field(
@@ -53,7 +55,7 @@ class DietarySettings(BaseModel):
 
     @field_validator("meat_portions", mode="before")
     @classmethod
-    def coerce_meat_portions(cls, v: object) -> int:
+    def coerce_meat_portions(cls, v: int | None) -> int:
         """Default meat_portions for legacy data without the field."""
         if v is None:
             return MAX_HOUSEHOLD_SIZE

@@ -6,12 +6,18 @@
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import { GradientBackground } from '@/components';
 import {
+  AiSection,
   CollapsibleSection,
   DietarySection,
-  EquipmentSection,
   GeneralSection,
   MembersSection,
   ReadOnlyBanner,
@@ -28,7 +34,7 @@ type SectionKey =
   | 'general'
   | 'members'
   | 'dietary'
-  | 'equipment'
+  | 'ai'
   | 'pantry'
   | 'language';
 
@@ -40,15 +46,7 @@ export default function HouseholdSettingsScreen() {
   const { settings, addItemAtHome, removeItemAtHome, setLanguage } =
     useSettings();
   const [expandedSections, setExpandedSections] = useState<Set<SectionKey>>(
-    () =>
-      new Set([
-        'general',
-        'members',
-        'dietary',
-        'equipment',
-        'pantry',
-        'language',
-      ]),
+    () => new Set<SectionKey>(),
   );
 
   const toggleSection = useCallback((key: SectionKey) => {
@@ -177,22 +175,39 @@ export default function HouseholdSettingsScreen() {
             >
               <DietarySection
                 dietary={form.settings.dietary}
-                householdSize={form.settings.household_size}
                 canEdit={form.canEdit}
                 onUpdateDietary={form.updateDietary}
               />
             </CollapsibleSection>
 
             <CollapsibleSection
-              icon="hardware-chip"
-              title={t('householdSettings.equipment.title')}
-              subtitle={t('householdSettings.equipment.subtitle')}
-              expanded={expandedSections.has('equipment')}
-              onToggle={() => toggleSection('equipment')}
+              icon="sparkles"
+              title={t('householdSettings.ai.title')}
+              subtitle={t('householdSettings.ai.subtitle')}
+              expanded={
+                (form.settings.ai_features_enabled ?? true) &&
+                expandedSections.has('ai')
+              }
+              onToggle={() => toggleSection('ai')}
+              disabled={!(form.settings.ai_features_enabled ?? true)}
+              rightAccessory={
+                <Switch
+                  value={form.settings.ai_features_enabled ?? true}
+                  onValueChange={form.updateAiEnabled}
+                  disabled={!form.canEdit}
+                  trackColor={{
+                    false: colors.border,
+                    true: colors.primary,
+                  }}
+                />
+              }
             >
-              <EquipmentSection
+              <AiSection
+                dietary={form.settings.dietary}
+                defaultServings={form.settings.default_servings}
                 equipment={form.settings.equipment}
                 canEdit={form.canEdit}
+                onUpdateDietary={form.updateDietary}
                 onToggleEquipment={form.toggleEquipment}
               />
             </CollapsibleSection>

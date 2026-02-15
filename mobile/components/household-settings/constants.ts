@@ -38,6 +38,7 @@ export const DEFAULT_SETTINGS: HouseholdSettings = {
   household_size: 2,
   default_servings: 2,
   language: 'sv',
+  ai_features_enabled: true,
   dietary: {
     lactose_free: false,
     seafood_ok: true,

@@ -12,7 +12,9 @@ import {
 import { EnhancingOverlay, GradientBackground } from '@/components';
 import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
+import { showNotification } from '@/lib/alert';
 import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
+import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
   colors,
@@ -36,6 +38,8 @@ const SUPPORTED_SITES = [
 
 export default function AddRecipeScreen() {
   const actions = useAddRecipeActions();
+  const { settings } = useSettings();
+  const aiEnabled = settings.aiEnabled;
   const {
     t,
     isManualMode,
@@ -163,70 +167,95 @@ export default function AddRecipeScreen() {
           </View>
 
           {/* AI Enhancement toggle */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: colors.glass.card,
-              borderRadius: borderRadius.md,
-              padding: spacing.lg,
-              marginBottom: spacing['2xl'],
-              ...shadows.sm,
-            }}
+          <Pressable
+            onPress={
+              !aiEnabled
+                ? () =>
+                    showNotification(
+                      t('addRecipe.enhanceWithAI'),
+                      t('common.aiDisabledHint'),
+                    )
+                : undefined
+            }
+            disabled={aiEnabled}
           >
             <View
-              style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: colors.glass.card,
+                borderRadius: borderRadius.md,
+                padding: spacing.lg,
+                marginBottom: spacing['2xl'],
+                opacity: aiEnabled ? 1 : 0.5,
+                ...shadows.sm,
+              }}
             >
               <View
-                style={{
-                  width: iconContainer.md,
-                  height: iconContainer.md,
-                  borderRadius: iconContainer.md / 2,
-                  backgroundColor: enhanceWithAI
-                    ? colors.ai.light
-                    : colors.glass.light,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: spacing.md,
-                }}
+                style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
               >
-                <Ionicons
-                  name="sparkles"
-                  size={18}
-                  color={enhanceWithAI ? colors.ai.primary : colors.gray[500]}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
+                <View
                   style={{
-                    fontSize: fontSize.lg,
-                    fontWeight: '600',
-                    color: colors.text.inverse,
-                    letterSpacing: letterSpacing.normal,
+                    width: iconContainer.md,
+                    height: iconContainer.md,
+                    borderRadius: iconContainer.md / 2,
+                    backgroundColor:
+                      aiEnabled && enhanceWithAI
+                        ? colors.ai.light
+                        : colors.glass.light,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: spacing.md,
                   }}
                 >
-                  {t('addRecipe.enhanceWithAI')}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: fontSize.md,
-                    color: colors.gray[600],
-                    marginTop: spacing.xs,
-                  }}
-                >
-                  {t('addRecipe.enhanceDescription')}
-                </Text>
+                  <Ionicons
+                    name="sparkles"
+                    size={18}
+                    color={
+                      aiEnabled && enhanceWithAI
+                        ? colors.ai.primary
+                        : colors.gray[500]
+                    }
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      fontSize: fontSize.lg,
+                      fontWeight: '600',
+                      color: aiEnabled ? colors.text.inverse : colors.gray[500],
+                      letterSpacing: letterSpacing.normal,
+                    }}
+                  >
+                    {t('addRecipe.enhanceWithAI')}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: fontSize.md,
+                      color: colors.gray[600],
+                      marginTop: spacing.xs,
+                    }}
+                  >
+                    {aiEnabled
+                      ? t('addRecipe.enhanceDescription')
+                      : t('common.aiDisabledHint')}
+                  </Text>
+                </View>
               </View>
+              <Switch
+                value={aiEnabled && enhanceWithAI}
+                onValueChange={setEnhanceWithAI}
+                trackColor={{ false: colors.gray[300], true: colors.ai.light }}
+                thumbColor={
+                  aiEnabled && enhanceWithAI
+                    ? colors.ai.primary
+                    : colors.gray[400]
+                }
+                disabled={isPending || !aiEnabled}
+              />
             </View>
-            <Switch
-              value={enhanceWithAI}
-              onValueChange={setEnhanceWithAI}
-              trackColor={{ false: colors.gray[300], true: colors.ai.light }}
-              thumbColor={enhanceWithAI ? colors.ai.primary : colors.gray[400]}
-              disabled={isPending}
-            />
-          </View>
+          </Pressable>
 
           {/* Import button */}
           <Pressable

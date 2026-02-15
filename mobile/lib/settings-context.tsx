@@ -53,6 +53,7 @@ interface Settings extends LocalSettings {
   favoriteRecipes: string[];
   language: AppLanguage;
   weekStart: WeekStart;
+  aiEnabled: boolean;
 }
 
 interface SettingsContextType {
@@ -157,6 +158,8 @@ export const SettingsProvider = ({
     householdSettings?.week_start === 'saturday' ? 'saturday' : 'monday';
 
   // Combined settings object
+  const aiEnabled = householdSettings?.ai_features_enabled ?? true;
+
   const settings: Settings = useMemo(
     () => ({
       ...localSettings,
@@ -164,6 +167,7 @@ export const SettingsProvider = ({
       favoriteRecipes: favoritesData?.favorite_recipes ?? [],
       language: resolvedLanguage,
       weekStart: resolvedWeekStart,
+      aiEnabled,
     }),
     [
       localSettings,
@@ -171,6 +175,7 @@ export const SettingsProvider = ({
       favoritesData,
       resolvedLanguage,
       resolvedWeekStart,
+      aiEnabled,
     ],
   );
 
