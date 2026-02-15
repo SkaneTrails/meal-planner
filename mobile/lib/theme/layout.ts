@@ -29,6 +29,8 @@ export const layout = {
     borderRadius: 16,
     /** Padding for scrollable content so it clears the floating bar */
     contentBottomPadding: 76, // height + bottomOffset + safety
+    /** Bottom offset for fixed overlay controls (save buttons, footers) */
+    overlayBottomOffset: 60, // height + bottomOffset
   },
 } as const;
 

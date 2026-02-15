@@ -135,6 +135,7 @@ vi.mock('@/lib/theme', () => ({
       horizontalMargin: 20,
       borderRadius: 16,
       contentBottomPadding: 76,
+      overlayBottomOffset: 60,
     },
   },
   fontSize: { xs: 10, sm: 12, md: 14, lg: 16, xl: 20, '2xl': 24, '3xl': 28 },

@@ -9,6 +9,7 @@ import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useTranslation } from '@/lib/i18n';
 import { borderRadius, colors, layout, shadows } from '@/lib/theme';
 
 type TabDef = {
@@ -16,6 +17,7 @@ type TabDef = {
   matchPrefixes: string[];
   icon: keyof typeof Ionicons.glyphMap;
   iconFocused: keyof typeof Ionicons.glyphMap;
+  labelKey: string;
 };
 
 const TABS: TabDef[] = [
@@ -24,24 +26,28 @@ const TABS: TabDef[] = [
     matchPrefixes: ['/(tabs)', '/index'],
     icon: 'home-outline',
     iconFocused: 'home',
+    labelKey: 'tabs.home',
   },
   {
     route: '/(tabs)/recipes',
     matchPrefixes: ['/(tabs)/recipes', '/recipe/'],
     icon: 'book-outline',
     iconFocused: 'book',
+    labelKey: 'tabs.recipes',
   },
   {
     route: '/(tabs)/meal-plan',
     matchPrefixes: ['/(tabs)/meal-plan', '/select-recipe'],
     icon: 'calendar-outline',
     iconFocused: 'calendar',
+    labelKey: 'tabs.mealPlan',
   },
   {
     route: '/(tabs)/grocery',
     matchPrefixes: ['/(tabs)/grocery'],
     icon: 'cart-outline',
     iconFocused: 'cart',
+    labelKey: 'tabs.grocery',
   },
 ];
 
@@ -89,6 +95,7 @@ export const FloatingTabBar = () => {
   const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useTranslation();
 
   // Hide on auth screens or when not logged in
   if (!user || HIDDEN_ON.includes(pathname)) return null;
@@ -103,6 +110,7 @@ export const FloatingTabBar = () => {
             <Pressable
               key={tab.route}
               accessibilityRole="tab"
+              accessibilityLabel={t(tab.labelKey)}
               accessibilityState={{ selected: active }}
               onPress={() => router.push(tab.route as never)}
               style={styles.tabButton}
@@ -118,7 +126,7 @@ export const FloatingTabBar = () => {
           );
         })}
       </View>
-      <View style={styles.bottomFill} />
+      <View style={styles.bottomFill} pointerEvents="none" />
     </View>
   );
 };

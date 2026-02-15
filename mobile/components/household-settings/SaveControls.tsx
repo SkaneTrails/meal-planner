@@ -41,7 +41,7 @@ export const BottomSaveBar = ({
     <View
       style={{
         position: 'absolute',
-        bottom: layout.tabBar.contentBottomPadding,
+        bottom: layout.tabBar.overlayBottomOffset,
         left: 0,
         right: 0,
         paddingHorizontal: spacing.lg,
