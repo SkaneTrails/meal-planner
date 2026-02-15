@@ -1,6 +1,6 @@
-import { Pressable, Switch, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { RadioGroup, SectionHeader } from '@/components';
+import { Pressable, Switch, Text, TextInput, View } from 'react-native';
+import { RadioGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -93,13 +93,7 @@ export const DietarySection = ({
   ];
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="nutrition"
-        title={t('householdSettings.dietary.title')}
-        subtitle={t('householdSettings.dietary.subtitle')}
-      />
-
+    <>
       {/* Seafood Toggle */}
       <View
         style={{
@@ -317,7 +311,7 @@ export const DietarySection = ({
         onChange={(value) => onUpdateDietary('dairy', value)}
         disabled={!canEdit}
       />
-    </View>
+    </>
   );
 };
 

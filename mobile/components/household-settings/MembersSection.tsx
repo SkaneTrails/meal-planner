@@ -6,7 +6,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { AnimatedPressable, SectionHeader } from '@/components';
+import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -274,13 +274,7 @@ export const MembersSection = ({
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="people"
-        title={t('settings.membersSection')}
-        subtitle={t('settings.membersSectionDesc')}
-      />
-
+    <>
       {membersLoading ? (
         <ActivityIndicator
           size="small"
@@ -327,6 +321,6 @@ export const MembersSection = ({
           isAddPending={isAddPending}
         />
       )}
-    </View>
+    </>
   );
 };

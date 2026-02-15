@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { SectionHeader } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import {
@@ -83,13 +82,7 @@ export const ItemsAtHomeSection = ({
   );
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="home"
-        title={t('settings.itemsAtHome')}
-        subtitle={t('settings.itemsAtHomeDesc')}
-      />
-
+    <>
       {/* Current items */}
       {itemsAtHome.length > 0 && (
         <CurrentItems items={itemsAtHome} onRemove={handleRemoveItem} />
@@ -146,7 +139,7 @@ export const ItemsAtHomeSection = ({
 
       {/* Empty state */}
       {itemsAtHome.length === 0 && <EmptyItemsState />}
-    </View>
+    </>
   );
 };
 

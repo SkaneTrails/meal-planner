@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { SectionHeader } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -169,16 +168,8 @@ export const EquipmentSection = ({
   canEdit,
   onToggleEquipment,
 }: EquipmentSectionProps) => {
-  const { t } = useTranslation();
-
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="hardware-chip"
-        title={t('householdSettings.equipment.title')}
-        subtitle={t('householdSettings.equipment.subtitle')}
-      />
-
+    <>
       <SelectedEquipment
         equipment={equipment}
         canEdit={canEdit}
@@ -189,6 +180,6 @@ export const EquipmentSection = ({
         canEdit={canEdit}
         onToggle={onToggleEquipment}
       />
-    </View>
+    </>
   );
 };
