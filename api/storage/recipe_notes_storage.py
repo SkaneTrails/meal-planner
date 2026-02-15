@@ -41,29 +41,34 @@ def list_notes(recipe_id: str, household_id: str) -> list[RecipeNote]:
 
 def create_note(recipe_id: str, household_id: str, text: str, created_by: str) -> RecipeNote:
     """Create a new note on a recipe for a household."""
+    now = datetime.now(tz=UTC)
     data = {
         "recipe_id": recipe_id,
         "household_id": household_id,
         "text": text,
         "created_by": created_by,
-        "created_at": datetime.now(tz=UTC),
+        "created_at": now,
     }
     _, doc_ref = _get_collection().add(data)
-    return RecipeNote(id=doc_ref.id, **data)
+    return RecipeNote(
+        id=doc_ref.id, recipe_id=recipe_id, household_id=household_id, text=text, created_by=created_by, created_at=now
+    )
 
 
-def delete_note(note_id: str, household_id: str) -> bool:
-    """Delete a note by ID, scoped to the household.
+def delete_note(note_id: str, household_id: str, recipe_id: str) -> bool:
+    """Delete a note by ID, scoped to the household and recipe.
 
-    Returns True if the note was deleted, False if not found or wrong household.
+    Returns True if the note was deleted, False if not found or wrong household/recipe.
     """
     doc_ref = _get_collection().document(note_id)
     doc = doc_ref.get()
-    if not doc.exists:
+    if not doc.exists:  # type: ignore[union-attr]
         return False
 
-    data = doc.to_dict()
-    if data.get("household_id") != household_id:
+    data = doc.to_dict()  # type: ignore[union-attr]
+    if data.get("household_id") != household_id:  # type: ignore[union-attr]
+        return False
+    if data.get("recipe_id") != recipe_id:  # type: ignore[union-attr]
         return False
 
     doc_ref.delete()

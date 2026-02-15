@@ -140,8 +140,8 @@ export const FilterChips = ({
             paddingVertical: 5,
             backgroundColor:
               libraryScope === 'all'
-                ? colors.content.body
-                : 'rgba(232, 222, 212, 0.7)',
+                ? colors.button.primary
+                : colors.glass.dark,
           }}
         >
           <Text
@@ -149,9 +149,7 @@ export const FilterChips = ({
               fontSize: 13,
               fontFamily: fontFamily.bodySemibold,
               color:
-                libraryScope === 'all'
-                  ? colors.white
-                  : colors.content.body,
+                libraryScope === 'all' ? colors.white : colors.content.body,
             }}
           >
             {t('recipes.scopeAll')}
@@ -167,8 +165,8 @@ export const FilterChips = ({
             paddingVertical: 5,
             backgroundColor:
               libraryScope === 'mine'
-                ? colors.content.body
-                : 'rgba(232, 222, 212, 0.7)',
+                ? colors.button.primary
+                : colors.glass.dark,
           }}
         >
           <Text
@@ -176,9 +174,7 @@ export const FilterChips = ({
               fontSize: 13,
               fontFamily: fontFamily.bodySemibold,
               color:
-                libraryScope === 'mine'
-                  ? colors.white
-                  : colors.content.body,
+                libraryScope === 'mine' ? colors.white : colors.content.body,
             }}
           >
             {t('recipes.scopeMine')}

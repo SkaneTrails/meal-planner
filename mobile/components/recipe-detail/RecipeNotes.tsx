@@ -5,10 +5,20 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
-import { useCreateRecipeNote, useDeleteRecipeNote, useRecipeNotes } from '@/lib/hooks';
+import {
+  useCreateRecipeNote,
+  useDeleteRecipeNote,
+  useRecipeNotes,
+} from '@/lib/hooks';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
@@ -100,7 +110,11 @@ export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
             marginRight: spacing.md,
           }}
         >
-          <Ionicons name="chatbubble-ellipses-outline" size={18} color="#5D4037" />
+          <Ionicons
+            name="chatbubble-ellipses-outline"
+            size={18}
+            color={colors.content.heading}
+          />
         </View>
         <Text
           style={{
@@ -126,7 +140,7 @@ export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
           value={text}
           onChangeText={setText}
           placeholder={t('recipe.notesPlaceholder')}
-          placeholderTextColor={colors.content.placeholder}
+          placeholderTextColor={colors.content.placeholderHex}
           multiline
           style={{
             flex: 1,

@@ -20,7 +20,7 @@ from api.routers.recipes import router as recipes_router  # noqa: E402
 app.include_router(recipes_router)
 
 
-def _mock_user(household_id: str = "hh1") -> AuthenticatedUser:
+def _mock_user(household_id: str | None = "hh1") -> AuthenticatedUser:
     return AuthenticatedUser(uid="u1", email="test@example.com", household_id=household_id, role="member")
 
 
@@ -139,10 +139,7 @@ class TestCreateNote:
         assert data["text"] == "Try doubling the sauce"
         assert data["id"] == "n_new"
         mock_create.assert_called_once_with(
-            recipe_id="r1",
-            household_id="hh1",
-            text="Try doubling the sauce",
-            created_by="test@example.com",
+            recipe_id="r1", household_id="hh1", text="Try doubling the sauce", created_by="test@example.com"
         )
 
     def test_rejects_empty_text(self, client: TestClient) -> None:
@@ -166,7 +163,7 @@ class TestDeleteNote:
         response = client.delete("/recipes/r1/notes/n1")
 
         assert response.status_code == 204
-        mock_delete.assert_called_once_with("n1", "hh1")
+        mock_delete.assert_called_once_with("n1", "hh1", "r1")
 
     @patch("api.routers.recipe_notes.recipe_notes_storage.delete_note")
     def test_returns_404_when_not_found(self, mock_delete: MagicMock, client: TestClient) -> None:
@@ -235,12 +232,12 @@ class TestStorageDeleteNote:
 
         mock_doc = MagicMock()
         mock_doc.exists = True
-        mock_doc.to_dict.return_value = {"household_id": "hh1"}
+        mock_doc.to_dict.return_value = {"household_id": "hh1", "recipe_id": "r1"}
         mock_doc_ref = MagicMock()
         mock_doc_ref.get.return_value = mock_doc
         mock_coll.return_value.document.return_value = mock_doc_ref
 
-        assert delete_note("n1", "hh1") is True
+        assert delete_note("n1", "hh1", "r1") is True
         mock_doc_ref.delete.assert_called_once()
 
     @patch("api.storage.recipe_notes_storage._get_collection")
@@ -254,7 +251,7 @@ class TestStorageDeleteNote:
         mock_doc_ref.get.return_value = mock_doc
         mock_coll.return_value.document.return_value = mock_doc_ref
 
-        assert delete_note("n1", "hh1") is False
+        assert delete_note("n1", "hh1", "r1") is False
 
     @patch("api.storage.recipe_notes_storage._get_collection")
     def test_returns_false_for_wrong_household(self, mock_coll: MagicMock) -> None:
@@ -263,10 +260,25 @@ class TestStorageDeleteNote:
 
         mock_doc = MagicMock()
         mock_doc.exists = True
-        mock_doc.to_dict.return_value = {"household_id": "other_hh"}
+        mock_doc.to_dict.return_value = {"household_id": "other_hh", "recipe_id": "r1"}
         mock_doc_ref = MagicMock()
         mock_doc_ref.get.return_value = mock_doc
         mock_coll.return_value.document.return_value = mock_doc_ref
 
-        assert delete_note("n1", "hh1") is False
+        assert delete_note("n1", "hh1", "r1") is False
+        mock_doc_ref.delete.assert_not_called()
+
+    @patch("api.storage.recipe_notes_storage._get_collection")
+    def test_returns_false_for_wrong_recipe(self, mock_coll: MagicMock) -> None:
+        """Should return False when recipe_id doesn't match."""
+        from api.storage.recipe_notes_storage import delete_note
+
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "hh1", "recipe_id": "other_recipe"}
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_coll.return_value.document.return_value = mock_doc_ref
+
+        assert delete_note("n1", "hh1", "r1") is False
         mock_doc_ref.delete.assert_not_called()

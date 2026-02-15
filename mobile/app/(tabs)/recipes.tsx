@@ -99,7 +99,13 @@ export default function RecipesScreen() {
       const matchesScope =
         libraryScope === 'all' ||
         recipe.household_id === currentUser?.household_id;
-      return matchesSearch && matchesDiet && matchesMeal && matchesFavorites && matchesScope;
+      return (
+        matchesSearch &&
+        matchesDiet &&
+        matchesMeal &&
+        matchesFavorites &&
+        matchesScope
+      );
     });
 
     if (sortBy === 'name') {

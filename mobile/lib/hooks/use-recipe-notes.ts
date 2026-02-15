@@ -40,13 +40,8 @@ export const useDeleteRecipeNote = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      recipeId,
-      noteId,
-    }: {
-      recipeId: string;
-      noteId: string;
-    }) => api.deleteRecipeNote(recipeId, noteId),
+    mutationFn: ({ recipeId, noteId }: { recipeId: string; noteId: string }) =>
+      api.deleteRecipeNote(recipeId, noteId),
     onSuccess: (_, { recipeId }) => {
       queryClient.invalidateQueries({ queryKey: noteKeys.list(recipeId) });
     },

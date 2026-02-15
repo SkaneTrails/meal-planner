@@ -32,9 +32,7 @@ def _get_today() -> date:
     return datetime.now(tz=UTC).date()
 
 
-def _collect_meal_entries(
-    meals: dict[str, str], start: date, end: date
-) -> tuple[set[str], list[str]]:
+def _collect_meal_entries(meals: dict[str, str], start: date, end: date) -> tuple[set[str], list[str]]:
     """Split meal plan entries into recipe IDs and custom meal texts for a date range."""
     recipe_ids: set[str] = set()
     custom_meal_texts: list[str] = []
@@ -50,7 +48,9 @@ def _collect_meal_entries(
 
         if start <= meal_date <= end:
             if value.startswith("custom:"):
-                custom_meal_texts.append(value.removeprefix("custom:"))
+                custom_text = value.removeprefix("custom:").strip()
+                if custom_text:
+                    custom_meal_texts.append(custom_text)
             else:
                 recipe_ids.add(value)
     return recipe_ids, custom_meal_texts
@@ -111,9 +111,7 @@ async def generate_grocery_list(
 
     # Add custom (quick) meals as simple grocery items
     for text in custom_meal_texts:
-        grocery_list.add_item(
-            GroceryItem(name=text, category=GroceryCategory.OTHER, recipe_sources=[text])
-        )
+        grocery_list.add_item(GroceryItem(name=text, category=GroceryCategory.OTHER, recipe_sources=[text]))
 
     return grocery_list
 
