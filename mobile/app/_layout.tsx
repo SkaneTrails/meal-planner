@@ -24,8 +24,9 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { AppState, type AppStateStatus } from 'react-native';
+import { AppState, type AppStateStatus, View } from 'react-native';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import {
@@ -89,42 +90,45 @@ export default function RootLayout() {
           <SettingsProvider>
             <GroceryProvider>
               <StatusBar style="dark" />
-              <Stack
-                screenOptions={{
-                  animation: 'slide_from_right',
-                  contentStyle: { backgroundColor: '#E8D8C8' }, // Match background.png base color
-                }}
-              >
-                <Stack.Screen
-                  name="sign-in"
-                  options={{ headerShown: false, animation: 'fade' }}
-                />
-                <Stack.Screen
-                  name="(tabs)"
-                  options={{ headerShown: false, animation: 'fade' }}
-                />
-                <Stack.Screen
-                  name="recipe/[id]"
-                  options={{
-                    headerShown: false,
+              <View style={{ flex: 1 }}>
+                <Stack
+                  screenOptions={{
                     animation: 'slide_from_right',
+                    contentStyle: { backgroundColor: '#E8D8C8' },
                   }}
-                />
-                <Stack.Screen
-                  name="select-recipe"
-                  options={{
-                    headerShown: false,
-                    animation: 'slide_from_right',
-                  }}
-                />
-                <Stack.Screen
-                  name="add-recipe"
-                  options={{
-                    headerShown: false,
-                    animation: 'slide_from_right',
-                  }}
-                />
-              </Stack>
+                >
+                  <Stack.Screen
+                    name="sign-in"
+                    options={{ headerShown: false, animation: 'fade' }}
+                  />
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false, animation: 'fade' }}
+                  />
+                  <Stack.Screen
+                    name="recipe/[id]"
+                    options={{
+                      headerShown: false,
+                      animation: 'slide_from_right',
+                    }}
+                  />
+                  <Stack.Screen
+                    name="select-recipe"
+                    options={{
+                      headerShown: false,
+                      animation: 'slide_from_right',
+                    }}
+                  />
+                  <Stack.Screen
+                    name="add-recipe"
+                    options={{
+                      headerShown: false,
+                      animation: 'slide_from_right',
+                    }}
+                  />
+                </Stack>
+                <FloatingTabBar />
+              </View>
             </GroceryProvider>
           </SettingsProvider>
         </QueryProvider>

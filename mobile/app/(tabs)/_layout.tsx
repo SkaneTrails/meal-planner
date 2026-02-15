@@ -1,60 +1,16 @@
 /**
  * Tab layout for main navigation.
- * Luxurious floating glass tab bar design.
+ * Tab bar rendering is handled by FloatingTabBar in the root layout.
  * Requires authentication - redirects to sign-in if not authenticated.
  * Requires household membership - redirects to no-access if not in a household (except superusers).
  */
 
-import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { Redirect, Tabs } from 'expo-router';
-import { ActivityIndicator, Platform, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import { colors } from '@/lib/theme';
-
-const TabBarBackground = () => {
-  if (Platform.OS === 'ios') {
-    return (
-      <BlurView
-        intensity={40}
-        tint="light"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          borderRadius: 16,
-          overflow: 'hidden',
-          backgroundColor: 'rgba(235, 228, 219, 0.85)',
-        }}
-      />
-    );
-  }
-  // Fallback for Android/web - warm beige with subtle shadow
-  return (
-    <View
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(235, 228, 219, 0.95)',
-        borderRadius: 16,
-        borderWidth: 0.5,
-        borderColor: 'rgba(93, 78, 64, 0.1)',
-        shadowColor: '#000',
-        shadowOffset: { width: 2, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 4,
-      }}
-    />
-  );
-};
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -105,131 +61,15 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      tabBar={() => null}
       screenOptions={{
-        tabBarActiveTintColor: '#5D4E40',
-        tabBarInactiveTintColor: '#8B7355',
-        tabBarShowLabel: false,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: {
-          position: 'absolute',
-          bottom: 16,
-          left: 32,
-          right: 32,
-          backgroundColor: 'transparent',
-          borderTopWidth: 0,
-          borderRadius: 16,
-          height: 44,
-          paddingBottom: 0,
-          paddingTop: 0,
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-        tabBarItemStyle: {
-          paddingVertical: 4,
-        },
         headerShown: false,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: t('tabs.home'),
-          tabBarAccessibilityLabel: t('tabs.home'),
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                backgroundColor: focused
-                  ? 'rgba(93, 78, 64, 0.12)'
-                  : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-              }}
-            >
-              <Ionicons
-                name={focused ? 'home' : 'home-outline'}
-                size={20}
-                color={focused ? '#5D4E40' : '#6B5B4B'}
-              />
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="recipes"
-        options={{
-          title: t('tabs.recipes'),
-          tabBarAccessibilityLabel: t('tabs.recipes'),
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                backgroundColor: focused
-                  ? 'rgba(93, 78, 64, 0.12)'
-                  : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-              }}
-            >
-              <Ionicons
-                name={focused ? 'book' : 'book-outline'}
-                size={20}
-                color={focused ? '#5D4E40' : '#6B5B4B'}
-              />
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="meal-plan"
-        options={{
-          title: t('tabs.mealPlan'),
-          tabBarAccessibilityLabel: t('tabs.mealPlan'),
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                backgroundColor: focused
-                  ? 'rgba(93, 78, 64, 0.12)'
-                  : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-              }}
-            >
-              <Ionicons
-                name={focused ? 'calendar' : 'calendar-outline'}
-                size={20}
-                color={focused ? '#5D4E40' : '#6B5B4B'}
-              />
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="grocery"
-        options={{
-          title: t('tabs.grocery'),
-          tabBarAccessibilityLabel: t('tabs.grocery'),
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                backgroundColor: focused
-                  ? 'rgba(93, 78, 64, 0.12)'
-                  : 'transparent',
-                borderRadius: 12,
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-              }}
-            >
-              <Ionicons
-                name={focused ? 'cart' : 'cart-outline'}
-                size={20}
-                color={focused ? '#5D4E40' : '#6B5B4B'}
-              />
-            </View>
-          ),
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />
+      <Tabs.Screen name="recipes" options={{ title: t('tabs.recipes') }} />
+      <Tabs.Screen name="meal-plan" options={{ title: t('tabs.mealPlan') }} />
+      <Tabs.Screen name="grocery" options={{ title: t('tabs.grocery') }} />
       <Tabs.Screen
         name="settings"
         options={{
