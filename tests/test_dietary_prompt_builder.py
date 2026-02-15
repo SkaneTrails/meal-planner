@@ -66,6 +66,26 @@ class TestDietaryConfigFromFirestore:
         assert cfg.dairy == "lactose_free"
         assert cfg.seafood_ok is True
 
+    def test_meat_portions_all_meat(self) -> None:
+        """meat_portions == household_size means everyone eats meat, no strategy needed."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 4}, household_size=4)
+        assert cfg.meat_strategy == "none"
+
+    def test_meat_portions_none(self) -> None:
+        """meat_portions=0 means fully vegetarian."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 0}, household_size=4)
+        assert cfg.meat_strategy == "none"
+
+    def test_meat_portions_split(self) -> None:
+        """meat_portions < household_size means split strategy."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 2}, household_size=4)
+        assert cfg.meat_strategy == "split"
+
+    def test_meat_portions_overrides_legacy_meat(self) -> None:
+        """When both meat and meat_portions are present, meat_portions wins."""
+        cfg = DietaryConfig.from_firestore({"meat": "all", "meat_portions": 3}, household_size=4)
+        assert cfg.meat_strategy == "split"
+
 
 # ---------------------------------------------------------------------------
 # DietaryConfig.active_sections

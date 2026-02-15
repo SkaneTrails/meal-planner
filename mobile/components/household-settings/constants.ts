@@ -42,6 +42,7 @@ export const DEFAULT_SETTINGS: HouseholdSettings = {
     lactose_free: false,
     seafood_ok: true,
     meat: 'all',
+    meat_portions: 2,
     minced_meat: 'meat',
     dairy: 'regular',
     chicken_alternative: null,

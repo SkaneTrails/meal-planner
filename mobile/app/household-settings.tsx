@@ -108,6 +108,7 @@ export default function HouseholdSettingsScreen() {
 
             <DietarySection
               dietary={form.settings.dietary}
+              householdSize={form.settings.household_size}
               canEdit={form.canEdit}
               onUpdateDietary={form.updateDietary}
             />

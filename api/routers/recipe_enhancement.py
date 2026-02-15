@@ -34,7 +34,9 @@ class HouseholdConfig:
         self.equipment: list[str] = equipment_raw if isinstance(equipment_raw, list) else []
         self.target_servings: int = self._coerce_positive_int(settings.get("default_servings"), default=4, min_value=1)
         self.people_count: int = self._coerce_positive_int(settings.get("household_size"), default=2, min_value=1)
-        self.dietary: DietaryConfig = DietaryConfig.from_firestore(settings.get("dietary"))
+        self.dietary: DietaryConfig = DietaryConfig.from_firestore(
+            settings.get("dietary"), household_size=self.people_count
+        )
 
     @staticmethod
     def _coerce_positive_int(value: object, *, default: int, min_value: int) -> int:

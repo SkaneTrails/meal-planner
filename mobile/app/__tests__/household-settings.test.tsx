@@ -36,6 +36,7 @@ const mockSettingsData = {
   dietary: {
     seafood_ok: true,
     meat: 'none' as const,
+    meat_portions: 0,
     minced_meat: 'meat' as const,
     dairy: 'regular' as const,
     chicken_alternative: 'tofu',

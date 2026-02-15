@@ -31,16 +31,30 @@ class DietaryConfig:
     seafood_ok: bool = True
 
     @classmethod
-    def from_firestore(cls, dietary: dict | None) -> DietaryConfig:
+    def from_firestore(cls, dietary: dict | None, household_size: int = 2) -> DietaryConfig:
         """Create from a Firestore ``dietary`` settings dict.
 
         Handles None values and missing keys gracefully, falling back
-        to safe defaults.
+        to safe defaults.  Prefers ``meat_portions`` (numeric) over
+        the legacy ``meat`` enum for determining ``meat_strategy``.
         """
         if not dietary or not isinstance(dietary, dict):
             return cls()
+
+        meat_portions = dietary.get("meat_portions")
+        if meat_portions is not None:
+            portions = int(meat_portions)
+            if portions == 0:
+                meat_strategy = "none"
+            elif portions >= household_size:
+                meat_strategy = "none"  # everyone eats meat, no strategy needed
+            else:
+                meat_strategy = "split"
+        else:
+            meat_strategy = dietary.get("meat") or "none"
+
         return cls(
-            meat_strategy=dietary.get("meat") or "none",
+            meat_strategy=meat_strategy,
             chicken_alternative=dietary.get("chicken_alternative") or "quorn",
             meat_alternative=dietary.get("meat_alternative") or "oumph",
             minced_meat=dietary.get("minced_meat") or "regular",

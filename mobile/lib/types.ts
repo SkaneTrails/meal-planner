@@ -297,6 +297,7 @@ export interface DietarySettings {
   lactose_free: boolean;
   seafood_ok: boolean;
   meat: MeatPreference;
+  meat_portions: number;
   minced_meat: MincedMeatPreference;
   dairy: DairyPreference;
   chicken_alternative?: string | null;

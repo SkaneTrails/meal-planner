@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from api.models.equipment import validate_equipment_keys
 
+MAX_HOUSEHOLD_SIZE = 20
+
 
 class MeatPreference(str, Enum):
     """How to handle meat in recipes."""
@@ -36,6 +38,10 @@ class DietarySettings(BaseModel):
 
     seafood_ok: bool = Field(default=True, description="Household eats seafood")
     meat: MeatPreference = Field(default=MeatPreference.ALL, description="How to handle meat dishes")
+    meat_portions: int = Field(
+        default=MAX_HOUSEHOLD_SIZE, ge=0, le=MAX_HOUSEHOLD_SIZE,
+        description="How many people in the household eat meat (0 = all vegetarian, max = household_size)",
+    )
     minced_meat: MincedMeatPreference = Field(
         default=MincedMeatPreference.MEAT, description="How to handle minced meat"
     )
@@ -44,6 +50,22 @@ class DietarySettings(BaseModel):
     # Vegetarian alternatives
     chicken_alternative: str | None = Field(default=None, description="Alternative for chicken (e.g., Quorn)")
     meat_alternative: str | None = Field(default=None, description="Alternative for other meats (e.g., Oumph)")
+
+    @field_validator("meat_portions", mode="before")
+    @classmethod
+    def coerce_meat_portions(cls, v: object) -> int:
+        """Default meat_portions for legacy data without the field."""
+        if v is None:
+            return MAX_HOUSEHOLD_SIZE
+        return int(v)
+
+    def derive_meat_strategy(self, household_size: int) -> MeatPreference:
+        """Derive the meat strategy from the numeric meat_portions field."""
+        if self.meat_portions == 0:
+            return MeatPreference.NONE
+        if self.meat_portions >= household_size:
+            return MeatPreference.ALL
+        return MeatPreference.SPLIT
 
 
 class HouseholdSettings(BaseModel):
@@ -89,6 +111,7 @@ class DietarySettingsUpdate(BaseModel):
 
     seafood_ok: bool | None = None
     meat: MeatPreference | None = None
+    meat_portions: int | None = Field(default=None, ge=0, le=MAX_HOUSEHOLD_SIZE)
     minced_meat: MincedMeatPreference | None = None
     dairy: DairyPreference | None = None
     chicken_alternative: str | None = None

@@ -421,7 +421,7 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     language = config.get("language", "sv") or "sv"
     target_servings = max(int(config.get("default_servings", 4) or 4), 1)
     people_count = max(int(config.get("household_size", 2) or 2), 1)
-    dietary = DietaryConfig.from_firestore(config.get("dietary"))
+    dietary = DietaryConfig.from_firestore(config.get("dietary"), household_size=people_count)
 
     print(f"\n\U0001f504 Re-enhancing: {original.get('title', recipe_id)}")
     print(f"   Household: {household_id}")
