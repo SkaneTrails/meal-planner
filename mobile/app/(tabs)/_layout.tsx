@@ -6,11 +6,10 @@
  */
 
 import { Redirect, Tabs } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { FullScreenLoading } from '@/components';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { colors } from '@/lib/theme';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -20,18 +19,7 @@ export default function TabLayout() {
   });
 
   if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: colors.bgLight,
-        }}
-      >
-        <ActivityIndicator size="large" color={colors.accent} />
-      </View>
-    );
+    return <FullScreenLoading background="muted" />;
   }
 
   if (!user) {
@@ -39,18 +27,7 @@ export default function TabLayout() {
   }
 
   if (userLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'white',
-        }}
-      >
-        <ActivityIndicator size="large" color="#10b981" />
-      </View>
-    );
+    return <FullScreenLoading background="muted" />;
   }
 
   // If API returns error (likely 403 - user not in any household), redirect to no-access

@@ -10,6 +10,7 @@ export { EnhancingOverlay } from './EnhancingOverlay';
 export { ErrorBoundary } from './ErrorBoundary';
 export { FilterChip } from './FilterChip';
 export { FloatingTabBar } from './FloatingTabBar';
+export { FullScreenLoading } from './FullScreenLoading';
 export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow } from './GroceryItemRow';
 export { GroceryListView } from './GroceryListView';

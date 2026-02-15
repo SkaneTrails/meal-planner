@@ -64,9 +64,31 @@ vi.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children }: any) => children,
 }));
 
+// Mock @/components/FullScreenLoading (must mock separately to prevent real module from loading GradientBackground)
+vi.mock('@/components/FullScreenLoading', () => ({
+  FullScreenLoading: ({ children, title, subtitle, icon }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'fullscreen-loading' },
+      icon && createElement('span', { 'data-testid': 'fullscreen-icon' }, icon),
+      title && createElement('span', null, title),
+      subtitle && createElement('span', null, subtitle),
+      children,
+    );
+  },
+}));
+
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
+  FullScreenLoading: ({ children, title, subtitle, icon }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'fullscreen-loading' },
+      icon && createElement('span', { 'data-testid': 'fullscreen-icon' }, icon),
+      title && createElement('span', null, title),
+      subtitle && createElement('span', null, subtitle),
+      children,
+    );
+  },
   AnimatedPressable: ({ children, onPress, ...props }: any) => {
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);

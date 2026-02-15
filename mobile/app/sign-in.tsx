@@ -4,8 +4,8 @@
  */
 
 import { Redirect } from 'expo-router';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { GradientBackground } from '../components';
+import { Pressable, Text, View } from 'react-native';
+import { FullScreenLoading, GradientBackground } from '../components';
 import { GoogleLogo } from '../components/GoogleLogo';
 import { useAuth } from '../lib/hooks/use-auth';
 import { useTranslation } from '../lib/i18n';
@@ -37,11 +37,7 @@ export default function SignInScreen() {
 
   if (loading) {
     return (
-      <GradientBackground
-        animated
-        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-      >
-        <ActivityIndicator size="large" color={colors.primary} />
+      <FullScreenLoading background="animated">
         <Pressable
           onPress={handleSignOut}
           style={({ pressed }) => ({
@@ -54,7 +50,7 @@ export default function SignInScreen() {
         >
           <Text
             style={{
-              color: 'rgba(255, 255, 255, 0.6)',
+              color: colors.glass.subtle,
               fontSize: fontSize.sm,
               fontFamily: fontFamily.body,
               textDecorationLine: 'underline',
@@ -63,7 +59,7 @@ export default function SignInScreen() {
             {t('signIn.signOut')}
           </Text>
         </Pressable>
-      </GradientBackground>
+      </FullScreenLoading>
     );
   }
 
