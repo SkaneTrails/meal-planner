@@ -151,7 +151,7 @@ export const useRemoveMember = () => {
 export const useHouseholdSettings = (householdId: string | null) => {
   return useQuery<HouseholdSettings>({
     queryKey: adminKeys.settings(householdId ?? ''),
-    queryFn: () => api.getHouseholdSettings(householdId!),
+    queryFn: () => api.getHouseholdSettings(householdId ?? ''),
     enabled: !!householdId,
   });
 };
@@ -232,7 +232,7 @@ interface ItemAtHomeResponse {
 export const useItemsAtHome = (householdId: string | null | undefined) => {
   return useQuery<ItemAtHomeResponse>({
     queryKey: adminKeys.itemsAtHome(householdId ?? ''),
-    queryFn: () => api.getItemsAtHome(householdId!),
+    queryFn: () => api.getItemsAtHome(householdId ?? ''),
     enabled: !!householdId,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
@@ -289,7 +289,7 @@ interface FavoriteRecipeResponse {
 export const useFavoriteRecipes = (householdId: string | null | undefined) => {
   return useQuery<FavoriteRecipeResponse>({
     queryKey: adminKeys.favorites(householdId ?? ''),
-    queryFn: () => api.getFavoriteRecipes(householdId!),
+    queryFn: () => api.getFavoriteRecipes(householdId ?? ''),
     enabled: !!householdId,
     staleTime: 5 * 60 * 1000,
   });

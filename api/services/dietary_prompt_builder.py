@@ -24,6 +24,8 @@ class DietaryConfig:
     """Dietary preferences loaded from household Firestore settings."""
 
     meat_strategy: str = "none"
+    meat_eaters: int = 0
+    vegetarians: int = 0
     chicken_alternative: str = "quorn"
     meat_alternative: str = "oumph"
     minced_meat: str = "regular"
@@ -31,16 +33,56 @@ class DietaryConfig:
     seafood_ok: bool = True
 
     @classmethod
-    def from_firestore(cls, dietary: dict | None) -> DietaryConfig:
+    def from_firestore(
+        cls, dietary: dict | None, household_size: int = 2, default_servings: int | None = None
+    ) -> DietaryConfig:
         """Create from a Firestore ``dietary`` settings dict.
 
         Handles None values and missing keys gracefully, falling back
-        to safe defaults.
+        to safe defaults.  Prefers ``meat_portions`` (numeric) over
+        the legacy ``meat`` enum for determining ``meat_strategy``.
+
+        ``default_servings`` is the denominator for proportional meat
+        splits (meat_portions is relative to servings, not people).
+        Falls back to ``household_size`` when not provided.
         """
         if not dietary or not isinstance(dietary, dict):
             return cls()
+
+        portion_base = default_servings if default_servings is not None else household_size
+
+        meat_portions = dietary.get("meat_portions")
+        if meat_portions is not None:
+            portions = int(meat_portions)
+            if portions == 0:
+                meat_strategy = "vegetarian"
+                meat_eaters = 0
+                vegetarians = portion_base
+            elif portions >= portion_base:
+                meat_strategy = "all"
+                meat_eaters = portion_base
+                vegetarians = 0
+            else:
+                meat_strategy = "split"
+                meat_eaters = portions
+                vegetarians = portion_base - portions
+        else:
+            legacy = dietary.get("meat") or "none"
+            meat_strategy = legacy
+            if legacy == "split":
+                meat_eaters = 1
+                vegetarians = max(portion_base - 1, 1)
+            elif legacy in ("all", "none"):
+                meat_eaters = portion_base if legacy == "all" else 0
+                vegetarians = 0 if legacy == "all" else portion_base
+            else:
+                meat_eaters = 0
+                vegetarians = 0
+
         return cls(
-            meat_strategy=dietary.get("meat") or "none",
+            meat_strategy=meat_strategy,
+            meat_eaters=meat_eaters,
+            vegetarians=vegetarians,
             chicken_alternative=dietary.get("chicken_alternative") or "quorn",
             meat_alternative=dietary.get("meat_alternative") or "oumph",
             minced_meat=dietary.get("minced_meat") or "regular",

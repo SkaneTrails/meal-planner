@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { SectionHeader } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -45,7 +44,7 @@ const SelectedEquipment = ({
         style={{
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
-          color: colors.text.inverse + '80',
+          color: colors.text.dark + '80',
           marginBottom: spacing.sm,
         }}
       >
@@ -69,14 +68,14 @@ const SelectedEquipment = ({
               gap: 4,
             })}
           >
-            <Text style={{ fontSize: fontSize.sm, color: colors.text.inverse }}>
+            <Text style={{ fontSize: fontSize.sm, color: colors.text.dark }}>
               {t(`householdSettings.equipment.items.${item}`)}
             </Text>
             {canEdit && (
               <Ionicons
                 name="close-circle"
                 size={14}
-                color={colors.text.inverse + '60'}
+                color={colors.text.dark + '60'}
               />
             )}
           </Pressable>
@@ -115,7 +114,7 @@ const AvailableEquipment = ({
               style={{
                 fontSize: fontSize.xs,
                 fontWeight: fontWeight.semibold,
-                color: colors.text.inverse + '80',
+                color: colors.text.dark + '80',
                 marginBottom: spacing.sm,
                 textTransform: 'uppercase',
               }}
@@ -136,7 +135,7 @@ const AvailableEquipment = ({
                     paddingVertical: spacing.xs,
                     borderRadius: borderRadius.full,
                     borderWidth: 1,
-                    borderColor: colors.text.inverse + '30',
+                    borderColor: colors.text.dark + '30',
                     borderStyle: 'dashed',
                     gap: 4,
                   })}
@@ -144,12 +143,12 @@ const AvailableEquipment = ({
                   <Ionicons
                     name="add"
                     size={14}
-                    color={colors.text.inverse + '80'}
+                    color={colors.text.dark + '80'}
                   />
                   <Text
                     style={{
                       fontSize: fontSize.sm,
-                      color: colors.text.inverse + '80',
+                      color: colors.text.dark + '80',
                     }}
                   >
                     {t(`householdSettings.equipment.items.${item}`)}
@@ -169,16 +168,8 @@ export const EquipmentSection = ({
   canEdit,
   onToggleEquipment,
 }: EquipmentSectionProps) => {
-  const { t } = useTranslation();
-
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="hardware-chip"
-        title={t('householdSettings.equipment.title')}
-        subtitle={t('householdSettings.equipment.subtitle')}
-      />
-
+    <>
       <SelectedEquipment
         equipment={equipment}
         canEdit={canEdit}
@@ -189,6 +180,6 @@ export const EquipmentSection = ({
         canEdit={canEdit}
         onToggle={onToggleEquipment}
       />
-    </View>
+    </>
   );
 };

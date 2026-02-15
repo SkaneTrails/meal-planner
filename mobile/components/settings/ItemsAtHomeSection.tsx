@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { SectionHeader } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import {
@@ -13,23 +12,23 @@ import {
   spacing,
 } from '@/lib/theme';
 
-const SUGGESTED_ITEMS = [
+const SUGGESTED_ITEM_KEYS = [
   'salt',
   'pepper',
-  'olive oil',
-  'vegetable oil',
+  'oliveOil',
+  'vegetableOil',
   'butter',
   'sugar',
   'flour',
   'garlic',
   'onion',
-  'soy sauce',
+  'soySauce',
   'vinegar',
   'honey',
   'rice',
   'pasta',
   'eggs',
-];
+] as const;
 
 interface ItemsAtHomeSectionProps {
   itemsAtHome: string[];
@@ -44,6 +43,11 @@ export const ItemsAtHomeSection = ({
 }: ItemsAtHomeSectionProps) => {
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
+
+  const suggestedItems = useMemo(
+    () => SUGGESTED_ITEM_KEYS.map((key) => t(`settings.suggestedItems.${key}`)),
+    [t],
+  );
 
   const handleAddItem = async () => {
     const item = newItem.trim();
@@ -73,18 +77,12 @@ export const ItemsAtHomeSection = ({
     }
   };
 
-  const suggestedNotAdded = SUGGESTED_ITEMS.filter(
+  const suggestedNotAdded = suggestedItems.filter(
     (item) => !itemsAtHome.includes(item.toLowerCase()),
   );
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="home"
-        title={t('settings.itemsAtHome')}
-        subtitle={t('settings.itemsAtHomeDesc')}
-      />
-
+    <>
       {/* Current items */}
       {itemsAtHome.length > 0 && (
         <CurrentItems items={itemsAtHome} onRemove={handleRemoveItem} />
@@ -141,7 +139,7 @@ export const ItemsAtHomeSection = ({
 
       {/* Empty state */}
       {itemsAtHome.length === 0 && <EmptyItemsState />}
-    </View>
+    </>
   );
 };
 
@@ -261,7 +259,6 @@ const SuggestedItems = ({
               style={{
                 fontSize: fontSize.sm,
                 color: colors.text.dark + '80',
-                textTransform: 'capitalize',
               }}
             >
               {item}

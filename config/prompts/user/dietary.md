@@ -3,9 +3,10 @@
 ## Household
 
 - **People**: {people_count}
+- **Servings per meal**: {target_servings}
 <!-- BEGIN:meat_split -->
-- **Setup**: One eats meat, one is vegetarian
-- **Serving style**: Often need to serve both meat and vegetarian at the same meal
+- **Setup**: {meat_eaters} of {target_servings} portions contain meat, {vegetarians} are vegetarian
+- **Serving style**: Need to serve both meat and vegetarian at the same meal
   <!-- END:meat_split -->
   <!-- BEGIN:vegetarian -->
 - **Setup**: Fully vegetarian household — no meat in any recipe
@@ -35,24 +36,24 @@
 
 **When NOT to split:** If the original recipe is already vegetarian or vegan (tofu, tempeh, seitan, beans, lentils, eggs-only, etc.), keep it as-is. Do NOT add meat to a vegetarian recipe — both people eat it.
 
-**How splitting works:** {people_count} people, {target_servings} servings — each person eats {servings_per_person} servings. One eats meat, one eats the vegetarian alternative. After scaling the recipe to the target servings, SPLIT the total protein in half — one half is the meat variant, the other half is the alternative.
+**How splitting works:** {target_servings} portions total — {meat_eaters} meat portions, {vegetarians} vegetarian portions. After scaling the recipe to {target_servings} servings, split the total protein proportionally — {meat_eaters}/{target_servings} of the protein is the meat variant, {vegetarians}/{target_servings} is the alternative.
 
-- Example: Original has 450 g chicken for 3P. Scaled to 4P → 600 g total. Split → **300 g chicken + 300 g chicken alternative** ✅
-- Counter-example: 600 g chicken + 600 g alternative ❌ (doubles the total protein)
+- Example: 4 portions, 1 meat, 3 vegetarian. Original has 400 g chicken for 4P. Split → **100 g chicken (1/4) + 300 g chicken alternative (3/4)** ✅
+- Counter-example: 400 g chicken + 400 g alternative ❌ (doubles the total protein)
 - Counter-example: Original has 400 g tofu → keep 400 g tofu ✅ (do NOT add chicken ❌)
 
 **Scaling must be practical:** Round quantities to sensible amounts. You cannot have ⅓ of an egg or 37 g of butter — round to whole eggs (or omit for one variant) and practical weights (25 g, 50 g, etc.).
 
 ### Chicken
 
-- **Split**: 50% chicken + 50% chicken alternative (full portions of each — see rule above)
+- **Split**: {meat_eaters}/{target_servings} chicken + {vegetarians}/{target_servings} chicken alternative (proportional portions — see rule above)
 - **Alternative**: Match the form — fillets, strips, or pieces
 - **Important**: Match the protein form — "Sliced chicken breast" → alternative fillet strips
 - **Flavor-match the alternative**: The vegetarian version should taste equally good, not like an afterthought. If the meat has a marinade, glaze, or spice rub, create a comparable seasoning for the alternative using pantry spices. The goal: both versions are satisfying on their own
 
 ### Other meat (beef, pork, lamb) — WHOLE CUTS ONLY
 
-- **Split**: 50% original meat + 50% meat alternative (NEVER use the chicken alternative for these meats)
+- **Split**: {meat_eaters}/{target_servings} original meat + {vegetarians}/{target_servings} meat alternative (NEVER use the chicken alternative for these meats)
 - **Alternative**: Use the meat alternative in the appropriate form (chunks, pulled, kebab) depending on the dish
 - **Applies to**: Steaks, roasts, strips, chunks, whole pieces — NOT mince
 <!-- END:meat_split -->

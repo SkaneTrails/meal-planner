@@ -1,5 +1,5 @@
-import { Switch, Text, TextInput, View } from 'react-native';
-import { RadioGroup, SectionHeader } from '@/components';
+import { Switch, Text, View } from 'react-native';
+import { RadioGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -9,12 +9,7 @@ import {
   shadows,
   spacing,
 } from '@/lib/theme';
-import type {
-  DairyPreference,
-  HouseholdSettings,
-  MeatPreference,
-  MincedMeatPreference,
-} from '@/lib/types';
+import type { DairyPreference, HouseholdSettings } from '@/lib/types';
 
 interface DietarySectionProps {
   dietary: HouseholdSettings['dietary'];
@@ -31,50 +26,6 @@ export const DietarySection = ({
   onUpdateDietary,
 }: DietarySectionProps) => {
   const { t } = useTranslation();
-
-  const meatOptions: {
-    value: MeatPreference;
-    label: string;
-    description: string;
-  }[] = [
-    {
-      value: 'all',
-      label: t('householdSettings.dietary.meatRegular'),
-      description: t('householdSettings.dietary.meatRegularDesc'),
-    },
-    {
-      value: 'split',
-      label: t('householdSettings.dietary.splitMeatVeg'),
-      description: t('householdSettings.dietary.splitMeatVegDesc'),
-    },
-    {
-      value: 'none',
-      label: t('householdSettings.dietary.meatNone'),
-      description: t('householdSettings.dietary.meatNoneDesc'),
-    },
-  ];
-
-  const mincedMeatOptions: {
-    value: MincedMeatPreference;
-    label: string;
-    description: string;
-  }[] = [
-    {
-      value: 'meat',
-      label: t('householdSettings.dietary.mincedRegular'),
-      description: t('householdSettings.dietary.mincedRegularDesc'),
-    },
-    {
-      value: 'soy',
-      label: t('householdSettings.dietary.mincedSoy'),
-      description: t('householdSettings.dietary.mincedSoyDesc'),
-    },
-    {
-      value: 'split',
-      label: t('householdSettings.dietary.mincedSplit'),
-      description: t('householdSettings.dietary.mincedSplitDesc'),
-    },
-  ];
 
   const dairyOptions: {
     value: DairyPreference;
@@ -99,13 +50,7 @@ export const DietarySection = ({
   ];
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="nutrition"
-        title={t('householdSettings.dietary.title')}
-        subtitle={t('householdSettings.dietary.subtitle')}
-      />
-
+    <>
       {/* Seafood Toggle */}
       <View
         style={{
@@ -128,7 +73,7 @@ export const DietarySection = ({
               style={{
                 fontSize: fontSize.md,
                 fontWeight: fontWeight.medium,
-                color: colors.text.inverse,
+                color: colors.text.dark,
               }}
             >
               {t('householdSettings.dietary.seafood')}
@@ -136,7 +81,7 @@ export const DietarySection = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.inverse + '80',
+                color: colors.text.dark + '80',
               }}
             >
               {t('householdSettings.dietary.seafoodDesc')}
@@ -151,82 +96,6 @@ export const DietarySection = ({
         </View>
       </View>
 
-      {/* Meat Preference */}
-      <Text style={categoryLabelStyle}>
-        {t('householdSettings.dietary.meatDishes')}
-      </Text>
-      <View style={{ marginBottom: spacing.lg }}>
-        <RadioGroup
-          options={meatOptions}
-          value={dietary.meat}
-          onChange={(value) => onUpdateDietary('meat', value)}
-          disabled={!canEdit}
-        />
-      </View>
-
-      {/* Meat Alternatives (shown when not "all") */}
-      {dietary.meat !== 'all' && (
-        <View
-          style={{
-            backgroundColor: colors.bgLight,
-            borderRadius: borderRadius.md,
-            padding: spacing.md,
-            marginBottom: spacing.lg,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              color: colors.text.inverse + '80',
-              marginBottom: spacing.sm,
-            }}
-          >
-            {t('householdSettings.dietary.chickenAlt')}
-          </Text>
-          <TextInput
-            value={dietary.chicken_alternative ?? ''}
-            onChangeText={(value) =>
-              onUpdateDietary('chicken_alternative', value || null)
-            }
-            editable={canEdit}
-            placeholder={t('householdSettings.dietary.chickenAltPlaceholder')}
-            style={textInputStyle}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              color: colors.text.inverse + '80',
-              marginTop: spacing.md,
-              marginBottom: spacing.sm,
-            }}
-          >
-            {t('householdSettings.dietary.meatAlt')}
-          </Text>
-          <TextInput
-            value={dietary.meat_alternative ?? ''}
-            onChangeText={(value) =>
-              onUpdateDietary('meat_alternative', value || null)
-            }
-            editable={canEdit}
-            placeholder={t('householdSettings.dietary.meatAltPlaceholder')}
-            style={textInputStyle}
-          />
-        </View>
-      )}
-
-      {/* Minced Meat Preference */}
-      <Text style={categoryLabelStyle}>
-        {t('householdSettings.dietary.mincedMeat')}
-      </Text>
-      <View style={{ marginBottom: spacing.lg }}>
-        <RadioGroup
-          options={mincedMeatOptions}
-          value={dietary.minced_meat}
-          onChange={(value) => onUpdateDietary('minced_meat', value)}
-          disabled={!canEdit}
-        />
-      </View>
-
       {/* Dairy Preference */}
       <Text style={categoryLabelStyle}>
         {t('householdSettings.dietary.dairy')}
@@ -237,7 +106,7 @@ export const DietarySection = ({
         onChange={(value) => onUpdateDietary('dairy', value)}
         disabled={!canEdit}
       />
-    </View>
+    </>
   );
 };
 
@@ -247,14 +116,4 @@ const categoryLabelStyle = {
   color: colors.text.muted,
   marginBottom: spacing.sm,
   textTransform: 'uppercase' as const,
-};
-
-const textInputStyle = {
-  backgroundColor: colors.white,
-  borderRadius: borderRadius.md,
-  padding: spacing.md,
-  fontSize: fontSize.md,
-  color: colors.text.inverse,
-  borderWidth: 1,
-  borderColor: colors.border,
 };

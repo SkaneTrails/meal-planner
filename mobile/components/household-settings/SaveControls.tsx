@@ -41,15 +41,15 @@ export const BottomSaveBar = ({
     <View
       style={{
         position: 'absolute',
-        bottom: 0,
+        bottom: 76,
         left: 0,
         right: 0,
         backgroundColor: 'rgba(253, 246, 240, 0.95)',
         borderTopWidth: 1,
         borderTopColor: 'rgba(139, 115, 85, 0.2)',
+        borderRadius: borderRadius.lg,
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.md,
-        paddingBottom: spacing.xl,
       }}
     >
       <Pressable

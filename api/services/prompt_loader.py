@@ -133,7 +133,11 @@ def load_system_prompt(
 
     prompt = prompt.replace("{target_servings}", str(safe_servings))
     prompt = prompt.replace("{people_count}", str(safe_people))
-    return prompt.replace("{servings_per_person}", str(servings_per_person))
+    prompt = prompt.replace("{servings_per_person}", str(servings_per_person))
+
+    resolved_dietary = dietary or DietaryConfig()
+    prompt = prompt.replace("{meat_eaters}", str(resolved_dietary.meat_eaters))
+    return prompt.replace("{vegetarians}", str(resolved_dietary.vegetarians))
 
 
 def validate_prompts() -> dict[str, bool]:

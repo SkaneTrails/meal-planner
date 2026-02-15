@@ -36,6 +36,7 @@ const mockSettingsData = {
   dietary: {
     seafood_ok: true,
     meat: 'none' as const,
+    meat_portions: 0,
     minced_meat: 'meat' as const,
     dairy: 'regular' as const,
     chicken_alternative: 'tofu',
@@ -65,11 +66,23 @@ vi.mock('@/lib/hooks/use-admin', () => ({
 async function renderScreen() {
   const { default: HouseholdSettingsScreen } = await import('@/app/household-settings');
   const Wrapper = createQueryWrapper();
-  return render(
+  const result = render(
     React.createElement(Wrapper, null,
       React.createElement(HouseholdSettingsScreen)
     ),
   );
+
+  // Expand all collapsed sections so tests can find inputs/switches inside them
+  const sectionTitles = [
+    'General', 'Members', 'Dietary Preferences',
+    'AI Improvements', 'Items at Home', 'Language',
+  ];
+  for (const title of sectionTitles) {
+    const header = screen.queryByText(title);
+    if (header) fireEvent.click(header);
+  }
+
+  return result;
 }
 
 describe('Household Settings screen', () => {
@@ -111,11 +124,16 @@ describe('Household Settings screen', () => {
       }
     });
 
-    it('disables all text inputs', async () => {
+    it('disables all settings text inputs', async () => {
       await renderScreen();
       const inputs = screen.queryAllByRole('textbox');
       expect(inputs.length).toBeGreaterThan(0);
-      for (const input of inputs) {
+      // Items-at-home input remains interactive for all household members
+      const settingsInputs = inputs.filter(
+        (el) => !(el as HTMLInputElement).placeholder?.includes('salt'),
+      );
+      expect(settingsInputs.length).toBeGreaterThan(0);
+      for (const input of settingsInputs) {
         expect((input as HTMLInputElement).disabled).toBe(true);
       }
     });

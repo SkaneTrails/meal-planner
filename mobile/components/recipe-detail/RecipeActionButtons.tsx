@@ -9,6 +9,7 @@ interface RecipeActionButtonsProps {
   canEdit: boolean;
   canEnhance: boolean;
   isEnhancing: boolean;
+  aiEnabled: boolean;
   t: TFunction;
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
@@ -29,6 +30,7 @@ export const RecipeActionButtons = ({
   canEdit,
   canEnhance,
   isEnhancing,
+  aiEnabled,
   t,
   onOpenEditModal,
   onShowPlanModal,
@@ -71,19 +73,33 @@ export const RecipeActionButtons = ({
     </AnimatedPressable>
     {canEnhance && (
       <AnimatedPressable
-        onPress={onEnhance}
+        onPress={
+          aiEnabled
+            ? onEnhance
+            : () =>
+                showNotification(
+                  t('recipe.enhanceRecipe'),
+                  t('common.aiDisabledHint'),
+                )
+        }
         hoverScale={1.1}
         pressScale={0.9}
         disabled={isEnhancing}
         style={{
           ...actionButtonStyle,
-          opacity: isEnhancing ? 0.5 : 1,
+          opacity: isEnhancing || !aiEnabled ? 0.5 : 1,
         }}
       >
         <Ionicons
           name="sparkles"
           size={20}
-          color={isEnhancing ? colors.gray[400] : colors.ai.primary}
+          color={
+            !aiEnabled
+              ? colors.gray[400]
+              : isEnhancing
+                ? colors.gray[400]
+                : colors.ai.primary
+          }
         />
       </AnimatedPressable>
     )}

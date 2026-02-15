@@ -144,10 +144,35 @@ if (isAdmin) {
 - Spread for updates: `setRecipe({ ...recipe, title: newTitle })`
 - Array methods that return new arrays: `.map()`, `.filter()`
 
-### Styling
+### Theme & Styling Architecture
 
 - `StyleSheet.create()` at bottom of file — no large inline style objects
 - Dynamic styles: use style arrays `[styles.card, { opacity: isActive ? 1 : 0.5 }]`
+
+**Always use theme constants** from `lib/theme/` — never hardcode colors, spacing, sizes, or layout dimensions:
+
+- Colors: `colors.accent`, `colors.tabBar.active` — not `'#5D4E40'`
+- Spacing: `spacing.lg`, `spacing.xl` — not `16`, `20`
+- Layout: `layout.tabBar.height`, `layout.screenPaddingTop` — not magic numbers
+- Border radius: `borderRadius.md` — not `16`
+
+**When to add new theme constants:**
+
+- A value appears in 2+ files → extract to `lib/theme/`
+- A value controls shared UI geometry (e.g., nav bar height, content padding) → always a constant
+- Platform-specific variants → put in theme with `Platform.select()`, not scattered in components
+
+**Shared visual patterns → reusable components:**
+
+- If 2+ screens use the same visual pattern (e.g., floating bar, glass card, gradient header), extract to `components/`
+- Component owns its own styling; consumers pass semantic props, not style overrides
+- Platform-specific rendering (blur on iOS, solid on Android) belongs inside the component, not at call sites
+
+**Layout consistency:**
+
+- Bottom padding for scrollable content must use a shared constant when a floating element overlays content
+- Screen-level padding uses `layout.screenPaddingHorizontal` and `layout.screenPaddingTop`
+- Never duplicate layout math — if a value is derived (e.g., `tabBarHeight + bottomOffset + margin`), compute it once in `lib/theme/layout.ts`
 
 ## Testing
 

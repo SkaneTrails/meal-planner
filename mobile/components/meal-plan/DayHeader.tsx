@@ -92,7 +92,7 @@ export const DayHeader = ({
               }}
             >
               <Ionicons
-                name="document-text"
+                name="reader-outline"
                 size={12}
                 color="#6B8E6B"
                 style={{ marginRight: 4 }}

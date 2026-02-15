@@ -231,6 +231,7 @@ export default function RecipeDetailScreen() {
               canEdit={canEdit}
               canEnhance={canEnhance}
               isEnhancing={isEnhancing}
+              aiEnabled={settings.aiEnabled}
               needsEnhancementReview={needsEnhancementReview}
               isReviewingEnhancement={isReviewingEnhancement}
               t={t}

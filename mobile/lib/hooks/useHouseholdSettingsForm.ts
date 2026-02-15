@@ -108,6 +108,11 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     setHasChanges(true);
   };
 
+  const updateAiEnabled = (enabled: boolean) => {
+    setSettings((prev) => ({ ...prev, ai_features_enabled: enabled }));
+    setHasChanges(true);
+  };
+
   const handleStartEditName = () => {
     setEditedName(household?.name ?? '');
     setIsEditingName(true);
@@ -198,6 +203,7 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     updateDietary,
     updateServings,
     toggleEquipment,
+    updateAiEnabled,
     household,
     isEditingName,
     editedName,

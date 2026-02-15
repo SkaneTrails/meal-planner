@@ -6,7 +6,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { AnimatedPressable, SectionHeader } from '@/components';
+import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -71,7 +71,7 @@ const MemberCard = ({
             style={{
               fontSize: fontSize.md,
               fontWeight: fontWeight.medium,
-              color: colors.text.inverse,
+              color: colors.text.dark,
             }}
           >
             {member.display_name || member.email}
@@ -80,7 +80,7 @@ const MemberCard = ({
             <Text
               style={{
                 fontSize: fontSize.xs,
-                color: colors.text.inverse + '60',
+                color: colors.text.dark + '60',
               }}
             >
               (you)
@@ -89,7 +89,7 @@ const MemberCard = ({
         </View>
         {member.display_name && (
           <Text
-            style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
+            style={{ fontSize: fontSize.sm, color: colors.text.dark + '80' }}
           >
             {member.email}
           </Text>
@@ -169,7 +169,7 @@ const AddMemberForm = ({
           value={newMemberEmail}
           onChangeText={onNewMemberEmailChange}
           placeholder={t('settings.addMemberPlaceholder')}
-          placeholderTextColor={colors.text.inverse + '60'}
+          placeholderTextColor={colors.text.dark + '60'}
           keyboardType="email-address"
           autoCapitalize="none"
           style={{
@@ -179,7 +179,7 @@ const AddMemberForm = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.md,
-            color: colors.text.inverse,
+            color: colors.text.dark,
           }}
         />
       </View>
@@ -200,8 +200,7 @@ const AddMemberForm = ({
           >
             <Text
               style={{
-                color:
-                  newMemberRole === role ? colors.white : colors.text.inverse,
+                color: newMemberRole === role ? colors.white : colors.text.dark,
                 fontWeight: fontWeight.medium,
                 fontSize: fontSize.sm,
               }}
@@ -237,16 +236,14 @@ const AddMemberForm = ({
                 name="person-add"
                 size={14}
                 color={
-                  newMemberEmail.trim()
-                    ? colors.white
-                    : colors.text.inverse + '60'
+                  newMemberEmail.trim() ? colors.white : colors.text.dark + '60'
                 }
               />
               <Text
                 style={{
                   color: newMemberEmail.trim()
                     ? colors.white
-                    : colors.text.inverse + '60',
+                    : colors.text.dark + '60',
                   fontWeight: fontWeight.medium,
                   fontSize: fontSize.sm,
                 }}
@@ -277,13 +274,7 @@ export const MembersSection = ({
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="people"
-        title={t('settings.membersSection')}
-        subtitle={t('settings.membersSectionDesc')}
-      />
-
+    <>
       {membersLoading ? (
         <ActivityIndicator
           size="small"
@@ -313,7 +304,7 @@ export const MembersSection = ({
           }}
         >
           <Text
-            style={{ color: colors.text.inverse + '80', fontSize: fontSize.sm }}
+            style={{ color: colors.text.dark + '80', fontSize: fontSize.sm }}
           >
             {t('admin.noMembers')}
           </Text>
@@ -330,6 +321,6 @@ export const MembersSection = ({
           isAddPending={isAddPending}
         />
       )}
-    </View>
+    </>
   );
 };

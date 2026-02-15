@@ -157,68 +157,58 @@ export const LanguageSection = ({
   currentLanguage,
   onChangeLanguage,
 }: LanguageSectionProps) => {
-  const { t } = useTranslation();
-
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="language"
-        title={t('settings.language')}
-        subtitle={t('settings.languageDesc')}
-      />
-
-      <View
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          overflow: 'hidden',
-          ...shadows.sm,
-        }}
-      >
-        {LANGUAGES.map((lang, index) => (
-          <Pressable
-            key={lang.code}
-            onPress={() => onChangeLanguage(lang.code)}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: spacing.md,
-              backgroundColor: pressed ? colors.bgMid : 'transparent',
-              borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
-              borderBottomColor: 'rgba(93, 78, 64, 0.15)',
-            })}
+    <View
+      style={{
+        backgroundColor: colors.glass.card,
+        borderRadius: borderRadius.md,
+        overflow: 'hidden',
+        ...shadows.sm,
+      }}
+    >
+      {LANGUAGES.map((lang, index) => (
+        <Pressable
+          key={lang.code}
+          onPress={() => onChangeLanguage(lang.code)}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: spacing.md,
+            backgroundColor: pressed ? colors.bgMid : 'transparent',
+            borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
+            borderBottomColor: 'rgba(93, 78, 64, 0.15)',
+          })}
+        >
+          <View
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              overflow: 'hidden',
+              marginRight: spacing.md,
+              backgroundColor: '#E8E8E8',
+            }}
           >
-            <View
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                overflow: 'hidden',
-                marginRight: spacing.md,
-                backgroundColor: '#E8E8E8',
-              }}
-            >
-              <Image
-                source={{ uri: FLAG_URLS[lang.code] }}
-                style={{ width: 32, height: 32 }}
-                contentFit="cover"
-              />
-            </View>
-            <Text
-              style={{
-                flex: 1,
-                fontSize: fontSize.md,
-                color: colors.text.dark,
-              }}
-            >
-              {lang.label}
-            </Text>
-            {currentLanguage === lang.code && (
-              <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
-            )}
-          </Pressable>
-        ))}
-      </View>
+            <Image
+              source={{ uri: FLAG_URLS[lang.code] }}
+              style={{ width: 32, height: 32 }}
+              contentFit="cover"
+            />
+          </View>
+          <Text
+            style={{
+              flex: 1,
+              fontSize: fontSize.md,
+              color: colors.text.dark,
+            }}
+          >
+            {lang.label}
+          </Text>
+          {currentLanguage === lang.code && (
+            <Ionicons name="checkmark-circle" size={20} color="#6B8E6B" />
+          )}
+        </Pressable>
+      ))}
     </View>
   );
 };

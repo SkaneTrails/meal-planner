@@ -350,13 +350,13 @@ class TestLoadSystemPrompt:
         (prompts_dir / "user").mkdir(parents=True)
 
         (prompts_dir / "core" / "base.md").write_text(
-            "{target_servings}s {people_count}p {servings_per_person}pp", encoding="utf-8"
+            "{target_servings}s {people_count}p {servings_per_person}pp {meat_eaters}m {vegetarians}v", encoding="utf-8"
         )
 
         with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):
             result = load_system_prompt("sv")
 
-        assert "4s 2p 2pp" in result
+        assert "4s 2p 2pp 0m 0v" in result
 
     def test_no_leftover_placeholders(self, tmp_path: Path) -> None:
         """Should not leave any unreplaced placeholders in the output."""
@@ -365,7 +365,7 @@ class TestLoadSystemPrompt:
         (prompts_dir / "user").mkdir(parents=True)
 
         (prompts_dir / "core" / "base.md").write_text(
-            "{target_servings} {people_count} {servings_per_person}", encoding="utf-8"
+            "{target_servings} {people_count} {servings_per_person} {meat_eaters} {vegetarians}", encoding="utf-8"
         )
 
         with patch("api.services.prompt_loader.get_prompts_dir", return_value=prompts_dir):

@@ -62,7 +62,8 @@ export const aggregateIngredients = (
           quantity_sources: [],
         });
       } else {
-        const item = ingredientsMap.get(normalizedName)!;
+        const item = ingredientsMap.get(normalizedName);
+        if (!item) return;
         if (!item.recipe_sources.includes(sourceLabel)) {
           item.recipe_sources.push(sourceLabel);
         }
