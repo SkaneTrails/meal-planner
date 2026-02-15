@@ -139,6 +139,8 @@ const sv: Translations = {
     mealTypeCount: '{{count}} typer',
     sort: 'Sortera',
     favorites: 'Favoriter',
+    scopeAll: 'Alla',
+    scopeMine: 'Mina',
     noMatchesFound: 'Inga träffar',
     emptyLibrary: 'Din receptbok är tom',
     tryAdjusting: 'Prova att ändra din sökning eller dina filter',

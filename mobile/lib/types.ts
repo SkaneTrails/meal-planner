@@ -5,6 +5,7 @@
 
 // Recipe types
 export type DietLabel = 'veggie' | 'fish' | 'meat';
+export type LibraryScope = 'all' | 'mine';
 export type MealLabel =
   | 'breakfast'
   | 'starter'

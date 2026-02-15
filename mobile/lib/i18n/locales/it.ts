@@ -139,6 +139,8 @@ const it: Translations = {
     mealTypeCount: '{{count}} tipi',
     sort: 'Ordina',
     favorites: 'Preferiti',
+    scopeAll: 'Tutte',
+    scopeMine: 'Mie',
     noMatchesFound: 'Nessun risultato',
     emptyLibrary: 'Il tuo ricettario è vuoto',
     tryAdjusting: 'Prova a modificare la ricerca o i filtri',

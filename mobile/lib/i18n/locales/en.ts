@@ -143,6 +143,8 @@ const en = {
     mealTypeCount: '{{count}} types',
     sort: 'Sort',
     favorites: 'Favorites',
+    scopeAll: 'All',
+    scopeMine: 'Mine',
     noMatchesFound: 'No matches found',
     emptyLibrary: 'Your recipe book is empty',
     tryAdjusting: 'Try adjusting your search or filters',

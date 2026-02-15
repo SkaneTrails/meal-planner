@@ -86,10 +86,27 @@ describe('aggregateIngredients', () => {
     expect(result[0].recipe_sources[0]).toBe('Pasta (×8)');
   });
 
-  it('skips custom: meals', () => {
+  it('includes custom meals as grocery items', () => {
     const meals = { 'mon-lunch': 'custom:Leftover pizza' };
     const result = aggregateIngredients(['mon-lunch'], meals, [], {});
-    expect(result).toEqual([]);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Leftover pizza');
+    expect(result[0].quantity).toBeNull();
+    expect(result[0].recipe_sources).toEqual(['Leftover pizza']);
+  });
+
+  it('does not duplicate identical custom meals', () => {
+    const meals = {
+      'mon-lunch': 'custom:Leftover pizza',
+      'tue-lunch': 'custom:Leftover pizza',
+    };
+    const result = aggregateIngredients(
+      ['mon-lunch', 'tue-lunch'],
+      meals,
+      [],
+      {},
+    );
+    expect(result).toHaveLength(1);
   });
 
   it('skips meals with no matching recipe', () => {

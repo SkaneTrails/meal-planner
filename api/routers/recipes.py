@@ -32,11 +32,13 @@ router = APIRouter(prefix="/recipes", tags=["recipes"], dependencies=[Depends(re
 # Imported AFTER creating `router` to avoid circular imports.
 from api.routers.recipe_enhancement import router as _enhancement_router  # noqa: E402
 from api.routers.recipe_images import router as _images_router  # noqa: E402
+from api.routers.recipe_notes import router as _notes_router  # noqa: E402
 from api.routers.recipe_scraping import router as _scraping_router  # noqa: E402
 
 router.include_router(_scraping_router)
 router.include_router(_enhancement_router)
 router.include_router(_images_router)
+router.include_router(_notes_router)
 
 # Re-export HouseholdConfig so existing test imports keep working
 __all__ = ["HouseholdConfig", "router"]

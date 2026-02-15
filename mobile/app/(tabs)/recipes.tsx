@@ -17,11 +17,11 @@ import { BottomSheetModal, GradientBackground } from '@/components';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useRecipes } from '@/lib/hooks';
+import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
-import type { DietLabel, MealLabel } from '@/lib/types';
+import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 if (
   Platform.OS === 'android' &&
@@ -38,7 +38,9 @@ export default function RecipesScreen() {
   const [mealFilters, setMealFilters] = useState<MealLabel[]>([]);
   const [sortBy, setSortBy] = useState('newest');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [libraryScope, setLibraryScope] = useState<LibraryScope>('all');
   const { isFavorite } = useSettings();
+  const { data: currentUser } = useCurrentUser();
 
   useFocusEffect(
     useCallback(() => {
@@ -48,6 +50,7 @@ export default function RecipesScreen() {
         setMealFilters([]);
         setSortBy('newest');
         setShowFavoritesOnly(false);
+        setLibraryScope('all');
       };
     }, []),
   );
@@ -93,7 +96,10 @@ export default function RecipesScreen() {
         mealFilters.length === 0 ||
         (recipe.meal_label && mealFilters.includes(recipe.meal_label));
       const matchesFavorites = !showFavoritesOnly || isFavorite(recipe.id);
-      return matchesSearch && matchesDiet && matchesMeal && matchesFavorites;
+      const matchesScope =
+        libraryScope === 'all' ||
+        recipe.household_id === currentUser?.household_id;
+      return matchesSearch && matchesDiet && matchesMeal && matchesFavorites && matchesScope;
     });
 
     if (sortBy === 'name') {
@@ -111,6 +117,8 @@ export default function RecipesScreen() {
     sortBy,
     showFavoritesOnly,
     isFavorite,
+    libraryScope,
+    currentUser?.household_id,
   ]);
 
   const handleDietChange = useCallback((diet: DietLabel | null) => {
@@ -179,10 +187,12 @@ export default function RecipesScreen() {
         <FilterChips
           dietFilter={dietFilter}
           showFavoritesOnly={showFavoritesOnly}
+          libraryScope={libraryScope}
           sortBy={sortBy}
           sortOptions={SORT_OPTIONS}
           onDietChange={handleDietChange}
           onFavoritesToggle={handleFavoritesToggle}
+          onLibraryScopeChange={setLibraryScope}
           onSortPress={() => setShowSortPicker(true)}
           t={t}
         />

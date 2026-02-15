@@ -31,7 +31,24 @@ export const aggregateIngredients = (
 
   selectedMealKeys.forEach((key) => {
     const recipeId = meals[key];
-    if (!recipeId || recipeId.startsWith('custom:')) return;
+    if (!recipeId) return;
+
+    // Include custom (quick) meals as simple grocery items
+    if (recipeId.startsWith('custom:')) {
+      const customText = recipeId.slice('custom:'.length);
+      if (customText && !ingredientsMap.has(customText)) {
+        ingredientsMap.set(customText, {
+          name: customText,
+          quantity: null,
+          unit: null,
+          category: 'other',
+          checked: false,
+          recipe_sources: [customText],
+          quantity_sources: [],
+        });
+      }
+      return;
+    }
 
     const recipe = recipeMap.get(recipeId);
     if (!recipe) return;

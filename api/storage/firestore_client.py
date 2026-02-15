@@ -42,3 +42,4 @@ def reset_client() -> None:  # pragma: no cover
 RECIPES_COLLECTION = "recipes"
 MEAL_PLANS_COLLECTION = "meal_plans"
 GROCERY_LISTS_COLLECTION = "grocery_lists"
+RECIPE_NOTES_COLLECTION = "recipe_notes"
