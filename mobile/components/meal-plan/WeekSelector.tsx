@@ -66,7 +66,7 @@ export const WeekSelector = ({
           style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
-            color: colors.surface.overlay,
+            color: colors.content.strong,
           }}
         >
           {formatWeekRange(weekDates, language)}

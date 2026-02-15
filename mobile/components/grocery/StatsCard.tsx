@@ -157,7 +157,7 @@ const ItemsAtHomeIndicator = ({
       <Text
         style={{
           fontSize: 12,
-          color: '#6B5B4B',
+          color: colors.button.primaryPressed,
           flex: 1,
           fontWeight: '500',
         }}

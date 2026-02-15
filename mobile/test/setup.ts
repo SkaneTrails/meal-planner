@@ -125,7 +125,7 @@ vi.mock('@/lib/theme', () => ({
       hover: 'rgba(93, 78, 64, 0.08)',
       tint: 'rgba(93, 78, 64, 0.06)',
     },
-    button: { primary: '#7A6858', disabled: '#C5B8A8' },
+    button: { primary: '#7A6858', primaryPressed: '#6B5B4B', disabled: '#C5B8A8' },
     border: '#e0e0e0',
     white: '#fff',
     success: '#22c55e',
@@ -133,7 +133,7 @@ vi.mock('@/lib/theme', () => ({
     gray: { 50: '#fafafa', 100: '#f5f5f5', 200: '#eee', 300: '#e0e0e0', 400: '#bdbdbd', 500: '#9e9e9e', 600: '#757575', 700: '#616161', 800: '#424242', 900: '#212121' },
     ai: {
       primary: '#6B8E6B',
-      primaryDark: '#567056',
+      primaryDark: '#5A7A5A',
       bg: 'rgba(107, 142, 107, 0.08)',
       bgPressed: 'rgba(107, 142, 107, 0.18)',
       muted: 'rgba(107, 142, 107, 0.5)',

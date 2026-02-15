@@ -81,7 +81,9 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               justifyContent: 'center',
               paddingVertical: spacing.md,
               borderRadius: borderRadius.sm,
-              backgroundColor: pressed ? '#6B5B4B' : colors.button.primary,
+              backgroundColor: pressed
+                ? colors.button.primaryPressed
+                : colors.button.primary,
               ...shadows.md,
             })}
           >
