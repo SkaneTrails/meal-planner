@@ -40,7 +40,7 @@ export const InstructionItem = ({
           borderRadius: borderRadius.sm,
           marginBottom: spacing.sm,
           borderLeftWidth: 2,
-          borderLeftColor: '#C4704B',
+          borderLeftColor: colors.ai.primary,
           shadowColor: '#000',
           shadowOffset: { width: 1, height: 2 },
           shadowOpacity: 0.06,
@@ -51,7 +51,7 @@ export const InstructionItem = ({
         <Ionicons
           name="bulb-outline"
           size={15}
-          color="#C4704B"
+          color={colors.ai.primary}
           style={{ marginRight: spacing.sm, marginTop: 2 }}
         />
         <Text

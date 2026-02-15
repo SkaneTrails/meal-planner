@@ -39,14 +39,16 @@ export const RadioGroup = <T extends string>({
               flexDirection: 'row',
               alignItems: 'center',
               backgroundColor: isSelected
-                ? colors.primary + '15'
+                ? 'rgba(255, 255, 255, 0.85)'
                 : pressed
-                  ? colors.bgDark
-                  : colors.white,
+                  ? 'rgba(255, 255, 255, 0.15)'
+                  : 'rgba(255, 255, 255, 0.06)',
               padding: spacing.md,
               borderRadius: borderRadius.md,
-              borderWidth: 1,
-              borderColor: isSelected ? colors.primary : colors.border,
+              borderWidth: 1.5,
+              borderColor: isSelected
+                ? colors.border
+                : 'rgba(255, 255, 255, 0.3)',
               opacity: disabled ? 0.5 : 1,
             })}
           >
@@ -80,7 +82,7 @@ export const RadioGroup = <T extends string>({
                   fontWeight: isSelected
                     ? fontWeight.semibold
                     : fontWeight.normal,
-                  color: colors.text.inverse,
+                  color: isSelected ? colors.text.inverse : colors.text.primary,
                 }}
               >
                 {option.label}
@@ -88,7 +90,9 @@ export const RadioGroup = <T extends string>({
               <Text
                 style={{
                   fontSize: fontSize.sm,
-                  color: colors.text.inverse + '80',
+                  color: isSelected
+                    ? colors.text.inverse + '80'
+                    : colors.text.secondary,
                 }}
               >
                 {option.description}

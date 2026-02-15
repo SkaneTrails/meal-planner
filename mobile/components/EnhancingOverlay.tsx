@@ -31,10 +31,10 @@ export const EnhancingOverlay = ({
   >
     <View style={styles.backdrop}>
       <View style={styles.card}>
-        <Ionicons name="sparkles" size={32} color="#7C3AED" />
+        <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
         <ActivityIndicator
           size="large"
-          color={colors.accent}
+          color={colors.ai.primary}
           style={styles.spinner}
         />
         <Text style={styles.message}>{message}</Text>

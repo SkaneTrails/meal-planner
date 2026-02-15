@@ -184,7 +184,7 @@ export default function AddRecipeScreen() {
                   height: iconContainer.md,
                   borderRadius: iconContainer.md / 2,
                   backgroundColor: enhanceWithAI
-                    ? colors.accentLight
+                    ? colors.ai.light
                     : colors.glass.light,
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -194,7 +194,7 @@ export default function AddRecipeScreen() {
                 <Ionicons
                   name="sparkles"
                   size={18}
-                  color={enhanceWithAI ? colors.accent : colors.gray[500]}
+                  color={enhanceWithAI ? colors.ai.primary : colors.gray[500]}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -222,8 +222,8 @@ export default function AddRecipeScreen() {
             <Switch
               value={enhanceWithAI}
               onValueChange={setEnhanceWithAI}
-              trackColor={{ false: colors.gray[300], true: colors.accentLight }}
-              thumbColor={enhanceWithAI ? colors.accent : colors.gray[400]}
+              trackColor={{ false: colors.gray[300], true: colors.ai.light }}
+              thumbColor={enhanceWithAI ? colors.ai.primary : colors.gray[400]}
               disabled={isPending}
             />
           </View>

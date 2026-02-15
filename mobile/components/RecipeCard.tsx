@@ -172,7 +172,7 @@ export const RecipeCard = ({
               {recipe.enhanced && (
                 <View
                   style={{
-                    backgroundColor: 'rgba(232, 168, 124, 0.15)',
+                    backgroundColor: colors.ai.light,
                     paddingHorizontal: 8,
                     paddingVertical: 3,
                     borderRadius: 8,
@@ -180,12 +180,16 @@ export const RecipeCard = ({
                     alignItems: 'center',
                   }}
                 >
-                  <Ionicons name="sparkles" size={11} color="#E8A87C" />
+                  <Ionicons
+                    name="sparkles"
+                    size={11}
+                    color={colors.ai.primary}
+                  />
                   <Text
                     style={{
                       fontSize: 11,
                       fontWeight: '600',
-                      color: '#D4956A',
+                      color: colors.ai.primary,
                       marginLeft: 3,
                     }}
                   >
@@ -288,7 +292,7 @@ export const RecipeCard = ({
                 position: 'absolute',
                 top: 10,
                 left: 10,
-                backgroundColor: 'rgba(232, 168, 124, 0.95)',
+                backgroundColor: colors.ai.badge,
                 paddingHorizontal: 8,
                 paddingVertical: 4,
                 borderRadius: 10,
