@@ -4,8 +4,9 @@
  */
 
 import { useRouter } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { GradientBackground } from '@/components';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import {
   AboutSection,
   AccountSection,
@@ -19,7 +20,7 @@ import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { colors, fontFamily, fontSize, layout, spacing } from '@/lib/theme';
+import { layout, spacing } from '@/lib/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -51,32 +52,12 @@ export default function SettingsScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
-          <View style={{ marginBottom: spacing.lg }}>
-            <Text
-              style={{
-                fontSize: fontSize['4xl'],
-                fontFamily: fontFamily.display,
-                color: colors.text.primary,
-                letterSpacing: -0.5,
-                textShadowColor: 'rgba(0, 0, 0, 0.15)',
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 2,
-              }}
-            >
-              {t('settings.title')}
-            </Text>
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                fontFamily: fontFamily.body,
-                color: colors.text.secondary,
-                marginTop: 4,
-              }}
-            >
-              {t('settings.subtitle')}
-            </Text>
-          </View>
+          <ScreenTitle
+            variant="large"
+            title={t('settings.title')}
+            subtitle={t('settings.subtitle')}
+            style={{ marginBottom: spacing.lg }}
+          />
 
           <AccountSection
             userEmail={user?.email}

@@ -20,6 +20,7 @@ import {
   HouseholdCard,
   HouseholdDetailModal,
 } from '@/components/admin';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { showNotification } from '@/lib/alert';
 import {
   useCreateHousehold,
@@ -215,25 +216,11 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
         <Ionicons name="chevron-back" size={22} color="white" />
       </AnimatedPressable>
       <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: fontSize['4xl'],
-            fontWeight: '600',
-            color: colors.text.primary,
-            letterSpacing: -0.5,
-          }}
-        >
-          {t('tabs.admin')}
-        </Text>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            color: colors.text.secondary,
-            marginTop: 4,
-          }}
-        >
-          {t('admin.subtitle')}
-        </Text>
+        <ScreenTitle
+          variant="large"
+          title={t('tabs.admin')}
+          subtitle={t('admin.subtitle')}
+        />
       </View>
     </View>
   );

@@ -9,6 +9,7 @@ import {
 import { AddRecipeModal } from '@/components/home/AddRecipeModal';
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { StatsCards } from '@/components/home/StatsCards';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
@@ -150,30 +151,11 @@ const Header = ({
       }}
     >
       <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: fontSize['4xl'],
-            fontFamily: fontFamily.display,
-            color: colors.text.primary,
-            letterSpacing: letterSpacing.tight,
-            marginBottom: 4,
-            textShadowColor: 'rgba(0, 0, 0, 0.15)',
-            textShadowOffset: { width: 1, height: 1 },
-            textShadowRadius: 2,
-          }}
-        >
-          {t(`home.${greetingKey}`)}
-        </Text>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.body,
-            color: colors.text.secondary,
-            letterSpacing: letterSpacing.normal,
-          }}
-        >
-          {t('home.subtitle')}
-        </Text>
+        <ScreenTitle
+          variant="large"
+          title={t(`home.${greetingKey}`)}
+          subtitle={t('home.subtitle')}
+        />
       </View>
       <AnimatedPressable
         onPress={onSettings}

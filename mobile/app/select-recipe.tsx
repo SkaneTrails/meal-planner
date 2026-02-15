@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { GradientBackground } from '@/components';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { CopyMealTab } from '@/components/select-recipe/CopyMealTab';
 import { LibraryTab } from '@/components/select-recipe/LibraryTab';
 import { QuickMealTab } from '@/components/select-recipe/QuickMealTab';
@@ -62,28 +63,7 @@ export default function SelectRecipeScreen() {
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
         >
-          <Text
-            style={{
-              fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.display,
-              color: colors.content.heading,
-              letterSpacing: -0.3,
-              textAlign: 'center',
-            }}
-          >
-            {headerTitle}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fontFamily.body,
-              color: colors.content.subtitle,
-              marginTop: 2,
-              textAlign: 'center',
-            }}
-          >
-            {headerSubtitle}
-          </Text>
+          <ScreenTitle title={headerTitle} subtitle={headerSubtitle} />
         </View>
 
         {!mode && (

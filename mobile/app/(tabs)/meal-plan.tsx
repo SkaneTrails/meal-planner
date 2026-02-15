@@ -16,6 +16,7 @@ import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
 import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 import {
   borderRadius,
@@ -24,7 +25,6 @@ import {
   fontSize,
   fontWeight,
   layout,
-  letterSpacing,
   spacing,
 } from '@/lib/theme';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
@@ -84,29 +84,10 @@ export default function MealPlanScreen() {
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}
         >
-          <Text
-            style={{
-              fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.displayBold,
-              fontWeight: '700',
-              color: colors.content.heading,
-              letterSpacing: letterSpacing.tight,
-              textAlign: 'center',
-            }}
-          >
-            {t('mealPlan.title')}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fontFamily.body,
-              color: colors.content.subtitle,
-              marginTop: 2,
-              textAlign: 'center',
-            }}
-          >
-            {t('mealPlan.subtitle')}
-          </Text>
+          <ScreenTitle
+            title={t('mealPlan.title')}
+            subtitle={t('mealPlan.subtitle')}
+          />
         </View>
 
         <WeekSelector
