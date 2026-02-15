@@ -147,6 +147,20 @@ export interface PaginatedRecipeList {
   has_more: boolean;
 }
 
+// Recipe Note types
+export interface RecipeNote {
+  id: string;
+  recipe_id: string;
+  household_id: string;
+  text: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface RecipeNoteCreate {
+  text: string;
+}
+
 // Meal Plan types
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 

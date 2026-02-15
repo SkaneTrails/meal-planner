@@ -223,6 +223,7 @@ export default function RecipeDetailScreen() {
           >
             <RecipeContent
               recipe={recipe}
+              recipeId={id}
               totalTime={totalTime}
               completedSteps={completedSteps}
               showAiChanges={showAiChanges}

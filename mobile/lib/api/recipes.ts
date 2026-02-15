@@ -8,6 +8,8 @@ import type {
   PaginatedRecipeList,
   Recipe,
   RecipeCreate,
+  RecipeNote,
+  RecipeNoteCreate,
   RecipeParseRequest,
   RecipePreview,
   RecipePreviewRequest,
@@ -227,5 +229,27 @@ export const recipeApi = {
     }
 
     return response.json();
+  },
+
+  // ── Recipe Notes ────────────────────────────────────────────────
+
+  getRecipeNotes: (recipeId: string): Promise<RecipeNote[]> => {
+    return apiRequest<RecipeNote[]>(`/recipes/${recipeId}/notes`);
+  },
+
+  createRecipeNote: (
+    recipeId: string,
+    note: RecipeNoteCreate,
+  ): Promise<RecipeNote> => {
+    return apiRequest<RecipeNote>(`/recipes/${recipeId}/notes`, {
+      method: 'POST',
+      body: JSON.stringify(note),
+    });
+  },
+
+  deleteRecipeNote: (recipeId: string, noteId: string): Promise<void> => {
+    return apiRequest<void>(`/recipes/${recipeId}/notes/${noteId}`, {
+      method: 'DELETE',
+    });
   },
 };

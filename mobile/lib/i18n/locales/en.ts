@@ -257,6 +257,17 @@ const en = {
     shareMessage: 'Check out this recipe: {{title}}\n\n{{url}}',
     copyToHousehold: 'Copy to your household',
     share: 'Share',
+    // Notes
+    notes: 'Notes',
+    notesPlaceholder: 'Add a note...',
+    addNote: 'Add',
+    deleteNote: 'Delete Note',
+    deleteNoteConfirm: 'Delete this note?',
+    noteAdded: 'Note added',
+    noteDeleted: 'Note deleted',
+    noteAddFailed: 'Could not add note',
+    noteDeleteFailed: 'Could not delete note',
+    noNotes: 'No notes yet',
   },
 
   // ── Meal plan screen ──────────────────────────────────────────────
