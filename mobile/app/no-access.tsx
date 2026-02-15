@@ -5,8 +5,8 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { GradientBackground } from '@/components';
+import { Pressable, Text, View } from 'react-native';
+import { FullScreenLoading, GradientBackground } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -45,14 +45,7 @@ export default function NoAccessScreen() {
   }
 
   if (loading || userLoading) {
-    return (
-      <GradientBackground
-        animated
-        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-      >
-        <ActivityIndicator size="large" color={colors.primary} />
-      </GradientBackground>
-    );
+    return <FullScreenLoading background="animated" />;
   }
 
   return (

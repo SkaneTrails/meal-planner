@@ -7,14 +7,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-} from 'react-native';
-import { AnimatedPressable, GradientBackground } from '@/components';
+  AnimatedPressable,
+  FullScreenLoading,
+  GradientBackground,
+} from '@/components';
 import {
   CreateHouseholdModal,
   HouseholdCard,
@@ -56,52 +54,17 @@ export default function AdminScreen() {
   const [newHouseholdName, setNewHouseholdName] = useState('');
 
   if (userLoading) {
-    return (
-      <GradientBackground muted>
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      </GradientBackground>
-    );
+    return <FullScreenLoading background="muted" />;
   }
 
   if (!currentUser || currentUser.role !== 'superuser') {
     return (
-      <GradientBackground muted>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: spacing.xl,
-          }}
-        >
-          <Ionicons name="lock-closed" size={64} color={colors.text.muted} />
-          <Text
-            style={{
-              fontSize: fontSize['2xl'],
-              fontWeight: fontWeight.semibold,
-              color: colors.text.muted,
-              marginTop: spacing.lg,
-              textAlign: 'center',
-            }}
-          >
-            {t('admin.accessRequired')}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              color: colors.text.muted,
-              marginTop: spacing.sm,
-              textAlign: 'center',
-            }}
-          >
-            {t('admin.accessRequiredMessage')}
-          </Text>
-        </View>
-      </GradientBackground>
+      <FullScreenLoading
+        background="muted"
+        icon="lock-closed"
+        title={t('admin.accessRequired')}
+        subtitle={t('admin.accessRequiredMessage')}
+      />
     );
   }
 

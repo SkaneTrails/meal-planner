@@ -6,14 +6,8 @@
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import {
-  ActivityIndicator,
-  ScrollView,
-  Switch,
-  Text,
-  View,
-} from 'react-native';
-import { GradientBackground } from '@/components';
+import { ActivityIndicator, ScrollView, Switch, View } from 'react-native';
+import { FullScreenLoading, GradientBackground } from '@/components';
 import {
   AiSection,
   CollapsibleSection,
@@ -71,24 +65,13 @@ export default function HouseholdSettingsScreen() {
 
   if (!form.householdId) {
     if (form.userLoading) {
-      return (
-        <GradientBackground muted>
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
-            <ActivityIndicator size="large" color={colors.accent} />
-          </View>
-        </GradientBackground>
-      );
+      return <FullScreenLoading background="muted" />;
     }
     return (
-      <GradientBackground muted>
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Text>{t('householdSettings.invalidHouseholdId')}</Text>
-        </View>
-      </GradientBackground>
+      <FullScreenLoading
+        background="muted"
+        title={t('householdSettings.invalidHouseholdId')}
+      />
     );
   }
 

@@ -12,7 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { GradientBackground } from '@/components';
+import { FullScreenLoading, GradientBackground } from '@/components';
 import {
   DIET_OPTIONS,
   MEAL_OPTIONS,
@@ -68,15 +68,7 @@ export default function ReviewRecipeScreen() {
   const [mealLabel, setMealLabel] = useState<MealLabel | null>(null);
 
   if (!preview) {
-    return (
-      <GradientBackground
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-      >
-        <Text style={{ color: colors.text.inverse, fontSize: fontSize.xl }}>
-          {t('common.error')}
-        </Text>
-      </GradientBackground>
-    );
+    return <FullScreenLoading title={t('common.error')} />;
   }
 
   const selectedRecipe: RecipeCreate =
