@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: layout.tabBar.height,
     borderRadius: layout.tabBar.borderRadius,
-    overflow: 'hidden',
     ...shadows.md,
   },
   tabButton: {
