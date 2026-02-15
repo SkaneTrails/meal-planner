@@ -144,7 +144,7 @@ export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
           multiline
           style={{
             flex: 1,
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
+            backgroundColor: colors.glass.subtle,
             borderRadius: borderRadius.md,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
@@ -216,7 +216,7 @@ export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
         <View
           key={note.id}
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            backgroundColor: colors.glass.faint,
             borderRadius: borderRadius.md,
             padding: spacing.md,
             marginBottom: spacing.sm,

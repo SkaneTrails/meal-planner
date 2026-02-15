@@ -120,12 +120,15 @@ export const useRecipeForm = (initialRecipe?: Recipe) => {
 - `StyleSheet.create()` at bottom of file — no large inline style objects
 - Dynamic styles: use style arrays `[styles.card, { opacity: isActive ? 1 : 0.5 }]`
 
-**Always use theme constants** from `lib/theme/` — never hardcode colors, spacing, sizes, or layout dimensions:
+**Always use theme constants** from `lib/theme/` — never hardcode colors, spacing, sizes, or layout dimensions. This is a **blocking rule**: PRs with hardcoded values will be rejected even if the visual result is correct.
 
 - Colors: `colors.content.body`, `colors.surface.pressed` — not `'#5D4E40'`, `'rgba(93, 78, 64, 0.15)'`
-- Spacing: `spacing.lg`, `spacing.xl` — not `16`, `20`
-- Layout: `layout.tabBar.height`, `layout.screenPaddingTop` — not magic numbers
+- Spacing: `spacing.lg`, `spacing.xl` — not `16`, `20` (always pick the nearest token — if no token exists, add one)
+- Font size: `fontSize.md`, `fontSize.xl` — not `13`, `15`
 - Border radius: `borderRadius.md` — not `16`
+- Layout: `layout.tabBar.height`, `layout.screenPaddingTop` — not magic numbers
+
+This applies to **all style properties** including `padding*`, `margin*`, `gap`, `fontSize`, `borderRadius`, `borderColor`, `backgroundColor`, and `color`. No exceptions for "just one place" — if you need a value, it must come from a theme token, or you must add a new token first.
 
 **Color token groups** — pick the semantic group that matches the usage context:
 
@@ -134,6 +137,9 @@ export const useRecipeForm = (initialRecipe?: Recipe) => {
 | `colors.content.*` | Text and icon colors                     | `heading`, `body`, `secondary`, `strong`, `tertiary`, `subtitle`, `icon`, `placeholder` |
 | `colors.surface.*` | Backgrounds, borders, interactive states | `overlay`, `border`, `pressed`, `active`, `subtle`, `hover`, `tint`                     |
 | `colors.button.*`  | Button-specific colors                   | `primary`, `primaryPressed`, `disabled`                                                 |
+| `colors.chip.*`    | Filter chip/pill colors                  | `bg`, `border`, `fishActive`, `meatActive`, `favoriteActive`                            |
+| `colors.glass.*`   | Translucent white overlays               | `light`, `medium`, `dark`, `subtle`, `faint`, `card`, `border`                          |
+| `colors.shadow.*`  | Baked-in shadow colors (with alpha)      | `text`                                                                                  |
 | `colors.ai.*`      | AI enhancement theming (sage green)      | `primary`, `primaryDark`, `bg`, `bgPressed`                                             |
 | `colors.tabBar.*`  | Tab bar theming                          | `bg`, `active`, `inactive`, `border`                                                    |
 
@@ -142,9 +148,11 @@ Never use a surface token for text color or a content token for backgrounds — 
 **When to add new theme constants:**
 
 - A value appears in 2+ files → extract to `lib/theme/`
-- A new color appears → add it to the appropriate group in `colors.ts`, never inline it
+- A new color appears → add it to the appropriate group in `colors.ts`, never inline it — even for one-off usage
+- A spacing/size value has no matching token → add a token to the scale (never hardcode a pixel value as a workaround)
 - A value controls shared UI geometry (e.g., nav bar height, content padding) → always a constant
 - Platform-specific variants → put in theme with `Platform.select()`, not scattered in components
+- If unsure between two tokens → pick the closest and accept the 1-2px difference; consistency beats pixel-perfection
 
 **Shared visual patterns → reusable components:**
 

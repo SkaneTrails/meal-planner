@@ -100,7 +100,8 @@ vi.mock('@/lib/theme', () => ({
     primary: '#6366f1',
     bgDark: '#1e1e1e',
     bgLight: '#f0f0f0',
-    glass: { card: '#ffffff20' },
+    glass: { card: '#ffffff20', subtle: '#ffffff99', faint: '#ffffff80' },
+    chip: { bg: '#e8ded4b3', border: '#8b735540', fishActive: '#2D7AB8', meatActive: '#B85C38', favoriteActive: '#C75050' },
     text: { inverse: '#fff', dark: '#000', secondary: '#888', muted: '#aaa', primary: '#333' },
     content: {
       heading: '#3D3D3D',
@@ -157,7 +158,7 @@ vi.mock('@/lib/theme', () => ({
     },
     shadow: { text: 'rgba(0, 0, 0, 0.15)' },
   },
-  spacing: { '2xs': 2, xs: 4, sm: 8, md: 12, lg: 16, xl: 24, '2xl': 32, '3xl': 40, '4xl': 48 },
+  spacing: { '2xs': 2, xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
     screenPaddingTop: 60,
     screenPaddingHorizontal: 20,
