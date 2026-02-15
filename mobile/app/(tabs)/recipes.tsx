@@ -20,7 +20,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import { fontFamily, fontSize, layout, letterSpacing } from '@/lib/theme';
 import type { DietLabel, MealLabel } from '@/lib/types';
 
 if (
@@ -133,7 +133,9 @@ export default function RecipesScreen() {
 
   return (
     <GradientBackground structured>
-      <View style={{ flex: 1, paddingBottom: 70 }}>
+      <View
+        style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
+      >
         {/* Header */}
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}

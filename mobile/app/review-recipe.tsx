@@ -30,6 +30,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  layout,
   letterSpacing,
   shadows,
   spacing,
@@ -103,7 +104,10 @@ export default function ReviewRecipeScreen() {
     <GradientBackground style={{ flex: 1 }}>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
+        contentContainerStyle={{
+          padding: spacing.lg,
+          paddingBottom: layout.tabBar.contentBottomPadding,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Recipe Image & Title */}

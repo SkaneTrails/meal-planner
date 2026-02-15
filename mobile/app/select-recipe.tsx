@@ -9,7 +9,7 @@ import {
   type TabType,
   useSelectRecipeState,
 } from '@/lib/hooks/useSelectRecipeState';
-import { fontFamily, fontSize, spacing } from '@/lib/theme';
+import { fontFamily, fontSize, layout, spacing } from '@/lib/theme';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
 
@@ -54,7 +54,10 @@ export default function SelectRecipeScreen() {
         }}
       />
 
-      <GradientBackground structured style={{ flex: 1, paddingBottom: 70 }}>
+      <GradientBackground
+        structured
+        style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
+      >
         {/* Header - same style as other pages */}
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}

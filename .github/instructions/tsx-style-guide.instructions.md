@@ -149,6 +149,7 @@ if (isAdmin) {
 - `StyleSheet.create()` at bottom of file — no large inline style objects
 - Dynamic styles: use style arrays `[styles.card, { opacity: isActive ? 1 : 0.5 }]`
 
+
 **Always use theme constants** from `lib/theme/` — never hardcode colors, spacing, sizes, or layout dimensions:
 
 - Colors: `colors.accent`, `colors.tabBar.active` — not `'#5D4E40'`

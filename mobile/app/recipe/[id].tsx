@@ -21,12 +21,11 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
-import { colors, spacing } from '@/lib/theme';
+import { colors, layout, spacing } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 const HEADER_BUTTON_BG = 'rgba(93, 78, 64, 0.75)';
-const CONTENT_BOTTOM_PADDING = 100;
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -216,7 +215,7 @@ export default function RecipeDetailScreen() {
           <View
             style={{
               padding: spacing.xl,
-              paddingBottom: CONTENT_BOTTOM_PADDING,
+              paddingBottom: layout.tabBar.contentBottomPadding,
               maxWidth: 720,
               alignSelf: 'center',
               width: '100%',

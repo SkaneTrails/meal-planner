@@ -20,6 +20,7 @@ import {
   colors,
   fontSize,
   iconContainer,
+  layout,
   letterSpacing,
   shadows,
   spacing,
@@ -63,7 +64,10 @@ export default function AddRecipeScreen() {
       <GradientBackground style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 80 }}
+          contentContainerStyle={{
+            padding: spacing.lg,
+            paddingBottom: layout.tabBar.contentBottomPadding,
+          }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

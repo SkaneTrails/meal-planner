@@ -23,6 +23,7 @@ import {
   fontFamily,
   fontSize,
   fontWeight,
+  layout,
   letterSpacing,
   spacing,
 } from '@/lib/theme';
@@ -78,7 +79,9 @@ export default function MealPlanScreen() {
 
   return (
     <GradientBackground structured>
-      <View style={{ flex: 1, paddingBottom: 70 }}>
+      <View
+        style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
+      >
         {/* Header */}
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}
@@ -128,7 +131,7 @@ export default function MealPlanScreen() {
               style={{ flex: 1 }}
               contentContainerStyle={{
                 paddingHorizontal: 20,
-                paddingBottom: 70,
+                paddingBottom: layout.tabBar.contentBottomPadding,
               }}
               onScroll={onScroll}
               scrollEventThrottle={16}

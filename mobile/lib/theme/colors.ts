@@ -85,6 +85,16 @@ export const lightColors = {
     border: 'rgba(0, 0, 0, 0.04)',
   },
 
+  // Tab bar — acrylic floating nav
+  tabBar: {
+    bg: 'rgba(235, 228, 219, 0.7)',
+    bgFallback: 'rgba(235, 228, 219, 0.92)',
+    border: 'rgba(93, 78, 64, 0.1)',
+    active: '#5D4E40',
+    inactive: '#8B7355',
+    focusBg: 'rgba(93, 78, 64, 0.12)',
+  },
+
   // AI enhancement theming — unified sage green palette
   ai: {
     primary: '#6B8E6B',
