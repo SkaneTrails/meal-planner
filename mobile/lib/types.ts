@@ -5,6 +5,7 @@
 
 // Recipe types
 export type DietLabel = 'veggie' | 'fish' | 'meat';
+export type LibraryScope = 'all' | 'mine';
 export type MealLabel =
   | 'breakfast'
   | 'starter'
@@ -144,6 +145,20 @@ export interface PaginatedRecipeList {
   total_count: number | null;
   next_cursor: string | null;
   has_more: boolean;
+}
+
+// Recipe Note types
+export interface RecipeNote {
+  id: string;
+  recipe_id: string;
+  household_id: string;
+  text: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface RecipeNoteCreate {
+  text: string;
 }
 
 // Meal Plan types

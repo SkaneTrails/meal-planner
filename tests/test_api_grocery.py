@@ -95,7 +95,7 @@ class TestGenerateGroceryList:
         assert "household" in response.json()["detail"].lower()
 
     def test_generate_with_custom_meals_only(self, client: TestClient) -> None:
-        """Should skip custom meals (not recipes)."""
+        """Should include custom meals as simple grocery items."""
         meals = {"2025-01-15_lunch": "custom:Eating out"}
         with (
             patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
@@ -105,7 +105,9 @@ class TestGenerateGroceryList:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["items"] == []
+        assert len(data["items"]) == 1
+        assert data["items"][0]["name"] == "Eating out"
+        assert data["items"][0]["category"] == "other"
 
     def test_generate_with_recipe(self, client: TestClient) -> None:
         """Should include ingredients from recipes."""

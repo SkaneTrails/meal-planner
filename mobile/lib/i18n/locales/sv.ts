@@ -139,6 +139,8 @@ const sv: Translations = {
     mealTypeCount: '{{count}} typer',
     sort: 'Sortera',
     favorites: 'Favoriter',
+    scopeAll: 'Alla',
+    scopeMine: 'Mina',
     noMatchesFound: 'Inga träffar',
     emptyLibrary: 'Din receptbok är tom',
     tryAdjusting: 'Prova att ändra din sökning eller dina filter',
@@ -250,6 +252,17 @@ const sv: Translations = {
     shareMessage: 'Kolla in det här receptet: {{title}}\n\n{{url}}',
     copyToHousehold: 'Kopiera till ditt hushåll',
     share: 'Dela',
+    // Notes
+    notes: 'Anteckningar',
+    notesPlaceholder: 'Lägg till en anteckning...',
+    addNote: 'Lägg till',
+    deleteNote: 'Ta bort anteckning',
+    deleteNoteConfirm: 'Ta bort den här anteckningen?',
+    noteAdded: 'Anteckning tillagd',
+    noteDeleted: 'Anteckning borttagen',
+    noteAddFailed: 'Kunde inte lägga till anteckning',
+    noteDeleteFailed: 'Kunde inte ta bort anteckning',
+    noNotes: 'Inga anteckningar än',
   },
 
   mealPlan: {

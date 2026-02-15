@@ -18,7 +18,7 @@ import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { type AppLanguage, useSettings } from '@/lib/settings-context';
+import { useSettings } from '@/lib/settings-context';
 import { colors, fontFamily, fontSize, layout, spacing } from '@/lib/theme';
 
 export default function SettingsScreen() {

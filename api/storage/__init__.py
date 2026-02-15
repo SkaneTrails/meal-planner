@@ -3,6 +3,7 @@
 from api.storage.firestore_client import (
     GROCERY_LISTS_COLLECTION,
     MEAL_PLANS_COLLECTION,
+    RECIPE_NOTES_COLLECTION,
     RECIPES_COLLECTION,
     get_firestore_client,
 )
@@ -14,6 +15,7 @@ from api.storage.meal_plan_storage import (
     update_day_note,
     update_meal,
 )
+from api.storage.recipe_notes_storage import create_note, delete_note, list_notes
 from api.storage.recipe_queries import get_all_recipes, get_recipes_by_ids, get_recipes_paginated
 from api.storage.recipe_storage import (
     delete_recipe,
@@ -29,7 +31,10 @@ __all__ = [
     "GROCERY_LISTS_COLLECTION",
     "MEAL_PLANS_COLLECTION",
     "RECIPES_COLLECTION",
+    "RECIPE_NOTES_COLLECTION",
+    "create_note",
     "delete_meal",
+    "delete_note",
     "delete_recipe",
     "find_recipe_by_url",
     "get_all_recipes",
@@ -37,6 +42,7 @@ __all__ = [
     "get_recipe",
     "get_recipes_by_ids",
     "get_recipes_paginated",
+    "list_notes",
     "load_day_notes",
     "load_meal_plan",
     "normalize_url",

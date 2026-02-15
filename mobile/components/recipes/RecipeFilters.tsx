@@ -9,7 +9,7 @@ import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { borderRadius, colors, fontFamily, fontSize } from '@/lib/theme';
-import type { DietLabel } from '@/lib/types';
+import type { DietLabel, LibraryScope } from '@/lib/types';
 
 interface SearchBarProps {
   searchQuery: string;
@@ -86,10 +86,12 @@ export const SearchBar = ({
 interface FilterChipsProps {
   dietFilter: DietLabel | null;
   showFavoritesOnly: boolean;
+  libraryScope: LibraryScope;
   sortBy: string;
   sortOptions: { value: string; label: string }[];
   onDietChange: (diet: DietLabel | null) => void;
   onFavoritesToggle: () => void;
+  onLibraryScopeChange: (scope: LibraryScope) => void;
   onSortPress: () => void;
   t: TFunction;
 }
@@ -103,10 +105,12 @@ const DIET_CHIPS: { diet: DietLabel; emoji: string; activeColor: string }[] = [
 export const FilterChips = ({
   dietFilter,
   showFavoritesOnly,
+  libraryScope,
   sortBy,
   sortOptions,
   onDietChange,
   onFavoritesToggle,
+  onLibraryScopeChange,
   onSortPress,
   t,
 }: FilterChipsProps) => (
@@ -116,6 +120,67 @@ export const FilterChips = ({
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
     >
+      {/* Library scope toggle */}
+      <View
+        style={{
+          flexDirection: 'row',
+          borderRadius: 14,
+          borderWidth: 1,
+          borderColor: 'rgba(139, 115, 85, 0.3)',
+          overflow: 'hidden',
+        }}
+      >
+        <Pressable
+          onPress={() => {
+            hapticLight();
+            onLibraryScopeChange('all');
+          }}
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            backgroundColor:
+              libraryScope === 'all'
+                ? colors.button.primary
+                : colors.glass.dark,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 13,
+              fontFamily: fontFamily.bodySemibold,
+              color:
+                libraryScope === 'all' ? colors.white : colors.content.body,
+            }}
+          >
+            {t('recipes.scopeAll')}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            hapticLight();
+            onLibraryScopeChange('mine');
+          }}
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            backgroundColor:
+              libraryScope === 'mine'
+                ? colors.button.primary
+                : colors.glass.dark,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 13,
+              fontFamily: fontFamily.bodySemibold,
+              color:
+                libraryScope === 'mine' ? colors.white : colors.content.body,
+            }}
+          >
+            {t('recipes.scopeMine')}
+          </Text>
+        </Pressable>
+      </View>
       {/* All chip */}
       <AnimatedPressable
         onPress={() => {

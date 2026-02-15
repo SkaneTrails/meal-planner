@@ -9,11 +9,13 @@ import { RecipeEnhancedInfo } from './RecipeEnhancedInfo';
 import { RecipeIngredientsList } from './RecipeIngredientsList';
 import { RecipeInstructions } from './RecipeInstructions';
 import { RecipeMetaLabels } from './RecipeMetaLabels';
+import { RecipeNotes } from './RecipeNotes';
 import { RecipeTags } from './RecipeTags';
 import { RecipeTimeServings } from './RecipeTimeServings';
 
 interface RecipeContentProps {
   recipe: Recipe;
+  recipeId: string;
   totalTime: number | null;
   completedSteps: Set<number>;
   showAiChanges: boolean;
@@ -37,6 +39,7 @@ interface RecipeContentProps {
 
 export const RecipeContent = ({
   recipe,
+  recipeId,
   totalTime,
   completedSteps,
   showAiChanges,
@@ -145,6 +148,8 @@ export const RecipeContent = ({
         t={t}
         onToggleAiChanges={onToggleAiChanges}
       />
+
+      <RecipeNotes recipeId={recipeId} t={t} />
 
       <RecipeActionsFooter
         url={recipe.url}

@@ -9,6 +9,7 @@ from api.auth.firebase import require_auth
 from api.auth.helpers import require_household
 from api.auth.models import AuthenticatedUser
 from api.models.grocery_list import (
+    GroceryCategory,
     GroceryItem,
     GroceryList,
     GroceryListState,
@@ -29,6 +30,30 @@ _MEAL_KEY_PARTS = 2
 def _get_today() -> date:
     """Get today's date (UTC)."""
     return datetime.now(tz=UTC).date()
+
+
+def _collect_meal_entries(meals: dict[str, str], start: date, end: date) -> tuple[set[str], list[str]]:
+    """Split meal plan entries into recipe IDs and custom meal texts for a date range."""
+    recipe_ids: set[str] = set()
+    custom_meal_texts: list[str] = []
+    for key, value in meals.items():
+        parts = key.rsplit("_", 1)
+        if len(parts) != _MEAL_KEY_PARTS:
+            continue
+        date_str, _ = parts
+        try:
+            meal_date = date.fromisoformat(date_str)
+        except ValueError:
+            continue
+
+        if start <= meal_date <= end:
+            if value.startswith("custom:"):
+                custom_text = value.removeprefix("custom:").strip()
+                if custom_text:
+                    custom_meal_texts.append(custom_text)
+            else:
+                recipe_ids.add(value)
+    return recipe_ids, custom_meal_texts
 
 
 @router.get("")
@@ -53,21 +78,7 @@ async def generate_grocery_list(
     # Load meal plan
     meals, _, extras = meal_plan_storage.load_meal_plan(household_id)
 
-    # Collect recipe IDs for the date range
-    recipe_ids: set[str] = set()
-    for key, value in meals.items():
-        parts = key.rsplit("_", 1)
-        if len(parts) != _MEAL_KEY_PARTS:
-            continue
-        date_str, _ = parts
-        try:
-            meal_date = date.fromisoformat(date_str)
-        except ValueError:
-            continue
-
-        # Check date range and skip custom meals
-        if effective_start <= meal_date <= effective_end and not value.startswith("custom:"):
-            recipe_ids.add(value)
+    recipe_ids, custom_meal_texts = _collect_meal_entries(meals, effective_start, effective_end)
 
     # Also include extras (Other section) - these are not date-bound
     for extra_id in extras:
@@ -97,6 +108,10 @@ async def generate_grocery_list(
             )
 
             grocery_list.add_item(item)
+
+    # Add custom (quick) meals as simple grocery items
+    for text in custom_meal_texts:
+        grocery_list.add_item(GroceryItem(name=text, category=GroceryCategory.OTHER, recipe_sources=[text]))
 
     return grocery_list
 

@@ -139,6 +139,8 @@ const it: Translations = {
     mealTypeCount: '{{count}} tipi',
     sort: 'Ordina',
     favorites: 'Preferiti',
+    scopeAll: 'Tutte',
+    scopeMine: 'Mie',
     noMatchesFound: 'Nessun risultato',
     emptyLibrary: 'Il tuo ricettario è vuoto',
     tryAdjusting: 'Prova a modificare la ricerca o i filtri',
@@ -256,6 +258,17 @@ const it: Translations = {
     shareMessage: "Dai un'occhiata a questa ricetta: {{title}}\n\n{{url}}",
     copyToHousehold: 'Copia nel tuo nucleo familiare',
     share: 'Condividi',
+    // Notes
+    notes: 'Note',
+    notesPlaceholder: 'Aggiungi una nota...',
+    addNote: 'Aggiungi',
+    deleteNote: 'Elimina nota',
+    deleteNoteConfirm: 'Eliminare questa nota?',
+    noteAdded: 'Nota aggiunta',
+    noteDeleted: 'Nota eliminata',
+    noteAddFailed: 'Impossibile aggiungere la nota',
+    noteDeleteFailed: 'Impossibile eliminare la nota',
+    noNotes: 'Nessuna nota',
   },
 
   mealPlan: {
