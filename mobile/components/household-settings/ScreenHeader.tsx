@@ -64,10 +64,15 @@ export const ScreenHeader = ({
             disabled={isSaving}
             style={({ pressed }) => ({
               backgroundColor: pressed ? colors.accentDark : colors.accent,
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm,
-              borderRadius: borderRadius.md,
+              paddingHorizontal: 24,
+              paddingVertical: 10,
+              borderRadius: borderRadius.lg,
               opacity: isSaving ? 0.6 : 1,
+              shadowColor: colors.accent,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 3,
             })}
           >
             {isSaving ? (

@@ -24,6 +24,8 @@ class DietaryConfig:
     """Dietary preferences loaded from household Firestore settings."""
 
     meat_strategy: str = "none"
+    meat_eaters: int = 0
+    vegetarians: int = 0
     chicken_alternative: str = "quorn"
     meat_alternative: str = "oumph"
     minced_meat: str = "regular"
@@ -46,15 +48,33 @@ class DietaryConfig:
             portions = int(meat_portions)
             if portions == 0:
                 meat_strategy = "none"
+                meat_eaters = 0
+                vegetarians = household_size
             elif portions >= household_size:
                 meat_strategy = "none"  # everyone eats meat, no strategy needed
+                meat_eaters = household_size
+                vegetarians = 0
             else:
                 meat_strategy = "split"
+                meat_eaters = portions
+                vegetarians = household_size - portions
         else:
-            meat_strategy = dietary.get("meat") or "none"
+            legacy = dietary.get("meat") or "none"
+            meat_strategy = legacy
+            if legacy == "split":
+                meat_eaters = 1
+                vegetarians = max(household_size - 1, 1)
+            elif legacy in ("all", "none"):
+                meat_eaters = household_size if legacy == "all" else 0
+                vegetarians = 0 if legacy == "all" else household_size
+            else:
+                meat_eaters = 0
+                vegetarians = 0
 
         return cls(
             meat_strategy=meat_strategy,
+            meat_eaters=meat_eaters,
+            vegetarians=vegetarians,
             chicken_alternative=dietary.get("chicken_alternative") or "quorn",
             meat_alternative=dietary.get("meat_alternative") or "oumph",
             minced_meat=dietary.get("minced_meat") or "regular",

@@ -122,7 +122,7 @@ export const DietarySection = ({
               style={{
                 fontSize: fontSize.md,
                 fontWeight: fontWeight.medium,
-                color: colors.text.inverse,
+                color: colors.text.dark,
               }}
             >
               {t('householdSettings.dietary.seafood')}
@@ -130,7 +130,7 @@ export const DietarySection = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.inverse + '80',
+                color: colors.text.dark + '80',
               }}
             >
               {t('householdSettings.dietary.seafoodDesc')}
@@ -161,7 +161,7 @@ export const DietarySection = ({
         <Text
           style={{
             fontSize: fontSize.sm,
-            color: colors.text.inverse + '80',
+            color: colors.text.dark + '80',
             marginBottom: spacing.md,
           }}
         >
@@ -195,7 +195,7 @@ export const DietarySection = ({
               style={{
                 fontSize: 28,
                 fontWeight: fontWeight.bold,
-                color: colors.text.inverse,
+                color: colors.text.dark,
               }}
             >
               {meatPortions}
@@ -203,7 +203,7 @@ export const DietarySection = ({
             <Text
               style={{
                 fontSize: fontSize.xs,
-                color: colors.text.inverse + '80',
+                color: colors.text.dark + '80',
               }}
             >
               {t('householdSettings.dietary.portionsOf', {
@@ -233,7 +233,7 @@ export const DietarySection = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              color: colors.text.inverse + '60',
+              color: colors.text.dark + '60',
               textAlign: 'center',
               marginTop: spacing.sm,
               fontStyle: 'italic',
@@ -257,7 +257,7 @@ export const DietarySection = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              color: colors.text.inverse + '80',
+              color: colors.text.dark + '80',
               marginBottom: spacing.sm,
             }}
           >
@@ -275,7 +275,7 @@ export const DietarySection = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              color: colors.text.inverse + '80',
+              color: colors.text.dark + '80',
               marginTop: spacing.md,
               marginBottom: spacing.sm,
             }}
@@ -334,7 +334,7 @@ const textInputStyle = {
   borderRadius: borderRadius.md,
   padding: spacing.md,
   fontSize: fontSize.md,
-  color: colors.text.inverse,
+  color: colors.text.dark,
   borderWidth: 1,
   borderColor: colors.border,
 };

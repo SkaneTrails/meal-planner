@@ -7,7 +7,6 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { GradientBackground } from '@/components';
 import {
-  BottomSaveBar,
   DietarySection,
   EquipmentSection,
   GeneralSection,
@@ -119,10 +118,6 @@ export default function HouseholdSettingsScreen() {
               onToggleEquipment={form.toggleEquipment}
             />
           </ScrollView>
-
-          {form.canEdit && form.hasChanges && (
-            <BottomSaveBar isSaving={form.isSaving} onSave={form.handleSave} />
-          )}
         </View>
       )}
     </GradientBackground>

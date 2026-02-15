@@ -187,14 +187,12 @@ const ModalHeader = ({
           style={{
             fontSize: fontSize['2xl'],
             fontWeight: fontWeight.bold,
-            color: colors.text.inverse,
+            color: colors.text.primary,
           }}
         >
           {household.name}
         </Text>
-        <Text
-          style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
-        >
+        <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary }}>
           {t('admin.createdBy', { email: household.created_by })}
         </Text>
       </View>
@@ -218,7 +216,7 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
         style={{
           fontSize: fontSize.xl,
           fontWeight: fontWeight.semibold,
-          color: colors.text.inverse,
+          color: colors.text.dark,
         }}
       >
         {t('admin.members')}
@@ -280,14 +278,14 @@ const MemberCard = ({
           style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.medium,
-            color: colors.text.inverse,
+            color: colors.text.dark,
           }}
         >
           {member.display_name || member.email}
         </Text>
         {member.display_name && (
           <Text
-            style={{ fontSize: fontSize.sm, color: colors.text.inverse + '80' }}
+            style={{ fontSize: fontSize.sm, color: colors.text.dark + '80' }}
           >
             {member.email}
           </Text>
