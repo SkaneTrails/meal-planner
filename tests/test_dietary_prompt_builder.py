@@ -67,16 +67,16 @@ class TestDietaryConfigFromFirestore:
         assert cfg.seafood_ok is True
 
     def test_meat_portions_all_meat(self) -> None:
-        """meat_portions == household_size means everyone eats meat, no strategy needed."""
+        """meat_portions == household_size means everyone eats meat."""
         cfg = DietaryConfig.from_firestore({"meat_portions": 4}, household_size=4)
-        assert cfg.meat_strategy == "none"
+        assert cfg.meat_strategy == "all"
         assert cfg.meat_eaters == 4
         assert cfg.vegetarians == 0
 
     def test_meat_portions_none(self) -> None:
         """meat_portions=0 means fully vegetarian."""
         cfg = DietaryConfig.from_firestore({"meat_portions": 0}, household_size=4)
-        assert cfg.meat_strategy == "none"
+        assert cfg.meat_strategy == "vegetarian"
         assert cfg.meat_eaters == 0
         assert cfg.vegetarians == 4
 

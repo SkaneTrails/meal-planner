@@ -35,7 +35,10 @@ export const AiSection = ({
 }: AiSectionProps) => {
   const { t } = useTranslation();
 
-  const meatPortions = dietary.meat_portions ?? defaultServings;
+  const meatPortions = Math.min(
+    dietary.meat_portions ?? defaultServings,
+    defaultServings,
+  );
 
   const handleMeatPortionsChange = (delta: number) => {
     const next = Math.max(0, Math.min(defaultServings, meatPortions + delta));

@@ -132,7 +132,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       }
       handlingUnauthorizedRef.current = true;
 
-      firebaseSignOut(auth!).catch((err) => {
+      firebaseSignOut(auth as NonNullable<typeof auth>).catch((err) => {
         if (__DEV__) {
           console.warn('Sign-out failed during unauthorized handling', err);
         }
@@ -201,7 +201,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
 
       const credential = GoogleAuthProvider.credential(id_token, access_token);
 
-      signInWithCredential(auth!, credential)
+      signInWithCredential(auth as NonNullable<typeof auth>, credential)
         .then(() => {
           setError(null);
         })
@@ -220,7 +220,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        await signInWithPopup(auth!, googleProvider);
+        await signInWithPopup(auth as NonNullable<typeof auth>, googleProvider);
       } else {
         await promptAsync();
       }
@@ -237,7 +237,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
 
   const signOut = useCallback(async () => {
     try {
-      await firebaseSignOut(auth!);
+      await firebaseSignOut(auth as NonNullable<typeof auth>);
       setError(null);
     } catch (_err) {
       setError('signOutFailed');

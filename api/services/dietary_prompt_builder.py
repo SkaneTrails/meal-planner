@@ -55,11 +55,11 @@ class DietaryConfig:
         if meat_portions is not None:
             portions = int(meat_portions)
             if portions == 0:
-                meat_strategy = "none"
+                meat_strategy = "vegetarian"
                 meat_eaters = 0
                 vegetarians = portion_base
             elif portions >= portion_base:
-                meat_strategy = "none"  # all portions are meat, no strategy needed
+                meat_strategy = "all"
                 meat_eaters = portion_base
                 vegetarians = 0
             else:

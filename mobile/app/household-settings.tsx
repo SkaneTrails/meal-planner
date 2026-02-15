@@ -1,7 +1,7 @@
 /**
  * Household Settings screen.
  * Allows admins to configure dietary preferences, equipment, and other household-level settings.
- * Sections are collapsible accordions — General is open by default.
+ * Sections are collapsible accordions — all start collapsed.
  */
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';

@@ -42,7 +42,7 @@ class DietarySettings(BaseModel):
         default=MAX_HOUSEHOLD_SIZE,
         ge=0,
         le=MAX_HOUSEHOLD_SIZE,
-        description="How many people in the household eat meat (0 = all vegetarian, max = household_size)",
+        description="How many portions contain meat, relative to default_servings (0 = all vegetarian, max = all meat)",
     )
     minced_meat: MincedMeatPreference = Field(
         default=MincedMeatPreference.MEAT, description="How to handle minced meat"

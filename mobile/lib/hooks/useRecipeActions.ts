@@ -70,14 +70,14 @@ export const useRecipeActions = (
     setIsUpdatingImage(true);
     try {
       const { api } = await import('@/lib/api');
-      await api.uploadRecipeImage(id!, localUri);
-      await updateRecipe.mutateAsync({ id: id!, updates: {} });
+      await api.uploadRecipeImage(id ?? '', localUri);
+      await updateRecipe.mutateAsync({ id: id ?? '', updates: {} });
       showNotification(t('common.success'), t('recipe.photoUploaded'));
     } catch (err) {
       console.warn('Upload failed, saving local URI:', err);
       try {
         await updateRecipe.mutateAsync({
-          id: id!,
+          id: id ?? '',
           updates: { image_url: localUri },
         });
         showNotification(
@@ -105,7 +105,10 @@ export const useRecipeActions = (
     if (!id) return;
     setIsUpdatingImage(true);
     try {
-      await updateRecipe.mutateAsync({ id: id!, updates: { image_url: url } });
+      await updateRecipe.mutateAsync({
+        id: id ?? '',
+        updates: { image_url: url },
+      });
       showNotification(t('common.success'), t('recipe.photoUpdated'));
     } catch {
       showNotification(t('common.error'), t('recipe.failedToUpdatePhoto'));
