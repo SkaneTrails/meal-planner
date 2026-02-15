@@ -1,6 +1,12 @@
 import type { StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, fontFamily, fontSize, letterSpacing } from '@/lib/theme';
+import {
+  colors,
+  fontFamily,
+  fontSize,
+  letterSpacing,
+  spacing,
+} from '@/lib/theme';
 
 interface ScreenTitleProps {
   title: string;
@@ -46,7 +52,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontFamily: fontFamily.body,
     color: colors.content.subtitle,
-    marginTop: 2,
+    marginTop: spacing['2xs'],
     textAlign: 'center',
   },
   largeTitle: {
@@ -54,7 +60,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.display,
     color: colors.text.primary,
     letterSpacing: letterSpacing.tight,
-    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowColor: colors.shadow.text,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
@@ -62,6 +68,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.lg,
     fontFamily: fontFamily.body,
     color: colors.text.secondary,
-    marginTop: 4,
+    letterSpacing: letterSpacing.normal,
+    marginTop: spacing.xs,
   },
 });

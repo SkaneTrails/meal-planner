@@ -110,6 +110,11 @@ export const lightColors = {
   info: '#42A5F5',
   infoBg: '#E3F2FD',
 
+  // Shadow colors — baked-in alpha for textShadow (no separate opacity prop)
+  shadow: {
+    text: 'rgba(0, 0, 0, 0.15)',
+  },
+
   // Glass/Blur effects - near-solid surfaces for app-like feel
   glass: {
     light: 'rgba(255, 255, 255, 0.88)',

@@ -155,8 +155,9 @@ vi.mock('@/lib/theme', () => ({
       inactive: '#8B7355',
       focusBg: 'rgba(93, 78, 64, 0.12)',
     },
+    shadow: { text: 'rgba(0, 0, 0, 0.15)' },
   },
-  spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, '2xl': 32, '3xl': 40, '4xl': 48 },
+  spacing: { '2xs': 2, xs: 4, sm: 8, md: 12, lg: 16, xl: 24, '2xl': 32, '3xl': 40, '4xl': 48 },
   layout: {
     screenPaddingTop: 60,
     screenPaddingHorizontal: 20,
