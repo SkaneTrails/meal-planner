@@ -76,7 +76,7 @@ export const DayHeader = ({
           style={{
             fontSize: fontSize.xl,
             fontFamily: fontFamily.bodySemibold,
-            color: isToday ? colors.primary : colors.content.heading,
+            color: isToday ? colors.primary : colors.content.headingMuted,
             letterSpacing: -0.2,
           }}
         >
