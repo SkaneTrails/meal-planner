@@ -134,12 +134,14 @@ vi.mock('@/lib/theme', () => ({
   colors: {
     primary: '#6366f1',
     bgDark: '#1e1e1e',
+    bgMid: '#F5E1D0',
     bgLight: '#f0f0f0',
     glass: { card: '#ffffff20', subtle: '#ffffff99', faint: '#ffffff80' },
     chip: { bg: '#e8ded4b3', border: '#8b735540', fishActive: '#2D7AB8', meatActive: '#B85C38', favoriteActive: '#C75050' },
     text: { inverse: '#fff', dark: '#000', secondary: '#888', muted: '#aaa', primary: '#333' },
     content: {
       heading: '#3D3D3D',
+      headingWarm: '#4A3728',
       body: '#5D4E40',
       secondary: '#8B7355',
       strong: 'rgba(93, 78, 64, 0.8)',
@@ -191,6 +193,28 @@ vi.mock('@/lib/theme', () => ({
       inactive: '#8B7355',
       focusBg: 'rgba(93, 78, 64, 0.12)',
     },
+    danger: '#DC2626',
+    overlay: {
+      backdrop: 'rgba(0, 0, 0, 0.5)',
+      backdropLight: 'rgba(0, 0, 0, 0.4)',
+    },
+    mealPlan: {
+      slotBg: 'rgba(240, 235, 228, 0.85)',
+      containerBg: 'rgba(245, 240, 235, 0.95)',
+      emptyBg: 'rgba(245, 242, 238, 0.7)',
+      emptyStateBg: 'rgba(240, 235, 228, 0.5)',
+    },
+    rating: {
+      positive: '#4A8B5C',
+      negative: '#B0645C',
+      positiveBg: 'rgba(76, 175, 80, 0.3)',
+      negativeBg: 'rgba(239, 83, 80, 0.3)',
+    },
+    timeline: {
+      badge: '#2D6A5A',
+      line: 'rgba(45, 106, 90, 0.15)',
+      completedText: '#166534',
+    },
     shadow: { text: 'rgba(0, 0, 0, 0.15)' },
   },
   spacing: { '2xs': 2, xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
@@ -214,7 +238,7 @@ vi.mock('@/lib/theme', () => ({
   fontFamily: { body: 'System', bodySemibold: 'System', heading: 'System', displayBold: 'System' },
   letterSpacing: { tighter: -0.8, tight: -0.5, normal: -0.2, wide: 0.8, wider: 1.2 },
   borderRadius: { sm: 4, md: 8, lg: 12, xl: 16, full: 9999 },
-  shadows: { sm: {}, md: {}, lg: {} },
+  shadows: { sm: {}, card: {}, md: {}, lg: {} },
   iconContainer: { sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
 }));
 
