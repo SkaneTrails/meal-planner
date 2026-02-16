@@ -1171,9 +1171,63 @@ class TestResolveRootId:
         assert _resolve_root_id(recipe, "abc") == "abc"
 
     def test_returns_copied_from_when_source_is_copy(self) -> None:
-        """Copy-of-a-copy should resolve to the root."""
+        """Direct copy should resolve to the original."""
         recipe = Recipe(id="copy_b", title="R", url="", ingredients=[], instructions=[], copied_from="root_a")
-        assert _resolve_root_id(recipe, "copy_b") == "root_a"
+
+        root_doc = MagicMock()
+        root_doc.exists = True
+        root_doc.to_dict.return_value = {"title": "Root"}
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.document.return_value.get.return_value = root_doc
+            result = _resolve_root_id(recipe, "copy_b")
+
+        assert result == "root_a"
+
+    def test_follows_transitive_chain_to_root(self) -> None:
+        """A->B->C chain: copying C should resolve to A."""
+        recipe_c = Recipe(id="C", title="R", url="", ingredients=[], instructions=[], copied_from="B")
+
+        doc_b = MagicMock()
+        doc_b.exists = True
+        doc_b.to_dict.return_value = {"copied_from": "A"}
+
+        doc_a = MagicMock()
+        doc_a.exists = True
+        doc_a.to_dict.return_value = {"title": "Root A"}
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.document.return_value.get.side_effect = [doc_b, doc_a]
+            result = _resolve_root_id(recipe_c, "C")
+
+        assert result == "A"
+
+    def test_stops_at_missing_document(self) -> None:
+        """Should return last valid ID if a document in the chain is missing."""
+        recipe = Recipe(id="copy", title="R", url="", ingredients=[], instructions=[], copied_from="deleted_id")
+
+        missing_doc = MagicMock()
+        missing_doc.exists = False
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.document.return_value.get.return_value = missing_doc
+            result = _resolve_root_id(recipe, "copy")
+
+        assert result == "deleted_id"
+
+    def test_handles_cycle_detection(self) -> None:
+        """Should stop if a cycle is detected in the chain."""
+        recipe = Recipe(id="X", title="R", url="", ingredients=[], instructions=[], copied_from="Y")
+
+        doc_y = MagicMock()
+        doc_y.exists = True
+        doc_y.to_dict.return_value = {"copied_from": "X"}
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.document.return_value.get.return_value = doc_y
+            result = _resolve_root_id(recipe, "X")
+
+        assert result == "Y"
 
 
 class TestFindExistingCopy:

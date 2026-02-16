@@ -446,10 +446,34 @@ def search_recipes(query: str, *, household_id: str | None = None, show_hidden: 
 def _resolve_root_id(source: Recipe, recipe_id: str) -> str:
     """Resolve the root original ID for copied_from.
 
-    If the source itself is a copy, follow the chain to the root.
-    This ensures all copies point to the same root for sibling dedup.
+    Follows the copied_from chain transitively until it reaches a recipe
+    with no copied_from (the root original). Handles legacy data where
+    intermediate copies may not already point to the root.
+
+    Includes cycle detection to avoid infinite loops on corrupted data.
     """
-    return source.copied_from or recipe_id
+    if not source.copied_from:
+        return recipe_id
+
+    db = get_firestore_client()
+    current_id = source.copied_from
+    visited: set[str] = {recipe_id, current_id}
+
+    while True:
+        doc = cast("DocumentSnapshot", db.collection(RECIPES_COLLECTION).document(current_id).get())
+        if not doc.exists:
+            return current_id
+
+        data = doc.to_dict()
+        if not data:
+            return current_id
+
+        next_id = data.get("copied_from")
+        if not next_id or next_id in visited:
+            return current_id
+
+        visited.add(next_id)
+        current_id = next_id
 
 
 def _find_existing_copy(household_id: str, root_id: str) -> str | None:
