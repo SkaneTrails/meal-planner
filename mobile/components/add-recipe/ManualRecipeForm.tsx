@@ -10,7 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { GradientBackground } from '@/components';
+import { GradientBackground, PrimaryButton } from '@/components';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   borderRadius,
@@ -257,59 +257,15 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
           </View>
 
           {/* Create button */}
-          <Pressable
+          <PrimaryButton
             onPress={handleCreateManual}
-            disabled={!title.trim() || isPending}
-            style={({ pressed }) => ({
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.md,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                title.trim() && !isPending ? colors.primary : colors.gray[300],
-              opacity: pressed ? 0.9 : 1,
-              ...shadows.md,
-            })}
-          >
-            {isPending ? (
-              <>
-                <Ionicons
-                  name="hourglass-outline"
-                  size={20}
-                  color={colors.white}
-                />
-                <Text
-                  style={{
-                    marginLeft: spacing.sm,
-                    color: colors.white,
-                    fontSize: fontSize.lg,
-                    fontWeight: '600',
-                  }}
-                >
-                  {t('addRecipe.creating')}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={20}
-                  color={colors.white}
-                />
-                <Text
-                  style={{
-                    marginLeft: spacing.sm,
-                    color: colors.white,
-                    fontSize: fontSize.lg,
-                    fontWeight: '600',
-                  }}
-                >
-                  {t('addRecipe.createButton')}
-                </Text>
-              </>
-            )}
-          </Pressable>
+            disabled={!title.trim()}
+            isPending={isPending}
+            icon="checkmark-circle-outline"
+            label={t('addRecipe.createButton')}
+            loadingLabel={t('addRecipe.creating')}
+            color={colors.primary}
+          />
         </ScrollView>
       </GradientBackground>
     </KeyboardAvoidingView>

@@ -5,14 +5,12 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
-import { FullScreenLoading, GradientBackground } from '@/components';
+  FullScreenLoading,
+  GradientBackground,
+  PrimaryButton,
+} from '@/components';
 import {
   DIET_OPTIONS,
   MEAL_OPTIONS,
@@ -32,7 +30,6 @@ import {
   fontSize,
   layout,
   letterSpacing,
-  shadows,
   spacing,
 } from '@/lib/theme';
 import type {
@@ -264,32 +261,12 @@ export default function ReviewRecipeScreen() {
           padding: spacing.lg,
         }}
       >
-        <Pressable
+        <PrimaryButton
           onPress={handleSave}
-          disabled={createRecipe.isPending}
-          style={({ pressed }) => ({
-            backgroundColor: colors.primary,
-            paddingVertical: spacing.md,
-            borderRadius: borderRadius.md,
-            alignItems: 'center',
-            opacity: pressed || createRecipe.isPending ? 0.8 : 1,
-            ...shadows.md,
-          })}
-        >
-          {createRecipe.isPending ? (
-            <ActivityIndicator size="small" color={colors.white} />
-          ) : (
-            <Text
-              style={{
-                fontSize: fontSize.xl,
-                fontFamily: fontFamily.bodySemibold,
-                color: colors.white,
-              }}
-            >
-              {t('reviewRecipe.saveRecipe')}
-            </Text>
-          )}
-        </Pressable>
+          isPending={createRecipe.isPending}
+          label={t('reviewRecipe.saveRecipe')}
+          color={colors.primary}
+        />
       </View>
     </GradientBackground>
   );

@@ -5,6 +5,7 @@ import {
   AnimatedPressable,
   GradientBackground,
   HomeScreenSkeleton,
+  PrimaryButton,
 } from '@/components';
 import { AddRecipeModal } from '@/components/home/AddRecipeModal';
 import { InspirationSection } from '@/components/home/InspirationSection';
@@ -179,37 +180,11 @@ const Header = ({
 
 const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => (
   <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
-    <AnimatedPressable
+    <PrimaryButton
       onPress={onPress}
-      hoverScale={1.02}
-      pressScale={0.97}
-      style={{
-        backgroundColor: colors.button.primary,
-        borderRadius: borderRadius.md,
-        paddingVertical: 14,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...shadows.md,
-      }}
-    >
-      <Ionicons
-        name="add-circle-outline"
-        size={20}
-        color={colors.white}
-        style={{ marginRight: 8 }}
-      />
-      <Text
-        style={{
-          color: colors.white,
-          fontSize: fontSize.md,
-          fontFamily: fontFamily.bodySemibold,
-        }}
-      >
-        {t('home.addRecipe.title')}
-      </Text>
-    </AnimatedPressable>
+      icon="add-circle-outline"
+      label={t('home.addRecipe.title')}
+    />
   </View>
 );
 

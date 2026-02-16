@@ -77,6 +77,22 @@ vi.mock('@/components/FullScreenLoading', () => ({
   },
 }));
 
+// Mock @/components/PrimaryButton (same reason — prevent loading AnimatedPressable chain)
+vi.mock('@/components/PrimaryButton', () => ({
+  PrimaryButton: ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
+    const { createElement } = require('react');
+    const displayLabel = isPending && loadingLabel ? loadingLabel : label;
+    return createElement('button', {
+      onClick: onPress,
+      disabled: disabled || isPending,
+      'data-testid': 'primary-button',
+    },
+      icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
+      displayLabel,
+    );
+  },
+}));
+
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
@@ -87,6 +103,18 @@ vi.mock('@/components', () => ({
       title && createElement('span', null, title),
       subtitle && createElement('span', null, subtitle),
       children,
+    );
+  },
+  PrimaryButton: ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
+    const { createElement } = require('react');
+    const displayLabel = isPending && loadingLabel ? loadingLabel : label;
+    return createElement('button', {
+      onClick: onPress,
+      disabled: disabled || isPending,
+      'data-testid': 'primary-button',
+    },
+      icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
+      displayLabel,
     );
   },
   AnimatedPressable: ({ children, onPress, ...props }: any) => {

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { BottomSheetModal } from '@/components';
+import { BottomSheetModal, PrimaryButton } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { colors, fontFamily } from '@/lib/theme';
@@ -66,34 +66,15 @@ export const GrocerySelectionModal = ({
           borderTopColor: 'rgba(0, 0, 0, 0.06)',
         }}
       >
-        <Pressable
+        <PrimaryButton
           onPress={() => {
             hapticSuccess();
             onCreateGroceryList();
           }}
-          style={({ pressed }) => ({
-            backgroundColor:
-              selectedMeals.size > 0
-                ? pressed
-                  ? colors.content.body
-                  : colors.button.primary
-                : 'rgba(122, 104, 88, 0.2)',
-            paddingVertical: 16,
-            borderRadius: 14,
-            alignItems: 'center',
-          })}
           disabled={selectedMeals.size === 0}
-        >
-          <Text
-            style={{
-              fontSize: 17,
-              fontFamily: fontFamily.bodySemibold,
-              color: selectedMeals.size > 0 ? '#fff' : colors.content.icon,
-            }}
-          >
-            {t('mealPlan.createGroceryList', { count: selectedMeals.size })}
-          </Text>
-        </Pressable>
+          label={t('mealPlan.createGroceryList', { count: selectedMeals.size })}
+          pressedColor={colors.content.body}
+        />
       </View>
     }
   >
