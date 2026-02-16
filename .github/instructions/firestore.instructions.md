@@ -33,6 +33,7 @@ The `created_at` field is **required** for queries.
     "household_id": str | None,      # Owning household (None = legacy/unassigned)
     "visibility": str,               # "household" (private) | "shared" (public)
     "created_by": str | None,        # User ID who created the recipe
+    "copied_from": str | None,       # Source recipe ID when copied from shared (for dedup)
 
     # Optional metadata
     "image_url": str | None,            # Hero image (800x600) for detail screen

@@ -4,6 +4,7 @@ import { Share } from 'react-native';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight, hapticSuccess, hapticWarning } from '@/lib/haptics';
 import {
+  useCopyRecipe,
   useCurrentUser,
   useDeleteRecipe,
   useEnhanceRecipe,
@@ -50,6 +51,7 @@ export const useRecipeActions = (
   const setMeal = useSetMeal();
   const reviewEnhancement = useReviewEnhancement();
   const enhanceRecipe = useEnhanceRecipe();
+  const copyRecipe = useCopyRecipe();
 
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
@@ -355,6 +357,31 @@ export const useRecipeActions = (
 
   const canEnhance = Boolean(isOwned && !recipe?.enhanced);
 
+  const isSharedOrLegacy =
+    recipe?.household_id == null || recipe?.visibility === 'shared';
+  const canCopy = Boolean(!isOwned && isSharedOrLegacy);
+
+  const handleCopyRecipe = async () => {
+    if (!id || !recipe) return;
+    showAlert(t('recipe.copyToHousehold'), t('recipe.copyConfirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('recipe.copy'),
+        onPress: async () => {
+          try {
+            const copied = await copyRecipe.mutateAsync(id);
+            hapticSuccess();
+            showNotification(t('common.success'), t('recipe.copySuccess'));
+            router.replace(`/recipe/${copied.id}`);
+          } catch {
+            hapticWarning();
+            showNotification(t('common.error'), t('recipe.copyFailed'));
+          }
+        },
+      },
+    ]);
+  };
+
   const handleEnhanceRecipe = async () => {
     if (!id || !recipe) return;
     showAlert(t('recipe.enhanceRecipe'), t('recipe.enhanceConfirm'), [
@@ -383,6 +410,8 @@ export const useRecipeActions = (
     isSuperuser,
     households,
     canEdit,
+    canCopy,
+    isCopying: copyRecipe.isPending,
     isUpdatingImage,
     isReviewingEnhancement: reviewEnhancement.isPending,
     needsEnhancementReview,
@@ -403,6 +432,7 @@ export const useRecipeActions = (
     handleThumbDown,
     handleDelete,
     handleShare,
+    handleCopyRecipe,
     handleSaveEdit,
     handleTransferRecipe,
     handleReviewEnhancement,

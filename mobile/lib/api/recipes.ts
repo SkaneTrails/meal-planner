@@ -152,6 +152,12 @@ export const recipeApi = {
     });
   },
 
+  copyRecipe: (id: string): Promise<Recipe> => {
+    return apiRequest<Recipe>(`/recipes/${id}/copy`, {
+      method: 'POST',
+    });
+  },
+
   uploadRecipeImage: async (id: string, imageUri: string): Promise<Recipe> => {
     const url = `${API_BASE_URL}${API_PREFIX}/recipes/${id}/image`;
     const formData = new FormData();

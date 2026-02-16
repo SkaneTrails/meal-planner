@@ -128,6 +128,17 @@ def _try_enhance_preview(
         return None
 
 
+def _recipe_data_for_enhancement(recipe: Recipe) -> dict:
+    """Build the data dict for Gemini, overlaying original scraped data when available."""
+    data = recipe.model_dump()
+    if recipe.original:
+        original = recipe.original.model_dump()
+        for key in ("title", "ingredients", "instructions", "servings", "prep_time", "cook_time", "total_time"):
+            if key in original:
+                data[key] = original[key]
+    return data
+
+
 @router.post("/{recipe_id}/enhance", status_code=status.HTTP_200_OK)
 async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
     """Enhance a recipe using AI (Gemini).
@@ -167,10 +178,11 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
         target_recipe = copied
 
     config = _get_household_config(household_id)
+    recipe_data = _recipe_data_for_enhancement(target_recipe)
 
     try:
         enhanced_data = do_enhance(
-            target_recipe.model_dump(),
+            recipe_data,
             language=config.language,
             equipment=config.equipment,
             target_servings=config.target_servings,

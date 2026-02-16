@@ -251,6 +251,11 @@ const sv: Translations = {
     couldNotOpenUrl: 'Kunde inte öppna receptets URL',
     shareMessage: 'Kolla in det här receptet: {{title}}\n\n{{url}}',
     copyToHousehold: 'Kopiera till ditt hushåll',
+    copy: 'Kopiera',
+    copyConfirm:
+      'Detta skapar en privat kopia i ditt hushåll. Du kan sedan förbättra den med dina preferenser.',
+    copySuccess: 'Receptet kopierat till ditt hushåll',
+    copyFailed: 'Kunde inte kopiera receptet',
     share: 'Dela',
     // Notes
     notes: 'Anteckningar',

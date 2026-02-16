@@ -257,6 +257,11 @@ const it: Translations = {
     couldNotOpenUrl: "Impossibile aprire l'URL della ricetta",
     shareMessage: "Dai un'occhiata a questa ricetta: {{title}}\n\n{{url}}",
     copyToHousehold: 'Copia nel tuo nucleo familiare',
+    copy: 'Copia',
+    copyConfirm:
+      'Verrà creata una copia privata nel tuo nucleo familiare. Potrai poi migliorarla con le tue preferenze.',
+    copySuccess: 'Ricetta copiata nel tuo nucleo familiare',
+    copyFailed: 'Impossibile copiare la ricetta',
     share: 'Condividi',
     // Notes
     notes: 'Note',

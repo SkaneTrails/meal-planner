@@ -9,6 +9,7 @@ const mockSetMealMutateAsync = vi.fn();
 const mockTransferMutateAsync = vi.fn();
 const mockReviewMutateAsync = vi.fn();
 const mockEnhanceMutateAsync = vi.fn();
+const mockCopyMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
 
@@ -20,6 +21,7 @@ vi.mock('@/lib/hooks', () => ({
   useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
   useReviewEnhancement: vi.fn(() => ({ mutateAsync: mockReviewMutateAsync, isPending: false })),
   useEnhanceRecipe: vi.fn(() => ({ mutateAsync: mockEnhanceMutateAsync, isPending: false })),
+  useCopyRecipe: vi.fn(() => ({ mutateAsync: mockCopyMutateAsync, isPending: false })),
 }));
 
 vi.mock('@/lib/hooks/use-admin', () => ({
@@ -98,6 +100,7 @@ beforeEach(() => {
   mockSetMealMutateAsync.mockResolvedValue(undefined);
   mockReviewMutateAsync.mockResolvedValue(undefined);
   mockEnhanceMutateAsync.mockResolvedValue(undefined);
+  mockCopyMutateAsync.mockResolvedValue({ id: 'copied-recipe-1' });
   mockUseCurrentUser.mockReturnValue({ data: mockCurrentUser() } as any);
 });
 
@@ -524,6 +527,81 @@ describe('useRecipeActions', () => {
       await act(async () => enhanceButton.onPress!());
 
       expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.enhanceFailed');
+    });
+  });
+
+  describe('canCopy', () => {
+    it('returns true for shared recipe not owned by user', () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canCopy).toBe(true);
+    });
+
+    it('returns true for legacy recipe with no household_id', () => {
+      const recipe = makeRecipe({ household_id: null });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canCopy).toBe(true);
+    });
+
+    it('returns false for owned recipe', () => {
+      const recipe = makeRecipe({ household_id: 'household-abc', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canCopy).toBe(false);
+    });
+
+    it('returns false for non-owned private recipe', () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'household' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.canCopy).toBe(false);
+    });
+  });
+
+  describe('handleCopyRecipe', () => {
+    it('does nothing when id is undefined', async () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions(undefined, recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+      expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it('shows confirmation dialog', async () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.copyToHousehold',
+        'recipe.copyConfirm',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel' }),
+          expect.objectContaining({ text: 'recipe.copy' }),
+        ]),
+      );
+    });
+
+    it('calls copyRecipe and navigates to copy on success', async () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const copyButton = buttons.find(b => b.text === 'recipe.copy')!;
+      await act(async () => copyButton.onPress!());
+
+      expect(mockCopyMutateAsync).toHaveBeenCalledWith('recipe-1');
+      expect(mockShowNotification).toHaveBeenCalledWith('common.success', 'recipe.copySuccess');
+    });
+
+    it('shows error notification on failure', async () => {
+      mockCopyMutateAsync.mockRejectedValue(new Error('Copy failed'));
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const copyButton = buttons.find(b => b.text === 'recipe.copy')!;
+      await act(async () => copyButton.onPress!());
+
+      expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.copyFailed');
     });
   });
 });

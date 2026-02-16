@@ -256,6 +256,11 @@ const en = {
     couldNotOpenUrl: 'Could not open the recipe URL',
     shareMessage: 'Check out this recipe: {{title}}\n\n{{url}}',
     copyToHousehold: 'Copy to your household',
+    copy: 'Copy',
+    copyConfirm:
+      'This will create a private copy in your household. You can then enhance it with your preferences.',
+    copySuccess: 'Recipe copied to your household',
+    copyFailed: 'Failed to copy recipe',
     share: 'Share',
     // Notes
     notes: 'Notes',
