@@ -11,6 +11,7 @@ interface RecipeActionButtonsProps {
   isCopying: boolean;
   canEnhance: boolean;
   isEnhancing: boolean;
+  isOwned: boolean | undefined;
   aiEnabled: boolean;
   t: TFunction;
   onOpenEditModal: () => void;
@@ -33,6 +34,7 @@ export const RecipeActionButtons = ({
   isCopying,
   canEnhance,
   isEnhancing,
+  isOwned,
   aiEnabled,
   t,
   onOpenEditModal,
@@ -40,89 +42,83 @@ export const RecipeActionButtons = ({
   onShare,
   onCopy,
   onEnhance,
-}: RecipeActionButtonsProps) => (
-  <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-    <AnimatedPressable
-      onPress={
-        canEdit
-          ? onOpenEditModal
-          : () =>
-              showAlert(t('recipe.cannotEdit'), t('recipe.cannotEditMessage'), [
-                { text: t('common.cancel'), style: 'cancel' },
-                ...(canCopy
-                  ? [{ text: t('recipe.copy'), onPress: onCopy }]
-                  : [{ text: t('common.ok') }]),
-              ])
-      }
-      hoverScale={1.1}
-      pressScale={0.9}
-      disableAnimation={!canEdit}
-      style={{ ...actionButtonStyle, opacity: canEdit ? 1 : 0.5 }}
-    >
-      <Ionicons name="create" size={20} color={colors.text.inverse} />
-    </AnimatedPressable>
-    <AnimatedPressable
-      onPress={onShowPlanModal}
-      hoverScale={1.1}
-      pressScale={0.9}
-      style={actionButtonStyle}
-    >
-      <Ionicons name="calendar" size={20} color={colors.text.inverse} />
-    </AnimatedPressable>
-    <AnimatedPressable
-      onPress={onShare}
-      hoverScale={1.1}
-      pressScale={0.9}
-      style={actionButtonStyle}
-    >
-      <Ionicons name="share" size={20} color={colors.text.inverse} />
-    </AnimatedPressable>
-    {canCopy && (
-      <AnimatedPressable
-        onPress={onCopy}
-        hoverScale={1.1}
-        pressScale={0.9}
-        disabled={isCopying}
-        style={{
-          ...actionButtonStyle,
-          opacity: isCopying ? 0.5 : 1,
-        }}
-      >
-        <Ionicons name="copy-outline" size={20} color={colors.text.inverse} />
-      </AnimatedPressable>
-    )}
-    {canEnhance && (
+}: RecipeActionButtonsProps) => {
+  const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
       <AnimatedPressable
         onPress={
-          aiEnabled
-            ? onEnhance
+          canEdit
+            ? onOpenEditModal
             : () =>
                 showAlert(
-                  t('recipe.enhanceRecipe'),
-                  t('common.aiDisabledHint'),
-                  [{ text: t('common.ok') }],
+                  t('recipe.cannotEdit'),
+                  t('recipe.cannotEditMessage'),
+                  [
+                    { text: t('common.cancel'), style: 'cancel' },
+                    ...(canCopy
+                      ? [{ text: t('recipe.copy'), onPress: onCopy }]
+                      : [{ text: t('common.ok') }]),
+                  ],
                 )
         }
         hoverScale={1.1}
         pressScale={0.9}
-        disabled={isEnhancing}
-        style={{
-          ...actionButtonStyle,
-          opacity: isEnhancing || !aiEnabled ? 0.5 : 1,
-        }}
+        disableAnimation={!canEdit}
+        style={{ ...actionButtonStyle, opacity: canEdit ? 1 : 0.5 }}
       >
-        <Ionicons
-          name="sparkles"
-          size={20}
-          color={
-            !aiEnabled
-              ? colors.gray[400]
-              : isEnhancing
-                ? colors.gray[400]
-                : colors.ai.primary
-          }
-        />
+        <Ionicons name="create" size={20} color={colors.text.inverse} />
       </AnimatedPressable>
-    )}
-  </View>
-);
+      <AnimatedPressable
+        onPress={onShowPlanModal}
+        hoverScale={1.1}
+        pressScale={0.9}
+        style={actionButtonStyle}
+      >
+        <Ionicons name="calendar" size={20} color={colors.text.inverse} />
+      </AnimatedPressable>
+      <AnimatedPressable
+        onPress={onShare}
+        hoverScale={1.1}
+        pressScale={0.9}
+        style={actionButtonStyle}
+      >
+        <Ionicons name="share" size={20} color={colors.text.inverse} />
+      </AnimatedPressable>
+      {canCopy && (
+        <AnimatedPressable
+          onPress={onCopy}
+          hoverScale={1.1}
+          pressScale={0.9}
+          disabled={isCopying}
+          style={{
+            ...actionButtonStyle,
+            opacity: isCopying ? 0.5 : 1,
+          }}
+        >
+          <Ionicons name="copy-outline" size={20} color={colors.text.inverse} />
+        </AnimatedPressable>
+      )}
+      {canEnhance && (
+        <AnimatedPressable
+          onPress={onEnhance}
+          hoverScale={1.1}
+          pressScale={0.9}
+          disabled={enhanceDisabled}
+          disableAnimation={enhanceDisabled}
+          style={{
+            ...actionButtonStyle,
+            opacity: enhanceDisabled ? 0.5 : 1,
+          }}
+        >
+          <Ionicons
+            name="sparkles"
+            size={20}
+            color={enhanceDisabled ? colors.gray[400] : colors.ai.primary}
+          />
+        </AnimatedPressable>
+      )}
+    </View>
+  );
+};

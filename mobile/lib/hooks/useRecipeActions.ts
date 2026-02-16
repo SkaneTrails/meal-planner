@@ -355,35 +355,79 @@ export const useRecipeActions = (
     recipe?.enhanced && !recipe?.enhancement_reviewed,
   );
 
-  const canEnhance = Boolean(isOwned && !recipe?.enhanced);
+  const canEnhance = Boolean(recipe && !recipe.enhanced);
 
   const isSharedOrLegacy =
     recipe?.household_id == null || recipe?.visibility === 'shared';
   const canCopy = Boolean(!isOwned && isSharedOrLegacy);
+  const isCopy = Boolean(recipe?.copied_from);
+
+  const doCopy = async (keepEnhanced: boolean) => {
+    if (!id) return;
+    try {
+      const copied = await copyRecipe.mutateAsync({ id, keepEnhanced });
+      hapticSuccess();
+      showNotification(t('common.success'), t('recipe.copySuccess'));
+      router.replace(`/recipe/${copied.id}`);
+    } catch {
+      hapticWarning();
+      showNotification(t('common.error'), t('recipe.copyFailed'));
+    }
+  };
 
   const handleCopyRecipe = async () => {
     if (!id || !recipe) return;
-    showAlert(t('recipe.copyToHousehold'), t('recipe.copyConfirm'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('recipe.copy'),
-        onPress: async () => {
-          try {
-            const copied = await copyRecipe.mutateAsync(id);
-            hapticSuccess();
-            showNotification(t('common.success'), t('recipe.copySuccess'));
-            router.replace(`/recipe/${copied.id}`);
-          } catch {
-            hapticWarning();
-            showNotification(t('common.error'), t('recipe.copyFailed'));
-          }
+
+    if (recipe.enhanced) {
+      showAlert(
+        t('recipe.copyEnhancedTitle'),
+        t('recipe.copyEnhancedMessage'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('recipe.copyAsIs'),
+            onPress: () => doCopy(true),
+          },
+          {
+            text: t('recipe.copyAndEnhance'),
+            onPress: async () => {
+              await doCopy(false);
+            },
+          },
+        ],
+      );
+    } else {
+      showAlert(t('recipe.copyToHousehold'), t('recipe.copyConfirm'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('recipe.copy'),
+          onPress: () => doCopy(false),
         },
-      },
-    ]);
+      ]);
+    }
   };
 
   const handleEnhanceRecipe = async () => {
     if (!id || !recipe) return;
+
+    if (!isOwned) {
+      if (canCopy) {
+        showAlert(
+          t('recipe.belongsToAnother'),
+          t('recipe.belongsToAnotherEnhance'),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('recipe.copy'), onPress: () => handleCopyRecipe() },
+          ],
+        );
+      } else {
+        showAlert(t('recipe.cannotEnhance'), t('recipe.cannotEnhanceMessage'), [
+          { text: t('common.ok') },
+        ]);
+      }
+      return;
+    }
+
     showAlert(t('recipe.enhanceRecipe'), t('recipe.enhanceConfirm'), [
       { text: t('common.cancel'), style: 'cancel' },
       {
@@ -409,8 +453,10 @@ export const useRecipeActions = (
     currentUser,
     isSuperuser,
     households,
+    isOwned,
     canEdit,
     canCopy,
+    isCopy,
     isCopying: copyRecipe.isPending,
     isUpdatingImage,
     isReviewingEnhancement: reviewEnhancement.isPending,

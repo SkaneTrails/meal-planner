@@ -242,7 +242,13 @@ export const useCopyRecipe = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => api.copyRecipe(id),
+    mutationFn: ({
+      id,
+      keepEnhanced,
+    }: {
+      id: string;
+      keepEnhanced?: boolean;
+    }) => api.copyRecipe(id, { keepEnhanced }),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });

@@ -259,8 +259,26 @@ const en = {
     copy: 'Copy',
     copyConfirm:
       'This will create a private copy in your household. You can then enhance it with your preferences.',
+    copyEnhancedTitle: 'Enhanced Recipe',
+    copyEnhancedMessage:
+      'This recipe was enhanced for another household. Would you like to re-enhance it for yours?',
+    copyAndEnhance: 'Copy & Enhance',
+    copyAsIs: 'Copy As Is',
     copySuccess: 'Recipe copied to your household',
     copyFailed: 'Failed to copy recipe',
+    belongsToAnother: 'Another Household',
+    belongsToAnotherEnhance:
+      'This recipe belongs to another household. Copy it to yours to enhance it?',
+    belongsToAnotherNote:
+      'This recipe belongs to another household. Copy it to yours to add notes?',
+    cannotEnhance: 'Cannot Enhance',
+    cannotEnhanceMessage:
+      'Copy this recipe to your household first to enhance it.',
+    cannotAddNote: 'Cannot Add Note',
+    cannotAddNoteMessage:
+      'Copy this recipe to your household first to add notes.',
+    copiedRecipeVisibility:
+      'Copied recipes are always private to your household.',
     share: 'Share',
     // Notes
     notes: 'Notes',

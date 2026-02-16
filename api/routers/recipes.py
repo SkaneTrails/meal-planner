@@ -144,7 +144,9 @@ async def delete_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)
 
 
 @router.post("/{recipe_id}/copy", status_code=status.HTTP_201_CREATED)
-async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
+async def copy_recipe(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str, keep_enhanced: bool = False
+) -> Recipe:
     """Create a copy of a shared/legacy recipe for your household.
 
     This allows users to:
@@ -152,6 +154,11 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     - Copy recipes before enhancing them (auto-done by enhance endpoint)
 
     The copy will be owned by the user's household with visibility="household".
+
+    Args:
+        keep_enhanced: If True, keep the enhanced content as-is instead of
+            reverting to the pre-enhancement original. Only relevant when
+            copying an enhanced recipe.
     """
     household_id = require_household(user)
 
@@ -166,7 +173,9 @@ async def copy_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)],
     if not is_shared_or_legacy:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
-    copied = recipe_storage.copy_recipe(recipe_id, to_household_id=household_id, copied_by=user.email)
+    copied = recipe_storage.copy_recipe(
+        recipe_id, to_household_id=household_id, copied_by=user.email, keep_enhanced=keep_enhanced
+    )
 
     if copied is None:  # pragma: no cover
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to copy recipe")
