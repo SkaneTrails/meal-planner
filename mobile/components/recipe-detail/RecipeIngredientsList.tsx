@@ -7,6 +7,7 @@ import {
   fontFamily,
   fontSize,
   letterSpacing,
+  shadows,
   spacing,
 } from '@/lib/theme';
 
@@ -67,7 +68,7 @@ export const RecipeIngredientsList = ({
           backgroundColor: colors.glass.solid,
           borderRadius: borderRadius.lg,
           padding: spacing.lg,
-          boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+          ...shadows.card,
         }}
       >
         {ingredients.map((ingredient, index) => (

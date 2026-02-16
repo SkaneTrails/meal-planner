@@ -223,7 +223,7 @@ const NextMealCard = ({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.04)',
+        borderColor: colors.glass.border,
       }}
     >
       <Image

@@ -20,8 +20,7 @@ export const SectionHeader = ({
   const titleColor = variant === 'dark' ? colors.white : colors.text.primary;
   const subtitleColor =
     variant === 'dark' ? colors.white + '80' : colors.text.secondary;
-  const bgColor =
-    variant === 'dark' ? colors.glass.card : 'rgba(255, 255, 255, 0.5)';
+  const bgColor = variant === 'dark' ? colors.glass.card : colors.glass.faint;
 
   return (
     <View

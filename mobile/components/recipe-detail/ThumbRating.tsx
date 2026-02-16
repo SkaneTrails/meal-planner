@@ -28,7 +28,7 @@ export const ThumbRating = ({
           padding: spacing.sm,
           borderRadius: 20,
           backgroundColor: isThumbDown
-            ? 'rgba(239, 83, 80, 0.3)'
+            ? colors.rating.negativeBg
             : pressed
               ? colors.border
               : 'transparent',
@@ -46,7 +46,7 @@ export const ThumbRating = ({
           padding: spacing.sm,
           borderRadius: 20,
           backgroundColor: isThumbUp
-            ? 'rgba(76, 175, 80, 0.3)'
+            ? colors.rating.positiveBg
             : pressed
               ? colors.border
               : 'transparent',

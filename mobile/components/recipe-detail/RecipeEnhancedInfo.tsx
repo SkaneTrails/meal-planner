@@ -7,6 +7,7 @@ import {
   fontFamily,
   fontSize,
   letterSpacing,
+  shadows,
   spacing,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -67,7 +68,7 @@ export const RecipeEnhancedInfo = ({
             padding: spacing.lg,
             borderLeftWidth: 4,
             borderLeftColor: colors.ai.primary,
-            boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+            ...shadows.card,
           }}
         >
           <Text
@@ -94,7 +95,7 @@ export const RecipeEnhancedInfo = ({
             backgroundColor: colors.glass.solid,
             borderRadius: borderRadius.lg,
             overflow: 'hidden',
-            boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+            ...shadows.card,
           }}
         >
           <Pressable

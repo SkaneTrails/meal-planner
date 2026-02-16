@@ -55,6 +55,7 @@ export const lightColors = {
   // Content colors — dark text/icons on light backgrounds (warm brown family)
   content: {
     heading: '#3D3D3D',
+    headingWarm: '#4A3728',
     body: '#5D4E40',
     secondary: '#8B7355',
     strong: 'rgba(93, 78, 64, 0.8)',
@@ -109,6 +110,36 @@ export const lightColors = {
   errorBg: '#FFEBEE',
   info: '#42A5F5',
   infoBg: '#E3F2FD',
+  danger: '#DC2626',
+
+  // Overlay / backdrop
+  overlay: {
+    backdrop: 'rgba(0, 0, 0, 0.5)',
+    backdropLight: 'rgba(0, 0, 0, 0.4)',
+  },
+
+  // Meal plan surfaces — warm beige at various opacities
+  mealPlan: {
+    slotBg: 'rgba(240, 235, 228, 0.85)',
+    containerBg: 'rgba(245, 240, 235, 0.95)',
+    emptyBg: 'rgba(245, 242, 238, 0.7)',
+    emptyStateBg: 'rgba(240, 235, 228, 0.5)',
+  },
+
+  // Recipe rating — thumb up/down
+  rating: {
+    positive: '#4A8B5C',
+    negative: '#B0645C',
+    positiveBg: 'rgba(76, 175, 80, 0.3)',
+    negativeBg: 'rgba(239, 83, 80, 0.3)',
+  },
+
+  // Instruction timeline — recipe detail
+  timeline: {
+    badge: '#2D6A5A',
+    line: 'rgba(45, 106, 90, 0.15)',
+    completedText: '#166534',
+  },
 
   // Chip/filter pill colors
   chip: {

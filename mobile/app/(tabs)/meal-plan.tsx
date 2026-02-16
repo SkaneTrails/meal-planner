@@ -135,7 +135,7 @@ export default function MealPlanScreen() {
                       borderWidth: 1,
                       borderColor: isToday
                         ? colors.surface.active
-                        : 'rgba(0, 0, 0, 0.04)',
+                        : colors.glass.border,
                       boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)',
                     }}
                   >

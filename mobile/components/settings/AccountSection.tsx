@@ -100,12 +100,12 @@ export const AccountSection = ({
           ...shadows.sm,
         }}
       >
-        <Ionicons name="log-out-outline" size={20} color="#DC2626" />
+        <Ionicons name="log-out-outline" size={20} color={colors.danger} />
         <Text
           style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.semibold,
-            color: '#DC2626',
+            color: colors.danger,
             marginLeft: spacing.sm,
           }}
         >

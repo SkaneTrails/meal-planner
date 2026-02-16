@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import type { DimensionValue } from 'react-native';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { colors } from '@/lib/theme';
+
 interface BottomSheetModalProps {
   visible: boolean;
   onClose: () => void;
@@ -34,7 +36,7 @@ export const BottomSheetModal = ({
   headerRight,
   footer,
   maxHeight = '80%' as DimensionValue,
-  backgroundColor = '#FFFFFF',
+  backgroundColor = colors.white,
   scrollable = true,
   testID,
 }: BottomSheetModalProps) => {
@@ -55,7 +57,7 @@ export const BottomSheetModal = ({
             style={{
               width: 40,
               height: 4,
-              backgroundColor: '#C4B5A6',
+              backgroundColor: colors.button.disabled,
               borderRadius: 2,
             }}
             testID="drag-handle"
@@ -74,14 +76,23 @@ export const BottomSheetModal = ({
         }}
       >
         <Text
-          style={{ fontSize: 20, fontWeight: '700', color: '#4A3728', flex: 1 }}
+          style={{
+            fontSize: 20,
+            fontWeight: '700',
+            color: colors.content.headingWarm,
+            flex: 1,
+          }}
         >
           {title}
         </Text>
         {headerRight}
         {showCloseButton && !headerRight && (
           <Pressable onPress={onClose} testID="close-button">
-            <Ionicons name="close" size={24} color="#4A3728" />
+            <Ionicons
+              name="close"
+              size={24}
+              color={colors.content.headingWarm}
+            />
           </Pressable>
         )}
       </View>
@@ -90,7 +101,7 @@ export const BottomSheetModal = ({
         <Text
           style={{
             fontSize: 13,
-            color: '#6b7280',
+            color: colors.gray[500],
             paddingHorizontal: 20,
             marginBottom: 12,
           }}
@@ -127,7 +138,7 @@ export const BottomSheetModal = ({
         <Pressable
           style={{
             flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.4)',
+            backgroundColor: colors.overlay.backdropLight,
             justifyContent: 'flex-end',
           }}
           onPress={onClose}
@@ -141,7 +152,7 @@ export const BottomSheetModal = ({
         <View
           style={{
             flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
+            backgroundColor: colors.overlay.backdrop,
             justifyContent: 'flex-end',
           }}
           testID="backdrop"

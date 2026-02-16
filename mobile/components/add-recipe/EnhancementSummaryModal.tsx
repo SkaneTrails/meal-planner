@@ -40,7 +40,7 @@ export const EnhancementSummaryModal = ({
       <View
         style={{
           flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: colors.overlay.backdrop,
           justifyContent: 'center',
           alignItems: 'center',
           padding: spacing['2xl'],
