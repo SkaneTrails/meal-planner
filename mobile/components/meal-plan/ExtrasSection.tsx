@@ -30,7 +30,7 @@ export const ExtrasSection = ({
     <View
       style={{
         marginBottom: 16,
-        backgroundColor: 'rgba(245, 240, 235, 0.95)',
+        backgroundColor: colors.mealPlan.containerBg,
         borderRadius: 18,
         padding: 14,
         borderWidth: 1.5,
@@ -101,7 +101,7 @@ export const ExtrasSection = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'rgba(240, 235, 228, 0.5)',
+            backgroundColor: colors.mealPlan.emptyStateBg,
             borderRadius: 12,
             padding: 16,
             borderWidth: 1,
@@ -154,7 +154,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(240, 235, 228, 0.85)',
+        backgroundColor: colors.mealPlan.slotBg,
         borderRadius: 12,
         padding: 12,
         marginBottom: 6,
@@ -179,7 +179,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
             style={{
               fontSize: 13,
               fontFamily: fontFamily.bodySemibold,
-              color: '#2D2D2D',
+              color: colors.primary,
             }}
           >
             {recipe.title}

@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
-import { colors } from '@/lib/theme';
+import { colors, shadows } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -77,7 +77,7 @@ export const GroceryItemRow = ({
         borderRadius: 10,
         marginBottom: 8,
         opacity: checked ? 0.85 : 1,
-        boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+        ...shadows.card,
       }}
     >
       {showReorder && (

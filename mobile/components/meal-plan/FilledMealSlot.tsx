@@ -45,7 +45,7 @@ export const FilledMealSlot = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(240, 235, 228, 0.85)',
+        backgroundColor: colors.mealPlan.slotBg,
         borderRadius: 12,
         padding: 12,
         marginBottom: 6,
@@ -87,7 +87,7 @@ export const FilledMealSlot = ({
             style={{
               fontSize: 13,
               fontFamily: fontFamily.bodySemibold,
-              color: '#2D2D2D',
+              color: colors.primary,
             }}
           >
             {title}

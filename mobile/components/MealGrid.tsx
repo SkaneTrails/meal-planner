@@ -62,13 +62,13 @@ export const MealCell = ({
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
           size={14}
-          color={hasContent ? colors.white : 'rgba(255, 255, 255, 0.5)'}
+          color={hasContent ? colors.white : colors.glass.faint}
         />
         <Text
           style={{
             fontSize: 12,
             marginLeft: 4,
-            color: hasContent ? colors.white : 'rgba(255, 255, 255, 0.5)',
+            color: hasContent ? colors.white : colors.glass.faint,
           }}
         >
           {t(MEAL_TYPE_LABEL_KEYS[mealType])}
@@ -86,7 +86,7 @@ export const MealCell = ({
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Ionicons name="add" size={20} color="rgba(255, 255, 255, 0.5)" />
+          <Ionicons name="add" size={20} color={colors.glass.faint} />
         </View>
       )}
     </Pressable>
@@ -123,11 +123,16 @@ export const DayColumn = ({
           paddingVertical: 8,
           marginBottom: 8,
           borderRadius: 16,
-          backgroundColor: isToday ? '#4A3728' : '#f3f4f6',
+          backgroundColor: isToday
+            ? colors.content.headingWarm
+            : colors.gray[100],
         }}
       >
         <Text
-          style={{ fontSize: 12, color: isToday ? colors.white : '#4b5563' }}
+          style={{
+            fontSize: 12,
+            color: isToday ? colors.white : colors.content.secondary,
+          }}
         >
           {dayName}
         </Text>
@@ -135,7 +140,7 @@ export const DayColumn = ({
           style={{
             fontSize: 18,
             fontWeight: 'bold',
-            color: isToday ? colors.white : '#4A3728',
+            color: isToday ? colors.white : colors.content.headingWarm,
           }}
         >
           {dayNumber}
@@ -166,11 +171,14 @@ export const DayColumn = ({
           style={{
             marginTop: 8,
             padding: 8,
-            backgroundColor: '#E8D5C4',
+            backgroundColor: colors.bgMid,
             borderRadius: 16,
           }}
         >
-          <Text style={{ fontSize: 12, color: '#4A3728' }} numberOfLines={2}>
+          <Text
+            style={{ fontSize: 12, color: colors.content.headingWarm }}
+            numberOfLines={2}
+          >
             {note}
           </Text>
         </View>

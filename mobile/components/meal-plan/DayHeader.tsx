@@ -70,7 +70,7 @@ export const DayHeader = ({
           style={{
             fontSize: 15,
             fontFamily: fontFamily.bodySemibold,
-            color: isToday ? '#2D2D2D' : 'rgba(45, 45, 45, 0.75)',
+            color: isToday ? colors.primary : 'rgba(45, 45, 45, 0.75)',
             letterSpacing: -0.2,
           }}
         >
@@ -169,7 +169,12 @@ const NoteEditor = ({
         value={noteText}
         onChangeText={onNoteTextChange}
         placeholder={t('mealPlan.notePlaceholder')}
-        style={{ flex: 1, fontSize: 14, color: '#4A3728', padding: 0 }}
+        style={{
+          flex: 1,
+          fontSize: 14,
+          color: colors.content.headingWarm,
+          padding: 0,
+        }}
         autoFocus
       />
       <Pressable onPress={onSave}>
@@ -177,7 +182,7 @@ const NoteEditor = ({
           style={{
             fontSize: 14,
             fontFamily: fontFamily.bodySemibold,
-            color: '#4A3728',
+            color: colors.content.headingWarm,
           }}
         >
           {t('mealPlan.notesSave')}
@@ -208,11 +213,13 @@ const NoteEditor = ({
               borderRadius: 16,
               borderWidth: 1,
               borderColor: noteText.includes(suggestion)
-                ? '#4A3728'
+                ? colors.content.headingWarm
                 : '#e5e7eb',
             }}
           >
-            <Text style={{ fontSize: 13, color: '#4A3728' }}>{suggestion}</Text>
+            <Text style={{ fontSize: 13, color: colors.content.headingWarm }}>
+              {suggestion}
+            </Text>
           </Pressable>
         ))}
       </View>

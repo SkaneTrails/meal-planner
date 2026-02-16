@@ -90,11 +90,11 @@ const StatCard = ({
     pressScale={0.97}
     style={{
       flex: 1,
-      backgroundColor: 'rgba(255,255,255,0.92)',
+      backgroundColor: colors.glass.solid,
       borderRadius: borderRadius.md,
       padding: 12,
       borderWidth: 1,
-      borderColor: 'rgba(0, 0, 0, 0.04)',
+      borderColor: colors.glass.border,
       ...shadows.sm,
     }}
   >

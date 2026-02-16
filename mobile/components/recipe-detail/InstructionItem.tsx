@@ -6,6 +6,7 @@ import {
   fontFamily,
   fontSize,
   letterSpacing,
+  shadows,
   spacing,
 } from '@/lib/theme';
 import type { StructuredInstruction } from '@/lib/types';
@@ -41,7 +42,7 @@ export const InstructionItem = ({
           marginBottom: spacing.sm,
           borderLeftWidth: 2,
           borderLeftColor: colors.ai.primary,
-          boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+          ...shadows.card,
         }}
       >
         <Ionicons
@@ -121,11 +122,11 @@ export const InstructionItem = ({
           ? colors.successBg
           : pressed
             ? colors.glass.dark
-            : 'rgba(255, 255, 255, 0.5)',
+            : colors.glass.faint,
         borderRadius: borderRadius.md,
         marginBottom: spacing.sm,
         opacity: isCompleted ? 0.7 : 1,
-        boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+        ...shadows.card,
       })}
     >
       <View
@@ -160,7 +161,7 @@ export const InstructionItem = ({
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: '#2D6A5A',
+              backgroundColor: colors.timeline.badge,
               paddingHorizontal: 10,
               paddingVertical: 3,
               borderRadius: 10,
@@ -185,7 +186,9 @@ export const InstructionItem = ({
           style={{
             fontSize: fontSize.xl,
             fontFamily: fontFamily.body,
-            color: isCompleted ? '#166534' : colors.content.body,
+            color: isCompleted
+              ? colors.timeline.completedText
+              : colors.content.body,
             lineHeight: 22,
             textDecorationLine: isCompleted ? 'line-through' : 'none',
           }}

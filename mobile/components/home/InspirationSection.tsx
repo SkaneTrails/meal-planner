@@ -239,11 +239,11 @@ const GetStartedFallback = ({
       hoverScale={1.01}
       pressScale={0.99}
       style={{
-        backgroundColor: 'rgba(255,255,255,0.92)',
+        backgroundColor: colors.glass.solid,
         borderRadius: borderRadius.md,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.04)',
+        borderColor: colors.glass.border,
       }}
     >
       <Image

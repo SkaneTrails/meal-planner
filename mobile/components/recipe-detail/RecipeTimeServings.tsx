@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { colors, fontFamily, fontSize, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, shadows, spacing } from '@/lib/theme';
 
 interface TimeStatProps {
   icon: 'timer' | 'flame' | 'time' | 'people';
@@ -68,7 +68,7 @@ export const RecipeTimeServings = ({
         borderRadius: 16,
         paddingVertical: spacing.md,
         paddingHorizontal: spacing.sm,
-        boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
+        ...shadows.card,
       }}
     >
       {prepTime ? (

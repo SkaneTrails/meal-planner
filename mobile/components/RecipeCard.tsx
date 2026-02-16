@@ -198,7 +198,11 @@ export const RecipeCard = ({
                   <Ionicons
                     name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
                     size={13}
-                    color={recipe.rating >= 3 ? '#4A8B5C' : '#B0645C'}
+                    color={
+                      recipe.rating >= 3
+                        ? colors.rating.positive
+                        : colors.rating.negative
+                    }
                   />
                 </View>
               )}

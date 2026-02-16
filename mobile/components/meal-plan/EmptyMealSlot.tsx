@@ -29,7 +29,7 @@ export const EmptyMealSlot = ({
     style={{
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: 'rgba(245, 242, 238, 0.7)',
+      backgroundColor: colors.mealPlan.emptyBg,
       borderRadius: 12,
       padding: 12,
       marginBottom: 6,

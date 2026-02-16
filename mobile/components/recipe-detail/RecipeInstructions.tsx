@@ -91,7 +91,7 @@ export const RecipeInstructions = ({
             top: 24,
             bottom: 24,
             width: 2,
-            backgroundColor: 'rgba(45, 106, 90, 0.15)',
+            backgroundColor: colors.timeline.line,
             borderRadius: 1,
           }}
         />
@@ -169,7 +169,9 @@ export const RecipeInstructions = ({
                 flex: 1,
                 fontSize: fontSize.xl,
                 fontFamily: fontFamily.body,
-                color: isCompleted ? '#166534' : colors.text.inverse,
+                color: isCompleted
+                  ? colors.timeline.completedText
+                  : colors.text.inverse,
                 lineHeight: 24,
                 textDecorationLine: isCompleted ? 'line-through' : 'none',
               }}
