@@ -47,6 +47,8 @@ export default function RecipeDetailScreen() {
 
   const {
     canEdit,
+    canCopy,
+    isCopying,
     isSuperuser,
     households,
     isUpdatingImage,
@@ -69,6 +71,7 @@ export default function RecipeDetailScreen() {
     handleThumbDown,
     handleShare,
     handleDelete,
+    handleCopyRecipe,
     handleSaveEdit,
     handleTransferRecipe,
     handleReviewEnhancement,
@@ -231,6 +234,8 @@ export default function RecipeDetailScreen() {
               showAiChanges={showAiChanges}
               showOriginal={showOriginal}
               canEdit={canEdit}
+              canCopy={canCopy}
+              isCopying={isCopying}
               canEnhance={canEnhance}
               isEnhancing={isEnhancing}
               aiEnabled={settings.aiEnabled}
@@ -247,6 +252,7 @@ export default function RecipeDetailScreen() {
               onOpenEditModal={() => setShowEditModal(true)}
               onShowPlanModal={() => setShowPlanModal(true)}
               onShare={handleShare}
+              onCopy={handleCopyRecipe}
               onEnhance={handleEnhanceRecipe}
               onReviewEnhancement={handleReviewEnhancement}
             />

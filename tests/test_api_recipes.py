@@ -1186,6 +1186,49 @@ class TestEnhanceRecipe:
         assert response.status_code == 500
         assert "unexpected error" in response.json()["detail"]
 
+    def test_uses_original_data_when_re_enhancing(self, client: TestClient) -> None:
+        """Should feed original scraped data to Gemini when re-enhancing."""
+        from api.models.recipe import OriginalRecipe
+
+        already_enhanced = Recipe(
+            id="test123",
+            title="Enhanced Title",
+            url="https://example.com/recipe",
+            ingredients=["enhanced ingredient 1"],
+            instructions=["enhanced step 1"],
+            household_id="test_household",
+            enhanced=True,
+            original=OriginalRecipe(
+                title="Original Title",
+                ingredients=["original ingredient 1", "original ingredient 2"],
+                instructions=["original step 1", "original step 2"],
+                servings=4,
+            ),
+        )
+        re_enhanced = Recipe(
+            id="test123",
+            title="Re-Enhanced Title",
+            url="https://example.com/recipe",
+            household_id="test_household",
+            enhanced=True,
+        )
+
+        with (
+            patch("api.routers.recipe_enhancement.recipe_storage.get_recipe", return_value=already_enhanced),
+            patch("api.routers.recipe_enhancement._get_household_config", return_value=HouseholdConfig({})),
+            patch("api.services.recipe_enhancer.enhance_recipe") as mock_enhance,
+            patch("api.routers.recipe_enhancement.recipe_storage.save_recipe", return_value=re_enhanced),
+        ):
+            mock_enhance.return_value = {"title": "Re-Enhanced Title", "changes_made": ["Re-improved"]}
+            response = client.post("/recipes/test123/enhance")
+
+        assert response.status_code == 200
+        recipe_data_sent = mock_enhance.call_args[0][0]
+        assert recipe_data_sent["title"] == "Original Title"
+        assert recipe_data_sent["ingredients"] == ["original ingredient 1", "original ingredient 2"]
+        assert recipe_data_sent["instructions"] == ["original step 1", "original step 2"]
+        assert recipe_data_sent["servings"] == 4
+
 
 class TestReviewEnhancementEndpoint:
     """Tests for POST /recipes/{recipe_id}/enhancement/review endpoint."""

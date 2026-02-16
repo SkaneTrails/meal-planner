@@ -233,3 +233,19 @@ export const useEnhanceRecipe = () => {
     },
   });
 };
+
+/**
+ * Hook to copy a shared recipe to the user's household.
+ * Navigates to the new copy after success.
+ */
+export const useCopyRecipe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => api.copyRecipe(id),
+    onSuccess: (data) => {
+      queryClient.setQueryData(recipeKeys.detail(data.id), data);
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+    },
+  });
+};

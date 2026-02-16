@@ -21,6 +21,8 @@ interface RecipeContentProps {
   showAiChanges: boolean;
   showOriginal: boolean;
   canEdit: boolean;
+  canCopy: boolean;
+  isCopying: boolean;
   canEnhance: boolean;
   isEnhancing: boolean;
   aiEnabled: boolean;
@@ -33,6 +35,7 @@ interface RecipeContentProps {
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
   onShare: () => void;
+  onCopy: () => void;
   onEnhance: () => void;
   onReviewEnhancement: (action: EnhancementReviewAction) => void;
 }
@@ -45,6 +48,8 @@ export const RecipeContent = ({
   showAiChanges,
   showOriginal,
   canEdit,
+  canCopy,
+  isCopying,
   canEnhance,
   isEnhancing,
   aiEnabled,
@@ -57,6 +62,7 @@ export const RecipeContent = ({
   onOpenEditModal,
   onShowPlanModal,
   onShare,
+  onCopy,
   onEnhance,
   onReviewEnhancement,
 }: RecipeContentProps) => {
@@ -93,6 +99,8 @@ export const RecipeContent = ({
     <>
       <RecipeActionButtons
         canEdit={canEdit}
+        canCopy={canCopy}
+        isCopying={isCopying}
         canEnhance={canEnhance}
         isEnhancing={isEnhancing}
         aiEnabled={aiEnabled}
@@ -100,6 +108,7 @@ export const RecipeContent = ({
         onOpenEditModal={onOpenEditModal}
         onShowPlanModal={onShowPlanModal}
         onShare={onShare}
+        onCopy={onCopy}
         onEnhance={onEnhance}
       />
 

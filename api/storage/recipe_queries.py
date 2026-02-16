@@ -141,6 +141,19 @@ def _deduplicate_recipes(recipes: list[Recipe]) -> list[Recipe]:
     return unique
 
 
+def _exclude_copied_originals(recipes: list[Recipe]) -> list[Recipe]:
+    """Remove shared recipes that the household has already copied.
+
+    When a household copies a shared recipe, their private copy has
+    ``copied_from`` set to the original's ID. The original should no
+    longer appear in their list.
+    """
+    copied_from_ids = {r.copied_from for r in recipes if r.copied_from}
+    if not copied_from_ids:
+        return recipes
+    return [r for r in recipes if r.id not in copied_from_ids]
+
+
 def get_all_recipes(
     *, include_duplicates: bool = False, household_id: str | None = None, show_hidden: bool = False
 ) -> list[Recipe]:
@@ -175,6 +188,8 @@ def get_all_recipes(
     # Re-sort after merging multiple queries
     if len(queries) > 1:  # pragma: no cover
         recipes.sort(key=lambda r: (r.created_at or "", r.id), reverse=True)
+
+    recipes = _exclude_copied_originals(recipes)
 
     if include_duplicates:
         return recipes
@@ -262,6 +277,8 @@ def get_recipes_paginated(
     # Re-sort after merging multiple queries
     if len(queries) > 1:
         all_recipes.sort(key=lambda r: (r.created_at or "", r.id), reverse=True)
+
+    all_recipes = _exclude_copied_originals(all_recipes)
 
     if len(all_recipes) > limit:
         page = all_recipes[:limit]
