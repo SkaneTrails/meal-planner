@@ -41,7 +41,7 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground muted>
-      <View style={{ flex: 1 }}>
+      <View style={[{ flex: 1 }, layout.contentContainer]}>
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{

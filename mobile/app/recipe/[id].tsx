@@ -218,13 +218,13 @@ export default function RecipeDetailScreen() {
             }}
           />
           <View
-            style={{
-              padding: spacing.xl,
-              paddingBottom: layout.tabBar.contentBottomPadding,
-              maxWidth: 720,
-              alignSelf: 'center',
-              width: '100%',
-            }}
+            style={[
+              {
+                padding: spacing.xl,
+                paddingBottom: layout.tabBar.contentBottomPadding,
+              },
+              layout.contentContainer,
+            ]}
           >
             <RecipeContent
               recipe={recipe}

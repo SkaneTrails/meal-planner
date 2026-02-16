@@ -21,7 +21,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { borderRadius, colors } from '@/lib/theme';
+import { borderRadius, colors, layout } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 if (
@@ -148,7 +148,7 @@ export default function RecipesScreen() {
 
   return (
     <GradientBackground structured>
-      <View style={{ flex: 1 }}>
+      <View style={[{ flex: 1 }, layout.contentContainer]}>
         {/* Header */}
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}
@@ -201,61 +201,61 @@ export default function RecipesScreen() {
           isFetchingNextPage={isFetchingNextPage}
           t={t}
         />
+      </View>
 
-        {/* Sort Picker Modal */}
-        <BottomSheetModal
-          visible={showSortPicker}
-          onClose={() => setShowSortPicker(false)}
-          title={t('recipes.sortBy')}
-          animationType="fade"
-          dismissOnBackdropPress
-          showDragHandle
-          showCloseButton={false}
-          backgroundColor={colors.surface.modal}
-          scrollable={false}
-        >
-          {SORT_OPTIONS.map((option) => (
-            <Pressable
-              key={option.value}
-              onPress={() => {
-                hapticSelection();
-                setSortBy(option.value);
-                setShowSortPicker(false);
-              }}
+      {/* Sort Picker Modal */}
+      <BottomSheetModal
+        visible={showSortPicker}
+        onClose={() => setShowSortPicker(false)}
+        title={t('recipes.sortBy')}
+        animationType="fade"
+        dismissOnBackdropPress
+        showDragHandle
+        showCloseButton={false}
+        backgroundColor={colors.surface.modal}
+        scrollable={false}
+      >
+        {SORT_OPTIONS.map((option) => (
+          <Pressable
+            key={option.value}
+            onPress={() => {
+              hapticSelection();
+              setSortBy(option.value);
+              setShowSortPicker(false);
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingVertical: 16,
+              paddingHorizontal: 20,
+              backgroundColor:
+                sortBy === option.value
+                  ? 'rgba(255, 255, 255, 0.6)'
+                  : 'transparent',
+              borderRadius: borderRadius.sm,
+              marginHorizontal: 8,
+            }}
+          >
+            <Text
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingVertical: 16,
-                paddingHorizontal: 20,
-                backgroundColor:
-                  sortBy === option.value
-                    ? 'rgba(255, 255, 255, 0.6)'
-                    : 'transparent',
-                borderRadius: borderRadius.sm,
-                marginHorizontal: 8,
+                fontSize: 16,
+                color: colors.content.body,
+                fontWeight: sortBy === option.value ? '600' : '400',
               }}
             >
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: colors.content.body,
-                  fontWeight: sortBy === option.value ? '600' : '400',
-                }}
-              >
-                {option.label}
-              </Text>
-              {sortBy === option.value && (
-                <Ionicons
-                  name="checkmark"
-                  size={20}
-                  color={colors.button.primary}
-                />
-              )}
-            </Pressable>
-          ))}
-        </BottomSheetModal>
-      </View>
+              {option.label}
+            </Text>
+            {sortBy === option.value && (
+              <Ionicons
+                name="checkmark"
+                size={20}
+                color={colors.button.primary}
+              />
+            )}
+          </Pressable>
+        ))}
+      </BottomSheetModal>
     </GradientBackground>
   );
 }

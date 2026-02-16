@@ -63,10 +63,13 @@ export default function HomeScreen() {
     <GradientBackground>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingBottom: layout.tabBar.contentBottomPadding,
-          paddingTop: 0,
-        }}
+        contentContainerStyle={[
+          {
+            paddingBottom: layout.tabBar.contentBottomPadding,
+            paddingTop: 0,
+          },
+          layout.contentContainer,
+        ]}
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
