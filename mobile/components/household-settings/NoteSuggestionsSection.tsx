@@ -4,6 +4,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   dotSize,
   fontSize,
@@ -80,7 +81,7 @@ export const NoteSuggestionsSection = ({
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.sm,
               fontSize: fontSize.md,
-              color: colors.text.dark,
+              color: colors.content.body,
             }}
             placeholder={t('settings.addSuggestionPlaceholder')}
             placeholderTextColor={colors.content.placeholderHex}
@@ -105,7 +106,7 @@ export const NoteSuggestionsSection = ({
               name="add"
               size={20}
               color={
-                newSuggestion.trim() ? colors.white : `${colors.text.inverse}60`
+                newSuggestion.trim() ? colors.white : colors.button.disabled
               }
             />
           </Pressable>
@@ -146,7 +147,7 @@ const CurrentSuggestions = ({
         style={{
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
-          color: `${colors.text.dark}80`,
+          color: colors.content.icon,
           marginBottom: spacing.sm,
         }}
       >
@@ -180,7 +181,7 @@ const CurrentSuggestions = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.dark,
+                color: colors.content.body,
               }}
             >
               {item}
@@ -189,7 +190,7 @@ const CurrentSuggestions = ({
               <Ionicons
                 name="close-circle"
                 size={14}
-                color={`${colors.text.dark}60`}
+                color={colors.content.placeholder}
               />
             )}
           </Pressable>
@@ -221,7 +222,7 @@ const PresetSuggestions = ({
         style={{
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
-          color: `${colors.text.dark}80`,
+          color: colors.content.icon,
           marginBottom: spacing.sm,
         }}
       >
@@ -240,7 +241,7 @@ const PresetSuggestions = ({
               paddingVertical: spacing.xs,
               borderRadius: borderRadius.full,
               borderWidth: 1,
-              borderColor: `${colors.text.dark}30`,
+              borderColor: colors.surface.divider,
               borderStyle: 'dashed',
               gap: spacing.sm,
             })}
@@ -250,13 +251,13 @@ const PresetSuggestions = ({
                 width: dotSize.md,
                 height: dotSize.md,
                 borderRadius: dotSize.md / 2,
-                backgroundColor: `${colors.text.dark}40`,
+                backgroundColor: colors.surface.borderLight,
               }}
             />
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: `${colors.text.dark}80`,
+                color: colors.content.icon,
               }}
             >
               {item}
@@ -284,9 +285,7 @@ const EmptyState = () => {
     >
       <View
         style={{
-          width: 48,
-          height: 48,
-          borderRadius: 24,
+          ...circleStyle(48),
           backgroundColor: colors.bgDark,
           alignItems: 'center',
           justifyContent: 'center',
@@ -296,15 +295,15 @@ const EmptyState = () => {
         <Ionicons
           name="document-text-outline"
           size={24}
-          color={colors.text.dark}
+          color={colors.content.body}
         />
       </View>
       <Text
         style={{
           fontSize: fontSize.md,
           fontWeight: fontWeight.semibold,
-          color: colors.text.dark,
-          marginBottom: 2,
+          color: colors.content.body,
+          marginBottom: spacing['2xs'],
         }}
       >
         {t('settings.noSuggestionsYet')}
@@ -312,7 +311,7 @@ const EmptyState = () => {
       <Text
         style={{
           fontSize: fontSize.sm,
-          color: `${colors.text.dark}80`,
+          color: colors.content.icon,
           textAlign: 'center',
         }}
       >

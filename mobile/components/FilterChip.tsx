@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react';
 import { Pressable, Text, type TextStyle, type ViewStyle } from 'react-native';
-import { borderRadius, colors, fontWeight } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  spacing,
+} from '@/lib/theme';
 
 interface FilterChipProps {
   label: string;
@@ -47,26 +53,26 @@ const FilterChip = ({
   <Pressable
     onPress={onPress}
     style={({ pressed }) => ({
-      paddingHorizontal: 14,
-      paddingVertical: 7,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.sm,
       borderRadius: borderRadius.md,
       backgroundColor: selected
         ? activeColor
         : pressed
-          ? `${activeColor}10`
+          ? `${activeColor}10` // Dynamic prop color — cannot use static token
           : 'transparent',
       borderWidth: 1.5,
       borderColor: selected ? activeColor : inactiveBorderColor,
       flexDirection: 'row',
       alignItems: 'center',
-      gap: leading ? 6 : 0,
+      gap: leading ? spacing.xs : 0,
       ...style,
     })}
   >
     {leading}
     <Text
       style={{
-        fontSize: 14,
+        fontSize: fontSize.lg,
         fontWeight: fontWeight.semibold,
         color: selected ? activeTextColor : inactiveTextColor,
         ...labelStyle,

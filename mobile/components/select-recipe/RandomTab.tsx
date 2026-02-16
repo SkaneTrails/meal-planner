@@ -154,7 +154,7 @@ const RandomHeader = ({
     <Text
       style={{
         fontSize: fontSize['3xl'],
-        fontWeight: '700',
+        fontWeight: fontWeight.bold,
         color: colors.text.inverse,
         textAlign: 'center',
         letterSpacing: letterSpacing.normal,
@@ -211,7 +211,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
       <Text
         style={{
           fontSize: fontSize['3xl'],
-          fontWeight: '700',
+          fontWeight: fontWeight.bold,
           color: colors.text.inverse,
           marginBottom: spacing.sm,
           letterSpacing: letterSpacing.normal,

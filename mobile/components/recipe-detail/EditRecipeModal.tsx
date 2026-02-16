@@ -238,7 +238,7 @@ export const EditRecipeModal = ({
                     fontSize: fontSize.sm,
                     fontFamily: fontFamily.body,
                     color: isSelected ? colors.bgDark : colors.gray[400],
-                    marginTop: 2,
+                    marginTop: spacing['2xs'],
                   }}
                 >
                   {translatedDesc}
@@ -413,7 +413,7 @@ export const EditRecipeModal = ({
         </Pressable>
       </View>
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: spacing['4xl'] }} />
     </BottomSheetModal>
   );
 };
