@@ -169,14 +169,14 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
         pressScale={0.9}
         style={{
           ...circleStyle(iconContainer.md),
-          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+          backgroundColor: colors.glass.button,
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: spacing.md,
           ...shadows.sm,
         }}
       >
-        <Ionicons name="chevron-back" size={22} color="white" />
+        <Ionicons name="chevron-back" size={22} color={colors.white} />
       </AnimatedPressable>
       <View style={{ flex: 1 }}>
         <ScreenTitle

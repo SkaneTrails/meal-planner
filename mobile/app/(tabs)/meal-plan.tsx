@@ -18,7 +18,14 @@ import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionMo
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
-import { borderRadius, colors, fontFamily, layout, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  layout,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
@@ -136,7 +143,7 @@ export default function MealPlanScreen() {
                       borderColor: isToday
                         ? colors.surface.active
                         : colors.glass.border,
-                      boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)',
+                      boxShadow: shadows.cardRaised.boxShadow,
                     }}
                   >
                     <DayHeader
@@ -270,7 +277,7 @@ export default function MealPlanScreen() {
                 paddingHorizontal: spacing.lg,
                 paddingVertical: spacing['sm-md'],
                 borderRadius: borderRadius.full,
-                boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)',
+                boxShadow: shadows.float.boxShadow,
               }}
             >
               <Ionicons name="today" size={16} color={colors.white} />

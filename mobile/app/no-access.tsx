@@ -64,7 +64,7 @@ export default function NoAccessScreen() {
           style={{
             width: 96,
             height: 96,
-            backgroundColor: 'rgba(255, 255, 255, 0.35)',
+            backgroundColor: colors.glass.buttonDefault,
             borderRadius: 24,
             alignItems: 'center',
             justifyContent: 'center',
@@ -126,8 +126,8 @@ export default function NoAccessScreen() {
           onPress={handleSignOut}
           style={({ pressed }) => ({
             backgroundColor: pressed
-              ? 'rgba(255, 255, 255, 0.45)'
-              : 'rgba(255, 255, 255, 0.35)',
+              ? colors.glass.buttonPressed
+              : colors.glass.buttonDefault,
             borderRadius: borderRadius.lg,
             paddingHorizontal: spacing.xl,
             paddingVertical: spacing.lg,
@@ -160,7 +160,7 @@ export default function NoAccessScreen() {
       <View style={{ paddingBottom: 48, paddingHorizontal: spacing.xl }}>
         <Text
           style={{
-            color: 'rgba(255, 255, 255, 0.9)',
+            color: colors.glass.bright,
             fontSize: fontSize.sm,
             fontFamily: fontFamily.body,
             textAlign: 'center',

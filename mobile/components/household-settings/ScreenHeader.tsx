@@ -66,7 +66,7 @@ export const ScreenHeader = ({
             })}
           >
             {isSaving ? (
-              <ActivityIndicator color="white" size="small" />
+              <ActivityIndicator color={colors.white} size="small" />
             ) : (
               <Text
                 style={{

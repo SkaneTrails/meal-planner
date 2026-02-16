@@ -215,7 +215,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                     position: 'absolute',
                     top: spacing.sm,
                     right: spacing.sm,
-                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    backgroundColor: colors.overlay.strong,
                     borderRadius: borderRadius.full,
                     padding: spacing.xs,
                   }}

@@ -105,9 +105,9 @@ export const GeneralSection = ({
               }}
             >
               {isRenamePending ? (
-                <ActivityIndicator color="white" size="small" />
+                <ActivityIndicator color={colors.white} size="small" />
               ) : (
-                <Ionicons name="checkmark" size={20} color="white" />
+                <Ionicons name="checkmark" size={20} color={colors.white} />
               )}
             </Pressable>
             <Pressable

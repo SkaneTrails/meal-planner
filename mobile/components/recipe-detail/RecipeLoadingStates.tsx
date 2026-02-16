@@ -96,8 +96,8 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
         paddingHorizontal: 24,
         paddingVertical: spacing.md,
         backgroundColor: pressed
-          ? 'rgba(122, 104, 88, 0.2)'
-          : 'rgba(122, 104, 88, 0.12)',
+          ? colors.button.primaryDivider
+          : colors.button.primaryActive,
         borderRadius: borderRadius.sm,
       })}
     >

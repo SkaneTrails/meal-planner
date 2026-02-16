@@ -285,7 +285,7 @@ export const GradientBackground = ({
 
   const orbs = [
     {
-      color: '#E8D0C0',
+      color: colors.gradient.orb1,
       size: SCREEN_WIDTH * 0.8,
       x: -SCREEN_WIDTH * 0.2,
       y: -SCREEN_HEIGHT * 0.1,
@@ -301,7 +301,7 @@ export const GradientBackground = ({
       delay: 3000,
     },
     {
-      color: '#D4A080',
+      color: colors.gradient.orb2,
       size: SCREEN_WIDTH * 0.7,
       x: SCREEN_WIDTH * 0.4,
       y: SCREEN_HEIGHT * 0.6,
@@ -317,7 +317,7 @@ export const GradientBackground = ({
       delay: 1000,
     },
     {
-      color: '#E0B090',
+      color: colors.gradient.orb3,
       size: SCREEN_WIDTH * 0.55,
       x: SCREEN_WIDTH * 0.6,
       y: SCREEN_HEIGHT * 0.1,
@@ -325,7 +325,7 @@ export const GradientBackground = ({
       delay: 3000,
     },
     {
-      color: '#C88060',
+      color: colors.gradient.orb4,
       size: SCREEN_WIDTH * 0.55,
       x: -SCREEN_WIDTH * 0.1,
       y: SCREEN_HEIGHT * 0.7,
@@ -338,7 +338,12 @@ export const GradientBackground = ({
     <View style={[styles.container, style]}>
       {/* Base gradient - warm terracotta tones */}
       <LinearGradient
-        colors={[colors.bgBase, '#D8B8A0', '#D0A080', '#C88060']}
+        colors={[
+          colors.bgBase,
+          colors.gradient.stop1,
+          colors.gradient.stop2,
+          colors.gradient.orb4,
+        ]}
         locations={[0, 0.33, 0.66, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}

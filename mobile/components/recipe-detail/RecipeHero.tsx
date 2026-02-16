@@ -105,7 +105,7 @@ export const RecipeHero = ({
             letterSpacing: letterSpacing.tight,
             flex: 1,
             marginRight: spacing.md,
-            textShadowColor: 'rgba(0, 0, 0, 0.5)',
+            textShadowColor: colors.overlay.backdrop,
             textShadowOffset: { width: 1, height: 2 },
             textShadowRadius: 4,
           }}
@@ -129,8 +129,8 @@ export const RecipeHero = ({
         top: 60,
         right: spacing.lg,
         backgroundColor: pressed
-          ? 'rgba(255, 255, 255, 0.45)'
-          : 'rgba(255, 255, 255, 0.3)',
+          ? colors.glass.buttonPressed
+          : colors.glass.button,
         borderRadius: borderRadius.xl,
         width: 44,
         height: 44,

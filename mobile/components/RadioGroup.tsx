@@ -46,9 +46,7 @@ export const RadioGroup = <T extends string>({
               padding: spacing.md,
               borderRadius: borderRadius.md,
               borderWidth: 1.5,
-              borderColor: isSelected
-                ? colors.border
-                : 'rgba(255, 255, 255, 0.3)',
+              borderColor: isSelected ? colors.border : colors.glass.button,
               opacity: disabled ? 0.5 : 1,
             })}
           >
