@@ -8,10 +8,9 @@ import {
   colors,
   fontFamily,
   fontSize,
+  layout,
   spacing,
 } from '@/lib/theme';
-
-const FOOTER_BOTTOM_MARGIN = 100;
 
 interface RecipeActionsFooterProps {
   url: string;
@@ -66,7 +65,12 @@ export const RecipeActionsFooter = ({
       </Pressable>
     )}
 
-    <View style={{ marginTop: spacing.md, marginBottom: FOOTER_BOTTOM_MARGIN }}>
+    <View
+      style={{
+        marginTop: spacing.md,
+        marginBottom: layout.tabBar.contentBottomPadding,
+      }}
+    >
       <PrimaryButton
         onPress={onShowPlanModal}
         icon="calendar"

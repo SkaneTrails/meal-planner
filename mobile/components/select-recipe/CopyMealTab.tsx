@@ -4,10 +4,12 @@ import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontFamily,
   fontSize,
   iconContainer,
+  layout,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -33,15 +35,16 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
+      contentContainerStyle={{
+        padding: spacing.lg,
+        paddingBottom: layout.tabBar.contentBottomPadding,
+      }}
     >
       {/* Header with sage accent */}
       <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
         <View
           style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
+            ...circleStyle(iconContainer.lg),
             backgroundColor: colors.ai.light,
             alignItems: 'center',
             justifyContent: 'center',
@@ -85,9 +88,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
         <Pressable
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
           style={({ pressed }) => ({
-            width: 36,
-            height: 36,
-            borderRadius: 18,
+            ...circleStyle(iconContainer.xs),
             backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
             alignItems: 'center',
             justifyContent: 'center',
@@ -125,9 +126,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
         <Pressable
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
           style={({ pressed }) => ({
-            width: 36,
-            height: 36,
-            borderRadius: 18,
+            ...circleStyle(iconContainer.xs),
             backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
             alignItems: 'center',
             justifyContent: 'center',

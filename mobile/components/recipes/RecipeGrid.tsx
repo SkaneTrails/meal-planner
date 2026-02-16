@@ -45,7 +45,7 @@ export const RecipeGrid = ({
   const { width } = useWindowDimensions();
 
   const minCardWidth = 180;
-  const horizontalPadding = 20;
+  const horizontalPadding = layout.screenPaddingHorizontal;
   const cardGap = 10;
   const availableWidth = width - horizontalPadding * 2;
   const numColumns = Math.max(2, Math.floor(availableWidth / minCardWidth));

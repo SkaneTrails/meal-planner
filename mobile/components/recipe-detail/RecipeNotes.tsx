@@ -22,9 +22,11 @@ import {
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontFamily,
   fontSize,
+  iconContainer,
   letterSpacing,
   spacing,
 } from '@/lib/theme';
@@ -101,9 +103,7 @@ export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
       >
         <View
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
+            ...circleStyle(iconContainer.xs),
             backgroundColor: colors.surface.active,
             alignItems: 'center',
             justifyContent: 'center',

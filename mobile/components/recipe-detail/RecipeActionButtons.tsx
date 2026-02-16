@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { showNotification } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { colors } from '@/lib/theme';
+import { circleStyle, colors, iconContainer } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -18,9 +18,7 @@ interface RecipeActionButtonsProps {
 }
 
 const actionButtonStyle = {
-  width: 40,
-  height: 40,
-  borderRadius: 20,
+  ...circleStyle(iconContainer.md),
   backgroundColor: colors.glass.solid,
   alignItems: 'center' as const,
   justifyContent: 'center' as const,

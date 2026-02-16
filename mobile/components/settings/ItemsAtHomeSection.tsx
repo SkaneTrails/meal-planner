@@ -5,9 +5,11 @@ import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
   fontWeight,
+  iconContainer,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -286,9 +288,7 @@ const EmptyItemsState = () => {
     >
       <View
         style={{
-          width: 48,
-          height: 48,
-          borderRadius: 24,
+          ...circleStyle(iconContainer.lg),
           backgroundColor: colors.bgDark,
           alignItems: 'center',
           justifyContent: 'center',

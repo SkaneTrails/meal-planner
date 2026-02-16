@@ -281,7 +281,7 @@ vi.mock('@/lib/theme', () => ({
   },
   borderRadius: { sm: 12, md: 16, lg: 20, xl: 24, full: 9999 },
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
-  iconContainer: { sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
+  iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
   shadows: { none: {}, xs: {}, sm: {}, card: {}, md: {}, lg: {}, xl: {}, glow: {}, glowSoft: {} },
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, '2xl': 17, '3xl': 20, '4xl': 26, '5xl': 32, '6xl': 40 },
@@ -313,6 +313,7 @@ vi.mock('@/lib/theme', () => ({
   cardStyle: {},
   glassCardStyle: {},
   inputStyle: {},
+  circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
 }));
 
 // Mock @/lib/settings-context

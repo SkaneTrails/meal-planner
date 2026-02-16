@@ -57,12 +57,17 @@ export const iconSize = {
 
 // Icon container sizes (circles around icons)
 export const iconContainer = {
+  xs: 36,
   sm: 32,
   md: 40,
   lg: 48,
   xl: 56,
   '2xl': 80,
 } as const;
+
+// Helper: generates width, height, borderRadius for a circular container
+export const circleStyle = (size: number) =>
+  ({ width: size, height: size, borderRadius: size / 2 }) as const;
 
 // Shadow presets — boxShadow shorthand (RN 0.76+)
 // Format: 'offsetX offsetY blurRadius spreadRadius color'

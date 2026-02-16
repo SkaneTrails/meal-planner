@@ -9,9 +9,11 @@ import {
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
   fontWeight,
+  iconContainer,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -95,9 +97,7 @@ export const GeneralSection = ({
               onPress={onSaveName}
               disabled={isRenamePending}
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 18,
+                ...circleStyle(iconContainer.xs),
                 backgroundColor: colors.accent,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -113,9 +113,7 @@ export const GeneralSection = ({
             <Pressable
               onPress={onCancelEditName}
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 18,
+                ...circleStyle(iconContainer.xs),
                 backgroundColor: colors.bgLight,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -173,9 +171,7 @@ export const GeneralSection = ({
             }
             disabled={!canEdit}
             style={({ pressed }) => ({
-              width: 40,
-              height: 40,
-              borderRadius: 20,
+              ...circleStyle(iconContainer.md),
               backgroundColor: pressed ? colors.bgDark : colors.bgLight,
               alignItems: 'center',
               justifyContent: 'center',
@@ -199,9 +195,7 @@ export const GeneralSection = ({
             onPress={() => onUpdateServings(settings.default_servings + 1)}
             disabled={!canEdit}
             style={({ pressed }) => ({
-              width: 40,
-              height: 40,
-              borderRadius: 20,
+              ...circleStyle(iconContainer.md),
               backgroundColor: pressed ? colors.bgDark : colors.bgLight,
               alignItems: 'center',
               justifyContent: 'center',
