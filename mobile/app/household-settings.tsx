@@ -88,14 +88,7 @@ export default function HouseholdSettingsScreen() {
           <ActivityIndicator size="large" color={colors.accent} />
         </View>
       ) : (
-        <View
-          style={{
-            flex: 1,
-            maxWidth: layout.contentMaxWidth,
-            alignSelf: 'center',
-            width: '100%',
-          }}
-        >
+        <View style={[{ flex: 1 }, layout.contentContainer]}>
           <ScreenHeader
             canEdit={form.canEdit}
             hasChanges={form.hasChanges}

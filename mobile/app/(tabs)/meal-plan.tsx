@@ -78,14 +78,7 @@ export default function MealPlanScreen() {
 
   return (
     <GradientBackground structured>
-      <View
-        style={{
-          flex: 1,
-          maxWidth: layout.contentMaxWidth,
-          alignSelf: 'center',
-          width: '100%',
-        }}
-      >
+      <View style={[{ flex: 1 }, layout.contentContainer]}>
         {/* Header */}
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}

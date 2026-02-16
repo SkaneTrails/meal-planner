@@ -45,14 +45,7 @@ export default function GroceryScreen() {
   if (isLoading && !hasLoadedOnce) {
     return (
       <GradientBackground neutral>
-        <View
-          style={{
-            flex: 1,
-            maxWidth: layout.contentMaxWidth,
-            alignSelf: 'center',
-            width: '100%',
-          }}
-        >
+        <View style={[{ flex: 1 }, layout.contentContainer]}>
           <GroceryHeader />
           <GroceryListSkeleton />
         </View>
@@ -62,14 +55,7 @@ export default function GroceryScreen() {
 
   return (
     <GradientBackground neutral>
-      <View
-        style={{
-          flex: 1,
-          maxWidth: layout.contentMaxWidth,
-          alignSelf: 'center',
-          width: '100%',
-        }}
-      >
+      <View style={[{ flex: 1 }, layout.contentContainer]}>
         <GroceryHeader />
 
         <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>

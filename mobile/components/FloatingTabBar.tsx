@@ -102,29 +102,35 @@ export const FloatingTabBar = () => {
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <View style={styles.bar}>
-        <TabBarBackground />
-        {TABS.map((tab) => {
-          const active = isTabActive(pathname, tab);
-          return (
-            <Pressable
-              key={tab.route}
-              accessibilityRole="tab"
-              accessibilityLabel={t(tab.labelKey)}
-              accessibilityState={{ selected: active }}
-              onPress={() => router.push(tab.route as never)}
-              style={styles.tabButton}
-            >
-              <View style={[styles.iconWrap, active && styles.iconWrapActive]}>
-                <Ionicons
-                  name={active ? tab.iconFocused : tab.icon}
-                  size={20}
-                  color={active ? colors.tabBar.active : colors.tabBar.inactive}
-                />
-              </View>
-            </Pressable>
-          );
-        })}
+      <View style={styles.barOuter}>
+        <View style={styles.bar}>
+          <TabBarBackground />
+          {TABS.map((tab) => {
+            const active = isTabActive(pathname, tab);
+            return (
+              <Pressable
+                key={tab.route}
+                accessibilityRole="tab"
+                accessibilityLabel={t(tab.labelKey)}
+                accessibilityState={{ selected: active }}
+                onPress={() => router.push(tab.route as never)}
+                style={styles.tabButton}
+              >
+                <View
+                  style={[styles.iconWrap, active && styles.iconWrapActive]}
+                >
+                  <Ionicons
+                    name={active ? tab.iconFocused : tab.icon}
+                    size={20}
+                    color={
+                      active ? colors.tabBar.active : colors.tabBar.inactive
+                    }
+                  />
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
       <View style={styles.bottomFill} pointerEvents="none" />
     </View>
@@ -138,13 +144,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  barOuter: {
+    paddingHorizontal: layout.tabBar.horizontalMargin,
+    alignItems: 'center' as const,
+  },
   bar: {
     flexDirection: 'row',
     height: layout.tabBar.height,
     maxWidth: layout.contentMaxWidth,
     width: '100%',
-    alignSelf: 'center',
-    marginHorizontal: layout.tabBar.horizontalMargin,
     borderRadius: layout.tabBar.borderRadius,
     ...shadows.md,
   },

@@ -295,6 +295,7 @@ vi.mock('@/lib/theme', () => ({
   spacing: { '2xs': 2, xs: 4, 'xs-sm': 6, sm: 8, 'sm-md': 10, md: 12, 'md-lg': 14, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
     contentMaxWidth: 720,
+    contentContainer: { maxWidth: 720, alignSelf: 'center', width: '100%' },
     screenPaddingTop: 60,
     screenPaddingHorizontal: 20,
     sectionGap: 24,

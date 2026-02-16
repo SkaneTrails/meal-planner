@@ -21,6 +21,12 @@ export const spacing = {
 // Layout constants
 export const layout = {
   contentMaxWidth: 720,
+  /** Shared style preset: maxWidth + center + full width. Spread into View style or contentContainerStyle. */
+  contentContainer: {
+    maxWidth: 720,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  },
   screenPaddingTop: 60,
   screenPaddingHorizontal: 20,
   sectionGap: 24,

@@ -70,13 +70,13 @@ export default function AddRecipeScreen() {
       <GradientBackground style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{
-            padding: spacing.lg,
-            paddingBottom: layout.tabBar.contentBottomPadding,
-            maxWidth: layout.contentMaxWidth,
-            alignSelf: 'center',
-            width: '100%',
-          }}
+          contentContainerStyle={[
+            {
+              padding: spacing.lg,
+              paddingBottom: layout.tabBar.contentBottomPadding,
+            },
+            layout.contentContainer,
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

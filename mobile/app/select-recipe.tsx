@@ -66,14 +66,7 @@ export default function SelectRecipeScreen() {
         structured
         style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
       >
-        <View
-          style={{
-            flex: 1,
-            maxWidth: layout.contentMaxWidth,
-            alignSelf: 'center',
-            width: '100%',
-          }}
-        >
+        <View style={[{ flex: 1 }, layout.contentContainer]}>
           {/* Header - same style as other pages */}
           <View
             style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}

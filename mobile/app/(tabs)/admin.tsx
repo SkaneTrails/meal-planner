@@ -86,14 +86,7 @@ export default function AdminScreen() {
 
   return (
     <GradientBackground muted>
-      <View
-        style={{
-          flex: 1,
-          maxWidth: layout.contentMaxWidth,
-          alignSelf: 'center',
-          width: '100%',
-        }}
-      >
+      <View style={[{ flex: 1 }, layout.contentContainer]}>
         <AdminHeader onBack={() => router.back()} />
 
         <CurrentUserInfo email={currentUser.email} role={currentUser.role} />
