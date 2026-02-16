@@ -438,10 +438,39 @@ def search_recipes(query: str, *, household_id: str | None = None, show_hidden: 
 
         recipes.append(recipe)
 
-    return recipes
+    from api.storage.recipe_queries import _exclude_copied_originals
+
+    return _exclude_copied_originals(recipes, household_id)
 
 
-def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str) -> Recipe | None:
+def _resolve_root_id(source: Recipe, recipe_id: str) -> str:
+    """Resolve the root original ID for copied_from.
+
+    If the source itself is a copy, follow the chain to the root.
+    This ensures all copies point to the same root for sibling dedup.
+    """
+    return source.copied_from or recipe_id
+
+
+def _find_existing_copy(household_id: str, root_id: str) -> str | None:
+    """Find an existing copy of a recipe in a household by root ID.
+
+    Returns the document ID of the existing copy, or None.
+    """
+    db = get_firestore_client()
+    docs = (
+        db.collection(RECIPES_COLLECTION)
+        .where(filter=FieldFilter("household_id", "==", household_id))
+        .where(filter=FieldFilter("copied_from", "==", root_id))
+        .limit(1)
+        .stream()
+    )
+    for doc in docs:
+        return doc.id
+    return None
+
+
+def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str, keep_enhanced: bool = False) -> Recipe | None:
     """
     Create a copy of a recipe for a different household.
 
@@ -449,52 +478,87 @@ def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str) -> Reci
     - A user wants to copy a shared recipe to their household
     - Before enhancing a shared recipe (creates household-owned copy first)
 
+    Copies always resolve ``copied_from`` to the root original so that
+    sibling copies from different households can be deduplicated.
+
+    If the source is enhanced and ``keep_enhanced`` is False, the copy
+    uses the pre-enhancement ``original`` snapshot as its baseline.
+
     Args:
         recipe_id: The recipe to copy.
         to_household_id: The household that will own the copy.
         copied_by: Email of the user creating the copy.
+        keep_enhanced: If True, copy the enhanced content as-is (user chose
+            to keep another household's enhancement). If False, strip
+            enhancement and use the original snapshot.
 
     Returns:
         The new copied recipe, or None if source recipe not found.
     """
-    # Get the source recipe
     source = get_recipe(recipe_id)
     if source is None:
         return None
 
-    # Create a RecipeCreate from the source
+    root_id = _resolve_root_id(source, recipe_id)
+
+    # Determine base content: use original snapshot if enhanced and user
+    # wants a clean copy, otherwise use current content.
+    use_original = source.enhanced and source.original and not keep_enhanced
+
     from api.models.recipe import RecipeCreate
 
-    recipe_data = RecipeCreate(
-        title=source.title,
-        url=source.url,
-        ingredients=source.ingredients,
-        instructions=source.instructions,
-        image_url=source.image_url,
-        thumbnail_url=source.thumbnail_url,
-        servings=source.servings,
-        prep_time=source.prep_time,
-        cook_time=source.cook_time,
-        total_time=source.total_time,
-        cuisine=source.cuisine,
-        category=source.category,
-        tags=source.tags,
-        tips=source.tips,
-        diet_label=source.diet_label,
-        meal_label=source.meal_label,
-        visibility="household",  # Copies are private by default
-        copied_from=recipe_id,  # Link back to the original shared recipe
-    )
+    if use_original:
+        orig = source.original
+        recipe_data = RecipeCreate(
+            title=orig.title,
+            url=source.url,
+            ingredients=orig.ingredients,
+            instructions=orig.instructions,
+            image_url=orig.image_url,
+            thumbnail_url=source.thumbnail_url,
+            servings=orig.servings,
+            prep_time=orig.prep_time,
+            cook_time=orig.cook_time,
+            total_time=orig.total_time,
+            cuisine=source.cuisine,
+            category=source.category,
+            tags=source.tags,
+            diet_label=source.diet_label,
+            meal_label=source.meal_label,
+            visibility="household",
+            copied_from=root_id,
+        )
+        enhancement = EnhancementMetadata()
+    else:
+        recipe_data = RecipeCreate(
+            title=source.title,
+            url=source.url,
+            ingredients=source.ingredients,
+            instructions=source.instructions,
+            image_url=source.image_url,
+            thumbnail_url=source.thumbnail_url,
+            servings=source.servings,
+            prep_time=source.prep_time,
+            cook_time=source.cook_time,
+            total_time=source.total_time,
+            cuisine=source.cuisine,
+            category=source.category,
+            tags=source.tags,
+            tips=source.tips if keep_enhanced else None,
+            diet_label=source.diet_label,
+            meal_label=source.meal_label,
+            visibility="household",
+            copied_from=root_id,
+        )
+        enhancement = EnhancementMetadata()
 
-    # Preserve enhancement metadata if copying from an enhanced recipe
-    return save_recipe(
-        recipe_data,
-        household_id=to_household_id,
-        created_by=copied_by,
-        enhancement=EnhancementMetadata(
-            enhanced=source.enhanced, enhanced_at=source.enhanced_at, changes_made=source.changes_made or []
-        ),
-    )
+    # If this household already has a copy from the same root, delete it
+    # so the new copy replaces it (prevents duplicates).
+    existing_id = _find_existing_copy(to_household_id, root_id)
+    if existing_id:
+        delete_recipe(existing_id, household_id=to_household_id)
+
+    return save_recipe(recipe_data, household_id=to_household_id, created_by=copied_by, enhancement=enhancement)
 
 
 def transfer_recipe_to_household(recipe_id: str, to_household_id: str) -> Recipe | None:

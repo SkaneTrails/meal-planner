@@ -16,6 +16,9 @@ from api.storage.recipe_queries import (
 from api.storage.recipe_storage import (
     EnhancementMetadata,
     _doc_to_recipe,
+    _find_existing_copy,
+    _resolve_root_id,
+    copy_recipe,
     delete_recipe,
     find_recipe_by_url,
     get_recipe,
@@ -1159,13 +1162,52 @@ class TestSearchRecipes:
         assert "private1" not in result_ids
 
 
+class TestResolveRootId:
+    """Tests for _resolve_root_id helper."""
+
+    def test_returns_recipe_id_when_no_copied_from(self) -> None:
+        """Root original should use its own ID."""
+        recipe = Recipe(id="abc", title="R", url="", ingredients=[], instructions=[], copied_from=None)
+        assert _resolve_root_id(recipe, "abc") == "abc"
+
+    def test_returns_copied_from_when_source_is_copy(self) -> None:
+        """Copy-of-a-copy should resolve to the root."""
+        recipe = Recipe(id="copy_b", title="R", url="", ingredients=[], instructions=[], copied_from="root_a")
+        assert _resolve_root_id(recipe, "copy_b") == "root_a"
+
+
+class TestFindExistingCopy:
+    """Tests for _find_existing_copy helper."""
+
+    def test_returns_id_when_copy_exists(self) -> None:
+        """Should return the existing copy's document ID."""
+        mock_doc = MagicMock()
+        mock_doc.id = "existing_copy_id"
+
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.where.return_value.where.return_value.limit.return_value.stream.return_value = iter(
+                [mock_doc]
+            )
+            result = _find_existing_copy("hh1", "root_a")
+
+        assert result == "existing_copy_id"
+
+    def test_returns_none_when_no_copy_exists(self) -> None:
+        """Should return None when no existing copy found."""
+        with patch("api.storage.recipe_storage.get_firestore_client") as mock_client:
+            mock_client.return_value.collection.return_value.where.return_value.where.return_value.limit.return_value.stream.return_value = iter(
+                []
+            )
+            result = _find_existing_copy("hh1", "root_a")
+
+        assert result is None
+
+
 class TestCopyRecipe:
     """Tests for copy_recipe function."""
 
     def test_copies_recipe_to_new_household(self) -> None:
         """Should copy recipe with new ownership and set copied_from."""
-        from api.storage.recipe_storage import copy_recipe
-
         source_recipe = Recipe(
             id="source_id",
             title="Shared Recipe",
@@ -1190,6 +1232,7 @@ class TestCopyRecipe:
 
         with (
             patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage._find_existing_copy", return_value=None),
             patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe) as mock_save,
         ):
             result = copy_recipe("source_id", to_household_id="hh123", copied_by="user@test.com")
@@ -1201,14 +1244,171 @@ class TestCopyRecipe:
         assert result.created_by == "user@test.com"
         assert result.copied_from == "source_id"
 
-        # Verify the RecipeCreate passed to save_recipe has copied_from set
         saved_recipe = mock_save.call_args[0][0]
         assert saved_recipe.copied_from == "source_id"
 
+    def test_resolves_copied_from_to_root(self) -> None:
+        """When copying a copy, copied_from should point to the root original."""
+        source_recipe = Recipe(
+            id="copy_b",
+            title="B's Copy",
+            url="https://example.com",
+            ingredients=["flour"],
+            instructions=["Mix"],
+            household_id="hh_b",
+            visibility="shared",
+            copied_from="root_a",
+        )
+
+        copied_recipe = Recipe(
+            id="copy_d",
+            title="B's Copy",
+            url="https://example.com",
+            ingredients=["flour"],
+            instructions=["Mix"],
+            household_id="hh_d",
+            visibility="household",
+            copied_from="root_a",
+        )
+
+        with (
+            patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage._find_existing_copy", return_value=None),
+            patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe) as mock_save,
+        ):
+            result = copy_recipe("copy_b", to_household_id="hh_d", copied_by="user@test.com")
+
+        assert result is not None
+        saved_recipe = mock_save.call_args[0][0]
+        assert saved_recipe.copied_from == "root_a"
+
+    def test_strips_enhancement_by_default(self) -> None:
+        """Should use original snapshot when source is enhanced and keep_enhanced=False."""
+        from api.models.recipe import OriginalRecipe
+
+        source_recipe = Recipe(
+            id="source_id",
+            title="Enhanced Title",
+            url="https://example.com",
+            ingredients=["enhanced ingredient"],
+            instructions=["Enhanced step"],
+            household_id="hh_other",
+            visibility="shared",
+            enhanced=True,
+            enhanced_at=datetime(2025, 1, 1, tzinfo=UTC),
+            tips="Some tips",
+            changes_made=["Changed stuff"],
+            original=OriginalRecipe(
+                title="Original Title", ingredients=["original ingredient"], instructions=["Original step"], servings=4
+            ),
+        )
+
+        copied_recipe = Recipe(
+            id="copied_id",
+            title="Original Title",
+            url="https://example.com",
+            ingredients=["original ingredient"],
+            instructions=["Original step"],
+            household_id="hh123",
+            visibility="household",
+            copied_from="source_id",
+        )
+
+        with (
+            patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage._find_existing_copy", return_value=None),
+            patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe) as mock_save,
+        ):
+            result = copy_recipe("source_id", to_household_id="hh123", copied_by="user@test.com")
+
+        assert result is not None
+        saved_recipe = mock_save.call_args[0][0]
+        assert saved_recipe.title == "Original Title"
+        assert saved_recipe.ingredients == ["original ingredient"]
+        assert saved_recipe.instructions == ["Original step"]
+        assert saved_recipe.servings == 4
+        enhancement = mock_save.call_args[1]["enhancement"]
+        assert enhancement.enhanced is False
+
+    def test_keeps_enhancement_when_requested(self) -> None:
+        """Should keep enhanced content as baseline when keep_enhanced=True."""
+        from api.models.recipe import OriginalRecipe
+
+        source_recipe = Recipe(
+            id="source_id",
+            title="Enhanced Title",
+            url="https://example.com",
+            ingredients=["enhanced ingredient"],
+            instructions=["Enhanced step"],
+            household_id="hh_other",
+            visibility="shared",
+            enhanced=True,
+            tips="Some tips",
+            original=OriginalRecipe(
+                title="Original Title", ingredients=["original ingredient"], instructions=["Original step"]
+            ),
+        )
+
+        copied_recipe = Recipe(
+            id="copied_id",
+            title="Enhanced Title",
+            url="https://example.com",
+            household_id="hh123",
+            visibility="household",
+            copied_from="source_id",
+        )
+
+        with (
+            patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage._find_existing_copy", return_value=None),
+            patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe) as mock_save,
+        ):
+            result = copy_recipe("source_id", to_household_id="hh123", copied_by="user@test.com", keep_enhanced=True)
+
+        assert result is not None
+        saved_recipe = mock_save.call_args[0][0]
+        assert saved_recipe.title == "Enhanced Title"
+        assert saved_recipe.ingredients == ["enhanced ingredient"]
+        assert saved_recipe.tips == "Some tips"
+        enhancement = mock_save.call_args[1]["enhancement"]
+        assert enhancement.enhanced is False
+
+    def test_overwrites_existing_copy(self) -> None:
+        """Should delete existing copy before creating a new one."""
+        source_recipe = Recipe(
+            id="source_id",
+            title="Shared Recipe",
+            url="https://example.com",
+            ingredients=[],
+            instructions=[],
+            household_id=None,
+            visibility="shared",
+        )
+
+        new_copy = Recipe(
+            id="new_copy_id",
+            title="Shared Recipe",
+            url="https://example.com",
+            ingredients=[],
+            instructions=[],
+            household_id="hh123",
+            visibility="household",
+            copied_from="source_id",
+        )
+
+        with (
+            patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage._find_existing_copy", return_value="old_copy_id"),
+            patch("api.storage.recipe_storage.delete_recipe") as mock_delete,
+            patch("api.storage.recipe_storage.save_recipe", return_value=new_copy),
+        ):
+            result = copy_recipe("source_id", to_household_id="hh123", copied_by="user@test.com")
+
+        assert result is not None
+        mock_delete.assert_called_once_with("old_copy_id", household_id="hh123")
+
     def test_returns_none_for_missing_recipe(self) -> None:
         """Should return None if source recipe doesn't exist."""
-        from api.storage.recipe_storage import copy_recipe
-
         with patch("api.storage.recipe_storage.get_recipe", return_value=None):
             result = copy_recipe("nonexistent", to_household_id="hh123", copied_by="user@test.com")
 
@@ -1391,12 +1591,89 @@ class TestExcludeCopiedOriginals:
             ),
         ]
 
-        result = _exclude_copied_originals(recipes)
+        result = _exclude_copied_originals(recipes, "hh1")
 
         result_ids = [r.id for r in result]
         assert "copy1" in result_ids
         assert "shared1" not in result_ids
         assert "shared2" in result_ids
+
+    def test_hides_sibling_copies_from_other_households(self) -> None:
+        """Should hide copies from other households that share the same root."""
+        recipes = [
+            Recipe(
+                id="my_copy",
+                title="My Copy",
+                url="https://example.com/pasta",
+                ingredients=[],
+                instructions=[],
+                household_id="hh_d",
+                visibility="household",
+                copied_from="root_a",
+            ),
+            Recipe(
+                id="root_a",
+                title="Original",
+                url="https://example.com/pasta",
+                ingredients=[],
+                instructions=[],
+                household_id="hh_a",
+                visibility="shared",
+            ),
+            Recipe(
+                id="copy_b",
+                title="B's Copy",
+                url="https://example.com/pasta",
+                ingredients=[],
+                instructions=[],
+                household_id="hh_b",
+                visibility="shared",
+                copied_from="root_a",
+            ),
+            Recipe(
+                id="copy_c",
+                title="C's Copy",
+                url="https://example.com/pasta",
+                ingredients=[],
+                instructions=[],
+                household_id="hh_c",
+                visibility="shared",
+                copied_from="root_a",
+            ),
+        ]
+
+        result = _exclude_copied_originals(recipes, "hh_d")
+
+        result_ids = [r.id for r in result]
+        assert "my_copy" in result_ids
+        assert "root_a" not in result_ids
+        assert "copy_b" not in result_ids
+        assert "copy_c" not in result_ids
+
+    def test_no_dedup_for_superuser(self) -> None:
+        """Should return all recipes when household_id is None (superuser)."""
+        recipes = [
+            Recipe(
+                id="copy1",
+                title="Copy",
+                url="https://example.com",
+                ingredients=[],
+                instructions=[],
+                household_id="hh1",
+                copied_from="shared1",
+            ),
+            Recipe(
+                id="shared1",
+                title="Shared",
+                url="https://example.com",
+                ingredients=[],
+                instructions=[],
+                visibility="shared",
+            ),
+        ]
+
+        result = _exclude_copied_originals(recipes, None)
+        assert len(result) == 2
 
     def test_returns_all_when_no_copies(self) -> None:
         """Should return all recipes when none are copies."""
@@ -1405,13 +1682,13 @@ class TestExcludeCopiedOriginals:
             Recipe(id="2", title="B", url="https://b.com", ingredients=[], instructions=[]),
         ]
 
-        result = _exclude_copied_originals(recipes)
+        result = _exclude_copied_originals(recipes, "hh1")
 
         assert len(result) == 2
 
     def test_handles_empty_list(self) -> None:
         """Should handle empty recipe list."""
-        result = _exclude_copied_originals([])
+        result = _exclude_copied_originals([], "hh1")
 
         assert result == []
 
