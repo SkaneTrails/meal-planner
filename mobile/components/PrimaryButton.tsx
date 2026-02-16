@@ -56,7 +56,9 @@ export function PrimaryButton({
   const isDisabled = disabled || isPending;
   const activeColor = isDisabled ? disabledColor : color;
   const displayIcon: IconName | undefined = isPending
-    ? 'hourglass-outline'
+    ? icon
+      ? 'hourglass-outline'
+      : undefined
     : icon;
   const displayLabel = isPending && loadingLabel ? loadingLabel : label;
 

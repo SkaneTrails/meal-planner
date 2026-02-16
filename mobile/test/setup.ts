@@ -65,58 +65,43 @@ vi.mock('expo-linear-gradient', () => ({
 }));
 
 // Mock @/components/FullScreenLoading (must mock separately to prevent real module from loading GradientBackground)
-vi.mock('@/components/FullScreenLoading', () => ({
-  FullScreenLoading: ({ children, title, subtitle, icon }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'fullscreen-loading' },
-      icon && createElement('span', { 'data-testid': 'fullscreen-icon' }, icon),
-      title && createElement('span', null, title),
-      subtitle && createElement('span', null, subtitle),
-      children,
-    );
+// Shared mock factories — reused in both direct-path and barrel mocks to avoid drift
+const FullScreenLoadingMock = ({ children, title, subtitle, icon }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'fullscreen-loading' },
+    icon && createElement('span', { 'data-testid': 'fullscreen-icon' }, icon),
+    title && createElement('span', null, title),
+    subtitle && createElement('span', null, subtitle),
+    children,
+  );
+};
+
+const PrimaryButtonMock = ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
+  const { createElement } = require('react');
+  const displayLabel = isPending && loadingLabel ? loadingLabel : label;
+  return createElement('button', {
+    onClick: onPress,
+    disabled: disabled || isPending,
+    'data-testid': 'primary-button',
   },
+    icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
+    displayLabel,
+  );
+};
+
+vi.mock('@/components/FullScreenLoading', () => ({
+  FullScreenLoading: FullScreenLoadingMock,
 }));
 
-// Mock @/components/PrimaryButton (same reason — prevent loading AnimatedPressable chain)
 vi.mock('@/components/PrimaryButton', () => ({
-  PrimaryButton: ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
-    const { createElement } = require('react');
-    const displayLabel = isPending && loadingLabel ? loadingLabel : label;
-    return createElement('button', {
-      onClick: onPress,
-      disabled: disabled || isPending,
-      'data-testid': 'primary-button',
-    },
-      icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
-      displayLabel,
-    );
-  },
+  PrimaryButton: PrimaryButtonMock,
 }));
 
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
-  FullScreenLoading: ({ children, title, subtitle, icon }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'fullscreen-loading' },
-      icon && createElement('span', { 'data-testid': 'fullscreen-icon' }, icon),
-      title && createElement('span', null, title),
-      subtitle && createElement('span', null, subtitle),
-      children,
-    );
-  },
-  PrimaryButton: ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
-    const { createElement } = require('react');
-    const displayLabel = isPending && loadingLabel ? loadingLabel : label;
-    return createElement('button', {
-      onClick: onPress,
-      disabled: disabled || isPending,
-      'data-testid': 'primary-button',
-    },
-      icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
-      displayLabel,
-    );
-  },
+  FullScreenLoading: FullScreenLoadingMock,
+  PrimaryButton: PrimaryButtonMock,
   AnimatedPressable: ({ children, onPress, ...props }: any) => {
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);
