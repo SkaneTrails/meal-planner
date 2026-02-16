@@ -503,7 +503,7 @@ describe('useRecipeActions', () => {
       );
     });
 
-    it('calls enhanceRecipe and shows success when confirmed', async () => {
+    it('calls enhanceRecipe and opens review modal when confirmed', async () => {
       const recipe = makeRecipe();
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       await act(async () => result.current.handleEnhanceRecipe());
@@ -513,7 +513,7 @@ describe('useRecipeActions', () => {
       await act(async () => enhanceButton.onPress!());
 
       expect(mockEnhanceMutateAsync).toHaveBeenCalledWith('recipe-1');
-      expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhanceSuccess', 'recipe.enhanceSuccessMessage');
+      expect(result.current.showEnhancementReviewModal).toBe(true);
     });
 
     it('shows error notification on failure', async () => {

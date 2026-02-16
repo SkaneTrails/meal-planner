@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { createQueryWrapper, mockRecipe } from '@/test/helpers';
-import type { Recipe } from '@/lib/types';
 
 vi.mock('react-native', async () => {
   const actual = await vi.importActual<typeof import('react-native')>('react-native');
@@ -16,9 +15,8 @@ vi.mock('react-native', async () => {
 const mockRouterPush = vi.fn();
 const mockRouterBack = vi.fn();
 
-const mockScrapeRecipeMutateAsync = vi.fn();
+const mockPreviewRecipeMutateAsync = vi.fn();
 const mockCreateRecipeMutateAsync = vi.fn();
-const mockReviewEnhancementMutateAsync = vi.fn();
 const mockPickImage = vi.fn();
 
 let mockSearchParams: Record<string, string | undefined> = {};
@@ -32,16 +30,12 @@ vi.mock('expo-router', () => ({
 }));
 
 vi.mock('@/lib/hooks', () => ({
-  useScrapeRecipe: vi.fn(() => ({
-    mutateAsync: mockScrapeRecipeMutateAsync,
+  usePreviewRecipe: vi.fn(() => ({
+    mutateAsync: mockPreviewRecipeMutateAsync,
     isPending: false,
   })),
   useCreateRecipe: vi.fn(() => ({
     mutateAsync: mockCreateRecipeMutateAsync,
-    isPending: false,
-  })),
-  useReviewEnhancement: vi.fn(() => ({
-    mutateAsync: mockReviewEnhancementMutateAsync,
     isPending: false,
   })),
   useImagePicker: vi.fn((onPick: (uri: string) => void) => ({
@@ -116,7 +110,6 @@ describe('useAddRecipeActions', () => {
     it('starts with no pending operations', () => {
       const { result } = render();
       expect(result.current.isPending).toBe(false);
-      expect(result.current.isReviewPending).toBe(false);
     });
   });
 
@@ -129,7 +122,7 @@ describe('useAddRecipeActions', () => {
         'addRecipe.invalidUrl',
         'addRecipe.invalidUrlMessage',
       );
-      expect(mockScrapeRecipeMutateAsync).not.toHaveBeenCalled();
+      expect(mockPreviewRecipeMutateAsync).not.toHaveBeenCalled();
     });
 
     it('shows notification for ftp:// URL', async () => {
@@ -144,47 +137,33 @@ describe('useAddRecipeActions', () => {
   });
 
   describe('handleImport', () => {
-    it('calls scrapeRecipe with URL and enhance flag', async () => {
-      mockScrapeRecipeMutateAsync.mockResolvedValueOnce(
-        mockRecipe({ id: 'new-1', title: 'Imported Recipe' }),
-      );
+    it('calls previewRecipe with URL and enhance flag', async () => {
+      const preview = { original: mockRecipe({ title: 'Preview' }), enhanced: null, changes_made: [] };
+      mockPreviewRecipeMutateAsync.mockResolvedValueOnce(preview);
       const { result } = render();
       act(() => result.current.setUrl('https://example.com/recipe'));
       await act(() => result.current.handleImport());
-      expect(mockScrapeRecipeMutateAsync).toHaveBeenCalledWith({
+      expect(mockPreviewRecipeMutateAsync).toHaveBeenCalledWith({
         url: 'https://example.com/recipe',
         enhance: false,
       });
     });
 
-    it('shows success alert for non-enhanced import', async () => {
-      mockScrapeRecipeMutateAsync.mockResolvedValueOnce(
-        mockRecipe({ id: 'new-1', title: 'Imported Recipe', enhanced: false }),
-      );
+    it('navigates to review page with preview data', async () => {
+      const preview = { original: mockRecipe({ title: 'Preview' }), enhanced: null, changes_made: [] };
+      mockPreviewRecipeMutateAsync.mockResolvedValueOnce(preview);
       const { result } = render();
       act(() => result.current.setUrl('https://example.com/recipe'));
       await act(() => result.current.handleImport());
-      expect(showAlert).toHaveBeenCalledWith(
-        'addRecipe.done',
-        expect.any(String),
-        expect.any(Array),
-      );
-    });
-
-    it('shows summary modal for enhanced import', async () => {
-      mockScrapeRecipeMutateAsync.mockResolvedValueOnce(
-        mockRecipe({ id: 'new-1', title: 'Enhanced Recipe', enhanced: true }),
-      );
-      const { result } = render();
-      act(() => result.current.setUrl('https://example.com/recipe'));
-      await act(() => result.current.handleImport());
-      expect(result.current.showSummaryModal).toBe(true);
-      expect(result.current.importedRecipe?.id).toBe('new-1');
+      expect(mockRouterPush).toHaveBeenCalledWith({
+        pathname: '/review-recipe',
+        params: { preview: JSON.stringify(preview) },
+      });
     });
 
     it('shows blocked site error', async () => {
       const err = new ApiClientError('blocked', 0, 'blocked');
-      mockScrapeRecipeMutateAsync.mockRejectedValueOnce(err);
+      mockPreviewRecipeMutateAsync.mockRejectedValueOnce(err);
       const { result } = render();
       act(() => result.current.setUrl('https://blocked.com/recipe'));
       await act(() => result.current.handleImport());
@@ -196,7 +175,7 @@ describe('useAddRecipeActions', () => {
 
     it('shows not-supported site error', async () => {
       const err = new ApiClientError('not supported', 0, 'not_supported');
-      mockScrapeRecipeMutateAsync.mockRejectedValueOnce(err);
+      mockPreviewRecipeMutateAsync.mockRejectedValueOnce(err);
       const { result } = render();
       act(() => result.current.setUrl('https://unknown.com/recipe'));
       await act(() => result.current.handleImport());
@@ -208,7 +187,7 @@ describe('useAddRecipeActions', () => {
 
     it('shows duplicate recipe error for 409', async () => {
       const err = new ApiClientError('exists', 409);
-      mockScrapeRecipeMutateAsync.mockRejectedValueOnce(err);
+      mockPreviewRecipeMutateAsync.mockRejectedValueOnce(err);
       const { result } = render();
       act(() => result.current.setUrl('https://example.com/recipe'));
       await act(() => result.current.handleImport());
@@ -219,7 +198,7 @@ describe('useAddRecipeActions', () => {
     });
 
     it('shows generic error for unknown failures', async () => {
-      mockScrapeRecipeMutateAsync.mockRejectedValueOnce(new Error('network down'));
+      mockPreviewRecipeMutateAsync.mockRejectedValueOnce(new Error('network down'));
       const { result } = render();
       act(() => result.current.setUrl('https://example.com/recipe'));
       await act(() => result.current.handleImport());
@@ -315,61 +294,6 @@ describe('useAddRecipeActions', () => {
         'addRecipe.createFailed',
         'server error',
       );
-    });
-  });
-
-  describe('enhancement review', () => {
-    const setupWithImportedRecipe = async () => {
-      mockScrapeRecipeMutateAsync.mockResolvedValueOnce(
-        mockRecipe({ id: 'enhanced-1', title: 'Enhanced', enhanced: true }),
-      );
-      const { result } = render();
-      act(() => result.current.setUrl('https://example.com/recipe'));
-      await act(() => result.current.handleImport());
-      return result;
-    };
-
-    it('handleAcceptEnhancement approves and navigates', async () => {
-      mockReviewEnhancementMutateAsync.mockResolvedValueOnce(undefined);
-      const result = await setupWithImportedRecipe();
-      await act(() => result.current.handleAcceptEnhancement());
-      expect(mockReviewEnhancementMutateAsync).toHaveBeenCalledWith({
-        id: 'enhanced-1',
-        action: 'approve',
-      });
-      expect(result.current.showSummaryModal).toBe(false);
-      expect(mockRouterPush).toHaveBeenCalledWith('/recipe/enhanced-1');
-    });
-
-    it('handleRejectEnhancement rejects and navigates', async () => {
-      mockReviewEnhancementMutateAsync.mockResolvedValueOnce(undefined);
-      const result = await setupWithImportedRecipe();
-      await act(() => result.current.handleRejectEnhancement());
-      expect(mockReviewEnhancementMutateAsync).toHaveBeenCalledWith({
-        id: 'enhanced-1',
-        action: 'reject',
-      });
-    });
-
-    it('handleViewRecipe closes modal and navigates', async () => {
-      const result = await setupWithImportedRecipe();
-      act(() => result.current.handleViewRecipe());
-      expect(result.current.showSummaryModal).toBe(false);
-      expect(mockRouterPush).toHaveBeenCalledWith('/recipe/enhanced-1');
-    });
-
-    it('handleAddAnother resets state', async () => {
-      const result = await setupWithImportedRecipe();
-      act(() => result.current.handleAddAnother());
-      expect(result.current.showSummaryModal).toBe(false);
-      expect(result.current.importedRecipe).toBeNull();
-      expect(result.current.url).toBe('');
-    });
-
-    it('does nothing when no imported recipe', async () => {
-      const { result } = render();
-      await act(() => result.current.handleAcceptEnhancement());
-      expect(mockReviewEnhancementMutateAsync).not.toHaveBeenCalled();
     });
   });
 

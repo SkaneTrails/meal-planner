@@ -57,6 +57,8 @@ export const useRecipeActions = (
   const [showUrlModal, setShowUrlModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showEnhancementReviewModal, setShowEnhancementReviewModal] =
+    useState(false);
 
   const isSuperuser = currentUser?.role === 'superuser';
   const { data: households } = useHouseholds({ enabled: isSuperuser });
@@ -392,10 +394,7 @@ export const useRecipeActions = (
           try {
             await enhanceRecipe.mutateAsync(id);
             hapticSuccess();
-            showNotification(
-              t('recipe.enhanceSuccess'),
-              t('recipe.enhanceSuccessMessage'),
-            );
+            setShowEnhancementReviewModal(true);
           } catch {
             hapticWarning();
             showNotification(t('common.error'), t('recipe.enhanceFailed'));
@@ -424,6 +423,8 @@ export const useRecipeActions = (
     setShowEditModal,
     showUrlModal,
     setShowUrlModal,
+    showEnhancementReviewModal,
+    setShowEnhancementReviewModal,
     handlePickImage,
     saveImageUrl,
     handlePlanMeal,

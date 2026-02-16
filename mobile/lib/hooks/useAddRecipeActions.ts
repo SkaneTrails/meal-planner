@@ -2,14 +2,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { showAlert, showNotification } from '@/lib/alert';
 import { ApiClientError, api } from '@/lib/api';
-import {
-  useCreateRecipe,
-  useImagePicker,
-  useReviewEnhancement,
-  useScrapeRecipe,
-} from '@/lib/hooks';
+import { useCreateRecipe, useImagePicker, usePreviewRecipe } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
+import type { DietLabel, MealLabel } from '@/lib/types';
 
 const extractHostname = (url: string): string => {
   try {
@@ -31,8 +26,6 @@ export const useAddRecipeActions = () => {
   // URL import state
   const [url, setUrl] = useState(urlParam || '');
   const [enhanceWithAI, setEnhanceWithAI] = useState(false);
-  const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [importedRecipe, setImportedRecipe] = useState<Recipe | null>(null);
 
   // Manual form state
   const [title, setTitle] = useState('');
@@ -46,9 +39,8 @@ export const useAddRecipeActions = () => {
   const [dietLabel, setDietLabel] = useState<DietLabel | null>(null);
   const [mealLabel, setMealLabel] = useState<MealLabel | null>(null);
 
-  const scrapeRecipe = useScrapeRecipe();
+  const previewRecipe = usePreviewRecipe();
   const createRecipe = useCreateRecipe();
-  const reviewEnhancement = useReviewEnhancement();
 
   const isValidUrl = (text: string) => {
     try {
@@ -69,36 +61,15 @@ export const useAddRecipeActions = () => {
     }
 
     try {
-      // scrapeRecipe handles client-side fetch + server fallback internally
-      const recipe = await scrapeRecipe.mutateAsync({
+      const preview = await previewRecipe.mutateAsync({
         url,
         enhance: enhanceWithAI,
       });
-      setImportedRecipe(recipe);
 
-      if (recipe.enhanced) {
-        // Show AI changes modal for user to accept or reject
-        setShowSummaryModal(true);
-      } else {
-        showAlert(
-          t('addRecipe.done'),
-          t('addRecipe.recipeImported', { title: recipe.title }),
-          [
-            {
-              text: t('addRecipe.viewRecipe'),
-              style: 'cancel',
-              onPress: () => {
-                router.back();
-                router.push(`/recipe/${recipe.id}`);
-              },
-            },
-            {
-              text: t('addRecipe.addMore'),
-              onPress: () => setUrl(''),
-            },
-          ],
-        );
-      }
+      router.push({
+        pathname: '/review-recipe',
+        params: { preview: JSON.stringify(preview) },
+      });
     } catch (err) {
       if (err instanceof ApiClientError && err.reason === 'blocked') {
         const host = extractHostname(url);
@@ -219,55 +190,15 @@ export const useAddRecipeActions = () => {
     setImageUrl('');
   });
 
-  const handleAcceptEnhancement = async () => {
-    if (!importedRecipe) return;
-    try {
-      await reviewEnhancement.mutateAsync({
-        id: importedRecipe.id,
-        action: 'approve',
-      });
-      setShowSummaryModal(false);
-      router.back();
-      router.push(`/recipe/${importedRecipe.id}`);
-    } catch {
-      showNotification(t('common.error'), t('addRecipe.enhanced.reviewFailed'));
-    }
-  };
-
-  const handleRejectEnhancement = async () => {
-    if (!importedRecipe) return;
-    try {
-      await reviewEnhancement.mutateAsync({
-        id: importedRecipe.id,
-        action: 'reject',
-      });
-      setShowSummaryModal(false);
-      router.back();
-      router.push(`/recipe/${importedRecipe.id}`);
-    } catch {
-      showNotification(t('common.error'), t('addRecipe.enhanced.reviewFailed'));
-    }
-  };
-
   const handleViewRecipe = () => {
-    setShowSummaryModal(false);
-    if (importedRecipe) {
-      router.back();
-      router.push(`/recipe/${importedRecipe.id}`);
-    }
+    // No-op: kept for compatibility but no longer used
   };
 
   const handleAddAnother = () => {
-    setShowSummaryModal(false);
-    setImportedRecipe(null);
     setUrl('');
   };
 
-  const isPending =
-    scrapeRecipe.isPending ||
-    createRecipe.isPending ||
-    reviewEnhancement.isPending;
-  const isReviewPending = reviewEnhancement.isPending;
+  const isPending = previewRecipe.isPending || createRecipe.isPending;
 
   return {
     t,
@@ -300,14 +231,8 @@ export const useAddRecipeActions = () => {
     setMealLabel,
     handleCreateManual,
     handlePickImage,
-    showSummaryModal,
-    setShowSummaryModal,
-    importedRecipe,
     handleViewRecipe,
     handleAddAnother,
-    handleAcceptEnhancement,
-    handleRejectEnhancement,
     isPending,
-    isReviewPending,
   };
 };

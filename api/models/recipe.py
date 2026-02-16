@@ -349,6 +349,21 @@ class RecipeParseRequest(BaseModel):
     )
 
 
+class RecipePreviewRequest(BaseModel):
+    """Request body for recipe preview (no save).
+
+    Accepts either client-provided HTML or URL-only (falls back to server-side scraping).
+    """
+
+    url: HttpUrl = Field(..., description="URL of the recipe")
+    html: str | None = Field(
+        default=None,
+        min_length=100,
+        max_length=10_000_000,
+        description="HTML content (optional — server scrapes if omitted)",
+    )
+
+
 class EnhancementReviewAction(str, Enum):
     """Actions for reviewing an AI enhancement."""
 
@@ -373,3 +388,20 @@ class RecipePreview(BaseModel):
     enhanced: RecipeCreate | None = Field(default=None, description="AI-enhanced version (if enhance=true)")
     changes_made: list[str] = Field(default_factory=list, description="List of AI enhancement changes")
     image_url: str | None = Field(default=None, description="Original image URL from the recipe")
+
+
+class SavePreviewRequest(BaseModel):
+    """Save a recipe from a previously previewed result.
+
+    The client picks a version (original or enhanced) and can override
+    diet_label/meal_label before saving.
+    """
+
+    version: str = Field(
+        default="original",
+        pattern="^(original|enhanced)$",
+        description="Which version to save: 'original' or 'enhanced'",
+    )
+    preview: RecipePreview = Field(..., description="The full preview returned by /recipes/preview")
+    diet_label: DietLabel | None = Field(default=None, description="User-selected diet label")
+    meal_label: MealLabel | None = Field(default=None, description="User-selected meal label")

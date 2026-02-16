@@ -9,6 +9,7 @@ import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { EnhancingOverlay, GradientBackground } from '@/components';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
+import { EnhancementReviewModal } from '@/components/recipe-detail/EnhancementReviewModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
 import { PlanMealModal } from '@/components/recipe-detail/PlanMealModal';
 import { RecipeContent } from '@/components/recipe-detail/RecipeContent';
@@ -63,6 +64,8 @@ export default function RecipeDetailScreen() {
     setShowEditModal,
     showUrlModal,
     setShowUrlModal,
+    showEnhancementReviewModal,
+    setShowEnhancementReviewModal,
     handlePickImage,
     saveImageUrl,
     handlePlanMeal,
@@ -297,6 +300,24 @@ export default function RecipeDetailScreen() {
       />
 
       <EnhancingOverlay visible={isEnhancing} message={t('recipe.enhancing')} />
+
+      {showEnhancementReviewModal && recipe && (
+        <EnhancementReviewModal
+          visible={showEnhancementReviewModal}
+          recipe={recipe}
+          t={t}
+          isSubmitting={isReviewingEnhancement}
+          onApprove={() => {
+            handleReviewEnhancement('approve');
+            setShowEnhancementReviewModal(false);
+          }}
+          onReject={() => {
+            handleReviewEnhancement('reject');
+            setShowEnhancementReviewModal(false);
+          }}
+          onClose={() => setShowEnhancementReviewModal(false)}
+        />
+      )}
     </GradientBackground>
   );
 }

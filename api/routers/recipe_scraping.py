@@ -15,12 +15,21 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from api.auth.firebase import require_auth
 from api.auth.helpers import require_household
 from api.auth.models import AuthenticatedUser
-from api.models.recipe import Recipe, RecipeParseRequest, RecipePreview, RecipeScrapeRequest
+from api.models.recipe import (
+    Recipe,
+    RecipeCreate,
+    RecipeParseRequest,
+    RecipePreview,
+    RecipePreviewRequest,
+    RecipeScrapeRequest,
+    SavePreviewRequest,
+)
 from api.routers.recipe_enhancement import _get_household_config, _try_enhance, _try_enhance_preview
 from api.routers.recipe_images import ingest_recipe_image
 from api.services.html_fetcher import FetchError, FetchResult, fetch_html
 from api.services.recipe_mapper import build_recipe_create_from_scraped
 from api.storage import recipe_storage
+from api.storage.recipe_storage import EnhancementMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -235,23 +244,28 @@ async def parse_recipe(
 @router.post("/preview", status_code=status.HTTP_200_OK)
 async def preview_recipe(
     user: Annotated[AuthenticatedUser, Depends(require_auth)],
-    request: RecipeParseRequest,
+    request: RecipePreviewRequest,
     *,
     enhance: Annotated[bool, Query(description="Include AI-enhanced version")] = False,
 ) -> RecipePreview:
     """Preview a scraped recipe without saving it.
 
-    Parses the recipe from client-provided HTML and returns a preview.
-    Optionally includes an AI-enhanced version for comparison.
+    Parses the recipe from client-provided HTML (or server-side scraping if
+    no HTML is provided) and returns a preview. Optionally includes an
+    AI-enhanced version for comparison.
     The client can then POST to /recipes to save the chosen version.
     """
     household_id = require_household(user)
     url = str(request.url)
-    html = request.html
-    logger.info("[preview_recipe] Received request for URL: %s, HTML length: %d", url, len(html))
 
     _check_duplicate_url(url)
-    scraped_data = await _parse_html_or_raise(url, html)
+
+    if request.html is not None:
+        logger.info("[preview_recipe] Received HTML for URL: %s, HTML length: %d", url, len(request.html))
+        scraped_data = await _parse_html_or_raise(url, request.html)
+    else:
+        logger.info("[preview_recipe] No HTML provided, scraping server-side for URL: %s", url)
+        scraped_data = await _scrape_with_fallback(url)
 
     original_create = build_recipe_create_from_scraped(scraped_data)
     image_url = original_create.image_url
@@ -269,3 +283,38 @@ async def preview_recipe(
     return RecipePreview(
         original=original_create, enhanced=enhanced_create, changes_made=changes_made, image_url=image_url
     )
+
+
+@router.post("/save-preview", status_code=status.HTTP_201_CREATED)
+async def save_preview(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], request: SavePreviewRequest
+) -> Recipe:
+    """Save a recipe from a previously previewed result.
+
+    The client picks a version (original or enhanced) and can override
+    diet_label and meal_label before saving. Image ingestion runs
+    automatically after save.
+    """
+    household_id = require_household(user)
+    preview = request.preview
+    chose_enhanced = request.version == "enhanced" and preview.enhanced is not None
+
+    recipe_to_save: RecipeCreate = (
+        preview.enhanced if chose_enhanced and preview.enhanced is not None else preview.original
+    )
+
+    if request.diet_label is not None:
+        recipe_to_save = recipe_to_save.model_copy(update={"diet_label": request.diet_label})
+    if request.meal_label is not None:
+        recipe_to_save = recipe_to_save.model_copy(update={"meal_label": request.meal_label})
+
+    enhancement = EnhancementMetadata()
+    if chose_enhanced:
+        enhancement = EnhancementMetadata(
+            enhanced=True, show_enhanced=True, enhancement_reviewed=True, changes_made=preview.changes_made
+        )
+
+    saved = recipe_storage.save_recipe(
+        recipe_to_save, enhancement=enhancement, household_id=household_id, created_by=user.email
+    )
+    return await ingest_recipe_image(saved, household_id=household_id)

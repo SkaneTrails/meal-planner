@@ -275,7 +275,10 @@ class TestCreateRecipe:
 
     def test_creates_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
         """Should create and return new recipe."""
-        with patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe):
+        with (
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes.ingest_recipe_image", new_callable=AsyncMock, return_value=sample_recipe),
+        ):
             response = client.post(
                 "/recipes",
                 json={
@@ -288,6 +291,33 @@ class TestCreateRecipe:
 
         assert response.status_code == 201
         assert response.json()["id"] == "test123"
+
+    def test_creates_recipe_with_image_ingestion(self, client: TestClient) -> None:
+        """Should download and process external image after saving."""
+        saved = Recipe(
+            id="img_test",
+            title="With Image",
+            url="https://example.com/recipe",
+            image_url="https://external.com/photo.jpg",
+        )
+        with_gcs_image = Recipe(
+            id="img_test",
+            title="With Image",
+            url="https://example.com/recipe",
+            image_url="https://storage.googleapis.com/bucket/img_test-hero.jpg",
+            thumbnail_url="https://storage.googleapis.com/bucket/img_test-thumb.jpg",
+        )
+        with (
+            patch("api.routers.recipes.recipe_storage.save_recipe", return_value=saved),
+            patch(
+                "api.routers.recipes.ingest_recipe_image", new_callable=AsyncMock, return_value=with_gcs_image
+            ) as mock_ingest,
+        ):
+            response = client.post("/recipes", json={"title": "With Image", "url": "https://example.com/recipe"})
+
+        assert response.status_code == 201
+        assert "storage.googleapis.com" in response.json()["image_url"]
+        mock_ingest.assert_called_once()
 
 
 class TestScrapeRecipe:
@@ -947,6 +977,203 @@ class TestPreviewRecipe:
 
         assert response.status_code == 422
         assert "Failed to parse" in response.json()["detail"]
+
+    def test_preview_without_html_scrapes_server_side(self, client: TestClient) -> None:
+        """Should scrape server-side when no HTML is provided."""
+        scraped_data = {
+            "title": "Server-Scraped Recipe",
+            "url": "https://example.com/server",
+            "ingredients": ["salt"],
+            "instructions": ["Season"],
+        }
+        fetch_result = FetchResult(html="<html>recipe</html>", final_url="https://example.com/server")
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 200
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = scraped_data
+        mock_cf_response.raise_for_status = MagicMock()
+
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post("/recipes/preview", json={"url": "https://example.com/server"})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["original"]["title"] == "Server-Scraped Recipe"
+
+
+class TestSavePreview:
+    """Tests for POST /recipes/save-preview endpoint."""
+
+    def test_saves_original_version(self, client: TestClient) -> None:
+        """Should save the original recipe when version='original'."""
+        saved = Recipe(
+            id="saved_orig",
+            title="Original Recipe",
+            url="https://example.com/recipe",
+            ingredients=["flour", "sugar"],
+            instructions=["Mix", "Bake"],
+        )
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=saved) as mock_save,
+            patch("api.routers.recipe_scraping.ingest_recipe_image", new_callable=AsyncMock, return_value=saved),
+        ):
+            response = client.post(
+                "/recipes/save-preview",
+                json={
+                    "version": "original",
+                    "preview": {
+                        "original": {
+                            "title": "Original Recipe",
+                            "url": "https://example.com/recipe",
+                            "ingredients": ["flour", "sugar"],
+                            "instructions": ["Mix", "Bake"],
+                        },
+                        "enhanced": None,
+                        "changes_made": [],
+                        "image_url": None,
+                    },
+                    "diet_label": "veggie",
+                    "meal_label": "meal",
+                },
+            )
+
+        assert response.status_code == 201
+        assert response.json()["id"] == "saved_orig"
+        call_args = mock_save.call_args
+        saved_recipe = call_args.args[0]
+        assert saved_recipe.title == "Original Recipe"
+        assert saved_recipe.diet_label.value == "veggie"
+        assert saved_recipe.meal_label.value == "meal"
+        enhancement = call_args.kwargs["enhancement"]
+        assert enhancement.enhanced is False
+
+    def test_saves_enhanced_version_with_metadata(self, client: TestClient) -> None:
+        """Should save the enhanced recipe with enhancement metadata when version='enhanced'."""
+        saved = Recipe(
+            id="saved_enh",
+            title="Enhanced Recipe",
+            url="https://example.com/recipe",
+            enhanced=True,
+            show_enhanced=True,
+            enhancement_reviewed=True,
+            changes_made=["Better technique"],
+        )
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=saved) as mock_save,
+            patch("api.routers.recipe_scraping.ingest_recipe_image", new_callable=AsyncMock, return_value=saved),
+        ):
+            response = client.post(
+                "/recipes/save-preview",
+                json={
+                    "version": "enhanced",
+                    "preview": {
+                        "original": {
+                            "title": "Original Recipe",
+                            "url": "https://example.com/recipe",
+                            "ingredients": ["flour"],
+                            "instructions": ["Mix"],
+                        },
+                        "enhanced": {
+                            "title": "Enhanced Recipe",
+                            "url": "https://example.com/recipe",
+                            "ingredients": ["flour", "butter"],
+                            "instructions": ["Mix well", "Fold gently"],
+                        },
+                        "changes_made": ["Better technique"],
+                        "image_url": "https://example.com/img.jpg",
+                    },
+                },
+            )
+
+        assert response.status_code == 201
+        call_args = mock_save.call_args
+        saved_recipe = call_args.args[0]
+        assert saved_recipe.title == "Enhanced Recipe"
+        enhancement = call_args.kwargs["enhancement"]
+        assert enhancement.enhanced is True
+        assert enhancement.show_enhanced is True
+        assert enhancement.enhancement_reviewed is True
+        assert enhancement.changes_made == ["Better technique"]
+
+    def test_falls_back_to_original_when_enhanced_is_none(self, client: TestClient) -> None:
+        """Should save original when version='enhanced' but no enhanced data exists."""
+        saved = Recipe(id="fallback", title="Original Recipe", url="https://example.com/recipe")
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=saved) as mock_save,
+            patch("api.routers.recipe_scraping.ingest_recipe_image", new_callable=AsyncMock, return_value=saved),
+        ):
+            response = client.post(
+                "/recipes/save-preview",
+                json={
+                    "version": "enhanced",
+                    "preview": {
+                        "original": {"title": "Original Recipe", "url": "https://example.com/recipe"},
+                        "enhanced": None,
+                        "changes_made": [],
+                        "image_url": None,
+                    },
+                },
+            )
+
+        assert response.status_code == 201
+        call_args = mock_save.call_args
+        saved_recipe = call_args.args[0]
+        assert saved_recipe.title == "Original Recipe"
+        enhancement = call_args.kwargs["enhancement"]
+        assert enhancement.enhanced is False
+
+    def test_runs_image_ingestion(self, client: TestClient) -> None:
+        """Should run image ingestion after saving."""
+        saved = Recipe(
+            id="img_preview",
+            title="With Image",
+            url="https://example.com/recipe",
+            image_url="https://external.com/img.jpg",
+        )
+        with_gcs = Recipe(
+            id="img_preview",
+            title="With Image",
+            url="https://example.com/recipe",
+            image_url="https://storage.googleapis.com/test/hero.jpg",
+            thumbnail_url="https://storage.googleapis.com/test/thumb.jpg",
+        )
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=saved),
+            patch(
+                "api.routers.recipe_scraping.ingest_recipe_image", new_callable=AsyncMock, return_value=with_gcs
+            ) as mock_ingest,
+        ):
+            response = client.post(
+                "/recipes/save-preview",
+                json={
+                    "version": "original",
+                    "preview": {
+                        "original": {
+                            "title": "With Image",
+                            "url": "https://example.com/recipe",
+                            "image_url": "https://external.com/img.jpg",
+                        },
+                        "enhanced": None,
+                        "changes_made": [],
+                        "image_url": "https://external.com/img.jpg",
+                    },
+                },
+            )
+
+        assert response.status_code == 201
+        assert "storage.googleapis.com" in response.json()["image_url"]
+        mock_ingest.assert_called_once()
 
 
 class TestUpdateRecipe:

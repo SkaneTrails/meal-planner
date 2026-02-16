@@ -15,7 +15,6 @@ import {
   GradientBackground,
   PrimaryButton,
 } from '@/components';
-import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { showNotification } from '@/lib/alert';
 import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
@@ -388,7 +387,6 @@ export default function AddRecipeScreen() {
           </View>
         </ScrollView>
 
-        <EnhancementSummaryModal actions={actions} />
         <EnhancingOverlay
           visible={isPending && enhanceWithAI}
           message={t('addRecipe.importingEnhancing')}

@@ -21,6 +21,7 @@ from api.models.recipe import (
     RecipeUpdate,
 )
 from api.routers.recipe_enhancement import HouseholdConfig  # re-export for tests
+from api.routers.recipe_images import ingest_recipe_image
 from api.storage import recipe_storage
 from api.storage.recipe_queries import count_recipes, get_recipes_paginated
 
@@ -99,12 +100,15 @@ async def get_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe: RecipeCreate) -> Recipe:
-    """Create a new recipe manually.
+    """Create a new recipe manually or from a preview.
 
-    Recipe will be owned by the user's household.
+    Recipe will be owned by the user's household. If the recipe has an
+    external image_url, the image is automatically downloaded, resized,
+    and stored in GCS.
     """
     household_id = require_household(user)
-    return recipe_storage.save_recipe(recipe, household_id=household_id, created_by=user.email)
+    saved = recipe_storage.save_recipe(recipe, household_id=household_id, created_by=user.email)
+    return await ingest_recipe_image(saved, household_id=household_id)
 
 
 @router.put("/{recipe_id}")

@@ -130,7 +130,7 @@ export interface RecipeParseRequest {
 
 export interface RecipePreviewRequest {
   url: string;
-  html: string;
+  html?: string;
   enhance?: boolean;
 }
 
@@ -139,6 +139,15 @@ export interface RecipePreview {
   enhanced: RecipeCreate | null;
   changes_made: string[];
   image_url: string | null;
+}
+
+export type PreviewVersion = 'original' | 'enhanced';
+
+export interface SavePreviewRequest {
+  version: PreviewVersion;
+  preview: RecipePreview;
+  diet_label?: DietLabel | null;
+  meal_label?: MealLabel | null;
 }
 
 export interface PaginatedRecipeList {

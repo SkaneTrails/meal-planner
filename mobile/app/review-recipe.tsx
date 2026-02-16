@@ -23,7 +23,7 @@ import { ReviewAiChanges } from '@/components/review-recipe/ReviewAiChanges';
 import { ReviewRecipePreview } from '@/components/review-recipe/ReviewRecipePreview';
 import { ReviewVersionToggle } from '@/components/review-recipe/ReviewVersionToggle';
 import { showNotification } from '@/lib/alert';
-import { useCreateRecipe } from '@/lib/hooks/use-recipes';
+import { useSavePreview } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -33,12 +33,7 @@ import {
   layout,
   spacing,
 } from '@/lib/theme';
-import type {
-  DietLabel,
-  MealLabel,
-  RecipeCreate,
-  RecipePreview,
-} from '@/lib/types';
+import type { DietLabel, MealLabel, RecipePreview } from '@/lib/types';
 
 type VersionTab = 'original' | 'enhanced';
 
@@ -46,7 +41,7 @@ export default function ReviewRecipeScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ preview: string }>();
   const { t } = useTranslation();
-  const createRecipe = useCreateRecipe();
+  const savePreview = useSavePreview();
 
   const preview: RecipePreview | null = useMemo(() => {
     if (!params.preview) return null;
@@ -69,20 +64,22 @@ export default function ReviewRecipeScreen() {
     return <FullScreenLoading title={t('common.error')} />;
   }
 
-  const selectedRecipe: RecipeCreate =
+  const selectedRecipe =
     selectedTab === 'enhanced' && preview.enhanced
       ? preview.enhanced
       : preview.original;
 
   const handleSave = async () => {
-    const recipeToSave: RecipeCreate = {
-      ...selectedRecipe,
-      diet_label: dietLabel,
-      meal_label: mealLabel,
-    };
-
     try {
-      const saved = await createRecipe.mutateAsync(recipeToSave);
+      const saved = await savePreview.mutateAsync({
+        version:
+          selectedTab === 'enhanced' && preview.enhanced
+            ? 'enhanced'
+            : 'original',
+        preview,
+        diet_label: dietLabel,
+        meal_label: mealLabel,
+      });
       router.back();
       router.push(`/recipe/${saved.id}`);
     } catch {
@@ -165,7 +162,7 @@ export default function ReviewRecipeScreen() {
       <BottomActionBar>
         <PrimaryButton
           onPress={handleSave}
-          isPending={createRecipe.isPending}
+          isPending={savePreview.isPending}
           label={t('reviewRecipe.saveRecipe')}
           color={colors.primary}
         />

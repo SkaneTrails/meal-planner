@@ -15,6 +15,7 @@ import type {
   RecipePreviewRequest,
   RecipeScrapeRequest,
   RecipeUpdate,
+  SavePreviewRequest,
 } from '../types';
 import {
   API_BASE_URL,
@@ -115,11 +116,68 @@ export const recipeApi = {
 
   previewRecipe: async (
     url: string,
-    html: string,
     enhance: boolean = true,
   ): Promise<RecipePreview> => {
-    const request: RecipePreviewRequest = { url, html, enhance };
-    return apiRequest<RecipePreview>('/recipes/preview', {
+    // Validate URL before attempting fetch
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      throw new ApiClientError('Invalid URL', 400);
+    }
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      throw new ApiClientError('Only http and https URLs are supported', 400);
+    }
+
+    const params = new URLSearchParams();
+    if (enhance) params.set('enhance', 'true');
+    const query = params.toString();
+
+    try {
+      const htmlResponse = await fetch(url, {
+        headers: {
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
+        },
+      });
+
+      if (!htmlResponse.ok) {
+        throw new ApiClientError(
+          `Failed to fetch recipe page: ${htmlResponse.status}`,
+          htmlResponse.status,
+        );
+      }
+
+      const html = await htmlResponse.text();
+
+      const request: RecipePreviewRequest = { url, html, enhance };
+      return apiRequest<RecipePreview>(
+        `/recipes/preview${query ? `?${query}` : ''}`,
+        {
+          method: 'POST',
+          body: JSON.stringify(request),
+        },
+      );
+    } catch (error) {
+      if (error instanceof ApiClientError) {
+        throw error;
+      }
+      // TypeError from fetch means CORS or network error — fall through
+      // to server-side preview (no HTML, server scrapes).
+      const request: RecipePreviewRequest = { url, enhance };
+      return apiRequest<RecipePreview>(
+        `/recipes/preview${query ? `?${query}` : ''}`,
+        {
+          method: 'POST',
+          body: JSON.stringify(request),
+        },
+      );
+    }
+  },
+
+  savePreview: (request: SavePreviewRequest): Promise<Recipe> => {
+    return apiRequest<Recipe>('/recipes/save-preview', {
       method: 'POST',
       body: JSON.stringify(request),
     });

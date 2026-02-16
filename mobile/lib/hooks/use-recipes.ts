@@ -18,6 +18,7 @@ import type {
   RecipeCreate,
   RecipePreview,
   RecipeUpdate,
+  SavePreviewRequest,
 } from '../types';
 
 // Query keys
@@ -151,17 +152,28 @@ export const useScrapeRecipe = () => {
 };
 
 /**
- * Hook to preview a recipe from URL/HTML without saving.
+ * Hook to preview a recipe from URL without saving.
+ * Handles client-side fetch + server-side fallback internally.
  * Returns both original and AI-enhanced versions for comparison.
  */
 export const usePreviewRecipe = () => {
-  return useMutation<
-    RecipePreview,
-    Error,
-    { url: string; html: string; enhance?: boolean }
-  >({
-    mutationFn: ({ url, html, enhance = true }) =>
-      api.previewRecipe(url, html, enhance),
+  return useMutation<RecipePreview, Error, { url: string; enhance?: boolean }>({
+    mutationFn: ({ url, enhance = true }) => api.previewRecipe(url, enhance),
+  });
+};
+
+/**
+ * Hook to save a recipe from a preview result.
+ * Sends the chosen version (original or enhanced) with user overrides.
+ */
+export const useSavePreview = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: SavePreviewRequest) => api.savePreview(request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+    },
   });
 };
 

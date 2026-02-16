@@ -24,6 +24,8 @@ class EnhancementMetadata:
     enhanced: bool = False
     enhanced_at: datetime | None = None
     changes_made: list[str] = field(default_factory=list)
+    show_enhanced: bool = True
+    enhancement_reviewed: bool = False
 
 
 def normalize_url(url: str) -> str:
@@ -224,8 +226,8 @@ def save_recipe(
     # Add enhancement fields if present
     if meta.enhanced:
         data["enhanced"] = meta.enhanced
-        data["show_enhanced"] = True
-        data["enhancement_reviewed"] = False
+        data["show_enhanced"] = meta.show_enhanced
+        data["enhancement_reviewed"] = meta.enhancement_reviewed
     if meta.enhanced_at:
         data["enhanced_at"] = meta.enhanced_at
     if meta.changes_made:
