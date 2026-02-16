@@ -135,8 +135,8 @@ export default function SignInScreen() {
           onPress={signIn}
           style={({ pressed }) => ({
             backgroundColor: pressed
-              ? 'rgba(255, 255, 255, 0.45)'
-              : 'rgba(255, 255, 255, 0.35)',
+              ? colors.glass.buttonPressed
+              : colors.glass.buttonDefault,
             borderRadius: borderRadius.lg,
             paddingHorizontal: spacing.xl,
             paddingVertical: spacing.lg,
@@ -172,7 +172,7 @@ export default function SignInScreen() {
       >
         <Text
           style={{
-            color: 'rgba(255, 255, 255, 0.9)',
+            color: colors.glass.bright,
             fontSize: fontSize.sm,
             fontFamily: fontFamily.body,
             textAlign: 'center',

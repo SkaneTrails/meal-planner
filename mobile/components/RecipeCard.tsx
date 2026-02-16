@@ -111,7 +111,7 @@ export const RecipeCard = ({
             backgroundColor: colors.glass.heavy,
             borderRadius: borderRadius.lg,
             transform: [{ scale: scaleAnim }],
-            boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)',
+            boxShadow: shadows.cardRaised.boxShadow,
           }}
         >
           <Image

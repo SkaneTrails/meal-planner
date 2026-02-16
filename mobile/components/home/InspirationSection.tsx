@@ -96,7 +96,7 @@ const InspirationHeader = ({
         borderRadius: borderRadius.full,
       }}
     >
-      <Ionicons name="shuffle" size={12} color="rgba(255, 255, 255, 0.8)" />
+      <Ionicons name="shuffle" size={12} color={colors.text.secondary} />
       <Text
         style={{
           color: colors.content.body,
@@ -167,7 +167,7 @@ const InspirationCard = ({
         {recipe.meal_label && (
           <LabelBadge
             label={t(`labels.meal.${recipe.meal_label}`)}
-            borderColor="rgba(255,255,255,0.5)"
+            borderColor={colors.glass.faint}
           />
         )}
         {recipe.diet_label && (
@@ -208,7 +208,7 @@ const LabelBadge = ({
       style={{
         fontSize: fontSize.xs,
         fontFamily: fontFamily.bodyMedium,
-        color: 'rgba(255,255,255,0.9)',
+        color: colors.glass.bright,
       }}
     >
       {label}
@@ -281,7 +281,7 @@ const GetStartedFallback = ({
         <Text
           style={{
             fontSize: fontSize.sm,
-            color: 'rgba(255, 255, 255, 0.8)',
+            color: colors.text.secondary,
             marginTop: 4,
           }}
         >

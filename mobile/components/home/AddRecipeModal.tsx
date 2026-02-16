@@ -54,7 +54,7 @@ export const AddRecipeModal = ({
       <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
         <View
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.6)',
+            backgroundColor: colors.glass.subtle,
             borderRadius: borderRadius.md,
             padding: 4,
             flexDirection: 'row',
@@ -158,7 +158,7 @@ export const AddRecipeModal = ({
           alignItems: 'center',
           paddingVertical: 16,
           paddingHorizontal: 20,
-          backgroundColor: pressed ? 'rgba(255, 255, 255, 0.4)' : 'transparent',
+          backgroundColor: pressed ? colors.text.light : 'transparent',
         })}
       >
         <View

@@ -53,7 +53,7 @@ export const MealCell = ({
         padding: 12,
         borderRadius: borderRadius.md,
         minHeight: 80,
-        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        backgroundColor: colors.glass.button,
       }}
     >
       <View

@@ -143,7 +143,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                     height: 20,
                     borderRadius: 10,
                     backgroundColor: pressed
-                      ? 'rgba(255,255,255,0.3)'
+                      ? colors.glass.button
                       : colors.border,
                     alignItems: 'center',
                     justifyContent: 'center',

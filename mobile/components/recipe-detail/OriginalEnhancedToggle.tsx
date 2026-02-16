@@ -24,7 +24,7 @@ export const OriginalEnhancedToggle = ({
     style={{
       marginTop: spacing.xl,
       flexDirection: 'row',
-      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+      backgroundColor: colors.text.light,
       borderRadius: borderRadius.lg,
       padding: 4,
     }}

@@ -115,7 +115,7 @@ export const GroceryListView = ({
             width: 80,
             height: 80,
             borderRadius: 24,
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            backgroundColor: colors.glass.faint,
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 20,
@@ -159,8 +159,8 @@ export const GroceryListView = ({
             alignItems: 'center',
             alignSelf: 'flex-start',
             backgroundColor: reorderMode
-              ? 'rgba(255, 255, 255, 0.95)'
-              : 'rgba(255, 255, 255, 0.6)',
+              ? colors.glass.heavy
+              : colors.glass.subtle,
             paddingHorizontal: 12,
             paddingVertical: spacing['xs-sm'],
             borderRadius: borderRadius.xs,

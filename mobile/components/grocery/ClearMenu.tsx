@@ -84,18 +84,16 @@ export const ClearMenu = ({
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.md,
-          backgroundColor: 'rgba(180, 80, 70, 0.1)',
+          backgroundColor: colors.destructive.bg,
           gap: spacing.xs,
         }}
       >
         <Ionicons
           name="trash-outline"
           size={14}
-          color="rgba(180, 80, 70, 0.8)"
+          color={colors.destructive.icon}
         />
-        <Text
-          style={{ fontSize: fontSize.sm, color: 'rgba(180, 80, 70, 0.9)' }}
-        >
+        <Text style={{ fontSize: fontSize.sm, color: colors.destructive.text }}>
           {t('grocery.clearEntireList')}
         </Text>
       </AnimatedPressable>

@@ -180,8 +180,8 @@ const GroceryWeekSelector = ({
       style={({ pressed }) => ({
         ...circleStyle(iconContainer.xs),
         backgroundColor: pressed
-          ? 'rgba(122, 104, 88, 0.15)'
-          : 'rgba(122, 104, 88, 0.08)',
+          ? colors.button.primaryHover
+          : colors.button.primarySubtle,
         alignItems: 'center',
         justifyContent: 'center',
       })}
@@ -192,7 +192,7 @@ const GroceryWeekSelector = ({
       style={{
         paddingHorizontal: 20,
         paddingVertical: spacing['sm-md'],
-        backgroundColor: 'rgba(122, 104, 88, 0.08)',
+        backgroundColor: colors.button.primarySubtle,
         borderRadius: 14,
       }}
     >
@@ -212,8 +212,8 @@ const GroceryWeekSelector = ({
       style={({ pressed }) => ({
         ...circleStyle(iconContainer.xs),
         backgroundColor: pressed
-          ? 'rgba(122, 104, 88, 0.15)'
-          : 'rgba(122, 104, 88, 0.08)',
+          ? colors.button.primaryHover
+          : colors.button.primarySubtle,
         alignItems: 'center',
         justifyContent: 'center',
       })}
@@ -245,13 +245,13 @@ const GroceryMealItem = ({
   <View
     style={{
       backgroundColor: isSelected
-        ? 'rgba(107, 142, 107, 0.1)'
+        ? colors.ai.selectedBg
         : 'rgba(0, 0, 0, 0.02)',
       borderRadius: 14,
       padding: spacing['md-lg'],
       marginBottom: 8,
       borderWidth: isSelected ? 1 : 0,
-      borderColor: 'rgba(107, 142, 107, 0.3)',
+      borderColor: colors.ai.border,
     }}
   >
     <Pressable
@@ -307,7 +307,7 @@ const GroceryMealItem = ({
           alignItems: 'center',
           marginTop: 12,
           marginLeft: 40,
-          backgroundColor: 'rgba(122, 104, 88, 0.1)',
+          backgroundColor: colors.button.primarySurface,
           borderRadius: borderRadius.sm,
           padding: spacing['xs-sm'],
           alignSelf: 'flex-start',
@@ -320,7 +320,7 @@ const GroceryMealItem = ({
             height: 30,
             borderRadius: 15,
             backgroundColor: pressed
-              ? 'rgba(122, 104, 88, 0.2)'
+              ? colors.button.primaryDivider
               : colors.glass.medium,
             alignItems: 'center',
             justifyContent: 'center',
@@ -358,7 +358,7 @@ const GroceryMealItem = ({
             height: 30,
             borderRadius: 15,
             backgroundColor: pressed
-              ? 'rgba(122, 104, 88, 0.2)'
+              ? colors.button.primaryDivider
               : colors.glass.medium,
             alignItems: 'center',
             justifyContent: 'center',

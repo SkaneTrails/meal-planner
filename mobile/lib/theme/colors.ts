@@ -104,6 +104,11 @@ export const lightColors = {
     primary: '#7A6858',
     primaryPressed: '#6B5B4B',
     disabled: '#C5B8A8',
+    primarySubtle: 'rgba(122, 104, 88, 0.08)',
+    primarySurface: 'rgba(122, 104, 88, 0.1)',
+    primaryActive: 'rgba(122, 104, 88, 0.12)',
+    primaryHover: 'rgba(122, 104, 88, 0.15)',
+    primaryDivider: 'rgba(122, 104, 88, 0.2)',
   },
 
   // Refined gray scale
@@ -135,6 +140,7 @@ export const lightColors = {
   overlay: {
     backdrop: 'rgba(0, 0, 0, 0.5)',
     backdropLight: 'rgba(0, 0, 0, 0.4)',
+    strong: 'rgba(0, 0, 0, 0.6)',
   },
 
   // Meal plan surfaces — warm beige at various opacities
@@ -187,6 +193,10 @@ export const lightColors = {
     faint: 'rgba(255, 255, 255, 0.5)',
     card: 'rgba(255, 255, 255, 0.85)',
     border: 'rgba(0, 0, 0, 0.04)',
+    button: 'rgba(255, 255, 255, 0.3)',
+    buttonPressed: 'rgba(255, 255, 255, 0.45)',
+    buttonDefault: 'rgba(255, 255, 255, 0.35)',
+    dim: 'rgba(255, 255, 255, 0.08)',
   },
 
   // Tab bar — acrylic floating nav
@@ -210,6 +220,25 @@ export const lightColors = {
     iconBg: 'rgba(107, 142, 107, 0.12)',
     light: 'rgba(107, 142, 107, 0.15)',
     badge: 'rgba(107, 142, 107, 0.95)',
+    selectedBg: 'rgba(107, 142, 107, 0.1)',
+    border: 'rgba(107, 142, 107, 0.3)',
+  },
+
+  // Destructive action — warm red for delete/clear actions
+  destructive: {
+    bg: 'rgba(180, 80, 70, 0.1)',
+    icon: 'rgba(180, 80, 70, 0.8)',
+    text: 'rgba(180, 80, 70, 0.9)',
+  },
+
+  // Gradient decorative — animated background orbs and gradient stops
+  gradient: {
+    orb1: '#E8D0C0',
+    orb2: '#D4A080',
+    orb3: '#E0B090',
+    orb4: '#C88060',
+    stop1: '#D8B8A0',
+    stop2: '#D0A080',
   },
 
   // Tag dot colors — muted palette for note/suggestion tags
