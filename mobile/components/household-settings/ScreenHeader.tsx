@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, spacing } from '@/lib/theme';
+import { borderRadius, colors, fontWeight, spacing } from '@/lib/theme';
 
 interface ScreenHeaderProps {
   canEdit: boolean;
@@ -69,7 +69,11 @@ export const ScreenHeader = ({
               <ActivityIndicator color="white" size="small" />
             ) : (
               <Text
-                style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}
+                style={{
+                  color: colors.white,
+                  fontSize: 15,
+                  fontWeight: fontWeight.semibold,
+                }}
               >
                 {t('common.save')}
               </Text>

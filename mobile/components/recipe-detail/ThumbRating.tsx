@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
-import { colors, spacing } from '@/lib/theme';
+import { borderRadius, colors, spacing } from '@/lib/theme';
 
 interface ThumbRatingProps {
   rating: number | null;
@@ -26,7 +26,7 @@ export const ThumbRating = ({
         onPress={onThumbDown}
         style={({ pressed }) => ({
           padding: spacing.sm,
-          borderRadius: 20,
+          borderRadius: borderRadius.lg,
           backgroundColor: isThumbDown
             ? colors.rating.negativeBg
             : pressed
@@ -44,7 +44,7 @@ export const ThumbRating = ({
         onPress={onThumbUp}
         style={({ pressed }) => ({
           padding: spacing.sm,
-          borderRadius: 20,
+          borderRadius: borderRadius.lg,
           backgroundColor: isThumbUp
             ? colors.rating.positiveBg
             : pressed

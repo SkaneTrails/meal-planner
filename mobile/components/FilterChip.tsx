@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Pressable, Text, type TextStyle, type ViewStyle } from 'react-native';
-import { colors } from '@/lib/theme';
+import { borderRadius, colors, fontWeight } from '@/lib/theme';
 
 interface FilterChipProps {
   label: string;
@@ -49,7 +49,7 @@ const FilterChip = ({
     style={({ pressed }) => ({
       paddingHorizontal: 14,
       paddingVertical: 7,
-      borderRadius: 16,
+      borderRadius: borderRadius.md,
       backgroundColor: selected
         ? activeColor
         : pressed
@@ -67,7 +67,7 @@ const FilterChip = ({
     <Text
       style={{
         fontSize: 14,
-        fontWeight: '600',
+        fontWeight: fontWeight.semibold,
         color: selected ? activeTextColor : inactiveTextColor,
         ...labelStyle,
       }}

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { type StyleProp, Text, View, type ViewStyle } from 'react-native';
-import { colors, fontSize, spacing } from '@/lib/theme';
+import { colors, fontSize, fontWeight, spacing } from '@/lib/theme';
 
 interface FormFieldProps {
   label: string;
@@ -27,7 +27,7 @@ const FormField = ({ label, children, compact, style }: FormFieldProps) => (
     <Text
       style={{
         fontSize: compact ? fontSize.md : fontSize.lg,
-        fontWeight: '600',
+        fontWeight: fontWeight.semibold,
         color: colors.text.inverse,
         marginBottom: compact ? spacing.xs : spacing.sm,
       }}

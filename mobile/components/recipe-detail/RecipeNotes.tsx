@@ -27,8 +27,8 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
-  letterSpacing,
   spacing,
+  typography,
 } from '@/lib/theme';
 
 interface RecipeNotesProps {
@@ -118,10 +118,8 @@ export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
         </View>
         <Text
           style={{
-            fontSize: fontSize['3xl'],
-            fontFamily: fontFamily.display,
+            ...typography.displaySmall,
             color: colors.content.heading,
-            letterSpacing: letterSpacing.normal,
           }}
         >
           {t('recipe.notes')}

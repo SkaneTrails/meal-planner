@@ -24,6 +24,7 @@ import {
   borderRadius,
   colors,
   fontSize,
+  fontWeight,
   iconContainer,
   layout,
   letterSpacing,
@@ -102,7 +103,7 @@ export default function AddRecipeScreen() {
                 style={{
                   marginLeft: spacing.sm,
                   fontSize: fontSize['2xl'],
-                  fontWeight: '600',
+                  fontWeight: fontWeight.semibold,
                   color: colors.white,
                   letterSpacing: letterSpacing.normal,
                 }}
@@ -221,7 +222,7 @@ export default function AddRecipeScreen() {
                   <Text
                     style={{
                       fontSize: fontSize.lg,
-                      fontWeight: '600',
+                      fontWeight: fontWeight.semibold,
                       color: aiEnabled ? colors.text.inverse : colors.gray[500],
                       letterSpacing: letterSpacing.normal,
                     }}
@@ -335,7 +336,7 @@ export default function AddRecipeScreen() {
                 marginLeft: spacing.sm,
                 color: colors.content.body,
                 fontSize: fontSize.lg,
-                fontWeight: '600',
+                fontWeight: fontWeight.semibold,
               }}
             >
               {t('home.addRecipe.manualEntry')}
@@ -347,7 +348,7 @@ export default function AddRecipeScreen() {
             <Text
               style={{
                 fontSize: fontSize.md,
-                fontWeight: '600',
+                fontWeight: fontWeight.semibold,
                 color: colors.gray[600],
                 marginBottom: spacing.md,
                 letterSpacing: letterSpacing.wide,

@@ -19,6 +19,7 @@ import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import {
+  borderRadius,
   circleStyle,
   colors,
   fontFamily,
@@ -107,7 +108,7 @@ export const RecipeCard = ({
             alignItems: 'center',
             padding: 14,
             backgroundColor: colors.glass.heavy,
-            borderRadius: 20,
+            borderRadius: borderRadius.lg,
             transform: [{ scale: scaleAnim }],
             boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)',
           }}
@@ -192,7 +193,7 @@ export const RecipeCard = ({
                   <Text
                     style={{
                       fontSize: 11,
-                      fontWeight: '600',
+                      fontWeight: fontWeight.semibold,
                       color: colors.ai.primary,
                       marginLeft: 3,
                     }}
@@ -311,7 +312,7 @@ export const RecipeCard = ({
               <Text
                 style={{
                   fontSize: 10,
-                  fontWeight: '600',
+                  fontWeight: fontWeight.semibold,
                   color: colors.white,
                   marginLeft: 3,
                 }}

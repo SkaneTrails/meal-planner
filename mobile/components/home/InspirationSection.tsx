@@ -11,6 +11,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  fontWeight,
   letterSpacing,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -268,7 +269,7 @@ const GetStartedFallback = ({
         <Text
           style={{
             fontSize: fontSize.xl,
-            fontWeight: '600',
+            fontWeight: fontWeight.semibold,
             color: colors.white,
             letterSpacing: letterSpacing.tight,
           }}

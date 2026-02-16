@@ -15,7 +15,14 @@ export {
   shadows,
   spacing,
 } from './theme/layout';
-export { cardStyle, glassCardStyle, inputStyle } from './theme/styles';
+export {
+  accentUnderlineStyle,
+  cardStyle,
+  glassCardStyle,
+  inputStyle,
+  settingsSubtitleStyle,
+  settingsTitleStyle,
+} from './theme/styles';
 export {
   fontFamily,
   fontFamilyWeight,

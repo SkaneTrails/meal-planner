@@ -3,11 +3,13 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
+  accentUnderlineStyle,
   borderRadius,
   circleStyle,
   colors,
   fontFamily,
   fontSize,
+  fontWeight,
   iconContainer,
   layout,
   shadows,
@@ -66,10 +68,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
         </Text>
         <View
           style={{
-            width: 40,
-            height: 3,
-            borderRadius: 2,
-            backgroundColor: colors.ai.primary,
+            ...accentUnderlineStyle,
             marginTop: spacing.sm,
           }}
         />
@@ -168,7 +167,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
               <Text
                 style={{
                   fontSize: fontSize.lg,
-                  fontWeight: '600',
+                  fontWeight: fontWeight.semibold,
                   color: colors.text.inverse,
                 }}
               >
@@ -214,7 +213,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           alignItems: 'center',
           justifyContent: 'center',
           paddingVertical: spacing.md,
-          borderRadius: 12,
+          borderRadius: borderRadius.sm,
           backgroundColor: pressed
             ? colors.surface.active
             : colors.surface.hover,
@@ -230,7 +229,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           style={{
             marginLeft: spacing.sm,
             fontSize: fontSize.lg,
-            fontWeight: '600',
+            fontWeight: fontWeight.semibold,
             color: colors.content.tertiary,
           }}
         >

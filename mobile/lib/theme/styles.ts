@@ -4,7 +4,7 @@
 
 import { colors } from './colors';
 import { borderRadius, shadows, spacing } from './layout';
-import { fontSize } from './typography';
+import { fontSize, fontWeight } from './typography';
 
 export const cardStyle = {
   backgroundColor: colors.white,
@@ -27,4 +27,22 @@ export const inputStyle = {
   paddingVertical: spacing.md,
   fontSize: fontSize.lg,
   color: colors.text.inverse,
+} as const;
+
+export const settingsTitleStyle = {
+  fontSize: 16,
+  fontWeight: fontWeight.semibold,
+  color: colors.text.dark,
+} as const;
+
+export const settingsSubtitleStyle = {
+  fontSize: fontSize.md,
+  color: colors.text.dark + '80',
+} as const;
+
+export const accentUnderlineStyle = {
+  width: 40,
+  height: 3,
+  borderRadius: 2,
+  backgroundColor: colors.ai.primary,
 } as const;

@@ -8,6 +8,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  fontWeight,
   spacing,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -58,7 +59,7 @@ export const ExtrasSection = ({
             style={{
               fontSize: fontSize.lg,
               fontFamily: fontFamily.displayBold,
-              fontWeight: '600',
+              fontWeight: fontWeight.semibold,
               color: colors.content.body,
               fontStyle: 'italic',
             }}
@@ -102,7 +103,7 @@ export const ExtrasSection = ({
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: colors.mealPlan.emptyStateBg,
-            borderRadius: 12,
+            borderRadius: borderRadius.sm,
             padding: 16,
             borderWidth: 1,
             borderColor: colors.surface.subtle,
@@ -155,7 +156,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: colors.mealPlan.slotBg,
-        borderRadius: 12,
+        borderRadius: borderRadius.sm,
         padding: 12,
         marginBottom: 6,
       }}
@@ -169,7 +170,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
           style={{
             width: 56,
             height: 56,
-            borderRadius: 12,
+            borderRadius: borderRadius.sm,
             backgroundColor: colors.border,
           }}
           resizeMode="cover"

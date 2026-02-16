@@ -3,7 +3,7 @@ import type React from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { colors, fontFamily } from '@/lib/theme';
+import { borderRadius, colors, fontFamily } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
 interface EmptyMealSlotProps {
@@ -30,7 +30,7 @@ export const EmptyMealSlot = ({
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: colors.mealPlan.emptyBg,
-      borderRadius: 12,
+      borderRadius: borderRadius.sm,
       padding: 12,
       marginBottom: 6,
     }}

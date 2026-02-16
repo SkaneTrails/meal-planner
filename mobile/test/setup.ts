@@ -314,6 +314,9 @@ vi.mock('@/lib/theme', () => ({
   cardStyle: {},
   glassCardStyle: {},
   inputStyle: {},
+  settingsTitleStyle: {},
+  settingsSubtitleStyle: {},
+  accentUnderlineStyle: {},
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
   dotSize: { md: 10 },
 }));

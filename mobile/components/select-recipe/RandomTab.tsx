@@ -4,11 +4,13 @@ import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
+  accentUnderlineStyle,
   borderRadius,
   circleStyle,
   colors,
   dotSize,
   fontSize,
+  fontWeight,
   iconContainer,
   layout,
   letterSpacing,
@@ -113,7 +115,7 @@ export const RandomTab = ({ state }: RandomTabProps) => {
               style={{
                 marginLeft: spacing.sm,
                 fontSize: fontSize.lg,
-                fontWeight: '600',
+                fontWeight: fontWeight.semibold,
                 color: colors.text.inverse,
               }}
             >
@@ -162,10 +164,7 @@ const RandomHeader = ({
     </Text>
     <View
       style={{
-        width: 40,
-        height: 3,
-        borderRadius: 2,
-        backgroundColor: colors.ai.primary,
+        ...accentUnderlineStyle,
         marginTop: spacing.sm,
       }}
     />
@@ -294,7 +293,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
             <Text
               style={{
                 fontSize: fontSize.sm,
-                fontWeight: '600',
+                fontWeight: fontWeight.semibold,
                 color:
                   recipe.diet_label === 'veggie'
                     ? colors.diet.veggie.text
@@ -314,7 +313,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
           <Text
             style={{
               fontSize: fontSize.md,
-              fontWeight: '600',
+              fontWeight: fontWeight.semibold,
               color: colors.gray[600],
               marginBottom: spacing.xs,
             }}

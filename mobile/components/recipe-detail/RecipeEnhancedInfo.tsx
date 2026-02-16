@@ -8,9 +8,9 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
-  letterSpacing,
   shadows,
   spacing,
+  typography,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 
@@ -52,10 +52,8 @@ export const RecipeEnhancedInfo = ({
           </View>
           <Text
             style={{
-              fontSize: fontSize['3xl'],
-              fontFamily: fontFamily.display,
+              ...typography.displaySmall,
               color: colors.content.heading,
-              letterSpacing: letterSpacing.normal,
             }}
           >
             {t('recipe.tips')}
@@ -120,10 +118,8 @@ export const RecipeEnhancedInfo = ({
             </View>
             <Text
               style={{
-                fontSize: fontSize['3xl'],
-                fontFamily: fontFamily.display,
+                ...typography.displaySmall,
                 color: colors.content.body,
-                letterSpacing: letterSpacing.normal,
                 flex: 1,
               }}
             >

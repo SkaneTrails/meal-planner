@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
+  borderRadius,
   colors,
   fontFamily,
   fontSize,
@@ -66,7 +67,7 @@ export const HouseholdTransfer = ({
                   : colors.gray[50],
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.sm,
-              borderRadius: 20,
+              borderRadius: borderRadius.lg,
               borderWidth: 1,
               borderColor: isCurrentHousehold ? colors.primary : colors.bgDark,
               opacity: isTransferring && !isCurrentHousehold ? 0.5 : 1,
@@ -100,7 +101,7 @@ export const HouseholdTransfer = ({
             backgroundColor: colors.gray[200],
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
-            borderRadius: 20,
+            borderRadius: borderRadius.lg,
             borderWidth: 1,
             borderColor: colors.gray[300],
           }}

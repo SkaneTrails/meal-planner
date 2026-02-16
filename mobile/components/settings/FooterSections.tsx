@@ -7,6 +7,8 @@ import {
   colors,
   fontSize,
   fontWeight,
+  settingsSubtitleStyle,
+  settingsTitleStyle,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -40,15 +42,10 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text
-            style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}
-          >
-            {t('settings.adminDashboard')}
-          </Text>
+          <Text style={settingsTitleStyle}>{t('settings.adminDashboard')}</Text>
           <Text
             style={{
-              fontSize: 13,
-              color: colors.text.dark + '80',
+              ...settingsSubtitleStyle,
               marginTop: 4,
             }}
           >

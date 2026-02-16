@@ -3,7 +3,13 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal, PrimaryButton } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import { circleStyle, colors, fontFamily, iconContainer } from '@/lib/theme';
+import {
+  borderRadius,
+  circleStyle,
+  colors,
+  fontFamily,
+  iconContainer,
+} from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
   formatDateLocal,
@@ -301,7 +307,7 @@ const GroceryMealItem = ({
           marginTop: 12,
           marginLeft: 40,
           backgroundColor: 'rgba(122, 104, 88, 0.1)',
-          borderRadius: 12,
+          borderRadius: borderRadius.sm,
           padding: 6,
           alignSelf: 'flex-start',
         }}
