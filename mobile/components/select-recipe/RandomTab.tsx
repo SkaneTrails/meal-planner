@@ -7,6 +7,7 @@ import {
   borderRadius,
   circleStyle,
   colors,
+  dotSize,
   fontSize,
   iconContainer,
   layout,
@@ -263,6 +264,9 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
         {recipe.diet_label && (
           <View
             style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.xs,
               paddingHorizontal: spacing.sm,
               paddingVertical: spacing.xs,
               borderRadius: borderRadius.sm,
@@ -274,6 +278,19 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
                     : colors.diet.meat.bg,
             }}
           >
+            <View
+              style={{
+                width: dotSize.md,
+                height: dotSize.md,
+                borderRadius: dotSize.md / 2,
+                backgroundColor:
+                  recipe.diet_label === 'veggie'
+                    ? colors.diet.veggie.text
+                    : recipe.diet_label === 'fish'
+                      ? colors.diet.fish.text
+                      : colors.diet.meat.text,
+              }}
+            />
             <Text
               style={{
                 fontSize: fontSize.sm,
@@ -286,11 +303,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
                       : colors.diet.meat.text,
               }}
             >
-              {recipe.diet_label === 'veggie'
-                ? `🥬 ${t('labels.diet.veggie')}`
-                : recipe.diet_label === 'fish'
-                  ? `🐟 ${t('labels.diet.fish')}`
-                  : `🥩 ${t('labels.diet.meat')}`}
+              {t(`labels.diet.${recipe.diet_label}`)}
             </Text>
           </View>
         )}

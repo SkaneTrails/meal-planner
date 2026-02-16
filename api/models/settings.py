@@ -83,6 +83,10 @@ class HouseholdSettings(BaseModel):
     )
     favorite_recipes: list[str] = Field(default_factory=list, description="Recipe IDs favorited by the household")
 
+    note_suggestions: list[str] = Field(
+        default_factory=list, description="Custom note suggestions for meal plan day labels"
+    )
+
     dietary: DietarySettings = Field(default_factory=DietarySettings)
     equipment: list[str] = Field(default_factory=list, description="Equipment keys from the equipment catalog")
 
@@ -132,6 +136,8 @@ class HouseholdSettingsUpdate(BaseModel):
     language: str | None = None
     week_start: str | None = None
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
+
+    note_suggestions: list[str] | None = None
 
     dietary: DietarySettingsUpdate | None = None
     equipment: list[str] | None = None

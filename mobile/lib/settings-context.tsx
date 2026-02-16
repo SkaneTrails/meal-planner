@@ -51,6 +51,7 @@ interface LocalSettings {
 interface Settings extends LocalSettings {
   itemsAtHome: string[];
   favoriteRecipes: string[];
+  noteSuggestions: string[];
   language: AppLanguage;
   weekStart: WeekStart;
   aiEnabled: boolean;
@@ -165,6 +166,7 @@ export const SettingsProvider = ({
       ...localSettings,
       itemsAtHome: itemsAtHomeData?.items_at_home ?? [],
       favoriteRecipes: favoritesData?.favorite_recipes ?? [],
+      noteSuggestions: householdSettings?.note_suggestions ?? [],
       language: resolvedLanguage,
       weekStart: resolvedWeekStart,
       aiEnabled,
@@ -173,6 +175,7 @@ export const SettingsProvider = ({
       localSettings,
       itemsAtHomeData,
       favoritesData,
+      householdSettings,
       resolvedLanguage,
       resolvedWeekStart,
       aiEnabled,

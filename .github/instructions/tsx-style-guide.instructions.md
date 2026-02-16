@@ -122,6 +122,18 @@ export const useRecipeForm = (initialRecipe?: Recipe) => {
 
 **Always use theme constants** from `lib/theme/` — never hardcode colors, spacing, sizes, or layout dimensions. This is a **blocking rule**: PRs with hardcoded values will be rejected even if the visual result is correct.
 
+#### Pre-flight checklist (MANDATORY before writing any style value)
+
+Every time you write a color, spacing, or size value in a style prop:
+
+1. **Search theme files first** — `grep -r '<value>' lib/theme/` for the exact hex/number. If a token exists **in a semantically matching group**, use it. If the same value exists under an unrelated group (e.g., `colors.success` has the same hex you need for a diet dot), do **not** reuse it — create a new token in the correct group instead. Reusing across unrelated groups couples concepts that should evolve independently.
+2. **Check semantic groups** — a color you need may already exist under a different name (e.g., `'#2E7D32'` is `colors.diet.veggie.text`, `'#2D7AB8'` is `colors.chip.fishActive`). Always verify the group matches your usage context (see table below).
+3. **Pick the nearest spacing token** — if you need 6px, use `spacing.sm` (8) not a literal `6`. Consistency > pixel-perfection.
+4. **Create before using** — if no token exists, add one to the appropriate theme file (`colors.ts`, `layout.ts`, `typography.ts`) BEFORE using the value in any component.
+5. **Never construct color strings** — don't do `` `${colors.text.dark}60` ``. If an alpha variant is needed, add it as a proper token (e.g., `colors.content.placeholderHex`).
+
+Violations of this checklist are the #1 source of review comments. The 30 seconds spent grepping saves a full review cycle.
+
 - Colors: `colors.content.body`, `colors.surface.pressed` — not `'#5D4E40'`, `'rgba(93, 78, 64, 0.15)'`
 - Spacing: `spacing.lg`, `spacing.xl` — not `16`, `20` (always pick the nearest token — if no token exists, add one)
 - Font size: `fontSize.md`, `fontSize.xl` — not `13`, `15`
@@ -132,16 +144,18 @@ This applies to **all style properties** including `padding*`, `margin*`, `gap`,
 
 **Color token groups** — pick the semantic group that matches the usage context:
 
-| Group              | Purpose                                  | Examples                                                                                |
-| ------------------ | ---------------------------------------- | --------------------------------------------------------------------------------------- |
-| `colors.content.*` | Text and icon colors                     | `heading`, `body`, `secondary`, `strong`, `tertiary`, `subtitle`, `icon`, `placeholder` |
-| `colors.surface.*` | Backgrounds, borders, interactive states | `overlay`, `border`, `pressed`, `active`, `subtle`, `hover`, `tint`                     |
-| `colors.button.*`  | Button-specific colors                   | `primary`, `primaryPressed`, `disabled`                                                 |
-| `colors.chip.*`    | Filter chip/pill colors                  | `bg`, `border`, `fishActive`, `meatActive`, `favoriteActive`                            |
-| `colors.glass.*`   | Translucent white overlays               | `light`, `medium`, `dark`, `subtle`, `faint`, `card`, `border`                          |
-| `colors.shadow.*`  | Baked-in shadow colors (with alpha)      | `text`                                                                                  |
-| `colors.ai.*`      | AI enhancement theming (sage green)      | `primary`, `primaryDark`, `bg`, `bgPressed`                                             |
-| `colors.tabBar.*`  | Tab bar theming                          | `bg`, `active`, `inactive`, `border`                                                    |
+| Group              | Purpose                                      | Examples                                                                                |
+| ------------------ | -------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `colors.content.*` | Text and icon colors                         | `heading`, `body`, `secondary`, `strong`, `tertiary`, `subtitle`, `icon`, `placeholder` |
+| `colors.surface.*` | Backgrounds, borders, interactive states     | `overlay`, `border`, `pressed`, `active`, `subtle`, `hover`, `tint`                     |
+| `colors.button.*`  | Button-specific colors                       | `primary`, `primaryPressed`, `disabled`                                                 |
+| `colors.chip.*`    | Filter chip/pill colors                      | `bg`, `border`, `fishActive`, `meatActive`, `favoriteActive`                            |
+| `colors.diet.*`    | Diet label semantic colors                   | `veggie.text`, `fish.text`, `meat.text`, `veggie.bg`, etc.                              |
+| `colors.tagDot`    | Colored dot palette for note/suggestion tags | Array of 8 muted colors, index-based                                                    |
+| `colors.glass.*`   | Translucent white overlays                   | `light`, `medium`, `dark`, `subtle`, `faint`, `card`, `border`                          |
+| `colors.shadow.*`  | Baked-in shadow colors (with alpha)          | `text`                                                                                  |
+| `colors.ai.*`      | AI enhancement theming (sage green)          | `primary`, `primaryDark`, `bg`, `bgPressed`                                             |
+| `colors.tabBar.*`  | Tab bar theming                              | `bg`, `active`, `inactive`, `border`                                                    |
 
 Never use a surface token for text color or a content token for backgrounds — semantic correctness matters for future theming.
 

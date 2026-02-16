@@ -207,6 +207,18 @@ export const lightColors = {
     light: 'rgba(107, 142, 107, 0.15)',
     badge: 'rgba(107, 142, 107, 0.95)',
   },
+
+  // Tag dot colors — muted palette for note/suggestion tags
+  tagDot: [
+    '#7A9BBD', // steel blue
+    '#8B9D77', // sage green
+    '#C47D5A', // terracotta
+    '#9B7BB8', // lavender
+    '#5BA3A3', // teal
+    '#D4A574', // amber
+    '#B07070', // dusty rose
+    '#6B8FA3', // slate blue
+  ] as readonly string[],
 } as const;
 
 // Export colors (light theme only)

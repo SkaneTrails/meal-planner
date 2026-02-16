@@ -24,7 +24,7 @@ import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 export const useMealPlanActions = () => {
   const router = useRouter();
   const { t, language } = useTranslation();
-  const { weekStart } = useSettings();
+  const { weekStart, settings } = useSettings();
   const { saveSelections } = useGroceryState();
 
   const MEAL_TYPES: MealTypeOption[] = useMemo(
@@ -35,7 +35,7 @@ export const useMealPlanActions = () => {
     [t],
   );
 
-  const NOTE_SUGGESTIONS = useMemo(
+  const DEFAULT_NOTE_SUGGESTIONS = useMemo(
     () => [
       t('mealPlan.dayLabels.office'),
       t('mealPlan.dayLabels.home'),
@@ -45,6 +45,14 @@ export const useMealPlanActions = () => {
       t('mealPlan.dayLabels.party'),
     ],
     [t],
+  );
+
+  const NOTE_SUGGESTIONS = useMemo(
+    () =>
+      settings.noteSuggestions.length > 0
+        ? settings.noteSuggestions
+        : DEFAULT_NOTE_SUGGESTIONS,
+    [settings.noteSuggestions, DEFAULT_NOTE_SUGGESTIONS],
   );
 
   const [weekOffset, setWeekOffset] = useState(0);

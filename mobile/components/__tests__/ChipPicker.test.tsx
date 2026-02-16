@@ -4,9 +4,9 @@ import React from 'react';
 import { ChipPicker } from '../ChipPicker';
 
 const DIET_OPTIONS = [
-  { value: null, labelKey: 'labels.diet.none', emoji: '➖' },
-  { value: 'veggie', labelKey: 'labels.diet.veggie', emoji: '🥬' },
-  { value: 'fish', labelKey: 'labels.diet.fish', emoji: '🐟' },
+  { value: null, labelKey: 'labels.diet.none', dotColor: null },
+  { value: 'veggie', labelKey: 'labels.diet.veggie', dotColor: '#2E7D32' },
+  { value: 'fish', labelKey: 'labels.diet.fish', dotColor: '#1565C0' },
 ];
 
 const MEAL_OPTIONS = [
@@ -33,7 +33,7 @@ describe('ChipPicker', () => {
     expect(screen.getByText('labels.diet.fish')).toBeDefined();
   });
 
-  it('renders emoji when present', () => {
+  it('renders options with dotColor', () => {
     render(
       <ChipPicker
         label="Diet"
@@ -43,8 +43,8 @@ describe('ChipPicker', () => {
         t={mockT}
       />,
     );
-    expect(screen.getByText('🥬')).toBeDefined();
-    expect(screen.getByText('🐟')).toBeDefined();
+    expect(screen.getByText('labels.diet.veggie')).toBeDefined();
+    expect(screen.getByText('labels.diet.fish')).toBeDefined();
   });
 
   it('renders options without emoji', () => {

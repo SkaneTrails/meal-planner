@@ -6,7 +6,7 @@ interface FilterChipProps {
   label: string;
   selected: boolean;
   onPress: () => void;
-  /** Optional leading content (emoji text or icon element) */
+  /** Optional leading content (colored dot or icon element) */
   leading?: ReactNode;
   /** Active background color. Default: colors.content.body */
   activeColor?: string;
@@ -26,9 +26,9 @@ interface FilterChipProps {
  * Reusable filter chip with active/inactive toggle styling.
  *
  * Supports three visual patterns found across the app:
- * - **Diet filter chips** (recipes.tsx): per-category colors, emoji leading
- * - **Edit modal chips** (recipe/[id].tsx): theme-color active, emoji/text labels
- * - **Note tag chips** (meal-plan.tsx): muted palette, text-only
+ * - **Diet filter chips** (recipes.tsx): per-category colors, colored dot leading
+ * - **Edit modal chips** (recipe/[id].tsx): theme-color active, text labels
+ * - **Note tag chips** (meal-plan.tsx): muted palette, colored dot + text
  *
  * For layout, wrap chips in a ScrollView (horizontal) or View (flexWrap).
  */

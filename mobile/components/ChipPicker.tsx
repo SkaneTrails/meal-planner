@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from 'react-native';
 import {
+  borderRadius,
   colors,
+  dotSize,
   fontFamily,
   fontSize,
   letterSpacing,
@@ -10,7 +12,7 @@ import {
 interface ChipOption<T> {
   value: T;
   labelKey: string;
-  emoji?: string;
+  dotColor?: string | null;
 }
 
 interface ChipPickerProps<T> {
@@ -61,7 +63,7 @@ const ChipPicker = <T,>({
         {label}
       </Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-        {options.map(({ value, labelKey, emoji }) => {
+        {options.map(({ value, labelKey, dotColor }) => {
           const isSelected = selected === value;
           return (
             <Pressable
@@ -77,13 +79,21 @@ const ChipPicker = <T,>({
                     : inactiveBg,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
-                borderRadius: 20,
+                borderRadius: borderRadius.lg,
                 borderWidth: 1,
                 borderColor: isSelected ? colors.primary : inactiveBorder,
+                gap: spacing.xs,
               })}
             >
-              {emoji !== undefined && (
-                <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
+              {dotColor != null && (
+                <View
+                  style={{
+                    width: dotSize.md,
+                    height: dotSize.md,
+                    borderRadius: dotSize.md / 2,
+                    backgroundColor: isSelected ? colors.white : dotColor,
+                  }}
+                />
               )}
               <Text
                 style={{

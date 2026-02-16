@@ -1,7 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { colors, fontFamily } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  dotSize,
+  fontFamily,
+  spacing,
+} from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -85,31 +90,60 @@ export const DayHeader = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.ai.bgPressed,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: 12,
+                gap: spacing.sm,
               }}
             >
-              <Ionicons
-                name="reader-outline"
-                size={12}
-                color={colors.ai.primary}
-                style={{ marginRight: 4 }}
-              />
-              <Text style={{ fontSize: 12, color: colors.ai.primaryDark }}>
-                {note}
-              </Text>
+              {note
+                .split(' ')
+                .filter((t) => t.trim())
+                .map((tag, index) => {
+                  const tagIndex = noteSuggestions.indexOf(tag);
+                  const tagDotColor =
+                    tagIndex >= 0
+                      ? colors.tagDot[tagIndex % colors.tagDot.length]
+                      : colors.content.icon;
+                  return (
+                    <View
+                      key={`${tag}-${index}`}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: spacing.xs,
+                        backgroundColor: colors.surface.tint,
+                        paddingHorizontal: spacing.sm,
+                        paddingVertical: spacing.xs,
+                        borderRadius: borderRadius.md,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: dotSize.md,
+                          height: dotSize.md,
+                          borderRadius: dotSize.md / 2,
+                          backgroundColor: tagDotColor,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: colors.content.secondary,
+                        }}
+                      >
+                        {tag}
+                      </Text>
+                    </View>
+                  );
+                })}
             </View>
           ) : (
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: 'rgba(139, 115, 85, 0.08)',
+                backgroundColor: colors.surface.hover,
                 paddingHorizontal: 10,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: borderRadius.md,
               }}
             >
               <Text style={{ fontSize: 12, color: colors.content.icon }}>
@@ -154,15 +188,15 @@ const NoteEditor = ({
   onCancel,
   onToggleTag,
 }: NoteEditorProps) => (
-  <View style={{ marginBottom: 12 }}>
+  <View style={{ marginBottom: spacing.md }}>
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f9f5f0',
-        borderRadius: 12,
-        padding: 10,
-        gap: 8,
+        backgroundColor: colors.surface.tint,
+        borderRadius: borderRadius.md,
+        padding: spacing.sm,
+        gap: spacing.xs,
       }}
     >
       <TextInput
@@ -175,6 +209,7 @@ const NoteEditor = ({
           color: colors.content.headingWarm,
           padding: 0,
         }}
+        placeholderTextColor={colors.content.placeholderHex}
         autoFocus
       />
       <Pressable onPress={onSave}>
@@ -189,7 +224,7 @@ const NoteEditor = ({
         </Text>
       </Pressable>
       <Pressable onPress={onCancel}>
-        <Text style={{ fontSize: 14, color: '#9ca3af' }}>
+        <Text style={{ fontSize: 14, color: colors.content.icon }}>
           {t('mealPlan.notesCancel')}
         </Text>
       </Pressable>
@@ -197,26 +232,37 @@ const NoteEditor = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={{ marginTop: 8 }}
+      style={{ marginTop: spacing.xs }}
     >
-      <View style={{ flexDirection: 'row', gap: 6 }}>
-        {noteSuggestions.map((suggestion) => (
+      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+        {noteSuggestions.map((suggestion, index) => (
           <Pressable
             key={suggestion}
             onPress={() => onToggleTag(suggestion)}
             style={{
-              backgroundColor: noteText.includes(suggestion)
-                ? '#e8dfd4'
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.sm,
+              backgroundColor: noteText.split(' ').includes(suggestion)
+                ? colors.surface.active
                 : colors.white,
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 16,
+              paddingHorizontal: spacing.md,
+              paddingVertical: spacing.sm,
+              borderRadius: borderRadius.full,
               borderWidth: 1,
-              borderColor: noteText.includes(suggestion)
+              borderColor: noteText.split(' ').includes(suggestion)
                 ? colors.content.headingWarm
-                : '#e5e7eb',
+                : colors.surface.divider,
             }}
           >
+            <View
+              style={{
+                width: dotSize.md,
+                height: dotSize.md,
+                borderRadius: dotSize.md / 2,
+                backgroundColor: colors.tagDot[index % colors.tagDot.length],
+              }}
+            />
             <Text style={{ fontSize: 13, color: colors.content.headingWarm }}>
               {suggestion}
             </Text>

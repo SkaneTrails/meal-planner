@@ -22,10 +22,10 @@ describe('FilterChip', () => {
         label="Veggie"
         selected={false}
         onPress={vi.fn()}
-        leading={<span data-testid="emoji">🌱</span>}
+        leading={<span data-testid="dot" />}
       />,
     );
-    expect(screen.getByTestId('emoji')).toBeTruthy();
+    expect(screen.getByTestId('dot')).toBeTruthy();
     expect(screen.getByText('Veggie')).toBeTruthy();
   });
 

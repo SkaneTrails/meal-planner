@@ -113,6 +113,27 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     setHasChanges(true);
   };
 
+  const addNoteSuggestion = (suggestion: string) => {
+    const trimmed = suggestion.trim();
+    if (!trimmed) return;
+    setSettings((prev) => {
+      const current = prev.note_suggestions ?? [];
+      if (current.includes(trimmed)) return prev;
+      setHasChanges(true);
+      return { ...prev, note_suggestions: [...current, trimmed] };
+    });
+  };
+
+  const removeNoteSuggestion = (suggestion: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      note_suggestions: (prev.note_suggestions ?? []).filter(
+        (s) => s !== suggestion,
+      ),
+    }));
+    setHasChanges(true);
+  };
+
   const handleStartEditName = () => {
     setEditedName(household?.name ?? '');
     setIsEditingName(true);
@@ -204,6 +225,8 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     updateServings,
     toggleEquipment,
     updateAiEnabled,
+    addNoteSuggestion,
+    removeNoteSuggestion,
     household,
     isEditingName,
     editedName,
