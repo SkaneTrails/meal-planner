@@ -33,9 +33,24 @@ export const lightColors = {
 
   // Diet label colors (refined pastels)
   diet: {
-    veggie: { bg: '#E8F5E9', text: '#2E7D32' },
-    fish: { bg: '#E3F2FD', text: '#1565C0' },
-    meat: { bg: '#FFEBEE', text: '#C62828' },
+    veggie: {
+      bg: '#E8F5E9',
+      text: '#2E7D32',
+      cardBg: 'rgba(78, 154, 89, 0.12)',
+      border: 'rgba(76, 175, 80, 0.7)',
+    },
+    fish: {
+      bg: '#E3F2FD',
+      text: '#1565C0',
+      cardBg: 'rgba(21, 101, 192, 0.12)',
+      border: 'rgba(66, 165, 245, 0.7)',
+    },
+    meat: {
+      bg: '#FFEBEE',
+      text: '#C62828',
+      cardBg: 'rgba(180, 80, 70, 0.12)',
+      border: 'rgba(229, 115, 115, 0.7)',
+    },
   },
 
   // Neutrals - refined gray scale with warmth
