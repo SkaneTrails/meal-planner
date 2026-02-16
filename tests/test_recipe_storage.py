@@ -7,6 +7,7 @@ from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, Recipe
 from api.storage.recipe_queries import (
     _build_household_query,
     _deduplicate_recipes,
+    _exclude_copied_originals,
     count_recipes,
     get_all_recipes,
     get_recipes_by_ids,
@@ -229,6 +230,22 @@ class TestDocToRecipe:
 
         assert result.show_enhanced is False
         assert result.enhancement_reviewed is False
+
+    def test_maps_copied_from_field(self) -> None:
+        """Should map copied_from from Firestore document."""
+        data = {"title": "Copied Recipe", "copied_from": "original_shared_id"}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.copied_from == "original_shared_id"
+
+    def test_defaults_copied_from_to_none(self) -> None:
+        """Should default copied_from to None when missing."""
+        data = {"title": "Recipe"}
+
+        result = _doc_to_recipe("doc123", data)
+
+        assert result.copied_from is None
 
 
 class TestSaveRecipe:
@@ -1146,7 +1163,7 @@ class TestCopyRecipe:
     """Tests for copy_recipe function."""
 
     def test_copies_recipe_to_new_household(self) -> None:
-        """Should copy recipe with new ownership."""
+        """Should copy recipe with new ownership and set copied_from."""
         from api.storage.recipe_storage import copy_recipe
 
         source_recipe = Recipe(
@@ -1168,11 +1185,12 @@ class TestCopyRecipe:
             household_id="hh123",
             visibility="household",
             created_by="user@test.com",
+            copied_from="source_id",
         )
 
         with (
             patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
-            patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe),
+            patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe) as mock_save,
         ):
             result = copy_recipe("source_id", to_household_id="hh123", copied_by="user@test.com")
 
@@ -1181,6 +1199,11 @@ class TestCopyRecipe:
         assert result.household_id == "hh123"
         assert result.visibility == "household"
         assert result.created_by == "user@test.com"
+        assert result.copied_from == "source_id"
+
+        # Verify the RecipeCreate passed to save_recipe has copied_from set
+        saved_recipe = mock_save.call_args[0][0]
+        assert saved_recipe.copied_from == "source_id"
 
     def test_returns_none_for_missing_recipe(self) -> None:
         """Should return None if source recipe doesn't exist."""
@@ -1332,6 +1355,65 @@ class TestDeduplicateRecipes:
         result = _deduplicate_recipes(recipes)
 
         assert [r.id for r in result] == ["1", "2", "3"]
+
+
+class TestExcludeCopiedOriginals:
+    """Tests for _exclude_copied_originals helper."""
+
+    def test_hides_shared_original_when_household_has_copy(self) -> None:
+        """Should remove shared recipes that have been copied to the household."""
+        recipes = [
+            Recipe(
+                id="copy1",
+                title="My Copy",
+                url="https://example.com/pasta",
+                ingredients=[],
+                instructions=[],
+                household_id="hh1",
+                visibility="household",
+                copied_from="shared1",
+            ),
+            Recipe(
+                id="shared1",
+                title="Shared Pasta",
+                url="https://example.com/pasta",
+                ingredients=[],
+                instructions=[],
+                visibility="shared",
+            ),
+            Recipe(
+                id="shared2",
+                title="Other Shared",
+                url="https://example.com/other",
+                ingredients=[],
+                instructions=[],
+                visibility="shared",
+            ),
+        ]
+
+        result = _exclude_copied_originals(recipes)
+
+        result_ids = [r.id for r in result]
+        assert "copy1" in result_ids
+        assert "shared1" not in result_ids
+        assert "shared2" in result_ids
+
+    def test_returns_all_when_no_copies(self) -> None:
+        """Should return all recipes when none are copies."""
+        recipes = [
+            Recipe(id="1", title="A", url="https://a.com", ingredients=[], instructions=[]),
+            Recipe(id="2", title="B", url="https://b.com", ingredients=[], instructions=[]),
+        ]
+
+        result = _exclude_copied_originals(recipes)
+
+        assert len(result) == 2
+
+    def test_handles_empty_list(self) -> None:
+        """Should handle empty recipe list."""
+        result = _exclude_copied_originals([])
+
+        assert result == []
 
 
 class TestBuildHouseholdQuery:

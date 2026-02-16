@@ -170,6 +170,9 @@ class RecipeBase(BaseModel):
         default="household", description="'household' = private, 'shared' = visible to all"
     )
     created_by: str | None = Field(default=None, description="Email of user who created the recipe")
+    copied_from: str | None = Field(
+        default=None, description="ID of the shared recipe this was copied from (for dedup)"
+    )
 
     @field_validator("ingredients", mode="before")
     @classmethod

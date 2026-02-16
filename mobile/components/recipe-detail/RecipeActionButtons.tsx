@@ -1,12 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import { AnimatedPressable } from '@/components';
-import { showNotification } from '@/lib/alert';
+import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
 import { circleStyle, colors, iconContainer } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
+  canCopy: boolean;
+  isCopying: boolean;
   canEnhance: boolean;
   isEnhancing: boolean;
   aiEnabled: boolean;
@@ -14,6 +16,7 @@ interface RecipeActionButtonsProps {
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
   onShare: () => void;
+  onCopy: () => void;
   onEnhance: () => void;
 }
 
@@ -26,6 +29,8 @@ const actionButtonStyle = {
 
 export const RecipeActionButtons = ({
   canEdit,
+  canCopy,
+  isCopying,
   canEnhance,
   isEnhancing,
   aiEnabled,
@@ -33,6 +38,7 @@ export const RecipeActionButtons = ({
   onOpenEditModal,
   onShowPlanModal,
   onShare,
+  onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => (
   <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
@@ -41,10 +47,12 @@ export const RecipeActionButtons = ({
         canEdit
           ? onOpenEditModal
           : () =>
-              showNotification(
-                t('recipe.cannotEdit'),
-                t('recipe.cannotEditMessage'),
-              )
+              showAlert(t('recipe.cannotEdit'), t('recipe.cannotEditMessage'), [
+                { text: t('common.cancel'), style: 'cancel' },
+                ...(canCopy
+                  ? [{ text: t('recipe.copy'), onPress: onCopy }]
+                  : [{ text: t('common.ok') }]),
+              ])
       }
       hoverScale={1.1}
       pressScale={0.9}
@@ -69,15 +77,30 @@ export const RecipeActionButtons = ({
     >
       <Ionicons name="share" size={20} color={colors.text.inverse} />
     </AnimatedPressable>
+    {canCopy && (
+      <AnimatedPressable
+        onPress={onCopy}
+        hoverScale={1.1}
+        pressScale={0.9}
+        disabled={isCopying}
+        style={{
+          ...actionButtonStyle,
+          opacity: isCopying ? 0.5 : 1,
+        }}
+      >
+        <Ionicons name="copy-outline" size={20} color={colors.text.inverse} />
+      </AnimatedPressable>
+    )}
     {canEnhance && (
       <AnimatedPressable
         onPress={
           aiEnabled
             ? onEnhance
             : () =>
-                showNotification(
+                showAlert(
                   t('recipe.enhanceRecipe'),
                   t('common.aiDisabledHint'),
+                  [{ text: t('common.ok') }],
                 )
         }
         hoverScale={1.1}

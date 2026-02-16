@@ -82,6 +82,7 @@ def _doc_to_recipe(doc_id: str, data: dict) -> Recipe:
         household_id=data.get("household_id"),
         visibility=raw_vis if (raw_vis := data.get("visibility")) in ("household", "shared") else "household",
         created_by=data.get("created_by"),
+        copied_from=data.get("copied_from"),
     )
 
 
@@ -215,6 +216,7 @@ def save_recipe(
         "household_id": household_id,
         "visibility": recipe.visibility if hasattr(recipe, "visibility") else "household",
         "created_by": created_by,
+        "copied_from": recipe.copied_from if hasattr(recipe, "copied_from") else None,
         # Explicit default so Firestore WHERE hidden==false matches new recipes
         "hidden": False,
     }
@@ -481,6 +483,7 @@ def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str) -> Reci
         diet_label=source.diet_label,
         meal_label=source.meal_label,
         visibility="household",  # Copies are private by default
+        copied_from=recipe_id,  # Link back to the original shared recipe
     )
 
     # Preserve enhancement metadata if copying from an enhanced recipe

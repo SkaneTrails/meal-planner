@@ -67,6 +67,7 @@ export interface Recipe {
   household_id?: string | null; // Owning household (null = legacy/unassigned)
   visibility?: RecipeVisibility; // 'household' = private, 'shared' = public
   created_by?: string | null; // Email of user who created the recipe
+  copied_from?: string | null; // ID of the shared recipe this was copied from
   // AI enhancement fields
   enhanced?: boolean; // True if AI-enhanced
   enhanced_at?: string; // ISO timestamp of enhancement
