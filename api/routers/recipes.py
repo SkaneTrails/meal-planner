@@ -114,8 +114,18 @@ async def update_recipe(
     """Update an existing recipe.
 
     Users can only update recipes they own (same household).
+    Copies (with copied_from) cannot change visibility to 'shared'.
     """
     household_id = require_household(user)
+
+    if updates.visibility == "shared":
+        existing = recipe_storage.get_recipe(recipe_id)
+        if existing and existing.copied_from:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Copies cannot be shared. Use 'publish as new' to share a modified recipe.",
+            )
+
     recipe = recipe_storage.update_recipe(recipe_id, updates, household_id=household_id)
     if recipe is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")

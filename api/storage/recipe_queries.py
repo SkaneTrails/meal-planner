@@ -141,17 +141,33 @@ def _deduplicate_recipes(recipes: list[Recipe]) -> list[Recipe]:
     return unique
 
 
-def _exclude_copied_originals(recipes: list[Recipe]) -> list[Recipe]:
-    """Remove shared recipes that the household has already copied.
+def _exclude_copied_originals(recipes: list[Recipe], household_id: str | None = None) -> list[Recipe]:
+    """Remove recipes that are duplicates of ones the household already owns.
 
     When a household copies a shared recipe, their private copy has
-    ``copied_from`` set to the original's ID. The original should no
-    longer appear in their list.
+    ``copied_from`` set to the root original's ID. This function hides:
+
+    1. The root original (``id ∈ my_origins``)
+    2. Sibling copies from other households that share the same root
+       (``copied_from ∈ my_origins AND household_id != mine``)
+
+    Args:
+        recipes: The merged list of owned + shared recipes.
+        household_id: The household to scope dedup to. If None (superuser),
+            no dedup is applied.
     """
-    copied_from_ids = {r.copied_from for r in recipes if r.copied_from}
-    if not copied_from_ids:
+    if not household_id:
         return recipes
-    return [r for r in recipes if r.id not in copied_from_ids]
+
+    my_origins = {r.copied_from for r in recipes if r.copied_from and r.household_id == household_id}
+    if not my_origins:
+        return recipes
+
+    return [
+        r
+        for r in recipes
+        if r.id not in my_origins and not (r.copied_from in my_origins and r.household_id != household_id)
+    ]
 
 
 def get_all_recipes(
@@ -189,7 +205,7 @@ def get_all_recipes(
     if len(queries) > 1:  # pragma: no cover
         recipes.sort(key=lambda r: (r.created_at or "", r.id), reverse=True)
 
-    recipes = _exclude_copied_originals(recipes)
+    recipes = _exclude_copied_originals(recipes, household_id)
 
     if include_duplicates:
         return recipes
@@ -278,7 +294,7 @@ def get_recipes_paginated(
     if len(queries) > 1:
         all_recipes.sort(key=lambda r: (r.created_at or "", r.id), reverse=True)
 
-    all_recipes = _exclude_copied_originals(all_recipes)
+    all_recipes = _exclude_copied_originals(all_recipes, household_id)
 
     if len(all_recipes) > limit:
         page = all_recipes[:limit]

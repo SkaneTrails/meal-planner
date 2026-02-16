@@ -969,6 +969,58 @@ class TestUpdateRecipe:
 
         assert response.status_code == 404
 
+    def test_rejects_sharing_a_copy(self, client: TestClient) -> None:
+        """Should return 400 when trying to share a recipe that has copied_from."""
+        existing = Recipe(
+            id="copy123",
+            title="My Copy",
+            url="https://example.com",
+            household_id="test_household",
+            visibility="household",
+            copied_from="root_original",
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=existing):
+            response = client.put("/recipes/copy123", json={"visibility": "shared"})
+
+        assert response.status_code == 400
+        assert "copies cannot be shared" in response.json()["detail"].lower()
+
+    def test_allows_sharing_original_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should allow sharing a recipe that is not a copy."""
+        updated_recipe = Recipe(
+            id="test123",
+            title="Test Carbonara",
+            url="https://example.com/carbonara",
+            household_id="test_household",
+            visibility="shared",
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated_recipe),
+        ):
+            response = client.put("/recipes/test123", json={"visibility": "shared"})
+
+        assert response.status_code == 200
+        assert response.json()["visibility"] == "shared"
+
+    def test_allows_non_visibility_update_on_copy(self, client: TestClient) -> None:
+        """Should allow updating non-visibility fields on a copy."""
+        updated = Recipe(
+            id="copy123",
+            title="New Title",
+            url="https://example.com",
+            household_id="test_household",
+            copied_from="root_original",
+        )
+
+        with patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated):
+            response = client.put("/recipes/copy123", json={"title": "New Title"})
+
+        assert response.status_code == 200
+        assert response.json()["title"] == "New Title"
+
 
 class TestDeleteRecipe:
     """Tests for DELETE /recipes/{recipe_id} endpoint."""
