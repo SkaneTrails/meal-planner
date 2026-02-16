@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { BottomSheetModal } from '@/components/BottomSheetModal';
 import { PrimaryButton } from '@/components/PrimaryButton';
@@ -20,6 +20,12 @@ export const LanguagePromptModal = ({
 }: LanguagePromptModalProps) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<AppLanguage>('en');
+
+  useEffect(() => {
+    if (visible) {
+      setSelected('en');
+    }
+  }, [visible]);
 
   return (
     <BottomSheetModal

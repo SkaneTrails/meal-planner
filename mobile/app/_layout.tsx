@@ -28,8 +28,10 @@ import { AppState, type AppStateStatus, View } from 'react-native';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { LanguagePromptModal } from '@/components/LanguagePromptModal';
+import { showNotification } from '@/lib/alert';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
+import { useTranslation } from '@/lib/i18n';
 import {
   persistQueryCache,
   QueryProvider,
@@ -51,16 +53,23 @@ const AppContent = () => {
   const { needsLanguagePrompt, setLanguage } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
 
+  const { t } = useTranslation();
+
   const handleLanguageConfirm = useCallback(
     async (language: AppLanguage) => {
       setIsSaving(true);
       try {
         await setLanguage(language);
+      } catch {
+        showNotification(
+          t('common.error'),
+          t('settings.failedToChangeLanguage'),
+        );
       } finally {
         setIsSaving(false);
       }
     },
-    [setLanguage],
+    [setLanguage, t],
   );
 
   return (

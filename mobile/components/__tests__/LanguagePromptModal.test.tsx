@@ -27,9 +27,12 @@ describe('LanguagePromptModal', () => {
   });
 
   it('defaults to English selected', () => {
-    render(<LanguagePromptModal {...defaultProps} />);
-    const checkmarks = screen.getAllByTestId('language-prompt-modal');
-    expect(checkmarks.length).toBeGreaterThan(0);
+    const onConfirm = vi.fn();
+    render(<LanguagePromptModal {...defaultProps} onConfirm={onConfirm} />);
+
+    fireEvent.click(screen.getByText('Confirm'));
+
+    expect(onConfirm).toHaveBeenCalledWith('en');
   });
 
   it('calls onConfirm with selected language', () => {
@@ -56,8 +59,14 @@ describe('LanguagePromptModal', () => {
     expect(screen.queryByTestId('close-button')).toBeNull();
   });
 
-  it('shows loading indicator while saving', () => {
-    render(<LanguagePromptModal {...defaultProps} isSaving />);
-    expect(screen.getByText('Confirm')).toBeTruthy();
+  it('disables confirm button while saving', () => {
+    const onConfirm = vi.fn();
+    render(
+      <LanguagePromptModal {...defaultProps} onConfirm={onConfirm} isSaving />,
+    );
+
+    fireEvent.click(screen.getByText('Confirm'));
+
+    expect(onConfirm).not.toHaveBeenCalled();
   });
 });

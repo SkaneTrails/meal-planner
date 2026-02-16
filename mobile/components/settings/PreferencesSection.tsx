@@ -146,12 +146,6 @@ export const WeekStartSection = ({
   );
 };
 
-const FLAG_URLS: Record<AppLanguage, string> = {
-  en: 'https://flagcdn.com/w80/gb.png',
-  sv: 'https://flagcdn.com/w80/se.png',
-  it: 'https://flagcdn.com/w80/it.png',
-};
-
 interface LanguageSectionProps {
   currentLanguage: AppLanguage;
   onChangeLanguage: (language: AppLanguage) => void;
