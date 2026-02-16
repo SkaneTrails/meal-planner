@@ -17,9 +17,21 @@ export const DIET_OPTIONS: {
   dotColor: string | null;
 }[] = [
   { value: null, labelKey: 'labels.diet.none', dotColor: null },
-  { value: 'veggie', labelKey: 'labels.diet.veggie', dotColor: '#2E7D32' },
-  { value: 'fish', labelKey: 'labels.diet.fish', dotColor: '#1565C0' },
-  { value: 'meat', labelKey: 'labels.diet.meat', dotColor: '#C62828' },
+  {
+    value: 'veggie',
+    labelKey: 'labels.diet.veggie',
+    dotColor: colors.diet.veggie.text,
+  },
+  {
+    value: 'fish',
+    labelKey: 'labels.diet.fish',
+    dotColor: colors.diet.fish.text,
+  },
+  {
+    value: 'meat',
+    labelKey: 'labels.diet.meat',
+    dotColor: colors.diet.meat.text,
+  },
 ];
 
 export const VISIBILITY_OPTIONS: {

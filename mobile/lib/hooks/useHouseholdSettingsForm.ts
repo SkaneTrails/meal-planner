@@ -119,9 +119,9 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     setSettings((prev) => {
       const current = prev.note_suggestions ?? [];
       if (current.includes(trimmed)) return prev;
+      setHasChanges(true);
       return { ...prev, note_suggestions: [...current, trimmed] };
     });
-    setHasChanges(true);
   };
 
   const removeNoteSuggestion = (suggestion: string) => {

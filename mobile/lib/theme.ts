@@ -8,6 +8,7 @@ export {
   animation,
   borderRadius,
   circleStyle,
+  dotSize,
   iconContainer,
   iconSize,
   layout,

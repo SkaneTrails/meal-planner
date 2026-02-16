@@ -4,6 +4,7 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   colors,
+  dotSize,
   fontFamily,
   fontSize,
   spacing,
@@ -40,9 +41,9 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
       >
         <View
           style={{
-            width: 10,
-            height: 10,
-            borderRadius: 5,
+            width: dotSize.md,
+            height: dotSize.md,
+            borderRadius: dotSize.md / 2,
             backgroundColor: DIET_LABELS[recipe.diet_label].dotColor,
           }}
         />

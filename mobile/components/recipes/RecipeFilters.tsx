@@ -11,6 +11,7 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   colors,
+  dotSize,
   fontFamily,
   fontSize,
   spacing,
@@ -112,8 +113,16 @@ const DIET_CHIPS: { diet: DietLabel; dotColor: string; activeColor: string }[] =
       dotColor: colors.ai.primary,
       activeColor: colors.ai.primary,
     },
-    { diet: 'fish', dotColor: '#2D7AB8', activeColor: '#2D7AB8' },
-    { diet: 'meat', dotColor: '#B85C38', activeColor: '#B85C38' },
+    {
+      diet: 'fish',
+      dotColor: colors.chip.fishActive,
+      activeColor: colors.chip.fishActive,
+    },
+    {
+      diet: 'meat',
+      dotColor: colors.chip.meatActive,
+      activeColor: colors.chip.meatActive,
+    },
   ];
 
 export const FilterChips = ({
@@ -253,9 +262,9 @@ export const FilterChips = ({
         >
           <View
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: 5,
+              width: dotSize.md,
+              height: dotSize.md,
+              borderRadius: dotSize.md / 2,
               backgroundColor: dietFilter === diet ? colors.white : dotColor,
             }}
           />

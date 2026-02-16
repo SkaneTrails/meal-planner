@@ -261,6 +261,7 @@ vi.mock('@/lib/theme', () => ({
       light: 'rgba(107, 142, 107, 0.15)',
       badge: 'rgba(107, 142, 107, 0.95)',
     },
+    tagDot: ['#7A9BBD', '#8B9D77', '#C47D5A', '#9B7BB8', '#5BA3A3', '#D4A574', '#B07070', '#6B8FA3'],
   },
   lightColors: undefined, // re-exported but unused in tests
   spacing: { '2xs': 2, xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
@@ -314,6 +315,7 @@ vi.mock('@/lib/theme', () => ({
   glassCardStyle: {},
   inputStyle: {},
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
+  dotSize: { md: 10 },
 }));
 
 // Mock @/lib/settings-context

@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from 'react-native';
 import {
+  borderRadius,
   colors,
+  dotSize,
   fontFamily,
   fontSize,
   letterSpacing,
@@ -77,7 +79,7 @@ const ChipPicker = <T,>({
                     : inactiveBg,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
-                borderRadius: 20,
+                borderRadius: borderRadius.lg,
                 borderWidth: 1,
                 borderColor: isSelected ? colors.primary : inactiveBorder,
                 gap: spacing.xs,
@@ -86,9 +88,9 @@ const ChipPicker = <T,>({
               {dotColor != null && (
                 <View
                   style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 5,
+                    width: dotSize.md,
+                    height: dotSize.md,
+                    borderRadius: dotSize.md / 2,
                     backgroundColor: isSelected ? colors.white : dotColor,
                   }}
                 />

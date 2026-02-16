@@ -1,6 +1,12 @@
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  dotSize,
+  fontFamily,
+  spacing,
+} from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -84,37 +90,37 @@ export const DayHeader = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 6,
+                gap: spacing.sm,
               }}
             >
               {note
                 .split(' ')
                 .filter((t) => t.trim())
-                .map((tag) => {
+                .map((tag, index) => {
                   const tagIndex = noteSuggestions.indexOf(tag);
-                  const dotColor =
+                  const tagDotColor =
                     tagIndex >= 0
                       ? colors.tagDot[tagIndex % colors.tagDot.length]
                       : colors.content.icon;
                   return (
                     <View
-                      key={tag}
+                      key={`${tag}-${index}`}
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        gap: 5,
+                        gap: spacing.xs,
                         backgroundColor: colors.surface.tint,
-                        paddingHorizontal: 10,
-                        paddingVertical: 4,
+                        paddingHorizontal: spacing.sm,
+                        paddingVertical: spacing.xs,
                         borderRadius: borderRadius.md,
                       }}
                     >
                       <View
                         style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: 5,
-                          backgroundColor: dotColor,
+                          width: dotSize.md,
+                          height: dotSize.md,
+                          borderRadius: dotSize.md / 2,
+                          backgroundColor: tagDotColor,
                         }}
                       />
                       <Text
@@ -228,7 +234,7 @@ const NoteEditor = ({
       showsHorizontalScrollIndicator={false}
       style={{ marginTop: spacing.xs }}
     >
-      <View style={{ flexDirection: 'row', gap: 6 }}>
+      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
         {noteSuggestions.map((suggestion, index) => (
           <Pressable
             key={suggestion}
@@ -236,24 +242,24 @@ const NoteEditor = ({
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 6,
-              backgroundColor: noteText.includes(suggestion)
+              gap: spacing.sm,
+              backgroundColor: noteText.split(' ').includes(suggestion)
                 ? colors.surface.active
                 : colors.white,
               paddingHorizontal: spacing.md,
-              paddingVertical: 6,
+              paddingVertical: spacing.sm,
               borderRadius: borderRadius.full,
               borderWidth: 1,
-              borderColor: noteText.includes(suggestion)
+              borderColor: noteText.split(' ').includes(suggestion)
                 ? colors.content.headingWarm
                 : colors.surface.divider,
             }}
           >
             <View
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
+                width: dotSize.md,
+                height: dotSize.md,
+                borderRadius: dotSize.md / 2,
                 backgroundColor: colors.tagDot[index % colors.tagDot.length],
               }}
             />

@@ -7,6 +7,7 @@ import {
   borderRadius,
   circleStyle,
   colors,
+  dotSize,
   fontSize,
   iconContainer,
   layout,
@@ -279,9 +280,9 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
           >
             <View
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
+                width: dotSize.md,
+                height: dotSize.md,
+                borderRadius: dotSize.md / 2,
                 backgroundColor:
                   recipe.diet_label === 'veggie'
                     ? colors.diet.veggie.text

@@ -5,6 +5,7 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   colors,
+  dotSize,
   fontSize,
   fontWeight,
   shadows,
@@ -68,7 +69,7 @@ export const NoteSuggestionsSection = ({
             flexDirection: 'row',
             backgroundColor: colors.glass.card,
             borderRadius: borderRadius.md,
-            padding: 4,
+            padding: spacing.xs,
             marginBottom: spacing.md,
             ...shadows.sm,
           }}
@@ -82,7 +83,7 @@ export const NoteSuggestionsSection = ({
               color: colors.text.dark,
             }}
             placeholder={t('settings.addSuggestionPlaceholder')}
-            placeholderTextColor={`${colors.text.dark}60`}
+            placeholderTextColor={colors.content.placeholderHex}
             value={newSuggestion}
             onChangeText={setNewSuggestion}
             onSubmitEditing={handleAdd}
@@ -151,8 +152,8 @@ const CurrentSuggestions = ({
       >
         {t('settings.yourSuggestions', { count: items.length })}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-        {items.map((item) => (
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+        {items.map((item, index) => (
           <Pressable
             key={item}
             onPress={() => canEdit && onRemove(item)}
@@ -165,16 +166,15 @@ const CurrentSuggestions = ({
               paddingHorizontal: spacing.sm,
               paddingVertical: spacing.xs,
               borderRadius: borderRadius.full,
-              gap: 6,
+              gap: spacing.sm,
             })}
           >
             <View
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor:
-                  colors.tagDot[items.indexOf(item) % colors.tagDot.length],
+                width: dotSize.md,
+                height: dotSize.md,
+                borderRadius: dotSize.md / 2,
+                backgroundColor: colors.tagDot[index % colors.tagDot.length],
               }}
             />
             <Text
@@ -227,7 +227,7 @@ const PresetSuggestions = ({
       >
         {t('settings.suggestions')}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
         {items.map((item) => (
           <Pressable
             key={item}
@@ -242,14 +242,14 @@ const PresetSuggestions = ({
               borderWidth: 1,
               borderColor: `${colors.text.dark}30`,
               borderStyle: 'dashed',
-              gap: 6,
+              gap: spacing.sm,
             })}
           >
             <View
               style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
+                width: dotSize.md,
+                height: dotSize.md,
+                borderRadius: dotSize.md / 2,
                 backgroundColor: `${colors.text.dark}40`,
               }}
             />

@@ -55,6 +55,11 @@ export const iconSize = {
   '3xl': 40,
 } as const;
 
+// Dot indicator sizes (colored dots in chips/tags)
+export const dotSize = {
+  md: 10,
+} as const;
+
 // Icon container sizes (circles around icons)
 export const iconContainer = {
   xs: 36,
