@@ -4,6 +4,17 @@ import type { TFunction } from '@/lib/i18n';
 import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
+const TAG_DOT_COLORS = [
+  '#7A9BBD', // steel blue
+  '#8B9D77', // sage green
+  '#C47D5A', // terracotta
+  '#9B7BB8', // lavender
+  '#5BA3A3', // teal
+  '#D4A574', // amber
+  '#B07070', // dusty rose
+  '#6B8FA3', // slate blue
+];
+
 interface DayHeaderProps {
   date: Date;
   isToday: boolean;
@@ -201,11 +212,14 @@ const NoteEditor = ({
       style={{ marginTop: spacing.xs }}
     >
       <View style={{ flexDirection: 'row', gap: 6 }}>
-        {noteSuggestions.map((suggestion) => (
+        {noteSuggestions.map((suggestion, index) => (
           <Pressable
             key={suggestion}
             onPress={() => onToggleTag(suggestion)}
             style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
               backgroundColor: noteText.includes(suggestion)
                 ? colors.surface.active
                 : colors.white,
@@ -218,6 +232,14 @@ const NoteEditor = ({
                 : colors.surface.divider,
             }}
           >
+            <View
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: TAG_DOT_COLORS[index % TAG_DOT_COLORS.length],
+              }}
+            />
             <Text style={{ fontSize: 13, color: colors.content.headingWarm }}>
               {suggestion}
             </Text>

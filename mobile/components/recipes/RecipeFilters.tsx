@@ -105,11 +105,16 @@ interface FilterChipsProps {
   t: TFunction;
 }
 
-const DIET_CHIPS: { diet: DietLabel; emoji: string; activeColor: string }[] = [
-  { diet: 'veggie', emoji: '🌱', activeColor: colors.ai.primary },
-  { diet: 'fish', emoji: '🐟', activeColor: colors.chip.fishActive },
-  { diet: 'meat', emoji: '🍗', activeColor: colors.chip.meatActive },
-];
+const DIET_CHIPS: { diet: DietLabel; dotColor: string; activeColor: string }[] =
+  [
+    {
+      diet: 'veggie',
+      dotColor: colors.ai.primary,
+      activeColor: colors.ai.primary,
+    },
+    { diet: 'fish', dotColor: '#2D7AB8', activeColor: '#2D7AB8' },
+    { diet: 'meat', dotColor: '#B85C38', activeColor: '#B85C38' },
+  ];
 
 export const FilterChips = ({
   dietFilter,
@@ -225,7 +230,7 @@ export const FilterChips = ({
       </AnimatedPressable>
 
       {/* Diet chips */}
-      {DIET_CHIPS.map(({ diet, emoji, activeColor }) => (
+      {DIET_CHIPS.map(({ diet, dotColor, activeColor }) => (
         <AnimatedPressable
           key={diet}
           onPress={() => {
@@ -246,7 +251,14 @@ export const FilterChips = ({
             gap: spacing.xs,
           }}
         >
-          <Text style={{ fontSize: fontSize.md }}>{emoji}</Text>
+          <View
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: dietFilter === diet ? colors.white : dotColor,
+            }}
+          />
           <Text
             style={{
               fontSize: fontSize.md,

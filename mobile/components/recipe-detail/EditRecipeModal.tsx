@@ -195,7 +195,7 @@ export const EditRecipeModal = ({
           {t('recipe.visibilityLabel')}
         </Text>
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
-          {VISIBILITY_OPTIONS.map(({ value, labelKey, emoji, descKey }) => {
+          {VISIBILITY_OPTIONS.map(({ value, labelKey, icon, descKey }) => {
             const isSelected = editVisibility === value;
             const translatedLabel = t(labelKey);
             const translatedDesc = t(descKey);
@@ -218,14 +218,12 @@ export const EditRecipeModal = ({
                   borderColor: isSelected ? colors.primary : colors.bgDark,
                 })}
               >
-                <Text
-                  style={{
-                    fontSize: fontSize['3xl'],
-                    marginBottom: spacing.xs,
-                  }}
-                >
-                  {emoji}
-                </Text>
+                <Ionicons
+                  name={icon}
+                  size={28}
+                  color={isSelected ? colors.white : colors.content.icon}
+                  style={{ marginBottom: spacing.xs }}
+                />
                 <Text
                   style={{
                     fontSize: fontSize.lg,

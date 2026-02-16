@@ -20,6 +20,17 @@ const DEFAULT_SUGGESTION_KEYS = [
   'party',
 ] as const;
 
+const TAG_DOT_COLORS = [
+  '#7A9BBD', // steel blue
+  '#8B9D77', // sage green
+  '#C47D5A', // terracotta
+  '#9B7BB8', // lavender
+  '#5BA3A3', // teal
+  '#D4A574', // amber
+  '#B07070', // dusty rose
+  '#6B8FA3', // slate blue
+];
+
 interface NoteSuggestionsSectionProps {
   suggestions: string[];
   canEdit: boolean;
@@ -165,9 +176,18 @@ const CurrentSuggestions = ({
               paddingHorizontal: spacing.sm,
               paddingVertical: spacing.xs,
               borderRadius: borderRadius.full,
-              gap: 4,
+              gap: 6,
             })}
           >
+            <View
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor:
+                  TAG_DOT_COLORS[items.indexOf(item) % TAG_DOT_COLORS.length],
+              }}
+            />
             <Text
               style={{
                 fontSize: fontSize.sm,
@@ -233,10 +253,17 @@ const PresetSuggestions = ({
               borderWidth: 1,
               borderColor: `${colors.text.dark}30`,
               borderStyle: 'dashed',
-              gap: 4,
+              gap: 6,
             })}
           >
-            <Ionicons name="add" size={14} color={`${colors.text.dark}80`} />
+            <View
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: `${colors.text.dark}40`,
+              }}
+            />
             <Text
               style={{
                 fontSize: fontSize.sm,

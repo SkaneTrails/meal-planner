@@ -10,7 +10,7 @@ import {
 interface ChipOption<T> {
   value: T;
   labelKey: string;
-  emoji?: string;
+  dotColor?: string | null;
 }
 
 interface ChipPickerProps<T> {
@@ -61,7 +61,7 @@ const ChipPicker = <T,>({
         {label}
       </Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-        {options.map(({ value, labelKey, emoji }) => {
+        {options.map(({ value, labelKey, dotColor }) => {
           const isSelected = selected === value;
           return (
             <Pressable
@@ -80,10 +80,18 @@ const ChipPicker = <T,>({
                 borderRadius: 20,
                 borderWidth: 1,
                 borderColor: isSelected ? colors.primary : inactiveBorder,
+                gap: spacing.xs,
               })}
             >
-              {emoji !== undefined && (
-                <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
+              {dotColor != null && (
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: isSelected ? colors.white : dotColor,
+                  }}
+                />
               )}
               <Text
                 style={{

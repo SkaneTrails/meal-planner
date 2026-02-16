@@ -14,30 +14,30 @@ export const PLACEHOLDER_IMAGE =
 export const DIET_OPTIONS: {
   value: DietLabel | null;
   labelKey: string;
-  emoji: string;
+  dotColor: string | null;
 }[] = [
-  { value: null, labelKey: 'labels.diet.none', emoji: '➖' },
-  { value: 'veggie', labelKey: 'labels.diet.veggie', emoji: '🥬' },
-  { value: 'fish', labelKey: 'labels.diet.fish', emoji: '🐟' },
-  { value: 'meat', labelKey: 'labels.diet.meat', emoji: '🥩' },
+  { value: null, labelKey: 'labels.diet.none', dotColor: null },
+  { value: 'veggie', labelKey: 'labels.diet.veggie', dotColor: '#2E7D32' },
+  { value: 'fish', labelKey: 'labels.diet.fish', dotColor: '#1565C0' },
+  { value: 'meat', labelKey: 'labels.diet.meat', dotColor: '#C62828' },
 ];
 
 export const VISIBILITY_OPTIONS: {
   value: RecipeVisibility;
   labelKey: string;
-  emoji: string;
+  icon: 'lock-closed-outline' | 'globe-outline';
   descKey: string;
 }[] = [
   {
     value: 'household',
     labelKey: 'labels.visibility.private',
-    emoji: '🔒',
+    icon: 'lock-closed-outline',
     descKey: 'labels.visibility.privateDesc',
   },
   {
     value: 'shared',
     labelKey: 'labels.visibility.shared',
-    emoji: '🌍',
+    icon: 'globe-outline',
     descKey: 'labels.visibility.sharedDesc',
   },
 ];
@@ -62,20 +62,20 @@ export const MEAL_TYPES: { type: MealType; labelKey: string }[] = [
 
 export const DIET_LABELS: Record<
   DietLabel,
-  { emoji: string; color: string; bgColor: string }
+  { dotColor: string; color: string; bgColor: string }
 > = {
   veggie: {
-    emoji: '🥬',
+    dotColor: colors.diet.veggie.text,
     color: colors.diet.veggie.text,
     bgColor: colors.diet.veggie.bg,
   },
   fish: {
-    emoji: '🐟',
+    dotColor: colors.diet.fish.text,
     color: colors.diet.fish.text,
     bgColor: colors.diet.fish.bg,
   },
   meat: {
-    emoji: '🥩',
+    dotColor: colors.diet.meat.text,
     color: colors.diet.meat.text,
     bgColor: colors.diet.meat.bg,
   },

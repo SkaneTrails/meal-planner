@@ -35,11 +35,17 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.md,
+          gap: spacing.xs,
         }}
       >
-        <Text style={{ marginRight: spacing.xs, fontSize: fontSize.lg }}>
-          {DIET_LABELS[recipe.diet_label].emoji}
-        </Text>
+        <View
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: DIET_LABELS[recipe.diet_label].dotColor,
+          }}
+        />
         <Text
           style={{
             fontSize: fontSize.md,
