@@ -1,12 +1,10 @@
 /**
  * Modal shown after enhancing an existing recipe.
- * Displays changes_made, version toggle (original/enhanced ingredients
- * & instructions), and approve/reject buttons so users can review
- * the AI enhancement before committing.
+ * Displays changes_made summary and approve/reject buttons so users
+ * can review the AI enhancement before committing.
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
@@ -21,8 +19,6 @@ import {
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { ReviewAiChanges } from '../review-recipe/ReviewAiChanges';
-
-type VersionTab = 'original' | 'enhanced';
 
 interface EnhancementReviewModalProps {
   visible: boolean;
@@ -43,20 +39,7 @@ export const EnhancementReviewModal = ({
   onReject,
   onClose,
 }: EnhancementReviewModalProps) => {
-  const [selectedTab, setSelectedTab] = useState<VersionTab>('enhanced');
-
-  const hasOriginal = recipe.original != null;
   const changes = recipe.changes_made ?? [];
-
-  const displayIngredients =
-    selectedTab === 'original' && hasOriginal
-      ? (recipe.original?.ingredients ?? recipe.ingredients)
-      : recipe.ingredients;
-
-  const displayInstructions =
-    selectedTab === 'original' && hasOriginal
-      ? (recipe.original?.instructions ?? recipe.instructions)
-      : recipe.instructions;
 
   return (
     <Modal
@@ -137,181 +120,6 @@ export const EnhancementReviewModal = ({
           >
             {/* AI Changes */}
             <ReviewAiChanges changes={changes} t={t} />
-
-            {/* Version Toggle */}
-            {hasOriginal && (
-              <View style={{ marginBottom: spacing.lg }}>
-                <Text
-                  style={{
-                    fontSize: fontSize.md,
-                    fontFamily: fontFamily.bodySemibold,
-                    color: colors.gray[500],
-                    marginBottom: spacing.sm,
-                    textTransform: 'uppercase',
-                    letterSpacing: letterSpacing.wide,
-                  }}
-                >
-                  {t('reviewRecipe.version')}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    backgroundColor: colors.glass.light,
-                    borderRadius: borderRadius.md,
-                    padding: spacing.xs,
-                  }}
-                >
-                  <Pressable
-                    onPress={() => setSelectedTab('original')}
-                    style={{
-                      flex: 1,
-                      paddingVertical: spacing.sm,
-                      borderRadius: borderRadius.sm,
-                      backgroundColor:
-                        selectedTab === 'original'
-                          ? colors.primary
-                          : 'transparent',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontFamily: fontFamily.bodyMedium,
-                        color:
-                          selectedTab === 'original'
-                            ? colors.white
-                            : colors.text.inverse,
-                      }}
-                    >
-                      {t('reviewRecipe.original')}
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setSelectedTab('enhanced')}
-                    style={{
-                      flex: 1,
-                      paddingVertical: spacing.sm,
-                      borderRadius: borderRadius.sm,
-                      backgroundColor:
-                        selectedTab === 'enhanced'
-                          ? colors.ai.primary
-                          : 'transparent',
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Ionicons
-                      name="sparkles"
-                      size={14}
-                      color={
-                        selectedTab === 'enhanced'
-                          ? colors.white
-                          : colors.ai.primary
-                      }
-                      style={{ marginRight: spacing.xs }}
-                    />
-                    <Text
-                      style={{
-                        fontSize: fontSize.md,
-                        fontFamily: fontFamily.bodyMedium,
-                        color:
-                          selectedTab === 'enhanced'
-                            ? colors.white
-                            : colors.ai.primary,
-                      }}
-                    >
-                      {t('reviewRecipe.enhanced')}
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-            )}
-
-            {/* Ingredients preview */}
-            <View style={{ marginBottom: spacing.lg }}>
-              <Text
-                style={{
-                  fontSize: fontSize.md,
-                  fontFamily: fontFamily.bodySemibold,
-                  color: colors.text.inverse,
-                  marginBottom: spacing.sm,
-                }}
-              >
-                {t('recipe.ingredients')} ({displayIngredients.length})
-              </Text>
-              {displayIngredients.slice(0, 5).map((ing, i) => (
-                <Text
-                  key={i}
-                  style={{
-                    fontSize: fontSize.md,
-                    fontFamily: fontFamily.body,
-                    color: colors.content.body,
-                    lineHeight: 22,
-                    paddingLeft: spacing.sm,
-                  }}
-                >
-                  • {ing}
-                </Text>
-              ))}
-              {displayIngredients.length > 5 && (
-                <Text
-                  style={{
-                    fontSize: fontSize.sm,
-                    fontFamily: fontFamily.body,
-                    color: colors.gray[500],
-                    paddingLeft: spacing.sm,
-                    marginTop: spacing.xs,
-                  }}
-                >
-                  +{displayIngredients.length - 5} more...
-                </Text>
-              )}
-            </View>
-
-            {/* Instructions preview */}
-            <View style={{ marginBottom: spacing.lg }}>
-              <Text
-                style={{
-                  fontSize: fontSize.md,
-                  fontFamily: fontFamily.bodySemibold,
-                  color: colors.text.inverse,
-                  marginBottom: spacing.sm,
-                }}
-              >
-                {t('recipe.instructions')} ({displayInstructions.length}{' '}
-                {t('reviewRecipe.steps')})
-              </Text>
-              {displayInstructions.slice(0, 3).map((step, i) => (
-                <Text
-                  key={i}
-                  style={{
-                    fontSize: fontSize.md,
-                    fontFamily: fontFamily.body,
-                    color: colors.content.body,
-                    lineHeight: 22,
-                    paddingLeft: spacing.sm,
-                    marginBottom: spacing.xs,
-                  }}
-                  numberOfLines={2}
-                >
-                  {i + 1}. {step}
-                </Text>
-              ))}
-              {displayInstructions.length > 3 && (
-                <Text
-                  style={{
-                    fontSize: fontSize.sm,
-                    fontFamily: fontFamily.body,
-                    color: colors.gray[500],
-                    paddingLeft: spacing.sm,
-                  }}
-                >
-                  +{displayInstructions.length - 3} more...
-                </Text>
-              )}
-            </View>
           </ScrollView>
 
           {/* Buttons */}
