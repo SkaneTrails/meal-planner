@@ -9,6 +9,7 @@ import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { EnhancingOverlay, GradientBackground } from '@/components';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
+import { EnhancementReviewModal } from '@/components/recipe-detail/EnhancementReviewModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
 import { PlanMealModal } from '@/components/recipe-detail/PlanMealModal';
 import { RecipeContent } from '@/components/recipe-detail/RecipeContent';
@@ -77,6 +78,9 @@ export default function RecipeDetailScreen() {
     handleTransferRecipe,
     handleReviewEnhancement,
     handleEnhanceRecipe,
+    showEnhancementReviewModal,
+    handleApproveEnhancement,
+    handleRejectEnhancement,
   } = useRecipeActions(id, recipe);
 
   const [weekOffset, setWeekOffset] = useState(0);
@@ -296,6 +300,15 @@ export default function RecipeDetailScreen() {
         t={t}
         onClose={() => setShowUrlModal(false)}
         onSave={saveImageUrl}
+      />
+
+      <EnhancementReviewModal
+        visible={showEnhancementReviewModal}
+        recipe={recipe}
+        isReviewPending={isReviewingEnhancement}
+        t={t}
+        onApprove={handleApproveEnhancement}
+        onReject={handleRejectEnhancement}
       />
 
       <EnhancingOverlay visible={isEnhancing} message={t('recipe.enhancing')} />

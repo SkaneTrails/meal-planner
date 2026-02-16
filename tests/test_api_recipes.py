@@ -733,6 +733,43 @@ class TestScrapeRecipe:
 
         assert response.status_code == 504
 
+    def test_scrape_with_diet_and_meal_labels(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should pass diet_label and meal_label through to saved recipe."""
+        scraped_data = {
+            "title": "Veggie Breakfast",
+            "url": "https://example.com/veggie",
+            "ingredients": ["eggs"],
+            "instructions": ["Cook"],
+        }
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 200
+        mock_cf_response.json.return_value = scraped_data
+        mock_cf_response.raise_for_status = MagicMock()
+
+        fetch_result = FetchResult(html="<html>recipe</html>", final_url="https://example.com/veggie")
+
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.fetch_html", new_callable=AsyncMock, return_value=fetch_result),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe) as mock_save,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post(
+                "/recipes/scrape?diet_label=veggie&meal_label=breakfast", json={"url": "https://example.com/veggie"}
+            )
+
+        assert response.status_code == 201
+        saved_create = mock_save.call_args[0][0]
+        assert saved_create.diet_label.value == "veggie"
+        assert saved_create.meal_label.value == "breakfast"
+
 
 class TestParseRecipe:
     """Tests for POST /recipes/parse endpoint."""
@@ -838,6 +875,45 @@ class TestParseRecipe:
 
         assert response.status_code == 422
         assert "Failed to parse" in response.json()["detail"]
+
+    def test_parse_with_diet_and_meal_labels(self, client: TestClient, sample_recipe: Recipe) -> None:
+        """Should pass diet_label and meal_label through to saved recipe."""
+        scraped_data = {
+            "title": "Fish Salad",
+            "url": "https://example.com/fish-salad",
+            "ingredients": ["salmon"],
+            "instructions": ["Grill"],
+        }
+
+        mock_cf_response = MagicMock()
+        mock_cf_response.status_code = 200
+        mock_cf_response.headers = {"content-type": "application/json"}
+        mock_cf_response.json.return_value = scraped_data
+        mock_cf_response.raise_for_status = MagicMock()
+
+        with (
+            patch("api.routers.recipe_scraping.recipe_storage.find_recipe_by_url", return_value=None),
+            patch("api.routers.recipe_scraping.httpx.AsyncClient") as mock_client_class,
+            patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe) as mock_save,
+        ):
+            mock_client = AsyncMock()
+            mock_client.post.return_value = mock_cf_response
+            mock_client.__aenter__.return_value = mock_client
+            mock_client.__aexit__.return_value = None
+            mock_client_class.return_value = mock_client
+
+            response = client.post(
+                "/recipes/parse?diet_label=fish&meal_label=salad",
+                json={
+                    "url": "https://example.com/fish-salad",
+                    "html": "<html><head><title>Fish</title></head><body>" + "x" * 100 + "</body></html>",
+                },
+            )
+
+        assert response.status_code == 201
+        saved_create = mock_save.call_args[0][0]
+        assert saved_create.diet_label.value == "fish"
+        assert saved_create.meal_label.value == "salad"
 
 
 class TestPreviewRecipe:

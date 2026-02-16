@@ -17,6 +17,11 @@ import {
 } from '@/components';
 import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
+import { ChipPicker } from '@/components/ChipPicker';
+import {
+  DIET_OPTIONS,
+  MEAL_OPTIONS,
+} from '@/components/recipe-detail/recipe-detail-constants';
 import { showNotification } from '@/lib/alert';
 import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import { useSettings } from '@/lib/settings-context';
@@ -54,6 +59,10 @@ export default function AddRecipeScreen() {
     setUrl,
     enhanceWithAI,
     setEnhanceWithAI,
+    dietLabel,
+    setDietLabel,
+    mealLabel,
+    setMealLabel,
     handleImport,
     isPending,
   } = actions;
@@ -258,6 +267,24 @@ export default function AddRecipeScreen() {
               />
             </View>
           </Pressable>
+
+          {/* Diet & Meal type pickers */}
+          <ChipPicker
+            label={t('recipe.dietType')}
+            options={DIET_OPTIONS}
+            selected={dietLabel}
+            onSelect={setDietLabel}
+            t={t}
+            variant="solid"
+          />
+          <ChipPicker
+            label={t('recipe.mealTypeLabel')}
+            options={MEAL_OPTIONS}
+            selected={mealLabel}
+            onSelect={setMealLabel}
+            t={t}
+            variant="solid"
+          />
 
           {/* Import button */}
           <PrimaryButton

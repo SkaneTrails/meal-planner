@@ -28,6 +28,8 @@ def build_recipe_create_from_scraped(scraped_data: dict[str, Any]) -> RecipeCrea
         prep_time=scraped_data.get("prep_time"),
         cook_time=scraped_data.get("cook_time"),
         total_time=scraped_data.get("total_time"),
+        diet_label=scraped_data.get("diet_label"),
+        meal_label=scraped_data.get("meal_label"),
     )
 
 

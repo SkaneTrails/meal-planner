@@ -73,6 +73,8 @@ export const useAddRecipeActions = () => {
       const recipe = await scrapeRecipe.mutateAsync({
         url,
         enhance: enhanceWithAI,
+        dietLabel,
+        mealLabel,
       });
       setImportedRecipe(recipe);
 
