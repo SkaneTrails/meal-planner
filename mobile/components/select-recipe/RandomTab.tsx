@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
+import { PrimaryButton } from '@/components/PrimaryButton';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   borderRadius,
@@ -71,34 +72,15 @@ export const RandomTab = ({ state }: RandomTabProps) => {
 
         {/* Action buttons */}
         <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
-          <Pressable
-            onPress={() => handleSelectRecipe(randomRecipe.id)}
-            disabled={setMeal.isPending}
-            style={({ pressed }) => ({
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.sm,
-              backgroundColor: pressed
-                ? colors.button.primaryPressed
-                : colors.button.primary,
-              ...shadows.md,
-            })}
-          >
-            <Ionicons name="checkmark-circle" size={20} color={colors.white} />
-            <Text
-              style={{
-                marginLeft: spacing.sm,
-                fontSize: fontSize.lg,
-                fontWeight: '600',
-                color: colors.white,
-              }}
-            >
-              {t('selectRecipe.random.addToPlan')}
-            </Text>
-          </Pressable>
+          <View style={{ flex: 1 }}>
+            <PrimaryButton
+              onPress={() => handleSelectRecipe(randomRecipe.id)}
+              disabled={setMeal.isPending}
+              icon="checkmark-circle"
+              label={t('selectRecipe.random.addToPlan')}
+              pressedColor={colors.button.primaryPressed}
+            />
+          </View>
           <Pressable
             onPress={shuffleRandom}
             disabled={setMeal.isPending}

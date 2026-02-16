@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { AnimatedPressable, GradientBackground } from '@/components';
+import { GradientBackground, PrimaryButton } from '@/components';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
 import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
@@ -18,15 +18,7 @@ import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionMo
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
-import {
-  borderRadius,
-  colors,
-  fontFamily,
-  fontSize,
-  fontWeight,
-  layout,
-  spacing,
-} from '@/lib/theme';
+import { borderRadius, colors, fontFamily, layout, spacing } from '@/lib/theme';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
@@ -241,38 +233,13 @@ export default function MealPlanScreen() {
               />
 
               {/* Skapa lista button at end of list */}
-              <AnimatedPressable
-                onPress={openGroceryModal}
-                hoverScale={1.02}
-                pressScale={0.98}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: colors.button.primary,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  marginTop: 8,
-                  marginBottom: 20,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 2, height: 4 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 12,
-                  elevation: 4,
-                }}
-              >
-                <Ionicons name="cart-outline" size={20} color={colors.white} />
-                <Text
-                  style={{
-                    marginLeft: 10,
-                    fontSize: fontSize.lg,
-                    fontWeight: fontWeight.semibold,
-                    color: colors.white,
-                  }}
-                >
-                  {t('mealPlan.createList')}
-                </Text>
-              </AnimatedPressable>
+              <View style={{ marginTop: 8, marginBottom: 20 }}>
+                <PrimaryButton
+                  onPress={openGroceryModal}
+                  icon="cart-outline"
+                  label={t('mealPlan.createList')}
+                />
+              </View>
             </ScrollView>
           </Animated.View>
         </View>

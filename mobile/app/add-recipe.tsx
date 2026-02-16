@@ -9,7 +9,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { EnhancingOverlay, GradientBackground } from '@/components';
+import {
+  EnhancingOverlay,
+  GradientBackground,
+  PrimaryButton,
+} from '@/components';
 import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { showNotification } from '@/lib/alert';
@@ -262,61 +266,19 @@ export default function AddRecipeScreen() {
           </Pressable>
 
           {/* Import button */}
-          <Pressable
+          <PrimaryButton
             onPress={handleImport}
-            disabled={!url || isPending}
-            style={({ pressed }) => ({
-              paddingVertical: spacing.lg,
-              borderRadius: borderRadius.md,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                url && !isPending ? colors.content.body : colors.gray[300],
-              opacity: pressed ? 0.9 : 1,
-              ...shadows.md,
-            })}
-          >
-            {isPending ? (
-              <>
-                <Ionicons
-                  name="hourglass-outline"
-                  size={20}
-                  color={colors.white}
-                />
-                <Text
-                  style={{
-                    marginLeft: spacing.sm,
-                    color: colors.white,
-                    fontSize: fontSize.lg,
-                    fontWeight: '600',
-                  }}
-                >
-                  {enhanceWithAI
-                    ? t('addRecipe.importingEnhancing')
-                    : t('addRecipe.importing')}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Ionicons
-                  name="download-outline"
-                  size={20}
-                  color={colors.white}
-                />
-                <Text
-                  style={{
-                    marginLeft: spacing.sm,
-                    color: colors.white,
-                    fontSize: fontSize.lg,
-                    fontWeight: '600',
-                  }}
-                >
-                  {t('addRecipe.importButton')}
-                </Text>
-              </>
-            )}
-          </Pressable>
+            disabled={!url}
+            isPending={isPending}
+            icon="download-outline"
+            label={t('addRecipe.importButton')}
+            loadingLabel={
+              enhanceWithAI
+                ? t('addRecipe.importingEnhancing')
+                : t('addRecipe.importing')
+            }
+            color={colors.content.body}
+          />
 
           {/* Or add manually link */}
           <View

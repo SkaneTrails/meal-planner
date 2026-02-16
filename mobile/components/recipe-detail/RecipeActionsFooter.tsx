@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Linking, Pressable, Text } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
+import { PrimaryButton } from '@/components';
 import { showNotification } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
 import {
@@ -7,7 +8,6 @@ import {
   colors,
   fontFamily,
   fontSize,
-  shadows,
   spacing,
 } from '@/lib/theme';
 
@@ -66,31 +66,14 @@ export const RecipeActionsFooter = ({
       </Pressable>
     )}
 
-    <Pressable
-      onPress={onShowPlanModal}
-      style={({ pressed }) => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: spacing.md,
-        marginTop: spacing.md,
-        marginBottom: FOOTER_BOTTOM_MARGIN,
-        backgroundColor: pressed ? colors.ai.primaryDark : colors.ai.primary,
-        borderRadius: borderRadius.sm,
-        ...shadows.md,
-      })}
-    >
-      <Ionicons name="calendar" size={20} color={colors.white} />
-      <Text
-        style={{
-          color: colors.white,
-          marginLeft: spacing.sm,
-          fontSize: fontSize['2xl'],
-          fontFamily: fontFamily.bodySemibold,
-        }}
-      >
-        {t('recipe.addToMealPlan')}
-      </Text>
-    </Pressable>
+    <View style={{ marginTop: spacing.md, marginBottom: FOOTER_BOTTOM_MARGIN }}>
+      <PrimaryButton
+        onPress={onShowPlanModal}
+        icon="calendar"
+        label={t('recipe.addToMealPlan')}
+        color={colors.ai.primary}
+        pressedColor={colors.ai.primaryDark}
+      />
+    </View>
   </>
 );
