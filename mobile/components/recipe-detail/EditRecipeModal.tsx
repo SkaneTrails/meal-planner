@@ -251,6 +251,33 @@ export const EditRecipeModal = ({
         </View>
       )}
 
+      {/* Info message for copies — visibility is locked */}
+      {recipe.copied_from && (
+        <View style={{ marginBottom: spacing.xl }}>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.gray[500],
+              marginBottom: spacing.sm,
+              textTransform: 'uppercase',
+              letterSpacing: letterSpacing.wide,
+            }}
+          >
+            {t('recipe.visibilityLabel')}
+          </Text>
+          <Text
+            style={{
+              fontSize: fontSize.base,
+              fontFamily: fontFamily.body,
+              color: colors.gray[400],
+            }}
+          >
+            {t('recipe.copiedRecipeVisibility')}
+          </Text>
+        </View>
+      )}
+
       {/* Household Transfer (Superuser only) */}
       {isSuperuser && households && households.length > 0 && (
         <HouseholdTransfer

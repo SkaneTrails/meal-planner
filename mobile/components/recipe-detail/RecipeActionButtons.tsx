@@ -105,7 +105,7 @@ export const RecipeActionButtons = ({
           onPress={onEnhance}
           hoverScale={1.1}
           pressScale={0.9}
-          disabled={isEnhancing}
+          disabled={enhanceDisabled}
           disableAnimation={enhanceDisabled}
           style={{
             ...actionButtonStyle,
