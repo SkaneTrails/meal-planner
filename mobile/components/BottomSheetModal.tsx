@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { DimensionValue } from 'react-native';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { colors } from '@/lib/theme/colors';
+import { colors } from '@/lib/theme';
 
 interface BottomSheetModalProps {
   visible: boolean;
