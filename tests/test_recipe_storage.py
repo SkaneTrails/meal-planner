@@ -1327,6 +1327,7 @@ class TestCopyRecipe:
 
         with (
             patch("api.storage.recipe_storage.get_recipe", return_value=source_recipe),
+            patch("api.storage.recipe_storage._resolve_root_id", return_value="root_a"),
             patch("api.storage.recipe_storage._find_existing_copy", return_value=None),
             patch("api.storage.recipe_storage.save_recipe", return_value=copied_recipe) as mock_save,
         ):
