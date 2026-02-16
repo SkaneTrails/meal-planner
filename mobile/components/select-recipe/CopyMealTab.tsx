@@ -42,7 +42,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
             width: 48,
             height: 48,
             borderRadius: 24,
-            backgroundColor: 'rgba(107, 142, 107, 0.15)',
+            backgroundColor: colors.ai.light,
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: spacing.sm,

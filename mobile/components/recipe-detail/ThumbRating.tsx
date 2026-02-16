@@ -30,7 +30,7 @@ export const ThumbRating = ({
           backgroundColor: isThumbDown
             ? 'rgba(239, 83, 80, 0.3)'
             : pressed
-              ? 'rgba(255, 255, 255, 0.2)'
+              ? colors.border
               : 'transparent',
         })}
       >
@@ -48,7 +48,7 @@ export const ThumbRating = ({
           backgroundColor: isThumbUp
             ? 'rgba(76, 175, 80, 0.3)'
             : pressed
-              ? 'rgba(255, 255, 255, 0.2)'
+              ? colors.border
               : 'transparent',
         })}
       >

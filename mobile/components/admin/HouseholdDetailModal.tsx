@@ -234,10 +234,10 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
           alignItems: 'center',
         }}
       >
-        <Ionicons name="person-add" size={16} color="white" />
+        <Ionicons name="person-add" size={16} color={colors.white} />
         <Text
           style={{
-            color: 'white',
+            color: colors.white,
             fontWeight: fontWeight.medium,
             marginLeft: 4,
           }}

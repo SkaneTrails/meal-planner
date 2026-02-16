@@ -59,7 +59,7 @@ export const DayHeader = ({
               style={{
                 fontSize: 12,
                 fontFamily: fontFamily.bodyBold,
-                color: '#FFFFFF',
+                color: colors.white,
               }}
             >
               {t('mealPlan.today')}
@@ -85,7 +85,7 @@ export const DayHeader = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: 'rgba(107, 142, 107, 0.18)',
+                backgroundColor: colors.ai.bgPressed,
                 paddingHorizontal: 10,
                 paddingVertical: 4,
                 borderRadius: 12,
@@ -202,7 +202,7 @@ const NoteEditor = ({
             style={{
               backgroundColor: noteText.includes(suggestion)
                 ? '#e8dfd4'
-                : '#fff',
+                : colors.white,
               paddingHorizontal: 12,
               paddingVertical: 6,
               borderRadius: 16,

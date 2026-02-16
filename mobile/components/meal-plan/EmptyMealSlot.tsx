@@ -86,12 +86,12 @@ export const EmptyMealSlot = ({
           gap: 5,
         }}
       >
-        <Ionicons name="book-outline" size={13} color="#FFFFFF" />
+        <Ionicons name="book-outline" size={13} color={colors.white} />
         <Text
           style={{
             fontSize: 12,
             fontFamily: fontFamily.bodySemibold,
-            color: '#FFFFFF',
+            color: colors.white,
           }}
         >
           {t('mealPlan.library')}

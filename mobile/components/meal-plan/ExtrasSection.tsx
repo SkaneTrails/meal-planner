@@ -170,7 +170,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
             width: 56,
             height: 56,
             borderRadius: 12,
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            backgroundColor: colors.border,
           }}
           resizeMode="cover"
         />

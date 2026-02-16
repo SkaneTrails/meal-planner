@@ -21,7 +21,7 @@ const actionButtonStyle = {
   width: 40,
   height: 40,
   borderRadius: 20,
-  backgroundColor: 'rgba(255, 255, 255, 0.92)',
+  backgroundColor: colors.glass.solid,
   alignItems: 'center' as const,
   justifyContent: 'center' as const,
 };

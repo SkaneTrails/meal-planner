@@ -6,6 +6,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
+import { colors } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 
@@ -61,13 +62,13 @@ export const MealCell = ({
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
           size={14}
-          color={hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'}
+          color={hasContent ? colors.white : 'rgba(255, 255, 255, 0.5)'}
         />
         <Text
           style={{
             fontSize: 12,
             marginLeft: 4,
-            color: hasContent ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
+            color: hasContent ? colors.white : 'rgba(255, 255, 255, 0.5)',
           }}
         >
           {t(MEAL_TYPE_LABEL_KEYS[mealType])}
@@ -76,7 +77,7 @@ export const MealCell = ({
 
       {displayText ? (
         <Text
-          style={{ fontSize: 14, color: '#FFFFFF', fontWeight: '500' }}
+          style={{ fontSize: 14, color: colors.white, fontWeight: '500' }}
           numberOfLines={2}
         >
           {displayText}
@@ -125,14 +126,16 @@ export const DayColumn = ({
           backgroundColor: isToday ? '#4A3728' : '#f3f4f6',
         }}
       >
-        <Text style={{ fontSize: 12, color: isToday ? '#fff' : '#4b5563' }}>
+        <Text
+          style={{ fontSize: 12, color: isToday ? colors.white : '#4b5563' }}
+        >
           {dayName}
         </Text>
         <Text
           style={{
             fontSize: 18,
             fontWeight: 'bold',
-            color: isToday ? '#fff' : '#4A3728',
+            color: isToday ? colors.white : '#4A3728',
           }}
         >
           {dayNumber}

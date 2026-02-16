@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { BottomActionBar, PrimaryButton } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontSize, layout, spacing } from '@/lib/theme';
+import { colors, fontSize, spacing } from '@/lib/theme';
 
 export const ReadOnlyBanner = () => {
   const { t } = useTranslation();
@@ -38,40 +39,13 @@ export const BottomSaveBar = ({
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        position: 'absolute',
-        bottom: layout.tabBar.overlayBottomOffset,
-        left: 0,
-        right: 0,
-        paddingHorizontal: spacing.lg,
-        paddingVertical: spacing.md,
-      }}
-    >
-      <Pressable
+    <BottomActionBar>
+      <PrimaryButton
         onPress={onSave}
-        disabled={isSaving}
-        style={({ pressed }) => ({
-          backgroundColor: pressed ? colors.content.body : colors.primary,
-          borderRadius: borderRadius.md,
-          paddingVertical: 14,
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'row',
-          gap: 8,
-        })}
-      >
-        {isSaving ? (
-          <ActivityIndicator color="white" size="small" />
-        ) : (
-          <>
-            <Ionicons name="checkmark" size={20} color="white" />
-            <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
-              {t('householdSettings.saveChanges')}
-            </Text>
-          </>
-        )}
-      </Pressable>
-    </View>
+        isPending={isSaving}
+        label={t('householdSettings.saveChanges')}
+        icon="checkmark"
+      />
+    </BottomActionBar>
   );
 };

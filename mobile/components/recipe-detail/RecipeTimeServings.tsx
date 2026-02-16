@@ -16,10 +16,10 @@ const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => (
       flex: 1,
       alignItems: 'center',
       borderLeftWidth: showBorder ? 1 : 0,
-      borderLeftColor: 'rgba(139, 115, 85, 0.15)',
+      borderLeftColor: colors.chip.divider,
     }}
   >
-    <Ionicons name={icon} size={18} color="#5D4037" />
+    <Ionicons name={icon} size={18} color={colors.content.body} />
     <Text
       style={{
         fontSize: fontSize.sm,
@@ -33,7 +33,7 @@ const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => (
       style={{
         fontSize: fontSize.lg,
         fontFamily: fontFamily.bodyBold,
-        color: '#5D4037',
+        color: colors.content.body,
       }}
     >
       {value}
@@ -64,15 +64,11 @@ export const RecipeTimeServings = ({
       style={{
         flexDirection: 'row',
         marginTop: spacing.lg,
-        backgroundColor: 'rgba(255, 255, 255, 0.92)',
+        backgroundColor: colors.glass.solid,
         borderRadius: 16,
         paddingVertical: spacing.md,
         paddingHorizontal: spacing.sm,
-        shadowColor: '#000',
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 2,
+        boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
       }}
     >
       {prepTime ? (

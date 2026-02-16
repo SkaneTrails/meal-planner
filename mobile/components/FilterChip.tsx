@@ -38,7 +38,7 @@ const FilterChip = ({
   onPress,
   leading,
   activeColor = colors.content.body,
-  activeTextColor = '#fff',
+  activeTextColor = colors.white,
   inactiveTextColor = colors.content.body,
   inactiveBorderColor = colors.content.secondary,
   style,

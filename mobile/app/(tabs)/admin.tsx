@@ -283,10 +283,10 @@ const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
           alignItems: 'center',
         }}
       >
-        <Ionicons name="add" size={18} color="white" />
+        <Ionicons name="add" size={18} color={colors.white} />
         <Text
           style={{
-            color: 'white',
+            color: colors.white,
             fontWeight: fontWeight.medium,
             marginLeft: 4,
           }}

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {
   EnhancingOverlay,
+  FormField,
   GradientBackground,
   PrimaryButton,
 } from '@/components';
@@ -121,18 +122,7 @@ export default function AddRecipeScreen() {
           </View>
 
           {/* URL input */}
-          <View style={{ marginBottom: spacing.lg }}>
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                fontWeight: '600',
-                color: colors.text.inverse,
-                marginBottom: spacing.sm,
-                letterSpacing: letterSpacing.normal,
-              }}
-            >
-              {t('addRecipe.urlLabel')}
-            </Text>
+          <FormField label={t('addRecipe.urlLabel')}>
             <View
               style={{
                 flexDirection: 'row',
@@ -172,7 +162,7 @@ export default function AddRecipeScreen() {
                 </Pressable>
               )}
             </View>
-          </View>
+          </FormField>
 
           {/* AI Enhancement toggle */}
           <Pressable

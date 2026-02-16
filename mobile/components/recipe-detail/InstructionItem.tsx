@@ -41,11 +41,7 @@ export const InstructionItem = ({
           marginBottom: spacing.sm,
           borderLeftWidth: 2,
           borderLeftColor: colors.ai.primary,
-          shadowColor: '#000',
-          shadowOffset: { width: 1, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 6,
-          elevation: 2,
+          boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
         }}
       >
         <Ionicons
@@ -59,7 +55,7 @@ export const InstructionItem = ({
             flex: 1,
             fontSize: fontSize.md,
             fontFamily: fontFamily.body,
-            color: '#5D4037',
+            color: colors.content.body,
             lineHeight: 20,
             fontStyle: 'italic',
           }}
@@ -92,7 +88,7 @@ export const InstructionItem = ({
           style={{
             fontSize: fontSize['2xl'],
             fontFamily: fontFamily.displayBold,
-            color: '#5D4037',
+            color: colors.content.body,
             letterSpacing: letterSpacing.normal,
             paddingHorizontal: spacing.md,
           }}
@@ -124,16 +120,12 @@ export const InstructionItem = ({
         backgroundColor: isCompleted
           ? colors.successBg
           : pressed
-            ? 'rgba(255, 255, 255, 0.65)'
+            ? colors.glass.dark
             : 'rgba(255, 255, 255, 0.5)',
         borderRadius: borderRadius.md,
         marginBottom: spacing.sm,
         opacity: isCompleted ? 0.7 : 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 2,
+        boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
       })}
     >
       <View
@@ -141,7 +133,7 @@ export const InstructionItem = ({
           width: 32,
           height: 32,
           borderRadius: 16,
-          backgroundColor: isCompleted ? colors.success : '#5D4037',
+          backgroundColor: isCompleted ? colors.success : colors.content.body,
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: spacing.md,
@@ -193,7 +185,7 @@ export const InstructionItem = ({
           style={{
             fontSize: fontSize.xl,
             fontFamily: fontFamily.body,
-            color: isCompleted ? '#166534' : '#5D4037',
+            color: isCompleted ? '#166534' : colors.content.body,
             lineHeight: 22,
             textDecorationLine: isCompleted ? 'line-through' : 'none',
           }}

@@ -114,6 +114,7 @@ export const lightColors = {
   chip: {
     bg: 'rgba(232, 222, 212, 0.7)',
     border: 'rgba(139, 115, 85, 0.3)',
+    divider: 'rgba(139, 115, 85, 0.15)',
     fishActive: '#2D7AB8',
     meatActive: '#B85C38',
     favoriteActive: '#C75050',
@@ -128,6 +129,9 @@ export const lightColors = {
   glass: {
     light: 'rgba(255, 255, 255, 0.88)',
     medium: 'rgba(255, 255, 255, 0.78)',
+    heavy: 'rgba(255, 255, 255, 0.95)',
+    solid: 'rgba(255, 255, 255, 0.92)',
+    bright: 'rgba(255, 255, 255, 0.9)',
     dark: 'rgba(255, 255, 255, 0.65)',
     subtle: 'rgba(255, 255, 255, 0.6)',
     faint: 'rgba(255, 255, 255, 0.5)',

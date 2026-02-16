@@ -51,7 +51,7 @@ export const WeekSelector = ({
         style={{
           padding: 8,
           borderRadius: borderRadius.full,
-          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          backgroundColor: colors.glass.subtle,
         }}
       >
         <Ionicons
@@ -102,7 +102,7 @@ export const WeekSelector = ({
         style={{
           padding: 8,
           borderRadius: borderRadius.full,
-          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          backgroundColor: colors.glass.subtle,
         }}
       >
         <Ionicons

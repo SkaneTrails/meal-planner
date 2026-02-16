@@ -19,14 +19,10 @@ export const AddItemCard = ({
   return (
     <View
       style={{
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.white,
         borderRadius: borderRadius.md,
         padding: spacing.md,
-        shadowColor: '#000',
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.04,
-        shadowRadius: 3,
-        elevation: 1,
+        boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.04)',
       }}
     >
       <Text

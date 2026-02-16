@@ -117,11 +117,11 @@ export const CreateHouseholdModal = ({
           }}
         >
           {isPending ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={colors.white} />
           ) : (
             <Text
               style={{
-                color: 'white',
+                color: colors.white,
                 fontSize: fontSize.lg,
                 fontWeight: fontWeight.semibold,
               }}

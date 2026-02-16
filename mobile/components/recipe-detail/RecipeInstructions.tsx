@@ -44,7 +44,7 @@ export const RecipeInstructions = ({
           marginRight: spacing.md,
         }}
       >
-        <Ionicons name="book" size={18} color="#5D4037" />
+        <Ionicons name="book" size={18} color={colors.content.body} />
       </View>
       <Text
         style={{

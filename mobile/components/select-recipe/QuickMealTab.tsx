@@ -42,7 +42,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
               width: iconContainer.xl,
               height: iconContainer.xl,
               borderRadius: iconContainer.xl / 2,
-              backgroundColor: 'rgba(107, 142, 107, 0.15)',
+              backgroundColor: colors.ai.light,
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: spacing.md,

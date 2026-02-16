@@ -76,7 +76,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          backgroundColor: colors.glass.solid,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: 20,
