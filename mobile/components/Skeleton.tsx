@@ -11,7 +11,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { borderRadius, colors } from '@/lib/theme';
+import { borderRadius, colors, spacing } from '@/lib/theme';
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -212,13 +212,13 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flex: 1,
-    padding: 10,
+    padding: spacing['sm-md'],
     justifyContent: 'center',
   },
   cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 6,
+    marginTop: spacing['xs-sm'],
   },
   gridContainer: {
     flexDirection: 'row',
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   groceryItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: spacing['md-lg'],
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
     marginBottom: 8,

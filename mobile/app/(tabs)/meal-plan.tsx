@@ -130,8 +130,8 @@ export default function MealPlanScreen() {
                       backgroundColor: isToday
                         ? colors.glass.heavy
                         : colors.glass.solid,
-                      borderRadius: 18,
-                      padding: 14,
+                      borderRadius: borderRadius.lg,
+                      padding: spacing['md-lg'],
                       borderWidth: 1,
                       borderColor: isToday
                         ? colors.surface.active
@@ -268,7 +268,7 @@ export default function MealPlanScreen() {
                 alignItems: 'center',
                 backgroundColor: colors.surface.overlay,
                 paddingHorizontal: spacing.lg,
-                paddingVertical: 10,
+                paddingVertical: spacing['sm-md'],
                 borderRadius: borderRadius.full,
                 boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)',
               }}
@@ -276,7 +276,7 @@ export default function MealPlanScreen() {
               <Ionicons name="today" size={16} color={colors.white} />
               <Text
                 style={{
-                  marginLeft: 6,
+                  marginLeft: spacing['xs-sm'],
                   fontSize: 13,
                   fontFamily: fontFamily.bodySemibold,
                   color: colors.white,

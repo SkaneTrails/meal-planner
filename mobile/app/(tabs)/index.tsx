@@ -21,6 +21,7 @@ import {
   layout,
   letterSpacing,
   shadows,
+  spacing,
 } from '@/lib/theme';
 
 const HOMEPAGE_HERO = require('@/assets/images/homepage-hero.png');
@@ -219,7 +220,7 @@ const NextMealCard = ({
       style={{
         backgroundColor: colors.glass.card,
         borderRadius: borderRadius.md,
-        padding: 14,
+        padding: spacing['md-lg'],
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
@@ -233,12 +234,12 @@ const NextMealCard = ({
         placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
         transition={200}
       />
-      <View style={{ flex: 1, marginLeft: 14 }}>
+      <View style={{ flex: 1, marginLeft: spacing['md-lg'] }}>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: 6,
+            marginBottom: spacing['xs-sm'],
           }}
         >
           {nextMeal && !nextMeal.isTomorrow && (
@@ -248,7 +249,7 @@ const NextMealCard = ({
                 height: 7,
                 borderRadius: 4,
                 backgroundColor: colors.ai.primary,
-                marginRight: 6,
+                marginRight: spacing['xs-sm'],
               }}
             />
           )}

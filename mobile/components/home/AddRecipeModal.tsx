@@ -3,7 +3,13 @@ import { useRouter } from 'expo-router';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
-import { borderRadius, colors, fontFamily, fontSize } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
@@ -64,7 +70,7 @@ export const AddRecipeModal = ({
           <TextInput
             style={{
               flex: 1,
-              paddingHorizontal: 10,
+              paddingHorizontal: spacing['sm-md'],
               paddingVertical: 12,
               fontSize: fontSize.md,
               color: colors.content.body,
@@ -89,8 +95,8 @@ export const AddRecipeModal = ({
                   : colors.accent
                 : colors.surface.pressed,
               borderRadius: borderRadius.sm,
-              paddingVertical: 10,
-              paddingHorizontal: 14,
+              paddingVertical: spacing['sm-md'],
+              paddingHorizontal: spacing['md-lg'],
               marginRight: 2,
             })}
           >
@@ -151,7 +157,7 @@ export const AddRecipeModal = ({
             backgroundColor: 'rgba(139, 115, 85, 0.1)',
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: 14,
+            marginRight: spacing['md-lg'],
           }}
         >
           <Ionicons

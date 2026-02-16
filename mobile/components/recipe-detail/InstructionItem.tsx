@@ -162,7 +162,7 @@ export const InstructionItem = ({
               flexDirection: 'row',
               alignItems: 'center',
               backgroundColor: colors.timeline.badge,
-              paddingHorizontal: 10,
+              paddingHorizontal: spacing['sm-md'],
               paddingVertical: 3,
               borderRadius: 10,
               alignSelf: 'flex-start',

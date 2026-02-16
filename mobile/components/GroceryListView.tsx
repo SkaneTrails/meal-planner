@@ -11,7 +11,7 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
-import { colors, fontWeight, layout } from '@/lib/theme';
+import { borderRadius, colors, fontWeight, layout, spacing } from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
 
@@ -162,8 +162,8 @@ export const GroceryListView = ({
               ? 'rgba(255, 255, 255, 0.95)'
               : 'rgba(255, 255, 255, 0.6)',
             paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 8,
+            paddingVertical: spacing['xs-sm'],
+            borderRadius: borderRadius.xs,
             gap: 4,
           }}
         >
@@ -190,7 +190,7 @@ export const GroceryListView = ({
             style={{
               fontSize: 12,
               color: colors.content.tertiary,
-              marginBottom: 10,
+              marginBottom: spacing['sm-md'],
               fontStyle: 'italic',
             }}
           >

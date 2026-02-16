@@ -9,6 +9,7 @@ import {
   colors,
   fontFamily,
   iconContainer,
+  spacing,
 } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
@@ -114,7 +115,7 @@ export const GrocerySelectionModal = ({
                 color: isToday
                   ? colors.content.heading
                   : colors.content.tertiary,
-                marginBottom: 10,
+                marginBottom: spacing['sm-md'],
               }}
             >
               {formatDayHeader(date, language, t('mealPlan.today'))}
@@ -190,7 +191,7 @@ const GroceryWeekSelector = ({
     <View
       style={{
         paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingVertical: spacing['sm-md'],
         backgroundColor: 'rgba(122, 104, 88, 0.08)',
         borderRadius: 14,
       }}
@@ -247,7 +248,7 @@ const GroceryMealItem = ({
         ? 'rgba(107, 142, 107, 0.1)'
         : 'rgba(0, 0, 0, 0.02)',
       borderRadius: 14,
-      padding: 14,
+      padding: spacing['md-lg'],
       marginBottom: 8,
       borderWidth: isSelected ? 1 : 0,
       borderColor: 'rgba(107, 142, 107, 0.3)',
@@ -261,7 +262,7 @@ const GroceryMealItem = ({
         style={{
           width: 26,
           height: 26,
-          borderRadius: 8,
+          borderRadius: borderRadius.xs,
           borderWidth: 2,
           borderColor: isSelected
             ? colors.ai.primary
@@ -269,7 +270,7 @@ const GroceryMealItem = ({
           backgroundColor: isSelected ? colors.ai.primary : 'transparent',
           alignItems: 'center',
           justifyContent: 'center',
-          marginRight: 14,
+          marginRight: spacing['md-lg'],
         }}
       >
         {isSelected && (
@@ -308,7 +309,7 @@ const GroceryMealItem = ({
           marginLeft: 40,
           backgroundColor: 'rgba(122, 104, 88, 0.1)',
           borderRadius: borderRadius.sm,
-          padding: 6,
+          padding: spacing['xs-sm'],
           alignSelf: 'flex-start',
         }}
       >
@@ -329,7 +330,7 @@ const GroceryMealItem = ({
         </Pressable>
         <View
           style={{
-            paddingHorizontal: 14,
+            paddingHorizontal: spacing['md-lg'],
             flexDirection: 'row',
             alignItems: 'center',
             gap: 4,

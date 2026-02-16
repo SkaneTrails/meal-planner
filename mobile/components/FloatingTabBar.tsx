@@ -10,7 +10,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, layout, shadows } from '@/lib/theme';
+import { borderRadius, colors, layout, shadows, spacing } from '@/lib/theme';
 
 type TabDef = {
   route: string;
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   iconWrap: {
     borderRadius: borderRadius.sm,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: spacing['xs-sm'],
   },
   iconWrapActive: {
     backgroundColor: colors.tabBar.focusBg,

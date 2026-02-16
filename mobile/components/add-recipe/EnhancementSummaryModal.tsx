@@ -206,7 +206,7 @@ export const EnhancementSummaryModal = ({
                   name="sparkles"
                   size={16}
                   color={colors.white}
-                  style={{ marginRight: 6 }}
+                  style={{ marginRight: spacing['xs-sm'] }}
                 />
                 <Text
                   style={{

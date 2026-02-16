@@ -59,7 +59,7 @@ export const ScreenHeader = ({
             style={({ pressed }) => ({
               backgroundColor: pressed ? colors.accentDark : colors.accent,
               paddingHorizontal: 24,
-              paddingVertical: 10,
+              paddingVertical: spacing['sm-md'],
               borderRadius: borderRadius.lg,
               opacity: isSaving ? 0.6 : 1,
               boxShadow: `0px 2px 4px 0px ${colors.accent}4D`,

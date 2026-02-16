@@ -32,8 +32,8 @@ export const ExtrasSection = ({
       style={{
         marginBottom: 16,
         backgroundColor: colors.mealPlan.containerBg,
-        borderRadius: 18,
-        padding: 14,
+        borderRadius: borderRadius.lg,
+        padding: spacing['md-lg'],
         borderWidth: 1.5,
         borderColor: colors.surface.pressed,
         borderStyle: 'dashed',
@@ -45,7 +45,7 @@ export const ExtrasSection = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 10,
+          marginBottom: spacing['sm-md'],
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -53,7 +53,7 @@ export const ExtrasSection = ({
             name="bookmark-outline"
             size={18}
             color={colors.content.secondary}
-            style={{ marginRight: 6 }}
+            style={{ marginRight: spacing['xs-sm'] }}
           />
           <Text
             style={{
@@ -158,7 +158,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         backgroundColor: colors.mealPlan.slotBg,
         borderRadius: borderRadius.sm,
         padding: 12,
-        marginBottom: 6,
+        marginBottom: spacing['xs-sm'],
       }}
     >
       <Pressable

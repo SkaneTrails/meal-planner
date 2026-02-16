@@ -27,6 +27,7 @@ import {
   fontWeight,
   iconContainer,
   shadows,
+  spacing,
 } from '@/lib/theme';
 import type { DietLabel, Recipe } from '@/lib/types';
 
@@ -100,13 +101,13 @@ export const RecipeCard = ({
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={{ marginBottom: 14 }}
+        style={{ marginBottom: spacing['md-lg'] }}
       >
         <Animated.View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            padding: 14,
+            padding: spacing['md-lg'],
             backgroundColor: colors.glass.heavy,
             borderRadius: borderRadius.lg,
             transform: [{ scale: scaleAnim }],
@@ -141,7 +142,7 @@ export const RecipeCard = ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginTop: 8,
-                gap: 10,
+                gap: spacing['sm-md'],
               }}
             >
               {recipe.diet_label && (
@@ -153,9 +154,9 @@ export const RecipeCard = ({
                         : recipe.diet_label === 'fish'
                           ? colors.diet.fish.cardBg
                           : colors.diet.meat.cardBg,
-                    paddingHorizontal: 10,
+                    paddingHorizontal: spacing['sm-md'],
                     paddingVertical: 4,
-                    borderRadius: 8,
+                    borderRadius: borderRadius.xs,
                   }}
                 >
                   <Text
@@ -180,7 +181,7 @@ export const RecipeCard = ({
                     backgroundColor: colors.ai.light,
                     paddingHorizontal: 8,
                     paddingVertical: 3,
-                    borderRadius: 8,
+                    borderRadius: borderRadius.xs,
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}
@@ -354,8 +355,8 @@ export const RecipeCard = ({
         {/* Content below image */}
         <View
           style={{
-            paddingHorizontal: 10,
-            paddingVertical: 6,
+            paddingHorizontal: spacing['sm-md'],
+            paddingVertical: spacing['xs-sm'],
             paddingBottom: 8,
             gap: 4,
           }}
@@ -375,7 +376,13 @@ export const RecipeCard = ({
           </Text>
 
           {/* Time info */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing['sm-md'],
+            }}
+          >
             {totalTime && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons

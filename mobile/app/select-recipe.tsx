@@ -123,7 +123,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
           onPress={() => onTabPress(tab)}
           style={({ pressed }) => ({
             flex: 1,
-            paddingVertical: 10,
+            paddingVertical: spacing['sm-md'],
             borderRadius: 10,
             backgroundColor: activeTab === tab ? colors.white : 'transparent',
             alignItems: 'center',
