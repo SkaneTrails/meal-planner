@@ -38,7 +38,7 @@ export const layout = {
   },
 } as const;
 
-// Border radius - standardized to 3 sizes
+// Border radius - standardized scale
 export const borderRadius = {
   xs: 8,
   sm: 12,
