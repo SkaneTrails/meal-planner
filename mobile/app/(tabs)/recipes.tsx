@@ -211,7 +211,7 @@ export default function RecipesScreen() {
           dismissOnBackdropPress
           showDragHandle
           showCloseButton={false}
-          backgroundColor="#F5EDE5"
+          backgroundColor={colors.surface.modal}
           scrollable={false}
         >
           {SORT_OPTIONS.map((option) => (

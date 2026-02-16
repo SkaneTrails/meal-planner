@@ -62,7 +62,7 @@ export const GeneralSection = ({
         <Text
           style={{
             fontSize: fontSize.sm,
-            color: colors.text.dark + '80',
+            color: colors.content.strong,
             marginBottom: spacing.xs,
           }}
         >
@@ -86,7 +86,7 @@ export const GeneralSection = ({
                 flex: 1,
                 fontSize: fontSize.lg,
                 fontWeight: fontWeight.bold,
-                color: colors.text.dark,
+                color: colors.content.body,
                 backgroundColor: colors.bgLight,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
@@ -119,7 +119,7 @@ export const GeneralSection = ({
                 justifyContent: 'center',
               }}
             >
-              <Ionicons name="close" size={20} color={colors.text.dark} />
+              <Ionicons name="close" size={20} color={colors.content.body} />
             </Pressable>
           </View>
         ) : (
@@ -135,7 +135,7 @@ export const GeneralSection = ({
               style={{
                 fontSize: fontSize.lg,
                 fontWeight: fontWeight.bold,
-                color: colors.text.dark,
+                color: colors.content.heading,
                 flex: 1,
               }}
             >
@@ -145,7 +145,7 @@ export const GeneralSection = ({
               <Ionicons
                 name="create-outline"
                 size={18}
-                color={colors.text.dark + '60'}
+                color={colors.content.subtitle}
               />
             )}
           </Pressable>
@@ -157,7 +157,7 @@ export const GeneralSection = ({
         <Text
           style={{
             fontSize: fontSize.sm,
-            color: colors.text.dark + '80',
+            color: colors.content.strong,
             marginBottom: spacing.xs,
           }}
         >
@@ -178,13 +178,13 @@ export const GeneralSection = ({
               opacity: canEdit ? 1 : 0.4,
             })}
           >
-            <Ionicons name="remove" size={20} color={colors.text.dark} />
+            <Ionicons name="remove" size={20} color={colors.content.body} />
           </Pressable>
           <Text
             style={{
               fontSize: fontSize['2xl'],
               fontWeight: fontWeight.bold,
-              color: colors.text.dark,
+              color: colors.content.heading,
               minWidth: 60,
               textAlign: 'center',
             }}
@@ -202,7 +202,7 @@ export const GeneralSection = ({
               opacity: canEdit ? 1 : 0.4,
             })}
           >
-            <Ionicons name="add" size={20} color={colors.text.dark} />
+            <Ionicons name="add" size={20} color={colors.content.body} />
           </Pressable>
         </View>
       </View>

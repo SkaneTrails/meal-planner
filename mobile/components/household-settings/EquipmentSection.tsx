@@ -44,7 +44,7 @@ const SelectedEquipment = ({
         style={{
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
-          color: colors.text.dark + '80',
+          color: colors.content.strong,
           marginBottom: spacing.sm,
         }}
       >
@@ -74,14 +74,14 @@ const SelectedEquipment = ({
               gap: 4,
             })}
           >
-            <Text style={{ fontSize: fontSize.sm, color: colors.text.dark }}>
+            <Text style={{ fontSize: fontSize.sm, color: colors.content.body }}>
               {t(`householdSettings.equipment.items.${item}`)}
             </Text>
             {canEdit && (
               <Ionicons
                 name="close-circle"
                 size={14}
-                color={colors.text.dark + '60'}
+                color={colors.content.subtitle}
               />
             )}
           </Pressable>
@@ -120,7 +120,7 @@ const AvailableEquipment = ({
               style={{
                 fontSize: fontSize.xs,
                 fontWeight: fontWeight.semibold,
-                color: colors.text.dark + '80',
+                color: colors.content.strong,
                 marginBottom: spacing.sm,
                 textTransform: 'uppercase',
               }}
@@ -147,7 +147,7 @@ const AvailableEquipment = ({
                     paddingVertical: spacing.xs,
                     borderRadius: borderRadius.full,
                     borderWidth: 1,
-                    borderColor: colors.text.dark + '30',
+                    borderColor: colors.surface.borderLight,
                     borderStyle: 'dashed',
                     gap: 4,
                   })}
@@ -155,12 +155,12 @@ const AvailableEquipment = ({
                   <Ionicons
                     name="add"
                     size={14}
-                    color={colors.text.dark + '80'}
+                    color={colors.content.strong}
                   />
                   <Text
                     style={{
                       fontSize: fontSize.sm,
-                      color: colors.text.dark + '80',
+                      color: colors.content.strong,
                     }}
                   >
                     {t(`householdSettings.equipment.items.${item}`)}

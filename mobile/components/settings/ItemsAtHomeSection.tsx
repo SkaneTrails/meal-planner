@@ -107,10 +107,10 @@ export const ItemsAtHomeSection = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.md,
-            color: colors.text.dark,
+            color: colors.content.body,
           }}
           placeholder={t('settings.addItemPlaceholder')}
-          placeholderTextColor={colors.text.dark + '60'}
+          placeholderTextColor={colors.content.subtitle}
           value={newItem}
           onChangeText={setNewItem}
           onSubmitEditing={handleAddItem}
@@ -168,7 +168,7 @@ const CurrentItems = ({
         style={{
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
-          color: colors.text.dark + '80',
+          color: colors.content.strong,
           marginBottom: spacing.sm,
         }}
       >
@@ -198,7 +198,7 @@ const CurrentItems = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.dark,
+                color: colors.content.body,
                 textTransform: 'capitalize',
               }}
             >
@@ -207,7 +207,7 @@ const CurrentItems = ({
             <Ionicons
               name="close-circle"
               size={14}
-              color={colors.text.dark + '60'}
+              color={colors.content.subtitle}
             />
           </Pressable>
         ))}
@@ -238,7 +238,7 @@ const SuggestedItems = ({
         style={{
           fontSize: fontSize.xs,
           fontWeight: fontWeight.semibold,
-          color: colors.text.dark + '80',
+          color: colors.content.strong,
           marginBottom: spacing.sm,
         }}
       >
@@ -263,16 +263,16 @@ const SuggestedItems = ({
               paddingVertical: spacing.xs,
               borderRadius: borderRadius.full,
               borderWidth: 1,
-              borderColor: colors.text.dark + '30',
+              borderColor: colors.surface.borderLight,
               borderStyle: 'dashed',
               gap: 4,
             })}
           >
-            <Ionicons name="add" size={14} color={colors.text.dark + '80'} />
+            <Ionicons name="add" size={14} color={colors.content.strong} />
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.dark + '80',
+                color: colors.content.strong,
               }}
             >
               {item}
@@ -307,13 +307,13 @@ const EmptyItemsState = () => {
           marginBottom: spacing.sm,
         }}
       >
-        <Ionicons name="basket-outline" size={24} color={colors.text.dark} />
+        <Ionicons name="basket-outline" size={24} color={colors.content.body} />
       </View>
       <Text
         style={{
           fontSize: fontSize.md,
           fontWeight: fontWeight.semibold,
-          color: colors.text.dark,
+          color: colors.content.heading,
           marginBottom: 2,
         }}
       >
@@ -322,7 +322,7 @@ const EmptyItemsState = () => {
       <Text
         style={{
           fontSize: fontSize.sm,
-          color: colors.text.dark + '80',
+          color: colors.content.strong,
           textAlign: 'center',
         }}
       >

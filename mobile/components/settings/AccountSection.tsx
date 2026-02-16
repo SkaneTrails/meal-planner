@@ -59,7 +59,7 @@ export const AccountSection = ({
               style={{
                 fontSize: 20,
                 fontWeight: fontWeight.semibold,
-                color: colors.text.dark,
+                color: colors.content.body,
               }}
             >
               {userEmail?.[0]?.toUpperCase() || '?'}
@@ -166,12 +166,12 @@ export const HouseholdSettingsLink = ({
           </Text>
         </View>
         {isLoading ? (
-          <ActivityIndicator size="small" color={colors.text.dark + '80'} />
+          <ActivityIndicator size="small" color={colors.content.strong} />
         ) : (
           <Ionicons
             name="chevron-forward"
             size={20}
-            color={colors.text.dark + '80'}
+            color={colors.content.strong}
           />
         )}
       </AnimatedPressable>

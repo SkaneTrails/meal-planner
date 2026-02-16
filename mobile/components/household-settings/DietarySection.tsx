@@ -73,7 +73,7 @@ export const DietarySection = ({
               style={{
                 fontSize: fontSize.md,
                 fontWeight: fontWeight.medium,
-                color: colors.text.dark,
+                color: colors.content.body,
               }}
             >
               {t('householdSettings.dietary.seafood')}
@@ -81,7 +81,7 @@ export const DietarySection = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.dark + '80',
+                color: colors.content.strong,
               }}
             >
               {t('householdSettings.dietary.seafoodDesc')}

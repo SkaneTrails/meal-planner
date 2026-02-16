@@ -110,7 +110,7 @@ export const CollapsibleSection = ({
                 <Ionicons
                   name="chevron-down"
                   size={16}
-                  color={colors.text.dark + '40'}
+                  color={colors.content.placeholder}
                 />
               </Animated.View>
             )}
@@ -121,7 +121,7 @@ export const CollapsibleSection = ({
             <Ionicons
               name="chevron-down"
               size={20}
-              color={colors.text.dark + '60'}
+              color={colors.content.subtitle}
             />
           </Animated.View>
         )}

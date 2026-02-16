@@ -55,7 +55,7 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
         <Ionicons
           name="chevron-forward"
           size={20}
-          color={colors.text.dark + '80'}
+          color={colors.content.strong}
         />
       </AnimatedPressable>
     </View>
@@ -89,15 +89,13 @@ export const AboutSection = () => {
             marginBottom: spacing.md,
           }}
         >
-          <Text
-            style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}
-          >
+          <Text style={{ fontSize: fontSize.md, color: colors.content.strong }}>
             {t('settings.version')}
           </Text>
           <Text
             style={{
               fontSize: fontSize.md,
-              color: colors.text.dark,
+              color: colors.content.body,
               fontWeight: fontWeight.medium,
             }}
           >
@@ -111,9 +109,7 @@ export const AboutSection = () => {
             alignItems: 'center',
           }}
         >
-          <Text
-            style={{ fontSize: fontSize.md, color: colors.text.dark + '80' }}
-          >
+          <Text style={{ fontSize: fontSize.md, color: colors.content.strong }}>
             {t('settings.madeWith')}
           </Text>
           <Text style={{ fontSize: fontSize.md }}>❤️</Text>

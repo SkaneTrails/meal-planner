@@ -27,7 +27,7 @@ export const RecipeTags = ({ tags }: RecipeTagsProps) => {
         <View
           key={tag}
           style={{
-            backgroundColor: 'rgba(93, 64, 55, 0.65)',
+            backgroundColor: 'rgba(93, 78, 64, 0.65)',
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.xs,
             borderRadius: borderRadius.lg,

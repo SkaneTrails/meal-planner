@@ -35,6 +35,7 @@ import {
   restoreQueryCache,
 } from '@/lib/query-provider';
 import { SettingsProvider } from '@/lib/settings-context';
+import { colors } from '@/lib/theme';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -94,7 +95,7 @@ export default function RootLayout() {
                 <Stack
                   screenOptions={{
                     animation: 'slide_from_right',
-                    contentStyle: { backgroundColor: '#E8D8C8' },
+                    contentStyle: { backgroundColor: colors.bgBase },
                   }}
                 >
                   <Stack.Screen

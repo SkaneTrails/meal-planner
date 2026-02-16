@@ -216,7 +216,7 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
         style={{
           fontSize: fontSize.xl,
           fontWeight: fontWeight.semibold,
-          color: colors.text.dark,
+          color: colors.content.heading,
         }}
       >
         {t('admin.members')}
@@ -278,15 +278,13 @@ const MemberCard = ({
           style={{
             fontSize: fontSize.md,
             fontWeight: fontWeight.medium,
-            color: colors.text.dark,
+            color: colors.content.heading,
           }}
         >
           {member.display_name || member.email}
         </Text>
         {member.display_name && (
-          <Text
-            style={{ fontSize: fontSize.sm, color: colors.text.dark + '80' }}
-          >
+          <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
             {member.email}
           </Text>
         )}

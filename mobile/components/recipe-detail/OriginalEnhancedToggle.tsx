@@ -44,14 +44,14 @@ export const OriginalEnhancedToggle = ({
       <Ionicons
         name="document-text-outline"
         size={16}
-        color={showOriginal ? colors.content.body : 'rgba(93, 64, 55, 0.5)'}
+        color={showOriginal ? colors.content.body : colors.content.icon}
         style={{ marginRight: spacing.xs }}
       />
       <Text
         style={{
           fontSize: fontSize.md,
           fontFamily: showOriginal ? fontFamily.bodySemibold : fontFamily.body,
-          color: showOriginal ? colors.content.body : 'rgba(93, 64, 55, 0.5)',
+          color: showOriginal ? colors.content.body : colors.content.icon,
         }}
       >
         {t('recipe.showOriginal')}

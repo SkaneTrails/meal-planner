@@ -9,6 +9,7 @@ export const lightColors = {
   primaryLight: '#404040',
 
   // Background gradients - warm peach/brown tones
+  bgBase: '#E8D8C8',
   bgLight: '#FDF6F0',
   bgMid: '#F5E1D0',
   bgDark: '#E8CDB5',
@@ -89,6 +90,8 @@ export const lightColors = {
     border: 'rgba(93, 78, 64, 0.3)',
     borderLight: 'rgba(93, 78, 64, 0.25)',
     divider: 'rgba(93, 78, 64, 0.2)',
+    dividerSolid: '#D4C5B5',
+    modal: '#F5EDE5',
     pressed: 'rgba(93, 78, 64, 0.15)',
     active: 'rgba(93, 78, 64, 0.12)',
     subtle: 'rgba(93, 78, 64, 0.1)',

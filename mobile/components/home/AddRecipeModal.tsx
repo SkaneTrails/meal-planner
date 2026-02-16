@@ -48,7 +48,7 @@ export const AddRecipeModal = ({
       dismissOnBackdropPress
       showDragHandle
       showCloseButton={false}
-      backgroundColor="#F5EDE5"
+      backgroundColor={colors.surface.modal}
       scrollable={false}
     >
       <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
@@ -76,7 +76,7 @@ export const AddRecipeModal = ({
               color: colors.content.body,
             }}
             placeholder={t('home.addRecipe.placeholder')}
-            placeholderTextColor="#A89585"
+            placeholderTextColor={colors.content.placeholder}
             value={recipeUrl}
             onChangeText={setRecipeUrl}
             autoCapitalize="none"
@@ -123,7 +123,13 @@ export const AddRecipeModal = ({
           marginVertical: 8,
         }}
       >
-        <View style={{ flex: 1, height: 1, backgroundColor: '#D4C5B5' }} />
+        <View
+          style={{
+            flex: 1,
+            height: 1,
+            backgroundColor: colors.surface.dividerSolid,
+          }}
+        />
         <Text
           style={{
             color: colors.content.secondary,
@@ -133,7 +139,13 @@ export const AddRecipeModal = ({
         >
           {t('common.or')}
         </Text>
-        <View style={{ flex: 1, height: 1, backgroundColor: '#D4C5B5' }} />
+        <View
+          style={{
+            flex: 1,
+            height: 1,
+            backgroundColor: colors.surface.dividerSolid,
+          }}
+        />
       </View>
 
       <Pressable

@@ -71,7 +71,7 @@ const MemberCard = ({
             style={{
               fontSize: fontSize.md,
               fontWeight: fontWeight.medium,
-              color: colors.text.dark,
+              color: colors.content.heading,
             }}
           >
             {member.display_name || member.email}
@@ -80,7 +80,7 @@ const MemberCard = ({
             <Text
               style={{
                 fontSize: fontSize.xs,
-                color: colors.text.dark + '60',
+                color: colors.content.subtitle,
               }}
             >
               (you)
@@ -88,9 +88,7 @@ const MemberCard = ({
           )}
         </View>
         {member.display_name && (
-          <Text
-            style={{ fontSize: fontSize.sm, color: colors.text.dark + '80' }}
-          >
+          <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
             {member.email}
           </Text>
         )}
@@ -169,7 +167,7 @@ const AddMemberForm = ({
           value={newMemberEmail}
           onChangeText={onNewMemberEmailChange}
           placeholder={t('settings.addMemberPlaceholder')}
-          placeholderTextColor={colors.text.dark + '60'}
+          placeholderTextColor={colors.content.subtitle}
           keyboardType="email-address"
           autoCapitalize="none"
           style={{
@@ -179,7 +177,7 @@ const AddMemberForm = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.md,
-            color: colors.text.dark,
+            color: colors.content.body,
           }}
         />
       </View>
@@ -200,7 +198,8 @@ const AddMemberForm = ({
           >
             <Text
               style={{
-                color: newMemberRole === role ? colors.white : colors.text.dark,
+                color:
+                  newMemberRole === role ? colors.white : colors.content.body,
                 fontWeight: fontWeight.medium,
                 fontSize: fontSize.sm,
               }}
@@ -236,14 +235,14 @@ const AddMemberForm = ({
                 name="person-add"
                 size={14}
                 color={
-                  newMemberEmail.trim() ? colors.white : colors.text.dark + '60'
+                  newMemberEmail.trim() ? colors.white : colors.content.subtitle
                 }
               />
               <Text
                 style={{
                   color: newMemberEmail.trim()
                     ? colors.white
-                    : colors.text.dark + '60',
+                    : colors.content.subtitle,
                   fontWeight: fontWeight.medium,
                   fontSize: fontSize.sm,
                 }}
@@ -303,9 +302,7 @@ export const MembersSection = ({
             ...shadows.sm,
           }}
         >
-          <Text
-            style={{ color: colors.text.dark + '80', fontSize: fontSize.sm }}
-          >
+          <Text style={{ color: colors.content.strong, fontSize: fontSize.sm }}>
             {t('admin.noMembers')}
           </Text>
         </View>

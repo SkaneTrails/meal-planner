@@ -54,7 +54,7 @@ export const RecipeLibrarySection = ({
               style={{
                 fontSize: fontSize.md,
                 fontWeight: fontWeight.medium,
-                color: colors.text.dark,
+                color: colors.content.body,
               }}
             >
               {t('settings.showHiddenRecipes')}
@@ -62,7 +62,7 @@ export const RecipeLibrarySection = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                color: colors.text.dark + '80',
+                color: colors.content.strong,
                 marginTop: 4,
               }}
             >
@@ -125,7 +125,7 @@ export const WeekStartSection = ({
               style={{
                 flex: 1,
                 fontSize: fontSize.md,
-                color: colors.text.dark,
+                color: colors.content.body,
               }}
             >
               {t(
@@ -190,7 +190,7 @@ export const LanguageSection = ({
               ...circleStyle(iconContainer.sm),
               overflow: 'hidden',
               marginRight: spacing.md,
-              backgroundColor: '#E8E8E8',
+              backgroundColor: colors.gray[200],
             }}
           >
             <Image
@@ -203,7 +203,7 @@ export const LanguageSection = ({
             style={{
               flex: 1,
               fontSize: fontSize.md,
-              color: colors.text.dark,
+              color: colors.content.body,
             }}
           >
             {lang.label}
