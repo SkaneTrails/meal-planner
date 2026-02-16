@@ -147,7 +147,7 @@ export const AddRecipeModal = ({
           style={{
             width: 40,
             height: 40,
-            borderRadius: 12,
+            borderRadius: borderRadius.sm,
             backgroundColor: 'rgba(139, 115, 85, 0.1)',
             alignItems: 'center',
             justifyContent: 'center',

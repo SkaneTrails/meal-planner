@@ -64,7 +64,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
           backgroundColor: colors.bgDark,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
-          borderRadius: 20,
+          borderRadius: borderRadius.lg,
         }}
       >
         <Text
@@ -86,7 +86,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
           backgroundColor: colors.glass.solid,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
-          borderRadius: 20,
+          borderRadius: borderRadius.lg,
           gap: spacing.xs,
         }}
       >

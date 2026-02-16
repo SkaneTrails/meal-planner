@@ -5,6 +5,7 @@ import {
   borderRadius,
   colors,
   fontSize,
+  fontWeight,
   iconContainer,
   letterSpacing,
   shadows,
@@ -110,7 +111,7 @@ export const EnhancementSummaryModal = ({
                 <Text
                   style={{
                     fontSize: fontSize.lg,
-                    fontWeight: '600',
+                    fontWeight: fontWeight.semibold,
                     color: colors.text.inverse,
                     marginBottom: spacing.md,
                   }}
@@ -180,7 +181,7 @@ export const EnhancementSummaryModal = ({
               <Text
                 style={{
                   fontSize: fontSize.lg,
-                  fontWeight: '600',
+                  fontWeight: fontWeight.semibold,
                   color: colors.text.inverse,
                 }}
               >
@@ -210,7 +211,7 @@ export const EnhancementSummaryModal = ({
                 <Text
                   style={{
                     fontSize: fontSize.lg,
-                    fontWeight: '600',
+                    fontWeight: fontWeight.semibold,
                     color: colors.white,
                   }}
                 >

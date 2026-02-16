@@ -21,7 +21,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { colors } from '@/lib/theme';
+import { borderRadius, colors } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 if (
@@ -232,7 +232,7 @@ export default function RecipesScreen() {
                   sortBy === option.value
                     ? 'rgba(255, 255, 255, 0.6)'
                     : 'transparent',
-                borderRadius: 12,
+                borderRadius: borderRadius.sm,
                 marginHorizontal: 8,
               }}
             >

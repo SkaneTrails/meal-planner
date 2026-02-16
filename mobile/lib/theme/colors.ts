@@ -70,6 +70,7 @@ export const lightColors = {
   // Content colors — dark text/icons on light backgrounds (warm brown family)
   content: {
     heading: '#3D3D3D',
+    headingMuted: 'rgba(45, 45, 45, 0.75)',
     headingWarm: '#4A3728',
     body: '#5D4E40',
     secondary: '#8B7355',

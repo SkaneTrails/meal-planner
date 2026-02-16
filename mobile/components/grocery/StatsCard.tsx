@@ -3,7 +3,13 @@ import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontSize, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  spacing,
+} from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
@@ -231,7 +237,7 @@ export const StatsCard = ({
           <Text
             style={{
               fontSize: 17,
-              fontWeight: '600',
+              fontWeight: fontWeight.semibold,
               color: colors.content.heading,
               marginTop: 4,
             }}

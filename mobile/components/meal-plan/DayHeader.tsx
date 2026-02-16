@@ -5,6 +5,7 @@ import {
   colors,
   dotSize,
   fontFamily,
+  fontSize,
   spacing,
 } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
@@ -46,7 +47,7 @@ export const DayHeader = ({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: isEditing ? 8 : 12,
+        marginBottom: isEditing ? spacing.sm : spacing.md,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -54,15 +55,15 @@ export const DayHeader = ({
           <View
             style={{
               backgroundColor: colors.ai.primary,
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-              borderRadius: 8,
-              marginRight: 10,
+              paddingHorizontal: spacing.sm,
+              paddingVertical: spacing.xs,
+              borderRadius: borderRadius.sm,
+              marginRight: spacing.sm,
             }}
           >
             <Text
               style={{
-                fontSize: 12,
+                fontSize: fontSize.base,
                 fontFamily: fontFamily.bodyBold,
                 color: colors.white,
               }}
@@ -73,9 +74,9 @@ export const DayHeader = ({
         )}
         <Text
           style={{
-            fontSize: 15,
+            fontSize: fontSize.xl,
             fontFamily: fontFamily.bodySemibold,
-            color: isToday ? colors.primary : 'rgba(45, 45, 45, 0.75)',
+            color: isToday ? colors.primary : colors.content.headingMuted,
             letterSpacing: -0.2,
           }}
         >
@@ -125,7 +126,7 @@ export const DayHeader = ({
                       />
                       <Text
                         style={{
-                          fontSize: 12,
+                          fontSize: fontSize.base,
                           color: colors.content.secondary,
                         }}
                       >
@@ -141,12 +142,14 @@ export const DayHeader = ({
                 flexDirection: 'row',
                 alignItems: 'center',
                 backgroundColor: colors.surface.hover,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
                 borderRadius: borderRadius.md,
               }}
             >
-              <Text style={{ fontSize: 12, color: colors.content.icon }}>
+              <Text
+                style={{ fontSize: fontSize.base, color: colors.content.icon }}
+              >
                 {t('mealPlan.addNote')}
               </Text>
             </View>
@@ -205,7 +208,7 @@ const NoteEditor = ({
         placeholder={t('mealPlan.notePlaceholder')}
         style={{
           flex: 1,
-          fontSize: 14,
+          fontSize: fontSize.lg,
           color: colors.content.headingWarm,
           padding: 0,
         }}
@@ -215,7 +218,7 @@ const NoteEditor = ({
       <Pressable onPress={onSave}>
         <Text
           style={{
-            fontSize: 14,
+            fontSize: fontSize.lg,
             fontFamily: fontFamily.bodySemibold,
             color: colors.content.headingWarm,
           }}
@@ -224,7 +227,7 @@ const NoteEditor = ({
         </Text>
       </Pressable>
       <Pressable onPress={onCancel}>
-        <Text style={{ fontSize: 14, color: colors.content.icon }}>
+        <Text style={{ fontSize: fontSize.lg, color: colors.content.icon }}>
           {t('mealPlan.notesCancel')}
         </Text>
       </Pressable>
@@ -263,7 +266,12 @@ const NoteEditor = ({
                 backgroundColor: colors.tagDot[index % colors.tagDot.length],
               }}
             />
-            <Text style={{ fontSize: 13, color: colors.content.headingWarm }}>
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                color: colors.content.headingWarm,
+              }}
+            >
               {suggestion}
             </Text>
           </Pressable>

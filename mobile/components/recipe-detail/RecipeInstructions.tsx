@@ -8,8 +8,8 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
-  letterSpacing,
   spacing,
+  typography,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { InstructionItem } from './InstructionItem';
@@ -48,10 +48,8 @@ export const RecipeInstructions = ({
       </View>
       <Text
         style={{
-          fontSize: fontSize['3xl'],
-          fontFamily: fontFamily.display,
+          ...typography.displaySmall,
           color: colors.content.heading,
-          letterSpacing: letterSpacing.normal,
         }}
       >
         {t('recipe.instructions')}

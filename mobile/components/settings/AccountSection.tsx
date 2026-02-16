@@ -9,6 +9,8 @@ import {
   fontSize,
   fontWeight,
   iconContainer,
+  settingsSubtitleStyle,
+  settingsTitleStyle,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -56,7 +58,7 @@ export const AccountSection = ({
             <Text
               style={{
                 fontSize: 20,
-                fontWeight: '600',
+                fontWeight: fontWeight.semibold,
                 color: colors.text.dark,
               }}
             >
@@ -64,19 +66,12 @@ export const AccountSection = ({
             </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '600',
-                color: colors.text.dark,
-              }}
-            >
+            <Text style={settingsTitleStyle}>
               {displayName || userEmail?.split('@')[0] || 'User'}
             </Text>
             <Text
               style={{
-                fontSize: 13,
-                color: colors.text.dark + '80',
+                ...settingsSubtitleStyle,
                 marginTop: 2,
               }}
             >
@@ -154,15 +149,12 @@ export const HouseholdSettingsLink = ({
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text
-            style={{ fontSize: 16, fontWeight: '600', color: colors.text.dark }}
-          >
+          <Text style={settingsTitleStyle}>
             {t('settings.householdSettings')}
           </Text>
           <Text
             style={{
-              fontSize: 13,
-              color: colors.text.dark + '80',
+              ...settingsSubtitleStyle,
               marginTop: 4,
             }}
           >

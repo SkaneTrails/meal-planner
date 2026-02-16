@@ -10,7 +10,14 @@ import {
   type TabType,
   useSelectRecipeState,
 } from '@/lib/hooks/useSelectRecipeState';
-import { colors, fontFamily, fontSize, layout, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  layout,
+  spacing,
+} from '@/lib/theme';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
 
@@ -106,7 +113,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
         flexDirection: 'row',
         gap: 8,
         backgroundColor: colors.surface.tint,
-        borderRadius: 12,
+        borderRadius: borderRadius.sm,
         padding: 4,
       }}
     >

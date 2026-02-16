@@ -2,9 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
+  accentUnderlineStyle,
   borderRadius,
   colors,
   fontSize,
+  fontWeight,
   iconContainer,
   letterSpacing,
   spacing,
@@ -57,7 +59,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           <Text
             style={{
               fontSize: fontSize['3xl'],
-              fontWeight: '600',
+              fontWeight: fontWeight.semibold,
               color: colors.text.inverse,
               letterSpacing: letterSpacing.normal,
             }}
@@ -66,10 +68,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           </Text>
           <View
             style={{
-              width: 40,
-              height: 3,
-              borderRadius: 2,
-              backgroundColor: colors.ai.primary,
+              ...accentUnderlineStyle,
               marginTop: spacing.sm,
             }}
           />
@@ -121,7 +120,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontWeight: '600',
+              fontWeight: fontWeight.semibold,
               color: customText.trim() ? colors.white : colors.gray[500],
             }}
           >
@@ -139,7 +138,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           alignItems: 'center',
           justifyContent: 'center',
           paddingVertical: spacing.md,
-          borderRadius: 12,
+          borderRadius: borderRadius.sm,
           backgroundColor: pressed
             ? colors.surface.active
             : colors.surface.hover,
@@ -155,7 +154,7 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           style={{
             marginLeft: spacing.sm,
             fontSize: fontSize.lg,
-            fontWeight: '600',
+            fontWeight: fontWeight.semibold,
             color: colors.content.tertiary,
           }}
         >

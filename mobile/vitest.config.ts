@@ -45,15 +45,21 @@ export default defineConfig({
         // Firebase auth integration — depends on Firebase SDK, Google Sign-In,
         // expo-auth-session; would require mocking the entire auth flow
         'lib/hooks/use-auth.tsx',
+        // React Query hooks wrapping API calls — testing only verifies
+        // React Query + mock API wiring, not application logic
+        'lib/hooks/use-admin.ts',
         // Screen components — heavy UI with logic delegated to hooks
         'app/\\(tabs\\)/**',
         'app/add-recipe.tsx',
         'app/review-recipe.tsx',
         'app/select-recipe.tsx',
+        'app/sign-in.tsx',
         'app/recipe/**',
         // Orchestration hooks — compose already-tested hooks/utils with
         // AsyncStorage and React state; testing only verifies mock wiring
         'lib/hooks/useGroceryScreen.ts',
+        'lib/hooks/useHomeScreenData.ts',
+        'lib/hooks/useMealPlanActions.ts',
         // Root layout — navigation configuration only
         'app/_layout.tsx',
       ],

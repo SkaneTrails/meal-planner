@@ -15,6 +15,7 @@ import {
   borderRadius,
   colors,
   fontSize,
+  fontWeight,
   letterSpacing,
   shadows,
   spacing,
@@ -84,7 +85,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                 style={{
                   marginLeft: spacing.sm,
                   fontSize: fontSize['2xl'],
-                  fontWeight: '600',
+                  fontWeight: fontWeight.semibold,
                   color: colors.white,
                   letterSpacing: letterSpacing.normal,
                 }}
@@ -185,7 +186,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
             <Text
               style={{
                 fontSize: fontSize.lg,
-                fontWeight: '600',
+                fontWeight: fontWeight.semibold,
                 color: colors.text.inverse,
                 marginBottom: spacing.sm,
               }}

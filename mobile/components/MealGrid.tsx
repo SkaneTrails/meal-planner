@@ -6,7 +6,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { colors } from '@/lib/theme';
+import { borderRadius, colors } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 
@@ -51,7 +51,7 @@ export const MealCell = ({
       onLongPress={onLongPress}
       style={{
         padding: 12,
-        borderRadius: 16,
+        borderRadius: borderRadius.md,
         minHeight: 80,
         backgroundColor: 'rgba(255, 255, 255, 0.3)',
       }}
@@ -122,7 +122,7 @@ export const DayColumn = ({
           alignItems: 'center',
           paddingVertical: 8,
           marginBottom: 8,
-          borderRadius: 16,
+          borderRadius: borderRadius.md,
           backgroundColor: isToday
             ? colors.content.headingWarm
             : colors.gray[100],
@@ -172,7 +172,7 @@ export const DayColumn = ({
             marginTop: 8,
             padding: 8,
             backgroundColor: colors.bgMid,
-            borderRadius: 16,
+            borderRadius: borderRadius.md,
           }}
         >
           <Text

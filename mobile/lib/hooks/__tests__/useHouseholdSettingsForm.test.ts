@@ -177,6 +177,86 @@ describe('useHouseholdSettingsForm', () => {
     });
   });
 
+  describe('updateAiEnabled', () => {
+    it('updates ai_features_enabled and marks changes', () => {
+      const { result } = render('h1');
+      act(() => result.current.updateAiEnabled(true));
+      expect(result.current.settings.ai_features_enabled).toBe(true);
+      expect(result.current.hasChanges).toBe(true);
+    });
+
+    it('toggles ai_features_enabled off', () => {
+      mockRemoteSettings = { ai_features_enabled: true };
+      const { result } = render('h1');
+      act(() => result.current.updateAiEnabled(false));
+      expect(result.current.settings.ai_features_enabled).toBe(false);
+      expect(result.current.hasChanges).toBe(true);
+    });
+  });
+
+  describe('addNoteSuggestion', () => {
+    it('adds a new suggestion and marks changes', () => {
+      const { result } = render('h1');
+      act(() => result.current.addNoteSuggestion('Gym'));
+      expect(result.current.settings.note_suggestions).toContain('Gym');
+      expect(result.current.hasChanges).toBe(true);
+    });
+
+    it('trims whitespace before adding', () => {
+      const { result } = render('h1');
+      act(() => result.current.addNoteSuggestion('  Gym  '));
+      expect(result.current.settings.note_suggestions).toContain('Gym');
+    });
+
+    it('ignores empty string', () => {
+      const { result } = render('h1');
+      act(() => result.current.addNoteSuggestion(''));
+      expect(result.current.settings.note_suggestions ?? []).toEqual([]);
+      expect(result.current.hasChanges).toBe(false);
+    });
+
+    it('ignores whitespace-only string', () => {
+      const { result } = render('h1');
+      act(() => result.current.addNoteSuggestion('   '));
+      expect(result.current.settings.note_suggestions ?? []).toEqual([]);
+      expect(result.current.hasChanges).toBe(false);
+    });
+
+    it('prevents duplicate suggestions', () => {
+      mockRemoteSettings = { note_suggestions: ['Gym'] };
+      const { result } = render('h1');
+      act(() => result.current.addNoteSuggestion('Gym'));
+      expect(result.current.settings.note_suggestions).toEqual(['Gym']);
+      expect(result.current.hasChanges).toBe(false);
+    });
+
+    it('handles undefined note_suggestions gracefully', () => {
+      mockRemoteSettings = {};
+      const { result } = render('h1');
+      act(() => result.current.addNoteSuggestion('Office'));
+      expect(result.current.settings.note_suggestions).toEqual(['Office']);
+      expect(result.current.hasChanges).toBe(true);
+    });
+  });
+
+  describe('removeNoteSuggestion', () => {
+    it('removes an existing suggestion', () => {
+      mockRemoteSettings = { note_suggestions: ['Gym', 'Office'] };
+      const { result } = render('h1');
+      act(() => result.current.removeNoteSuggestion('Gym'));
+      expect(result.current.settings.note_suggestions).toEqual(['Office']);
+      expect(result.current.hasChanges).toBe(true);
+    });
+
+    it('handles removing from undefined note_suggestions', () => {
+      mockRemoteSettings = {};
+      const { result } = render('h1');
+      act(() => result.current.removeNoteSuggestion('Gym'));
+      expect(result.current.settings.note_suggestions).toEqual([]);
+      expect(result.current.hasChanges).toBe(true);
+    });
+  });
+
   describe('handleSave', () => {
     it('saves settings and shows notification on success', async () => {
       const { result } = render('h1');

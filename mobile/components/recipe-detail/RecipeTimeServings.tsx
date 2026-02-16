@@ -1,7 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { colors, fontFamily, fontSize, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 interface TimeStatProps {
   icon: 'timer' | 'flame' | 'time' | 'people';
@@ -65,7 +72,7 @@ export const RecipeTimeServings = ({
         flexDirection: 'row',
         marginTop: spacing.lg,
         backgroundColor: colors.glass.solid,
-        borderRadius: 16,
+        borderRadius: borderRadius.md,
         paddingVertical: spacing.md,
         paddingHorizontal: spacing.sm,
         ...shadows.card,
