@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { colors, fontFamily } from '@/lib/theme';
+import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -85,19 +85,19 @@ export const DayHeader = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.ai.bgPressed,
+                backgroundColor: colors.surface.tint,
                 paddingHorizontal: 10,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: borderRadius.md,
               }}
             >
               <Ionicons
-                name="reader-outline"
+                name="document-text-outline"
                 size={12}
-                color={colors.ai.primary}
+                color={colors.content.icon}
                 style={{ marginRight: 4 }}
               />
-              <Text style={{ fontSize: 12, color: colors.ai.primaryDark }}>
+              <Text style={{ fontSize: 12, color: colors.content.secondary }}>
                 {note}
               </Text>
             </View>
@@ -106,10 +106,10 @@ export const DayHeader = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: 'rgba(139, 115, 85, 0.08)',
+                backgroundColor: colors.surface.hover,
                 paddingHorizontal: 10,
                 paddingVertical: 4,
-                borderRadius: 12,
+                borderRadius: borderRadius.md,
               }}
             >
               <Text style={{ fontSize: 12, color: colors.content.icon }}>
@@ -154,15 +154,15 @@ const NoteEditor = ({
   onCancel,
   onToggleTag,
 }: NoteEditorProps) => (
-  <View style={{ marginBottom: 12 }}>
+  <View style={{ marginBottom: spacing.md }}>
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f9f5f0',
-        borderRadius: 12,
-        padding: 10,
-        gap: 8,
+        backgroundColor: colors.surface.tint,
+        borderRadius: borderRadius.md,
+        padding: spacing.sm,
+        gap: spacing.xs,
       }}
     >
       <TextInput
@@ -175,6 +175,7 @@ const NoteEditor = ({
           color: colors.content.headingWarm,
           padding: 0,
         }}
+        placeholderTextColor={colors.content.placeholderHex}
         autoFocus
       />
       <Pressable onPress={onSave}>
@@ -189,7 +190,7 @@ const NoteEditor = ({
         </Text>
       </Pressable>
       <Pressable onPress={onCancel}>
-        <Text style={{ fontSize: 14, color: '#9ca3af' }}>
+        <Text style={{ fontSize: 14, color: colors.content.icon }}>
           {t('mealPlan.notesCancel')}
         </Text>
       </Pressable>
@@ -197,7 +198,7 @@ const NoteEditor = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={{ marginTop: 8 }}
+      style={{ marginTop: spacing.xs }}
     >
       <View style={{ flexDirection: 'row', gap: 6 }}>
         {noteSuggestions.map((suggestion) => (
@@ -206,15 +207,15 @@ const NoteEditor = ({
             onPress={() => onToggleTag(suggestion)}
             style={{
               backgroundColor: noteText.includes(suggestion)
-                ? '#e8dfd4'
+                ? colors.surface.active
                 : colors.white,
-              paddingHorizontal: 12,
+              paddingHorizontal: spacing.md,
               paddingVertical: 6,
-              borderRadius: 16,
+              borderRadius: borderRadius.full,
               borderWidth: 1,
               borderColor: noteText.includes(suggestion)
                 ? colors.content.headingWarm
-                : '#e5e7eb',
+                : colors.surface.divider,
             }}
           >
             <Text style={{ fontSize: 13, color: colors.content.headingWarm }}>

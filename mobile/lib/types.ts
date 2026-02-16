@@ -327,6 +327,7 @@ export interface HouseholdSettings {
   ai_features_enabled?: boolean;
   items_at_home?: string[];
   favorite_recipes?: string[];
+  note_suggestions?: string[];
   dietary: DietarySettings;
   equipment: string[];
 }

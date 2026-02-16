@@ -566,6 +566,19 @@ class TestUpdateHouseholdSettings:
         assert data["household_size"] == 4
         assert data["language"] == "en"
 
+    def test_update_note_suggestions(self, superuser_client: TestClient) -> None:
+        """note_suggestions can be updated via settings endpoint."""
+        new_settings = {"note_suggestions": ["Office", "Gym", "Leftovers"]}
+        with (
+            patch("api.routers.admin.household_storage.update_household_settings", return_value=True),
+            patch("api.routers.admin.household_storage.get_household_settings", return_value=new_settings),
+        ):
+            response = superuser_client.put("/admin/households/any/settings", json=new_settings)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["note_suggestions"] == ["Office", "Gym", "Leftovers"]
+
     def test_admin_can_update_own(self, admin_client: TestClient) -> None:
         """Admin can update settings for their own household."""
         new_settings = {"household_size": 3}

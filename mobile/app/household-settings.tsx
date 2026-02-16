@@ -14,6 +14,7 @@ import {
   DietarySection,
   GeneralSection,
   MembersSection,
+  NoteSuggestionsSection,
   ReadOnlyBanner,
   ScreenHeader,
 } from '@/components/household-settings';
@@ -30,6 +31,7 @@ type SectionKey =
   | 'dietary'
   | 'ai'
   | 'pantry'
+  | 'notes'
   | 'language';
 
 export default function HouseholdSettingsScreen() {
@@ -206,6 +208,21 @@ export default function HouseholdSettingsScreen() {
                 itemsAtHome={settings.itemsAtHome}
                 onAddItem={addItemAtHome}
                 onRemoveItem={removeItemAtHome}
+              />
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              icon="document-text-outline"
+              title={t('settings.noteSuggestions')}
+              subtitle={t('settings.noteSuggestionsDesc')}
+              expanded={expandedSections.has('notes')}
+              onToggle={() => toggleSection('notes')}
+            >
+              <NoteSuggestionsSection
+                suggestions={form.settings.note_suggestions ?? []}
+                canEdit={form.canEdit}
+                onAdd={form.addNoteSuggestion}
+                onRemove={form.removeNoteSuggestion}
               />
             </CollapsibleSection>
 

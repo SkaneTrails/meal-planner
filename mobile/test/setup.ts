@@ -323,6 +323,7 @@ vi.mock('@/lib/settings-context', () => ({
       language: 'en',
       itemsAtHome: [],
       favoriteRecipes: [],
+      noteSuggestions: [],
       showHiddenRecipes: false,
     },
     setLanguage: vi.fn(),

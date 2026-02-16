@@ -212,3 +212,39 @@ class TestSettingsEquipmentField:
         )
         assert "air_fryer" in settings.equipment
         assert "magic_wand" in settings.equipment
+
+
+class TestNoteSuggestionsOnSettings:
+    """Tests for the note_suggestions field on HouseholdSettings models."""
+
+    def test_defaults_to_empty_list(self) -> None:
+        settings = HouseholdSettings(
+            household_size=2,
+            default_servings=2,
+            language="en",
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+        )
+        assert settings.note_suggestions == []
+
+    def test_accepts_custom_suggestions(self) -> None:
+        suggestions = ["Office", "Gym", "Leftovers"]
+        settings = HouseholdSettings(
+            household_size=2,
+            default_servings=2,
+            language="en",
+            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            note_suggestions=suggestions,
+        )
+        assert settings.note_suggestions == suggestions
+
+    def test_update_model_accepts_suggestions(self) -> None:
+        update = HouseholdSettingsUpdate(note_suggestions=["Home", "Travel"])
+        assert update.note_suggestions == ["Home", "Travel"]
+
+    def test_update_model_allows_none(self) -> None:
+        update = HouseholdSettingsUpdate()
+        assert update.note_suggestions is None
+
+    def test_update_model_accepts_empty_list(self) -> None:
+        update = HouseholdSettingsUpdate(note_suggestions=[])
+        assert update.note_suggestions == []
