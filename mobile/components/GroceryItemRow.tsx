@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
-import { colors, shadows } from '@/lib/theme';
+import { colors, shadows, spacing } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -71,7 +71,7 @@ export const GroceryItemRow = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
+        padding: spacing['sm-md'],
         paddingVertical: 12,
         backgroundColor: isActive ? colors.white : colors.glass.solid,
         borderRadius: 10,
@@ -86,7 +86,7 @@ export const GroceryItemRow = ({
           delayLongPress={50}
           style={({ pressed }) =>
             ({
-              padding: 14,
+              padding: spacing['md-lg'],
               marginRight: 2,
               opacity: pressed ? 0.5 : 1,
               ...(Platform.OS === 'web' && { cursor: 'grab' }),

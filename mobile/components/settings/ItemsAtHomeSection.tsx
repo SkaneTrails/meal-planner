@@ -174,7 +174,13 @@ const CurrentItems = ({
       >
         {t('settings.yourItems', { count: items.length })}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: spacing['xs-sm'],
+        }}
+      >
         {items.map((item) => (
           <Pressable
             key={item}
@@ -238,7 +244,13 @@ const SuggestedItems = ({
       >
         {t('settings.suggestions')}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: spacing['xs-sm'],
+        }}
+      >
         {items.map((item) => (
           <Pressable
             key={item}

@@ -264,7 +264,7 @@ vi.mock('@/lib/theme', () => ({
     tagDot: ['#7A9BBD', '#8B9D77', '#C47D5A', '#9B7BB8', '#5BA3A3', '#D4A574', '#B07070', '#6B8FA3'],
   },
   lightColors: undefined, // re-exported but unused in tests
-  spacing: { '2xs': 2, xs: 4, sm: 8, md: 12, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
+  spacing: { '2xs': 2, xs: 4, 'xs-sm': 6, sm: 8, 'sm-md': 10, md: 12, 'md-lg': 14, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
     screenPaddingTop: 60,
     screenPaddingHorizontal: 20,
@@ -280,7 +280,7 @@ vi.mock('@/lib/theme', () => ({
       overlayBottomOffset: 60,
     },
   },
-  borderRadius: { sm: 12, md: 16, lg: 20, xl: 24, full: 9999 },
+  borderRadius: { xs: 8, sm: 12, md: 16, lg: 20, xl: 24, full: 9999 },
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
   shadows: { none: {}, xs: {}, sm: {}, card: {}, md: {}, lg: {}, xl: {}, glow: {}, glowSoft: {} },

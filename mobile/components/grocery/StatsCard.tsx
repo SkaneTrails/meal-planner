@@ -31,7 +31,7 @@ const ActionButtons = ({
   onToggleClearMenu,
   onClearChecked,
 }: ActionButtonsProps) => (
-  <View style={{ flexDirection: 'row', gap: 6 }}>
+  <View style={{ flexDirection: 'row', gap: spacing['xs-sm'] }}>
     <AnimatedPressable
       onPress={onToggleAddItem}
       hoverScale={1.08}
@@ -60,7 +60,7 @@ const ActionButtons = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 10,
+          paddingHorizontal: spacing['sm-md'],
           paddingVertical: 8,
           borderRadius: 10,
           backgroundColor: showClearMenu
@@ -84,7 +84,7 @@ const ActionButtons = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 10,
+          paddingHorizontal: spacing['sm-md'],
           paddingVertical: 8,
           borderRadius: 10,
           backgroundColor: colors.surface.hover,
@@ -105,7 +105,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
   if (itemsToBuy <= 0) return null;
 
   return (
-    <View style={{ marginTop: 14 }}>
+    <View style={{ marginTop: spacing['md-lg'] }}>
       <View
         style={{
           height: 6,
@@ -147,12 +147,12 @@ const ItemsAtHomeIndicator = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 10,
-        paddingVertical: 6,
-        paddingHorizontal: 10,
+        marginTop: spacing['sm-md'],
+        paddingVertical: spacing['xs-sm'],
+        paddingHorizontal: spacing['sm-md'],
         backgroundColor: colors.chip.divider,
-        borderRadius: 8,
-        gap: 6,
+        borderRadius: borderRadius.xs,
+        gap: spacing['xs-sm'],
       }}
     >
       <Ionicons

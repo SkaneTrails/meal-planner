@@ -6,8 +6,11 @@
 export const spacing = {
   '2xs': 2,
   xs: 4,
+  'xs-sm': 6,
   sm: 8,
+  'sm-md': 10,
   md: 12,
+  'md-lg': 14,
   lg: 16,
   xl: 20,
   '2xl': 24,
@@ -35,8 +38,9 @@ export const layout = {
   },
 } as const;
 
-// Border radius - standardized to 3 sizes
+// Border radius - standardized scale
 export const borderRadius = {
+  xs: 8,
   sm: 12,
   md: 16,
   lg: 20,

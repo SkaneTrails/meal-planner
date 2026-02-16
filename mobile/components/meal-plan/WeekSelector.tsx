@@ -38,7 +38,7 @@ export const WeekSelector = ({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: spacing.md,
-        paddingVertical: 10,
+        paddingVertical: spacing['sm-md'],
       }}
     >
       <AnimatedPressable

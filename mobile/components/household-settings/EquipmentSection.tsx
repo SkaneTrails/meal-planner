@@ -52,7 +52,13 @@ const SelectedEquipment = ({
           count: equipment.length,
         })}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: spacing['xs-sm'],
+        }}
+      >
         {equipment.map((item) => (
           <Pressable
             key={item}
@@ -121,7 +127,13 @@ const AvailableEquipment = ({
             >
               {t(`householdSettings.equipment.categories.${key}`)}
             </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: spacing['xs-sm'],
+              }}
+            >
               {available.map((item) => (
                 <Pressable
                   key={item}

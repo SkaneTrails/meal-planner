@@ -13,6 +13,7 @@ import {
   fontSize,
   fontWeight,
   letterSpacing,
+  spacing,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 
@@ -66,7 +67,7 @@ const InspirationHeader = ({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 10,
+      marginBottom: spacing['sm-md'],
     }}
   >
     <Text
@@ -90,8 +91,8 @@ const InspirationHeader = ({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 0.25)',
-        paddingHorizontal: 10,
-        paddingVertical: 6,
+        paddingHorizontal: spacing['sm-md'],
+        paddingVertical: spacing['xs-sm'],
         borderRadius: borderRadius.full,
       }}
     >
@@ -141,7 +142,7 @@ const InspirationCard = ({
         bottom: 0,
         height: 100,
         justifyContent: 'flex-end',
-        padding: 14,
+        padding: spacing['md-lg'],
       }}
     >
       <Text
@@ -160,7 +161,7 @@ const InspirationCard = ({
           flexDirection: 'row',
           alignItems: 'center',
           marginTop: 8,
-          gap: 6,
+          gap: spacing['xs-sm'],
         }}
       >
         {recipe.meal_label && (
@@ -198,7 +199,7 @@ const LabelBadge = ({
       backgroundColor: 'transparent',
       borderWidth: 1,
       borderColor,
-      paddingHorizontal: 10,
+      paddingHorizontal: spacing['sm-md'],
       paddingVertical: 4,
       borderRadius: borderRadius.full,
     }}

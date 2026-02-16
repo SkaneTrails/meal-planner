@@ -42,7 +42,7 @@ export const AddItemCard = ({
             backgroundColor: colors.surface.tint,
             borderRadius: borderRadius.sm,
             paddingHorizontal: 12,
-            paddingVertical: 10,
+            paddingVertical: spacing['sm-md'],
             fontSize: 14,
             color: colors.content.heading,
           }}
@@ -66,7 +66,7 @@ export const AddItemCard = ({
               ? colors.ai.primary
               : 'rgba(200, 190, 180, 0.5)',
             paddingHorizontal: 16,
-            paddingVertical: 10,
+            paddingVertical: spacing['sm-md'],
             borderRadius: borderRadius.sm,
           }}
         >
