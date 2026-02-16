@@ -152,8 +152,12 @@ export const recipeApi = {
     });
   },
 
-  copyRecipe: (id: string): Promise<Recipe> => {
-    return apiRequest<Recipe>(`/recipes/${id}/copy`, {
+  copyRecipe: (
+    id: string,
+    options?: { keepEnhanced?: boolean },
+  ): Promise<Recipe> => {
+    const params = options?.keepEnhanced ? '?keep_enhanced=true' : '';
+    return apiRequest<Recipe>(`/recipes/${id}/copy${params}`, {
       method: 'POST',
     });
   },

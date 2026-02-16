@@ -260,8 +260,26 @@ const it: Translations = {
     copy: 'Copia',
     copyConfirm:
       'Verrà creata una copia privata nel tuo nucleo familiare. Potrai poi migliorarla con le tue preferenze.',
+    copyEnhancedTitle: 'Ricetta migliorata',
+    copyEnhancedMessage:
+      'Questa ricetta è stata migliorata per un altro nucleo familiare. Vuoi migliorarla per il tuo?',
+    copyAndEnhance: 'Copia e migliora',
+    copyAsIs: "Copia così com'è",
     copySuccess: 'Ricetta copiata nel tuo nucleo familiare',
     copyFailed: 'Impossibile copiare la ricetta',
+    belongsToAnother: 'Altro nucleo familiare',
+    belongsToAnotherEnhance:
+      'Questa ricetta appartiene a un altro nucleo familiare. Copiala nel tuo per migliorarla?',
+    belongsToAnotherNote:
+      'Questa ricetta appartiene a un altro nucleo familiare. Copiala nel tuo per aggiungere note?',
+    cannotEnhance: 'Impossibile migliorare',
+    cannotEnhanceMessage:
+      'Copia prima questa ricetta nel tuo nucleo familiare per migliorarla.',
+    cannotAddNote: 'Impossibile aggiungere nota',
+    cannotAddNoteMessage:
+      'Copia prima questa ricetta nel tuo nucleo familiare per aggiungere note.',
+    copiedRecipeVisibility:
+      'Le ricette copiate sono sempre private per il tuo nucleo familiare.',
     share: 'Condividi',
     // Notes
     notes: 'Note',

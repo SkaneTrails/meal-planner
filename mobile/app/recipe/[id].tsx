@@ -46,6 +46,7 @@ export default function RecipeDetailScreen() {
   const { data: recipe, isLoading, error } = useRecipe(id);
 
   const {
+    isOwned,
     canEdit,
     canCopy,
     isCopying,
@@ -233,6 +234,7 @@ export default function RecipeDetailScreen() {
               completedSteps={completedSteps}
               showAiChanges={showAiChanges}
               showOriginal={showOriginal}
+              isOwned={isOwned}
               canEdit={canEdit}
               canCopy={canCopy}
               isCopying={isCopying}

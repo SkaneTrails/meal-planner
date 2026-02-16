@@ -20,6 +20,7 @@ interface RecipeContentProps {
   completedSteps: Set<number>;
   showAiChanges: boolean;
   showOriginal: boolean;
+  isOwned: boolean | undefined;
   canEdit: boolean;
   canCopy: boolean;
   isCopying: boolean;
@@ -47,6 +48,7 @@ export const RecipeContent = ({
   completedSteps,
   showAiChanges,
   showOriginal,
+  isOwned,
   canEdit,
   canCopy,
   isCopying,
@@ -103,6 +105,7 @@ export const RecipeContent = ({
         isCopying={isCopying}
         canEnhance={canEnhance}
         isEnhancing={isEnhancing}
+        isOwned={isOwned}
         aiEnabled={aiEnabled}
         t={t}
         onOpenEditModal={onOpenEditModal}
@@ -158,7 +161,13 @@ export const RecipeContent = ({
         onToggleAiChanges={onToggleAiChanges}
       />
 
-      <RecipeNotes recipeId={recipeId} t={t} />
+      <RecipeNotes
+        recipeId={recipeId}
+        isOwned={isOwned}
+        canCopy={canCopy}
+        t={t}
+        onCopy={onCopy}
+      />
 
       <RecipeActionsFooter
         url={recipe.url}

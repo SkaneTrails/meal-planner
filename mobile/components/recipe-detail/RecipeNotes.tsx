@@ -33,16 +33,43 @@ import {
 
 interface RecipeNotesProps {
   recipeId: string;
+  isOwned: boolean | undefined;
+  canCopy: boolean;
   t: TFunction;
+  onCopy: () => void;
 }
 
-export const RecipeNotes = ({ recipeId, t }: RecipeNotesProps) => {
+export const RecipeNotes = ({
+  recipeId,
+  isOwned,
+  canCopy,
+  t,
+  onCopy,
+}: RecipeNotesProps) => {
   const [text, setText] = useState('');
   const { data: notes, isLoading } = useRecipeNotes(recipeId);
   const createNote = useCreateRecipeNote();
   const deleteNote = useDeleteRecipeNote();
 
   const handleAdd = () => {
+    if (!isOwned) {
+      if (canCopy) {
+        showAlert(
+          t('recipe.belongsToAnother'),
+          t('recipe.belongsToAnotherNote'),
+          [
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('recipe.copy'), onPress: onCopy },
+          ],
+        );
+      } else {
+        showAlert(t('recipe.cannotAddNote'), t('recipe.cannotAddNoteMessage'), [
+          { text: t('common.ok') },
+        ]);
+      }
+      return;
+    }
+
     const trimmed = text.trim();
     if (!trimmed) return;
     hapticLight();

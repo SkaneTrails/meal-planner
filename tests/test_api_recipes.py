@@ -1111,6 +1111,63 @@ class TestCopyRecipe:
 
         assert response.status_code == 404
 
+    def test_passes_keep_enhanced_to_storage(self, client: TestClient) -> None:
+        """Should pass keep_enhanced=True query param to storage layer."""
+        shared_recipe = Recipe(
+            id="shared123",
+            title="Enhanced Recipe",
+            url="https://example.com/shared",
+            household_id="other_household",
+            visibility="shared",
+            enhanced=True,
+        )
+        copied_recipe = Recipe(
+            id="copied123",
+            title="Enhanced Recipe",
+            url="https://example.com/shared",
+            household_id="test_household",
+            visibility="household",
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=shared_recipe),
+            patch("api.routers.recipes.recipe_storage.copy_recipe", return_value=copied_recipe) as mock_copy,
+        ):
+            response = client.post("/recipes/shared123/copy?keep_enhanced=true")
+
+        assert response.status_code == 201
+        mock_copy.assert_called_once_with(
+            "shared123", to_household_id="test_household", copied_by="test@example.com", keep_enhanced=True
+        )
+
+    def test_defaults_keep_enhanced_to_false(self, client: TestClient) -> None:
+        """Should default keep_enhanced to False when not specified."""
+        shared_recipe = Recipe(
+            id="shared123",
+            title="Shared Recipe",
+            url="https://example.com/shared",
+            household_id="other_household",
+            visibility="shared",
+        )
+        copied_recipe = Recipe(
+            id="copied123",
+            title="Shared Recipe",
+            url="https://example.com/shared",
+            household_id="test_household",
+            visibility="household",
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=shared_recipe),
+            patch("api.routers.recipes.recipe_storage.copy_recipe", return_value=copied_recipe) as mock_copy,
+        ):
+            response = client.post("/recipes/shared123/copy")
+
+        assert response.status_code == 201
+        mock_copy.assert_called_once_with(
+            "shared123", to_household_id="test_household", copied_by="test@example.com", keep_enhanced=False
+        )
+
 
 class TestEnhanceRecipe:
     """Tests for POST /recipes/{recipe_id}/enhance endpoint."""

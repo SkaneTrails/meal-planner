@@ -469,10 +469,10 @@ describe('useRecipeActions', () => {
       expect(result.current.canEnhance).toBe(false);
     });
 
-    it('returns false for non-owned recipe', () => {
+    it('returns true for non-owned non-enhanced recipe', () => {
       const recipe = makeRecipe({ household_id: 'other-household', enhanced: false });
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
-      expect(result.current.canEnhance).toBe(false);
+      expect(result.current.canEnhance).toBe(true);
     });
 
     it('returns false when recipe is undefined', () => {
@@ -489,7 +489,7 @@ describe('useRecipeActions', () => {
       expect(mockShowAlert).not.toHaveBeenCalled();
     });
 
-    it('shows confirmation dialog', async () => {
+    it('shows confirmation dialog for owned recipe', async () => {
       const recipe = makeRecipe();
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       await act(async () => result.current.handleEnhanceRecipe());
@@ -499,6 +499,33 @@ describe('useRecipeActions', () => {
         expect.arrayContaining([
           expect.objectContaining({ text: 'common.cancel' }),
           expect.objectContaining({ text: 'recipe.enhance' }),
+        ]),
+      );
+    });
+
+    it('shows belongs-to-another dialog for copyable foreign recipe', async () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleEnhanceRecipe());
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.belongsToAnother',
+        'recipe.belongsToAnotherEnhance',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel' }),
+          expect.objectContaining({ text: 'recipe.copy' }),
+        ]),
+      );
+    });
+
+    it('shows cannot-enhance alert for non-copyable foreign recipe', async () => {
+      const recipe = makeRecipe({ household_id: 'other-household', visibility: 'household' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleEnhanceRecipe());
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.cannotEnhance',
+        'recipe.cannotEnhanceMessage',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.ok' }),
         ]),
       );
     });
@@ -564,7 +591,7 @@ describe('useRecipeActions', () => {
       expect(mockShowAlert).not.toHaveBeenCalled();
     });
 
-    it('shows confirmation dialog', async () => {
+    it('shows simple confirmation for non-enhanced recipe', async () => {
       const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       await act(async () => result.current.handleCopyRecipe());
@@ -578,6 +605,63 @@ describe('useRecipeActions', () => {
       );
     });
 
+    it('shows enhanced dialog with two options for enhanced recipe', async () => {
+      const recipe = makeRecipe({
+        household_id: 'other-household',
+        visibility: 'shared',
+        enhanced: true,
+      });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.copyEnhancedTitle',
+        'recipe.copyEnhancedMessage',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel' }),
+          expect.objectContaining({ text: 'recipe.copyAsIs' }),
+          expect.objectContaining({ text: 'recipe.copyAndEnhance' }),
+        ]),
+      );
+    });
+
+    it('copies with keepEnhanced=true when choosing Copy As Is', async () => {
+      const recipe = makeRecipe({
+        household_id: 'other-household',
+        visibility: 'shared',
+        enhanced: true,
+      });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const copyAsIsButton = buttons.find(b => b.text === 'recipe.copyAsIs')!;
+      await act(async () => copyAsIsButton.onPress!());
+
+      expect(mockCopyMutateAsync).toHaveBeenCalledWith({
+        id: 'recipe-1',
+        keepEnhanced: true,
+      });
+    });
+
+    it('copies with keepEnhanced=false when choosing Copy & Enhance', async () => {
+      const recipe = makeRecipe({
+        household_id: 'other-household',
+        visibility: 'shared',
+        enhanced: true,
+      });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const copyEnhanceButton = buttons.find(b => b.text === 'recipe.copyAndEnhance')!;
+      await act(async () => copyEnhanceButton.onPress!());
+
+      expect(mockCopyMutateAsync).toHaveBeenCalledWith({
+        id: 'recipe-1',
+        keepEnhanced: false,
+      });
+    });
+
     it('calls copyRecipe and navigates to copy on success', async () => {
       const recipe = makeRecipe({ household_id: 'other-household', visibility: 'shared' });
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
@@ -587,7 +671,10 @@ describe('useRecipeActions', () => {
       const copyButton = buttons.find(b => b.text === 'recipe.copy')!;
       await act(async () => copyButton.onPress!());
 
-      expect(mockCopyMutateAsync).toHaveBeenCalledWith('recipe-1');
+      expect(mockCopyMutateAsync).toHaveBeenCalledWith({
+        id: 'recipe-1',
+        keepEnhanced: false,
+      });
       expect(mockShowNotification).toHaveBeenCalledWith('common.success', 'recipe.copySuccess');
     });
 
@@ -602,6 +689,47 @@ describe('useRecipeActions', () => {
       await act(async () => copyButton.onPress!());
 
       expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.copyFailed');
+    });
+  });
+
+  describe('isCopy', () => {
+    it('returns true when recipe has copied_from', () => {
+      const recipe = makeRecipe({ copied_from: 'original-123' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.isCopy).toBe(true);
+    });
+
+    it('returns false when recipe has no copied_from', () => {
+      const recipe = makeRecipe({ copied_from: null });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.isCopy).toBe(false);
+    });
+
+    it('returns false when copied_from is undefined', () => {
+      const recipe = makeRecipe();
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.isCopy).toBe(false);
+    });
+  });
+
+  describe('isOwned', () => {
+    it('returns true when recipe belongs to user household', () => {
+      const recipe = makeRecipe({ household_id: 'household-abc' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.isOwned).toBe(true);
+    });
+
+    it('returns false when recipe belongs to different household', () => {
+      const recipe = makeRecipe({ household_id: 'other-household' });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.isOwned).toBe(false);
+    });
+
+    it('returns undefined when currentUser is not loaded', () => {
+      mockUseCurrentUser.mockReturnValue({ data: undefined } as any);
+      const recipe = makeRecipe();
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      expect(result.current.isOwned).toBeUndefined();
     });
   });
 });

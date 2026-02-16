@@ -180,74 +180,76 @@ export const EditRecipeModal = ({
         variant="solid"
       />
 
-      {/* Visibility */}
-      <View style={{ marginBottom: spacing.xl }}>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodySemibold,
-            color: colors.gray[500],
-            marginBottom: spacing.sm,
-            textTransform: 'uppercase',
-            letterSpacing: letterSpacing.wide,
-          }}
-        >
-          {t('recipe.visibilityLabel')}
-        </Text>
-        <View style={{ flexDirection: 'row', gap: spacing.md }}>
-          {VISIBILITY_OPTIONS.map(({ value, labelKey, icon, descKey }) => {
-            const isSelected = editVisibility === value;
-            const translatedLabel = t(labelKey);
-            const translatedDesc = t(descKey);
-            return (
-              <Pressable
-                key={value}
-                onPress={() => setEditVisibility(value)}
-                style={({ pressed }) => ({
-                  flex: 1,
-                  alignItems: 'center',
-                  backgroundColor: isSelected
-                    ? colors.primary
-                    : pressed
-                      ? colors.bgMid
-                      : colors.gray[50],
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.md,
-                  borderRadius: borderRadius.md,
-                  borderWidth: 1,
-                  borderColor: isSelected ? colors.primary : colors.bgDark,
-                })}
-              >
-                <Ionicons
-                  name={icon}
-                  size={28}
-                  color={isSelected ? colors.white : colors.content.icon}
-                  style={{ marginBottom: spacing.xs }}
-                />
-                <Text
-                  style={{
-                    fontSize: fontSize.lg,
-                    fontFamily: fontFamily.bodySemibold,
-                    color: isSelected ? colors.white : colors.text.inverse,
-                  }}
+      {/* Visibility — hidden for copies (always private) */}
+      {!recipe.copied_from && (
+        <View style={{ marginBottom: spacing.xl }}>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.gray[500],
+              marginBottom: spacing.sm,
+              textTransform: 'uppercase',
+              letterSpacing: letterSpacing.wide,
+            }}
+          >
+            {t('recipe.visibilityLabel')}
+          </Text>
+          <View style={{ flexDirection: 'row', gap: spacing.md }}>
+            {VISIBILITY_OPTIONS.map(({ value, labelKey, icon, descKey }) => {
+              const isSelected = editVisibility === value;
+              const translatedLabel = t(labelKey);
+              const translatedDesc = t(descKey);
+              return (
+                <Pressable
+                  key={value}
+                  onPress={() => setEditVisibility(value)}
+                  style={({ pressed }) => ({
+                    flex: 1,
+                    alignItems: 'center',
+                    backgroundColor: isSelected
+                      ? colors.primary
+                      : pressed
+                        ? colors.bgMid
+                        : colors.gray[50],
+                    paddingHorizontal: spacing.md,
+                    paddingVertical: spacing.md,
+                    borderRadius: borderRadius.md,
+                    borderWidth: 1,
+                    borderColor: isSelected ? colors.primary : colors.bgDark,
+                  })}
                 >
-                  {translatedLabel}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: fontSize.sm,
-                    fontFamily: fontFamily.body,
-                    color: isSelected ? colors.bgDark : colors.gray[400],
-                    marginTop: spacing['2xs'],
-                  }}
-                >
-                  {translatedDesc}
-                </Text>
-              </Pressable>
-            );
-          })}
+                  <Ionicons
+                    name={icon}
+                    size={28}
+                    color={isSelected ? colors.white : colors.content.icon}
+                    style={{ marginBottom: spacing.xs }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: fontSize.lg,
+                      fontFamily: fontFamily.bodySemibold,
+                      color: isSelected ? colors.white : colors.text.inverse,
+                    }}
+                  >
+                    {translatedLabel}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: fontSize.sm,
+                      fontFamily: fontFamily.body,
+                      color: isSelected ? colors.bgDark : colors.gray[400],
+                      marginTop: spacing['2xs'],
+                    }}
+                  >
+                    {translatedDesc}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
-      </View>
+      )}
 
       {/* Household Transfer (Superuser only) */}
       {isSuperuser && households && households.length > 0 && (

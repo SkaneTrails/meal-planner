@@ -254,8 +254,26 @@ const sv: Translations = {
     copy: 'Kopiera',
     copyConfirm:
       'Detta skapar en privat kopia i ditt hushåll. Du kan sedan förbättra den med dina preferenser.',
+    copyEnhancedTitle: 'Förbättrat recept',
+    copyEnhancedMessage:
+      'Det här receptet har förbättrats för ett annat hushåll. Vill du förbättra det för ditt?',
+    copyAndEnhance: 'Kopiera & förbättra',
+    copyAsIs: 'Kopiera som det är',
     copySuccess: 'Receptet kopierat till ditt hushåll',
     copyFailed: 'Kunde inte kopiera receptet',
+    belongsToAnother: 'Annat hushåll',
+    belongsToAnotherEnhance:
+      'Det här receptet tillhör ett annat hushåll. Kopiera det till ditt för att förbättra det?',
+    belongsToAnotherNote:
+      'Det här receptet tillhör ett annat hushåll. Kopiera det till ditt för att lägga till anteckningar?',
+    cannotEnhance: 'Kan inte förbättra',
+    cannotEnhanceMessage:
+      'Kopiera receptet till ditt hushåll först för att förbättra det.',
+    cannotAddNote: 'Kan inte lägga till anteckning',
+    cannotAddNoteMessage:
+      'Kopiera receptet till ditt hushåll först för att lägga till anteckningar.',
+    copiedRecipeVisibility:
+      'Kopierade recept är alltid privata för ditt hushåll.',
     share: 'Dela',
     // Notes
     notes: 'Anteckningar',
