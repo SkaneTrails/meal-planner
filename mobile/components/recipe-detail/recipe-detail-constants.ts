@@ -1,3 +1,4 @@
+import { colors } from '@/lib/theme';
 import type {
   DietLabel,
   MealLabel,
@@ -63,7 +64,19 @@ export const DIET_LABELS: Record<
   DietLabel,
   { emoji: string; color: string; bgColor: string }
 > = {
-  veggie: { emoji: '🥬', color: '#166534', bgColor: '#DCFCE7' },
-  fish: { emoji: '🐟', color: '#1E40AF', bgColor: '#DBEAFE' },
-  meat: { emoji: '🥩', color: '#991B1B', bgColor: '#FEE2E2' },
+  veggie: {
+    emoji: '🥬',
+    color: colors.diet.veggie.text,
+    bgColor: colors.diet.veggie.bg,
+  },
+  fish: {
+    emoji: '🐟',
+    color: colors.diet.fish.text,
+    bgColor: colors.diet.fish.bg,
+  },
+  meat: {
+    emoji: '🥩',
+    color: colors.diet.meat.text,
+    bgColor: colors.diet.meat.bg,
+  },
 };

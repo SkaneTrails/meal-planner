@@ -140,10 +140,10 @@ export const RecipeCard = ({
                   style={{
                     backgroundColor:
                       recipe.diet_label === 'veggie'
-                        ? 'rgba(78, 154, 89, 0.12)'
+                        ? colors.diet.veggie.cardBg
                         : recipe.diet_label === 'fish'
-                          ? 'rgba(21, 101, 192, 0.12)'
-                          : 'rgba(180, 80, 70, 0.12)',
+                          ? colors.diet.fish.cardBg
+                          : colors.diet.meat.cardBg,
                     paddingHorizontal: 10,
                     paddingVertical: 4,
                     borderRadius: 8,
@@ -155,10 +155,10 @@ export const RecipeCard = ({
                       fontFamily: fontFamily.bodyMedium,
                       color:
                         recipe.diet_label === 'veggie'
-                          ? '#2F6B3B'
+                          ? colors.diet.veggie.text
                           : recipe.diet_label === 'fish'
-                            ? '#1565C0'
-                            : '#A0453D',
+                            ? colors.diet.fish.text
+                            : colors.diet.meat.text,
                     }}
                   >
                     {t(DIET_LABEL_KEYS[recipe.diet_label])}
@@ -357,7 +357,7 @@ export const RecipeCard = ({
               fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               fontWeight: fontWeight.semibold,
-              color: '#3D3228',
+              color: colors.content.heading,
               lineHeight: 18,
             }}
             numberOfLines={2}

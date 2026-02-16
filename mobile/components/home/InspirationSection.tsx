@@ -173,10 +173,10 @@ const InspirationCard = ({
             label={t(`labels.diet.${recipe.diet_label}`)}
             borderColor={
               recipe.diet_label === 'veggie'
-                ? 'rgba(76, 175, 80, 0.7)'
+                ? colors.diet.veggie.border
                 : recipe.diet_label === 'fish'
-                  ? 'rgba(66, 165, 245, 0.7)'
-                  : 'rgba(229, 115, 115, 0.7)'
+                  ? colors.diet.fish.border
+                  : colors.diet.meat.border
             }
           />
         )}
