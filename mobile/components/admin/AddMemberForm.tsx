@@ -109,7 +109,9 @@ export const AddMemberForm = ({
             <Text
               style={{
                 color:
-                  newMemberRole === role ? 'white' : colors.content.heading,
+                  newMemberRole === role
+                    ? colors.white
+                    : colors.content.heading,
                 fontWeight: fontWeight.medium,
               }}
             >
@@ -135,11 +137,11 @@ export const AddMemberForm = ({
         }}
       >
         {isPending ? (
-          <ActivityIndicator color="white" />
+          <ActivityIndicator color={colors.white} />
         ) : (
           <Text
             style={{
-              color: 'white',
+              color: colors.white,
               fontSize: fontSize.md,
               fontWeight: fontWeight.semibold,
             }}

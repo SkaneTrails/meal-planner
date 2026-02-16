@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { BottomSheetModal } from '@/components';
+import { BottomSheetModal, ChipPicker } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
@@ -161,111 +161,24 @@ export const EditRecipeModal = ({
       }
     >
       {/* Diet Type */}
-      <View style={{ marginBottom: spacing.xl }}>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodySemibold,
-            color: colors.gray[500],
-            marginBottom: spacing.sm,
-            textTransform: 'uppercase',
-            letterSpacing: letterSpacing.wide,
-          }}
-        >
-          {t('recipe.dietType')}
-        </Text>
-        <View
-          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
-        >
-          {DIET_OPTIONS.map(({ value, labelKey, emoji }) => {
-            const isSelected = editDietLabel === value;
-            const translatedLabel = t(labelKey);
-            return (
-              <Pressable
-                key={labelKey}
-                onPress={() => setEditDietLabel(value)}
-                style={({ pressed }) => ({
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: isSelected
-                    ? colors.primary
-                    : pressed
-                      ? colors.bgMid
-                      : colors.gray[50],
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: isSelected ? colors.primary : colors.bgDark,
-                })}
-              >
-                <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
-                <Text
-                  style={{
-                    fontSize: fontSize.lg,
-                    fontFamily: fontFamily.bodyMedium,
-                    color: isSelected ? colors.white : colors.text.inverse,
-                  }}
-                >
-                  {translatedLabel}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
+      <ChipPicker
+        label={t('recipe.dietType')}
+        options={DIET_OPTIONS}
+        selected={editDietLabel}
+        onSelect={setEditDietLabel}
+        t={t}
+        variant="solid"
+      />
 
       {/* Meal Type */}
-      <View style={{ marginBottom: spacing.xl }}>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodySemibold,
-            color: colors.gray[500],
-            marginBottom: spacing.sm,
-            textTransform: 'uppercase',
-            letterSpacing: letterSpacing.wide,
-          }}
-        >
-          {t('recipe.mealTypeLabel')}
-        </Text>
-        <View
-          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
-        >
-          {MEAL_OPTIONS.map(({ value, labelKey }) => {
-            const isSelected = editMealLabel === value;
-            const translatedLabel = t(labelKey);
-            return (
-              <Pressable
-                key={labelKey}
-                onPress={() => setEditMealLabel(value)}
-                style={({ pressed }) => ({
-                  backgroundColor: isSelected
-                    ? colors.primary
-                    : pressed
-                      ? colors.bgMid
-                      : colors.gray[50],
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: isSelected ? colors.primary : colors.bgDark,
-                })}
-              >
-                <Text
-                  style={{
-                    fontSize: fontSize.lg,
-                    fontFamily: fontFamily.bodyMedium,
-                    color: isSelected ? colors.white : colors.text.inverse,
-                  }}
-                >
-                  {translatedLabel}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
+      <ChipPicker
+        label={t('recipe.mealTypeLabel')}
+        options={MEAL_OPTIONS}
+        selected={editMealLabel}
+        onSelect={setEditMealLabel}
+        t={t}
+        variant="solid"
+      />
 
       {/* Visibility */}
       <View style={{ marginBottom: spacing.xl }}>

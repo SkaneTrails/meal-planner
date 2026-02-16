@@ -39,15 +39,11 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: colors.glass.bright,
             borderRadius: 14,
             paddingHorizontal: 16,
             paddingVertical: 12,
-            shadowColor: '#000',
-            shadowOffset: { width: 1, height: 1 },
-            shadowOpacity: 0.04,
-            shadowRadius: 4,
-            elevation: 1,
+            boxShadow: '1px 1px 4px 0px rgba(0, 0, 0, 0.04)',
           }}
         >
           <Ionicons name="search" size={18} color={colors.content.icon} />

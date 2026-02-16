@@ -73,15 +73,11 @@ export const GroceryItemRow = ({
         alignItems: 'center',
         padding: 10,
         paddingVertical: 12,
-        backgroundColor: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.92)',
+        backgroundColor: isActive ? colors.white : colors.glass.solid,
         borderRadius: 10,
         marginBottom: 8,
         opacity: checked ? 0.85 : 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 2,
+        boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
       }}
     >
       {showReorder && (
@@ -122,7 +118,9 @@ export const GroceryItemRow = ({
             borderColor: checked ? colors.ai.primary : colors.surface.border,
           }}
         >
-          {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+          {checked && (
+            <Ionicons name="checkmark" size={14} color={colors.white} />
+          )}
         </View>
 
         <View style={{ flex: 1 }}>

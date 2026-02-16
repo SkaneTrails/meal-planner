@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import type React from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -10,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { GradientBackground, PrimaryButton } from '@/components';
+import { FormField, GradientBackground, PrimaryButton } from '@/components';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   borderRadius,
@@ -282,27 +281,6 @@ const inputStyle = {
   ...shadows.sm,
 };
 
-interface FormFieldProps {
-  label: string;
-  children: React.ReactNode;
-}
-
-const FormField = ({ label, children }: FormFieldProps) => (
-  <View style={{ marginBottom: spacing.lg }}>
-    <Text
-      style={{
-        fontSize: fontSize.lg,
-        fontWeight: '600',
-        color: colors.text.inverse,
-        marginBottom: spacing.sm,
-      }}
-    >
-      {label}
-    </Text>
-    {children}
-  </View>
-);
-
 interface NumericFieldProps {
   label: string;
   placeholder: string;
@@ -318,17 +296,7 @@ const NumericField = ({
   onChangeText,
   disabled,
 }: NumericFieldProps) => (
-  <View style={{ flex: 1 }}>
-    <Text
-      style={{
-        fontSize: fontSize.md,
-        fontWeight: '600',
-        color: colors.text.inverse,
-        marginBottom: spacing.xs,
-      }}
-    >
-      {label}
-    </Text>
+  <FormField label={label} compact>
     <TextInput
       style={{
         backgroundColor: colors.glass.card,
@@ -346,5 +314,5 @@ const NumericField = ({
       keyboardType="numeric"
       editable={!disabled}
     />
-  </View>
+  </FormField>
 );

@@ -62,11 +62,7 @@ export const ScreenHeader = ({
               paddingVertical: 10,
               borderRadius: borderRadius.lg,
               opacity: isSaving ? 0.6 : 1,
-              shadowColor: colors.accent,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
-              elevation: 3,
+              boxShadow: `0px 2px 4px 0px ${colors.accent}4D`,
             })}
           >
             {isSaving ? (

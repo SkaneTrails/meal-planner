@@ -133,7 +133,7 @@ const RandomHeader = ({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: 'rgba(107, 142, 107, 0.15)',
+        backgroundColor: colors.ai.light,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.md,

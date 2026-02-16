@@ -98,14 +98,10 @@ export const RecipeCard = ({
             flexDirection: 'row',
             alignItems: 'center',
             padding: 14,
-            backgroundColor: 'rgba(255, 255, 255, 0.96)',
+            backgroundColor: colors.glass.heavy,
             borderRadius: 20,
             transform: [{ scale: scaleAnim }],
-            shadowColor: '#000',
-            shadowOffset: { width: 2, height: 6 },
-            shadowOpacity: 0.1,
-            shadowRadius: 16,
-            elevation: 4,
+            boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)',
           }}
         >
           <Image
@@ -253,11 +249,7 @@ export const RecipeCard = ({
           borderRadius: 22,
           overflow: 'hidden',
           transform: [{ scale: scaleAnim }],
-          shadowColor: '#000',
-          shadowOffset: { width: 2, height: 6 },
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-          elevation: 5,
+          boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.12)',
         }}
       >
         {/* Image with gradient overlay */}
@@ -326,7 +318,7 @@ export const RecipeCard = ({
                 right: 10,
                 backgroundColor: isRecipeFavorite
                   ? 'rgba(220, 38, 38, 0.9)'
-                  : 'rgba(255, 255, 255, 0.9)',
+                  : colors.glass.bright,
                 width: 32,
                 height: 32,
                 borderRadius: 16,

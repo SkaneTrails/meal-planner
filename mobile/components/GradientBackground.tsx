@@ -185,7 +185,7 @@ export const GradientBackground = ({
           {
             width: windowWidth,
             height: windowHeight,
-            backgroundColor: '#EBE4DB',
+            backgroundColor: colors.tabBar.bottomFill,
           },
         ]}
       >

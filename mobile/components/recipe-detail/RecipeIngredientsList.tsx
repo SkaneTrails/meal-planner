@@ -38,7 +38,7 @@ export const RecipeIngredientsList = ({
           marginRight: spacing.md,
         }}
       >
-        <Ionicons name="list" size={18} color="#5D4037" />
+        <Ionicons name="list" size={18} color={colors.content.body} />
       </View>
       <Text
         style={{
@@ -64,14 +64,10 @@ export const RecipeIngredientsList = ({
     ) : (
       <View
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          backgroundColor: colors.glass.solid,
           borderRadius: borderRadius.lg,
           padding: spacing.lg,
-          shadowColor: '#000',
-          shadowOffset: { width: 1, height: 2 },
-          shadowOpacity: 0.06,
-          shadowRadius: 6,
-          elevation: 2,
+          boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
         }}
       >
         {ingredients.map((ingredient, index) => (
@@ -82,7 +78,7 @@ export const RecipeIngredientsList = ({
               alignItems: 'flex-start',
               paddingVertical: spacing.sm,
               borderBottomWidth: index < ingredients.length - 1 ? 1 : 0,
-              borderBottomColor: 'rgba(139, 115, 85, 0.15)',
+              borderBottomColor: colors.chip.divider,
             }}
           >
             <View

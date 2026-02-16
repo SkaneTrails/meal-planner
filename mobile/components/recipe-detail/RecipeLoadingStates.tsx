@@ -23,15 +23,11 @@ export const RecipeLoading = ({ structured = true }: RecipeLoadingProps) => (
       style={{
         width: 64,
         height: 64,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        backgroundColor: colors.glass.card,
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 2, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 3,
+        boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.08)',
       }}
     >
       <BouncingLoader size={12} />
@@ -58,16 +54,12 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
       style={{
         width: 80,
         height: 80,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: colors.glass.bright,
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.lg,
-        shadowColor: '#000',
-        shadowOffset: { width: 2, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 3,
+        boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.08)',
       }}
     >
       <Ionicons

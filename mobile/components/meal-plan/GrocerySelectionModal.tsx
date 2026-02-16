@@ -270,7 +270,9 @@ const GroceryMealItem = ({
           marginRight: 14,
         }}
       >
-        {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
+        {isSelected && (
+          <Ionicons name="checkmark" size={16} color={colors.white} />
+        )}
       </View>
       <View style={{ flex: 1 }}>
         <Text
@@ -316,7 +318,7 @@ const GroceryMealItem = ({
             borderRadius: 15,
             backgroundColor: pressed
               ? 'rgba(122, 104, 88, 0.2)'
-              : 'rgba(255, 255, 255, 0.8)',
+              : colors.glass.medium,
             alignItems: 'center',
             justifyContent: 'center',
           })}
@@ -354,7 +356,7 @@ const GroceryMealItem = ({
             borderRadius: 15,
             backgroundColor: pressed
               ? 'rgba(122, 104, 88, 0.2)'
-              : 'rgba(255, 255, 255, 0.8)',
+              : colors.glass.medium,
             alignItems: 'center',
             justifyContent: 'center',
           })}

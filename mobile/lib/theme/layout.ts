@@ -64,64 +64,17 @@ export const iconContainer = {
   '2xl': 80,
 } as const;
 
-// Shadow presets - consistent bottom-right direction
+// Shadow presets — boxShadow shorthand (RN 0.76+)
+// Format: 'offsetX offsetY blurRadius spreadRadius color'
 export const shadows = {
-  none: {
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-  },
-  xs: {
-    shadowColor: '#000',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  sm: {
-    shadowColor: '#000',
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  md: {
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  lg: {
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 5,
-  },
-  xl: {
-    shadowColor: '#000',
-    shadowOffset: { width: 3, height: 12 },
-    shadowOpacity: 0.12,
-    shadowRadius: 28,
-    elevation: 8,
-  },
-  glow: {
-    shadowColor: '#E8A87C',
-    shadowOffset: { width: 1, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 6,
-  },
-  glowSoft: {
-    shadowColor: '#E8A87C',
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
-  },
+  none: { boxShadow: '0px 0px 0px 0px transparent' },
+  xs: { boxShadow: '1px 1px 2px 0px rgba(0, 0, 0, 0.03)' },
+  sm: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.04)' },
+  md: { boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.06)' },
+  lg: { boxShadow: '2px 8px 20px 0px rgba(0, 0, 0, 0.08)' },
+  xl: { boxShadow: '3px 12px 28px 0px rgba(0, 0, 0, 0.12)' },
+  glow: { boxShadow: '1px 4px 16px 0px rgba(232, 168, 124, 0.25)' },
+  glowSoft: { boxShadow: '1px 2px 10px 0px rgba(232, 168, 124, 0.15)' },
 } as const;
 
 // Animation durations - smooth, premium feel

@@ -118,14 +118,13 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
             flex: 1,
             paddingVertical: 10,
             borderRadius: 10,
-            backgroundColor: activeTab === tab ? '#FFFFFF' : 'transparent',
+            backgroundColor: activeTab === tab ? colors.white : 'transparent',
             alignItems: 'center',
             transform: [{ scale: pressed ? 0.98 : 1 }],
-            shadowColor: activeTab === tab ? '#000' : 'transparent',
-            shadowOffset: { width: 1, height: 1 },
-            shadowOpacity: activeTab === tab ? 0.08 : 0,
-            shadowRadius: 4,
-            elevation: activeTab === tab ? 2 : 0,
+            boxShadow:
+              activeTab === tab
+                ? '1px 1px 4px 0px rgba(0, 0, 0, 0.08)'
+                : '0px 0px 0px 0px transparent',
           })}
         >
           <Text

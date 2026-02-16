@@ -5,8 +5,10 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import {
+  BottomActionBar,
+  ChipPicker,
   FullScreenLoading,
   GradientBackground,
   PrimaryButton,
@@ -29,7 +31,6 @@ import {
   fontFamily,
   fontSize,
   layout,
-  letterSpacing,
   spacing,
 } from '@/lib/theme';
 import type {
@@ -139,135 +140,36 @@ export default function ReviewRecipeScreen() {
         )}
 
         {/* Diet Type Picker */}
-        <View style={{ marginBottom: spacing.xl }}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
-              color: colors.gray[500],
-              marginBottom: spacing.sm,
-              textTransform: 'uppercase',
-              letterSpacing: letterSpacing.wide,
-            }}
-          >
-            {t('recipe.dietType')}
-          </Text>
-          <View
-            style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
-          >
-            {DIET_OPTIONS.map(({ value, labelKey, emoji }) => {
-              const isSelected = dietLabel === value;
-              return (
-                <Pressable
-                  key={labelKey}
-                  onPress={() => setDietLabel(value)}
-                  style={({ pressed }) => ({
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: isSelected
-                      ? colors.primary
-                      : pressed
-                        ? colors.bgMid
-                        : colors.glass.card,
-                    paddingHorizontal: spacing.md,
-                    paddingVertical: spacing.sm,
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: isSelected
-                      ? colors.primary
-                      : colors.glass.border,
-                  })}
-                >
-                  <Text style={{ marginRight: spacing.xs }}>{emoji}</Text>
-                  <Text
-                    style={{
-                      fontSize: fontSize.lg,
-                      fontFamily: fontFamily.bodyMedium,
-                      color: isSelected ? colors.white : colors.text.inverse,
-                    }}
-                  >
-                    {t(labelKey)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+        <ChipPicker
+          label={t('recipe.dietType')}
+          options={DIET_OPTIONS}
+          selected={dietLabel}
+          onSelect={setDietLabel}
+          t={t}
+        />
 
         {/* Meal Type Picker */}
-        <View style={{ marginBottom: spacing.xl }}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
-              color: colors.gray[500],
-              marginBottom: spacing.sm,
-              textTransform: 'uppercase',
-              letterSpacing: letterSpacing.wide,
-            }}
-          >
-            {t('recipe.mealTypeLabel')}
-          </Text>
-          <View
-            style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}
-          >
-            {MEAL_OPTIONS.map(({ value, labelKey }) => {
-              const isSelected = mealLabel === value;
-              return (
-                <Pressable
-                  key={labelKey}
-                  onPress={() => setMealLabel(value)}
-                  style={({ pressed }) => ({
-                    backgroundColor: isSelected
-                      ? colors.primary
-                      : pressed
-                        ? colors.bgMid
-                        : colors.glass.card,
-                    paddingHorizontal: spacing.md,
-                    paddingVertical: spacing.sm,
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: isSelected
-                      ? colors.primary
-                      : colors.glass.border,
-                  })}
-                >
-                  <Text
-                    style={{
-                      fontSize: fontSize.lg,
-                      fontFamily: fontFamily.bodyMedium,
-                      color: isSelected ? colors.white : colors.text.inverse,
-                    }}
-                  >
-                    {t(labelKey)}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+        <ChipPicker
+          label={t('recipe.mealTypeLabel')}
+          options={MEAL_OPTIONS}
+          selected={mealLabel}
+          onSelect={setMealLabel}
+          t={t}
+        />
 
         {/* Recipe Preview (Ingredients + Instructions) */}
         <ReviewRecipePreview recipe={selectedRecipe} t={t} />
       </ScrollView>
 
       {/* Save Button */}
-      <View
-        style={{
-          position: 'absolute',
-          bottom: layout.tabBar.overlayBottomOffset,
-          left: 0,
-          right: 0,
-          padding: spacing.lg,
-        }}
-      >
+      <BottomActionBar>
         <PrimaryButton
           onPress={handleSave}
           isPending={createRecipe.isPending}
           label={t('reviewRecipe.saveRecipe')}
           color={colors.primary}
         />
-      </View>
+      </BottomActionBar>
     </GradientBackground>
   );
 }

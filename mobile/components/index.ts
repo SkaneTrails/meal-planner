@@ -3,13 +3,16 @@
  */
 
 export { AnimatedPressable } from './AnimatedPressable';
+export { BottomActionBar } from './BottomActionBar';
 export { BottomSheetModal } from './BottomSheetModal';
 export { BouncingLoader } from './BouncingLoader';
+export { ChipPicker } from './ChipPicker';
 export { EmptyState } from './EmptyState';
 export { EnhancingOverlay } from './EnhancingOverlay';
 export { ErrorBoundary } from './ErrorBoundary';
 export { FilterChip } from './FilterChip';
 export { FloatingTabBar } from './FloatingTabBar';
+export { FormField } from './FormField';
 export { FullScreenLoading } from './FullScreenLoading';
 export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow } from './GroceryItemRow';

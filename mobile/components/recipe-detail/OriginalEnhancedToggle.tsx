@@ -38,22 +38,20 @@ export const OriginalEnhancedToggle = ({
         justifyContent: 'center',
         paddingVertical: spacing.sm,
         borderRadius: borderRadius.md,
-        backgroundColor: showOriginal
-          ? 'rgba(255, 255, 255, 0.85)'
-          : 'transparent',
+        backgroundColor: showOriginal ? colors.glass.card : 'transparent',
       }}
     >
       <Ionicons
         name="document-text-outline"
         size={16}
-        color={showOriginal ? '#5D4037' : 'rgba(93, 64, 55, 0.5)'}
+        color={showOriginal ? colors.content.body : 'rgba(93, 64, 55, 0.5)'}
         style={{ marginRight: spacing.xs }}
       />
       <Text
         style={{
           fontSize: fontSize.md,
           fontFamily: showOriginal ? fontFamily.bodySemibold : fontFamily.body,
-          color: showOriginal ? '#5D4037' : 'rgba(93, 64, 55, 0.5)',
+          color: showOriginal ? colors.content.body : 'rgba(93, 64, 55, 0.5)',
         }}
       >
         {t('recipe.showOriginal')}
@@ -68,9 +66,7 @@ export const OriginalEnhancedToggle = ({
         justifyContent: 'center',
         paddingVertical: spacing.sm,
         borderRadius: borderRadius.md,
-        backgroundColor: showOriginal
-          ? 'transparent'
-          : 'rgba(255, 255, 255, 0.85)',
+        backgroundColor: showOriginal ? 'transparent' : colors.glass.card,
       }}
     >
       <Ionicons

@@ -128,19 +128,15 @@ export default function MealPlanScreen() {
                     style={{
                       marginBottom: 16,
                       backgroundColor: isToday
-                        ? 'rgba(255, 255, 255, 0.96)'
-                        : 'rgba(255, 255, 255, 0.92)',
+                        ? colors.glass.heavy
+                        : colors.glass.solid,
                       borderRadius: 18,
                       padding: 14,
                       borderWidth: 1,
                       borderColor: isToday
                         ? colors.surface.active
                         : 'rgba(0, 0, 0, 0.04)',
-                      shadowColor: '#000',
-                      shadowOffset: { width: 2, height: 6 },
-                      shadowOpacity: 0.1,
-                      shadowRadius: 16,
-                      elevation: 4,
+                      boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)',
                     }}
                   >
                     <DayHeader
@@ -274,11 +270,7 @@ export default function MealPlanScreen() {
                 paddingHorizontal: spacing.lg,
                 paddingVertical: 10,
                 borderRadius: borderRadius.full,
-                shadowColor: '#000',
-                shadowOffset: { width: 1, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 8,
-                elevation: 4,
+                boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)',
               }}
             >
               <Ionicons name="today" size={16} color={colors.white} />

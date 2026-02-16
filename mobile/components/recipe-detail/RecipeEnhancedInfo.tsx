@@ -62,16 +62,12 @@ export const RecipeEnhancedInfo = ({
         </View>
         <View
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            backgroundColor: colors.glass.solid,
             borderRadius: borderRadius.lg,
             padding: spacing.lg,
             borderLeftWidth: 4,
             borderLeftColor: colors.ai.primary,
-            shadowColor: '#000',
-            shadowOffset: { width: 1, height: 2 },
-            shadowOpacity: 0.06,
-            shadowRadius: 6,
-            elevation: 2,
+            boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
           }}
         >
           <Text
@@ -95,14 +91,10 @@ export const RecipeEnhancedInfo = ({
         <View
           style={{
             marginBottom: spacing.xl,
-            backgroundColor: 'rgba(255, 255, 255, 0.92)',
+            backgroundColor: colors.glass.solid,
             borderRadius: borderRadius.lg,
             overflow: 'hidden',
-            shadowColor: '#000',
-            shadowOffset: { width: 1, height: 2 },
-            shadowOpacity: 0.06,
-            shadowRadius: 6,
-            elevation: 2,
+            boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)',
           }}
         >
           <Pressable
@@ -131,7 +123,7 @@ export const RecipeEnhancedInfo = ({
               style={{
                 fontSize: fontSize['3xl'],
                 fontFamily: fontFamily.display,
-                color: '#5D4037',
+                color: colors.content.body,
                 letterSpacing: letterSpacing.normal,
                 flex: 1,
               }}
@@ -141,7 +133,7 @@ export const RecipeEnhancedInfo = ({
             <Ionicons
               name={showAiChanges ? 'chevron-up' : 'chevron-down'}
               size={20}
-              color="#5D4037"
+              color={colors.content.body}
             />
           </Pressable>
           {showAiChanges && (
@@ -150,7 +142,7 @@ export const RecipeEnhancedInfo = ({
                 paddingHorizontal: spacing.lg,
                 paddingBottom: spacing.lg,
                 borderTopWidth: 1,
-                borderTopColor: 'rgba(139, 115, 85, 0.15)',
+                borderTopColor: colors.chip.divider,
                 paddingTop: spacing.md,
               }}
             >
@@ -177,7 +169,7 @@ export const RecipeEnhancedInfo = ({
                       flex: 1,
                       fontSize: fontSize.lg,
                       fontFamily: fontFamily.body,
-                      color: '#5D4037',
+                      color: colors.content.body,
                       lineHeight: 20,
                     }}
                   >

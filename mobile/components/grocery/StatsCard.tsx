@@ -42,7 +42,7 @@ const ActionButtons = ({
       <Ionicons
         name={showAddItem ? 'close' : 'add'}
         size={18}
-        color="#FFFFFF"
+        color={colors.white}
       />
     </AnimatedPressable>
 
@@ -103,7 +103,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
       <View
         style={{
           height: 6,
-          backgroundColor: 'rgba(107, 142, 107, 0.15)',
+          backgroundColor: colors.ai.light,
           borderRadius: 3,
           overflow: 'hidden',
         }}
@@ -144,7 +144,7 @@ const ItemsAtHomeIndicator = ({
         marginTop: 10,
         paddingVertical: 6,
         paddingHorizontal: 10,
-        backgroundColor: 'rgba(139, 115, 85, 0.15)',
+        backgroundColor: colors.chip.divider,
         borderRadius: 8,
         gap: 6,
       }}
@@ -205,15 +205,11 @@ export const StatsCard = ({
   return (
     <View
       style={{
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.white,
         borderRadius: borderRadius.md,
         padding: spacing.md,
         marginBottom: spacing.sm,
-        shadowColor: '#000',
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.06,
-        shadowRadius: 4,
-        elevation: 2,
+        boxShadow: '1px 1px 4px 0px rgba(0, 0, 0, 0.06)',
       }}
     >
       <View
