@@ -6,9 +6,11 @@ import { useTranslation } from '@/lib/i18n';
 import { type AppLanguage, LANGUAGES } from '@/lib/settings-context';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
   fontWeight,
+  iconContainer,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -185,9 +187,7 @@ export const LanguageSection = ({
         >
           <View
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 16,
+              ...circleStyle(iconContainer.sm),
               overflow: 'hidden',
               marginRight: spacing.md,
               backgroundColor: '#E8E8E8',
@@ -195,7 +195,7 @@ export const LanguageSection = ({
           >
             <Image
               source={{ uri: FLAG_URLS[lang.code] }}
-              style={{ width: 32, height: 32 }}
+              style={{ width: iconContainer.sm, height: iconContainer.sm }}
               contentFit="cover"
             />
           </View>

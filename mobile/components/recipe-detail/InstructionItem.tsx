@@ -2,9 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontFamily,
   fontSize,
+  iconContainer,
   letterSpacing,
   shadows,
   spacing,
@@ -131,9 +133,7 @@ export const InstructionItem = ({
     >
       <View
         style={{
-          width: 32,
-          height: 32,
-          borderRadius: 16,
+          ...circleStyle(iconContainer.sm),
           backgroundColor: isCompleted ? colors.success : colors.content.body,
           alignItems: 'center',
           justifyContent: 'center',

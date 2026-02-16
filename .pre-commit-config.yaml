@@ -124,7 +124,7 @@ repos:
     hooks:
       - id: biome
         name: Biome (mobile)
-        entry: pnpm -C mobile exec biome check
+        entry: pnpm -C mobile exec biome check --write
         language: system
         files: ^mobile/.*\.(ts|tsx|js|jsx|json|css)$
         pass_filenames: false

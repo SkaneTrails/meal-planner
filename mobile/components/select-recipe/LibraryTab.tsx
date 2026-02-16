@@ -3,7 +3,7 @@ import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
-import { colors, fontSize, spacing } from '@/lib/theme';
+import { colors, fontSize, layout, spacing } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 
@@ -82,7 +82,10 @@ export const LibraryTab = ({ state }: LibraryTabProps) => {
             onPress={() => onRecipePress(item.id)}
           />
         )}
-        contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+        contentContainerStyle={{
+          padding: layout.screenPaddingHorizontal,
+          paddingBottom: layout.tabBar.contentBottomPadding,
+        }}
         ListEmptyComponent={
           <EmptyState
             icon={searchQuery ? 'search' : 'book-outline'}

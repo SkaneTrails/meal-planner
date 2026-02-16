@@ -85,8 +85,8 @@ export const RecipeHero = ({
         left: 0,
         right: 0,
         bottom: 0,
-        paddingTop: 100,
-        paddingBottom: 48,
+        paddingTop: Math.round((headerHeight * 2) / 7),
+        paddingBottom: spacing['4xl'] + spacing.sm,
         paddingHorizontal: spacing.xl,
       }}
     >

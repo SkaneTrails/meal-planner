@@ -21,7 +21,13 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
-import { colors, layout, spacing } from '@/lib/theme';
+import {
+  circleStyle,
+  colors,
+  iconContainer,
+  layout,
+  spacing,
+} from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
@@ -130,9 +136,7 @@ export default function RecipeDetailScreen() {
             <Pressable
               onPress={() => router.replace('/(tabs)/recipes')}
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
+                ...circleStyle(iconContainer.md),
                 backgroundColor: HEADER_BUTTON_BG,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -149,9 +153,7 @@ export default function RecipeDetailScreen() {
                 if (id) toggleFavorite(id);
               }}
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
+                ...circleStyle(iconContainer.md),
                 backgroundColor: HEADER_BUTTON_BG,
                 alignItems: 'center',
                 justifyContent: 'center',

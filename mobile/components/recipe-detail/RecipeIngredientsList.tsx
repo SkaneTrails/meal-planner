@@ -3,9 +3,11 @@ import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontFamily,
   fontSize,
+  iconContainer,
   letterSpacing,
   shadows,
   spacing,
@@ -30,9 +32,7 @@ export const RecipeIngredientsList = ({
     >
       <View
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
+          ...circleStyle(iconContainer.xs),
           backgroundColor: colors.surface.active,
           alignItems: 'center',
           justifyContent: 'center',

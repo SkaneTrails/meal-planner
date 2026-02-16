@@ -5,8 +5,11 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
+  iconContainer,
+  layout,
   letterSpacing,
   shadows,
   spacing,
@@ -33,7 +36,10 @@ export const RandomTab = ({ state }: RandomTabProps) => {
   if (!randomRecipe) {
     return (
       <ScrollView
-        contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}
+        contentContainerStyle={{
+          padding: spacing.xl,
+          paddingBottom: layout.tabBar.contentBottomPadding,
+        }}
       >
         <EmptyState
           icon="dice-outline"
@@ -51,7 +57,10 @@ export const RandomTab = ({ state }: RandomTabProps) => {
 
   return (
     <ScrollView
-      contentContainerStyle={{ padding: spacing.xl, paddingBottom: 100 }}
+      contentContainerStyle={{
+        padding: spacing.xl,
+        paddingBottom: layout.tabBar.contentBottomPadding,
+      }}
     >
       <View style={{ alignItems: 'center' }}>
         {/* Header */}
@@ -130,9 +139,7 @@ const RandomHeader = ({
   <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
     <View
       style={{
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        ...circleStyle(iconContainer.xl),
         backgroundColor: colors.ai.light,
         alignItems: 'center',
         justifyContent: 'center',

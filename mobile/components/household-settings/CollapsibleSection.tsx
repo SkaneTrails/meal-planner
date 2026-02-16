@@ -1,7 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { type ReactNode, useRef } from 'react';
 import { Animated, LayoutAnimation, Pressable, Text, View } from 'react-native';
-import { colors, fontSize, fontWeight, spacing } from '@/lib/theme';
+import {
+  circleStyle,
+  colors,
+  fontSize,
+  fontWeight,
+  iconContainer,
+  spacing,
+} from '@/lib/theme';
 
 interface CollapsibleSectionProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -58,9 +65,7 @@ export const CollapsibleSection = ({
       >
         <View
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
+            ...circleStyle(iconContainer.md),
             backgroundColor: colors.glass.faint,
             alignItems: 'center',
             justifyContent: 'center',

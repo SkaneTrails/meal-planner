@@ -18,7 +18,15 @@ import {
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { colors, fontFamily, fontSize, fontWeight, shadows } from '@/lib/theme';
+import {
+  circleStyle,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  iconContainer,
+  shadows,
+} from '@/lib/theme';
 import type { DietLabel, Recipe } from '@/lib/types';
 
 const PLACEHOLDER_BLURHASH = 'L5PZfS~q.8-;_3t7xuIU00og?bD%';
@@ -236,8 +244,10 @@ export const RecipeCard = ({
     );
   }
 
+  // Content area below image: title (20px + 4px margin) + meal badge row (20px) + padding (6+8+6)
+  const CARD_CONTENT_HEIGHT = 64;
   const imageHeight = cardSize ? cardSize * 0.65 : 120;
-  const cardHeight = imageHeight + 64;
+  const cardHeight = imageHeight + CARD_CONTENT_HEIGHT;
 
   return (
     <Pressable
@@ -323,9 +333,7 @@ export const RecipeCard = ({
                 backgroundColor: isRecipeFavorite
                   ? 'rgba(220, 38, 38, 0.9)'
                   : colors.glass.bright,
-                width: 32,
-                height: 32,
-                borderRadius: 16,
+                ...circleStyle(iconContainer.sm),
                 alignItems: 'center',
                 justifyContent: 'center',
                 ...shadows.sm,

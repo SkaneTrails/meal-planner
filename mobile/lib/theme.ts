@@ -7,6 +7,7 @@ export { colors, lightColors } from './theme/colors';
 export {
   animation,
   borderRadius,
+  circleStyle,
   iconContainer,
   iconSize,
   layout,

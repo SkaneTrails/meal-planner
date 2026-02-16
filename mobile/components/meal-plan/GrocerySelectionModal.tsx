@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal, PrimaryButton } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import { colors, fontFamily } from '@/lib/theme';
+import { circleStyle, colors, fontFamily, iconContainer } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
   formatDateLocal,
@@ -171,9 +171,7 @@ const GroceryWeekSelector = ({
     <Pressable
       onPress={onPreviousWeek}
       style={({ pressed }) => ({
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+        ...circleStyle(iconContainer.xs),
         backgroundColor: pressed
           ? 'rgba(122, 104, 88, 0.15)'
           : 'rgba(122, 104, 88, 0.08)',
@@ -205,9 +203,7 @@ const GroceryWeekSelector = ({
     <Pressable
       onPress={onNextWeek}
       style={({ pressed }) => ({
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+        ...circleStyle(iconContainer.xs),
         backgroundColor: pressed
           ? 'rgba(122, 104, 88, 0.15)'
           : 'rgba(122, 104, 88, 0.08)',

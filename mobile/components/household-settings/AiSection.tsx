@@ -4,9 +4,11 @@ import { RadioGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
   fontWeight,
+  iconContainer,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -112,9 +114,7 @@ export const AiSection = ({
             onPress={() => handleMeatPortionsChange(-1)}
             disabled={disabledByAi || meatPortions <= 0}
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
+              ...circleStyle(iconContainer.md),
               backgroundColor:
                 disabledByAi || meatPortions <= 0
                   ? colors.border
@@ -150,9 +150,7 @@ export const AiSection = ({
             onPress={() => handleMeatPortionsChange(1)}
             disabled={disabledByAi || meatPortions >= defaultServings}
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
+              ...circleStyle(iconContainer.md),
               backgroundColor:
                 disabledByAi || meatPortions >= defaultServings
                   ? colors.border

@@ -3,9 +3,11 @@ import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontFamily,
   fontSize,
+  iconContainer,
   letterSpacing,
   spacing,
 } from '@/lib/theme';
@@ -35,9 +37,7 @@ export const RecipeInstructions = ({
     >
       <View
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
+          ...circleStyle(iconContainer.xs),
           backgroundColor: colors.surface.active,
           alignItems: 'center',
           justifyContent: 'center',
@@ -140,9 +140,7 @@ export const RecipeInstructions = ({
           >
             <View
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
+                ...circleStyle(iconContainer.sm),
                 backgroundColor: isCompleted ? colors.success : colors.primary,
                 alignItems: 'center',
                 justifyContent: 'center',
