@@ -20,6 +20,7 @@ const sv: Translations = {
     search: 'Sök',
     done: 'Klar',
     back: 'Tillbaka',
+    confirm: 'Bekräfta',
     aiDisabledHint:
       'Aktivera AI i hushållsinställningar för att använda denna funktion',
   },
@@ -444,6 +445,9 @@ const sv: Translations = {
     noHousehold: 'Du tillhör inte något hushåll ännu',
     language: 'Språk',
     languageDesc: 'Välj ditt föredragna språk',
+    chooseLanguageTitle: 'Välj ditt språk',
+    chooseLanguageMessage:
+      'Välj språk för receptförbättring. Recept översätts och anpassas till detta språk.',
     itemsAtHome: 'Varor hemma',
     itemsAtHomeDesc: 'Dessa visas inte i din inköpslista',
     yourItems: 'Dina varor ({{count}})',

@@ -21,6 +21,7 @@ const en = {
     search: 'Search',
     done: 'Done',
     back: 'Back',
+    confirm: 'Confirm',
     aiDisabledHint: 'Enable AI in household settings to use this feature',
   },
 
@@ -453,6 +454,9 @@ const en = {
     noHousehold: 'You are not part of a household yet',
     language: 'Language',
     languageDesc: 'Choose your preferred language',
+    chooseLanguageTitle: 'Choose Your Language',
+    chooseLanguageMessage:
+      'Select the language for recipe enhancement. Recipes will be translated and adapted to this language.',
     itemsAtHome: 'Items at Home',
     itemsAtHomeDesc: "These won't appear in your grocery list",
     yourItems: 'Your items ({{count}})',

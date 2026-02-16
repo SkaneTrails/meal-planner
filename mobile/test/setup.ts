@@ -381,6 +381,7 @@ vi.mock('@/lib/settings-context', () => ({
     isFavorite: vi.fn(() => false),
     toggleShowHiddenRecipes: vi.fn(),
     isLoading: false,
+    needsLanguagePrompt: false,
   })),
   LANGUAGES: [
     { code: 'en', label: 'English', flag: '🇬🇧' },
