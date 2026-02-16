@@ -1,19 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
-
-const TAG_DOT_COLORS = [
-  '#7A9BBD', // steel blue
-  '#8B9D77', // sage green
-  '#C47D5A', // terracotta
-  '#9B7BB8', // lavender
-  '#5BA3A3', // teal
-  '#D4A574', // amber
-  '#B07070', // dusty rose
-  '#6B8FA3', // slate blue
-];
 
 interface DayHeaderProps {
   date: Date;
@@ -96,21 +84,50 @@ export const DayHeader = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.surface.tint,
-                paddingHorizontal: 10,
-                paddingVertical: 4,
-                borderRadius: borderRadius.md,
+                gap: 6,
               }}
             >
-              <Ionicons
-                name="document-text-outline"
-                size={12}
-                color={colors.content.icon}
-                style={{ marginRight: 4 }}
-              />
-              <Text style={{ fontSize: 12, color: colors.content.secondary }}>
-                {note}
-              </Text>
+              {note
+                .split(' ')
+                .filter((t) => t.trim())
+                .map((tag) => {
+                  const tagIndex = noteSuggestions.indexOf(tag);
+                  const dotColor =
+                    tagIndex >= 0
+                      ? colors.tagDot[tagIndex % colors.tagDot.length]
+                      : colors.content.icon;
+                  return (
+                    <View
+                      key={tag}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 5,
+                        backgroundColor: colors.surface.tint,
+                        paddingHorizontal: 10,
+                        paddingVertical: 4,
+                        borderRadius: borderRadius.md,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: 5,
+                          backgroundColor: dotColor,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: colors.content.secondary,
+                        }}
+                      >
+                        {tag}
+                      </Text>
+                    </View>
+                  );
+                })}
             </View>
           ) : (
             <View
@@ -234,10 +251,10 @@ const NoteEditor = ({
           >
             <View
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: TAG_DOT_COLORS[index % TAG_DOT_COLORS.length],
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: colors.tagDot[index % colors.tagDot.length],
               }}
             />
             <Text style={{ fontSize: 13, color: colors.content.headingWarm }}>

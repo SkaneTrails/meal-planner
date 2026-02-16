@@ -279,9 +279,9 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
           >
             <View
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
                 backgroundColor:
                   recipe.diet_label === 'veggie'
                     ? colors.diet.veggie.text

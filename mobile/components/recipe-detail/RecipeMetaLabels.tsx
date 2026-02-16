@@ -40,9 +40,9 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => (
       >
         <View
           style={{
-            width: 8,
-            height: 8,
-            borderRadius: 4,
+            width: 10,
+            height: 10,
+            borderRadius: 5,
             backgroundColor: DIET_LABELS[recipe.diet_label].dotColor,
           }}
         />

@@ -20,17 +20,6 @@ const DEFAULT_SUGGESTION_KEYS = [
   'party',
 ] as const;
 
-const TAG_DOT_COLORS = [
-  '#7A9BBD', // steel blue
-  '#8B9D77', // sage green
-  '#C47D5A', // terracotta
-  '#9B7BB8', // lavender
-  '#5BA3A3', // teal
-  '#D4A574', // amber
-  '#B07070', // dusty rose
-  '#6B8FA3', // slate blue
-];
-
 interface NoteSuggestionsSectionProps {
   suggestions: string[];
   canEdit: boolean;
@@ -181,11 +170,11 @@ const CurrentSuggestions = ({
           >
             <View
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
                 backgroundColor:
-                  TAG_DOT_COLORS[items.indexOf(item) % TAG_DOT_COLORS.length],
+                  colors.tagDot[items.indexOf(item) % colors.tagDot.length],
               }}
             />
             <Text
@@ -258,9 +247,9 @@ const PresetSuggestions = ({
           >
             <View
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
                 backgroundColor: `${colors.text.dark}40`,
               }}
             />
