@@ -30,14 +30,14 @@ export const inputStyle = {
 } as const;
 
 export const settingsTitleStyle = {
-  fontSize: 16,
+  fontSize: fontSize['2xl'],
   fontWeight: fontWeight.semibold,
-  color: colors.text.dark,
+  color: colors.content.body,
 } as const;
 
 export const settingsSubtitleStyle = {
   fontSize: fontSize.md,
-  color: colors.text.dark + '80',
+  color: colors.content.subtitle,
 } as const;
 
 export const accentUnderlineStyle = {
