@@ -61,6 +61,7 @@ interface SettingsContextType {
   settings: Settings;
   weekStart: WeekStart;
   isLoading: boolean;
+  needsLanguagePrompt: boolean;
   addItemAtHome: (item: string) => Promise<void>;
   removeItemAtHome: (item: string) => Promise<void>;
   isItemAtHome: (item: string) => boolean;
@@ -153,6 +154,17 @@ export const SettingsProvider = ({
   const cloudLanguage = householdSettings?.language;
   const resolvedLanguage: AppLanguage =
     cloudLanguage && isSupportedLanguage(cloudLanguage) ? cloudLanguage : 'en';
+
+  // Prompt user to pick a language if their own household has none set.
+  // Superusers may manage multiple households — only check the user's own.
+  const isSuperuser = currentUser?.role === 'superuser';
+  const needsLanguagePrompt =
+    isAuthenticated &&
+    !isUserLoading &&
+    !isSettingsLoading &&
+    !!householdId &&
+    !isSuperuser &&
+    !cloudLanguage;
 
   // Resolve week start from household settings
   const resolvedWeekStart: WeekStart =
@@ -295,6 +307,7 @@ export const SettingsProvider = ({
       settings,
       weekStart: resolvedWeekStart,
       isLoading,
+      needsLanguagePrompt,
       addItemAtHome,
       removeItemAtHome,
       isItemAtHome,
@@ -308,6 +321,7 @@ export const SettingsProvider = ({
       settings,
       resolvedWeekStart,
       isLoading,
+      needsLanguagePrompt,
       addItemAtHome,
       removeItemAtHome,
       isItemAtHome,

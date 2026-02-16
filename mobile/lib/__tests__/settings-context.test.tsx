@@ -524,3 +524,131 @@ describe('SettingsProvider auth gate', () => {
     });
   });
 });
+
+describe('needsLanguagePrompt', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    for (const key of Object.keys(mockStorage)) {
+      delete mockStorage[key];
+    }
+    mockItemsAtHome = [];
+    mockFavoriteRecipes = [];
+    mockHouseholdLanguage = 'en';
+
+    mockUseAuth.mockReturnValue({
+      user: { email: 'test@example.com' } as any,
+      loading: false,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    mockUseCurrentUser.mockImplementation(() => ({
+      data: { uid: 'test-uid', email: 'test@example.com', household_id: 'test-household', role: 'member' },
+      isLoading: false,
+    }));
+
+    mockUseItemsAtHome.mockImplementation(() => ({
+      data: { items_at_home: mockItemsAtHome },
+      isLoading: false,
+    }));
+
+    mockUseAddItemAtHome.mockImplementation(() => ({ mutateAsync: vi.fn() }));
+    mockUseRemoveItemAtHome.mockImplementation(() => ({ mutateAsync: vi.fn() }));
+    mockUseFavoriteRecipes.mockImplementation(() => ({
+      data: { favorite_recipes: mockFavoriteRecipes },
+      isLoading: false,
+    }));
+    mockUseAddFavoriteRecipe.mockImplementation(() => ({ mutateAsync: vi.fn() }));
+    mockUseRemoveFavoriteRecipe.mockImplementation(() => ({ mutateAsync: vi.fn() }));
+    mockUseUpdateHouseholdSettings.mockImplementation(() => ({ mutateAsync: vi.fn() }));
+  });
+
+  it('is true when household has no language set', async () => {
+    mockUseHouseholdSettings.mockImplementation(() => ({
+      data: { language: null },
+      isLoading: false,
+    }));
+
+    const { result, unmount } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.needsLanguagePrompt).toBe(true);
+    unmount();
+  });
+
+  it('is false when household has a language set', async () => {
+    mockUseHouseholdSettings.mockImplementation(() => ({
+      data: { language: 'sv' },
+      isLoading: false,
+    }));
+
+    const { result, unmount } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.needsLanguagePrompt).toBe(false);
+    unmount();
+  });
+
+  it('is false for superusers even without language', async () => {
+    mockUseCurrentUser.mockImplementation(() => ({
+      data: {
+        uid: 'admin-uid',
+        email: 'admin@example.com',
+        household_id: 'test-household',
+        role: 'superuser',
+      },
+      isLoading: false,
+    }));
+    mockUseHouseholdSettings.mockImplementation(() => ({
+      data: { language: null },
+      isLoading: false,
+    }));
+
+    const { result, unmount } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.needsLanguagePrompt).toBe(false);
+    unmount();
+  });
+
+  it('is false while settings are still loading', async () => {
+    mockUseHouseholdSettings.mockImplementation(() => ({
+      data: undefined,
+      isLoading: true,
+    }));
+
+    const { result, unmount } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    expect(result.current.needsLanguagePrompt).toBe(false);
+    unmount();
+  });
+
+  it('is false when user has no household', async () => {
+    mockUseCurrentUser.mockImplementation(() => ({
+      data: { uid: 'test-uid', email: 'test@example.com', household_id: null },
+      isLoading: false,
+    }));
+    mockUseHouseholdSettings.mockImplementation(() => ({
+      data: undefined,
+      isLoading: false,
+    }));
+
+    const { result, unmount } = renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.needsLanguagePrompt).toBe(false);
+    unmount();
+  });
+});

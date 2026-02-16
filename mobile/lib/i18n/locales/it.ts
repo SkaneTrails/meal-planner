@@ -20,6 +20,7 @@ const it: Translations = {
     search: 'Cerca',
     done: 'Fatto',
     back: 'Indietro',
+    confirm: 'Conferma',
     aiDisabledHint:
       'Abilita AI nelle impostazioni del nucleo familiare per usare questa funzione',
   },
@@ -453,6 +454,9 @@ const it: Translations = {
     noHousehold: 'Non fai ancora parte di un nucleo familiare',
     language: 'Lingua',
     languageDesc: 'Scegli la tua lingua preferita',
+    chooseLanguageTitle: 'Scegli la tua lingua',
+    chooseLanguageMessage:
+      'Seleziona la lingua per il miglioramento delle ricette. Le ricette verranno tradotte e adattate a questa lingua.',
     itemsAtHome: 'Articoli a casa',
     itemsAtHomeDesc: 'Non appariranno nella lista della spesa',
     yourItems: 'I tuoi articoli ({{count}})',
