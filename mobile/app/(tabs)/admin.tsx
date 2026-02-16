@@ -33,6 +33,7 @@ import {
   fontSize,
   fontWeight,
   iconContainer,
+  layout,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -85,7 +86,14 @@ export default function AdminScreen() {
 
   return (
     <GradientBackground muted>
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+          width: '100%',
+        }}
+      >
         <AdminHeader onBack={() => router.back()} />
 
         <CurrentUserInfo email={currentUser.email} role={currentUser.role} />
@@ -129,23 +137,23 @@ export default function AdminScreen() {
             }
           />
         </View>
-
-        <CreateHouseholdModal
-          visible={showCreateModal}
-          householdName={newHouseholdName}
-          onHouseholdNameChange={setNewHouseholdName}
-          onCreate={handleCreateHousehold}
-          onClose={() => setShowCreateModal(false)}
-          isPending={createHousehold.isPending}
-        />
-
-        {selectedHousehold && (
-          <HouseholdDetailModal
-            household={selectedHousehold}
-            onClose={() => setSelectedHousehold(null)}
-          />
-        )}
       </View>
+
+      <CreateHouseholdModal
+        visible={showCreateModal}
+        householdName={newHouseholdName}
+        onHouseholdNameChange={setNewHouseholdName}
+        onCreate={handleCreateHousehold}
+        onClose={() => setShowCreateModal(false)}
+        isPending={createHousehold.isPending}
+      />
+
+      {selectedHousehold && (
+        <HouseholdDetailModal
+          household={selectedHousehold}
+          onClose={() => setSelectedHousehold(null)}
+        />
+      )}
     </GradientBackground>
   );
 }

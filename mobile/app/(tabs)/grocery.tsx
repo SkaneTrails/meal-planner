@@ -15,7 +15,7 @@ import {
   StatsCard,
 } from '@/components/grocery';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
-import { spacing } from '@/lib/theme';
+import { layout, spacing } from '@/lib/theme';
 
 export default function GroceryScreen() {
   const {
@@ -45,7 +45,14 @@ export default function GroceryScreen() {
   if (isLoading && !hasLoadedOnce) {
     return (
       <GradientBackground neutral>
-        <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
+            width: '100%',
+          }}
+        >
           <GroceryHeader />
           <GroceryListSkeleton />
         </View>
@@ -55,7 +62,14 @@ export default function GroceryScreen() {
 
   return (
     <GradientBackground neutral>
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+          width: '100%',
+        }}
+      >
         <GroceryHeader />
 
         <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>

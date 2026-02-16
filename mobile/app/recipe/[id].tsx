@@ -221,7 +221,7 @@ export default function RecipeDetailScreen() {
             style={{
               padding: spacing.xl,
               paddingBottom: layout.tabBar.contentBottomPadding,
-              maxWidth: 720,
+              maxWidth: layout.contentMaxWidth,
               alignSelf: 'center',
               width: '100%',
             }}

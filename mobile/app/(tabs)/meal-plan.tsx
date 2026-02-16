@@ -78,7 +78,14 @@ export default function MealPlanScreen() {
 
   return (
     <GradientBackground structured>
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+          width: '100%',
+        }}
+      >
         {/* Header */}
         <View
           style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}
@@ -294,24 +301,24 @@ export default function MealPlanScreen() {
             </Pressable>
           </Animated.View>
         )}
-
-        <GrocerySelectionModal
-          visible={showGroceryModal}
-          groceryWeekDates={groceryWeekDates}
-          language={language}
-          t={t}
-          mealTypes={MEAL_TYPES}
-          selectedMeals={selectedMeals}
-          mealServings={mealServings}
-          getMealForSlot={getMealForSlot}
-          onClose={() => setShowGroceryModal(false)}
-          onCreateGroceryList={handleCreateGroceryList}
-          onToggleMeal={handleToggleMeal}
-          onChangeServings={handleChangeServings}
-          onPreviousWeek={() => setGroceryWeekOffset((prev) => prev - 1)}
-          onNextWeek={() => setGroceryWeekOffset((prev) => prev + 1)}
-        />
       </View>
+
+      <GrocerySelectionModal
+        visible={showGroceryModal}
+        groceryWeekDates={groceryWeekDates}
+        language={language}
+        t={t}
+        mealTypes={MEAL_TYPES}
+        selectedMeals={selectedMeals}
+        mealServings={mealServings}
+        getMealForSlot={getMealForSlot}
+        onClose={() => setShowGroceryModal(false)}
+        onCreateGroceryList={handleCreateGroceryList}
+        onToggleMeal={handleToggleMeal}
+        onChangeServings={handleChangeServings}
+        onPreviousWeek={() => setGroceryWeekOffset((prev) => prev - 1)}
+        onNextWeek={() => setGroceryWeekOffset((prev) => prev + 1)}
+      />
     </GradientBackground>
   );
 }

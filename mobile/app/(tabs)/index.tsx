@@ -66,6 +66,9 @@ export default function HomeScreen() {
         contentContainerStyle={{
           paddingBottom: layout.tabBar.contentBottomPadding,
           paddingTop: 0,
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+          width: '100%',
         }}
         refreshControl={
           <RefreshControl

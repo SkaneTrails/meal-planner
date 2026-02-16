@@ -73,6 +73,9 @@ export default function AddRecipeScreen() {
           contentContainerStyle={{
             padding: spacing.lg,
             paddingBottom: layout.tabBar.contentBottomPadding,
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
+            width: '100%',
           }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

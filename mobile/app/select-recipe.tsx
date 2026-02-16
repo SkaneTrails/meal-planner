@@ -66,32 +66,41 @@ export default function SelectRecipeScreen() {
         structured
         style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
       >
-        {/* Header - same style as other pages */}
         <View
-          style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
+          style={{
+            flex: 1,
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
+            width: '100%',
+          }}
         >
-          <ScreenTitle title={headerTitle} subtitle={headerSubtitle} />
+          {/* Header - same style as other pages */}
+          <View
+            style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
+          >
+            <ScreenTitle title={headerTitle} subtitle={headerSubtitle} />
+          </View>
+
+          {!mode && (
+            <TabBar
+              tabs={TAB_KEYS}
+              activeTab={activeTab}
+              onTabPress={(tab) => {
+                setActiveTab(tab);
+                if (tab === 'random') shuffleRandom();
+              }}
+              labels={{
+                library: t('selectRecipe.tabs.library'),
+                random: t('selectRecipe.tabs.random'),
+                quick: t('selectRecipe.tabs.quick'),
+                copy: t('selectRecipe.tabs.copy'),
+                extras: t('selectRecipe.tabs.extras'),
+              }}
+            />
+          )}
+
+          {renderActiveTab()}
         </View>
-
-        {!mode && (
-          <TabBar
-            tabs={TAB_KEYS}
-            activeTab={activeTab}
-            onTabPress={(tab) => {
-              setActiveTab(tab);
-              if (tab === 'random') shuffleRandom();
-            }}
-            labels={{
-              library: t('selectRecipe.tabs.library'),
-              random: t('selectRecipe.tabs.random'),
-              quick: t('selectRecipe.tabs.quick'),
-              copy: t('selectRecipe.tabs.copy'),
-              extras: t('selectRecipe.tabs.extras'),
-            }}
-          />
-        )}
-
-        {renderActiveTab()}
       </GradientBackground>
     </>
   );

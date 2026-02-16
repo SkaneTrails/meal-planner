@@ -141,6 +141,9 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     height: layout.tabBar.height,
+    maxWidth: layout.contentMaxWidth,
+    width: '100%',
+    alignSelf: 'center',
     marginHorizontal: layout.tabBar.horizontalMargin,
     borderRadius: layout.tabBar.borderRadius,
     ...shadows.md,

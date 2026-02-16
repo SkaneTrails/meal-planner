@@ -20,6 +20,7 @@ export const spacing = {
 
 // Layout constants
 export const layout = {
+  contentMaxWidth: 720,
   screenPaddingTop: 60,
   screenPaddingHorizontal: 20,
   sectionGap: 24,
