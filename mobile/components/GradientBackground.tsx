@@ -338,7 +338,7 @@ export const GradientBackground = ({
     <View style={[styles.container, style]}>
       {/* Base gradient - warm terracotta tones */}
       <LinearGradient
-        colors={['#E8D8C8', '#D8B8A0', '#D0A080', '#C88060']}
+        colors={[colors.bgBase, '#D8B8A0', '#D0A080', '#C88060']}
         locations={[0, 0.33, 0.66, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}

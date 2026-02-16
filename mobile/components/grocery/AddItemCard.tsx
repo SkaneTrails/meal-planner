@@ -47,7 +47,7 @@ export const AddItemCard = ({
             color: colors.content.heading,
           }}
           placeholder={t('grocery.addItemExamplePlaceholder')}
-          placeholderTextColor="#A09080"
+          placeholderTextColor={colors.content.placeholder}
           value={newItemText}
           onChangeText={onChangeText}
           onSubmitEditing={onSubmit}
