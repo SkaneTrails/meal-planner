@@ -318,7 +318,7 @@ const GroceryMealItem = ({
             borderRadius: 15,
             backgroundColor: pressed
               ? 'rgba(122, 104, 88, 0.2)'
-              : colors.text.secondary,
+              : colors.glass.medium,
             alignItems: 'center',
             justifyContent: 'center',
           })}
@@ -356,7 +356,7 @@ const GroceryMealItem = ({
             borderRadius: 15,
             backgroundColor: pressed
               ? 'rgba(122, 104, 88, 0.2)'
-              : colors.text.secondary,
+              : colors.glass.medium,
             alignItems: 'center',
             justifyContent: 'center',
           })}

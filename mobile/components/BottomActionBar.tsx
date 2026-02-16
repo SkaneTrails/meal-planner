@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 import { layout, spacing } from '@/lib/theme';
 
 interface BottomActionBarProps {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -13,14 +13,16 @@ interface BottomActionBarProps {
  */
 const BottomActionBar = ({ children, style }: BottomActionBarProps) => (
   <View
-    style={{
-      position: 'absolute',
-      bottom: layout.tabBar.overlayBottomOffset,
-      left: 0,
-      right: 0,
-      padding: spacing.lg,
-      ...style,
-    }}
+    style={[
+      {
+        position: 'absolute',
+        bottom: layout.tabBar.overlayBottomOffset,
+        left: 0,
+        right: 0,
+        padding: spacing.lg,
+      },
+      style,
+    ]}
   >
     {children}
   </View>

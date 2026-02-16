@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Text, View, type ViewStyle } from 'react-native';
+import { type StyleProp, Text, View, type ViewStyle } from 'react-native';
 import { colors, fontSize, spacing } from '@/lib/theme';
 
 interface FormFieldProps {
@@ -7,7 +7,7 @@ interface FormFieldProps {
   children: ReactNode;
   /** Tighter spacing for inline row usage (flex: 1, smaller margin) */
   compact?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 /**
@@ -16,11 +16,13 @@ interface FormFieldProps {
  */
 const FormField = ({ label, children, compact, style }: FormFieldProps) => (
   <View
-    style={{
-      marginBottom: compact ? spacing.sm : spacing.lg,
-      ...(compact && { flex: 1 }),
-      ...style,
-    }}
+    style={[
+      {
+        marginBottom: compact ? spacing.sm : spacing.lg,
+        ...(compact && { flex: 1 }),
+      },
+      style,
+    ]}
   >
     <Text
       style={{
