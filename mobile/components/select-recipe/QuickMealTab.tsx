@@ -4,12 +4,12 @@ import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   letterSpacing,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
@@ -19,6 +19,7 @@ interface QuickMealTabProps {
 }
 
 export const QuickMealTab = ({ state }: QuickMealTabProps) => {
+  const { colors } = useTheme();
   const {
     t,
     customText,

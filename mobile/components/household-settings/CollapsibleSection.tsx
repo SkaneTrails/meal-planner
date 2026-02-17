@@ -3,11 +3,11 @@ import { type ReactNode, useRef } from 'react';
 import { Animated, LayoutAnimation, Pressable, Text, View } from 'react-native';
 import {
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface CollapsibleSectionProps {
@@ -24,7 +24,7 @@ interface CollapsibleSectionProps {
 
 export const CollapsibleSection = ({
   icon,
-  iconColor = colors.content.body,
+  iconColor: iconColorProp,
   title,
   subtitle,
   expanded,
@@ -33,6 +33,8 @@ export const CollapsibleSection = ({
   rightAccessory,
   children,
 }: CollapsibleSectionProps) => {
+  const { colors } = useTheme();
+  const iconColor = iconColorProp ?? colors.content.body;
   const rotateAnim = useRef(new Animated.Value(expanded ? 1 : 0)).current;
 
   const handleToggle = () => {

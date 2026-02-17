@@ -2,9 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { BottomActionBar, PrimaryButton } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 
 export const ReadOnlyBanner = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

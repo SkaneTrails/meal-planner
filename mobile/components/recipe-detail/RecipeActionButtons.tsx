@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { circleStyle, colors, iconContainer } from '@/lib/theme';
+import { circleStyle, iconContainer, useTheme } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -21,13 +21,6 @@ interface RecipeActionButtonsProps {
   onEnhance: () => void;
 }
 
-const actionButtonStyle = {
-  ...circleStyle(iconContainer.md),
-  backgroundColor: colors.glass.solid,
-  alignItems: 'center' as const,
-  justifyContent: 'center' as const,
-};
-
 export const RecipeActionButtons = ({
   canEdit,
   canCopy,
@@ -43,7 +36,15 @@ export const RecipeActionButtons = ({
   onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => {
+  const { colors } = useTheme();
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
+
+  const actionButtonStyle = {
+    ...circleStyle(iconContainer.md),
+    backgroundColor: colors.glass.solid,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  };
 
   return (
     <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>

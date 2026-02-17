@@ -3,11 +3,11 @@ import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface AddItemCardProps {
@@ -21,6 +21,7 @@ export const AddItemCard = ({
   onChangeText,
   onSubmit,
 }: AddItemCardProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

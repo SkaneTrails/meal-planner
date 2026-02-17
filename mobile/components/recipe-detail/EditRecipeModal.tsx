@@ -11,11 +11,11 @@ import { BottomSheetModal, ChipPicker } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   letterSpacing,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type {
   DietLabel,
@@ -26,7 +26,7 @@ import type {
 } from '@/lib/types';
 import { HouseholdTransfer } from './HouseholdTransfer';
 import {
-  DIET_OPTIONS,
+  getDietOptions,
   MEAL_OPTIONS,
   VISIBILITY_OPTIONS,
 } from './recipe-detail-constants';
@@ -63,6 +63,7 @@ export const EditRecipeModal = ({
   onTransferRecipe,
   onDelete,
 }: EditRecipeModalProps) => {
+  const { colors } = useTheme();
   const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(
     recipe.diet_label,
   );
@@ -163,7 +164,7 @@ export const EditRecipeModal = ({
       {/* Diet Type */}
       <ChipPicker
         label={t('recipe.dietType')}
-        options={DIET_OPTIONS}
+        options={getDietOptions(colors)}
         selected={editDietLabel}
         onSelect={setEditDietLabel}
         t={t}

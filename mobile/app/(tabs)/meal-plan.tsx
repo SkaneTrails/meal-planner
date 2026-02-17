@@ -20,16 +20,17 @@ import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 import {
   borderRadius,
-  colors,
   iconContainer,
   iconSize,
   layout,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { formatDateLocal, isPastDate } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
+  const { colors } = useTheme();
   const {
     t,
     language,

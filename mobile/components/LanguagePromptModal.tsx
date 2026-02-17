@@ -5,7 +5,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { LanguagePicker } from '@/components/settings/LanguagePicker';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
-import { colors, fontSize, fontWeight, spacing } from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface LanguagePromptModalProps {
   visible: boolean;
@@ -18,6 +18,7 @@ export const LanguagePromptModal = ({
   onConfirm,
   isSaving,
 }: LanguagePromptModalProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const [selected, setSelected] = useState<AppLanguage>('en');
 

@@ -2,11 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
@@ -16,6 +16,7 @@ interface HouseholdCardProps {
 }
 
 export const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
+  const { colors } = useTheme();
   return (
     <Pressable
       onPress={onPress}

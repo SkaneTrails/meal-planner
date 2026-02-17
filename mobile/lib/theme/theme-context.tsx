@@ -4,13 +4,14 @@
  * Provides the resolved color palette and derived style presets via React
  * context so components can opt into theme-aware rendering incrementally.
  *
- * Currently hardcoded to the light palette — no switching UI yet.
+ * Pass a custom `palette` to `ThemeProvider` to override the default light
+ * colors. When no palette is supplied, the built-in light palette is used.
  */
 
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import type { ColorTokens } from './colors';
-import { colors } from './colors';
+import { colors as defaultPalette } from './colors';
 import { createStyles, type ThemeStyles } from './styles';
 
 interface ThemeValue {
@@ -29,14 +30,23 @@ export const useTheme = (): ThemeValue => {
   return value;
 };
 
+interface ThemeProviderProps {
+  children: React.ReactNode;
+  /** Optional color palette override. Defaults to the built-in light palette. */
+  palette?: ColorTokens;
+}
+
 /** Wraps children with the resolved theme value. */
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+export const ThemeProvider = ({
+  children,
+  palette = defaultPalette,
+}: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(
     () => ({
-      colors,
-      styles: createStyles(colors),
+      colors: palette,
+      styles: createStyles(palette),
     }),
-    [],
+    [palette],
   );
 
   return (

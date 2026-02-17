@@ -24,17 +24,17 @@ import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 import {
   circleStyle,
-  colors,
   iconContainer,
   layout,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
-const HEADER_BUTTON_BG = colors.surface.overlayMedium;
-
 export default function RecipeDetailScreen() {
+  const { colors } = useTheme();
+  const HEADER_BUTTON_BG = colors.surface.overlayMedium;
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 

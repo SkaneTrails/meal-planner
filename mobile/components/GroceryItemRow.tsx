@@ -8,12 +8,12 @@ import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
@@ -64,6 +64,7 @@ export const GroceryItemRow = ({
   isActive,
   showReorder,
 }: GroceryItemRowProps) => {
+  const { colors } = useTheme();
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 

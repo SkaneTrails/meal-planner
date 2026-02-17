@@ -4,11 +4,11 @@ import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   layout,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface ScreenHeaderProps {
@@ -26,6 +26,7 @@ export const ScreenHeader = ({
   onSave,
   onBack,
 }: ScreenHeaderProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -3,12 +3,12 @@ import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   letterSpacing,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type VersionTab = 'original' | 'enhanced';
@@ -23,81 +23,86 @@ export const ReviewVersionToggle = ({
   selectedTab,
   onSelectTab,
   t,
-}: ReviewVersionToggleProps) => (
-  <View style={{ marginBottom: spacing.xl }}>
-    <Text
-      style={{
-        fontSize: fontSize.lg,
-        fontFamily: fontFamily.bodySemibold,
-        color: colors.gray[500],
-        marginBottom: spacing.sm,
-        textTransform: 'uppercase',
-        letterSpacing: letterSpacing.wide,
-      }}
-    >
-      {t('reviewRecipe.version')}
-    </Text>
-    <View
-      style={{
-        flexDirection: 'row',
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.xs,
-        ...shadows.sm,
-      }}
-    >
-      <Pressable
-        onPress={() => onSelectTab('original')}
+}: ReviewVersionToggleProps) => {
+  const { colors } = useTheme();
+  return (
+    <View style={{ marginBottom: spacing.xl }}>
+      <Text
         style={{
-          flex: 1,
-          paddingVertical: spacing.md,
-          borderRadius: borderRadius.sm,
-          backgroundColor:
-            selectedTab === 'original' ? colors.primary : 'transparent',
-          alignItems: 'center',
+          fontSize: fontSize.lg,
+          fontFamily: fontFamily.bodySemibold,
+          color: colors.gray[500],
+          marginBottom: spacing.sm,
+          textTransform: 'uppercase',
+          letterSpacing: letterSpacing.wide,
         }}
       >
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodyMedium,
-            color:
-              selectedTab === 'original' ? colors.white : colors.text.inverse,
-          }}
-        >
-          {t('reviewRecipe.original')}
-        </Text>
-      </Pressable>
-      <Pressable
-        onPress={() => onSelectTab('enhanced')}
+        {t('reviewRecipe.version')}
+      </Text>
+      <View
         style={{
-          flex: 1,
-          paddingVertical: spacing.md,
-          borderRadius: borderRadius.sm,
-          backgroundColor:
-            selectedTab === 'enhanced' ? colors.ai.primary : 'transparent',
-          alignItems: 'center',
           flexDirection: 'row',
-          justifyContent: 'center',
-          gap: spacing.xs,
+          backgroundColor: colors.glass.card,
+          borderRadius: borderRadius.md,
+          padding: spacing.xs,
+          ...shadows.sm,
         }}
       >
-        <Ionicons
-          name="sparkles"
-          size={16}
-          color={selectedTab === 'enhanced' ? colors.white : colors.ai.primary}
-        />
-        <Text
+        <Pressable
+          onPress={() => onSelectTab('original')}
           style={{
-            fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodyMedium,
-            color:
-              selectedTab === 'enhanced' ? colors.white : colors.text.inverse,
+            flex: 1,
+            paddingVertical: spacing.md,
+            borderRadius: borderRadius.sm,
+            backgroundColor:
+              selectedTab === 'original' ? colors.primary : 'transparent',
+            alignItems: 'center',
           }}
         >
-          {t('reviewRecipe.enhanced')}
-        </Text>
-      </Pressable>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.bodyMedium,
+              color:
+                selectedTab === 'original' ? colors.white : colors.text.inverse,
+            }}
+          >
+            {t('reviewRecipe.original')}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => onSelectTab('enhanced')}
+          style={{
+            flex: 1,
+            paddingVertical: spacing.md,
+            borderRadius: borderRadius.sm,
+            backgroundColor:
+              selectedTab === 'enhanced' ? colors.ai.primary : 'transparent',
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: spacing.xs,
+          }}
+        >
+          <Ionicons
+            name="sparkles"
+            size={16}
+            color={
+              selectedTab === 'enhanced' ? colors.white : colors.ai.primary
+            }
+          />
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fontFamily.bodyMedium,
+              color:
+                selectedTab === 'enhanced' ? colors.white : colors.text.inverse,
+            }}
+          >
+            {t('reviewRecipe.enhanced')}
+          </Text>
+        </Pressable>
+      </View>
     </View>
-  </View>
-);
+  );
+};

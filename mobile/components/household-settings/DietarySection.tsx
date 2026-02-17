@@ -3,11 +3,11 @@ import { RadioGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { DairyPreference, HouseholdSettings } from '@/lib/types';
 
@@ -25,6 +25,7 @@ export const DietarySection = ({
   canEdit,
   onUpdateDietary,
 }: DietarySectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   const dairyOptions: {
@@ -97,7 +98,15 @@ export const DietarySection = ({
       </View>
 
       {/* Dairy Preference */}
-      <Text style={categoryLabelStyle}>
+      <Text
+        style={{
+          fontSize: fontSize.sm,
+          fontWeight: fontWeight.semibold,
+          color: colors.text.muted,
+          marginBottom: spacing.sm,
+          textTransform: 'uppercase' as const,
+        }}
+      >
         {t('householdSettings.dietary.dairy')}
       </Text>
       <RadioGroup
@@ -108,12 +117,4 @@ export const DietarySection = ({
       />
     </>
   );
-};
-
-const categoryLabelStyle = {
-  fontSize: fontSize.sm,
-  fontWeight: fontWeight.semibold,
-  color: colors.text.muted,
-  marginBottom: spacing.sm,
-  textTransform: 'uppercase' as const,
 };

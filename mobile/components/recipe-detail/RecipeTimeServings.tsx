@@ -3,11 +3,11 @@ import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface TimeStatProps {
@@ -17,36 +17,39 @@ interface TimeStatProps {
   showBorder: boolean;
 }
 
-const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => (
-  <View
-    style={{
-      flex: 1,
-      alignItems: 'center',
-      borderLeftWidth: showBorder ? 1 : 0,
-      borderLeftColor: colors.chip.divider,
-    }}
-  >
-    <Ionicons name={icon} size={18} color={colors.content.body} />
-    <Text
+const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => {
+  const { colors } = useTheme();
+  return (
+    <View
       style={{
-        fontSize: fontSize.sm,
-        color: colors.content.secondary,
-        marginTop: spacing.xs,
+        flex: 1,
+        alignItems: 'center',
+        borderLeftWidth: showBorder ? 1 : 0,
+        borderLeftColor: colors.chip.divider,
       }}
     >
-      {label}
-    </Text>
-    <Text
-      style={{
-        fontSize: fontSize.lg,
-        fontFamily: fontFamily.bodyBold,
-        color: colors.content.body,
-      }}
-    >
-      {value}
-    </Text>
-  </View>
-);
+      <Ionicons name={icon} size={18} color={colors.content.body} />
+      <Text
+        style={{
+          fontSize: fontSize.sm,
+          color: colors.content.secondary,
+          marginTop: spacing.xs,
+        }}
+      >
+        {label}
+      </Text>
+      <Text
+        style={{
+          fontSize: fontSize.lg,
+          fontFamily: fontFamily.bodyBold,
+          color: colors.content.body,
+        }}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+};
 
 interface RecipeTimeServingsProps {
   prepTime: number | null | undefined;
@@ -63,6 +66,7 @@ export const RecipeTimeServings = ({
   servings,
   t,
 }: RecipeTimeServingsProps) => {
+  const { colors } = useTheme();
   const hasAnyTime = prepTime || cookTime || totalTime;
   if (!hasAnyTime && !servings) return null;
 

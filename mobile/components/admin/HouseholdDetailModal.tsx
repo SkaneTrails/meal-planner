@@ -13,12 +13,12 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { Household, HouseholdMember } from '@/lib/types';
 
@@ -31,6 +31,7 @@ export const HouseholdDetailModal = ({
   household,
   onClose,
 }: HouseholdDetailModalProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const {
     data: members,
@@ -155,6 +156,7 @@ const ModalHeader = ({
   household: Household;
   onClose: () => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -201,6 +203,7 @@ const ModalHeader = ({
 };
 
 const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -256,6 +259,7 @@ const MemberCard = ({
   member: HouseholdMember;
   onRemove: () => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;

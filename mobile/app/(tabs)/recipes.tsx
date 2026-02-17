@@ -23,10 +23,10 @@ import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   layout,
+  useTheme,
 } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
@@ -38,6 +38,7 @@ if (
 }
 
 export default function RecipesScreen() {
+  const { colors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');

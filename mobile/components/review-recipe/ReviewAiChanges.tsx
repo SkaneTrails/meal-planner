@@ -3,12 +3,12 @@ import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface ReviewAiChangesProps {
@@ -17,6 +17,7 @@ interface ReviewAiChangesProps {
 }
 
 export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
+  const { colors } = useTheme();
   if (changes.length === 0) return null;
 
   return (

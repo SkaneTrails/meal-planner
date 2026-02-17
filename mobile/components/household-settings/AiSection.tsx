@@ -4,11 +4,11 @@ import { RadioGroup, StepperControl } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { HouseholdSettings, MincedMeatPreference } from '@/lib/types';
 import { EQUIPMENT_CATEGORIES } from './constants';
@@ -33,6 +33,7 @@ export const AiSection = ({
   onUpdateDietary,
   onToggleEquipment,
 }: AiSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   const meatPortions = Math.min(
@@ -79,7 +80,15 @@ export const AiSection = ({
   return (
     <>
       {/* Meat Portions Stepper */}
-      <Text style={categoryLabelStyle}>
+      <Text
+        style={{
+          fontSize: fontSize.sm,
+          fontWeight: fontWeight.semibold,
+          color: colors.text.muted,
+          marginBottom: spacing.sm,
+          textTransform: 'uppercase' as const,
+        }}
+      >
         {t('householdSettings.dietary.meatDishes')}
       </Text>
       <View
@@ -151,7 +160,15 @@ export const AiSection = ({
             }
             editable={!disabledByAi}
             placeholder={t('householdSettings.dietary.chickenAltPlaceholder')}
-            style={textInputStyle}
+            style={{
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
+              padding: spacing.md,
+              fontSize: fontSize.md,
+              color: colors.content.body,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
           />
           <Text
             style={{
@@ -170,13 +187,29 @@ export const AiSection = ({
             }
             editable={!disabledByAi}
             placeholder={t('householdSettings.dietary.meatAltPlaceholder')}
-            style={textInputStyle}
+            style={{
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
+              padding: spacing.md,
+              fontSize: fontSize.md,
+              color: colors.content.body,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
           />
         </View>
       )}
 
       {/* Minced Meat Preference */}
-      <Text style={categoryLabelStyle}>
+      <Text
+        style={{
+          fontSize: fontSize.sm,
+          fontWeight: fontWeight.semibold,
+          color: colors.text.muted,
+          marginBottom: spacing.sm,
+          textTransform: 'uppercase' as const,
+        }}
+      >
         {t('householdSettings.dietary.mincedMeat')}
       </Text>
       <View style={{ marginBottom: spacing.lg }}>
@@ -189,7 +222,15 @@ export const AiSection = ({
       </View>
 
       {/* Equipment */}
-      <Text style={categoryLabelStyle}>
+      <Text
+        style={{
+          fontSize: fontSize.sm,
+          fontWeight: fontWeight.semibold,
+          color: colors.text.muted,
+          marginBottom: spacing.sm,
+          textTransform: 'uppercase' as const,
+        }}
+      >
         {t('householdSettings.equipment.title')}
       </Text>
       <SelectedEquipment
@@ -215,6 +256,7 @@ const SelectedEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   if (equipment.length === 0) return null;
@@ -289,6 +331,7 @@ const AvailableEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -362,22 +405,4 @@ const AvailableEquipment = ({
       })}
     </View>
   );
-};
-
-const categoryLabelStyle = {
-  fontSize: fontSize.sm,
-  fontWeight: fontWeight.semibold,
-  color: colors.text.muted,
-  marginBottom: spacing.sm,
-  textTransform: 'uppercase' as const,
-};
-
-const textInputStyle = {
-  backgroundColor: colors.white,
-  borderRadius: borderRadius.md,
-  padding: spacing.md,
-  fontSize: fontSize.md,
-  color: colors.content.body,
-  borderWidth: 1,
-  borderColor: colors.border,
 };

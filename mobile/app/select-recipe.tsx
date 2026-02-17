@@ -12,12 +12,12 @@ import {
 } from '@/lib/hooks/useSelectRecipeState';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   layout,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
@@ -109,45 +109,49 @@ interface TabBarProps {
   labels: Record<TabType, string>;
 }
 
-const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
-  <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
-    <View
-      style={{
-        flexDirection: 'row',
-        gap: 8,
-        backgroundColor: colors.surface.tint,
-        borderRadius: borderRadius.sm,
-        padding: 4,
-      }}
-    >
-      {tabs.map((tab) => (
-        <Pressable
-          key={tab}
-          onPress={() => onTabPress(tab)}
-          style={({ pressed }) => ({
-            flex: 1,
-            paddingVertical: spacing['sm-md'],
-            borderRadius: borderRadius['sm-md'],
-            backgroundColor: activeTab === tab ? colors.white : 'transparent',
-            alignItems: 'center',
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-            ...(activeTab === tab ? shadows.card : shadows.none),
-          })}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              fontFamily: fontFamily.bodySemibold,
-              color:
-                activeTab === tab
-                  ? colors.content.heading
-                  : colors.content.subtitle,
-            }}
+const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
+  const { colors } = useTheme();
+
+  return (
+    <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 8,
+          backgroundColor: colors.surface.tint,
+          borderRadius: borderRadius.sm,
+          padding: 4,
+        }}
+      >
+        {tabs.map((tab) => (
+          <Pressable
+            key={tab}
+            onPress={() => onTabPress(tab)}
+            style={({ pressed }) => ({
+              flex: 1,
+              paddingVertical: spacing['sm-md'],
+              borderRadius: borderRadius['sm-md'],
+              backgroundColor: activeTab === tab ? colors.white : 'transparent',
+              alignItems: 'center',
+              transform: [{ scale: pressed ? 0.98 : 1 }],
+              ...(activeTab === tab ? shadows.card : shadows.none),
+            })}
           >
-            {labels[tab]}
-          </Text>
-        </Pressable>
-      ))}
+            <Text
+              style={{
+                fontSize: fontSize.sm,
+                fontFamily: fontFamily.bodySemibold,
+                color:
+                  activeTab === tab
+                    ? colors.content.heading
+                    : colors.content.subtitle,
+              }}
+            >
+              {labels[tab]}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
     </View>
-  </View>
-);
+  );
+};

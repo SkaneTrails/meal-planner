@@ -17,7 +17,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { colors } from '@/lib/theme';
+import { useTheme } from '@/lib/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -171,6 +171,7 @@ export const GradientBackground = ({
   structured = false,
   neutral = false,
 }: GradientBackgroundProps) => {
+  const { colors } = useTheme();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const _isMobile = Platform.OS === 'ios' || Platform.OS === 'android';

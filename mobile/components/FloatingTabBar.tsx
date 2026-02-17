@@ -10,7 +10,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, layout, shadows, spacing } from '@/lib/theme';
+import { borderRadius, layout, shadows, spacing, useTheme } from '@/lib/theme';
 
 type TabDef = {
   route: string;
@@ -64,12 +64,18 @@ const isTabActive = (pathname: string, tab: TabDef): boolean =>
   });
 
 const TabBarBackground = () => {
+  const { colors } = useTheme();
+
   if (Platform.OS === 'ios') {
     return (
       <BlurView
         intensity={40}
         tint="light"
-        style={[StyleSheet.absoluteFill, styles.blurFill]}
+        style={[
+          StyleSheet.absoluteFill,
+          styles.blurFill,
+          { backgroundColor: colors.tabBar.bg },
+        ]}
       />
     );
   }
@@ -80,6 +86,10 @@ const TabBarBackground = () => {
         style={[
           StyleSheet.absoluteFill,
           styles.webFill,
+          {
+            backgroundColor: colors.tabBar.bg,
+            borderColor: colors.tabBar.border,
+          },
           // @ts-expect-error — RN web supports backdropFilter
           { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' },
         ]}
@@ -88,7 +98,18 @@ const TabBarBackground = () => {
   }
 
   // Android fallback — near-opaque warm beige
-  return <View style={[StyleSheet.absoluteFill, styles.androidFill]} />;
+  return (
+    <View
+      style={[
+        StyleSheet.absoluteFill,
+        styles.androidFill,
+        {
+          backgroundColor: colors.tabBar.bgFallback,
+          borderColor: colors.tabBar.border,
+        },
+      ]}
+    />
+  );
 };
 
 export const FloatingTabBar = () => {
@@ -96,6 +117,7 @@ export const FloatingTabBar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   // Hide on auth screens or when not logged in
   if (!user || HIDDEN_ON.includes(pathname)) return null;
@@ -117,7 +139,12 @@ export const FloatingTabBar = () => {
                 style={styles.tabButton}
               >
                 <View
-                  style={[styles.iconWrap, active && styles.iconWrapActive]}
+                  style={[
+                    styles.iconWrap,
+                    active && {
+                      backgroundColor: colors.tabBar.focusBg,
+                    },
+                  ]}
                 >
                   <Ionicons
                     name={active ? tab.iconFocused : tab.icon}
@@ -132,7 +159,13 @@ export const FloatingTabBar = () => {
           })}
         </View>
       </View>
-      <View style={styles.bottomFill} pointerEvents="none" />
+      <View
+        style={[
+          styles.bottomFill,
+          { backgroundColor: colors.tabBar.bottomFill },
+        ]}
+        pointerEvents="none"
+      />
     </View>
   );
 };
@@ -158,7 +191,6 @@ const styles = StyleSheet.create({
   },
   bottomFill: {
     height: layout.tabBar.bottomOffset,
-    backgroundColor: colors.tabBar.bottomFill,
   },
   tabButton: {
     flex: 1,
@@ -170,24 +202,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: spacing['xs-sm'],
   },
-  iconWrapActive: {
-    backgroundColor: colors.tabBar.focusBg,
-  },
   blurFill: {
     borderRadius: layout.tabBar.borderRadius,
     overflow: 'hidden',
-    backgroundColor: colors.tabBar.bg,
   },
   webFill: {
     borderRadius: layout.tabBar.borderRadius,
-    backgroundColor: colors.tabBar.bg,
     borderWidth: 0.5,
-    borderColor: colors.tabBar.border,
   },
   androidFill: {
     borderRadius: layout.tabBar.borderRadius,
-    backgroundColor: colors.tabBar.bgFallback,
     borderWidth: 0.5,
-    borderColor: colors.tabBar.border,
   },
 });

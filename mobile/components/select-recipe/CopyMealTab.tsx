@@ -6,7 +6,6 @@ import {
   accentUnderlineStyle,
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   fontWeight,
@@ -15,6 +14,7 @@ import {
   letterSpacing,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
@@ -25,6 +25,7 @@ interface CopyMealTabProps {
 }
 
 export const CopyMealTab = ({ state }: CopyMealTabProps) => {
+  const { colors } = useTheme();
   const {
     t,
     bcp47,

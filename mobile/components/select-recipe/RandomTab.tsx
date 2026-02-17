@@ -7,7 +7,6 @@ import {
   accentUnderlineStyle,
   borderRadius,
   circleStyle,
-  colors,
   dotSize,
   fontSize,
   fontWeight,
@@ -17,6 +16,7 @@ import {
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
@@ -26,6 +26,7 @@ interface RandomTabProps {
 }
 
 export const RandomTab = ({ state }: RandomTabProps) => {
+  const { colors } = useTheme();
   const {
     t,
     randomRecipe,
@@ -139,48 +140,52 @@ const RandomHeader = ({
   t,
   mealTypeCount,
   mealTypeLabel,
-}: RandomHeaderProps) => (
-  <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
-    <View
-      style={{
-        ...circleStyle(iconContainer.xl),
-        backgroundColor: colors.ai.light,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: spacing.md,
-      }}
-    >
-      <Ionicons name="dice" size={32} color={colors.ai.primary} />
+}: RandomHeaderProps) => {
+  const { colors } = useTheme();
+
+  return (
+    <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
+      <View
+        style={{
+          ...circleStyle(iconContainer.xl),
+          backgroundColor: colors.ai.light,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: spacing.md,
+        }}
+      >
+        <Ionicons name="dice" size={32} color={colors.ai.primary} />
+      </View>
+      <Text
+        style={{
+          fontSize: fontSize['3xl'],
+          fontWeight: fontWeight.bold,
+          color: colors.text.inverse,
+          textAlign: 'center',
+          letterSpacing: letterSpacing.normal,
+        }}
+      >
+        {t('selectRecipe.random.howAbout')}
+      </Text>
+      <View
+        style={{
+          ...accentUnderlineStyle,
+          marginTop: spacing.sm,
+        }}
+      />
+      <Text
+        style={{
+          fontSize: fontSize.lg,
+          color: colors.gray[600],
+          marginTop: spacing.xs,
+        }}
+      >
+        {t('selectRecipe.random.matchCount', { count: mealTypeCount })}{' '}
+        {mealTypeLabel}
+      </Text>
     </View>
-    <Text
-      style={{
-        fontSize: fontSize['3xl'],
-        fontWeight: fontWeight.bold,
-        color: colors.text.inverse,
-        textAlign: 'center',
-        letterSpacing: letterSpacing.normal,
-      }}
-    >
-      {t('selectRecipe.random.howAbout')}
-    </Text>
-    <View
-      style={{
-        ...accentUnderlineStyle,
-        marginTop: spacing.sm,
-      }}
-    />
-    <Text
-      style={{
-        fontSize: fontSize.lg,
-        color: colors.gray[600],
-        marginTop: spacing.xs,
-      }}
-    >
-      {t('selectRecipe.random.matchCount', { count: mealTypeCount })}{' '}
-      {mealTypeLabel}
-    </Text>
-  </View>
-);
+  );
+};
 
 interface RandomRecipeCardProps {
   recipe: NonNullable<State['randomRecipe']>;
@@ -188,154 +193,162 @@ interface RandomRecipeCardProps {
   t: (key: string, opts?: Record<string, string | number>) => string;
 }
 
-const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
-  <Pressable
-    onPress={() => onSelect(recipe.id)}
-    style={({ pressed }) => ({
-      backgroundColor: colors.glass.card,
-      borderRadius: borderRadius.lg,
-      overflow: 'hidden',
-      ...shadows.md,
-      transform: [{ scale: pressed ? 0.99 : 1 }],
-    })}
-  >
-    {(recipe.thumbnail_url || recipe.image_url) && (
-      <Image
-        source={{
-          uri: (recipe.thumbnail_url || recipe.image_url) ?? undefined,
-        }}
-        style={{ width: '100%', height: 180 }}
-        resizeMode="cover"
-      />
-    )}
-    <View style={{ padding: spacing.lg }}>
-      <Text
-        style={{
-          fontSize: fontSize['3xl'],
-          fontWeight: fontWeight.bold,
-          color: colors.text.inverse,
-          marginBottom: spacing.sm,
-          letterSpacing: letterSpacing.normal,
-        }}
-      >
-        {recipe.title}
-      </Text>
+const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
+  const { colors } = useTheme();
 
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: spacing.md,
-          marginBottom: spacing.md,
-        }}
-      >
-        {recipe.total_time && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: spacing.xs,
-            }}
-          >
-            <Ionicons name="time-outline" size={16} color={colors.gray[500]} />
-            <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
-              {t('selectRecipe.random.time', { count: recipe.total_time })}
-            </Text>
-          </View>
-        )}
-        {recipe.servings && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: spacing.xs,
-            }}
-          >
-            <Ionicons
-              name="people-outline"
-              size={16}
-              color={colors.gray[500]}
-            />
-            <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
-              {t('selectRecipe.random.servings', { count: recipe.servings })}
-            </Text>
-          </View>
-        )}
-        {recipe.diet_label && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: spacing.xs,
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.xs,
-              borderRadius: borderRadius.sm,
-              backgroundColor:
-                recipe.diet_label === 'veggie'
-                  ? colors.diet.veggie.bg
-                  : recipe.diet_label === 'fish'
-                    ? colors.diet.fish.bg
-                    : colors.diet.meat.bg,
-            }}
-          >
+  return (
+    <Pressable
+      onPress={() => onSelect(recipe.id)}
+      style={({ pressed }) => ({
+        backgroundColor: colors.glass.card,
+        borderRadius: borderRadius.lg,
+        overflow: 'hidden',
+        ...shadows.md,
+        transform: [{ scale: pressed ? 0.99 : 1 }],
+      })}
+    >
+      {(recipe.thumbnail_url || recipe.image_url) && (
+        <Image
+          source={{
+            uri: (recipe.thumbnail_url || recipe.image_url) ?? undefined,
+          }}
+          style={{ width: '100%', height: 180 }}
+          resizeMode="cover"
+        />
+      )}
+      <View style={{ padding: spacing.lg }}>
+        <Text
+          style={{
+            fontSize: fontSize['3xl'],
+            fontWeight: fontWeight.bold,
+            color: colors.text.inverse,
+            marginBottom: spacing.sm,
+            letterSpacing: letterSpacing.normal,
+          }}
+        >
+          {recipe.title}
+        </Text>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: spacing.md,
+            marginBottom: spacing.md,
+          }}
+        >
+          {recipe.total_time && (
             <View
               style={{
-                width: dotSize.md,
-                height: dotSize.md,
-                borderRadius: dotSize.md / 2,
-                backgroundColor:
-                  recipe.diet_label === 'veggie'
-                    ? colors.diet.veggie.text
-                    : recipe.diet_label === 'fish'
-                      ? colors.diet.fish.text
-                      : colors.diet.meat.text,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                fontWeight: fontWeight.semibold,
-                color:
-                  recipe.diet_label === 'veggie'
-                    ? colors.diet.veggie.text
-                    : recipe.diet_label === 'fish'
-                      ? colors.diet.fish.text
-                      : colors.diet.meat.text,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.xs,
               }}
             >
-              {t(`labels.diet.${recipe.diet_label}`)}
+              <Ionicons
+                name="time-outline"
+                size={16}
+                color={colors.gray[500]}
+              />
+              <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
+                {t('selectRecipe.random.time', { count: recipe.total_time })}
+              </Text>
+            </View>
+          )}
+          {recipe.servings && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.xs,
+              }}
+            >
+              <Ionicons
+                name="people-outline"
+                size={16}
+                color={colors.gray[500]}
+              />
+              <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
+                {t('selectRecipe.random.servings', { count: recipe.servings })}
+              </Text>
+            </View>
+          )}
+          {recipe.diet_label && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.xs,
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: borderRadius.sm,
+                backgroundColor:
+                  recipe.diet_label === 'veggie'
+                    ? colors.diet.veggie.bg
+                    : recipe.diet_label === 'fish'
+                      ? colors.diet.fish.bg
+                      : colors.diet.meat.bg,
+              }}
+            >
+              <View
+                style={{
+                  width: dotSize.md,
+                  height: dotSize.md,
+                  borderRadius: dotSize.md / 2,
+                  backgroundColor:
+                    recipe.diet_label === 'veggie'
+                      ? colors.diet.veggie.text
+                      : recipe.diet_label === 'fish'
+                        ? colors.diet.fish.text
+                        : colors.diet.meat.text,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: fontSize.sm,
+                  fontWeight: fontWeight.semibold,
+                  color:
+                    recipe.diet_label === 'veggie'
+                      ? colors.diet.veggie.text
+                      : recipe.diet_label === 'fish'
+                        ? colors.diet.fish.text
+                        : colors.diet.meat.text,
+                }}
+              >
+                {t(`labels.diet.${recipe.diet_label}`)}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {recipe.ingredients && recipe.ingredients.length > 0 && (
+          <View>
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontWeight: fontWeight.semibold,
+                color: colors.gray[600],
+                marginBottom: spacing.xs,
+              }}
+            >
+              {t('selectRecipe.random.ingredientsCount', {
+                count: recipe.ingredients.length,
+              })}
+            </Text>
+            <Text
+              style={{
+                fontSize: fontSize.base,
+                color: colors.gray[500],
+                lineHeight: lineHeight.sm,
+              }}
+              numberOfLines={2}
+            >
+              {recipe.ingredients.slice(0, 5).join(' • ')}
+              {recipe.ingredients.length > 5 ? ' ...' : ''}
             </Text>
           </View>
         )}
       </View>
-
-      {recipe.ingredients && recipe.ingredients.length > 0 && (
-        <View>
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontWeight: fontWeight.semibold,
-              color: colors.gray[600],
-              marginBottom: spacing.xs,
-            }}
-          >
-            {t('selectRecipe.random.ingredientsCount', {
-              count: recipe.ingredients.length,
-            })}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize.base,
-              color: colors.gray[500],
-              lineHeight: lineHeight.sm,
-            }}
-            numberOfLines={2}
-          >
-            {recipe.ingredients.slice(0, 5).join(' • ')}
-            {recipe.ingredients.length > 5 ? ' ...' : ''}
-          </Text>
-        </View>
-      )}
-    </View>
-  </Pressable>
-);
+    </Pressable>
+  );
+};

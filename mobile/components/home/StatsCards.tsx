@@ -6,12 +6,12 @@ import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   letterSpacing,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
@@ -31,6 +31,7 @@ export const StatsCards = ({
   groceryItemsCount,
   t,
 }: StatsCardsProps) => {
+  const { colors } = useTheme();
   const router = useRouter();
 
   return (
@@ -84,56 +85,60 @@ const StatCard = ({
   label,
   iconColor,
   onPress,
-}: StatCardProps) => (
-  <AnimatedPressable
-    onPress={onPress}
-    hoverScale={1.03}
-    pressScale={0.97}
-    style={{
-      flex: 1,
-      backgroundColor: colors.glass.solid,
-      borderRadius: borderRadius.md,
-      padding: 12,
-      borderWidth: 1,
-      borderColor: colors.glass.border,
-      ...shadows.sm,
-    }}
-  >
-    <Ionicons
-      name={icon}
-      size={18}
-      color={iconColor}
-      style={{ marginBottom: 8 }}
-    />
-    <Text
+}: StatCardProps) => {
+  const { colors } = useTheme();
+
+  return (
+    <AnimatedPressable
+      onPress={onPress}
+      hoverScale={1.03}
+      pressScale={0.97}
       style={{
-        fontSize: fontSize['3xl'],
-        fontFamily: fontFamily.bodySemibold,
-        color: colors.content.body,
-        letterSpacing: letterSpacing.tight,
+        flex: 1,
+        backgroundColor: colors.glass.solid,
+        borderRadius: borderRadius.md,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: colors.glass.border,
+        ...shadows.sm,
       }}
     >
-      {value}
-    </Text>
-    <Text
-      style={{
-        fontSize: fontSize.xs,
-        fontFamily: fontFamily.body,
-        color: subtitle ? colors.content.secondary : 'transparent',
-        marginBottom: 2,
-      }}
-    >
-      {subtitle || ' '}
-    </Text>
-    <Text
-      style={{
-        fontSize: fontSize.xs,
-        color: colors.content.secondary,
-        letterSpacing: letterSpacing.wide,
-        textTransform: 'uppercase',
-      }}
-    >
-      {label}
-    </Text>
-  </AnimatedPressable>
-);
+      <Ionicons
+        name={icon}
+        size={18}
+        color={iconColor}
+        style={{ marginBottom: 8 }}
+      />
+      <Text
+        style={{
+          fontSize: fontSize['3xl'],
+          fontFamily: fontFamily.bodySemibold,
+          color: colors.content.body,
+          letterSpacing: letterSpacing.tight,
+        }}
+      >
+        {value}
+      </Text>
+      <Text
+        style={{
+          fontSize: fontSize.xs,
+          fontFamily: fontFamily.body,
+          color: subtitle ? colors.content.secondary : 'transparent',
+          marginBottom: 2,
+        }}
+      >
+        {subtitle || ' '}
+      </Text>
+      <Text
+        style={{
+          fontSize: fontSize.xs,
+          color: colors.content.secondary,
+          letterSpacing: letterSpacing.wide,
+          textTransform: 'uppercase',
+        }}
+      >
+        {label}
+      </Text>
+    </AnimatedPressable>
+  );
+};

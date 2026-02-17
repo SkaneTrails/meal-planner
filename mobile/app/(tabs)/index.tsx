@@ -15,19 +15,20 @@ import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   layout,
   letterSpacing,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 const HOMEPAGE_HERO = require('@/assets/images/homepage-hero.png');
 const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
   const data = useHomeScreenData();
   const {
     router,
@@ -146,47 +147,51 @@ const Header = ({
   greetingKey: string;
   t: TFn;
   onSettings: () => void;
-}) => (
-  <View
-    style={{
-      paddingHorizontal: spacing.xl,
-      paddingTop: layout.screenPaddingTop,
-      paddingBottom: spacing.lg,
-    }}
-  >
+}) => {
+  const { colors } = useTheme();
+
+  return (
     <View
       style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        paddingHorizontal: spacing.xl,
+        paddingTop: layout.screenPaddingTop,
+        paddingBottom: spacing.lg,
       }}
     >
-      <View style={{ flex: 1 }}>
-        <ScreenTitle
-          variant="large"
-          title={t(`home.${greetingKey}`)}
-          subtitle={t('home.subtitle')}
-        />
-      </View>
-      <AnimatedPressable
-        onPress={onSettings}
-        hoverScale={1.08}
-        pressScale={0.95}
+      <View
         style={{
-          width: 44,
-          height: 44,
-          borderRadius: borderRadius['lg-xl'],
-          backgroundColor: colors.border,
-          alignItems: 'center',
-          justifyContent: 'center',
-          ...shadows.sm,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
         }}
       >
-        <Ionicons name="settings-outline" size={24} color={colors.white} />
-      </AnimatedPressable>
+        <View style={{ flex: 1 }}>
+          <ScreenTitle
+            variant="large"
+            title={t(`home.${greetingKey}`)}
+            subtitle={t('home.subtitle')}
+          />
+        </View>
+        <AnimatedPressable
+          onPress={onSettings}
+          hoverScale={1.08}
+          pressScale={0.95}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: borderRadius['lg-xl'],
+            backgroundColor: colors.border,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...shadows.sm,
+          }}
+        >
+          <Ionicons name="settings-outline" size={24} color={colors.white} />
+        </AnimatedPressable>
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => (
   <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
@@ -208,96 +213,102 @@ const NextMealCard = ({
   nextMeal: NextMealType;
   t: TFn;
   onPress: () => void;
-}) => (
-  <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
-    <Text
-      style={{
-        fontSize: fontSize.xl,
-        fontFamily: fontFamily.display,
-        color: colors.white,
-        marginBottom: spacing.sm,
-        letterSpacing: letterSpacing.normal,
-      }}
-    >
-      {t('home.nextUp.title')}
-    </Text>
+}) => {
+  const { colors } = useTheme();
 
-    <AnimatedPressable
-      onPress={onPress}
-      hoverScale={1.01}
-      pressScale={0.99}
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing['md-lg'],
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: colors.glass.border,
-      }}
-    >
-      <Image
-        source={nextMeal?.imageUrl ? { uri: nextMeal.imageUrl } : HOMEPAGE_HERO}
-        style={{ width: 72, height: 72, borderRadius: borderRadius.md }}
-        contentFit="cover"
-        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
-        transition={200}
-      />
-      <View style={{ flex: 1, marginLeft: spacing['md-lg'] }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: spacing['xs-sm'],
-          }}
-        >
-          {nextMeal && !nextMeal.isTomorrow && (
-            <View
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: borderRadius['2xs'],
-                backgroundColor: colors.ai.primary,
-                marginRight: spacing['xs-sm'],
-              }}
-            />
-          )}
-          <Text
+  return (
+    <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
+      <Text
+        style={{
+          fontSize: fontSize.xl,
+          fontFamily: fontFamily.display,
+          color: colors.white,
+          marginBottom: spacing.sm,
+          letterSpacing: letterSpacing.normal,
+        }}
+      >
+        {t('home.nextUp.title')}
+      </Text>
+
+      <AnimatedPressable
+        onPress={onPress}
+        hoverScale={1.01}
+        pressScale={0.99}
+        style={{
+          backgroundColor: colors.glass.card,
+          borderRadius: borderRadius.md,
+          padding: spacing['md-lg'],
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: colors.glass.border,
+        }}
+      >
+        <Image
+          source={
+            nextMeal?.imageUrl ? { uri: nextMeal.imageUrl } : HOMEPAGE_HERO
+          }
+          style={{ width: 72, height: 72, borderRadius: borderRadius.md }}
+          contentFit="cover"
+          placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+          transition={200}
+        />
+        <View style={{ flex: 1, marginLeft: spacing['md-lg'] }}>
+          <View
             style={{
-              fontSize: fontSize.sm,
-              color:
-                nextMeal && !nextMeal.isTomorrow
-                  ? colors.content.body
-                  : colors.content.secondary,
-              fontFamily:
-                nextMeal && !nextMeal.isTomorrow
-                  ? fontFamily.bodySemibold
-                  : fontFamily.body,
-              textTransform: 'uppercase',
-              letterSpacing: letterSpacing.wide,
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: spacing['xs-sm'],
             }}
           >
-            {nextMeal
-              ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
-              : t('home.nextUp.noMealPlanned')}
+            {nextMeal && !nextMeal.isTomorrow && (
+              <View
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: borderRadius['2xs'],
+                  backgroundColor: colors.ai.primary,
+                  marginRight: spacing['xs-sm'],
+                }}
+              />
+            )}
+            <Text
+              style={{
+                fontSize: fontSize.sm,
+                color:
+                  nextMeal && !nextMeal.isTomorrow
+                    ? colors.content.body
+                    : colors.content.secondary,
+                fontFamily:
+                  nextMeal && !nextMeal.isTomorrow
+                    ? fontFamily.bodySemibold
+                    : fontFamily.body,
+                textTransform: 'uppercase',
+                letterSpacing: letterSpacing.wide,
+              }}
+            >
+              {nextMeal
+                ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
+                : t('home.nextUp.noMealPlanned')}
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontSize: fontSize.xl,
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.content.body,
+            }}
+            numberOfLines={2}
+          >
+            {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
           </Text>
         </View>
-        <Text
-          style={{
-            fontSize: fontSize.xl,
-            fontFamily: fontFamily.bodySemibold,
-            color: colors.content.body,
-          }}
-          numberOfLines={2}
-        >
-          {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
-        </Text>
-      </View>
-      <Ionicons
-        name="chevron-forward"
-        size={20}
-        color={colors.content.secondary}
-      />
-    </AnimatedPressable>
-  </View>
-);
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.content.secondary}
+        />
+      </AnimatedPressable>
+    </View>
+  );
+};

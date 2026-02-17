@@ -7,11 +7,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface EnhancingOverlayProps {
@@ -22,38 +22,43 @@ interface EnhancingOverlayProps {
 export const EnhancingOverlay = ({
   visible,
   message,
-}: EnhancingOverlayProps) => (
-  <Modal
-    visible={visible}
-    transparent
-    animationType="fade"
-    statusBarTranslucent
-    onRequestClose={() => {}}
-  >
-    <View style={styles.backdrop}>
-      <View style={styles.card}>
-        <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
-        <ActivityIndicator
-          size="large"
-          color={colors.ai.primary}
-          style={styles.spinner}
-        />
-        <Text style={styles.message}>{message}</Text>
+}: EnhancingOverlayProps) => {
+  const { colors } = useTheme();
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={() => {}}
+    >
+      <View
+        style={[styles.backdrop, { backgroundColor: colors.overlay.backdrop }]}
+      >
+        <View style={[styles.card, { backgroundColor: colors.glass.heavy }]}>
+          <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
+          <ActivityIndicator
+            size="large"
+            color={colors.ai.primary}
+            style={styles.spinner}
+          />
+          <Text style={[styles.message, { color: colors.text.inverse }]}>
+            {message}
+          </Text>
+        </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: colors.overlay.backdrop,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.xl,
   },
   card: {
-    backgroundColor: colors.glass.heavy,
     borderRadius: borderRadius.lg,
     padding: spacing['3xl'],
     alignItems: 'center',
@@ -68,7 +73,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     fontSize: fontSize.lg,
     fontFamily: fontFamily.bodySemibold,
-    color: colors.text.inverse,
     textAlign: 'center',
   },
 });

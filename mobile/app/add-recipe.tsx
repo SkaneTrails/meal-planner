@@ -19,7 +19,7 @@ import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { ChipPicker } from '@/components/ChipPicker';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import {
-  DIET_OPTIONS,
+  getDietOptions,
   MEAL_OPTIONS,
 } from '@/components/recipe-detail/recipe-detail-constants';
 import { showNotification } from '@/lib/alert';
@@ -27,7 +27,6 @@ import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
@@ -36,6 +35,7 @@ import {
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 const SUPPORTED_SITES = [
@@ -50,6 +50,7 @@ const SUPPORTED_SITES = [
 ];
 
 export default function AddRecipeScreen() {
+  const { colors } = useTheme();
   const actions = useAddRecipeActions();
   const { settings } = useSettings();
   const aiEnabled = settings.aiEnabled;
@@ -272,7 +273,7 @@ export default function AddRecipeScreen() {
           {/* Diet & Meal type pickers */}
           <ChipPicker
             label={t('recipe.dietType')}
-            options={DIET_OPTIONS}
+            options={getDietOptions(colors)}
             selected={dietLabel}
             onSelect={setDietLabel}
             t={t}

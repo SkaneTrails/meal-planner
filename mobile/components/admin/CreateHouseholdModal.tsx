@@ -11,11 +11,11 @@ import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface CreateHouseholdModalProps {
@@ -35,6 +35,7 @@ export const CreateHouseholdModal = ({
   onClose,
   isPending,
 }: CreateHouseholdModalProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

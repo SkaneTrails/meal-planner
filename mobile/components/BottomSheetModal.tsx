@@ -5,11 +5,11 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   fontWeight,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface BottomSheetModalProps {
@@ -43,10 +43,12 @@ export const BottomSheetModal = ({
   headerRight,
   footer,
   maxHeight = '80%' as DimensionValue,
-  backgroundColor = colors.white,
+  backgroundColor: backgroundColorProp,
   scrollable = true,
   testID,
 }: BottomSheetModalProps) => {
+  const { colors } = useTheme();
+  const backgroundColor = backgroundColorProp ?? colors.white;
   const backdropContent = (
     <View
       style={{

@@ -4,12 +4,12 @@ import { AnimatedPressable, SectionHeader } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontWeight,
   settingsSubtitleStyle,
   settingsTitleStyle,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface AdminSectionProps {
@@ -17,6 +17,7 @@ interface AdminSectionProps {
 }
 
 export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -62,6 +63,7 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
 };
 
 export const AboutSection = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

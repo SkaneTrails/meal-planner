@@ -21,7 +21,6 @@ import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   fontWeight,
@@ -30,6 +29,7 @@ import {
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { DietLabel, Recipe } from '@/lib/types';
 
@@ -59,6 +59,7 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
+  const { colors } = useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);

@@ -12,12 +12,12 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { HouseholdSettings } from '@/lib/types';
 
@@ -50,6 +50,7 @@ export const GeneralSection = ({
   onUpdateServings,
   onUpdateIncludeBreakfast,
 }: GeneralSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

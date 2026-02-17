@@ -23,13 +23,13 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   iconContainer,
   lineHeight,
   spacing,
   typography,
+  useTheme,
 } from '@/lib/theme';
 
 interface RecipeNotesProps {
@@ -47,6 +47,7 @@ export const RecipeNotes = ({
   t,
   onCopy,
 }: RecipeNotesProps) => {
+  const { colors } = useTheme();
   const [text, setText] = useState('');
   const { data: notes, isLoading } = useRecipeNotes(recipeId);
   const createNote = useCreateRecipeNote();

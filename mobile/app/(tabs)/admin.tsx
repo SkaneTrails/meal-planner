@@ -29,17 +29,18 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   layout,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
 export default function AdminScreen() {
+  const { colors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
@@ -153,6 +154,7 @@ export default function AdminScreen() {
 
 const AdminHeader = ({ onBack }: { onBack: () => void }) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -192,6 +194,7 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
 
 const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -251,6 +254,7 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
 
 const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   return (
     <View

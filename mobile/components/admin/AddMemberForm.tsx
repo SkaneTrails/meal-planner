@@ -10,11 +10,11 @@ import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface AddMemberFormProps {
@@ -36,6 +36,7 @@ export const AddMemberForm = ({
   onClose,
   isPending,
 }: AddMemberFormProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
