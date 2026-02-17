@@ -42,8 +42,7 @@ import {
   SettingsProvider,
   useSettings,
 } from '@/lib/settings-context';
-import { colors } from '@/lib/theme';
-import { ThemeProvider } from '@/lib/theme/theme-context';
+import { colors, ThemeProvider } from '@/lib/theme';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync().catch(() => {

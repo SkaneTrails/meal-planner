@@ -7,6 +7,7 @@
  * Currently hardcoded to the light palette — no switching UI yet.
  */
 
+import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import type { ColorTokens } from './colors';
 import { colors } from './colors';
