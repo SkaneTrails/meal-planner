@@ -1,12 +1,12 @@
 import type { StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 import {
-  colors,
   fontFamily,
   fontSize,
   fontWeight,
   letterSpacing,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface ScreenTitleProps {
@@ -22,16 +22,34 @@ export const ScreenTitle = ({
   variant = 'centered',
   style,
 }: ScreenTitleProps) => {
+  const { colors } = useTheme();
   const isCentered = variant === 'centered';
 
   return (
     <View style={style}>
-      <Text style={isCentered ? styles.centeredTitle : styles.largeTitle}>
+      <Text
+        style={[
+          isCentered ? styles.centeredTitle : styles.largeTitle,
+          isCentered
+            ? { color: colors.content.heading }
+            : {
+                color: colors.text.primary,
+                textShadowColor: colors.shadow.text,
+              },
+        ]}
+      >
         {title}
       </Text>
       {subtitle && (
         <Text
-          style={isCentered ? styles.centeredSubtitle : styles.largeSubtitle}
+          style={[
+            isCentered ? styles.centeredSubtitle : styles.largeSubtitle,
+            {
+              color: isCentered
+                ? colors.content.subtitle
+                : colors.text.secondary,
+            },
+          ]}
         >
           {subtitle}
         </Text>
@@ -45,30 +63,25 @@ const styles = StyleSheet.create({
     fontSize: fontSize['3xl'],
     fontFamily: fontFamily.displayBold,
     fontWeight: fontWeight.bold,
-    color: colors.content.heading,
     letterSpacing: letterSpacing.tight,
     textAlign: 'center',
   },
   centeredSubtitle: {
     fontSize: fontSize.md,
     fontFamily: fontFamily.body,
-    color: colors.content.subtitle,
     marginTop: spacing['2xs'],
     textAlign: 'center',
   },
   largeTitle: {
     fontSize: fontSize['4xl'],
     fontFamily: fontFamily.display,
-    color: colors.text.primary,
     letterSpacing: letterSpacing.tight,
-    textShadowColor: colors.shadow.text,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   largeSubtitle: {
     fontSize: fontSize.lg,
     fontFamily: fontFamily.body,
-    color: colors.text.secondary,
     letterSpacing: letterSpacing.normal,
     marginTop: spacing.xs,
   },

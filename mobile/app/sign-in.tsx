@@ -11,13 +11,14 @@ import { useAuth } from '../lib/hooks/use-auth';
 import { useTranslation } from '../lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   spacing,
+  useTheme,
 } from '../lib/theme';
 
 export default function SignInScreen() {
+  const { colors } = useTheme();
   const { user, loading, error, signIn, signOut } = useAuth();
   const { t } = useTranslation();
 

@@ -3,12 +3,12 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   iconSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { toBcp47 } from '@/lib/utils/dateFormatter';
 
@@ -27,6 +27,7 @@ export const CollapsedDayRow = ({
   t,
   onExpand,
 }: CollapsedDayRowProps) => {
+  const { colors } = useTheme();
   const bcp47 = toBcp47(language);
   const dayName = date.toLocaleDateString(bcp47, { weekday: 'short' });
   const monthDay = date.toLocaleDateString(bcp47, {
@@ -39,13 +40,22 @@ export const CollapsedDayRow = ({
       : t('mealPlan.noMeals');
 
   return (
-    <Pressable onPress={onExpand} style={styles.container}>
+    <Pressable
+      onPress={onExpand}
+      style={[styles.container, { backgroundColor: colors.glass.card }]}
+    >
       <View style={styles.left}>
-        <Text style={styles.dayName}>{dayName}</Text>
-        <Text style={styles.monthDay}>{monthDay}</Text>
+        <Text style={[styles.dayName, { color: colors.content.body }]}>
+          {dayName}
+        </Text>
+        <Text style={[styles.monthDay, { color: colors.content.subtitle }]}>
+          {monthDay}
+        </Text>
       </View>
       <View style={styles.right}>
-        <Text style={styles.summary}>{summary}</Text>
+        <Text style={[styles.summary, { color: colors.content.icon }]}>
+          {summary}
+        </Text>
         <Ionicons
           name="chevron-down"
           size={iconSize.sm}
@@ -61,7 +71,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.glass.card,
     borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
@@ -81,15 +90,12 @@ const styles = StyleSheet.create({
   dayName: {
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
-    color: colors.content.body,
     textTransform: 'capitalize',
   },
   monthDay: {
     fontSize: fontSize.md,
-    color: colors.content.subtitle,
   },
   summary: {
     fontSize: fontSize.sm,
-    color: colors.content.icon,
   },
 });
