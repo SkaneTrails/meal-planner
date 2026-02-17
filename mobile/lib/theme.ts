@@ -16,9 +16,11 @@ export {
   shadows,
   spacing,
 } from './theme/layout';
+export type { ThemeStyles } from './theme/styles';
 export {
   accentUnderlineStyle,
   cardStyle,
+  createStyles,
   glassCardStyle,
   inputStyle,
   settingsSubtitleStyle,

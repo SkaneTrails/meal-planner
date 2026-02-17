@@ -1,48 +1,65 @@
 /**
  * Composable style helpers for common UI patterns.
+ *
+ * `createStyles` builds the presets from a color palette so future themes
+ * can regenerate them. The static exports below are the light-theme defaults.
  */
 
+import type { ColorTokens } from './colors';
 import { colors } from './colors';
 import { borderRadius, shadows, spacing } from './layout';
 import { fontSize, fontWeight } from './typography';
 
-export const cardStyle = {
-  backgroundColor: colors.white,
-  borderRadius: borderRadius.lg,
-  ...shadows.md,
-} as const;
+/** Build style presets for a given color palette. */
+export const createStyles = (c: ColorTokens) =>
+  ({
+    cardStyle: {
+      backgroundColor: c.white,
+      borderRadius: borderRadius.lg,
+      ...shadows.md,
+    },
+    glassCardStyle: {
+      backgroundColor: c.glass.light,
+      borderRadius: borderRadius.lg,
+      borderWidth: 1,
+      borderColor: c.glass.border,
+      ...shadows.sm,
+    },
+    inputStyle: {
+      backgroundColor: c.white,
+      borderRadius: borderRadius.md,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+      fontSize: fontSize.lg,
+      color: c.text.inverse,
+    },
+    settingsTitleStyle: {
+      fontSize: fontSize['2xl'],
+      fontWeight: fontWeight.semibold,
+      color: c.content.body,
+    },
+    settingsSubtitleStyle: {
+      fontSize: fontSize.md,
+      color: c.content.subtitle,
+    },
+    accentUnderlineStyle: {
+      width: 40,
+      height: 3,
+      borderRadius: 2,
+      backgroundColor: c.ai.primary,
+    },
+  }) as const;
 
-export const glassCardStyle = {
-  backgroundColor: colors.glass.light,
-  borderRadius: borderRadius.lg,
-  borderWidth: 1,
-  borderColor: colors.glass.border,
-  ...shadows.sm,
-} as const;
+/** Return type of `createStyles` — useful for typing themed style objects. */
+export type ThemeStyles = ReturnType<typeof createStyles>;
 
-export const inputStyle = {
-  backgroundColor: colors.white,
-  borderRadius: borderRadius.md,
-  paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.md,
-  fontSize: fontSize.lg,
-  color: colors.text.inverse,
-} as const;
-
-export const settingsTitleStyle = {
-  fontSize: fontSize['2xl'],
-  fontWeight: fontWeight.semibold,
-  color: colors.content.body,
-} as const;
-
-export const settingsSubtitleStyle = {
-  fontSize: fontSize.md,
-  color: colors.content.subtitle,
-} as const;
-
-export const accentUnderlineStyle = {
-  width: 40,
-  height: 3,
-  borderRadius: 2,
-  backgroundColor: colors.ai.primary,
-} as const;
+// Light-theme defaults (preserve existing static exports)
+const styles = createStyles(colors);
+export const {
+  cardStyle,
+  glassCardStyle,
+  inputStyle,
+  settingsTitleStyle,
+  settingsSubtitleStyle,
+  accentUnderlineStyle,
+} = styles;
