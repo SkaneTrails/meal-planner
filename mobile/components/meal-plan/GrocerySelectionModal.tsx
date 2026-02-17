@@ -317,7 +317,7 @@ const GroceryMealItem = ({
         <Pressable
           onPress={() => onChangeServings(mealKey, -1)}
           style={({ pressed }) => ({
-            ...circleStyle(30),
+            ...circleStyle(iconContainer.sm),
             backgroundColor: pressed
               ? colors.button.primaryDivider
               : colors.glass.medium,
@@ -353,7 +353,7 @@ const GroceryMealItem = ({
         <Pressable
           onPress={() => onChangeServings(mealKey, 1)}
           style={({ pressed }) => ({
-            ...circleStyle(30),
+            ...circleStyle(iconContainer.sm),
             backgroundColor: pressed
               ? colors.button.primaryDivider
               : colors.glass.medium,

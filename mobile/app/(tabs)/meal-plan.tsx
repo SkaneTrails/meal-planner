@@ -82,7 +82,11 @@ export default function MealPlanScreen() {
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         {/* Header */}
         <View
-          style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}
+          style={{
+            paddingHorizontal: spacing.xl,
+            paddingTop: spacing.lg,
+            paddingBottom: spacing.md,
+          }}
         >
           <ScreenTitle
             title={t('mealPlan.title')}
@@ -109,7 +113,7 @@ export default function MealPlanScreen() {
               ref={scrollViewRef}
               style={{ flex: 1 }}
               contentContainerStyle={{
-                paddingHorizontal: 20,
+                paddingHorizontal: spacing.xl,
                 paddingBottom: layout.tabBar.contentBottomPadding,
               }}
               onScroll={onScroll}
@@ -134,7 +138,7 @@ export default function MealPlanScreen() {
                   <View
                     key={date.toISOString()}
                     style={{
-                      marginBottom: 16,
+                      marginBottom: spacing.lg,
                       backgroundColor: isToday
                         ? colors.glass.heavy
                         : colors.glass.solid,
@@ -199,8 +203,8 @@ export default function MealPlanScreen() {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  marginVertical: 16,
-                  marginHorizontal: 8,
+                  marginVertical: spacing.lg,
+                  marginHorizontal: spacing.sm,
                 }}
               >
                 <View
@@ -216,7 +220,7 @@ export default function MealPlanScreen() {
                     height: 8,
                     borderRadius: borderRadius['2xs'],
                     backgroundColor: colors.surface.border,
-                    marginHorizontal: 12,
+                    marginHorizontal: spacing.md,
                   }}
                 />
                 <View
@@ -237,7 +241,7 @@ export default function MealPlanScreen() {
               />
 
               {/* Skapa lista button at end of list */}
-              <View style={{ marginTop: 8, marginBottom: 20 }}>
+              <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
                 <PrimaryButton
                   onPress={openGroceryModal}
                   icon="cart-outline"

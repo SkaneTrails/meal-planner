@@ -94,7 +94,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
       onPress={onGoBack}
       style={({ pressed }) => ({
         marginTop: spacing.xl,
-        paddingHorizontal: 24,
+        paddingHorizontal: spacing['2xl'],
         paddingVertical: spacing.md,
         backgroundColor: pressed
           ? colors.button.primaryDivider

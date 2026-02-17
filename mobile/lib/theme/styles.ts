@@ -13,18 +13,6 @@ import { fontSize, fontWeight } from './typography';
 /** Build style presets for a given color palette. */
 export const createStyles = (c: ColorTokens) =>
   ({
-    cardStyle: {
-      backgroundColor: c.white,
-      borderRadius: borderRadius.lg,
-      ...shadows.md,
-    },
-    glassCardStyle: {
-      backgroundColor: c.glass.light,
-      borderRadius: borderRadius.lg,
-      borderWidth: 1,
-      borderColor: c.glass.border,
-      ...shadows.sm,
-    },
     inputStyle: {
       backgroundColor: c.white,
       borderRadius: borderRadius.md,
@@ -34,7 +22,7 @@ export const createStyles = (c: ColorTokens) =>
       color: c.text.inverse,
     },
     settingsTitleStyle: {
-      fontSize: fontSize['2xl'],
+      fontSize: fontSize.lg,
       fontWeight: fontWeight.semibold,
       color: c.content.body,
     },
@@ -56,8 +44,6 @@ export type ThemeStyles = ReturnType<typeof createStyles>;
 // Light-theme defaults (preserve existing static exports)
 const styles = createStyles(colors);
 export const {
-  cardStyle,
-  glassCardStyle,
   inputStyle,
   settingsTitleStyle,
   settingsSubtitleStyle,

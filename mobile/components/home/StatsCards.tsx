@@ -11,6 +11,7 @@ import {
   fontSize,
   letterSpacing,
   shadows,
+  spacing,
 } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
@@ -36,9 +37,9 @@ export const StatsCards = ({
     <View
       style={{
         flexDirection: 'row',
-        paddingHorizontal: 16,
-        gap: 8,
-        marginBottom: 16,
+        paddingHorizontal: spacing.lg,
+        gap: spacing.sm,
+        marginBottom: spacing.lg,
       }}
     >
       <StatCard

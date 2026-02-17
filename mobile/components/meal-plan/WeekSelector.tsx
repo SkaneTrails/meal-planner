@@ -31,7 +31,7 @@ export const WeekSelector = ({
   onNextWeek,
   onJumpToToday,
 }: WeekSelectorProps) => (
-  <View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
+  <View style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}>
     <View
       style={{
         flexDirection: 'row',
@@ -49,7 +49,7 @@ export const WeekSelector = ({
         hoverScale={1.1}
         pressScale={0.9}
         style={{
-          padding: 8,
+          padding: spacing.sm,
           borderRadius: borderRadius.full,
           backgroundColor: colors.glass.subtle,
         }}
@@ -100,7 +100,7 @@ export const WeekSelector = ({
         hoverScale={1.1}
         pressScale={0.9}
         style={{
-          padding: 8,
+          padding: spacing.sm,
           borderRadius: borderRadius.full,
           backgroundColor: colors.glass.subtle,
         }}

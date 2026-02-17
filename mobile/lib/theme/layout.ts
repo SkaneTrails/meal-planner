@@ -27,7 +27,7 @@ export const layout = {
     alignSelf: 'center' as const,
     width: '100%' as const,
   },
-  screenPaddingTop: 60,
+  screenPaddingTop: 44,
   screenPaddingHorizontal: 20,
   sectionGap: 24,
   cardGap: 8,

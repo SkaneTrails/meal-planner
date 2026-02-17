@@ -7,6 +7,7 @@ import {
   colors,
   fontSize,
   fontWeight,
+  layout,
   spacing,
 } from '@/lib/theme';
 
@@ -31,7 +32,7 @@ export const ScreenHeader = ({
     <View
       style={{
         paddingHorizontal: spacing.lg,
-        paddingTop: 44,
+        paddingTop: layout.screenPaddingTop,
         paddingBottom: spacing.md,
       }}
     >
@@ -47,8 +48,8 @@ export const ScreenHeader = ({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            padding: 8,
-            marginLeft: -8,
+            padding: spacing.sm,
+            marginLeft: -spacing.sm,
           }}
         >
           <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
@@ -68,7 +69,7 @@ export const ScreenHeader = ({
             disabled={isSaving}
             style={({ pressed }) => ({
               backgroundColor: pressed ? colors.accentDark : colors.accent,
-              paddingHorizontal: 24,
+              paddingHorizontal: spacing['2xl'],
               paddingVertical: spacing['sm-md'],
               borderRadius: borderRadius.lg,
               opacity: isSaving ? 0.6 : 1,
