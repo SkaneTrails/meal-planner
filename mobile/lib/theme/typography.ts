@@ -6,16 +6,32 @@ import { Platform } from 'react-native';
 
 /** Structural contract for font family mappings. */
 export type FontFamilyTokens = {
-  readonly [K in keyof typeof fontFamily]: string;
+  readonly display: string;
+  readonly displayRegular: string;
+  readonly displayMedium: string;
+  readonly displayBold: string;
+  readonly body: string;
+  readonly bodyMedium: string;
+  readonly bodySemibold: string;
+  readonly bodyBold: string;
+  readonly accent: string;
 };
 
 // Font families - DM Sans for everything (unified font)
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
 const isWeb = Platform.OS === 'web';
 
-// For web: fontFamily is just the font name, weight comes from fontWeight
-// For native: fontFamily includes the weight (e.g., DMSans_600SemiBold)
-export const fontFamily = {
+// Monospace font family for the terminal CRT theme
+const MONO = isWeb
+  ? '"Courier New", "Courier", monospace'
+  : Platform.select({
+      ios: 'Courier',
+      android: 'monospace',
+      default: 'monospace',
+    });
+
+/** DM Sans — default light theme font family. */
+export const defaultFontFamily: FontFamilyTokens = {
   display: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
   displayRegular: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
   displayMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
@@ -26,6 +42,26 @@ export const fontFamily = {
   bodyBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
   accent: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
 };
+
+/** Monospace — terminal CRT theme font family. */
+export const terminalFontFamily: FontFamilyTokens = {
+  display: MONO,
+  displayRegular: MONO,
+  displayMedium: MONO,
+  displayBold: MONO,
+  body: MONO,
+  bodyMedium: MONO,
+  bodySemibold: MONO,
+  bodyBold: MONO,
+  accent: MONO,
+};
+
+// Static font family mapping used by the typography presets below. Dynamic,
+// theme-aware font access should go through `useTheme().fonts` where available.
+// The presets are intentionally static — migrating them to a factory that takes
+// `fonts` is planned as a follow-up when runtime theme switching lands.
+/** @deprecated Use `useTheme().fonts` for theme-aware font access. */
+export const fontFamily = defaultFontFamily;
 
 // Font weights - used in addition to fontFamily for web
 // On native, fontFamily already includes weight, so these are redundant but harmless

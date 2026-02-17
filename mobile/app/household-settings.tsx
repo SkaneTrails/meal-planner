@@ -6,8 +6,12 @@
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, ScrollView, Switch, View } from 'react-native';
-import { FullScreenLoading, GradientBackground } from '@/components';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
+import {
+  FullScreenLoading,
+  GradientBackground,
+  ThemeToggle,
+} from '@/components';
 import {
   AiSection,
   CollapsibleSection,
@@ -178,14 +182,10 @@ export default function HouseholdSettingsScreen() {
               onToggle={() => toggleSection('ai')}
               disabled={!(form.settings.ai_features_enabled ?? true)}
               rightAccessory={
-                <Switch
+                <ThemeToggle
                   value={form.settings.ai_features_enabled ?? true}
                   onValueChange={form.updateAiEnabled}
                   disabled={!form.canEdit}
-                  trackColor={{
-                    false: colors.border,
-                    true: colors.primary,
-                  }}
                 />
               }
             >

@@ -32,3 +32,4 @@ export {
   StatCardSkeleton,
 } from './Skeleton';
 export { StepperControl } from './StepperControl';
+export { ThemeToggle } from './ThemeToggle';

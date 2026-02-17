@@ -28,11 +28,13 @@ export { terminalColors } from './theme/terminal-colors';
 export { ThemeProvider, useTheme } from './theme/theme-context';
 export type { FontFamilyTokens } from './theme/typography';
 export {
+  defaultFontFamily,
   fontFamily,
   fontFamilyWeight,
   fontSize,
   fontWeight,
   letterSpacing,
   lineHeight,
+  terminalFontFamily,
   typography,
 } from './theme/typography';

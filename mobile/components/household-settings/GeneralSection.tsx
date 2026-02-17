@@ -2,12 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
   Pressable,
-  Switch,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { StepperControl } from '@/components';
+import { StepperControl, ThemeToggle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -208,14 +207,10 @@ export const GeneralSection = ({
             {t('householdSettings.general.includeBreakfastDesc')}
           </Text>
         </View>
-        <Switch
+        <ThemeToggle
           value={settings.include_breakfast ?? false}
           onValueChange={onUpdateIncludeBreakfast}
           disabled={!canEdit}
-          trackColor={{
-            false: colors.border,
-            true: colors.primary,
-          }}
         />
       </View>
     </View>
