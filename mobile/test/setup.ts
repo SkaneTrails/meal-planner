@@ -298,6 +298,14 @@ vi.mock('@/lib/theme', () => {
       orb1: '#E8D0C0', orb2: '#D4A080', orb3: '#E0B090', orb4: '#C88060',
       stop1: '#D8B8A0', stop2: '#D0A080',
     },
+    background: {
+      mutedOverlay: 'rgba(0, 0, 0, 0.15)',
+      defaultOverlay: 'rgba(255, 255, 255, 0.08)',
+      structuredWash: 'rgba(235, 228, 219, 0.96)',
+      structuredGradientStart: 'rgba(210, 200, 190, 0.15)',
+      structuredGradientEnd: 'transparent',
+      animatedOverlay: 'rgba(255, 255, 255, 0.08)',
+    },
     tagDot: ['#7A9BBD', '#8B9D77', '#C47D5A', '#9B7BB8', '#5BA3A3', '#D4A574', '#B07070', '#6B8FA3'],
   };
 
