@@ -2,6 +2,13 @@
  * Color palette - luxurious design system with elegant warm tones.
  */
 
+/** Recursively widen color literal types to `string` for structural contracts. */
+type WidenColors<T> = T extends readonly string[]
+  ? readonly string[]
+  : T extends string
+    ? string
+    : { readonly [K in keyof T]: WidenColors<T[K]> };
+
 export const lightColors = {
   // Primary - Elegant dark charcoal
   primary: '#2D2D2D',
@@ -253,6 +260,9 @@ export const lightColors = {
     '#6B8FA3', // slate blue
   ] as readonly string[],
 } as const;
+
+/** Structural contract that every color palette must satisfy. */
+export type ColorTokens = WidenColors<typeof lightColors>;
 
 // Export colors (light theme only)
 export const colors = lightColors;

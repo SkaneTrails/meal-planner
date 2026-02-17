@@ -3,6 +3,7 @@
  * Re-exports all theme modules for a unified import surface.
  */
 
+export type { ColorTokens } from './theme/colors';
 export { colors, lightColors } from './theme/colors';
 export {
   animation,
@@ -23,6 +24,7 @@ export {
   settingsSubtitleStyle,
   settingsTitleStyle,
 } from './theme/styles';
+export type { FontFamilyTokens } from './theme/typography';
 export {
   fontFamily,
   fontFamilyWeight,
