@@ -134,9 +134,9 @@ vi.mock('@/components', () => ({
   ThemeToggle: ({ value, onValueChange, disabled }: any) => {
     const { createElement } = require('react');
     return createElement('button', {
-      onClick: () => !disabled && onValueChange(!value),
+      onClick: () => onValueChange(!value),
+      disabled: disabled ?? false,
       'aria-checked': value,
-      'aria-disabled': disabled,
       role: 'switch',
     }, value ? 'ON' : 'OFF');
   },
