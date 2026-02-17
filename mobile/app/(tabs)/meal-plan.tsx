@@ -6,7 +6,6 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import { GradientBackground } from '@/components';
@@ -171,6 +170,24 @@ export default function MealPlanScreen() {
                       opacity: isPast ? 0.6 : 1,
                     }}
                   >
+                    {isPast && (
+                      <Pressable
+                        onPress={() => togglePastDay(dateStr)}
+                        style={{
+                          position: 'absolute',
+                          top: spacing.sm,
+                          right: spacing.sm,
+                          padding: spacing.xs,
+                          zIndex: 1,
+                        }}
+                      >
+                        <Ionicons
+                          name="chevron-up"
+                          size={iconSize.md}
+                          color={colors.content.subtitle}
+                        />
+                      </Pressable>
+                    )}
                     <DayHeader
                       date={date}
                       isToday={isToday}
@@ -283,11 +300,23 @@ export default function MealPlanScreen() {
               boxShadow: shadows.float.boxShadow,
             }}
           >
-            <Ionicons
-              name="cart-outline"
-              size={iconSize.xl}
-              color={colors.white}
-            />
+            <Ionicons name="cart" size={iconSize.xl} color={colors.white} />
+            {/* Small + badge */}
+            <View
+              style={{
+                position: 'absolute',
+                top: -2,
+                right: -2,
+                width: 18,
+                height: 18,
+                borderRadius: borderRadius.full,
+                backgroundColor: colors.accent,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Ionicons name="add" size={12} color={colors.white} />
+            </View>
           </Pressable>
         </View>
 

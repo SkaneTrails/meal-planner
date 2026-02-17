@@ -10,7 +10,7 @@ import {
   shadows,
   spacing,
 } from '@/lib/theme';
-import { formatDayHeader, toBcp47 } from '@/lib/utils/dateFormatter';
+import { toBcp47 } from '@/lib/utils/dateFormatter';
 
 interface CollapsedDayRowProps {
   date: Date;
