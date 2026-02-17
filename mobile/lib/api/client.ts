@@ -13,18 +13,17 @@ export const API_PREFIX = '/api/v1';
 
 let getAuthToken: (() => Promise<string | null>) | null = null;
 
-// Sign out callback - called when API returns 401/403 (auth failure)
-// status: 401 = token invalid/expired, 403 = no household access
-// hadToken: true if a token was sent with the request
-let onUnauthorized: ((status: number, hadToken: boolean) => void) | null = null;
+// Sign out callback - called when API returns 401 (expired/invalid token).
+// 403 is NOT handled here — it means "forbidden" (insufficient role), not
+// "unauthenticated".  The no-access redirect in _layout.tsx handles the
+// real "no household" case via useCurrentUser's isError state.
+let onUnauthorized: ((hadToken: boolean) => void) | null = null;
 
 export const setAuthTokenGetter = (getter: () => Promise<string | null>) => {
   getAuthToken = getter;
 };
 
-export const setOnUnauthorized = (
-  callback: (status: number, hadToken: boolean) => void,
-) => {
+export const setOnUnauthorized = (callback: (hadToken: boolean) => void) => {
   onUnauthorized = callback;
 };
 
@@ -76,11 +75,8 @@ export const apiRequest = async <T>(
   });
 
   if (!response.ok) {
-    if (
-      (response.status === 401 || response.status === 403) &&
-      onUnauthorized
-    ) {
-      onUnauthorized(response.status, hadToken);
+    if (response.status === 401 && onUnauthorized) {
+      onUnauthorized(hadToken);
     }
 
     let error: ApiError;

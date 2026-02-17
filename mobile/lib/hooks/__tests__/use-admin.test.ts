@@ -146,6 +146,27 @@ describe('useHousehold', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockApi.getHousehold).toHaveBeenCalledWith('h1');
   });
+
+  it('does NOT fetch when enabled is false', async () => {
+    const { result } = renderHook(
+      () => useHousehold('h1', { enabled: false }),
+      { wrapper: createQueryWrapper() },
+    );
+
+    expect(result.current.isFetching).toBe(false);
+    expect(result.current.data).toBeUndefined();
+    expect(mockApi.getHousehold).not.toHaveBeenCalled();
+  });
+
+  it('fetches when enabled is true', async () => {
+    const { result } = renderHook(
+      () => useHousehold('h1', { enabled: true }),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockApi.getHousehold).toHaveBeenCalledWith('h1');
+  });
 });
 
 describe('useHouseholdMembers', () => {
@@ -159,6 +180,27 @@ describe('useHouseholdMembers', () => {
   it('fetches household members', async () => {
     const { result } = renderHook(
       () => useHouseholdMembers('h1'),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockApi.getHouseholdMembers).toHaveBeenCalledWith('h1');
+  });
+
+  it('does NOT fetch when enabled is false', async () => {
+    const { result } = renderHook(
+      () => useHouseholdMembers('h1', { enabled: false }),
+      { wrapper: createQueryWrapper() },
+    );
+
+    expect(result.current.isFetching).toBe(false);
+    expect(result.current.data).toBeUndefined();
+    expect(mockApi.getHouseholdMembers).not.toHaveBeenCalled();
+  });
+
+  it('fetches when enabled is true', async () => {
+    const { result } = renderHook(
+      () => useHouseholdMembers('h1', { enabled: true }),
       { wrapper: createQueryWrapper() },
     );
 

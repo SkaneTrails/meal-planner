@@ -22,6 +22,11 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const householdId = paramId ?? currentUser?.household_id;
 
+  const canEdit =
+    currentUser?.role === 'superuser' ||
+    (currentUser?.role === 'admin' &&
+      currentUser?.household_id === householdId);
+
   const { data: remoteSettings, isLoading: settingsLoading } =
     useHouseholdSettings(householdId ?? null);
   const isLoading = userLoading || settingsLoading;
@@ -31,7 +36,7 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     data: members,
     isLoading: membersLoading,
     refetch: refetchMembers,
-  } = useHouseholdMembers(householdId ?? '');
+  } = useHouseholdMembers(householdId ?? '', { enabled: canEdit });
   const addMember = useAddMember();
   const removeMember = useRemoveMember();
   const [newMemberEmail, setNewMemberEmail] = useState('');
@@ -39,15 +44,12 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     'member',
   );
 
-  const { data: household } = useHousehold(householdId ?? '');
+  const { data: household } = useHousehold(householdId ?? '', {
+    enabled: canEdit,
+  });
   const renameHousehold = useRenameHousehold();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
-
-  const canEdit =
-    currentUser?.role === 'superuser' ||
-    (currentUser?.role === 'admin' &&
-      currentUser?.household_id === householdId);
 
   const [settings, setSettings] = useState<HouseholdSettings>(DEFAULT_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);

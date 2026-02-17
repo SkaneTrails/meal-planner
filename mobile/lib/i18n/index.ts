@@ -87,3 +87,24 @@ export const useTranslation = () => {
 
   return { t, language };
 };
+
+/**
+ * Standalone translate function for use outside React component tree.
+ * Falls back to English when the key is missing in the given language.
+ */
+export const translateStandalone = (
+  language: AppLanguage,
+  key: string,
+  params?: Record<string, string | number>,
+): string => {
+  const translations = locales[language] ?? en;
+  const value = resolve(translations, key);
+  if (value != null && value !== '') {
+    return interpolate(value, params);
+  }
+  const fallback = resolve(en, key);
+  if (fallback != null && fallback !== '') {
+    return interpolate(fallback, params);
+  }
+  return key;
+};

@@ -57,23 +57,28 @@ export const useHouseholds = (options?: { enabled?: boolean }) => {
 
 /**
  * Get a specific household by ID.
+ * Requires admin or superuser role — pass enabled: false for members.
  */
-export const useHousehold = (id: string) => {
+export const useHousehold = (id: string, options?: { enabled?: boolean }) => {
   return useQuery<Household>({
     queryKey: adminKeys.household(id),
     queryFn: () => api.getHousehold(id),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && (options?.enabled ?? true),
   });
 };
 
 /**
  * Get members of a household.
+ * Requires admin or superuser role — pass enabled: false for members.
  */
-export const useHouseholdMembers = (householdId: string) => {
+export const useHouseholdMembers = (
+  householdId: string,
+  options?: { enabled?: boolean },
+) => {
   return useQuery<HouseholdMember[]>({
     queryKey: adminKeys.members(householdId),
     queryFn: () => api.getHouseholdMembers(householdId),
-    enabled: Boolean(householdId),
+    enabled: Boolean(householdId) && (options?.enabled ?? true),
   });
 };
 
