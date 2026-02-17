@@ -5,7 +5,6 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   colors,
-  fontSize,
   fontWeight,
   settingsSubtitleStyle,
   settingsTitleStyle,
@@ -89,13 +88,12 @@ export const AboutSection = () => {
             marginBottom: spacing.md,
           }}
         >
-          <Text style={{ fontSize: fontSize.md, color: colors.content.strong }}>
+          <Text style={{ ...settingsTitleStyle, color: colors.content.strong }}>
             {t('settings.version')}
           </Text>
           <Text
             style={{
-              fontSize: fontSize.md,
-              color: colors.content.body,
+              ...settingsTitleStyle,
               fontWeight: fontWeight.medium,
             }}
           >
@@ -109,10 +107,10 @@ export const AboutSection = () => {
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontSize: fontSize.md, color: colors.content.strong }}>
+          <Text style={{ ...settingsTitleStyle, color: colors.content.strong }}>
             {t('settings.madeWith')}
           </Text>
-          <Text style={{ fontSize: fontSize.md }}>❤️</Text>
+          <Text style={settingsTitleStyle}>❤️</Text>
         </View>
       </View>
     </View>

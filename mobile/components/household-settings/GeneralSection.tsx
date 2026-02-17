@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { StepperControl } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -163,48 +164,16 @@ export const GeneralSection = ({
         >
           {t('householdSettings.general.defaultServings')}
         </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Pressable
-            onPress={() =>
-              settings.default_servings > 1 &&
-              onUpdateServings(settings.default_servings - 1)
-            }
-            disabled={!canEdit}
-            style={({ pressed }) => ({
-              ...circleStyle(iconContainer.md),
-              backgroundColor: pressed ? colors.bgDark : colors.bgLight,
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: canEdit ? 1 : 0.4,
-            })}
-          >
-            <Ionicons name="remove" size={20} color={colors.content.body} />
-          </Pressable>
-          <Text
-            style={{
-              fontSize: fontSize['2xl'],
-              fontWeight: fontWeight.bold,
-              color: colors.content.heading,
-              minWidth: 60,
-              textAlign: 'center',
-            }}
-          >
-            {settings.default_servings}
-          </Text>
-          <Pressable
-            onPress={() => onUpdateServings(settings.default_servings + 1)}
-            disabled={!canEdit}
-            style={({ pressed }) => ({
-              ...circleStyle(iconContainer.md),
-              backgroundColor: pressed ? colors.bgDark : colors.bgLight,
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: canEdit ? 1 : 0.4,
-            })}
-          >
-            <Ionicons name="add" size={20} color={colors.content.body} />
-          </Pressable>
-        </View>
+        <StepperControl
+          value={settings.default_servings}
+          onDecrement={() =>
+            settings.default_servings > 1 &&
+            onUpdateServings(settings.default_servings - 1)
+          }
+          onIncrement={() => onUpdateServings(settings.default_servings + 1)}
+          decrementDisabled={!canEdit || settings.default_servings <= 1}
+          incrementDisabled={!canEdit}
+        />
       </View>
     </View>
   );

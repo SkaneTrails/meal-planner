@@ -1,14 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { RadioGroup } from '@/components';
+import { RadioGroup, StepperControl } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   colors,
   fontSize,
   fontWeight,
-  iconContainer,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -102,66 +100,16 @@ export const AiSection = ({
         >
           {t('householdSettings.dietary.meatPortionsDesc')}
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: spacing.lg,
-          }}
-        >
-          <Pressable
-            onPress={() => handleMeatPortionsChange(-1)}
-            disabled={disabledByAi || meatPortions <= 0}
-            style={{
-              ...circleStyle(iconContainer.md),
-              backgroundColor:
-                disabledByAi || meatPortions <= 0
-                  ? colors.border
-                  : colors.primary,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Ionicons name="remove" size={20} color={colors.white} />
-          </Pressable>
-          <View style={{ alignItems: 'center', minWidth: 80 }}>
-            <Text
-              style={{
-                fontSize: fontSize['3xl-4xl'],
-                fontWeight: fontWeight.bold,
-                color: colors.content.heading,
-              }}
-            >
-              {meatPortions}
-            </Text>
-            <Text
-              style={{
-                fontSize: fontSize.xs,
-                color: colors.content.strong,
-              }}
-            >
-              {t('householdSettings.dietary.portionsOf', {
-                total: defaultServings,
-              })}
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => handleMeatPortionsChange(1)}
-            disabled={disabledByAi || meatPortions >= defaultServings}
-            style={{
-              ...circleStyle(iconContainer.md),
-              backgroundColor:
-                disabledByAi || meatPortions >= defaultServings
-                  ? colors.border
-                  : colors.primary,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Ionicons name="add" size={20} color={colors.white} />
-          </Pressable>
-        </View>
+        <StepperControl
+          value={meatPortions}
+          onDecrement={() => handleMeatPortionsChange(-1)}
+          onIncrement={() => handleMeatPortionsChange(1)}
+          decrementDisabled={disabledByAi || meatPortions <= 0}
+          incrementDisabled={disabledByAi || meatPortions >= defaultServings}
+          subtitle={t('householdSettings.dietary.portionsOf', {
+            total: defaultServings,
+          })}
+        />
         {meatPortions === 0 && (
           <Text
             style={{

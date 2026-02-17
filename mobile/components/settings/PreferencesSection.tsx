@@ -6,8 +6,8 @@ import type { AppLanguage } from '@/lib/settings-context';
 import {
   borderRadius,
   colors,
-  fontSize,
-  fontWeight,
+  settingsSubtitleStyle,
+  settingsTitleStyle,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -48,19 +48,12 @@ export const RecipeLibrarySection = ({
           }}
         >
           <View style={{ flex: 1, marginRight: spacing.md }}>
-            <Text
-              style={{
-                fontSize: fontSize.md,
-                fontWeight: fontWeight.medium,
-                color: colors.content.body,
-              }}
-            >
+            <Text style={settingsTitleStyle}>
               {t('settings.showHiddenRecipes')}
             </Text>
             <Text
               style={{
-                fontSize: fontSize.sm,
-                color: colors.content.strong,
+                ...settingsSubtitleStyle,
                 marginTop: 4,
               }}
             >
@@ -122,8 +115,7 @@ export const WeekStartSection = ({
             <Text
               style={{
                 flex: 1,
-                fontSize: fontSize.md,
-                color: colors.content.body,
+                ...settingsTitleStyle,
               }}
             >
               {t(

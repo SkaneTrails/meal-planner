@@ -122,6 +122,15 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': `radio-${value}` });
   },
+  StepperControl: ({ value, onDecrement, onIncrement, decrementDisabled, incrementDisabled, subtitle }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'stepper-control' },
+      createElement('button', { onClick: onDecrement, disabled: decrementDisabled, 'aria-label': 'Decrease' }, '−'),
+      createElement('span', null, value),
+      createElement('button', { onClick: onIncrement, disabled: incrementDisabled, 'aria-label': 'Increase' }, '+'),
+      subtitle ? createElement('span', null, subtitle) : null,
+    );
+  },
 }));
 
 // Mock @/lib/alert
