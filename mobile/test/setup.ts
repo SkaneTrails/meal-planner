@@ -359,6 +359,14 @@ vi.mock('@/lib/theme', () => ({
   settingsTitleStyle: { fontSize: 17, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
   accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
+  createStyles: () => ({
+    cardStyle: {},
+    glassCardStyle: {},
+    inputStyle: {},
+    settingsTitleStyle: { fontSize: 17, fontWeight: '600', color: '#5D4E40' },
+    settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
+    accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
+  }),
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
   dotSize: { md: 10 },
 }));
