@@ -12,6 +12,7 @@ import {
   fontWeight,
   iconContainer,
   layout,
+  letterSpacing,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -58,10 +59,10 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
         <Text
           style={{
             fontSize: fontSize['2xl'],
-            fontWeight: '700',
+            fontWeight: fontWeight.bold,
             color: colors.text.inverse,
             textAlign: 'center',
-            letterSpacing: -0.3,
+            letterSpacing: letterSpacing.snug,
           }}
         >
           {t('selectRecipe.copy.title')}

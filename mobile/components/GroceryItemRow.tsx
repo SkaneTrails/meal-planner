@@ -6,7 +6,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
-import { colors, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -72,10 +80,10 @@ export const GroceryItemRow = ({
         flexDirection: 'row',
         alignItems: 'center',
         padding: spacing['sm-md'],
-        paddingVertical: 12,
+        paddingVertical: spacing.md,
         backgroundColor: isActive ? colors.white : colors.glass.solid,
-        borderRadius: 10,
-        marginBottom: 8,
+        borderRadius: borderRadius['sm-md'],
+        marginBottom: spacing.sm,
         opacity: checked ? 0.85 : 1,
         ...shadows.card,
       }}
@@ -87,7 +95,7 @@ export const GroceryItemRow = ({
           style={({ pressed }) =>
             ({
               padding: spacing['md-lg'],
-              marginRight: 2,
+              marginRight: spacing['2xs'],
               opacity: pressed ? 0.5 : 1,
               ...(Platform.OS === 'web' && { cursor: 'grab' }),
             }) as ViewStyle
@@ -109,11 +117,11 @@ export const GroceryItemRow = ({
           style={{
             width: 22,
             height: 22,
-            borderRadius: 6,
+            borderRadius: borderRadius['xs-sm'],
             borderWidth: 2,
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: 12,
+            marginRight: spacing.md,
             backgroundColor: checked ? colors.ai.primary : 'transparent',
             borderColor: checked ? colors.ai.primary : colors.surface.border,
           }}
@@ -126,8 +134,9 @@ export const GroceryItemRow = ({
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              fontSize: 15,
-              fontWeight: '500',
+              fontSize: fontSize.xl,
+              fontFamily: fontFamily.bodyMedium,
+              fontWeight: fontWeight.medium,
               textDecorationLine: checked ? 'line-through' : 'none',
               color: checked ? colors.content.subtitle : colors.content.body,
             }}
@@ -137,9 +146,10 @@ export const GroceryItemRow = ({
           {item.recipe_sources.length > 0 && (
             <Text
               style={{
-                fontSize: 12,
+                fontSize: fontSize.base,
+                fontFamily: fontFamily.body,
                 color: colors.content.tertiary,
-                marginTop: 3,
+                marginTop: spacing['2xs'],
               }}
             >
               {item.recipe_sources.join(' · ')}

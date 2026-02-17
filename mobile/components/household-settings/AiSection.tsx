@@ -128,7 +128,7 @@ export const AiSection = ({
           <View style={{ alignItems: 'center', minWidth: 80 }}>
             <Text
               style={{
-                fontSize: 28,
+                fontSize: fontSize['3xl-4xl'],
                 fontWeight: fontWeight.bold,
                 color: colors.content.heading,
               }}

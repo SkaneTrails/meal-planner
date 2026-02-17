@@ -141,7 +141,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                   style={({ pressed }) => ({
                     width: 20,
                     height: 20,
-                    borderRadius: 10,
+                    borderRadius: borderRadius['sm-md'],
                     backgroundColor: pressed
                       ? colors.glass.button
                       : colors.border,

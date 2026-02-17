@@ -2,7 +2,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontWeight, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  spacing,
+} from '@/lib/theme';
 
 interface ScreenHeaderProps {
   canEdit: boolean;
@@ -47,7 +53,11 @@ export const ScreenHeader = ({
         >
           <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
           <Text
-            style={{ color: colors.text.primary, fontSize: 17, marginLeft: 2 }}
+            style={{
+              color: colors.text.primary,
+              fontSize: fontSize['2xl'],
+              marginLeft: spacing['2xs'],
+            }}
           >
             {t('common.back')}
           </Text>
@@ -71,7 +81,7 @@ export const ScreenHeader = ({
               <Text
                 style={{
                   color: colors.white,
-                  fontSize: 15,
+                  fontSize: fontSize.xl,
                   fontWeight: fontWeight.semibold,
                 }}
               >

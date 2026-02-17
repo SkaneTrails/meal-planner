@@ -6,7 +6,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  spacing,
+} from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 
@@ -57,17 +64,22 @@ export const MealCell = ({
       }}
     >
       <View
-        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: spacing.xs,
+        }}
       >
         <Ionicons
           name={MEAL_TYPE_ICONS[mealType]}
-          size={14}
+          size={fontSize.lg}
           color={hasContent ? colors.white : colors.glass.faint}
         />
         <Text
           style={{
-            fontSize: 12,
-            marginLeft: 4,
+            fontSize: fontSize.base,
+            fontFamily: fontFamily.body,
+            marginLeft: spacing.xs,
             color: hasContent ? colors.white : colors.glass.faint,
           }}
         >
@@ -77,7 +89,12 @@ export const MealCell = ({
 
       {displayText ? (
         <Text
-          style={{ fontSize: 14, color: colors.white, fontWeight: '500' }}
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodyMedium,
+            color: colors.white,
+            fontWeight: fontWeight.medium,
+          }}
           numberOfLines={2}
         >
           {displayText}
@@ -115,13 +132,13 @@ export const DayColumn = ({
   const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
   return (
-    <View style={{ flex: 1, marginHorizontal: 4 }}>
+    <View style={{ flex: 1, marginHorizontal: spacing.xs }}>
       {/* Day header */}
       <View
         style={{
           alignItems: 'center',
-          paddingVertical: 8,
-          marginBottom: 8,
+          paddingVertical: spacing.sm,
+          marginBottom: spacing.sm,
           borderRadius: borderRadius.md,
           backgroundColor: isToday
             ? colors.content.headingWarm
@@ -130,7 +147,8 @@ export const DayColumn = ({
       >
         <Text
           style={{
-            fontSize: 12,
+            fontSize: fontSize.base,
+            fontFamily: fontFamily.body,
             color: isToday ? colors.white : colors.content.secondary,
           }}
         >
@@ -138,8 +156,9 @@ export const DayColumn = ({
         </Text>
         <Text
           style={{
-            fontSize: 18,
-            fontWeight: 'bold',
+            fontSize: fontSize['xl-2xl'],
+            fontFamily: fontFamily.bodyBold,
+            fontWeight: fontWeight.bold,
             color: isToday ? colors.white : colors.content.headingWarm,
           }}
         >
@@ -148,7 +167,7 @@ export const DayColumn = ({
       </View>
 
       {/* Meal cells */}
-      <View style={{ gap: 8 }}>
+      <View style={{ gap: spacing.sm }}>
         {mealTypes.map((mealType) => {
           const mealData = meals[mealType] || {};
           return (
@@ -169,14 +188,18 @@ export const DayColumn = ({
       {note && (
         <View
           style={{
-            marginTop: 8,
-            padding: 8,
+            marginTop: spacing.sm,
+            padding: spacing.sm,
             backgroundColor: colors.bgMid,
             borderRadius: borderRadius.md,
           }}
         >
           <Text
-            style={{ fontSize: 12, color: colors.content.headingWarm }}
+            style={{
+              fontSize: fontSize.base,
+              fontFamily: fontFamily.body,
+              color: colors.content.headingWarm,
+            }}
             numberOfLines={2}
           >
             {note}

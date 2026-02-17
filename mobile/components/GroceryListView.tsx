@@ -11,7 +11,16 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontWeight, layout, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  layout,
+  lineHeight,
+  spacing,
+} from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
 
@@ -118,7 +127,7 @@ export const GroceryListView = ({
             backgroundColor: colors.glass.faint,
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: 20,
+            marginBottom: spacing.xl,
           }}
         >
           <Ionicons name="cart-outline" size={40} color={colors.content.body} />
@@ -126,7 +135,8 @@ export const GroceryListView = ({
         <Text
           style={{
             color: colors.content.body,
-            fontSize: 18,
+            fontSize: fontSize['xl-2xl'],
+            fontFamily: fontFamily.bodySemibold,
             fontWeight: fontWeight.semibold,
             textAlign: 'center',
           }}
@@ -136,10 +146,11 @@ export const GroceryListView = ({
         <Text
           style={{
             color: colors.content.tertiary,
-            fontSize: 15,
-            marginTop: 8,
+            fontSize: fontSize.xl,
+            fontFamily: fontFamily.body,
+            marginTop: spacing.sm,
             textAlign: 'center',
-            lineHeight: 22,
+            lineHeight: lineHeight.lg,
             maxWidth: 280,
           }}
         >
@@ -151,7 +162,9 @@ export const GroceryListView = ({
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
+      <View
+        style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}
+      >
         <Pressable
           onPress={handleToggleReorder}
           style={{
@@ -161,10 +174,10 @@ export const GroceryListView = ({
             backgroundColor: reorderMode
               ? colors.glass.heavy
               : colors.glass.subtle,
-            paddingHorizontal: 12,
+            paddingHorizontal: spacing.md,
             paddingVertical: spacing['xs-sm'],
             borderRadius: borderRadius.xs,
-            gap: 4,
+            gap: spacing.xs,
           }}
         >
           <Ionicons
@@ -174,7 +187,8 @@ export const GroceryListView = ({
           />
           <Text
             style={{
-              fontSize: 12,
+              fontSize: fontSize.base,
+              fontFamily: fontFamily.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.body,
             }}
@@ -185,10 +199,11 @@ export const GroceryListView = ({
       </View>
 
       {reorderMode ? (
-        <View style={{ flex: 1, paddingHorizontal: 20 }}>
+        <View style={{ flex: 1, paddingHorizontal: spacing.xl }}>
           <Text
             style={{
-              fontSize: 12,
+              fontSize: fontSize.base,
+              fontFamily: fontFamily.body,
               color: colors.content.tertiary,
               marginBottom: spacing['sm-md'],
               fontStyle: 'italic',
@@ -213,7 +228,7 @@ export const GroceryListView = ({
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
-            paddingHorizontal: 20,
+            paddingHorizontal: spacing.xl,
             paddingBottom: layout.tabBar.contentBottomPadding,
           }}
           showsVerticalScrollIndicator={false}

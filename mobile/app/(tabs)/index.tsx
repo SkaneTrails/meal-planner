@@ -169,7 +169,7 @@ const Header = ({
         style={{
           width: 44,
           height: 44,
-          borderRadius: 22,
+          borderRadius: borderRadius['lg-xl'],
           backgroundColor: colors.border,
           alignItems: 'center',
           justifyContent: 'center',
@@ -250,7 +250,7 @@ const NextMealCard = ({
               style={{
                 width: 7,
                 height: 7,
-                borderRadius: 4,
+                borderRadius: borderRadius['2xs'],
                 backgroundColor: colors.ai.primary,
                 marginRight: spacing['xs-sm'],
               }}

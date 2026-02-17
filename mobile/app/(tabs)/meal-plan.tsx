@@ -22,6 +22,7 @@ import {
   borderRadius,
   colors,
   fontFamily,
+  fontSize,
   layout,
   shadows,
   spacing,
@@ -213,7 +214,7 @@ export default function MealPlanScreen() {
                   style={{
                     width: 8,
                     height: 8,
-                    borderRadius: 4,
+                    borderRadius: borderRadius['2xs'],
                     backgroundColor: colors.surface.border,
                     marginHorizontal: 12,
                   }}
@@ -284,7 +285,7 @@ export default function MealPlanScreen() {
               <Text
                 style={{
                   marginLeft: spacing['xs-sm'],
-                  fontSize: 13,
+                  fontSize: fontSize.md,
                   fontFamily: fontFamily.bodySemibold,
                   color: colors.white,
                 }}

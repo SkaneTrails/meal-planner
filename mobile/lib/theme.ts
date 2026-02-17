@@ -33,5 +33,6 @@ export {
   fontSize,
   fontWeight,
   letterSpacing,
+  lineHeight,
   typography,
 } from './theme/typography';

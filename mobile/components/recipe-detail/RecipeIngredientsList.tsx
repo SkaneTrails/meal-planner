@@ -8,6 +8,7 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
+  lineHeight,
   shadows,
   spacing,
   typography,
@@ -84,7 +85,7 @@ export const RecipeIngredientsList = ({
               style={{
                 width: 8,
                 height: 8,
-                borderRadius: 4,
+                borderRadius: borderRadius['2xs'],
                 backgroundColor: colors.primary,
                 marginTop: 7,
                 marginRight: spacing.md,
@@ -96,7 +97,7 @@ export const RecipeIngredientsList = ({
                 fontSize: fontSize.xl,
                 fontFamily: fontFamily.body,
                 color: colors.text.inverse,
-                lineHeight: 22,
+                lineHeight: lineHeight.lg,
               }}
             >
               {ingredient}

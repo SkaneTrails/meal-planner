@@ -16,6 +16,7 @@ import {
   iconContainer,
   iconSize,
   letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: fontSize.lg,
     color: colors.text.inverse,
-    lineHeight: 22,
+    lineHeight: lineHeight.lg,
   },
   noChanges: {
     fontSize: fontSize.lg,

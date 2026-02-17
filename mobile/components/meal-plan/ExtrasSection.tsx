@@ -5,6 +5,7 @@ import { AnimatedPressable } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontFamily,
   fontSize,
@@ -30,7 +31,7 @@ export const ExtrasSection = ({
   return (
     <View
       style={{
-        marginBottom: 16,
+        marginBottom: spacing.lg,
         backgroundColor: colors.mealPlan.containerBg,
         borderRadius: borderRadius.lg,
         padding: spacing['md-lg'],
@@ -86,7 +87,7 @@ export const ExtrasSection = ({
               fontSize: fontSize.sm,
               fontFamily: fontFamily.body,
               color: colors.content.body,
-              marginLeft: 4,
+              marginLeft: spacing.xs,
             }}
           >
             {t('mealPlan.extras.add')}
@@ -104,7 +105,7 @@ export const ExtrasSection = ({
             justifyContent: 'center',
             backgroundColor: colors.mealPlan.emptyStateBg,
             borderRadius: borderRadius.sm,
-            padding: 16,
+            padding: spacing.lg,
             borderWidth: 1,
             borderColor: colors.surface.subtle,
             borderStyle: 'dashed',
@@ -120,7 +121,7 @@ export const ExtrasSection = ({
               fontSize: fontSize.sm,
               fontFamily: fontFamily.body,
               color: colors.content.subtitle,
-              marginLeft: 8,
+              marginLeft: spacing.sm,
             }}
           >
             {t('mealPlan.extras.emptyState')}
@@ -157,7 +158,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         alignItems: 'center',
         backgroundColor: colors.mealPlan.slotBg,
         borderRadius: borderRadius.sm,
-        padding: 12,
+        padding: spacing.md,
         marginBottom: spacing['xs-sm'],
       }}
     >
@@ -175,10 +176,10 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
           }}
           resizeMode="cover"
         />
-        <View style={{ flex: 1, marginLeft: 12 }}>
+        <View style={{ flex: 1, marginLeft: spacing.md }}>
           <Text
             style={{
-              fontSize: 13,
+              fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               color: colors.primary,
             }}
@@ -188,10 +189,10 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
           {recipe.total_time && (
             <Text
               style={{
-                fontSize: 11,
+                fontSize: fontSize.sm,
                 fontFamily: fontFamily.body,
                 color: colors.content.tertiary,
-                marginTop: 2,
+                marginTop: spacing['2xs'],
               }}
             >
               {recipe.total_time} min
@@ -205,13 +206,11 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         hoverScale={1.1}
         pressScale={0.9}
         style={{
-          width: 28,
-          height: 28,
-          borderRadius: 14,
+          ...circleStyle(28),
           backgroundColor: colors.surface.border,
           alignItems: 'center',
           justifyContent: 'center',
-          marginLeft: 8,
+          marginLeft: spacing.sm,
         }}
       >
         <Ionicons name="close" size={18} color={colors.content.body} />

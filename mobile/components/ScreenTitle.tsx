@@ -4,6 +4,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  fontWeight,
   letterSpacing,
   spacing,
 } from '@/lib/theme';
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   centeredTitle: {
     fontSize: fontSize['3xl'],
     fontFamily: fontFamily.displayBold,
-    fontWeight: '700',
+    fontWeight: fontWeight.bold,
     color: colors.content.heading,
     letterSpacing: letterSpacing.tight,
     textAlign: 'center',

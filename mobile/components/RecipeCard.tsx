@@ -26,6 +26,8 @@ import {
   fontSize,
   fontWeight,
   iconContainer,
+  letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -119,19 +121,23 @@ export const RecipeCard = ({
               uri:
                 recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE,
             }}
-            style={{ width: 60, height: 60, borderRadius: 14 }}
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: borderRadius['md-lg'],
+            }}
             contentFit="cover"
             placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
             transition={200}
           />
-          <View style={{ flex: 1, marginLeft: 16 }}>
+          <View style={{ flex: 1, marginLeft: spacing.lg }}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: fontSize['lg-xl'],
                 fontFamily: fontFamily.bodyMedium,
                 color: colors.content.heading,
-                letterSpacing: -0.2,
-                lineHeight: 22,
+                letterSpacing: letterSpacing.normal,
+                lineHeight: lineHeight.lg,
               }}
               numberOfLines={1}
             >
@@ -141,7 +147,7 @@ export const RecipeCard = ({
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginTop: 8,
+                marginTop: spacing.sm,
                 gap: spacing['sm-md'],
               }}
             >
@@ -155,13 +161,13 @@ export const RecipeCard = ({
                           ? colors.diet.fish.cardBg
                           : colors.diet.meat.cardBg,
                     paddingHorizontal: spacing['sm-md'],
-                    paddingVertical: 4,
+                    paddingVertical: spacing.xs,
                     borderRadius: borderRadius.xs,
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: 12,
+                      fontSize: fontSize.base,
                       fontFamily: fontFamily.bodyMedium,
                       color:
                         recipe.diet_label === 'veggie'
@@ -179,8 +185,8 @@ export const RecipeCard = ({
                 <View
                   style={{
                     backgroundColor: colors.ai.light,
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
+                    paddingHorizontal: spacing.sm,
+                    paddingVertical: spacing['2xs'],
                     borderRadius: borderRadius.xs,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -193,10 +199,10 @@ export const RecipeCard = ({
                   />
                   <Text
                     style={{
-                      fontSize: 11,
+                      fontSize: fontSize.sm,
                       fontWeight: fontWeight.semibold,
                       color: colors.ai.primary,
-                      marginLeft: 3,
+                      marginLeft: spacing['2xs'],
                     }}
                   >
                     AI
@@ -207,7 +213,7 @@ export const RecipeCard = ({
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons
                     name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
-                    size={13}
+                    size={fontSize.md}
                     color={
                       recipe.rating >= 3
                         ? colors.rating.positive
@@ -220,14 +226,14 @@ export const RecipeCard = ({
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons
                     name="time-outline"
-                    size={13}
+                    size={fontSize.md}
                     color={colors.content.icon}
                   />
                   <Text
                     style={{
-                      fontSize: 13,
+                      fontSize: fontSize.md,
                       color: colors.content.subtitle,
-                      marginLeft: 4,
+                      marginLeft: spacing.xs,
                     }}
                   >
                     {totalTime}m
@@ -262,10 +268,10 @@ export const RecipeCard = ({
           width: cardSize,
           height: cardHeight,
           backgroundColor: colors.white,
-          borderRadius: 22,
+          borderRadius: borderRadius['lg-xl'],
           overflow: 'hidden',
           transform: [{ scale: scaleAnim }],
-          boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.12)',
+          ...shadows.cardRaised,
         }}
       >
         {/* Image with gradient overlay */}
@@ -298,24 +304,28 @@ export const RecipeCard = ({
             <View
               style={{
                 position: 'absolute',
-                top: 10,
-                left: 10,
+                top: spacing['sm-md'],
+                left: spacing['sm-md'],
                 backgroundColor: colors.ai.badge,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 10,
+                paddingHorizontal: spacing.sm,
+                paddingVertical: spacing.xs,
+                borderRadius: borderRadius['sm-md'],
                 flexDirection: 'row',
                 alignItems: 'center',
                 ...shadows.sm,
               }}
             >
-              <Ionicons name="sparkles" size={12} color={colors.white} />
+              <Ionicons
+                name="sparkles"
+                size={fontSize.base}
+                color={colors.white}
+              />
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: fontSize.xs,
                   fontWeight: fontWeight.semibold,
                   color: colors.white,
-                  marginLeft: 3,
+                  marginLeft: spacing['2xs'],
                 }}
               >
                 AI
@@ -330,10 +340,10 @@ export const RecipeCard = ({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={{
                 position: 'absolute',
-                top: 10,
-                right: 10,
+                top: spacing['sm-md'],
+                right: spacing['sm-md'],
                 backgroundColor: isRecipeFavorite
-                  ? 'rgba(220, 38, 38, 0.9)'
+                  ? colors.danger
                   : colors.glass.bright,
                 ...circleStyle(iconContainer.sm),
                 alignItems: 'center',
@@ -368,7 +378,7 @@ export const RecipeCard = ({
               fontFamily: fontFamily.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.heading,
-              lineHeight: 18,
+              lineHeight: lineHeight.sm,
             }}
             numberOfLines={2}
           >
@@ -387,14 +397,14 @@ export const RecipeCard = ({
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons
                   name="time-outline"
-                  size={13}
+                  size={fontSize.md}
                   color={colors.content.secondary}
                 />
                 <Text
                   style={{
                     fontSize: fontSize.xs,
                     color: colors.content.secondary,
-                    marginLeft: 3,
+                    marginLeft: spacing['2xs'],
                   }}
                 >
                   {totalTime} min
@@ -405,14 +415,14 @@ export const RecipeCard = ({
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Ionicons
                   name="people-outline"
-                  size={13}
+                  size={fontSize.md}
                   color={colors.content.secondary}
                 />
                 <Text
                   style={{
                     fontSize: fontSize.xs,
                     color: colors.content.secondary,
-                    marginLeft: 3,
+                    marginLeft: spacing['2xs'],
                   }}
                 >
                   {recipe.servings}

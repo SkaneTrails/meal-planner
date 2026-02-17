@@ -54,7 +54,7 @@ export const RadioGroup = <T extends string>({
               style={{
                 width: 22,
                 height: 22,
-                borderRadius: 11,
+                borderRadius: borderRadius.sm,
                 borderWidth: 2,
                 borderColor: isSelected ? colors.primary : colors.text.muted,
                 alignItems: 'center',
@@ -67,7 +67,7 @@ export const RadioGroup = <T extends string>({
                   style={{
                     width: 12,
                     height: 12,
-                    borderRadius: 6,
+                    borderRadius: borderRadius['xs-sm'],
                     backgroundColor: colors.primary,
                   }}
                 />

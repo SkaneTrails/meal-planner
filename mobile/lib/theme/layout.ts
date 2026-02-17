@@ -47,10 +47,16 @@ export const layout = {
 
 // Border radius - standardized scale
 export const borderRadius = {
+  '3xs': 3,
+  '2xs': 4,
+  'xs-sm': 6,
   xs: 8,
+  'sm-md': 10,
   sm: 12,
+  'md-lg': 14,
   md: 16,
   lg: 20,
+  'lg-xl': 22,
   xl: 24,
   full: 9999,
 } as const;

@@ -16,6 +16,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  lineHeight,
   spacing,
 } from '@/lib/theme';
 
@@ -65,7 +66,7 @@ export default function NoAccessScreen() {
             width: 96,
             height: 96,
             backgroundColor: colors.glass.buttonDefault,
-            borderRadius: 24,
+            borderRadius: borderRadius.xl,
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: spacing.lg,
@@ -77,7 +78,7 @@ export default function NoAccessScreen() {
         {/* Title */}
         <Text
           style={{
-            fontSize: 32,
+            fontSize: fontSize['5xl'],
             fontFamily: fontFamily.displayBold,
             color: colors.text.primary,
             marginBottom: spacing.sm,
@@ -112,7 +113,7 @@ export default function NoAccessScreen() {
             color: colors.text.secondary,
             textAlign: 'center',
             fontSize: fontSize.lg,
-            lineHeight: 26,
+            lineHeight: lineHeight['2xl'],
             marginBottom: 48,
           }}
         >

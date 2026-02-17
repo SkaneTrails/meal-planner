@@ -3,7 +3,14 @@ import type React from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  circleStyle,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
 interface EmptyMealSlotProps {
@@ -31,7 +38,7 @@ export const EmptyMealSlot = ({
       alignItems: 'center',
       backgroundColor: colors.mealPlan.emptyBg,
       borderRadius: borderRadius.sm,
-      padding: 12,
+      padding: spacing.md,
       marginBottom: spacing['xs-sm'],
     }}
   >
@@ -39,20 +46,18 @@ export const EmptyMealSlot = ({
     <View style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}>
       <View
         style={{
-          width: 26,
-          height: 26,
-          borderRadius: 13,
+          ...circleStyle(26),
           backgroundColor: colors.surface.active,
           alignItems: 'center',
           justifyContent: 'center',
-          marginRight: 8,
+          marginRight: spacing.sm,
         }}
       >
         <Ionicons name="add" size={16} color={colors.content.subtitle} />
       </View>
       <Text
         style={{
-          fontSize: 13,
+          fontSize: fontSize.md,
           fontFamily: fontFamily.bodySemibold,
           color: colors.content.strong,
         }}
@@ -80,16 +85,16 @@ export const EmptyMealSlot = ({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: colors.content.body,
-          paddingHorizontal: 12,
+          paddingHorizontal: spacing.md,
           paddingVertical: spacing['xs-sm'],
-          borderRadius: 10,
-          gap: 5,
+          borderRadius: borderRadius['sm-md'],
+          gap: spacing['xs-sm'],
         }}
       >
         <Ionicons name="book-outline" size={13} color={colors.white} />
         <Text
           style={{
-            fontSize: 12,
+            fontSize: fontSize.base,
             fontFamily: fontFamily.bodySemibold,
             color: colors.white,
           }}
@@ -131,7 +136,7 @@ const SecondaryActionButton = ({
     style={{
       width: 34,
       height: 34,
-      borderRadius: 10,
+      borderRadius: borderRadius['sm-md'],
       backgroundColor: colors.surface.active,
       alignItems: 'center',
       justifyContent: 'center',

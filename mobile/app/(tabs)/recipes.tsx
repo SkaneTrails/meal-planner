@@ -21,7 +21,13 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { borderRadius, colors, layout } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  layout,
+} from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 if (
@@ -230,18 +236,19 @@ export default function RecipesScreen() {
               paddingVertical: 16,
               paddingHorizontal: 20,
               backgroundColor:
-                sortBy === option.value
-                  ? 'rgba(255, 255, 255, 0.6)'
-                  : 'transparent',
+                sortBy === option.value ? colors.glass.subtle : 'transparent',
               borderRadius: borderRadius.sm,
               marginHorizontal: 8,
             }}
           >
             <Text
               style={{
-                fontSize: 16,
+                fontSize: fontSize['lg-xl'],
                 color: colors.content.body,
-                fontWeight: sortBy === option.value ? '600' : '400',
+                fontWeight:
+                  sortBy === option.value
+                    ? fontWeight.semibold
+                    : fontWeight.normal,
               }}
             >
               {option.label}

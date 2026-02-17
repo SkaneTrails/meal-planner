@@ -49,11 +49,22 @@ export const fontSize = {
   md: 13,
   lg: 14,
   xl: 15,
+  'lg-xl': 16,
   '2xl': 17,
+  'xl-2xl': 18,
   '3xl': 20,
+  '3xl-4xl': 28,
   '4xl': 26,
   '5xl': 32,
   '6xl': 40,
+} as const;
+
+export const lineHeight = {
+  sm: 18,
+  md: 20,
+  lg: 22,
+  xl: 24,
+  '2xl': 26,
 } as const;
 
 // Font weights for typography hierarchy
@@ -69,6 +80,7 @@ export const fontWeight = {
 export const letterSpacing = {
   tighter: -0.8,
   tight: -0.5,
+  snug: -0.3,
   normal: -0.2,
   wide: 0.8,
   wider: 1.2,

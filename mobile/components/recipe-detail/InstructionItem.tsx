@@ -8,6 +8,7 @@ import {
   fontSize,
   iconContainer,
   letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -39,7 +40,7 @@ export const InstructionItem = ({
           alignItems: 'flex-start',
           paddingVertical: spacing.sm,
           paddingHorizontal: spacing.md,
-          backgroundColor: 'rgba(255, 255, 255, 0.55)',
+          backgroundColor: colors.glass.subtle,
           borderRadius: borderRadius.sm,
           marginBottom: spacing.sm,
           borderLeftWidth: 2,
@@ -59,7 +60,7 @@ export const InstructionItem = ({
             fontSize: fontSize.md,
             fontFamily: fontFamily.body,
             color: colors.content.body,
-            lineHeight: 20,
+            lineHeight: lineHeight.md,
             fontStyle: 'italic',
           }}
         >
@@ -84,7 +85,7 @@ export const InstructionItem = ({
           style={{
             flex: 1,
             height: 1,
-            backgroundColor: 'rgba(139, 115, 85, 0.2)',
+            backgroundColor: colors.surface.divider,
           }}
         />
         <Text
@@ -102,7 +103,7 @@ export const InstructionItem = ({
           style={{
             flex: 1,
             height: 1,
-            backgroundColor: 'rgba(139, 115, 85, 0.2)',
+            backgroundColor: colors.surface.divider,
           }}
         />
       </View>
@@ -164,7 +165,7 @@ export const InstructionItem = ({
               backgroundColor: colors.timeline.badge,
               paddingHorizontal: spacing['sm-md'],
               paddingVertical: 3,
-              borderRadius: 10,
+              borderRadius: borderRadius['sm-md'],
               alignSelf: 'flex-start',
               marginBottom: spacing.xs,
             }}
@@ -189,7 +190,7 @@ export const InstructionItem = ({
             color: isCompleted
               ? colors.timeline.completedText
               : colors.content.body,
-            lineHeight: 22,
+            lineHeight: lineHeight.lg,
             textDecorationLine: isCompleted ? 'line-through' : 'none',
           }}
         >

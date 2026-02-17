@@ -27,6 +27,7 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
+  lineHeight,
   spacing,
   typography,
 } from '@/lib/theme';
@@ -252,7 +253,7 @@ export const RecipeNotes = ({
               color: colors.content.body,
               fontFamily: fontFamily.body,
               fontSize: fontSize.lg,
-              lineHeight: 22,
+              lineHeight: lineHeight.lg,
             }}
           >
             {note.text}
