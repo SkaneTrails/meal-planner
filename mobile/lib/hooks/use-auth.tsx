@@ -28,6 +28,8 @@ import { Platform } from 'react-native';
 import { showNotification } from '../alert';
 import { setAuthTokenGetter, setOnUnauthorized } from '../api';
 import { auth, isFirebaseConfigured } from '../firebase';
+import { translateStandalone } from '../i18n';
+import { getCurrentLanguage } from '../language-state';
 
 interface AuthContextType {
   user: User | null;
@@ -121,8 +123,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   // hadToken: true means we sent a token but server rejected it (real auth failure)
   //           false means no token was available (race condition during sign-in)
   useEffect(() => {
-    setOnUnauthorized((status: number, hadToken: boolean) => {
-      // If no token was sent, it's likely a race condition during sign-in
+    setOnUnauthorized((hadToken: boolean) => {
       if (!hadToken) {
         return;
       }
@@ -138,20 +139,9 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
         }
       });
 
-      let title: string;
-      let message: string;
-      if (status === 401) {
-        title = 'Session Expired';
-        message = 'Your session has expired. Please sign in again.';
-      } else if (status === 403) {
-        title = 'No Access';
-        message =
-          'Your account is not part of any household. Please contact an administrator to be added.';
-      } else {
-        title = 'Authentication Error';
-        message =
-          'There was a problem with your session. Please sign in again.';
-      }
+      const lang = getCurrentLanguage();
+      const title = translateStandalone(lang, 'auth.sessionExpiredTitle');
+      const message = translateStandalone(lang, 'auth.sessionExpiredMessage');
 
       if (Platform.OS === 'web') {
         window.alert(`${title}\n\n${message}`);

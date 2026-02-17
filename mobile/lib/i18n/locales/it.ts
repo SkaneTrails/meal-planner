@@ -628,6 +628,11 @@ const it: Translations = {
     somethingWentWrong: 'Qualcosa è andato storto. Riprova.',
   },
 
+  auth: {
+    sessionExpiredTitle: 'Sessione scaduta',
+    sessionExpiredMessage: 'La tua sessione è scaduta. Accedi di nuovo.',
+  },
+
   noAccess: {
     title: 'Nessun accesso',
     signedInAs: 'Sei connesso come',

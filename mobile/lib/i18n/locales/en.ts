@@ -629,6 +629,12 @@ const en = {
     somethingWentWrong: 'Something went wrong. Please try again.',
   },
 
+  // ── Auth (non-React alerts) ───────────────────────────────────────
+  auth: {
+    sessionExpiredTitle: 'Session Expired',
+    sessionExpiredMessage: 'Your session has expired. Please sign in again.',
+  },
+
   // ── No-access screen ──────────────────────────────────────────────
   noAccess: {
     title: 'No Access',

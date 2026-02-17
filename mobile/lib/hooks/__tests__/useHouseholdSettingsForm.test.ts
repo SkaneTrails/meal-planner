@@ -77,6 +77,13 @@ vi.mock('@/lib/alert', () => ({
 }));
 
 import { useHouseholdSettingsForm } from '../useHouseholdSettingsForm';
+import {
+  useHouseholdMembers,
+  useHousehold,
+} from '@/lib/hooks/use-admin';
+
+const mockUseHouseholdMembers = vi.mocked(useHouseholdMembers);
+const mockUseHousehold = vi.mocked(useHousehold);
 
 describe('useHouseholdSettingsForm', () => {
   beforeEach(() => {
@@ -114,6 +121,20 @@ describe('useHouseholdSettingsForm', () => {
       mockCurrentUser = { role: 'member', household_id: 'h1' };
       const { result } = render('h1');
       expect(result.current.canEdit).toBe(false);
+    });
+
+    it('passes enabled: false to admin-only hooks for member role', () => {
+      mockCurrentUser = { role: 'member', household_id: 'h1' };
+      render('h1');
+      expect(mockUseHouseholdMembers).toHaveBeenCalledWith('h1', { enabled: false });
+      expect(mockUseHousehold).toHaveBeenCalledWith('h1', { enabled: false });
+    });
+
+    it('passes enabled: true to admin-only hooks for admin role', () => {
+      mockCurrentUser = { role: 'admin', household_id: 'h1' };
+      render('h1');
+      expect(mockUseHouseholdMembers).toHaveBeenCalledWith('h1', { enabled: true });
+      expect(mockUseHousehold).toHaveBeenCalledWith('h1', { enabled: true });
     });
   });
 

@@ -617,6 +617,11 @@ const sv: Translations = {
     somethingWentWrong: 'Något gick fel. Försök igen.',
   },
 
+  auth: {
+    sessionExpiredTitle: 'Sessionen har gått ut',
+    sessionExpiredMessage: 'Din session har gått ut. Logga in igen.',
+  },
+
   noAccess: {
     title: 'Ingen åtkomst',
     signedInAs: 'Du är inloggad som',
