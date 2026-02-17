@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
   fontWeight,
@@ -52,9 +53,7 @@ export const RadioGroup = <T extends string>({
           >
             <View
               style={{
-                width: 22,
-                height: 22,
-                borderRadius: borderRadius.sm,
+                ...circleStyle(22),
                 borderWidth: 2,
                 borderColor: isSelected ? colors.primary : colors.text.muted,
                 alignItems: 'center',
@@ -65,9 +64,7 @@ export const RadioGroup = <T extends string>({
               {isSelected && (
                 <View
                   style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: borderRadius['xs-sm'],
+                    ...circleStyle(12),
                     backgroundColor: colors.primary,
                   }}
                 />
