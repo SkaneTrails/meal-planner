@@ -1,6 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { AnimatedPressable, IconCircle, SectionHeader } from '@/components';
+import {
+  AnimatedPressable,
+  IconCircle,
+  SectionHeader,
+  SurfaceCard,
+} from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -35,15 +40,7 @@ export const AccountSection = ({
         subtitle={userEmail || 'Email unavailable'}
       />
 
-      <View
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
-          marginBottom: spacing.md,
-          ...shadows.sm,
-        }}
-      >
+      <SurfaceCard style={{ marginBottom: spacing.md }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <IconCircle
             size="lg"
@@ -74,7 +71,7 @@ export const AccountSection = ({
             </Text>
           </View>
         </View>
-      </View>
+      </SurfaceCard>
 
       <AnimatedPressable
         onPress={onSignOut}

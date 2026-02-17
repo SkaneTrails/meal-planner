@@ -1,14 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { IconCircle, SurfaceCard } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   fontSize,
   fontWeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -91,15 +90,9 @@ export const ItemsAtHomeSection = ({
       )}
 
       {/* Add new item input */}
-      <View
-        style={{
-          flexDirection: 'row',
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: 4,
-          marginBottom: spacing.md,
-          ...shadows.sm,
-        }}
+      <SurfaceCard
+        padding={4}
+        style={{ flexDirection: 'row', marginBottom: spacing.md }}
       >
         <TextInput
           style={{
@@ -132,7 +125,7 @@ export const ItemsAtHomeSection = ({
             color={newItem.trim() ? colors.white : colors.text.inverse + '60'}
           />
         </Pressable>
-      </View>
+      </SurfaceCard>
 
       {/* Suggested items */}
       {suggestedNotAdded.length > 0 && (
@@ -156,15 +149,7 @@ const CurrentItems = ({
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        marginBottom: spacing.md,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard padding={spacing.md} style={{ marginBottom: spacing.md }}>
       <Text
         style={{
           fontSize: fontSize.xs,
@@ -213,7 +198,7 @@ const CurrentItems = ({
           </Pressable>
         ))}
       </View>
-    </View>
+    </SurfaceCard>
   );
 };
 
@@ -228,14 +213,7 @@ const SuggestedItems = ({
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard padding={spacing.md}>
       <Text
         style={{
           fontSize: fontSize.xs,
@@ -282,7 +260,7 @@ const SuggestedItems = ({
           </Pressable>
         ))}
       </View>
-    </View>
+    </SurfaceCard>
   );
 };
 
@@ -291,16 +269,11 @@ const EmptyItemsState = () => {
   const { t } = useTranslation();
 
   return (
+<<<<<<< HEAD
     <View
       style={{
         backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.lg,
-        alignItems: 'center',
-        marginTop: spacing.sm,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard style={{ alignItems: 'center', marginTop: spacing.sm }}>
       <IconCircle
         size="lg"
         bg={colors.bgDark}
@@ -327,6 +300,6 @@ const EmptyItemsState = () => {
       >
         {t('settings.addItemsHint')}
       </Text>
-    </View>
+    </SurfaceCard>
   );
 };

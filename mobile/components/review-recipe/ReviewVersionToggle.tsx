@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { SurfaceCard } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   fontSize,
   letterSpacing,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -38,15 +38,7 @@ export const ReviewVersionToggle = ({
       >
         {t('reviewRecipe.version')}
       </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.xs,
-          ...shadows.sm,
-        }}
-      >
+      <SurfaceCard padding={spacing.xs} style={{ flexDirection: 'row' }}>
         <Pressable
           onPress={() => onSelectTab('original')}
           style={{
@@ -101,7 +93,7 @@ export const ReviewVersionToggle = ({
             {t('reviewRecipe.enhanced')}
           </Text>
         </Pressable>
-      </View>
+      </SurfaceCard>
     </View>
   );
 };

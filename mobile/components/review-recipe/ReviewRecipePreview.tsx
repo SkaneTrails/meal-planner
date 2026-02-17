@@ -1,12 +1,7 @@
 import { Text, View } from 'react-native';
+import { SurfaceCard } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { RecipeCreate } from '@/lib/types';
 
 interface ReviewRecipePreviewProps {
@@ -23,15 +18,7 @@ export const ReviewRecipePreview = ({
   const instructions = recipe.instructions ?? [];
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.lg,
-        marginBottom: spacing.xl,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard style={{ marginBottom: spacing.xl }}>
       <Text
         style={{
           fontSize: fontSize.lg,
@@ -103,6 +90,6 @@ export const ReviewRecipePreview = ({
           +{instructions.length - 3} {t('common.more')}
         </Text>
       )}
-    </View>
+    </SurfaceCard>
   );
 };

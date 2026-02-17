@@ -1,13 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
+import { SurfaceCard } from '@/components';
 import { type AppLanguage, LANGUAGES } from '@/lib/settings-context';
 import {
-  borderRadius,
   circleStyle,
   fontSize,
   iconContainer,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -30,14 +29,7 @@ export const LanguagePicker = ({
   const { colors } = useTheme();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        overflow: 'hidden',
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
       {LANGUAGES.map((lang, index) => (
         <Pressable
           key={lang.code}
@@ -83,6 +75,6 @@ export const LanguagePicker = ({
           )}
         </Pressable>
       ))}
-    </View>
+    </SurfaceCard>
   );
 };

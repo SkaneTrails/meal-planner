@@ -1,14 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
+import { SurfaceCard } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  lineHeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 
 interface ReviewAiChangesProps {
   changes: string[];
@@ -20,15 +14,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
   if (changes.length === 0) return null;
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.lg,
-        marginBottom: spacing.xl,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard style={{ marginBottom: spacing.xl }}>
       <View
         style={{
           flexDirection: 'row',
@@ -75,6 +61,6 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
           </Text>
         </View>
       ))}
-    </View>
+    </SurfaceCard>
   );
 };
