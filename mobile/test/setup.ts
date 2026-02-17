@@ -375,6 +375,24 @@ vi.mock('@/lib/theme', () => ({
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
   dotSize: { md: 10 },
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
+  useTheme: () => ({
+    colors: {
+      primary: '#2D2D2D', white: '#FFFFFF', bgBase: '#E8D8C8',
+      text: { primary: '#FFFFFF', inverse: '#2D2D2D' },
+      content: { heading: '#3D3D3D', body: '#5D4E40', subtitle: 'rgba(93, 78, 64, 0.6)' },
+      glass: { light: 'rgba(255, 255, 255, 0.88)', border: 'rgba(0, 0, 0, 0.04)' },
+      ai: { primary: '#6B8E6B' },
+    },
+    styles: {
+      cardStyle: {},
+      glassCardStyle: {},
+      inputStyle: {},
+      settingsTitleStyle: { fontSize: 17, fontWeight: '600', color: '#5D4E40' },
+      settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
+      accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
+    },
+  }),
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock @/lib/settings-context

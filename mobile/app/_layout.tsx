@@ -42,7 +42,7 @@ import {
   SettingsProvider,
   useSettings,
 } from '@/lib/settings-context';
-import { colors } from '@/lib/theme';
+import { colors, ThemeProvider } from '@/lib/theme';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -167,15 +167,17 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <QueryProvider>
-          <SettingsProvider>
-            <GroceryProvider>
-              <AppContent />
-            </GroceryProvider>
-          </SettingsProvider>
-        </QueryProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <QueryProvider>
+            <SettingsProvider>
+              <GroceryProvider>
+                <AppContent />
+              </GroceryProvider>
+            </SettingsProvider>
+          </QueryProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
