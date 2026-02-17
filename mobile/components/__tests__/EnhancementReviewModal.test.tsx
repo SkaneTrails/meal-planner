@@ -38,8 +38,7 @@ describe('EnhancementReviewModal', () => {
     }),
     isReviewPending: false,
     t,
-    onApprove: vi.fn(),
-    onReject: vi.fn(),
+    onReview: vi.fn(),
   };
 
   it('renders changes list when recipe has changes_made', () => {
@@ -70,34 +69,31 @@ describe('EnhancementReviewModal', () => {
     expect(screen.getByText('Test Recipe')).toBeTruthy();
   });
 
-  it('calls onApprove when approve button is pressed', () => {
-    const onApprove = vi.fn();
-    render(<EnhancementReviewModal {...defaultProps} onApprove={onApprove} />);
+  it('calls onReview with approve when approve button is pressed', () => {
+    const onReview = vi.fn();
+    render(<EnhancementReviewModal {...defaultProps} onReview={onReview} />);
     fireEvent.click(screen.getByText('recipe.approveEnhancement'));
-    expect(onApprove).toHaveBeenCalledOnce();
+    expect(onReview).toHaveBeenCalledWith('approve');
   });
 
-  it('calls onReject when reject button is pressed', () => {
-    const onReject = vi.fn();
-    render(<EnhancementReviewModal {...defaultProps} onReject={onReject} />);
+  it('calls onReview with reject when reject button is pressed', () => {
+    const onReview = vi.fn();
+    render(<EnhancementReviewModal {...defaultProps} onReview={onReview} />);
     fireEvent.click(screen.getByText('recipe.rejectEnhancement'));
-    expect(onReject).toHaveBeenCalledOnce();
+    expect(onReview).toHaveBeenCalledWith('reject');
   });
 
   it('disables buttons when isReviewPending is true', () => {
-    const onApprove = vi.fn();
-    const onReject = vi.fn();
+    const onReview = vi.fn();
     render(
       <EnhancementReviewModal
         {...defaultProps}
         isReviewPending={true}
-        onApprove={onApprove}
-        onReject={onReject}
+        onReview={onReview}
       />,
     );
     fireEvent.click(screen.getByText('recipe.approveEnhancement'));
     fireEvent.click(screen.getByText('recipe.rejectEnhancement'));
-    expect(onApprove).not.toHaveBeenCalled();
-    expect(onReject).not.toHaveBeenCalled();
+    expect(onReview).not.toHaveBeenCalled();
   });
 });

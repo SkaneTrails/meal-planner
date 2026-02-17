@@ -18,8 +18,7 @@ interface EnhancementReviewModalProps {
   recipe: Recipe;
   isReviewPending: boolean;
   t: TFunction;
-  onApprove: () => void;
-  onReject: () => void;
+  onReview: (action: 'approve' | 'reject') => void;
 }
 
 export const EnhancementReviewModal = ({
@@ -27,8 +26,7 @@ export const EnhancementReviewModal = ({
   recipe,
   isReviewPending,
   t,
-  onApprove,
-  onReject,
+  onReview,
 }: EnhancementReviewModalProps) => {
   const changes = recipe.changes_made ?? [];
 
@@ -160,7 +158,7 @@ export const EnhancementReviewModal = ({
           {/* Buttons */}
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             <Pressable
-              onPress={onReject}
+              onPress={() => onReview('reject')}
               disabled={isReviewPending}
               style={({ pressed }) => ({
                 flex: 1,
@@ -184,7 +182,7 @@ export const EnhancementReviewModal = ({
               </Text>
             </Pressable>
             <Pressable
-              onPress={onApprove}
+              onPress={() => onReview('approve')}
               disabled={isReviewPending}
               style={({ pressed }) => ({
                 flex: 1,

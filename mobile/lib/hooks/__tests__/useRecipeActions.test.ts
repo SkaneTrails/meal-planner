@@ -438,6 +438,7 @@ describe('useRecipeActions', () => {
       await act(async () => result.current.handleReviewEnhancement('approve'));
       expect(mockReviewMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', action: 'approve' });
       expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhancementApproved', 'recipe.enhancementApprovedMessage');
+      expect(result.current.showEnhancementReviewModal).toBe(false);
     });
 
     it('calls reviewEnhancement with reject and shows success', async () => {
@@ -446,6 +447,7 @@ describe('useRecipeActions', () => {
       await act(async () => result.current.handleReviewEnhancement('reject'));
       expect(mockReviewMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', action: 'reject' });
       expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhancementRejected', 'recipe.enhancementRejectedMessage');
+      expect(result.current.showEnhancementReviewModal).toBe(false);
     });
 
     it('shows error notification on failure', async () => {
@@ -555,30 +557,6 @@ describe('useRecipeActions', () => {
       await act(async () => enhanceButton.onPress!());
 
       expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.enhanceFailed');
-    });
-  });
-
-  describe('handleApproveEnhancement', () => {
-    it('calls reviewEnhancement with approve and closes modal', async () => {
-      const recipe = makeRecipe({ enhanced: true });
-      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
-
-      await act(async () => result.current.handleApproveEnhancement());
-
-      expect(mockReviewMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', action: 'approve' });
-      expect(result.current.showEnhancementReviewModal).toBe(false);
-    });
-  });
-
-  describe('handleRejectEnhancement', () => {
-    it('calls reviewEnhancement with reject and closes modal', async () => {
-      const recipe = makeRecipe({ enhanced: true });
-      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
-
-      await act(async () => result.current.handleRejectEnhancement());
-
-      expect(mockReviewMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', action: 'reject' });
-      expect(result.current.showEnhancementReviewModal).toBe(false);
     });
   });
 

@@ -79,8 +79,6 @@ export default function RecipeDetailScreen() {
     handleReviewEnhancement,
     handleEnhanceRecipe,
     showEnhancementReviewModal,
-    handleApproveEnhancement,
-    handleRejectEnhancement,
   } = useRecipeActions(id, recipe);
 
   const [weekOffset, setWeekOffset] = useState(0);
@@ -307,8 +305,7 @@ export default function RecipeDetailScreen() {
         recipe={recipe}
         isReviewPending={isReviewingEnhancement}
         t={t}
-        onApprove={handleApproveEnhancement}
-        onReject={handleRejectEnhancement}
+        onReview={handleReviewEnhancement}
       />
 
       <EnhancingOverlay visible={isEnhancing} message={t('recipe.enhancing')} />

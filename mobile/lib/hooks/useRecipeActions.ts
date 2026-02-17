@@ -336,6 +336,7 @@ export const useRecipeActions = (
     try {
       await reviewEnhancement.mutateAsync({ id, action });
       hapticSuccess();
+      setShowEnhancementReviewModal(false);
       if (action === 'approve') {
         showNotification(
           t('recipe.enhancementApproved'),
@@ -448,16 +449,6 @@ export const useRecipeActions = (
     ]);
   };
 
-  const handleApproveEnhancement = async () => {
-    await handleReviewEnhancement('approve');
-    setShowEnhancementReviewModal(false);
-  };
-
-  const handleRejectEnhancement = async () => {
-    await handleReviewEnhancement('reject');
-    setShowEnhancementReviewModal(false);
-  };
-
   return {
     currentUser,
     isSuperuser,
@@ -493,7 +484,5 @@ export const useRecipeActions = (
     handleReviewEnhancement,
     handleEnhanceRecipe,
     showEnhancementReviewModal,
-    handleApproveEnhancement,
-    handleRejectEnhancement,
   };
 };
