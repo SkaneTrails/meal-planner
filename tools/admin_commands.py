@@ -87,6 +87,10 @@ def user_get(email: str) -> None:
 
 def user_add(email: str, household_id: str, *, role: str = "member") -> None:
     """Add a user to a household."""
+    if "@" not in email or "." not in email.split("@")[-1]:
+        print(f"\u274c Invalid email format: {email}")
+        return
+
     db = _get_db()
     normalized = email.lower()
 
@@ -178,7 +182,7 @@ def user_list(*, household_id: str | None = None) -> None:
 
     count = 0
     for doc in query.stream():
-        data = doc.to_dict()
+        data = doc.to_dict() or {}
         print(f"  {doc.id:<35s}  {data.get('role', 'member'):<8s}  {data.get('household_id', '')}")
         count += 1
 
@@ -230,7 +234,7 @@ def household_get(household_id: str) -> None:
     members = list(query.stream())
     print(f"\n  --- Members ({len(members)}) ---")
     for m in members:
-        m_data = m.to_dict()
+        m_data = m.to_dict() or {}
         print(f"    {m.id} ({m_data.get('role', 'member')})")
 
     settings_doc = (
@@ -289,7 +293,18 @@ def household_set(household_id: str, field: str, value: str) -> None:
     field_type = SETTINGS_FIELDS[field]
     try:
         if field_type is bool:
-            parsed = value.lower() in ("true", "1", "yes")
+            normalized = value.strip().lower()
+            truthy_values = ("true", "1", "yes")
+            falsy_values = ("false", "0", "no")
+            if normalized in truthy_values:
+                parsed = True
+            elif normalized in falsy_values:
+                parsed = False
+            else:
+                valid_values = ", ".join(truthy_values + falsy_values)
+                print(f"\u274c Invalid boolean value for {field}: {value!r}")
+                print(f"   Expected one of: {valid_values}")
+                return
         elif field_type is int:
             parsed = int(value)
         else:
