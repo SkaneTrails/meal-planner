@@ -22,6 +22,7 @@ export { DayColumn, MealCell } from './MealGrid';
 export { PrimaryButton } from './PrimaryButton';
 export { RadioGroup } from './RadioGroup';
 export { RecipeCard } from './RecipeCard';
+export { ScreenTitle } from './ScreenTitle';
 export { SectionHeader } from './SectionHeader';
 export {
   GroceryItemSkeleton,
@@ -33,4 +34,5 @@ export {
   StatCardSkeleton,
 } from './Skeleton';
 export { StepperControl } from './StepperControl';
+export { SurfaceCard } from './SurfaceCard';
 export { ThemeToggle } from './ThemeToggle';

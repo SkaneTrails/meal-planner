@@ -135,6 +135,10 @@ vi.mock('@/components', () => ({
       subtitle ? createElement('span', null, subtitle) : null,
     );
   },
+  SurfaceCard: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'surface-card' }, children);
+  },
   ThemeToggle: ({ value, onValueChange, disabled }: any) => {
     const { createElement } = require('react');
     return createElement('button', {

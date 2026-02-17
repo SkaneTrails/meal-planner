@@ -1,13 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { SectionHeader, ThemeToggle } from '@/components';
+import { SectionHeader, SurfaceCard, ThemeToggle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
 import {
-  borderRadius,
   settingsSubtitleStyle,
   settingsTitleStyle,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -22,7 +20,6 @@ export const RecipeLibrarySection = ({
   showHiddenRecipes,
   onToggle,
 }: RecipeLibrarySectionProps) => {
-  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -33,14 +30,7 @@ export const RecipeLibrarySection = ({
         subtitle={t('settings.recipeLibraryDesc')}
       />
 
-      <View
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
-          ...shadows.sm,
-        }}
-      >
+      <SurfaceCard>
         <View
           style={{
             flexDirection: 'row',
@@ -63,7 +53,7 @@ export const RecipeLibrarySection = ({
           </View>
           <ThemeToggle value={showHiddenRecipes} onValueChange={onToggle} />
         </View>
-      </View>
+      </SurfaceCard>
     </View>
   );
 };
@@ -88,14 +78,7 @@ export const WeekStartSection = ({
         subtitle={t('settings.weekStartDesc')}
       />
 
-      <View
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          overflow: 'hidden',
-          ...shadows.sm,
-        }}
-      >
+      <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
         {(['monday', 'saturday'] as const).map((day, index) => (
           <Pressable
             key={day}
@@ -130,7 +113,7 @@ export const WeekStartSection = ({
             )}
           </Pressable>
         ))}
-      </View>
+      </SurfaceCard>
     </View>
   );
 };

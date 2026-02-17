@@ -15,6 +15,7 @@ import {
   GradientBackground,
   IconCircle,
   PrimaryButton,
+  SurfaceCard,
 } from '@/components';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { ChipPicker } from '@/components/ChipPicker';
@@ -138,14 +139,12 @@ export default function AddRecipeScreen() {
 
           {/* URL input */}
           <FormField label={t('addRecipe.urlLabel')}>
-            <View
+            <SurfaceCard
+              padding={0}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.lg,
-                ...shadows.sm,
               }}
             >
               <Ionicons name="link" size={20} color={colors.text.inverse} />
@@ -176,7 +175,7 @@ export default function AddRecipeScreen() {
                   />
                 </Pressable>
               )}
-            </View>
+            </SurfaceCard>
           </FormField>
 
           {/* AI Enhancement toggle */}
@@ -192,17 +191,13 @@ export default function AddRecipeScreen() {
             }
             disabled={aiEnabled}
           >
-            <View
+            <SurfaceCard
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                padding: spacing.lg,
                 marginBottom: spacing['2xl'],
                 opacity: aiEnabled ? 1 : 0.5,
-                ...shadows.sm,
               }}
             >
               <View
@@ -262,7 +257,7 @@ export default function AddRecipeScreen() {
                 }
                 disabled={isPending || !aiEnabled}
               />
-            </View>
+            </SurfaceCard>
           </Pressable>
 
           {/* Diet & Meal type pickers */}

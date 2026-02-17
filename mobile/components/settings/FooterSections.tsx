@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, SectionHeader } from '@/components';
+import { AnimatedPressable, SectionHeader, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -74,14 +74,7 @@ export const AboutSection = () => {
         subtitle={t('settings.aboutDesc')}
       />
 
-      <View
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
-          ...shadows.sm,
-        }}
-      >
+      <SurfaceCard>
         <View
           style={{
             flexDirection: 'row',
@@ -114,7 +107,7 @@ export const AboutSection = () => {
           </Text>
           <Text style={settingsTitleStyle}>❤️</Text>
         </View>
-      </View>
+      </SurfaceCard>
     </View>
   );
 };
