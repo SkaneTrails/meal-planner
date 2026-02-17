@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { IconCircle } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
@@ -45,17 +46,13 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
     >
       {/* Header with sage accent */}
       <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
-        <View
-          style={{
-            ...circleStyle(iconContainer.lg),
-            backgroundColor: colors.ai.light,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: spacing.sm,
-          }}
+        <IconCircle
+          size="lg"
+          bg={colors.ai.light}
+          style={{ marginBottom: spacing.sm }}
         >
           <Ionicons name="copy" size={24} color={colors.ai.primary} />
-        </View>
+        </IconCircle>
         <Text
           style={{
             fontSize: fontSize['2xl'],
@@ -185,22 +182,13 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
                 {MEAL_TYPE_LABELS[meal.mealType as MealType] || meal.mealType}
               </Text>
             </View>
-            <View
-              style={{
-                width: iconContainer.md,
-                height: iconContainer.md,
-                borderRadius: iconContainer.md / 2,
-                backgroundColor: colors.glass.light,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <IconCircle size="md" bg={colors.glass.light}>
               <Ionicons
                 name="copy-outline"
                 size={18}
                 color={colors.text.inverse}
               />
-            </View>
+            </IconCircle>
           </Pressable>
         ))
       )}

@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
-  iconContainer,
   lineHeight,
   spacing,
   typography,
@@ -37,17 +36,13 @@ export const RecipeInstructions = ({
           marginBottom: spacing.lg,
         }}
       >
-        <View
-          style={{
-            ...circleStyle(iconContainer.xs),
-            backgroundColor: colors.surface.active,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: spacing.md,
-          }}
+        <IconCircle
+          size="xs"
+          bg={colors.surface.active}
+          style={{ marginRight: spacing.md }}
         >
           <Ionicons name="book" size={18} color={colors.content.body} />
-        </View>
+        </IconCircle>
         <Text
           style={{
             ...typography.displaySmall,
@@ -138,14 +133,10 @@ export const RecipeInstructions = ({
                 opacity: isCompleted ? 0.7 : 1,
               })}
             >
-              <View
+              <IconCircle
+                size="sm"
+                bg={isCompleted ? colors.success : colors.primary}
                 style={{
-                  ...circleStyle(iconContainer.sm),
-                  backgroundColor: isCompleted
-                    ? colors.success
-                    : colors.primary,
-                  alignItems: 'center',
-                  justifyContent: 'center',
                   marginRight: spacing.md,
                   marginTop: 2,
                 }}
@@ -163,7 +154,7 @@ export const RecipeInstructions = ({
                     {index + 1}
                   </Text>
                 )}
-              </View>
+              </IconCircle>
               <Text
                 style={{
                   flex: 1,

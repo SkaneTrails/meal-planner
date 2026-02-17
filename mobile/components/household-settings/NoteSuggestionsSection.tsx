@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { IconCircle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   dotSize,
   fontSize,
   fontWeight,
@@ -287,21 +287,17 @@ const EmptyState = () => {
         ...shadows.sm,
       }}
     >
-      <View
-        style={{
-          ...circleStyle(48),
-          backgroundColor: colors.bgDark,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: spacing.sm,
-        }}
+      <IconCircle
+        size={48}
+        bg={colors.bgDark}
+        style={{ marginBottom: spacing.sm }}
       >
         <Ionicons
           name="document-text-outline"
           size={24}
           color={colors.content.body}
         />
-      </View>
+      </IconCircle>
       <Text
         style={{
           fontSize: fontSize.md,

@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { Pressable, Text, View, type ViewStyle } from 'react-native';
+import { IconCircle } from '@/components';
 import {
   borderRadius,
   fontSize,
-  iconContainer,
   letterSpacing,
   lineHeight,
   shadows,
@@ -47,19 +47,13 @@ const EmptyState = ({
       ]}
     >
       {icon && (
-        <View
-          style={{
-            width: iconContainer['2xl'],
-            height: iconContainer['2xl'],
-            borderRadius: iconContainer['2xl'] / 2,
-            backgroundColor: colors.glass.card,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: spacing.xl,
-          }}
+        <IconCircle
+          size="2xl"
+          bg={colors.glass.card}
+          style={{ marginBottom: spacing.xl }}
         >
           <Ionicons name={icon} size={36} color={colors.text.inverse} />
-        </View>
+        </IconCircle>
       )}
       <Text
         style={{

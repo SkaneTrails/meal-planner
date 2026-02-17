@@ -87,6 +87,8 @@ export const iconContainer = {
   '2xl': 80,
 } as const;
 
+export type IconContainerSize = keyof typeof iconContainer;
+
 // Helper: generates width, height, borderRadius for a circular container
 export const circleStyle = (size: number) =>
   ({ width: size, height: size, borderRadius: size / 2 }) as const;

@@ -7,12 +7,11 @@ import {
   Text,
   View,
 } from 'react-native';
+import { IconCircle } from '@/components';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
-  iconContainer,
   iconSize,
   letterSpacing,
   lineHeight,
@@ -62,15 +61,17 @@ export const EnhancementReviewModal = ({
         <View style={[styles.card, { backgroundColor: colors.white }]}>
           {/* Header */}
           <View style={styles.header}>
-            <View
-              style={[styles.iconCircle, { backgroundColor: colors.ai.light }]}
+            <IconCircle
+              size="lg"
+              bg={colors.ai.light}
+              style={{ marginRight: spacing.md }}
             >
               <Ionicons
                 name="sparkles"
                 size={iconSize.xl}
                 color={colors.ai.primary}
               />
-            </View>
+            </IconCircle>
             <View style={styles.headerText}>
               <Text
                 style={[styles.headerLabel, { color: colors.text.inverse }]}
@@ -196,12 +197,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.lg,
-  },
-  iconCircle: {
-    ...circleStyle(iconContainer.lg),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
   },
   headerText: {
     flex: 1,

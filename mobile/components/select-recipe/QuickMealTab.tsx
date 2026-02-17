@@ -1,12 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { IconCircle } from '@/components';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
   borderRadius,
   fontSize,
   fontWeight,
-  iconContainer,
   letterSpacing,
   spacing,
   useTheme,
@@ -40,23 +40,17 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
         }}
       >
         <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
-          <View
-            style={{
-              width: iconContainer.xl,
-              height: iconContainer.xl,
-              borderRadius: iconContainer.xl / 2,
-              backgroundColor: colors.ai.light,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: spacing.md,
-            }}
+          <IconCircle
+            size="xl"
+            bg={colors.ai.light}
+            style={{ marginBottom: spacing.md }}
           >
             <Ionicons
               name="create-outline"
               size={28}
               color={colors.ai.primary}
             />
-          </View>
+          </IconCircle>
           <Text
             style={{
               fontSize: fontSize['3xl'],

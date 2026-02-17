@@ -13,6 +13,7 @@ import {
   EnhancingOverlay,
   FormField,
   GradientBackground,
+  IconCircle,
   PrimaryButton,
 } from '@/components';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
@@ -29,7 +30,6 @@ import {
   borderRadius,
   fontSize,
   fontWeight,
-  iconContainer,
   layout,
   letterSpacing,
   lineHeight,
@@ -208,19 +208,14 @@ export default function AddRecipeScreen() {
               <View
                 style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
               >
-                <View
-                  style={{
-                    width: iconContainer.md,
-                    height: iconContainer.md,
-                    borderRadius: iconContainer.md / 2,
-                    backgroundColor:
-                      aiEnabled && enhanceWithAI
-                        ? colors.ai.light
-                        : colors.glass.light,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: spacing.md,
-                  }}
+                <IconCircle
+                  size="md"
+                  bg={
+                    aiEnabled && enhanceWithAI
+                      ? colors.ai.light
+                      : colors.glass.light
+                  }
+                  style={{ marginRight: spacing.md }}
                 >
                   <Ionicons
                     name="sparkles"
@@ -231,7 +226,7 @@ export default function AddRecipeScreen() {
                         : colors.gray[500]
                     }
                   />
-                </View>
+                </IconCircle>
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{

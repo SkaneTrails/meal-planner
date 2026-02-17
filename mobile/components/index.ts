@@ -17,6 +17,7 @@ export { FullScreenLoading } from './FullScreenLoading';
 export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow } from './GroceryItemRow';
 export { GroceryListView } from './GroceryListView';
+export { IconCircle } from './IconCircle';
 export { DayColumn, MealCell } from './MealGrid';
 export { PrimaryButton } from './PrimaryButton';
 export { RadioGroup } from './RadioGroup';

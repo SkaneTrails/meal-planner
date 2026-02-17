@@ -118,6 +118,10 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': `section-${title}` }, title);
   },
+  IconCircle: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'icon-circle' }, children);
+  },
   RadioGroup: ({ value, onChange }: any) => {
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': `radio-${value}` });
