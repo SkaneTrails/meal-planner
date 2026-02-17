@@ -131,6 +131,15 @@ vi.mock('@/components', () => ({
       subtitle ? createElement('span', null, subtitle) : null,
     );
   },
+  ThemeToggle: ({ value, onValueChange, disabled }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', {
+      onClick: () => !disabled && onValueChange(!value),
+      'aria-checked': value,
+      'aria-disabled': disabled,
+      role: 'switch',
+    }, value ? 'ON' : 'OFF');
+  },
 }));
 
 // Mock @/lib/alert
