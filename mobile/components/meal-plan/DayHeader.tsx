@@ -3,12 +3,12 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   dotSize,
   fontFamily,
   fontSize,
   iconSize,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
@@ -44,7 +44,9 @@ export const DayHeader = ({
   onCancelEdit,
   onToggleTag,
   onCollapse,
-}: DayHeaderProps) => (
+}: DayHeaderProps) => {
+  const { colors } = useTheme();
+  return (
   <>
     <Pressable
       onPress={onCollapse}
@@ -184,7 +186,8 @@ export const DayHeader = ({
       />
     )}
   </>
-);
+  );
+};
 
 interface NoteEditorProps {
   noteText: string;
@@ -204,8 +207,10 @@ const NoteEditor = ({
   onSave,
   onCancel,
   onToggleTag,
-}: NoteEditorProps) => (
-  <View style={{ marginBottom: spacing.md }}>
+}: NoteEditorProps) => {
+  const { colors } = useTheme();
+  return (
+    <View style={{ marginBottom: spacing.md }}>
     <View
       style={{
         flexDirection: 'row',
@@ -293,4 +298,5 @@ const NoteEditor = ({
       </View>
     </ScrollView>
   </View>
-);
+  );
+};

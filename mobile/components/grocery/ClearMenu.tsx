@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontSize, spacing } from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface ClearMenuProps {
   onClearMealPlanItems: () => void;
@@ -15,6 +15,7 @@ export const ClearMenu = ({
   onClearManualItems,
   onClearAll,
 }: ClearMenuProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

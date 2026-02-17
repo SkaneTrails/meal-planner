@@ -12,7 +12,7 @@ import {
 import { RecipeCard, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { TFunction } from '@/lib/i18n';
-import { colors, layout } from '@/lib/theme';
+import { layout, useTheme } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
 interface RecipeGridProps {
@@ -42,6 +42,7 @@ export const RecipeGrid = ({
   isFetchingNextPage,
   t,
 }: RecipeGridProps) => {
+  const { colors } = useTheme();
   const { width } = useWindowDimensions();
 
   const minCardWidth = 180;

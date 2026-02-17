@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps, ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { GradientBackground } from '@/components/GradientBackground';
-import { colors, fontFamily, fontSize, spacing } from '@/lib/theme';
+import { colors, fontFamily, fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface FullScreenLoadingProps {
   /** GradientBackground visual mode (default: 'default') */
@@ -39,13 +39,16 @@ export const FullScreenLoading = ({
   subtitle,
   children,
 }: FullScreenLoadingProps) => {
+  const { colors: themeColors } = useTheme();
   const isMessage = Boolean(icon || title);
 
   return (
     <GradientBackground {...bgVariant(background)} style={styles.container}>
       {isMessage ? (
         <View style={styles.content}>
-          {icon && <Ionicons name={icon} size={64} color={colors.text.muted} />}
+          {icon && (
+            <Ionicons name={icon} size={64} color={themeColors.text.muted} />
+          )}
           {title && (
             <Text style={[styles.title, icon && { marginTop: spacing.lg }]}>
               {title}
@@ -54,7 +57,7 @@ export const FullScreenLoading = ({
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         </View>
       ) : (
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={themeColors.primary} />
       )}
       {children}
     </GradientBackground>

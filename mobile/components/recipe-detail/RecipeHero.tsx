@@ -10,11 +10,11 @@ import {
 } from 'react-native';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   letterSpacing,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import {
   PLACEHOLDER_BLURHASH,
@@ -46,103 +46,106 @@ export const RecipeHero = ({
   onPickImage,
   onThumbUp,
   onThumbDown,
-}: RecipeHeroProps) => (
-  <Animated.View
-    style={{
-      position: 'relative',
-      height: headerHeight,
-      overflow: 'hidden',
-      transform: [
-        {
-          translateY: scrollY.interpolate({
-            inputRange: [-headerHeight, 0, headerHeight],
-            outputRange: [-headerHeight / 2, 0, headerHeight * 0.5],
-            extrapolate: 'clamp',
-          }),
-        },
-        {
-          scale: scrollY.interpolate({
-            inputRange: [-headerHeight, 0, 1],
-            outputRange: [2, 1, 1],
-            extrapolate: 'clamp',
-          }),
-        },
-      ],
-    }}
-  >
-    <Image
-      source={{ uri: imageUrl || PLACEHOLDER_IMAGE }}
-      style={{ width: '100%', height: headerHeight }}
-      contentFit="cover"
-      placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
-      transition={400}
-    />
-
-    <LinearGradient
-      colors={['transparent', 'rgba(0,0,0,0.7)']}
+}: RecipeHeroProps) => {
+  const { colors } = useTheme();
+  return (
+    <Animated.View
       style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        paddingTop: Math.round((headerHeight * 2) / 7),
-        paddingBottom: spacing['4xl'] + spacing.sm,
-        paddingHorizontal: spacing.xl,
+        position: 'relative',
+        height: headerHeight,
+        overflow: 'hidden',
+        transform: [
+          {
+            translateY: scrollY.interpolate({
+              inputRange: [-headerHeight, 0, headerHeight],
+              outputRange: [-headerHeight / 2, 0, headerHeight * 0.5],
+              extrapolate: 'clamp',
+            }),
+          },
+          {
+            scale: scrollY.interpolate({
+              inputRange: [-headerHeight, 0, 1],
+              outputRange: [2, 1, 1],
+              extrapolate: 'clamp',
+            }),
+          },
+        ],
       }}
     >
-      <View
+      <Image
+        source={{ uri: imageUrl || PLACEHOLDER_IMAGE }}
+        style={{ width: '100%', height: headerHeight }}
+        contentFit="cover"
+        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+        transition={400}
+      />
+
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.7)']}
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          paddingTop: Math.round((headerHeight * 2) / 7),
+          paddingBottom: spacing['4xl'] + spacing.sm,
+          paddingHorizontal: spacing.xl,
         }}
       >
-        <Text
+        <View
           style={{
-            fontSize: fontSize['4xl'],
-            fontFamily: fontFamily.display,
-            color: colors.white,
-            letterSpacing: letterSpacing.tight,
-            flex: 1,
-            marginRight: spacing.md,
-            textShadowColor: colors.overlay.backdrop,
-            textShadowOffset: { width: 1, height: 2 },
-            textShadowRadius: 4,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
           }}
         >
-          {title}
-        </Text>
-        <ThumbRating
-          rating={rating}
-          hidden={hidden}
-          onThumbUp={onThumbUp}
-          onThumbDown={onThumbDown}
-          size={24}
-        />
-      </View>
-    </LinearGradient>
+          <Text
+            style={{
+              fontSize: fontSize['4xl'],
+              fontFamily: fontFamily.display,
+              color: colors.white,
+              letterSpacing: letterSpacing.tight,
+              flex: 1,
+              marginRight: spacing.md,
+              textShadowColor: colors.overlay.backdrop,
+              textShadowOffset: { width: 1, height: 2 },
+              textShadowRadius: 4,
+            }}
+          >
+            {title}
+          </Text>
+          <ThumbRating
+            rating={rating}
+            hidden={hidden}
+            onThumbUp={onThumbUp}
+            onThumbDown={onThumbDown}
+            size={24}
+          />
+        </View>
+      </LinearGradient>
 
-    <Pressable
-      onPress={onPickImage}
-      style={({ pressed }) => ({
-        position: 'absolute',
-        top: 60,
-        right: spacing.lg,
-        backgroundColor: pressed
-          ? colors.glass.buttonPressed
-          : colors.glass.button,
-        borderRadius: borderRadius.xl,
-        width: 44,
-        height: 44,
-        alignItems: 'center',
-        justifyContent: 'center',
-      })}
-    >
-      {isUpdatingImage ? (
-        <ActivityIndicator size="small" color={colors.white} />
-      ) : (
-        <Ionicons name="camera" size={20} color={colors.white} />
-      )}
-    </Pressable>
-  </Animated.View>
-);
+      <Pressable
+        onPress={onPickImage}
+        style={({ pressed }) => ({
+          position: 'absolute',
+          top: 60,
+          right: spacing.lg,
+          backgroundColor: pressed
+            ? colors.glass.buttonPressed
+            : colors.glass.button,
+          borderRadius: borderRadius.xl,
+          width: 44,
+          height: 44,
+          alignItems: 'center',
+          justifyContent: 'center',
+        })}
+      >
+        {isUpdatingImage ? (
+          <ActivityIndicator size="small" color={colors.white} />
+        ) : (
+          <Ionicons name="camera" size={20} color={colors.white} />
+        )}
+      </Pressable>
+    </Animated.View>
+  );
+};

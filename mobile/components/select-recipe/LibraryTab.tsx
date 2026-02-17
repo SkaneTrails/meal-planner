@@ -5,11 +5,11 @@ import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   borderRadius,
-  colors,
   fontSize,
   layout,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
@@ -19,6 +19,7 @@ interface LibraryTabProps {
 }
 
 export const LibraryTab = ({ state }: LibraryTabProps) => {
+  const { colors } = useTheme();
   const {
     t,
     mode,

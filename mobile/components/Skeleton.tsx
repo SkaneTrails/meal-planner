@@ -11,7 +11,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { borderRadius, colors, spacing } from '@/lib/theme';
+import { borderRadius, colors, spacing, useTheme } from '@/lib/theme';
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -26,6 +26,7 @@ export const Skeleton = ({
   borderRadius: radius = borderRadius.sm,
   style,
 }: SkeletonProps) => {
+  const { colors: themeColors } = useTheme();
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export const Skeleton = ({
           width,
           height,
           borderRadius: radius,
-          backgroundColor: colors.bgDark,
+          backgroundColor: themeColors.bgDark,
           opacity,
         },
         style,

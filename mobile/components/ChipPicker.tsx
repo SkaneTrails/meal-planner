@@ -1,12 +1,12 @@
 import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
-  colors,
   dotSize,
   fontFamily,
   fontSize,
   letterSpacing,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface ChipOption<T> {
@@ -44,6 +44,7 @@ const ChipPicker = <T,>({
   t,
   variant = 'glass',
 }: ChipPickerProps<T>) => {
+  const { colors } = useTheme();
   const isGlass = variant === 'glass';
   const inactiveBg = isGlass ? colors.glass.card : colors.gray[50];
   const inactiveBorder = isGlass ? colors.glass.border : colors.bgDark;

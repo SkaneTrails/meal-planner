@@ -2,11 +2,11 @@ import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { RecipeCreate } from '@/lib/types';
 
@@ -19,6 +19,7 @@ export const ReviewRecipePreview = ({
   recipe,
   t,
 }: ReviewRecipePreviewProps) => {
+  const { colors } = useTheme();
   const ingredients = recipe.ingredients ?? [];
   const instructions = recipe.instructions ?? [];
 

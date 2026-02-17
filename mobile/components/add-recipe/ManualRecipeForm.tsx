@@ -13,13 +13,13 @@ import { FormField, GradientBackground, PrimaryButton } from '@/components';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   letterSpacing,
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type Actions = ReturnType<typeof useAddRecipeActions>;
@@ -29,6 +29,7 @@ interface ManualRecipeFormProps {
 }
 
 export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
+  const { colors } = useTheme();
   const {
     t,
     isPending,
@@ -51,6 +52,16 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
     handleCreateManual,
     handlePickImage,
   } = actions;
+
+  const inputStyle = {
+    backgroundColor: colors.glass.card,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    fontSize: fontSize.lg,
+    color: colors.text.inverse,
+    ...shadows.sm,
+  };
 
   return (
     <KeyboardAvoidingView
@@ -273,16 +284,6 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
   );
 };
 
-const inputStyle = {
-  backgroundColor: colors.glass.card,
-  borderRadius: borderRadius.md,
-  paddingHorizontal: spacing.lg,
-  paddingVertical: spacing.md,
-  fontSize: fontSize.lg,
-  color: colors.text.inverse,
-  ...shadows.sm,
-};
-
 interface NumericFieldProps {
   label: string;
   placeholder: string;
@@ -297,24 +298,28 @@ const NumericField = ({
   value,
   onChangeText,
   disabled,
-}: NumericFieldProps) => (
-  <FormField label={label} compact>
-    <TextInput
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
-        fontSize: fontSize.md,
-        color: colors.text.inverse,
-        ...shadows.sm,
-      }}
-      placeholder={placeholder}
-      placeholderTextColor={colors.gray[500]}
-      value={value}
-      onChangeText={onChangeText}
-      keyboardType="numeric"
-      editable={!disabled}
-    />
-  </FormField>
-);
+}: NumericFieldProps) => {
+  const { colors } = useTheme();
+
+  return (
+    <FormField label={label} compact>
+      <TextInput
+        style={{
+          backgroundColor: colors.glass.card,
+          borderRadius: borderRadius.md,
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing.sm,
+          fontSize: fontSize.md,
+          color: colors.text.inverse,
+          ...shadows.sm,
+        }}
+        placeholder={placeholder}
+        placeholderTextColor={colors.gray[500]}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType="numeric"
+        editable={!disabled}
+      />
+    </FormField>
+  );
+};

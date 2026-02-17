@@ -10,7 +10,14 @@ import { usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, layout, shadows, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  layout,
+  shadows,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 type TabDef = {
   route: string;
@@ -96,6 +103,7 @@ export const FloatingTabBar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
+  const { colors: themeColors } = useTheme();
 
   // Hide on auth screens or when not logged in
   if (!user || HIDDEN_ON.includes(pathname)) return null;
@@ -123,7 +131,9 @@ export const FloatingTabBar = () => {
                     name={active ? tab.iconFocused : tab.icon}
                     size={20}
                     color={
-                      active ? colors.tabBar.active : colors.tabBar.inactive
+                      active
+                        ? themeColors.tabBar.active
+                        : themeColors.tabBar.inactive
                     }
                   />
                 </View>

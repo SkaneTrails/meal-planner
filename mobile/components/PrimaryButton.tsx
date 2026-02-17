@@ -12,11 +12,11 @@ import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type IconName = ComponentProps<typeof IoniconsType>['name'];
@@ -49,10 +49,13 @@ export function PrimaryButton({
   isPending = false,
   loadingLabel,
   disabled = false,
-  color = colors.button.primary,
+  color: colorProp,
   pressedColor,
-  disabledColor = colors.button.disabled,
+  disabledColor: disabledColorProp,
 }: PrimaryButtonProps) {
+  const { colors } = useTheme();
+  const color = colorProp ?? colors.button.primary;
+  const disabledColor = disabledColorProp ?? colors.button.disabled;
   const isDisabled = disabled || isPending;
   const activeColor = isDisabled ? disabledColor : color;
   const displayIcon: IconName | undefined = isPending
@@ -90,7 +93,9 @@ export function PrimaryButton({
           style={styles.icon}
         />
       ) : null}
-      <Text style={styles.label}>{displayLabel}</Text>
+      <Text style={[styles.label, { color: colors.white }]}>
+        {displayLabel}
+      </Text>
     </AnimatedPressable>
   );
 }
@@ -112,7 +117,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   label: {
-    color: colors.white,
     fontSize: fontSize.lg,
     fontFamily: fontFamily.bodySemibold,
   },

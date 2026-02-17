@@ -4,10 +4,10 @@ import { BottomSheetModal } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { isPastDate, toBcp47 } from '@/lib/utils/dateFormatter';
@@ -42,6 +42,7 @@ export const PlanMealModal = ({
   onClearMeal,
   getMealForSlot,
 }: PlanMealModalProps) => {
+  const { colors } = useTheme();
   const resolvedMealTypes = mealTypesProp ?? DEFAULT_MEAL_TYPES;
 
   return (

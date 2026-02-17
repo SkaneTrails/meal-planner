@@ -5,12 +5,12 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   dotSize,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 const DEFAULT_SUGGESTION_KEYS = [
@@ -35,6 +35,7 @@ export const NoteSuggestionsSection = ({
   onAdd,
   onRemove,
 }: NoteSuggestionsSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const [newSuggestion, setNewSuggestion] = useState('');
 
@@ -131,6 +132,7 @@ const CurrentSuggestions = ({
   canEdit: boolean;
   onRemove: (item: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -207,6 +209,7 @@ const PresetSuggestions = ({
   items: string[];
   onAdd: (item: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -270,6 +273,7 @@ const PresetSuggestions = ({
 };
 
 const EmptyState = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

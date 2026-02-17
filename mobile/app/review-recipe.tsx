@@ -14,7 +14,7 @@ import {
   PrimaryButton,
 } from '@/components';
 import {
-  DIET_OPTIONS,
+  getDietOptions,
   MEAL_OPTIONS,
   PLACEHOLDER_BLURHASH,
   PLACEHOLDER_IMAGE,
@@ -27,11 +27,11 @@ import { useCreateRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   layout,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type {
   DietLabel,
@@ -43,6 +43,7 @@ import type {
 type VersionTab = 'original' | 'enhanced';
 
 export default function ReviewRecipeScreen() {
+  const { colors } = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams<{ preview: string }>();
   const { t } = useTranslation();
@@ -142,7 +143,7 @@ export default function ReviewRecipeScreen() {
         {/* Diet Type Picker */}
         <ChipPicker
           label={t('recipe.dietType')}
-          options={DIET_OPTIONS}
+          options={getDietOptions(colors)}
           selected={dietLabel}
           onSelect={setDietLabel}
           t={t}

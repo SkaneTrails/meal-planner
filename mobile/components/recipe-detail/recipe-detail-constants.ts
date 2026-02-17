@@ -1,4 +1,4 @@
-import { colors } from '@/lib/theme';
+import type { ColorTokens } from '@/lib/theme';
 import type {
   DietLabel,
   MealLabel,
@@ -11,11 +11,13 @@ export const PLACEHOLDER_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0teleV@';
 export const PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800';
 
-export const DIET_OPTIONS: {
+export const getDietOptions = (
+  colors: ColorTokens,
+): {
   value: DietLabel | null;
   labelKey: string;
   dotColor: string | null;
-}[] = [
+}[] => [
   { value: null, labelKey: 'labels.diet.none', dotColor: null },
   {
     value: 'veggie',
@@ -72,10 +74,9 @@ export const DEFAULT_MEAL_TYPES: { type: MealType; labelKey: string }[] = [
   { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
 ];
 
-export const DIET_LABELS: Record<
-  DietLabel,
-  { dotColor: string; color: string; bgColor: string }
-> = {
+export const getDietLabels = (
+  colors: ColorTokens,
+): Record<DietLabel, { dotColor: string; color: string; bgColor: string }> => ({
   veggie: {
     dotColor: colors.diet.veggie.text,
     color: colors.diet.veggie.text,
@@ -91,4 +92,4 @@ export const DIET_LABELS: Record<
     color: colors.diet.meat.text,
     bgColor: colors.diet.meat.bg,
   },
-};
+});

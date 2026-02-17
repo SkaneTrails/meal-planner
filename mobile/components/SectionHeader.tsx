@@ -2,11 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import {
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface SectionHeaderProps {
@@ -21,9 +21,11 @@ export const SectionHeader = ({
   icon,
   title,
   subtitle,
-  iconColor = colors.content.body,
+  iconColor: iconColorProp,
   variant = 'light',
 }: SectionHeaderProps) => {
+  const { colors } = useTheme();
+  const iconColor = iconColorProp ?? colors.content.body;
   const titleColor = variant === 'dark' ? colors.white : colors.text.primary;
   const subtitleColor =
     variant === 'dark' ? colors.white + '80' : colors.text.secondary;

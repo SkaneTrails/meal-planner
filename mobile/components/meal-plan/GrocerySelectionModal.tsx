@@ -6,11 +6,11 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   iconContainer,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
@@ -59,100 +59,106 @@ export const GrocerySelectionModal = ({
   onChangeServings,
   onPreviousWeek,
   onNextWeek,
-}: GrocerySelectionModalProps) => (
-  <BottomSheetModal
-    visible={visible}
-    onClose={onClose}
-    title={t('mealPlan.selectMeals')}
-    subtitle={t('mealPlan.selectMealsSubtitle')}
-    scrollable={false}
-    footer={
-      <View
-        style={{
-          padding: spacing.xl,
-          borderTopWidth: 1,
-          borderTopColor: colors.surface.divider,
-        }}
-      >
-        <PrimaryButton
-          onPress={() => {
-            hapticSuccess();
-            onCreateGroceryList();
+}: GrocerySelectionModalProps) => {
+  const { colors } = useTheme();
+  return (
+    <BottomSheetModal
+      visible={visible}
+      onClose={onClose}
+      title={t('mealPlan.selectMeals')}
+      subtitle={t('mealPlan.selectMealsSubtitle')}
+      scrollable={false}
+      footer={
+        <View
+          style={{
+            padding: spacing.xl,
+            borderTopWidth: 1,
+            borderTopColor: colors.surface.divider,
           }}
-          disabled={selectedMeals.size === 0}
-          label={t('mealPlan.createGroceryList', { count: selectedMeals.size })}
-          pressedColor={colors.content.body}
-        />
-      </View>
-    }
-  >
-    <GroceryWeekSelector
-      weekDates={groceryWeekDates}
-      language={language}
-      onPreviousWeek={onPreviousWeek}
-      onNextWeek={onNextWeek}
-    />
-
-    <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{ padding: spacing.xl }}
-      showsVerticalScrollIndicator={false}
-    >
-      {groceryWeekDates.map((date) => {
-        const hasAnyMeal = mealTypes.some((mt) => {
-          const meal = getMealForSlot(date, mt.type);
-          return meal?.recipe || meal?.customText;
-        });
-        if (!hasAnyMeal) return null;
-
-        const isToday = date.toDateString() === new Date().toDateString();
-
-        return (
-          <View key={date.toISOString()} style={{ marginBottom: spacing.lg }}>
-            <Text
-              style={{
-                fontSize: fontSize['lg-xl'],
-                fontFamily: fontFamily.bodySemibold,
-                color: isToday
-                  ? colors.content.heading
-                  : colors.content.tertiary,
-                marginBottom: spacing['sm-md'],
-              }}
-            >
-              {formatDayHeader(date, language, t('mealPlan.today'))}
-            </Text>
-            {mealTypes.map(({ type, label }) => {
-              const meal = getMealForSlot(date, type);
-              if (!meal?.recipe && !meal?.customText) return null;
-
-              const title = meal?.recipe?.title || meal?.customText || '';
-              const recipeServings = meal?.recipe?.servings;
-              const dateStr = formatDateLocal(date);
-              const key = `${dateStr}_${type}`;
-              const isSelected = selectedMeals.has(key);
-              const currentServings = mealServings[key] || recipeServings || 2;
-
-              return (
-                <GroceryMealItem
-                  key={type}
-                  title={title}
-                  label={label}
-                  isSelected={isSelected}
-                  currentServings={currentServings}
-                  mealKey={key}
-                  onToggle={() =>
-                    onToggleMeal(date, type, recipeServings ?? undefined)
-                  }
-                  onChangeServings={onChangeServings}
-                />
-              );
+        >
+          <PrimaryButton
+            onPress={() => {
+              hapticSuccess();
+              onCreateGroceryList();
+            }}
+            disabled={selectedMeals.size === 0}
+            label={t('mealPlan.createGroceryList', {
+              count: selectedMeals.size,
             })}
-          </View>
-        );
-      })}
-    </ScrollView>
-  </BottomSheetModal>
-);
+            pressedColor={colors.content.body}
+          />
+        </View>
+      }
+    >
+      <GroceryWeekSelector
+        weekDates={groceryWeekDates}
+        language={language}
+        onPreviousWeek={onPreviousWeek}
+        onNextWeek={onNextWeek}
+      />
+
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: spacing.xl }}
+        showsVerticalScrollIndicator={false}
+      >
+        {groceryWeekDates.map((date) => {
+          const hasAnyMeal = mealTypes.some((mt) => {
+            const meal = getMealForSlot(date, mt.type);
+            return meal?.recipe || meal?.customText;
+          });
+          if (!hasAnyMeal) return null;
+
+          const isToday = date.toDateString() === new Date().toDateString();
+
+          return (
+            <View key={date.toISOString()} style={{ marginBottom: spacing.lg }}>
+              <Text
+                style={{
+                  fontSize: fontSize['lg-xl'],
+                  fontFamily: fontFamily.bodySemibold,
+                  color: isToday
+                    ? colors.content.heading
+                    : colors.content.tertiary,
+                  marginBottom: spacing['sm-md'],
+                }}
+              >
+                {formatDayHeader(date, language, t('mealPlan.today'))}
+              </Text>
+              {mealTypes.map(({ type, label }) => {
+                const meal = getMealForSlot(date, type);
+                if (!meal?.recipe && !meal?.customText) return null;
+
+                const title = meal?.recipe?.title || meal?.customText || '';
+                const recipeServings = meal?.recipe?.servings;
+                const dateStr = formatDateLocal(date);
+                const key = `${dateStr}_${type}`;
+                const isSelected = selectedMeals.has(key);
+                const currentServings =
+                  mealServings[key] || recipeServings || 2;
+
+                return (
+                  <GroceryMealItem
+                    key={type}
+                    title={title}
+                    label={label}
+                    isSelected={isSelected}
+                    currentServings={currentServings}
+                    mealKey={key}
+                    onToggle={() =>
+                      onToggleMeal(date, type, recipeServings ?? undefined)
+                    }
+                    onChangeServings={onChangeServings}
+                  />
+                );
+              })}
+            </View>
+          );
+        })}
+      </ScrollView>
+    </BottomSheetModal>
+  );
+};
 
 interface GroceryWeekSelectorProps {
   weekDates: Date[];
@@ -166,63 +172,70 @@ const GroceryWeekSelector = ({
   language,
   onPreviousWeek,
   onNextWeek,
-}: GroceryWeekSelectorProps) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginTop: spacing.md,
-      gap: spacing.sm,
-    }}
-  >
-    <Pressable
-      onPress={onPreviousWeek}
-      style={({ pressed }) => ({
-        ...circleStyle(iconContainer.xs),
-        backgroundColor: pressed
-          ? colors.button.primaryHover
-          : colors.button.primarySubtle,
-        alignItems: 'center',
-        justifyContent: 'center',
-      })}
-    >
-      <Ionicons name="chevron-back" size={20} color={colors.content.body} />
-    </Pressable>
+}: GroceryWeekSelectorProps) => {
+  const { colors } = useTheme();
+  return (
     <View
       style={{
-        paddingHorizontal: spacing.xl,
-        paddingVertical: spacing['sm-md'],
-        backgroundColor: colors.button.primarySubtle,
-        borderRadius: borderRadius['md-lg'],
-      }}
-    >
-      <Text
-        style={{
-          fontSize: fontSize.lg,
-          fontFamily: fontFamily.bodySemibold,
-          color: colors.content.heading,
-          textAlign: 'center',
-        }}
-      >
-        {formatWeekRange(weekDates, language)}
-      </Text>
-    </View>
-    <Pressable
-      onPress={onNextWeek}
-      style={({ pressed }) => ({
-        ...circleStyle(iconContainer.xs),
-        backgroundColor: pressed
-          ? colors.button.primaryHover
-          : colors.button.primarySubtle,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-      })}
+        marginTop: spacing.md,
+        gap: spacing.sm,
+      }}
     >
-      <Ionicons name="chevron-forward" size={20} color={colors.content.body} />
-    </Pressable>
-  </View>
-);
+      <Pressable
+        onPress={onPreviousWeek}
+        style={({ pressed }) => ({
+          ...circleStyle(iconContainer.xs),
+          backgroundColor: pressed
+            ? colors.button.primaryHover
+            : colors.button.primarySubtle,
+          alignItems: 'center',
+          justifyContent: 'center',
+        })}
+      >
+        <Ionicons name="chevron-back" size={20} color={colors.content.body} />
+      </Pressable>
+      <View
+        style={{
+          paddingHorizontal: spacing.xl,
+          paddingVertical: spacing['sm-md'],
+          backgroundColor: colors.button.primarySubtle,
+          borderRadius: borderRadius['md-lg'],
+        }}
+      >
+        <Text
+          style={{
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodySemibold,
+            color: colors.content.heading,
+            textAlign: 'center',
+          }}
+        >
+          {formatWeekRange(weekDates, language)}
+        </Text>
+      </View>
+      <Pressable
+        onPress={onNextWeek}
+        style={({ pressed }) => ({
+          ...circleStyle(iconContainer.xs),
+          backgroundColor: pressed
+            ? colors.button.primaryHover
+            : colors.button.primarySubtle,
+          alignItems: 'center',
+          justifyContent: 'center',
+        })}
+      >
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.content.body}
+        />
+      </Pressable>
+    </View>
+  );
+};
 
 interface GroceryMealItemProps {
   title: string;
@@ -242,104 +255,45 @@ const GroceryMealItem = ({
   mealKey,
   onToggle,
   onChangeServings,
-}: GroceryMealItemProps) => (
-  <View
-    style={{
-      backgroundColor: isSelected
-        ? colors.ai.selectedBg
-        : colors.surface.subtle,
-      borderRadius: borderRadius['md-lg'],
-      padding: spacing['md-lg'],
-      marginBottom: spacing.sm,
-      borderWidth: isSelected ? 1 : 0,
-      borderColor: colors.ai.border,
-    }}
-  >
-    <Pressable
-      onPress={onToggle}
-      style={{ flexDirection: 'row', alignItems: 'center' }}
+}: GroceryMealItemProps) => {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        backgroundColor: isSelected
+          ? colors.ai.selectedBg
+          : colors.surface.subtle,
+        borderRadius: borderRadius['md-lg'],
+        padding: spacing['md-lg'],
+        marginBottom: spacing.sm,
+        borderWidth: isSelected ? 1 : 0,
+        borderColor: colors.ai.border,
+      }}
     >
-      <View
-        style={{
-          width: 26,
-          height: 26,
-          borderRadius: borderRadius.xs,
-          borderWidth: 2,
-          borderColor: isSelected
-            ? colors.ai.primary
-            : colors.surface.borderLight,
-          backgroundColor: isSelected ? colors.ai.primary : 'transparent',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: spacing['md-lg'],
-        }}
+      <Pressable
+        onPress={onToggle}
+        style={{ flexDirection: 'row', alignItems: 'center' }}
       >
-        {isSelected && (
-          <Ionicons name="checkmark" size={16} color={colors.white} />
-        )}
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: fontSize.xl,
-            fontFamily: fontFamily.bodySemibold,
-            color: colors.content.heading,
-          }}
-        >
-          {title}
-        </Text>
-        <Text
-          style={{
-            fontSize: fontSize.md,
-            fontFamily: fontFamily.body,
-            color: colors.content.subtitle,
-            marginTop: spacing['2xs'],
-          }}
-        >
-          {label}
-        </Text>
-      </View>
-    </Pressable>
-
-    {isSelected && (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginTop: spacing.md,
-          marginLeft: spacing['4xl'],
-          backgroundColor: colors.button.primarySurface,
-          borderRadius: borderRadius.sm,
-          padding: spacing['xs-sm'],
-          alignSelf: 'flex-start',
-        }}
-      >
-        <Pressable
-          onPress={() => onChangeServings(mealKey, -1)}
-          style={({ pressed }) => ({
-            ...circleStyle(iconContainer.sm),
-            backgroundColor: pressed
-              ? colors.button.primaryDivider
-              : colors.glass.medium,
-            alignItems: 'center',
-            justifyContent: 'center',
-          })}
-        >
-          <Ionicons name="remove" size={18} color={colors.content.body} />
-        </Pressable>
         <View
           style={{
-            paddingHorizontal: spacing['md-lg'],
-            flexDirection: 'row',
+            width: 26,
+            height: 26,
+            borderRadius: borderRadius.xs,
+            borderWidth: 2,
+            borderColor: isSelected
+              ? colors.ai.primary
+              : colors.surface.borderLight,
+            backgroundColor: isSelected ? colors.ai.primary : 'transparent',
             alignItems: 'center',
-            gap: spacing.xs,
+            justifyContent: 'center',
+            marginRight: spacing['md-lg'],
           }}
         >
-          <Ionicons
-            name="restaurant-outline"
-            size={fontSize.xl}
-            color={colors.content.body}
-          />
+          {isSelected && (
+            <Ionicons name="checkmark" size={16} color={colors.white} />
+          )}
+        </View>
+        <View style={{ flex: 1 }}>
           <Text
             style={{
               fontSize: fontSize.xl,
@@ -347,23 +301,85 @@ const GroceryMealItem = ({
               color: colors.content.heading,
             }}
           >
-            {currentServings}
+            {title}
+          </Text>
+          <Text
+            style={{
+              fontSize: fontSize.md,
+              fontFamily: fontFamily.body,
+              color: colors.content.subtitle,
+              marginTop: spacing['2xs'],
+            }}
+          >
+            {label}
           </Text>
         </View>
-        <Pressable
-          onPress={() => onChangeServings(mealKey, 1)}
-          style={({ pressed }) => ({
-            ...circleStyle(iconContainer.sm),
-            backgroundColor: pressed
-              ? colors.button.primaryDivider
-              : colors.glass.medium,
+      </Pressable>
+
+      {isSelected && (
+        <View
+          style={{
+            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
-          })}
+            marginTop: spacing.md,
+            marginLeft: spacing['4xl'],
+            backgroundColor: colors.button.primarySurface,
+            borderRadius: borderRadius.sm,
+            padding: spacing['xs-sm'],
+            alignSelf: 'flex-start',
+          }}
         >
-          <Ionicons name="add" size={18} color={colors.content.body} />
-        </Pressable>
-      </View>
-    )}
-  </View>
-);
+          <Pressable
+            onPress={() => onChangeServings(mealKey, -1)}
+            style={({ pressed }) => ({
+              ...circleStyle(iconContainer.sm),
+              backgroundColor: pressed
+                ? colors.button.primaryDivider
+                : colors.glass.medium,
+              alignItems: 'center',
+              justifyContent: 'center',
+            })}
+          >
+            <Ionicons name="remove" size={18} color={colors.content.body} />
+          </Pressable>
+          <View
+            style={{
+              paddingHorizontal: spacing['md-lg'],
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.xs,
+            }}
+          >
+            <Ionicons
+              name="restaurant-outline"
+              size={fontSize.xl}
+              color={colors.content.body}
+            />
+            <Text
+              style={{
+                fontSize: fontSize.xl,
+                fontFamily: fontFamily.bodySemibold,
+                color: colors.content.heading,
+              }}
+            >
+              {currentServings}
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => onChangeServings(mealKey, 1)}
+            style={({ pressed }) => ({
+              ...circleStyle(iconContainer.sm),
+              backgroundColor: pressed
+                ? colors.button.primaryDivider
+                : colors.glass.medium,
+              alignItems: 'center',
+              justifyContent: 'center',
+            })}
+          >
+            <Ionicons name="add" size={18} color={colors.content.body} />
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+};

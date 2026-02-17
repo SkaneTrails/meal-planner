@@ -23,7 +23,7 @@ import { showNotification } from '@/lib/alert';
 import { useHouseholdSettingsForm } from '@/lib/hooks/useHouseholdSettingsForm';
 import { useTranslation } from '@/lib/i18n';
 import { type AppLanguage, useSettings } from '@/lib/settings-context';
-import { colors, layout, spacing } from '@/lib/theme';
+import { layout, spacing, useTheme } from '@/lib/theme';
 
 type SectionKey =
   | 'general'
@@ -35,6 +35,7 @@ type SectionKey =
   | 'language';
 
 export default function HouseholdSettingsScreen() {
+  const { colors } = useTheme();
   const router = useRouter();
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();

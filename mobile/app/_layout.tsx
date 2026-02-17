@@ -42,7 +42,7 @@ import {
   SettingsProvider,
   useSettings,
 } from '@/lib/settings-context';
-import { colors, ThemeProvider } from '@/lib/theme';
+import { ThemeProvider, useTheme } from '@/lib/theme';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -50,6 +50,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 const AppContent = () => {
+  const { colors } = useTheme();
   const { needsLanguagePrompt, setLanguage } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
 

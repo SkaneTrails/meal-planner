@@ -5,11 +5,11 @@ import { type AppLanguage, LANGUAGES } from '@/lib/settings-context';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   iconContainer,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 const FLAG_URLS: Record<AppLanguage, string> = {
@@ -27,6 +27,8 @@ export const LanguagePicker = ({
   currentLanguage,
   onChangeLanguage,
 }: LanguagePickerProps) => {
+  const { colors } = useTheme();
+
   return (
     <View
       style={{

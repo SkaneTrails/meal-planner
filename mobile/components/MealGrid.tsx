@@ -8,11 +8,11 @@ import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   fontWeight,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
@@ -48,6 +48,7 @@ export const MealCell = ({
   onPress,
   onLongPress,
 }: MealCellProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const hasContent = recipe || customText;
   const displayText = recipe?.title || customText;
@@ -125,6 +126,7 @@ export const DayColumn = ({
   onMealPress,
   onMealLongPress,
 }: DayColumnProps) => {
+  const { colors } = useTheme();
   const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
   const dayNumber = date.getDate();
   const isToday = new Date().toDateString() === date.toDateString();

@@ -1,8 +1,15 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { colors, fontFamily, fontSize, lineHeight, spacing } from '@/lib/theme';
+import {
+  fontFamily,
+  fontSize,
+  lineHeight,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 export const EmptyGroceryState = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

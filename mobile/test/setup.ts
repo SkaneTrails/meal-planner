@@ -139,8 +139,8 @@ vi.mock('@/lib/alert', () => ({
 }));
 
 // Mock @/lib/theme — values must match real theme exports
-vi.mock('@/lib/theme', () => ({
-  colors: {
+vi.mock('@/lib/theme', () => {
+  const c = {
     primary: '#2D2D2D',
     primaryDark: '#1A1A1A',
     primaryLight: '#404040',
@@ -299,7 +299,17 @@ vi.mock('@/lib/theme', () => ({
       stop1: '#D8B8A0', stop2: '#D0A080',
     },
     tagDot: ['#7A9BBD', '#8B9D77', '#C47D5A', '#9B7BB8', '#5BA3A3', '#D4A574', '#B07070', '#6B8FA3'],
-  },
+  };
+
+  const mockStyles = {
+    inputStyle: {},
+    settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
+    settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
+    accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
+  };
+
+  return {
+  colors: c,
   lightColors: undefined, // re-exported but unused in tests
   spacing: { '2xs': 2, xs: 4, 'xs-sm': 6, sm: 8, 'sm-md': 10, md: 12, 'md-lg': 14, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
@@ -366,34 +376,17 @@ vi.mock('@/lib/theme', () => ({
   settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
   accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
-  createStyles: () => ({
-    inputStyle: {},
-    settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
-    settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
-    accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
-  }),
+  createStyles: () => mockStyles,
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
   dotSize: { md: 10 },
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
   useTheme: () => ({
-    colors: {
-      primary: '#2D2D2D', white: '#FFFFFF', bgBase: '#E8D8C8',
-      text: { primary: '#FFFFFF', inverse: '#2D2D2D' },
-      content: { heading: '#3D3D3D', body: '#5D4E40', subtitle: 'rgba(93, 78, 64, 0.6)' },
-      glass: { light: 'rgba(255, 255, 255, 0.88)', border: 'rgba(0, 0, 0, 0.04)' },
-      ai: { primary: '#6B8E6B' },
-    },
-    styles: {
-      cardStyle: {},
-      glassCardStyle: {},
-      inputStyle: {},
-      settingsTitleStyle: { fontSize: 17, fontWeight: '600', color: '#5D4E40' },
-      settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
-      accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
-    },
+    colors: c,
+    styles: mockStyles,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
+  };
+});
 
 // Mock @/lib/settings-context
 vi.mock('@/lib/settings-context', () => ({

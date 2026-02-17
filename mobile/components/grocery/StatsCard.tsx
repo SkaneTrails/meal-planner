@@ -5,11 +5,11 @@ import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
@@ -31,71 +31,74 @@ const ActionButtons = ({
   onToggleAddItem,
   onToggleClearMenu,
   onClearChecked,
-}: ActionButtonsProps) => (
-  <View style={{ flexDirection: 'row', gap: spacing['xs-sm'] }}>
-    <AnimatedPressable
-      onPress={onToggleAddItem}
-      hoverScale={1.08}
-      pressScale={0.95}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
-        borderRadius: borderRadius['sm-md'],
-        backgroundColor: colors.ai.primary,
-      }}
-    >
-      <Ionicons
-        name={showAddItem ? 'close' : 'add'}
-        size={18}
-        color={colors.white}
-      />
-    </AnimatedPressable>
-
-    {totalItems > 0 && (
+}: ActionButtonsProps) => {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flexDirection: 'row', gap: spacing['xs-sm'] }}>
       <AnimatedPressable
-        onPress={onToggleClearMenu}
+        onPress={onToggleAddItem}
         hoverScale={1.08}
         pressScale={0.95}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: spacing['sm-md'],
+          paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius['sm-md'],
-          backgroundColor: showClearMenu
-            ? colors.surface.pressed
-            : colors.surface.hover,
+          backgroundColor: colors.ai.primary,
         }}
       >
         <Ionicons
-          name={showClearMenu ? 'close' : 'trash-outline'}
-          size={16}
-          color={colors.content.icon}
+          name={showAddItem ? 'close' : 'add'}
+          size={18}
+          color={colors.white}
         />
       </AnimatedPressable>
-    )}
 
-    {checkedCount > 0 && (
-      <AnimatedPressable
-        onPress={onClearChecked}
-        hoverScale={1.08}
-        pressScale={0.95}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: spacing['sm-md'],
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius['sm-md'],
-          backgroundColor: colors.surface.hover,
-        }}
-      >
-        <Ionicons name="refresh" size={16} color={colors.content.icon} />
-      </AnimatedPressable>
-    )}
-  </View>
-);
+      {totalItems > 0 && (
+        <AnimatedPressable
+          onPress={onToggleClearMenu}
+          hoverScale={1.08}
+          pressScale={0.95}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: spacing['sm-md'],
+            paddingVertical: spacing.sm,
+            borderRadius: borderRadius['sm-md'],
+            backgroundColor: showClearMenu
+              ? colors.surface.pressed
+              : colors.surface.hover,
+          }}
+        >
+          <Ionicons
+            name={showClearMenu ? 'close' : 'trash-outline'}
+            size={16}
+            color={colors.content.icon}
+          />
+        </AnimatedPressable>
+      )}
+
+      {checkedCount > 0 && (
+        <AnimatedPressable
+          onPress={onClearChecked}
+          hoverScale={1.08}
+          pressScale={0.95}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: spacing['sm-md'],
+            paddingVertical: spacing.sm,
+            borderRadius: borderRadius['sm-md'],
+            backgroundColor: colors.surface.hover,
+          }}
+        >
+          <Ionicons name="refresh" size={16} color={colors.content.icon} />
+        </AnimatedPressable>
+      )}
+    </View>
+  );
+};
 
 interface ProgressBarProps {
   itemsToBuy: number;
@@ -103,6 +106,7 @@ interface ProgressBarProps {
 }
 
 const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
+  const { colors } = useTheme();
   if (itemsToBuy <= 0) return null;
 
   return (
@@ -135,6 +139,7 @@ interface ItemsAtHomeIndicatorProps {
 const ItemsAtHomeIndicator = ({
   hiddenAtHomeCount,
 }: ItemsAtHomeIndicatorProps) => {
+  const { colors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -207,6 +212,7 @@ export const StatsCard = ({
   onClearManualItems,
   onClearAll,
 }: StatsCardProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

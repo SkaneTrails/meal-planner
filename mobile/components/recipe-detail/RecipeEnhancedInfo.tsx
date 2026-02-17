@@ -4,7 +4,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   iconContainer,
@@ -12,6 +11,7 @@ import {
   shadows,
   spacing,
   typography,
+  useTheme,
 } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 
@@ -29,82 +29,18 @@ export const RecipeEnhancedInfo = ({
   showAiChanges,
   t,
   onToggleAiChanges,
-}: RecipeEnhancedInfoProps) => (
-  <>
-    {recipe.enhanced && !showOriginal && recipe.tips && (
-      <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: spacing.md,
-          }}
-        >
+}: RecipeEnhancedInfoProps) => {
+  const { colors } = useTheme();
+  return (
+    <>
+      {recipe.enhanced && !showOriginal && recipe.tips && (
+        <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
           <View
             style={{
-              ...circleStyle(iconContainer.xs),
-              backgroundColor: colors.ai.iconBg,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: spacing.md,
-            }}
-          >
-            <Ionicons name="bulb-outline" size={18} color={colors.ai.primary} />
-          </View>
-          <Text
-            style={{
-              ...typography.displaySmall,
-              color: colors.content.heading,
-            }}
-          >
-            {t('recipe.tips')}
-          </Text>
-        </View>
-        <View
-          style={{
-            backgroundColor: colors.glass.solid,
-            borderRadius: borderRadius.lg,
-            padding: spacing.lg,
-            borderLeftWidth: 4,
-            borderLeftColor: colors.ai.primary,
-            ...shadows.card,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.xl,
-              fontFamily: fontFamily.body,
-              color: colors.text.inverse,
-              lineHeight: lineHeight.xl,
-            }}
-          >
-            {recipe.tips}
-          </Text>
-        </View>
-      </View>
-    )}
-
-    {recipe.enhanced &&
-      !showOriginal &&
-      recipe.changes_made &&
-      recipe.changes_made.length > 0 && (
-        <View
-          style={{
-            marginBottom: spacing.xl,
-            backgroundColor: colors.glass.solid,
-            borderRadius: borderRadius.lg,
-            overflow: 'hidden',
-            ...shadows.card,
-          }}
-        >
-          <Pressable
-            onPress={onToggleAiChanges}
-            style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
-              padding: spacing.lg,
-              opacity: pressed ? 0.7 : 1,
-            })}
+              marginBottom: spacing.md,
+            }}
           >
             <View
               style={{
@@ -115,67 +51,138 @@ export const RecipeEnhancedInfo = ({
                 marginRight: spacing.md,
               }}
             >
-              <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
+              <Ionicons
+                name="bulb-outline"
+                size={18}
+                color={colors.ai.primary}
+              />
             </View>
             <Text
               style={{
                 ...typography.displaySmall,
-                color: colors.content.body,
-                flex: 1,
+                color: colors.content.heading,
               }}
             >
-              {t('recipe.aiImprovements')}
+              {t('recipe.tips')}
             </Text>
-            <Ionicons
-              name={showAiChanges ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.content.body}
-            />
-          </Pressable>
-          {showAiChanges && (
-            <View
+          </View>
+          <View
+            style={{
+              backgroundColor: colors.glass.solid,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              borderLeftWidth: 4,
+              borderLeftColor: colors.ai.primary,
+              ...shadows.card,
+            }}
+          >
+            <Text
               style={{
-                paddingHorizontal: spacing.lg,
-                paddingBottom: spacing.lg,
-                borderTopWidth: 1,
-                borderTopColor: colors.chip.divider,
-                paddingTop: spacing.md,
+                fontSize: fontSize.xl,
+                fontFamily: fontFamily.body,
+                color: colors.text.inverse,
+                lineHeight: lineHeight.xl,
               }}
             >
-              {recipe.changes_made.map((change, index) => (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    marginBottom:
-                      index < (recipe.changes_made?.length ?? 0) - 1
-                        ? spacing.sm
-                        : 0,
-                  }}
-                >
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={18}
-                    color={colors.ai.primary}
-                    style={{ marginRight: spacing.sm, marginTop: 2 }}
-                  />
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: fontSize.lg,
-                      fontFamily: fontFamily.body,
-                      color: colors.content.body,
-                      lineHeight: lineHeight.md,
-                    }}
-                  >
-                    {change}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          )}
+              {recipe.tips}
+            </Text>
+          </View>
         </View>
       )}
-  </>
-);
+
+      {recipe.enhanced &&
+        !showOriginal &&
+        recipe.changes_made &&
+        recipe.changes_made.length > 0 && (
+          <View
+            style={{
+              marginBottom: spacing.xl,
+              backgroundColor: colors.glass.solid,
+              borderRadius: borderRadius.lg,
+              overflow: 'hidden',
+              ...shadows.card,
+            }}
+          >
+            <Pressable
+              onPress={onToggleAiChanges}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: spacing.lg,
+                opacity: pressed ? 0.7 : 1,
+              })}
+            >
+              <View
+                style={{
+                  ...circleStyle(iconContainer.xs),
+                  backgroundColor: colors.ai.iconBg,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: spacing.md,
+                }}
+              >
+                <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
+              </View>
+              <Text
+                style={{
+                  ...typography.displaySmall,
+                  color: colors.content.body,
+                  flex: 1,
+                }}
+              >
+                {t('recipe.aiImprovements')}
+              </Text>
+              <Ionicons
+                name={showAiChanges ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={colors.content.body}
+              />
+            </Pressable>
+            {showAiChanges && (
+              <View
+                style={{
+                  paddingHorizontal: spacing.lg,
+                  paddingBottom: spacing.lg,
+                  borderTopWidth: 1,
+                  borderTopColor: colors.chip.divider,
+                  paddingTop: spacing.md,
+                }}
+              >
+                {recipe.changes_made.map((change, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      marginBottom:
+                        index < (recipe.changes_made?.length ?? 0) - 1
+                          ? spacing.sm
+                          : 0,
+                    }}
+                  >
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={18}
+                      color={colors.ai.primary}
+                      style={{ marginRight: spacing.sm, marginTop: 2 }}
+                    />
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: fontSize.lg,
+                        fontFamily: fontFamily.body,
+                        color: colors.content.body,
+                        lineHeight: lineHeight.md,
+                      }}
+                    >
+                      {change}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+    </>
+  );
+};

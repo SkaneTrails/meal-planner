@@ -6,12 +6,12 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 const SUGGESTED_ITEM_KEYS = [
@@ -43,6 +43,7 @@ export const ItemsAtHomeSection = ({
   onAddItem,
   onRemoveItem,
 }: ItemsAtHomeSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 
@@ -152,6 +153,7 @@ const CurrentItems = ({
   items: string[];
   onRemove: (item: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -223,6 +225,7 @@ const SuggestedItems = ({
   items: string[];
   onAdd: (item: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -285,6 +288,7 @@ const SuggestedItems = ({
 };
 
 const EmptyItemsState = () => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

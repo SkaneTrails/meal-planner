@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { type StyleProp, Text, View, type ViewStyle } from 'react-native';
-import { colors, fontSize, fontWeight, spacing } from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface FormFieldProps {
   label: string;
@@ -14,28 +14,31 @@ interface FormFieldProps {
  * Label + content wrapper for form inputs.
  * Renders a styled label above any children (TextInput, icon-wrapped input, etc.).
  */
-const FormField = ({ label, children, compact, style }: FormFieldProps) => (
-  <View
-    style={[
-      {
-        marginBottom: compact ? spacing.sm : spacing.lg,
-        ...(compact && { flex: 1 }),
-      },
-      style,
-    ]}
-  >
-    <Text
-      style={{
-        fontSize: compact ? fontSize.md : fontSize.lg,
-        fontWeight: fontWeight.semibold,
-        color: colors.text.inverse,
-        marginBottom: compact ? spacing.xs : spacing.sm,
-      }}
+const FormField = ({ label, children, compact, style }: FormFieldProps) => {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={[
+        {
+          marginBottom: compact ? spacing.sm : spacing.lg,
+          ...(compact && { flex: 1 }),
+        },
+        style,
+      ]}
     >
-      {label}
-    </Text>
-    {children}
-  </View>
-);
+      <Text
+        style={{
+          fontSize: compact ? fontSize.md : fontSize.lg,
+          fontWeight: fontWeight.semibold,
+          color: colors.text.inverse,
+          marginBottom: compact ? spacing.xs : spacing.sm,
+        }}
+      >
+        {label}
+      </Text>
+      {children}
+    </View>
+  );
+};
 
 export { FormField };

@@ -5,11 +5,11 @@ import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
 import {
   borderRadius,
-  colors,
   settingsSubtitleStyle,
   settingsTitleStyle,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { LanguagePicker } from './LanguagePicker';
 
@@ -22,6 +22,7 @@ export const RecipeLibrarySection = ({
   showHiddenRecipes,
   onToggle,
 }: RecipeLibrarySectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -81,6 +82,7 @@ export const WeekStartSection = ({
   weekStart,
   onSetWeekStart,
 }: WeekStartSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

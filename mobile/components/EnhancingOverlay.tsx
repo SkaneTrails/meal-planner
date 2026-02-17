@@ -12,6 +12,7 @@ import {
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface EnhancingOverlayProps {
@@ -22,27 +23,30 @@ interface EnhancingOverlayProps {
 export const EnhancingOverlay = ({
   visible,
   message,
-}: EnhancingOverlayProps) => (
-  <Modal
-    visible={visible}
-    transparent
-    animationType="fade"
-    statusBarTranslucent
-    onRequestClose={() => {}}
-  >
-    <View style={styles.backdrop}>
-      <View style={styles.card}>
-        <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
-        <ActivityIndicator
-          size="large"
-          color={colors.ai.primary}
-          style={styles.spinner}
-        />
-        <Text style={styles.message}>{message}</Text>
+}: EnhancingOverlayProps) => {
+  const { colors } = useTheme();
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={() => {}}
+    >
+      <View style={styles.backdrop}>
+        <View style={styles.card}>
+          <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
+          <ActivityIndicator
+            size="large"
+            color={colors.ai.primary}
+            style={styles.spinner}
+          />
+          <Text style={styles.message}>{message}</Text>
+        </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   backdrop: {

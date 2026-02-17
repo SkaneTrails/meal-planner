@@ -4,11 +4,11 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   letterSpacing,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface TagEditorProps {
@@ -18,6 +18,7 @@ interface TagEditorProps {
 }
 
 export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
+  const { colors } = useTheme();
   const [newTag, setNewTag] = useState('');
 
   const handleAddTag = () => {

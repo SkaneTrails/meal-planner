@@ -4,113 +4,119 @@ import { BouncingLoader, GradientBackground } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface RecipeLoadingProps {
   structured?: boolean;
 }
 
-export const RecipeLoading = ({ structured = true }: RecipeLoadingProps) => (
-  <GradientBackground
-    structured={structured}
-    style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-  >
-    <View
-      style={{
-        width: 64,
-        height: 64,
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...shadows.lg,
-      }}
+export const RecipeLoading = ({ structured = true }: RecipeLoadingProps) => {
+  const { colors } = useTheme();
+  return (
+    <GradientBackground
+      structured={structured}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
     >
-      <BouncingLoader size={12} />
-    </View>
-  </GradientBackground>
-);
+      <View
+        style={{
+          width: 64,
+          height: 64,
+          backgroundColor: colors.glass.card,
+          borderRadius: borderRadius.md,
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...shadows.lg,
+        }}
+      >
+        <BouncingLoader size={12} />
+      </View>
+    </GradientBackground>
+  );
+};
 
 interface RecipeNotFoundProps {
   t: TFunction;
   onGoBack: () => void;
 }
 
-export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
-  <GradientBackground
-    structured
-    style={{
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: spacing.xl,
-    }}
-  >
-    <View
+export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
+  const { colors } = useTheme();
+  return (
+    <GradientBackground
+      structured
       style={{
-        width: 80,
-        height: 80,
-        backgroundColor: colors.glass.bright,
-        borderRadius: borderRadius.lg,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: spacing.lg,
-        ...shadows.lg,
+        padding: spacing.xl,
       }}
     >
-      <Ionicons
-        name="alert-circle-outline"
-        size={40}
-        color={colors.content.subtitle}
-      />
-    </View>
-    <Text
-      style={{
-        color: colors.content.heading,
-        fontSize: fontSize['2xl'],
-        fontFamily: fontFamily.displayBold,
-        textAlign: 'center',
-      }}
-    >
-      {t('recipe.notFound')}
-    </Text>
-    <Text
-      style={{
-        color: colors.content.tertiary,
-        fontSize: fontSize.md,
-        fontFamily: fontFamily.body,
-        marginTop: spacing.sm,
-        textAlign: 'center',
-      }}
-    >
-      {t('recipe.notFoundMessage')}
-    </Text>
-    <Pressable
-      onPress={onGoBack}
-      style={({ pressed }) => ({
-        marginTop: spacing.xl,
-        paddingHorizontal: spacing['2xl'],
-        paddingVertical: spacing.md,
-        backgroundColor: pressed
-          ? colors.button.primaryDivider
-          : colors.button.primaryActive,
-        borderRadius: borderRadius.sm,
-      })}
-    >
-      <Text
+      <View
         style={{
-          color: colors.content.body,
-          fontSize: fontSize.lg,
-          fontFamily: fontFamily.bodySemibold,
+          width: 80,
+          height: 80,
+          backgroundColor: colors.glass.bright,
+          borderRadius: borderRadius.lg,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: spacing.lg,
+          ...shadows.lg,
         }}
       >
-        {t('common.goBack')}
+        <Ionicons
+          name="alert-circle-outline"
+          size={40}
+          color={colors.content.subtitle}
+        />
+      </View>
+      <Text
+        style={{
+          color: colors.content.heading,
+          fontSize: fontSize['2xl'],
+          fontFamily: fontFamily.displayBold,
+          textAlign: 'center',
+        }}
+      >
+        {t('recipe.notFound')}
       </Text>
-    </Pressable>
-  </GradientBackground>
-);
+      <Text
+        style={{
+          color: colors.content.tertiary,
+          fontSize: fontSize.md,
+          fontFamily: fontFamily.body,
+          marginTop: spacing.sm,
+          textAlign: 'center',
+        }}
+      >
+        {t('recipe.notFoundMessage')}
+      </Text>
+      <Pressable
+        onPress={onGoBack}
+        style={({ pressed }) => ({
+          marginTop: spacing.xl,
+          paddingHorizontal: spacing['2xl'],
+          paddingVertical: spacing.md,
+          backgroundColor: pressed
+            ? colors.button.primaryDivider
+            : colors.button.primaryActive,
+          borderRadius: borderRadius.sm,
+        })}
+      >
+        <Text
+          style={{
+            color: colors.content.body,
+            fontSize: fontSize.lg,
+            fontFamily: fontFamily.bodySemibold,
+          }}
+        >
+          {t('common.goBack')}
+        </Text>
+      </Pressable>
+    </GradientBackground>
+  );
+};

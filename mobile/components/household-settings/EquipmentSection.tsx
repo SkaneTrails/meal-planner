@@ -3,11 +3,11 @@ import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { EQUIPMENT_CATEGORIES } from './constants';
 
@@ -26,6 +26,7 @@ const SelectedEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   if (equipment.length === 0) return null;
@@ -100,6 +101,7 @@ const AvailableEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -5,10 +5,10 @@ import { BottomSheetModal } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
@@ -30,6 +30,7 @@ export const AddRecipeModal = ({
   onImport,
   t,
 }: AddRecipeModalProps) => {
+  const { colors } = useTheme();
   const router = useRouter();
 
   const handleSubmit = () => {

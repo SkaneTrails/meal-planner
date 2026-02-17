@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
-import { borderRadius, colors, spacing } from '@/lib/theme';
+import { borderRadius, spacing, useTheme } from '@/lib/theme';
 
 interface ThumbRatingProps {
   rating: number | null;
@@ -17,6 +17,7 @@ export const ThumbRating = ({
   onThumbDown,
   size = 28,
 }: ThumbRatingProps) => {
+  const { colors } = useTheme();
   const isThumbUp = rating === 5;
   const isThumbDown = hidden;
 

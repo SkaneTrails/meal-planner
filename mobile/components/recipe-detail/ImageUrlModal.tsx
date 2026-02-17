@@ -3,10 +3,10 @@ import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontFamily,
   fontSize,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface ImageUrlModalProps {
@@ -24,6 +24,7 @@ export const ImageUrlModal = ({
   onClose,
   onSave,
 }: ImageUrlModalProps) => {
+  const { colors } = useTheme();
   const [imageUrlInput, setImageUrlInput] = useState(initialUrl);
 
   useEffect(() => {

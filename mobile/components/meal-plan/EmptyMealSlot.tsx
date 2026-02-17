@@ -6,10 +6,10 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
@@ -31,94 +31,99 @@ export const EmptyMealSlot = ({
   label,
   t,
   onPress,
-}: EmptyMealSlotProps) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: colors.mealPlan.emptyBg,
-      borderRadius: borderRadius.sm,
-      padding: spacing.md,
-      marginBottom: spacing['xs-sm'],
-    }}
-  >
-    {/* Label section */}
-    <View style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}>
-      <View
-        style={{
-          ...circleStyle(26),
-          backgroundColor: colors.surface.active,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: spacing.sm,
-        }}
-      >
-        <Ionicons name="add" size={16} color={colors.content.subtitle} />
-      </View>
-      <Text
-        style={{
-          fontSize: fontSize.md,
-          fontFamily: fontFamily.bodySemibold,
-          color: colors.content.strong,
-        }}
-      >
-        {label}
-      </Text>
-    </View>
-
-    {/* Actions: Primary (Library) + Secondary icon buttons */}
+}: EmptyMealSlotProps) => {
+  const { colors } = useTheme();
+  return (
     <View
       style={{
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end',
-        gap: spacing['xs-sm'],
+        backgroundColor: colors.mealPlan.emptyBg,
+        borderRadius: borderRadius.sm,
+        padding: spacing.md,
+        marginBottom: spacing['xs-sm'],
       }}
     >
-      {/* Primary action: Library */}
-      <AnimatedPressable
-        onPress={() => onPress(date, mealType, 'library')}
-        hoverScale={1.03}
-        pressScale={0.97}
+      {/* Label section */}
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}
+      >
+        <View
+          style={{
+            ...circleStyle(26),
+            backgroundColor: colors.surface.active,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: spacing.sm,
+          }}
+        >
+          <Ionicons name="add" size={16} color={colors.content.subtitle} />
+        </View>
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.bodySemibold,
+            color: colors.content.strong,
+          }}
+        >
+          {label}
+        </Text>
+      </View>
+
+      {/* Actions: Primary (Library) + Secondary icon buttons */}
+      <View
         style={{
+          flex: 1,
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: colors.content.body,
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing['xs-sm'],
-          borderRadius: borderRadius['sm-md'],
+          justifyContent: 'flex-end',
           gap: spacing['xs-sm'],
         }}
       >
-        <Ionicons name="book-outline" size={13} color={colors.white} />
-        <Text
+        {/* Primary action: Library */}
+        <AnimatedPressable
+          onPress={() => onPress(date, mealType, 'library')}
+          hoverScale={1.03}
+          pressScale={0.97}
           style={{
-            fontSize: fontSize.base,
-            fontFamily: fontFamily.bodySemibold,
-            color: colors.white,
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: colors.content.body,
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing['xs-sm'],
+            borderRadius: borderRadius['sm-md'],
+            gap: spacing['xs-sm'],
           }}
         >
-          {t('mealPlan.library')}
-        </Text>
-      </AnimatedPressable>
+          <Ionicons name="book-outline" size={13} color={colors.white} />
+          <Text
+            style={{
+              fontSize: fontSize.base,
+              fontFamily: fontFamily.bodySemibold,
+              color: colors.white,
+            }}
+          >
+            {t('mealPlan.library')}
+          </Text>
+        </AnimatedPressable>
 
-      {/* Secondary actions: icon-only ghost buttons */}
-      <SecondaryActionButton
-        icon="dice-outline"
-        onPress={() => onPress(date, mealType, 'random')}
-      />
-      <SecondaryActionButton
-        icon="copy-outline"
-        onPress={() => onPress(date, mealType, 'copy')}
-      />
-      <SecondaryActionButton
-        icon="create-outline"
-        onPress={() => onPress(date, mealType, 'quick')}
-      />
+        {/* Secondary actions: icon-only ghost buttons */}
+        <SecondaryActionButton
+          icon="dice-outline"
+          onPress={() => onPress(date, mealType, 'random')}
+        />
+        <SecondaryActionButton
+          icon="copy-outline"
+          onPress={() => onPress(date, mealType, 'copy')}
+        />
+        <SecondaryActionButton
+          icon="create-outline"
+          onPress={() => onPress(date, mealType, 'quick')}
+        />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 interface SecondaryActionButtonProps {
   icon: React.ComponentProps<typeof Ionicons>['name'];
@@ -128,20 +133,23 @@ interface SecondaryActionButtonProps {
 const SecondaryActionButton = ({
   icon,
   onPress,
-}: SecondaryActionButtonProps) => (
-  <AnimatedPressable
-    onPress={onPress}
-    hoverScale={1.1}
-    pressScale={0.9}
-    style={{
-      width: 34,
-      height: 34,
-      borderRadius: borderRadius['sm-md'],
-      backgroundColor: colors.surface.active,
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}
-  >
-    <Ionicons name={icon} size={17} color={colors.content.tertiary} />
-  </AnimatedPressable>
-);
+}: SecondaryActionButtonProps) => {
+  const { colors } = useTheme();
+  return (
+    <AnimatedPressable
+      onPress={onPress}
+      hoverScale={1.1}
+      pressScale={0.9}
+      style={{
+        width: 34,
+        height: 34,
+        borderRadius: borderRadius['sm-md'],
+        backgroundColor: colors.surface.active,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Ionicons name={icon} size={17} color={colors.content.tertiary} />
+    </AnimatedPressable>
+  );
+};

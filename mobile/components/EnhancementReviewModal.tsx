@@ -19,6 +19,7 @@ import {
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface EnhancementReviewModalProps {
@@ -47,89 +48,92 @@ export const EnhancementReviewModal = ({
   isReviewPending,
   onReview,
   onRequestClose,
-}: EnhancementReviewModalProps) => (
-  <Modal
-    visible={visible}
-    transparent
-    animationType="fade"
-    onRequestClose={onRequestClose}
-  >
-    <View style={styles.backdrop}>
-      <View style={styles.card}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.iconCircle}>
-            <Ionicons
-              name="sparkles"
-              size={iconSize.xl}
-              color={colors.ai.primary}
-            />
-          </View>
-          <View style={styles.headerText}>
-            <Text style={styles.headerLabel}>{headerLabel}</Text>
-            <Text style={styles.title} numberOfLines={1}>
-              {title}
-            </Text>
-          </View>
-        </View>
-
-        {/* Changes list */}
-        <ScrollView style={styles.changesList}>
-          {changesMade.length > 0 ? (
-            <>
-              <Text style={styles.changesLabel}>{changesLabel}</Text>
-              {changesMade.map((change, index) => (
-                <View key={index} style={styles.changeItem}>
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={iconSize.md}
-                    color={colors.success}
-                    style={styles.changeIcon}
-                  />
-                  <Text style={styles.changeText}>{change}</Text>
-                </View>
-              ))}
-            </>
-          ) : (
-            <Text style={styles.noChanges}>{noChangesLabel}</Text>
-          )}
-        </ScrollView>
-
-        {/* Buttons */}
-        <View style={styles.buttonRow}>
-          <Pressable
-            onPress={() => onReview('reject')}
-            disabled={isReviewPending}
-            style={({ pressed }) => [
-              styles.rejectButton,
-              { opacity: pressed || isReviewPending ? 0.7 : 1 },
-            ]}
-          >
-            <Text style={styles.rejectLabel}>{rejectLabel}</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => onReview('approve')}
-            disabled={isReviewPending}
-            style={({ pressed }) => [
-              styles.approveButton,
-              { opacity: pressed || isReviewPending ? 0.7 : 1 },
-            ]}
-          >
-            <View style={styles.approveContent}>
+}: EnhancementReviewModalProps) => {
+  const { colors } = useTheme();
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onRequestClose}
+    >
+      <View style={styles.backdrop}>
+        <View style={styles.card}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.iconCircle}>
               <Ionicons
                 name="sparkles"
-                size={iconSize.sm}
-                color={colors.white}
-                style={styles.approveIcon}
+                size={iconSize.xl}
+                color={colors.ai.primary}
               />
-              <Text style={styles.approveLabel}>{approveLabel}</Text>
             </View>
-          </Pressable>
+            <View style={styles.headerText}>
+              <Text style={styles.headerLabel}>{headerLabel}</Text>
+              <Text style={styles.title} numberOfLines={1}>
+                {title}
+              </Text>
+            </View>
+          </View>
+
+          {/* Changes list */}
+          <ScrollView style={styles.changesList}>
+            {changesMade.length > 0 ? (
+              <>
+                <Text style={styles.changesLabel}>{changesLabel}</Text>
+                {changesMade.map((change, index) => (
+                  <View key={index} style={styles.changeItem}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={iconSize.md}
+                      color={colors.success}
+                      style={styles.changeIcon}
+                    />
+                    <Text style={styles.changeText}>{change}</Text>
+                  </View>
+                ))}
+              </>
+            ) : (
+              <Text style={styles.noChanges}>{noChangesLabel}</Text>
+            )}
+          </ScrollView>
+
+          {/* Buttons */}
+          <View style={styles.buttonRow}>
+            <Pressable
+              onPress={() => onReview('reject')}
+              disabled={isReviewPending}
+              style={({ pressed }) => [
+                styles.rejectButton,
+                { opacity: pressed || isReviewPending ? 0.7 : 1 },
+              ]}
+            >
+              <Text style={styles.rejectLabel}>{rejectLabel}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => onReview('approve')}
+              disabled={isReviewPending}
+              style={({ pressed }) => [
+                styles.approveButton,
+                { opacity: pressed || isReviewPending ? 0.7 : 1 },
+              ]}
+            >
+              <View style={styles.approveContent}>
+                <Ionicons
+                  name="sparkles"
+                  size={iconSize.sm}
+                  color={colors.white}
+                  style={styles.approveIcon}
+                />
+                <Text style={styles.approveLabel}>{approveLabel}</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   backdrop: {

@@ -5,7 +5,6 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
@@ -13,6 +12,7 @@ import {
   settingsTitleStyle,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 
 interface AccountSectionProps {
@@ -26,6 +26,7 @@ export const AccountSection = ({
   displayName,
   onSignOut,
 }: AccountSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -122,6 +123,7 @@ export const HouseholdSettingsLink = ({
   isLoading,
   onPress,
 }: HouseholdSettingsLinkProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -3,7 +3,6 @@ import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   iconContainer,
@@ -11,6 +10,7 @@ import {
   lineHeight,
   shadows,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { StructuredInstruction } from '@/lib/types';
 
@@ -29,6 +29,7 @@ export const InstructionItem = ({
   onToggle,
   stepNumber,
 }: InstructionItemProps) => {
+  const { colors } = useTheme();
   const { type, content, time } = instruction;
 
   if (type === 'tip') {

@@ -5,10 +5,10 @@ import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  colors,
   fontSize,
   fontWeight,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import { formatWeekRange } from '@/lib/utils/dateFormatter';
 
@@ -30,87 +30,92 @@ export const WeekSelector = ({
   onPreviousWeek,
   onNextWeek,
   onJumpToToday,
-}: WeekSelectorProps) => (
-  <View style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}>
+}: WeekSelectorProps) => {
+  const { colors } = useTheme();
+  return (
     <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: spacing.md,
-        paddingVertical: spacing['sm-md'],
-      }}
+      style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}
     >
-      <AnimatedPressable
-        onPress={() => {
-          hapticLight();
-          onPreviousWeek();
-        }}
-        hoverScale={1.1}
-        pressScale={0.9}
+      <View
         style={{
-          padding: spacing.sm,
-          borderRadius: borderRadius.full,
-          backgroundColor: colors.glass.subtle,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: spacing.md,
+          paddingVertical: spacing['sm-md'],
         }}
       >
-        <Ionicons
-          name="chevron-back"
-          size={18}
-          color={colors.content.tertiary}
-        />
-      </AnimatedPressable>
-
-      <View style={{ alignItems: 'center' }}>
-        <Text
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            onPreviousWeek();
+          }}
+          hoverScale={1.1}
+          pressScale={0.9}
           style={{
-            fontSize: fontSize.md,
-            fontWeight: fontWeight.semibold,
-            color: colors.content.strong,
+            padding: spacing.sm,
+            borderRadius: borderRadius.full,
+            backgroundColor: colors.glass.subtle,
           }}
         >
-          {formatWeekRange(weekDates, language)}
-        </Text>
-        {weekOffset !== 0 && (
-          <Pressable
-            onPress={() => {
-              hapticLight();
-              onJumpToToday();
+          <Ionicons
+            name="chevron-back"
+            size={18}
+            color={colors.content.tertiary}
+          />
+        </AnimatedPressable>
+
+        <View style={{ alignItems: 'center' }}>
+          <Text
+            style={{
+              fontSize: fontSize.md,
+              fontWeight: fontWeight.semibold,
+              color: colors.content.strong,
             }}
           >
-            <Text
-              style={{
-                fontSize: fontSize.xs,
-                color: colors.accent,
-                marginTop: 2,
-                fontWeight: fontWeight.medium,
+            {formatWeekRange(weekDates, language)}
+          </Text>
+          {weekOffset !== 0 && (
+            <Pressable
+              onPress={() => {
+                hapticLight();
+                onJumpToToday();
               }}
             >
-              {t('mealPlan.jumpToToday')}
-            </Text>
-          </Pressable>
-        )}
-      </View>
+              <Text
+                style={{
+                  fontSize: fontSize.xs,
+                  color: colors.accent,
+                  marginTop: 2,
+                  fontWeight: fontWeight.medium,
+                }}
+              >
+                {t('mealPlan.jumpToToday')}
+              </Text>
+            </Pressable>
+          )}
+        </View>
 
-      <AnimatedPressable
-        onPress={() => {
-          hapticLight();
-          onNextWeek();
-        }}
-        hoverScale={1.1}
-        pressScale={0.9}
-        style={{
-          padding: spacing.sm,
-          borderRadius: borderRadius.full,
-          backgroundColor: colors.glass.subtle,
-        }}
-      >
-        <Ionicons
-          name="chevron-forward"
-          size={18}
-          color={colors.content.tertiary}
-        />
-      </AnimatedPressable>
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            onNextWeek();
+          }}
+          hoverScale={1.1}
+          pressScale={0.9}
+          style={{
+            padding: spacing.sm,
+            borderRadius: borderRadius.full,
+            backgroundColor: colors.glass.subtle,
+          }}
+        >
+          <Ionicons
+            name="chevron-forward"
+            size={18}
+            color={colors.content.tertiary}
+          />
+        </AnimatedPressable>
+      </View>
     </View>
-  </View>
-);
+  );
+};

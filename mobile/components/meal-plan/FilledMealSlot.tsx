@@ -5,10 +5,10 @@ import { AnimatedPressable } from '@/components';
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontFamily,
   fontSize,
   spacing,
+  useTheme,
 } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
@@ -42,6 +42,7 @@ export const FilledMealSlot = ({
   onRemove,
   onMealPress,
 }: FilledMealSlotProps) => {
+  const { colors } = useTheme();
   const router = useRouter();
   const title = recipe?.title || customText || '';
   const imageUrl =
