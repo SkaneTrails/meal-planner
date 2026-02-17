@@ -13,9 +13,12 @@ import { createContext, useContext, useMemo } from 'react';
 import type { ColorTokens } from './colors';
 import { colors as defaultPalette } from './colors';
 import { createStyles, type ThemeStyles } from './styles';
+import type { FontFamilyTokens } from './typography';
+import { defaultFontFamily } from './typography';
 
-interface ThemeValue {
+export interface ThemeValue {
   colors: ColorTokens;
+  fonts: FontFamilyTokens;
   styles: ThemeStyles;
 }
 
@@ -34,19 +37,23 @@ interface ThemeProviderProps {
   children: React.ReactNode;
   /** Optional color palette override. Defaults to the built-in light palette. */
   palette?: ColorTokens;
+  /** Optional font family override. Defaults to DM Sans. */
+  fonts?: FontFamilyTokens;
 }
 
 /** Wraps children with the resolved theme value. */
 export const ThemeProvider = ({
   children,
   palette = defaultPalette,
+  fonts = defaultFontFamily,
 }: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(
     () => ({
       colors: palette,
+      fonts,
       styles: createStyles(palette),
     }),
-    [palette],
+    [palette, fonts],
   );
 
   return (

@@ -390,6 +390,17 @@ vi.mock('@/lib/theme', () => {
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
   useTheme: () => ({
     colors: c,
+    fonts: {
+      display: 'DMSans_600SemiBold',
+      displayRegular: 'DMSans_400Regular',
+      displayMedium: 'DMSans_500Medium',
+      displayBold: 'DMSans_700Bold',
+      body: 'DMSans_400Regular',
+      bodyMedium: 'DMSans_500Medium',
+      bodySemibold: 'DMSans_600SemiBold',
+      bodyBold: 'DMSans_700Bold',
+      accent: 'DMSans_500Medium',
+    },
     styles: mockStyles,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,

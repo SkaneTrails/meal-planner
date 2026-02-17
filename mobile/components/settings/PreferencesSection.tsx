@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Switch, Text, View } from 'react-native';
-import { SectionHeader } from '@/components';
+import { Pressable, Text, View } from 'react-native';
+import { SectionHeader, ThemeToggle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
 import {
@@ -61,12 +61,7 @@ export const RecipeLibrarySection = ({
               {t('settings.showHiddenRecipesDesc')}
             </Text>
           </View>
-          <Switch
-            value={showHiddenRecipes}
-            onValueChange={onToggle}
-            trackColor={{ false: colors.bgDark, true: colors.accent + '80' }}
-            thumbColor={showHiddenRecipes ? colors.accent : colors.bgMid}
-          />
+          <ThemeToggle value={showHiddenRecipes} onValueChange={onToggle} />
         </View>
       </View>
     </View>

@@ -1,5 +1,5 @@
-import { Switch, Text, View } from 'react-native';
-import { RadioGroup } from '@/components';
+import { Text, View } from 'react-native';
+import { RadioGroup, ThemeToggle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -88,11 +88,10 @@ export const DietarySection = ({
               {t('householdSettings.dietary.seafoodDesc')}
             </Text>
           </View>
-          <Switch
+          <ThemeToggle
             value={dietary.seafood_ok}
             onValueChange={(value) => onUpdateDietary('seafood_ok', value)}
             disabled={!canEdit}
-            trackColor={{ false: colors.border, true: colors.primary }}
           />
         </View>
       </View>
