@@ -6,7 +6,6 @@ import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   letterSpacing,
   shadows,
@@ -86,7 +85,7 @@ const StatCard = ({
   iconColor,
   onPress,
 }: StatCardProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <AnimatedPressable
@@ -112,7 +111,7 @@ const StatCard = ({
       <Text
         style={{
           fontSize: fontSize['3xl'],
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           color: colors.content.body,
           letterSpacing: letterSpacing.tight,
         }}
@@ -122,7 +121,7 @@ const StatCard = ({
       <Text
         style={{
           fontSize: fontSize.xs,
-          fontFamily: fontFamily.body,
+          fontFamily: fonts.body,
           color: subtitle ? colors.content.secondary : 'transparent',
           marginBottom: 2,
         }}

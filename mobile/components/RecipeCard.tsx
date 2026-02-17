@@ -21,7 +21,6 @@ import { useSettings } from '@/lib/settings-context';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   fontWeight,
   iconContainer,
@@ -59,7 +58,7 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
@@ -135,7 +134,7 @@ export const RecipeCard = ({
             <Text
               style={{
                 fontSize: fontSize['lg-xl'],
-                fontFamily: fontFamily.bodyMedium,
+                fontFamily: fonts.bodyMedium,
                 color: colors.content.heading,
                 letterSpacing: letterSpacing.normal,
                 lineHeight: lineHeight.lg,
@@ -169,7 +168,7 @@ export const RecipeCard = ({
                   <Text
                     style={{
                       fontSize: fontSize.base,
-                      fontFamily: fontFamily.bodyMedium,
+                      fontFamily: fonts.bodyMedium,
                       color:
                         recipe.diet_label === 'veggie'
                           ? colors.diet.veggie.text
@@ -376,7 +375,7 @@ export const RecipeCard = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.heading,
               lineHeight: lineHeight.sm,

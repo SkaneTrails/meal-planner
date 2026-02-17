@@ -12,7 +12,6 @@ import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   shadows,
   spacing,
@@ -53,7 +52,7 @@ export function PrimaryButton({
   pressedColor,
   disabledColor: disabledColorProp,
 }: PrimaryButtonProps) {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const color = colorProp ?? colors.button.primary;
   const disabledColor = disabledColorProp ?? colors.button.disabled;
   const isDisabled = disabled || isPending;
@@ -93,7 +92,12 @@ export function PrimaryButton({
           style={styles.icon}
         />
       ) : null}
-      <Text style={[styles.label, { color: colors.white }]}>
+      <Text
+        style={[
+          styles.label,
+          { color: colors.white, fontFamily: fonts.bodySemibold },
+        ]}
+      >
         {displayLabel}
       </Text>
     </AnimatedPressable>
@@ -118,6 +122,5 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: fontSize.lg,
-    fontFamily: fontFamily.bodySemibold,
   },
 });

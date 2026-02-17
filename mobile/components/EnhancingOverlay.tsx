@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   shadows,
   spacing,
@@ -23,7 +22,7 @@ export const EnhancingOverlay = ({
   visible,
   message,
 }: EnhancingOverlayProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <Modal
       visible={visible}
@@ -42,7 +41,12 @@ export const EnhancingOverlay = ({
             color={colors.ai.primary}
             style={styles.spinner}
           />
-          <Text style={[styles.message, { color: colors.text.inverse }]}>
+          <Text
+            style={[
+              styles.message,
+              { color: colors.text.inverse, fontFamily: fonts.bodySemibold },
+            ]}
+          >
             {message}
           </Text>
         </View>
@@ -72,7 +76,6 @@ const styles = StyleSheet.create({
   message: {
     marginTop: spacing.lg,
     fontSize: fontSize.lg,
-    fontFamily: fontFamily.bodySemibold,
     textAlign: 'center',
   },
 });

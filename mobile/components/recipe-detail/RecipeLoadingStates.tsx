@@ -4,7 +4,6 @@ import { BouncingLoader, GradientBackground } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   shadows,
   spacing,
@@ -45,7 +44,7 @@ interface RecipeNotFoundProps {
 }
 
 export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <GradientBackground
       structured
@@ -78,7 +77,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
         style={{
           color: colors.content.heading,
           fontSize: fontSize['2xl'],
-          fontFamily: fontFamily.displayBold,
+          fontFamily: fonts.displayBold,
           textAlign: 'center',
         }}
       >
@@ -88,7 +87,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
         style={{
           color: colors.content.tertiary,
           fontSize: fontSize.md,
-          fontFamily: fontFamily.body,
+          fontFamily: fonts.body,
           marginTop: spacing.sm,
           textAlign: 'center',
         }}
@@ -111,7 +110,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
           style={{
             color: colors.content.body,
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
           }}
         >
           {t('common.goBack')}

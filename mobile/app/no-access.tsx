@@ -13,7 +13,6 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   lineHeight,
   spacing,
@@ -21,7 +20,7 @@ import {
 } from '@/lib/theme';
 
 export default function NoAccessScreen() {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
   const { t } = useTranslation();
@@ -80,7 +79,7 @@ export default function NoAccessScreen() {
         <Text
           style={{
             fontSize: fontSize['5xl'],
-            fontFamily: fontFamily.displayBold,
+            fontFamily: fonts.displayBold,
             color: colors.text.primary,
             marginBottom: spacing.sm,
           }}
@@ -89,7 +88,7 @@ export default function NoAccessScreen() {
         </Text>
         <Text
           style={{
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.text.secondary,
             textAlign: 'center',
             fontSize: fontSize.lg,
@@ -100,7 +99,7 @@ export default function NoAccessScreen() {
         </Text>
         <Text
           style={{
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.text.primary,
             fontSize: fontSize.lg,
             marginBottom: spacing.sm,
@@ -110,7 +109,7 @@ export default function NoAccessScreen() {
         </Text>
         <Text
           style={{
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.text.secondary,
             textAlign: 'center',
             fontSize: fontSize.lg,
@@ -148,7 +147,7 @@ export default function NoAccessScreen() {
           <Text
             style={{
               color: colors.text.primary,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               fontSize: fontSize.lg,
               marginLeft: spacing.md,
             }}
@@ -164,7 +163,7 @@ export default function NoAccessScreen() {
           style={{
             color: colors.glass.bright,
             fontSize: fontSize.sm,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             textAlign: 'center',
           }}
         >

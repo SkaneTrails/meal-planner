@@ -6,7 +6,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   fontWeight,
   spacing,
@@ -28,7 +27,7 @@ export const ExtrasSection = ({
   onAddExtra,
   onRemoveExtra,
 }: ExtrasSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -60,7 +59,7 @@ export const ExtrasSection = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.displayBold,
+              fontFamily: fonts.displayBold,
               fontWeight: fontWeight.semibold,
               color: colors.content.body,
               fontStyle: 'italic',
@@ -86,7 +85,7 @@ export const ExtrasSection = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.content.body,
               marginLeft: spacing.xs,
             }}
@@ -120,7 +119,7 @@ export const ExtrasSection = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.content.subtitle,
               marginLeft: spacing.sm,
             }}
@@ -148,7 +147,7 @@ interface ExtraRecipeRowProps {
 }
 
 const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const router = useRouter();
   const imageUrl =
     recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE;
@@ -182,7 +181,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.primary,
             }}
           >
@@ -192,7 +191,7 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
             <Text
               style={{
                 fontSize: fontSize.sm,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.content.tertiary,
                 marginTop: spacing['2xs'],
               }}

@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   shadows,
   spacing,
@@ -18,7 +17,7 @@ interface TimeStatProps {
 }
 
 const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -41,7 +40,7 @@ const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => {
       <Text
         style={{
           fontSize: fontSize.lg,
-          fontFamily: fontFamily.bodyBold,
+          fontFamily: fonts.bodyBold,
           color: colors.content.body,
         }}
       >

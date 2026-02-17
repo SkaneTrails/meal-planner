@@ -3,7 +3,6 @@ import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   iconContainer,
   letterSpacing,
@@ -29,7 +28,7 @@ export const InstructionItem = ({
   onToggle,
   stepNumber,
 }: InstructionItemProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { type, content, time } = instruction;
 
   if (type === 'tip') {
@@ -59,7 +58,7 @@ export const InstructionItem = ({
           style={{
             flex: 1,
             fontSize: fontSize.md,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.content.body,
             lineHeight: lineHeight.md,
             fontStyle: 'italic',
@@ -92,7 +91,7 @@ export const InstructionItem = ({
         <Text
           style={{
             fontSize: fontSize['2xl'],
-            fontFamily: fontFamily.displayBold,
+            fontFamily: fonts.displayBold,
             color: colors.content.body,
             letterSpacing: letterSpacing.normal,
             paddingHorizontal: spacing.md,
@@ -150,7 +149,7 @@ export const InstructionItem = ({
             style={{
               color: colors.white,
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodyBold,
+              fontFamily: fonts.bodyBold,
             }}
           >
             {displayNumber}
@@ -175,7 +174,7 @@ export const InstructionItem = ({
             <Text
               style={{
                 fontSize: fontSize.sm,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 color: colors.white,
                 marginLeft: 4,
               }}
@@ -187,7 +186,7 @@ export const InstructionItem = ({
         <Text
           style={{
             fontSize: fontSize.xl,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: isCompleted
               ? colors.timeline.completedText
               : colors.content.body,

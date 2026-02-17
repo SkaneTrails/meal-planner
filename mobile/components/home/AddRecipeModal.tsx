@@ -3,13 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
-import {
-  borderRadius,
-  fontFamily,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
@@ -30,7 +24,7 @@ export const AddRecipeModal = ({
   onImport,
   t,
 }: AddRecipeModalProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const router = useRouter();
 
   const handleSubmit = () => {
@@ -107,7 +101,7 @@ export const AddRecipeModal = ({
                   ? colors.white
                   : colors.content.secondary,
                 fontSize: fontSize.sm,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
               }}
             >
               {t('home.addRecipe.importButton')}
@@ -183,7 +177,7 @@ export const AddRecipeModal = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.content.body,
             }}
           >

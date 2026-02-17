@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontFamily,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { isPastDate, toBcp47 } from '@/lib/utils/dateFormatter';
 import { DEFAULT_MEAL_TYPES } from './recipe-detail-constants';
@@ -42,7 +36,7 @@ export const PlanMealModal = ({
   onClearMeal,
   getMealForSlot,
 }: PlanMealModalProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const resolvedMealTypes = mealTypesProp ?? DEFAULT_MEAL_TYPES;
 
   return (
@@ -72,7 +66,7 @@ export const PlanMealModal = ({
         <Text
           style={{
             fontSize: fontSize.xl,
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.text.inverse,
           }}
         >
@@ -94,7 +88,7 @@ export const PlanMealModal = ({
       <Text
         style={{
           fontSize: fontSize.xl,
-          fontFamily: fontFamily.body,
+          fontFamily: fonts.body,
           color: colors.gray[500],
           paddingHorizontal: spacing.xl,
           marginBottom: spacing.lg,
@@ -140,7 +134,7 @@ export const PlanMealModal = ({
                     <Text
                       style={{
                         fontSize: fontSize.sm,
-                        fontFamily: fontFamily.bodyBold,
+                        fontFamily: fonts.bodyBold,
                         color: colors.white,
                       }}
                     >
@@ -151,7 +145,7 @@ export const PlanMealModal = ({
                 <Text
                   style={{
                     fontSize: fontSize.xl,
-                    fontFamily: fontFamily.bodySemibold,
+                    fontFamily: fonts.bodySemibold,
                     color: isToday ? colors.text.inverse : colors.gray[500],
                   }}
                 >
@@ -210,7 +204,7 @@ export const PlanMealModal = ({
                           <Text
                             style={{
                               fontSize: fontSize.lg,
-                              fontFamily: fontFamily.bodySemibold,
+                              fontFamily: fonts.bodySemibold,
                               color: colors.text.inverse,
                             }}
                           >

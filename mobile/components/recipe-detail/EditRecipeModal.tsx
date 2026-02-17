@@ -11,7 +11,6 @@ import { BottomSheetModal, ChipPicker } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   letterSpacing,
   spacing,
@@ -63,7 +62,7 @@ export const EditRecipeModal = ({
   onTransferRecipe,
   onDelete,
 }: EditRecipeModalProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(
     recipe.diet_label,
   );
@@ -126,7 +125,7 @@ export const EditRecipeModal = ({
             <Text
               style={{
                 fontSize: fontSize.xl,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.gray[500],
               }}
             >
@@ -150,7 +149,7 @@ export const EditRecipeModal = ({
               <Text
                 style={{
                   fontSize: fontSize.xl,
-                  fontFamily: fontFamily.bodySemibold,
+                  fontFamily: fonts.bodySemibold,
                   color: colors.white,
                 }}
               >
@@ -187,7 +186,7 @@ export const EditRecipeModal = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.gray[500],
               marginBottom: spacing.sm,
               textTransform: 'uppercase',
@@ -229,7 +228,7 @@ export const EditRecipeModal = ({
                   <Text
                     style={{
                       fontSize: fontSize.lg,
-                      fontFamily: fontFamily.bodySemibold,
+                      fontFamily: fonts.bodySemibold,
                       color: isSelected ? colors.white : colors.text.inverse,
                     }}
                   >
@@ -238,7 +237,7 @@ export const EditRecipeModal = ({
                   <Text
                     style={{
                       fontSize: fontSize.sm,
-                      fontFamily: fontFamily.body,
+                      fontFamily: fonts.body,
                       color: isSelected ? colors.bgDark : colors.gray[400],
                       marginTop: spacing['2xs'],
                     }}
@@ -258,7 +257,7 @@ export const EditRecipeModal = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.gray[500],
               marginBottom: spacing.sm,
               textTransform: 'uppercase',
@@ -270,7 +269,7 @@ export const EditRecipeModal = ({
           <Text
             style={{
               fontSize: fontSize.base,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.gray[400],
             }}
           >
@@ -295,7 +294,7 @@ export const EditRecipeModal = ({
         <Text
           style={{
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.gray[500],
             marginBottom: spacing.sm,
             textTransform: 'uppercase',
@@ -309,7 +308,7 @@ export const EditRecipeModal = ({
             <Text
               style={{
                 fontSize: fontSize.base,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.gray[400],
                 marginBottom: spacing.xs,
               }}
@@ -328,7 +327,7 @@ export const EditRecipeModal = ({
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.text.inverse,
                 textAlign: 'center',
                 borderWidth: 1,
@@ -340,7 +339,7 @@ export const EditRecipeModal = ({
             <Text
               style={{
                 fontSize: fontSize.base,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.gray[400],
                 marginBottom: spacing.xs,
               }}
@@ -359,7 +358,7 @@ export const EditRecipeModal = ({
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.text.inverse,
                 textAlign: 'center',
                 borderWidth: 1,
@@ -371,7 +370,7 @@ export const EditRecipeModal = ({
             <Text
               style={{
                 fontSize: fontSize.base,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.gray[400],
                 marginBottom: spacing.xs,
               }}
@@ -390,7 +389,7 @@ export const EditRecipeModal = ({
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.text.inverse,
                 textAlign: 'center',
                 borderWidth: 1,
@@ -434,7 +433,7 @@ export const EditRecipeModal = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.error,
             }}
           >

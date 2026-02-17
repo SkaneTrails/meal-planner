@@ -2,7 +2,6 @@ import { Pressable, Text, View } from 'react-native';
 import {
   borderRadius,
   dotSize,
-  fontFamily,
   fontSize,
   letterSpacing,
   spacing,
@@ -44,7 +43,7 @@ const ChipPicker = <T,>({
   t,
   variant = 'glass',
 }: ChipPickerProps<T>) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const isGlass = variant === 'glass';
   const inactiveBg = isGlass ? colors.glass.card : colors.gray[50];
   const inactiveBorder = isGlass ? colors.glass.border : colors.bgDark;
@@ -54,7 +53,7 @@ const ChipPicker = <T,>({
       <Text
         style={{
           fontSize: fontSize.lg,
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           color: colors.gray[500],
           marginBottom: spacing.sm,
           textTransform: 'uppercase',
@@ -99,7 +98,7 @@ const ChipPicker = <T,>({
               <Text
                 style={{
                   fontSize: fontSize.lg,
-                  fontFamily: fontFamily.bodyMedium,
+                  fontFamily: fonts.bodyMedium,
                   color: isSelected ? colors.white : colors.text.inverse,
                 }}
               >

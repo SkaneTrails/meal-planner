@@ -12,7 +12,6 @@ import {
 } from '@/lib/hooks/useSelectRecipeState';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   layout,
   shadows,
@@ -110,7 +109,7 @@ interface TabBarProps {
 }
 
 const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
@@ -140,7 +139,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
             <Text
               style={{
                 fontSize: fontSize.sm,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 color:
                   activeTab === tab
                     ? colors.content.heading

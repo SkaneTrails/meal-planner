@@ -15,7 +15,6 @@ import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   layout,
   letterSpacing,
@@ -214,14 +213,14 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
       <Text
         style={{
           fontSize: fontSize.xl,
-          fontFamily: fontFamily.display,
+          fontFamily: fonts.display,
           color: colors.white,
           marginBottom: spacing.sm,
           letterSpacing: letterSpacing.normal,
@@ -281,8 +280,8 @@ const NextMealCard = ({
                     : colors.content.secondary,
                 fontFamily:
                   nextMeal && !nextMeal.isTomorrow
-                    ? fontFamily.bodySemibold
-                    : fontFamily.body,
+                    ? fonts.bodySemibold
+                    : fonts.body,
                 textTransform: 'uppercase',
                 letterSpacing: letterSpacing.wide,
               }}
@@ -295,7 +294,7 @@ const NextMealCard = ({
           <Text
             style={{
               fontSize: fontSize.xl,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.content.body,
             }}
             numberOfLines={2}

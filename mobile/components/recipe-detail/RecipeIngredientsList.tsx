@@ -4,7 +4,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   iconContainer,
   lineHeight,
@@ -23,7 +22,7 @@ export const RecipeIngredientsList = ({
   ingredients,
   t,
 }: RecipeIngredientsListProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View style={{ marginTop: spacing.xl }}>
       <View
@@ -97,7 +96,7 @@ export const RecipeIngredientsList = ({
                 style={{
                   flex: 1,
                   fontSize: fontSize.xl,
-                  fontFamily: fontFamily.body,
+                  fontFamily: fonts.body,
                   color: colors.text.inverse,
                   lineHeight: lineHeight.lg,
                 }}

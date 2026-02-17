@@ -1,15 +1,9 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontFamily,
-  fontSize,
-  lineHeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 
 export const EmptyGroceryState = () => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -25,7 +19,7 @@ export const EmptyGroceryState = () => {
         style={{
           color: colors.content.body,
           fontSize: fontSize['xl-2xl'],
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           textAlign: 'center',
         }}
       >

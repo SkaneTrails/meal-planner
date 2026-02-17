@@ -4,7 +4,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   dotSize,
-  fontFamily,
   fontSize,
   spacing,
   useTheme,
@@ -18,7 +17,7 @@ interface RecipeMetaLabelsProps {
 }
 
 export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const dietLabels = getDietLabels(colors);
   return (
     <View
@@ -53,7 +52,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: dietLabels[recipe.diet_label].color,
             }}
           >
@@ -73,7 +72,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.text.inverse,
             }}
           >
@@ -105,7 +104,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.text.inverse,
             }}
           >

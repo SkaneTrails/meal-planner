@@ -3,7 +3,6 @@ import type { ComponentProps } from 'react';
 import { Pressable, Text, View, type ViewStyle } from 'react-native';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   iconContainer,
   letterSpacing,
@@ -35,7 +34,7 @@ const EmptyState = ({
   action,
   style,
 }: EmptyStateProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={[
@@ -66,7 +65,7 @@ const EmptyState = ({
         style={{
           color: colors.text.inverse,
           fontSize: fontSize['3xl'],
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           textAlign: 'center',
           letterSpacing: letterSpacing.normal,
         }}
@@ -78,7 +77,7 @@ const EmptyState = ({
           style={{
             color: colors.gray[600],
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             marginTop: spacing.sm,
             textAlign: 'center',
             lineHeight: lineHeight.lg,
@@ -104,7 +103,7 @@ const EmptyState = ({
             style={{
               color: colors.white,
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
             }}
           >
             {action.label}

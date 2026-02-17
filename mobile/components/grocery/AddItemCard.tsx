@@ -3,7 +3,6 @@ import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   shadows,
   spacing,
@@ -21,7 +20,7 @@ export const AddItemCard = ({
   onChangeText,
   onSubmit,
 }: AddItemCardProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -36,7 +35,7 @@ export const AddItemCard = ({
       <Text
         style={{
           fontSize: fontSize.base,
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           color: colors.content.tertiary,
           marginBottom: spacing.sm,
         }}
@@ -83,7 +82,7 @@ export const AddItemCard = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.white,
             }}
           >

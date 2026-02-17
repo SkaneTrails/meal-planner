@@ -6,7 +6,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   iconContainer,
   spacing,
@@ -60,7 +59,7 @@ export const GrocerySelectionModal = ({
   onPreviousWeek,
   onNextWeek,
 }: GrocerySelectionModalProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <BottomSheetModal
       visible={visible}
@@ -116,7 +115,7 @@ export const GrocerySelectionModal = ({
               <Text
                 style={{
                   fontSize: fontSize['lg-xl'],
-                  fontFamily: fontFamily.bodySemibold,
+                  fontFamily: fonts.bodySemibold,
                   color: isToday
                     ? colors.content.heading
                     : colors.content.tertiary,
@@ -173,7 +172,7 @@ const GroceryWeekSelector = ({
   onPreviousWeek,
   onNextWeek,
 }: GroceryWeekSelectorProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -208,7 +207,7 @@ const GroceryWeekSelector = ({
         <Text
           style={{
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.heading,
             textAlign: 'center',
           }}
@@ -256,7 +255,7 @@ const GroceryMealItem = ({
   onToggle,
   onChangeServings,
 }: GroceryMealItemProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -297,7 +296,7 @@ const GroceryMealItem = ({
           <Text
             style={{
               fontSize: fontSize.xl,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.content.heading,
             }}
           >
@@ -306,7 +305,7 @@ const GroceryMealItem = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.content.subtitle,
               marginTop: spacing['2xs'],
             }}
@@ -358,7 +357,7 @@ const GroceryMealItem = ({
             <Text
               style={{
                 fontSize: fontSize.xl,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 color: colors.content.heading,
               }}
             >
