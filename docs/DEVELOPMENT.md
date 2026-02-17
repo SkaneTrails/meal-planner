@@ -291,7 +291,8 @@ scripts/                 # CLI tools
 └── run-function.sh      # Run Cloud Function locally
 
 tools/                   # Interactive CLI tools
-└── recipe_manager.py    # Firestore recipe CRUD + interactive menu
+├── admin_commands.py    # User & household management commands
+└── recipe_manager.py    # Admin tool: recipes, users, households
 
 tests/                   # API test files (pytest)
 ├── conftest.py          # Shared fixtures
@@ -364,6 +365,13 @@ uv run python scripts/recipe_enhancer.py --list
 # Recipe management (list, get, export, delete, enhance, etc.)
 uv run python tools/recipe_manager.py --project <project_id> list
 uv run python tools/recipe_manager.py --project <project_id> status
+
+# User & household management
+uv run python -m tools.recipe_manager --project <project_id> user get <email>
+uv run python -m tools.recipe_manager --project <project_id> user list --household <id>
+uv run python -m tools.recipe_manager --project <project_id> household list
+uv run python -m tools.recipe_manager --project <project_id> household get <id>
+uv run python -m tools.recipe_manager --project <project_id> household set <id> <field> <value>
 
 # Test Gemini integration
 uv run python scripts/test_gemini.py
