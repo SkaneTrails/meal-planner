@@ -24,6 +24,7 @@ export {
   settingsSubtitleStyle,
   settingsTitleStyle,
 } from './theme/styles';
+export { terminalColors } from './theme/terminal-colors';
 export { ThemeProvider, useTheme } from './theme/theme-context';
 export type { FontFamilyTokens } from './theme/typography';
 export {

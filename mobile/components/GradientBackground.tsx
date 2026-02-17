@@ -219,7 +219,7 @@ export const GradientBackground = ({
             style={[
               StyleSheet.absoluteFill,
               {
-                backgroundColor: 'rgba(0, 0, 0, 0.15)',
+                backgroundColor: colors.background.mutedOverlay,
               },
             ]}
           />
@@ -253,7 +253,7 @@ export const GradientBackground = ({
               style={[
                 StyleSheet.absoluteFill,
                 {
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: colors.background.defaultOverlay,
                 },
               ]}
             />
@@ -266,13 +266,16 @@ export const GradientBackground = ({
                 style={[
                   StyleSheet.absoluteFill,
                   {
-                    backgroundColor: 'rgba(235, 228, 219, 0.96)',
+                    backgroundColor: colors.background.structuredWash,
                   },
                 ]}
               />
               {/* Very subtle warm tint at top only */}
               <LinearGradient
-                colors={['rgba(210, 200, 190, 0.15)', 'transparent']}
+                colors={[
+                  colors.background.structuredGradientStart,
+                  colors.background.structuredGradientEnd,
+                ]}
                 locations={[0, 0.3]}
                 style={[StyleSheet.absoluteFill]}
               />
@@ -371,7 +374,7 @@ export const GradientBackground = ({
         style={[
           StyleSheet.absoluteFill,
           {
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            backgroundColor: colors.background.animatedOverlay,
           },
         ]}
       />

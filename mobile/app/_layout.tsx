@@ -42,7 +42,7 @@ import {
   SettingsProvider,
   useSettings,
 } from '@/lib/settings-context';
-import { ThemeProvider, useTheme } from '@/lib/theme';
+import { ThemeProvider, terminalColors, useTheme } from '@/lib/theme';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -166,9 +166,12 @@ export default function RootLayout() {
     return null;
   }
 
+  const themePalette =
+    process.env.EXPO_PUBLIC_THEME === 'terminal' ? terminalColors : undefined;
+
   return (
     <ErrorBoundary>
-      <ThemeProvider>
+      <ThemeProvider palette={themePalette}>
         <AuthProvider>
           <QueryProvider>
             <SettingsProvider>

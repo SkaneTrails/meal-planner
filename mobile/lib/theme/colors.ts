@@ -248,6 +248,16 @@ export const lightColors = {
     stop2: '#D0A080',
   },
 
+  // Background overlays — used by GradientBackground to tint/cover the base image
+  background: {
+    mutedOverlay: 'rgba(0, 0, 0, 0.15)',
+    defaultOverlay: 'rgba(255, 255, 255, 0.08)',
+    structuredWash: 'rgba(235, 228, 219, 0.96)',
+    structuredGradientStart: 'rgba(210, 200, 190, 0.15)',
+    structuredGradientEnd: 'transparent',
+    animatedOverlay: 'rgba(255, 255, 255, 0.08)',
+  },
+
   // Tag dot colors — muted palette for note/suggestion tags
   tagDot: [
     '#7A9BBD', // steel blue
