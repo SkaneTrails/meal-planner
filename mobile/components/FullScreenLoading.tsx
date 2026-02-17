@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps, ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { GradientBackground } from '@/components/GradientBackground';
-import { colors, fontFamily, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontFamily, fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface FullScreenLoadingProps {
   /** GradientBackground visual mode (default: 'default') */
@@ -39,25 +39,33 @@ export const FullScreenLoading = ({
   subtitle,
   children,
 }: FullScreenLoadingProps) => {
-  const { colors: themeColors } = useTheme();
+  const { colors } = useTheme();
   const isMessage = Boolean(icon || title);
 
   return (
     <GradientBackground {...bgVariant(background)} style={styles.container}>
       {isMessage ? (
         <View style={styles.content}>
-          {icon && (
-            <Ionicons name={icon} size={64} color={themeColors.text.muted} />
-          )}
+          {icon && <Ionicons name={icon} size={64} color={colors.text.muted} />}
           {title && (
-            <Text style={[styles.title, icon && { marginTop: spacing.lg }]}>
+            <Text
+              style={[
+                styles.title,
+                { color: colors.text.muted },
+                icon && { marginTop: spacing.lg },
+              ]}
+            >
               {title}
             </Text>
           )}
-          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          {subtitle && (
+            <Text style={[styles.subtitle, { color: colors.text.muted }]}>
+              {subtitle}
+            </Text>
+          )}
         </View>
       ) : (
-        <ActivityIndicator size="large" color={themeColors.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       )}
       {children}
     </GradientBackground>
@@ -77,13 +85,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize['2xl'],
     fontFamily: fontFamily.bodySemibold,
-    color: colors.text.muted,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: fontSize.lg,
     fontFamily: fontFamily.body,
-    color: colors.text.muted,
     marginTop: spacing.sm,
     textAlign: 'center',
   },

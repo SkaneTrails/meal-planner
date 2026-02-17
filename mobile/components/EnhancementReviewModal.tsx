@@ -10,7 +10,6 @@ import {
 import {
   borderRadius,
   circleStyle,
-  colors,
   fontSize,
   fontWeight,
   iconContainer,
@@ -57,11 +56,15 @@ export const EnhancementReviewModal = ({
       animationType="fade"
       onRequestClose={onRequestClose}
     >
-      <View style={styles.backdrop}>
-        <View style={styles.card}>
+      <View
+        style={[styles.backdrop, { backgroundColor: colors.overlay.backdrop }]}
+      >
+        <View style={[styles.card, { backgroundColor: colors.white }]}>
           {/* Header */}
           <View style={styles.header}>
-            <View style={styles.iconCircle}>
+            <View
+              style={[styles.iconCircle, { backgroundColor: colors.ai.light }]}
+            >
               <Ionicons
                 name="sparkles"
                 size={iconSize.xl}
@@ -69,8 +72,15 @@ export const EnhancementReviewModal = ({
               />
             </View>
             <View style={styles.headerText}>
-              <Text style={styles.headerLabel}>{headerLabel}</Text>
-              <Text style={styles.title} numberOfLines={1}>
+              <Text
+                style={[styles.headerLabel, { color: colors.text.inverse }]}
+              >
+                {headerLabel}
+              </Text>
+              <Text
+                style={[styles.title, { color: colors.gray[600] }]}
+                numberOfLines={1}
+              >
                 {title}
               </Text>
             </View>
@@ -80,21 +90,40 @@ export const EnhancementReviewModal = ({
           <ScrollView style={styles.changesList}>
             {changesMade.length > 0 ? (
               <>
-                <Text style={styles.changesLabel}>{changesLabel}</Text>
+                <Text
+                  style={[styles.changesLabel, { color: colors.text.inverse }]}
+                >
+                  {changesLabel}
+                </Text>
                 {changesMade.map((change, index) => (
-                  <View key={index} style={styles.changeItem}>
+                  <View
+                    key={index}
+                    style={[
+                      styles.changeItem,
+                      { backgroundColor: colors.successBg },
+                    ]}
+                  >
                     <Ionicons
                       name="checkmark-circle"
                       size={iconSize.md}
                       color={colors.success}
                       style={styles.changeIcon}
                     />
-                    <Text style={styles.changeText}>{change}</Text>
+                    <Text
+                      style={[
+                        styles.changeText,
+                        { color: colors.text.inverse },
+                      ]}
+                    >
+                      {change}
+                    </Text>
                   </View>
                 ))}
               </>
             ) : (
-              <Text style={styles.noChanges}>{noChangesLabel}</Text>
+              <Text style={[styles.noChanges, { color: colors.gray[600] }]}>
+                {noChangesLabel}
+              </Text>
             )}
           </ScrollView>
 
@@ -105,17 +134,28 @@ export const EnhancementReviewModal = ({
               disabled={isReviewPending}
               style={({ pressed }) => [
                 styles.rejectButton,
-                { opacity: pressed || isReviewPending ? 0.7 : 1 },
+                {
+                  backgroundColor: colors.glass.light,
+                  borderColor: colors.gray[300],
+                  opacity: pressed || isReviewPending ? 0.7 : 1,
+                },
               ]}
             >
-              <Text style={styles.rejectLabel}>{rejectLabel}</Text>
+              <Text
+                style={[styles.rejectLabel, { color: colors.text.inverse }]}
+              >
+                {rejectLabel}
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => onReview('approve')}
               disabled={isReviewPending}
               style={({ pressed }) => [
                 styles.approveButton,
-                { opacity: pressed || isReviewPending ? 0.7 : 1 },
+                {
+                  backgroundColor: colors.ai.primary,
+                  opacity: pressed || isReviewPending ? 0.7 : 1,
+                },
               ]}
             >
               <View style={styles.approveContent}>
@@ -125,7 +165,9 @@ export const EnhancementReviewModal = ({
                   color={colors.white}
                   style={styles.approveIcon}
                 />
-                <Text style={styles.approveLabel}>{approveLabel}</Text>
+                <Text style={[styles.approveLabel, { color: colors.white }]}>
+                  {approveLabel}
+                </Text>
               </View>
             </Pressable>
           </View>
@@ -138,13 +180,11 @@ export const EnhancementReviewModal = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: colors.overlay.backdrop,
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing['2xl'],
   },
   card: {
-    backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     padding: spacing['2xl'],
     width: '100%',
@@ -159,7 +199,6 @@ const styles = StyleSheet.create({
   },
   iconCircle: {
     ...circleStyle(iconContainer.lg),
-    backgroundColor: colors.ai.light,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -170,12 +209,10 @@ const styles = StyleSheet.create({
   headerLabel: {
     fontSize: fontSize['3xl'],
     fontWeight: fontWeight.bold,
-    color: colors.text.inverse,
     letterSpacing: letterSpacing.normal,
   },
   title: {
     fontSize: fontSize.lg,
-    color: colors.gray[600],
     marginTop: spacing.xs,
   },
   changesList: {
@@ -185,14 +222,12 @@ const styles = StyleSheet.create({
   changesLabel: {
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
-    color: colors.text.inverse,
     marginBottom: spacing.md,
   },
   changeItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginBottom: spacing.sm,
-    backgroundColor: colors.successBg,
     padding: spacing.md,
     borderRadius: borderRadius.sm,
   },
@@ -203,12 +238,10 @@ const styles = StyleSheet.create({
   changeText: {
     flex: 1,
     fontSize: fontSize.lg,
-    color: colors.text.inverse,
     lineHeight: lineHeight.lg,
   },
   noChanges: {
     fontSize: fontSize.lg,
-    color: colors.gray[600],
     fontStyle: 'italic',
   },
   buttonRow: {
@@ -219,21 +252,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.glass.light,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.gray[300],
   },
   rejectLabel: {
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
-    color: colors.text.inverse,
   },
   approveButton: {
     flex: 1,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.ai.primary,
     alignItems: 'center',
     ...shadows.sm,
   },
@@ -247,6 +276,5 @@ const styles = StyleSheet.create({
   approveLabel: {
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
-    color: colors.white,
   },
 });
