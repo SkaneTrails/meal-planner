@@ -345,6 +345,7 @@ describe('useRecipeActions', () => {
       expect(result.current.showPlanModal).toBe(false);
       expect(result.current.showEditModal).toBe(false);
       expect(result.current.showUrlModal).toBe(false);
+      expect(result.current.showEnhancementReviewModal).toBe(false);
     });
 
     it('can toggle modal visibility', () => {
@@ -437,6 +438,7 @@ describe('useRecipeActions', () => {
       await act(async () => result.current.handleReviewEnhancement('approve'));
       expect(mockReviewMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', action: 'approve' });
       expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhancementApproved', 'recipe.enhancementApprovedMessage');
+      expect(result.current.showEnhancementReviewModal).toBe(false);
     });
 
     it('calls reviewEnhancement with reject and shows success', async () => {
@@ -445,6 +447,7 @@ describe('useRecipeActions', () => {
       await act(async () => result.current.handleReviewEnhancement('reject'));
       expect(mockReviewMutateAsync).toHaveBeenCalledWith({ id: 'recipe-1', action: 'reject' });
       expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhancementRejected', 'recipe.enhancementRejectedMessage');
+      expect(result.current.showEnhancementReviewModal).toBe(false);
     });
 
     it('shows error notification on failure', async () => {
@@ -530,7 +533,7 @@ describe('useRecipeActions', () => {
       );
     });
 
-    it('calls enhanceRecipe and shows success when confirmed', async () => {
+    it('opens enhancement review modal when confirmed', async () => {
       const recipe = makeRecipe();
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       await act(async () => result.current.handleEnhanceRecipe());
@@ -540,7 +543,7 @@ describe('useRecipeActions', () => {
       await act(async () => enhanceButton.onPress!());
 
       expect(mockEnhanceMutateAsync).toHaveBeenCalledWith('recipe-1');
-      expect(mockShowNotification).toHaveBeenCalledWith('recipe.enhanceSuccess', 'recipe.enhanceSuccessMessage');
+      expect(result.current.showEnhancementReviewModal).toBe(true);
     });
 
     it('shows error notification on failure', async () => {

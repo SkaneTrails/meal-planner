@@ -228,6 +228,8 @@ describe('useScrapeRecipe', () => {
     expect(mockApi.scrapeRecipe).toHaveBeenCalledWith(
       'https://example.com/recipe',
       false,
+      undefined,
+      undefined,
     );
   });
 
@@ -246,6 +248,8 @@ describe('useScrapeRecipe', () => {
     expect(mockApi.scrapeRecipe).toHaveBeenCalledWith(
       'https://example.com/recipe',
       true,
+      undefined,
+      undefined,
     );
   });
 });

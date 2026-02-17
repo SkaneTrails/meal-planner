@@ -7,6 +7,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { EnhancingOverlay, GradientBackground } from '@/components';
+import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
@@ -77,6 +78,8 @@ export default function RecipeDetailScreen() {
     handleTransferRecipe,
     handleReviewEnhancement,
     handleEnhanceRecipe,
+    showEnhancementReviewModal,
+    closeEnhancementReviewModal,
   } = useRecipeActions(id, recipe);
 
   const [weekOffset, setWeekOffset] = useState(0);
@@ -296,6 +299,20 @@ export default function RecipeDetailScreen() {
         t={t}
         onClose={() => setShowUrlModal(false)}
         onSave={saveImageUrl}
+      />
+
+      <EnhancementReviewModal
+        visible={showEnhancementReviewModal}
+        title={recipe.title}
+        headerLabel={t('recipe.enhanceSuccess')}
+        changesMade={recipe.changes_made ?? []}
+        changesLabel={t('addRecipe.enhanced.changesLabel')}
+        noChangesLabel={t('addRecipe.enhanced.noChangesListed')}
+        rejectLabel={t('recipe.rejectEnhancement')}
+        approveLabel={t('recipe.approveEnhancement')}
+        isReviewPending={isReviewingEnhancement}
+        onReview={handleReviewEnhancement}
+        onRequestClose={closeEnhancementReviewModal}
       />
 
       <EnhancingOverlay visible={isEnhancing} message={t('recipe.enhancing')} />

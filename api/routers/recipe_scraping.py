@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from api.auth.firebase import require_auth
 from api.auth.helpers import require_household
 from api.auth.models import AuthenticatedUser
-from api.models.recipe import Recipe, RecipeParseRequest, RecipePreview, RecipeScrapeRequest
+from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeParseRequest, RecipePreview, RecipeScrapeRequest
 from api.routers.recipe_enhancement import _get_household_config, _try_enhance, _try_enhance_preview
 from api.routers.recipe_images import ingest_recipe_image
 from api.services.html_fetcher import FetchError, FetchResult, fetch_html
@@ -185,6 +185,8 @@ async def scrape_recipe(
     request: RecipeScrapeRequest,
     *,
     enhance: Annotated[bool, Query(description="Enhance recipe with AI after scraping")] = False,
+    diet_label: Annotated[DietLabel | None, Query(description="Diet label to assign")] = None,
+    meal_label: Annotated[MealLabel | None, Query(description="Meal label to assign")] = None,
 ) -> Recipe:
     """Scrape a recipe from a URL and save it.
 
@@ -200,6 +202,10 @@ async def scrape_recipe(
 
     _check_duplicate_url(url)
     scraped_data = await _scrape_with_fallback(url)
+    if diet_label is not None:
+        scraped_data["diet_label"] = diet_label.value
+    if meal_label is not None:
+        scraped_data["meal_label"] = meal_label.value
 
     return await _save_and_process_recipe(
         scraped_data, household_id=household_id, created_by=user.email, enhance=enhance
@@ -212,6 +218,8 @@ async def parse_recipe(
     request: RecipeParseRequest,
     *,
     enhance: Annotated[bool, Query(description="Enhance recipe with AI after parsing")] = False,
+    diet_label: Annotated[DietLabel | None, Query(description="Diet label to assign")] = None,
+    meal_label: Annotated[MealLabel | None, Query(description="Meal label to assign")] = None,
 ) -> Recipe:
     """Parse a recipe from client-provided HTML and save it.
 
@@ -226,6 +234,10 @@ async def parse_recipe(
 
     _check_duplicate_url(url)
     scraped_data = await _parse_html_or_raise(url, html)
+    if diet_label is not None:
+        scraped_data["diet_label"] = diet_label.value
+    if meal_label is not None:
+        scraped_data["meal_label"] = meal_label.value
 
     return await _save_and_process_recipe(
         scraped_data, household_id=household_id, created_by=user.email, enhance=enhance
