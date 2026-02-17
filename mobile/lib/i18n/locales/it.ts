@@ -322,6 +322,8 @@ const it: Translations = {
     nextWeek: 'Prossima settimana',
     createGroceryList: 'Crea lista della spesa ({{count}} pasti)',
     addNote: '+ nota',
+    mealsPlanned: '{{count}} pasti',
+    noMeals: 'Nessun pasto',
     dayLabels: {
       office: 'Ufficio',
       home: 'Casa',
@@ -654,6 +656,8 @@ const it: Translations = {
       nameUpdated: 'Nome del nucleo familiare aggiornato',
 
       defaultServings: 'Porzioni predefinite',
+      includeBreakfast: 'Includi colazione',
+      includeBreakfastDesc: 'Mostra lo slot colazione nel menu settimanale',
     },
     dietary: {
       title: 'Preferenze dietetiche',

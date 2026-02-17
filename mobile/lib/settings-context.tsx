@@ -64,6 +64,7 @@ interface Settings extends LocalSettings {
   language: AppLanguage;
   weekStart: WeekStart;
   aiEnabled: boolean;
+  includeBreakfast: boolean;
 }
 
 interface SettingsContextType {
@@ -186,6 +187,7 @@ export const SettingsProvider = ({
 
   // Combined settings object
   const aiEnabled = householdSettings?.ai_features_enabled ?? true;
+  const includeBreakfast = householdSettings?.include_breakfast ?? false;
 
   const settings: Settings = useMemo(
     () => ({
@@ -196,6 +198,7 @@ export const SettingsProvider = ({
       language: resolvedLanguage,
       weekStart: resolvedWeekStart,
       aiEnabled,
+      includeBreakfast,
     }),
     [
       localSettings,
@@ -205,6 +208,7 @@ export const SettingsProvider = ({
       resolvedLanguage,
       resolvedWeekStart,
       aiEnabled,
+      includeBreakfast,
     ],
   );
 

@@ -126,6 +126,7 @@ export default function HouseholdSettingsScreen() {
                 onCancelEditName={form.cancelEditName}
                 isRenamePending={form.isRenamePending}
                 onUpdateServings={form.updateServings}
+                onUpdateIncludeBreakfast={form.updateIncludeBreakfast}
               />
             </CollapsibleSection>
 

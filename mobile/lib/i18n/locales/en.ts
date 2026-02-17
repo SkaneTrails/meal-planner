@@ -322,6 +322,8 @@ const en = {
     nextWeek: 'Next Week',
     createGroceryList: 'Create Grocery List ({{count}} meals)',
     addNote: '+ note',
+    mealsPlanned: '{{count}} meals',
+    noMeals: 'No meals',
     // Day labels (icons)
     dayLabels: {
       office: 'Office',
@@ -658,6 +660,8 @@ const en = {
       nameUpdated: 'Household name updated',
 
       defaultServings: 'Default Servings',
+      includeBreakfast: 'Include Breakfast',
+      includeBreakfastDesc: 'Show breakfast slot in weekly planner',
     },
     dietary: {
       title: 'Dietary Preferences',

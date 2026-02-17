@@ -326,6 +326,7 @@ export interface HouseholdSettings {
   language: string;
   week_start?: 'monday' | 'saturday';
   ai_features_enabled?: boolean;
+  include_breakfast?: boolean;
   items_at_home?: string[];
   favorite_recipes?: string[];
   note_suggestions?: string[];

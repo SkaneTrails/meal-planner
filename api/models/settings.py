@@ -78,6 +78,7 @@ class HouseholdSettings(BaseModel):
     language: str = Field(default="sv", description="Preferred language for recipes (sv, en, it)")
     week_start: str = Field(default="monday", description="Day the week starts on (monday or saturday)")
     ai_features_enabled: bool = Field(default=True, description="Show AI enhancement controls in UI")
+    include_breakfast: bool = Field(default=False, description="Include breakfast slot in weekly planner")
     items_at_home: list[str] = Field(
         default_factory=list, description="Ingredients always at home (excluded from grocery lists)"
     )
@@ -136,6 +137,7 @@ class HouseholdSettingsUpdate(BaseModel):
     language: str | None = None
     week_start: str | None = None
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
+    include_breakfast: bool | None = Field(default=None, description="Include breakfast slot in weekly planner")
 
     note_suggestions: list[str] | None = None
 

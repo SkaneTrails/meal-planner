@@ -27,13 +27,17 @@ export const useMealPlanActions = () => {
   const { weekStart, settings } = useSettings();
   const { saveSelections } = useGroceryState();
 
-  const MEAL_TYPES: MealTypeOption[] = useMemo(
-    () => [
+  const MEAL_TYPES: MealTypeOption[] = useMemo(() => {
+    const types: MealTypeOption[] = [];
+    if (settings?.includeBreakfast) {
+      types.push({ type: 'breakfast', label: t('labels.mealTime.breakfast') });
+    }
+    types.push(
       { type: 'lunch', label: t('labels.mealTime.lunch') },
       { type: 'dinner', label: t('labels.mealTime.dinner') },
-    ],
-    [t],
-  );
+    );
+    return types;
+  }, [t, settings?.includeBreakfast]);
 
   const DEFAULT_NOTE_SUGGESTIONS = useMemo(
     () => [
@@ -63,6 +67,9 @@ export const useMealPlanActions = () => {
   const [showJumpButton, setShowJumpButton] = useState(false);
   const [editingNoteDate, setEditingNoteDate] = useState<string | null>(null);
   const [noteText, setNoteText] = useState('');
+  const [expandedPastDays, setExpandedPastDays] = useState<Set<string>>(
+    new Set(),
+  );
   const scrollViewRef = useRef<ScrollView>(null);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
@@ -128,6 +135,30 @@ export const useMealPlanActions = () => {
     },
     [mealPlan, recipeMap],
   );
+
+  const countMealsForDate = useCallback(
+    (date: Date): number => {
+      if (!mealPlan?.meals) return 0;
+      const dateStr = formatDateLocal(date);
+      return MEAL_TYPES.reduce((count, { type }) => {
+        const key = `${dateStr}_${type}`;
+        return mealPlan.meals[key] ? count + 1 : count;
+      }, 0);
+    },
+    [mealPlan, MEAL_TYPES],
+  );
+
+  const togglePastDay = useCallback((dateStr: string) => {
+    setExpandedPastDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(dateStr)) {
+        next.delete(dateStr);
+      } else {
+        next.add(dateStr);
+      }
+      return next;
+    });
+  }, []);
 
   const handleScroll = useCallback(
     (scrollY: number) => {
@@ -449,5 +480,8 @@ export const useMealPlanActions = () => {
     getExtrasRecipes,
     handleAddExtra,
     handleRemoveExtra,
+    expandedPastDays,
+    togglePastDay,
+    countMealsForDate,
   };
 };

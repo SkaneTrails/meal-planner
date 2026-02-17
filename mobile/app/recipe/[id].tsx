@@ -89,6 +89,18 @@ export default function RecipeDetailScreen() {
   );
   const { data: mealPlan } = useMealPlan();
 
+  const planMealTypes = useMemo(() => {
+    const types: { type: MealType; labelKey: string }[] = [];
+    if (settings.includeBreakfast) {
+      types.push({ type: 'breakfast', labelKey: 'labels.mealTime.breakfast' });
+    }
+    types.push(
+      { type: 'lunch', labelKey: 'labels.mealTime.lunch' },
+      { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
+    );
+    return types;
+  }, [settings.includeBreakfast]);
+
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showAiChanges, setShowAiChanges] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
@@ -272,6 +284,7 @@ export default function RecipeDetailScreen() {
         weekOffset={weekOffset}
         language={settings.language}
         t={t}
+        mealTypes={planMealTypes}
         onClose={() => setShowPlanModal(false)}
         onSetWeekOffset={setWeekOffset}
         onPlanMeal={handlePlanMeal}
