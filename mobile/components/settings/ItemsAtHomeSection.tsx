@@ -269,10 +269,6 @@ const EmptyItemsState = () => {
   const { t } = useTranslation();
 
   return (
-<<<<<<< HEAD
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
     <SurfaceCard style={{ alignItems: 'center', marginTop: spacing.sm }}>
       <IconCircle
         size="lg"
