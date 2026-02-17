@@ -1,4 +1,4 @@
-"""Firestore recipe manager — CRUD, enhancement review, and interactive menu.
+"""Firestore admin tool — recipe CRUD, enhancement review, user/household management.
 
 Enhancement preserves original data in the same Firestore document:
 - Top-level fields = enhanced version (what the app displays)
@@ -22,10 +22,24 @@ Usage (CLI — bypasses interactive menu):
     uv run python tools/recipe_manager.py --project <project_id> reenhance <recipe_id> --household <id>
     uv run python tools/recipe_manager.py --project <project_id> reenhance <recipe_id> --household <id> --apply
 
+User management:
+    uv run python tools/recipe_manager.py --project <project_id> user get <email>
+    uv run python tools/recipe_manager.py --project <project_id> user list [--household <id>]
+    uv run python tools/recipe_manager.py --project <project_id> user add <email> <household_id> [--role member|admin]
+    uv run python tools/recipe_manager.py --project <project_id> user remove <email>
+    uv run python tools/recipe_manager.py --project <project_id> user set-role <email> <role>
+
+Household management:
+    uv run python tools/recipe_manager.py --project <project_id> household list
+    uv run python tools/recipe_manager.py --project <project_id> household get <id>
+    uv run python tools/recipe_manager.py --project <project_id> household create <name>
+    uv run python tools/recipe_manager.py --project <project_id> household set <id> <field> <value>
+
 Interactive menu (for humans):
     uv run python tools/recipe_manager.py --project <project_id>
 
 Note: --project is required. Reads and writes recipes in the meal-planner database.
+Superuser management is excluded — managed exclusively through Terraform.
 """
 
 import argparse
@@ -34,6 +48,8 @@ from collections.abc import Callable
 from pathlib import Path
 
 from google.cloud import firestore
+
+from tools import admin_commands
 
 PROGRESS_FILE = Path(__file__).parent.parent / "data" / "recipe_review_progress.json"
 RECIPES_COLLECTION = "recipes"
@@ -607,22 +623,58 @@ MENU_ITEMS = [
     ("9", "Mark recipe as done", lambda: _menu_id_action(mark_processed)),
 ]
 
+ADMIN_MENU_ITEMS = [
+    ("u1", "Look up user", lambda: admin_commands.user_get(_prompt("Email"))),
+    (
+        "u2",
+        "List members",
+        lambda: admin_commands.user_list(household_id=_prompt("Household ID (empty=all)", required=False) or None),
+    ),
+    (
+        "u3",
+        "Add user to household",
+        lambda: admin_commands.user_add(
+            _prompt("Email"), _prompt("Household ID"), role=_prompt("Role (member/admin)", required=False) or "member"
+        ),
+    ),
+    ("u4", "Remove user", lambda: admin_commands.user_remove(_prompt("Email"))),
+    ("u5", "Change user role", lambda: admin_commands.user_set_role(_prompt("Email"), _prompt("Role (member/admin)"))),
+    ("h1", "List households", admin_commands.household_list),
+    ("h2", "Get household details", lambda: admin_commands.household_get(_prompt("Household ID"))),
+    ("h3", "Create household", lambda: admin_commands.household_create(_prompt("Household name"))),
+    (
+        "h4",
+        "Update household setting",
+        lambda: admin_commands.household_set(_prompt("Household ID"), _prompt("Setting name"), _prompt("Value")),
+    ),
+]
+
 
 def interactive_menu() -> None:
     """Launch an interactive terminal menu for human users."""
-    print("\n\U0001f4cb Recipe Manager \u2014 Interactive Menu")
+    print("\n\U0001f4cb Admin Tool \u2014 Interactive Menu")
     print(f"   Project: {_project}  |  Database: {DATABASE}")
 
     handlers = {key: fn for key, _, fn in MENU_ITEMS}
+    handlers.update({key: fn for key, _, fn in ADMIN_MENU_ITEMS})
 
     while True:
-        print(f"\n{'=' * 45}")
+        print(f"\n{'=' * 50}")
+        print("  --- Recipes ---")
         for key, label, _ in MENU_ITEMS:
-            print(f"  {key}) {label}")
-        print("  0) Quit")
-        print(f"{'=' * 45}")
+            print(f"  {key:>3}) {label}")
+        print("\n  --- Users ---")
+        for key, label, _ in ADMIN_MENU_ITEMS:
+            if key.startswith("u"):
+                print(f"  {key:>3}) {label}")
+        print("\n  --- Households ---")
+        for key, label, _ in ADMIN_MENU_ITEMS:
+            if key.startswith("h"):
+                print(f"  {key:>3}) {label}")
+        print(f"\n  {'0':>3}) Quit")
+        print(f"{'=' * 50}")
 
-        choice = input("\n  Choose [0-9]: ").strip()
+        choice = input("\n  Choose: ").strip()
 
         if choice == "0":
             print("\n\U0001f44b Bye!")
@@ -651,7 +703,7 @@ def _non_negative_int(value: str) -> int:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Firestore recipe manager — CRUD, enhancement review, and interactive menu"
+        description="Firestore admin tool — recipe CRUD, enhancement review, user/household management"
     )
     parser.add_argument("--project", required=True, help="GCP project ID (required)")
 
@@ -689,16 +741,22 @@ def _build_parser() -> argparse.ArgumentParser:
     p_reenhance.add_argument("--output", default=None, help="Output file path (default: data/reenhanced_<id>.json)")
     p_reenhance.add_argument("--apply", action="store_true", help="Write result to Firestore (default: dry run)")
 
+    admin_commands.register_subcommands(sub)
+
     return parser
 
 
 def _set_project(project: str) -> None:
     global _project  # noqa: PLW0603
     _project = project
+    admin_commands.set_project(project)
 
 
 def _dispatch(args: argparse.Namespace) -> None:
     """Dispatch CLI subcommand to the appropriate handler."""
+    if admin_commands.dispatch(args):
+        return
+
     simple_commands: dict[str, Callable[[], None]] = {"next": get_next_recipe, "status": show_status}
     id_commands: dict[str, Callable[[str], None]] = {
         "get": get_recipe,
