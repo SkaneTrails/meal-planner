@@ -4,7 +4,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   dotSize,
-  fontFamily,
   fontSize,
   iconSize,
   spacing,
@@ -45,7 +44,7 @@ export const DayHeader = ({
   onToggleTag,
   onCollapse,
 }: DayHeaderProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <>
       <Pressable
@@ -72,7 +71,7 @@ export const DayHeader = ({
               <Text
                 style={{
                   fontSize: fontSize.base,
-                  fontFamily: fontFamily.bodyBold,
+                  fontFamily: fonts.bodyBold,
                   color: colors.white,
                 }}
               >
@@ -83,7 +82,7 @@ export const DayHeader = ({
           <Text
             style={{
               fontSize: fontSize.xl,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: isToday ? colors.primary : colors.content.headingMuted,
               letterSpacing: -0.2,
             }}
@@ -211,7 +210,7 @@ const NoteEditor = ({
   onCancel,
   onToggleTag,
 }: NoteEditorProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View style={{ marginBottom: spacing.md }}>
       <View
@@ -241,7 +240,7 @@ const NoteEditor = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.content.headingWarm,
             }}
           >

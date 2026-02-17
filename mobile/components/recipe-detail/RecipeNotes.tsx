@@ -23,7 +23,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   iconContainer,
   lineHeight,
@@ -47,7 +46,7 @@ export const RecipeNotes = ({
   t,
   onCopy,
 }: RecipeNotesProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const [text, setText] = useState('');
   const { data: notes, isLoading } = useRecipeNotes(recipeId);
   const createNote = useCreateRecipeNote();
@@ -176,7 +175,7 @@ export const RecipeNotes = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.content.body,
             minHeight: 42,
             maxHeight: 100,
@@ -206,7 +205,7 @@ export const RecipeNotes = ({
             <Text
               style={{
                 color: !text.trim() ? colors.content.placeholder : colors.white,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 fontSize: fontSize.lg,
               }}
             >
@@ -229,7 +228,7 @@ export const RecipeNotes = ({
         <Text
           style={{
             color: colors.content.placeholder,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             fontSize: fontSize.lg,
             textAlign: 'center',
             paddingVertical: spacing.md,
@@ -252,7 +251,7 @@ export const RecipeNotes = ({
           <Text
             style={{
               color: colors.content.body,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               fontSize: fontSize.lg,
               lineHeight: lineHeight.lg,
             }}
@@ -270,7 +269,7 @@ export const RecipeNotes = ({
             <Text
               style={{
                 color: colors.content.placeholder,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 fontSize: fontSize.sm,
               }}
             >

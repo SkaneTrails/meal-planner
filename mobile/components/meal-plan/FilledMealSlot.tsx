@@ -5,7 +5,6 @@ import { AnimatedPressable } from '@/components';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   spacing,
   useTheme,
@@ -42,7 +41,7 @@ export const FilledMealSlot = ({
   onRemove,
   onMealPress,
 }: FilledMealSlotProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const router = useRouter();
   const title = recipe?.title || customText || '';
   const imageUrl =
@@ -94,7 +93,7 @@ export const FilledMealSlot = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.primary,
             }}
           >
@@ -103,7 +102,7 @@ export const FilledMealSlot = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.content.tertiary,
               marginTop: spacing['2xs'],
             }}

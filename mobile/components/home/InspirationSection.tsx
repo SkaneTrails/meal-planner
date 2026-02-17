@@ -8,7 +8,6 @@ import { hapticLight } from '@/lib/haptics';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   fontWeight,
   letterSpacing,
@@ -62,7 +61,7 @@ const InspirationHeader = ({
   t: Data['t'];
   onShuffle: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View
@@ -76,7 +75,7 @@ const InspirationHeader = ({
       <Text
         style={{
           fontSize: fontSize['2xl'],
-          fontFamily: fontFamily.display,
+          fontFamily: fonts.display,
           color: colors.white,
           letterSpacing: letterSpacing.normal,
         }}
@@ -103,7 +102,7 @@ const InspirationHeader = ({
         <Text
           style={{
             color: colors.content.body,
-            fontFamily: fontFamily.bodyMedium,
+            fontFamily: fonts.bodyMedium,
             fontSize: fontSize.xs,
             marginLeft: 4,
           }}
@@ -124,7 +123,7 @@ const InspirationCard = ({
   t: Data['t'];
   onPress: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <AnimatedPressable
@@ -155,7 +154,7 @@ const InspirationCard = ({
         <Text
           style={{
             fontSize: fontSize['2xl'],
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.white,
             letterSpacing: letterSpacing.tight,
           }}
@@ -202,7 +201,7 @@ const LabelBadge = ({
   label: string;
   borderColor: string;
 }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View
@@ -218,7 +217,7 @@ const LabelBadge = ({
       <Text
         style={{
           fontSize: fontSize.xs,
-          fontFamily: fontFamily.bodyMedium,
+          fontFamily: fonts.bodyMedium,
           color: colors.glass.bright,
         }}
       >
@@ -235,14 +234,14 @@ const GetStartedFallback = ({
   t: Data['t'];
   onPress: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
       <Text
         style={{
           fontSize: fontSize['4xl'],
-          fontFamily: fontFamily.display,
+          fontFamily: fonts.display,
           color: colors.white,
           marginBottom: spacing.sm,
           letterSpacing: letterSpacing.tight,

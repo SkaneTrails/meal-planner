@@ -6,7 +6,6 @@ import {
   accentUnderlineStyle,
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   fontWeight,
   iconContainer,
@@ -25,7 +24,7 @@ interface CopyMealTabProps {
 }
 
 export const CopyMealTab = ({ state }: CopyMealTabProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const {
     t,
     bcp47,
@@ -108,7 +107,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.text.inverse,
               textAlign: 'center',
             }}

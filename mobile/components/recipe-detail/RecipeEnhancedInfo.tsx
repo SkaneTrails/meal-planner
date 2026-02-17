@@ -4,7 +4,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   iconContainer,
   lineHeight,
@@ -30,7 +29,7 @@ export const RecipeEnhancedInfo = ({
   t,
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <>
       {recipe.enhanced && !showOriginal && recipe.tips && (
@@ -79,7 +78,7 @@ export const RecipeEnhancedInfo = ({
             <Text
               style={{
                 fontSize: fontSize.xl,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.text.inverse,
                 lineHeight: lineHeight.xl,
               }}
@@ -170,7 +169,7 @@ export const RecipeEnhancedInfo = ({
                       style={{
                         flex: 1,
                         fontSize: fontSize.lg,
-                        fontFamily: fontFamily.body,
+                        fontFamily: fonts.body,
                         color: colors.content.body,
                         lineHeight: lineHeight.md,
                       }}

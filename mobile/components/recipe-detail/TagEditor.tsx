@@ -4,7 +4,6 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   letterSpacing,
   spacing,
@@ -18,7 +17,7 @@ interface TagEditorProps {
 }
 
 export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const [newTag, setNewTag] = useState('');
 
   const handleAddTag = () => {
@@ -46,7 +45,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
       <Text
         style={{
           fontSize: fontSize.lg,
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           color: colors.gray[500],
           marginBottom: spacing.sm,
           textTransform: 'uppercase',
@@ -78,7 +77,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.md,
             fontSize: fontSize.xl,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.text.inverse,
             borderWidth: 1,
             borderColor: colors.bgDark,
@@ -130,7 +129,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                 <Text
                   style={{
                     fontSize: fontSize.md,
-                    fontFamily: fontFamily.bodyMedium,
+                    fontFamily: fonts.bodyMedium,
                     color: colors.white,
                     marginRight: spacing.xs,
                   }}
@@ -160,7 +159,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
         <Text
           style={{
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.gray[400],
             fontStyle: 'italic',
           }}

@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   letterSpacing,
   spacing,
@@ -47,7 +46,7 @@ export const RecipeHero = ({
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <Animated.View
       style={{
@@ -102,7 +101,7 @@ export const RecipeHero = ({
           <Text
             style={{
               fontSize: fontSize['4xl'],
-              fontFamily: fontFamily.display,
+              fontFamily: fonts.display,
               color: colors.white,
               letterSpacing: letterSpacing.tight,
               flex: 1,

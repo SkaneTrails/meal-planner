@@ -13,7 +13,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   fontWeight,
   layout,
@@ -37,7 +36,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
@@ -137,7 +136,7 @@ export const GroceryListView = ({
           style={{
             color: colors.content.body,
             fontSize: fontSize['xl-2xl'],
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             fontWeight: fontWeight.semibold,
             textAlign: 'center',
           }}
@@ -148,7 +147,7 @@ export const GroceryListView = ({
           style={{
             color: colors.content.tertiary,
             fontSize: fontSize.xl,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             marginTop: spacing.sm,
             textAlign: 'center',
             lineHeight: lineHeight.lg,
@@ -189,7 +188,7 @@ export const GroceryListView = ({
           <Text
             style={{
               fontSize: fontSize.base,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.body,
             }}
@@ -204,7 +203,7 @@ export const GroceryListView = ({
           <Text
             style={{
               fontSize: fontSize.base,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.content.tertiary,
               marginBottom: spacing['sm-md'],
               fontStyle: 'italic',

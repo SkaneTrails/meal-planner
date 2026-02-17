@@ -8,7 +8,6 @@ import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   fontWeight,
   spacing,
@@ -48,7 +47,7 @@ export const MealCell = ({
   onPress,
   onLongPress,
 }: MealCellProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
   const hasContent = recipe || customText;
   const displayText = recipe?.title || customText;
@@ -79,7 +78,7 @@ export const MealCell = ({
         <Text
           style={{
             fontSize: fontSize.base,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             marginLeft: spacing.xs,
             color: hasContent ? colors.white : colors.glass.faint,
           }}
@@ -92,7 +91,7 @@ export const MealCell = ({
         <Text
           style={{
             fontSize: fontSize.lg,
-            fontFamily: fontFamily.bodyMedium,
+            fontFamily: fonts.bodyMedium,
             color: colors.white,
             fontWeight: fontWeight.medium,
           }}
@@ -126,7 +125,7 @@ export const DayColumn = ({
   onMealPress,
   onMealLongPress,
 }: DayColumnProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
   const dayNumber = date.getDate();
   const isToday = new Date().toDateString() === date.toDateString();
@@ -150,7 +149,7 @@ export const DayColumn = ({
         <Text
           style={{
             fontSize: fontSize.base,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: isToday ? colors.white : colors.content.secondary,
           }}
         >
@@ -159,7 +158,7 @@ export const DayColumn = ({
         <Text
           style={{
             fontSize: fontSize['xl-2xl'],
-            fontFamily: fontFamily.bodyBold,
+            fontFamily: fonts.bodyBold,
             fontWeight: fontWeight.bold,
             color: isToday ? colors.white : colors.content.headingWarm,
           }}
@@ -199,7 +198,7 @@ export const DayColumn = ({
           <Text
             style={{
               fontSize: fontSize.base,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.content.headingWarm,
             }}
             numberOfLines={2}

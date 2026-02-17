@@ -4,7 +4,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   iconContainer,
   lineHeight,
@@ -28,7 +27,7 @@ export const RecipeInstructions = ({
   t,
   onToggleStep,
 }: RecipeInstructionsProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
       <View
@@ -63,7 +62,7 @@ export const RecipeInstructions = ({
               marginLeft: 'auto',
               fontSize: fontSize.md,
               color: colors.success,
-              fontFamily: fontFamily.bodyMedium,
+              fontFamily: fonts.bodyMedium,
             }}
           >
             {t('recipe.stepsDone', {
@@ -158,7 +157,7 @@ export const RecipeInstructions = ({
                     style={{
                       color: colors.white,
                       fontSize: fontSize.lg,
-                      fontFamily: fontFamily.bodyBold,
+                      fontFamily: fonts.bodyBold,
                     }}
                   >
                     {index + 1}
@@ -169,7 +168,7 @@ export const RecipeInstructions = ({
                 style={{
                   flex: 1,
                   fontSize: fontSize.xl,
-                  fontFamily: fontFamily.body,
+                  fontFamily: fonts.body,
                   color: isCompleted
                     ? colors.timeline.completedText
                     : colors.text.inverse,

@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps, ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { GradientBackground } from '@/components/GradientBackground';
-import { fontFamily, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface FullScreenLoadingProps {
   /** GradientBackground visual mode (default: 'default') */
@@ -39,7 +39,7 @@ export const FullScreenLoading = ({
   subtitle,
   children,
 }: FullScreenLoadingProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const isMessage = Boolean(icon || title);
 
   return (
@@ -51,7 +51,7 @@ export const FullScreenLoading = ({
             <Text
               style={[
                 styles.title,
-                { color: colors.text.muted },
+                { color: colors.text.muted, fontFamily: fonts.bodySemibold },
                 icon && { marginTop: spacing.lg },
               ]}
             >
@@ -59,7 +59,12 @@ export const FullScreenLoading = ({
             </Text>
           )}
           {subtitle && (
-            <Text style={[styles.subtitle, { color: colors.text.muted }]}>
+            <Text
+              style={[
+                styles.subtitle,
+                { color: colors.text.muted, fontFamily: fonts.body },
+              ]}
+            >
               {subtitle}
             </Text>
           )}
@@ -84,12 +89,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSize['2xl'],
-    fontFamily: fontFamily.bodySemibold,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: fontSize.lg,
-    fontFamily: fontFamily.body,
     marginTop: spacing.sm,
     textAlign: 'center',
   },

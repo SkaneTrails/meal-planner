@@ -9,16 +9,10 @@ import { FullScreenLoading, GradientBackground } from '../components';
 import { GoogleLogo } from '../components/GoogleLogo';
 import { useAuth } from '../lib/hooks/use-auth';
 import { useTranslation } from '../lib/i18n';
-import {
-  borderRadius,
-  fontFamily,
-  fontSize,
-  spacing,
-  useTheme,
-} from '../lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '../lib/theme';
 
 export default function SignInScreen() {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { user, loading, error, signIn, signOut } = useAuth();
   const { t } = useTranslation();
 
@@ -53,7 +47,7 @@ export default function SignInScreen() {
             style={{
               color: colors.glass.subtle,
               fontSize: fontSize.sm,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               textDecorationLine: 'underline',
             }}
           >
@@ -79,7 +73,7 @@ export default function SignInScreen() {
         <Text
           style={{
             fontSize: 56,
-            fontFamily: fontFamily.displayBold,
+            fontFamily: fonts.displayBold,
             color: colors.text.primary,
             letterSpacing: -1,
             marginBottom: spacing.sm,
@@ -89,7 +83,7 @@ export default function SignInScreen() {
         </Text>
         <Text
           style={{
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.text.secondary,
             textAlign: 'center',
             fontSize: fontSize.xl,
@@ -117,7 +111,7 @@ export default function SignInScreen() {
                 color: colors.error,
                 textAlign: 'center',
                 fontSize: fontSize.lg,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
               }}
             >
               {(() => {
@@ -152,7 +146,7 @@ export default function SignInScreen() {
           <Text
             style={{
               color: colors.text.inverse,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               fontSize: fontSize.lg,
               marginLeft: spacing.md,
             }}
@@ -175,7 +169,7 @@ export default function SignInScreen() {
           style={{
             color: colors.glass.bright,
             fontSize: fontSize.sm,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             textAlign: 'center',
           }}
         >
@@ -194,7 +188,7 @@ export default function SignInScreen() {
             style={{
               color: 'rgba(255, 255, 255, 0.7)',
               fontSize: fontSize.sm,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               textDecorationLine: 'underline',
             }}
           >

@@ -8,7 +8,6 @@ import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   fontWeight,
   shadows,
@@ -64,7 +63,7 @@ export const GroceryItemRow = ({
   isActive,
   showReorder,
 }: GroceryItemRowProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 
@@ -136,7 +135,7 @@ export const GroceryItemRow = ({
           <Text
             style={{
               fontSize: fontSize.xl,
-              fontFamily: fontFamily.bodyMedium,
+              fontFamily: fonts.bodyMedium,
               fontWeight: fontWeight.medium,
               textDecorationLine: checked ? 'line-through' : 'none',
               color: checked ? colors.content.subtitle : colors.content.body,
@@ -148,7 +147,7 @@ export const GroceryItemRow = ({
             <Text
               style={{
                 fontSize: fontSize.base,
-                fontFamily: fontFamily.body,
+                fontFamily: fonts.body,
                 color: colors.content.tertiary,
                 marginTop: spacing['2xs'],
               }}

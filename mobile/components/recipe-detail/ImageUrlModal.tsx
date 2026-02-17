@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontFamily,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface ImageUrlModalProps {
   visible: boolean;
@@ -24,7 +18,7 @@ export const ImageUrlModal = ({
   onClose,
   onSave,
 }: ImageUrlModalProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const [imageUrlInput, setImageUrlInput] = useState(initialUrl);
 
   useEffect(() => {
@@ -61,7 +55,7 @@ export const ImageUrlModal = ({
           <Text
             style={{
               fontSize: fontSize['2xl'],
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.text.inverse,
               marginBottom: spacing.sm,
             }}
@@ -71,7 +65,7 @@ export const ImageUrlModal = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.gray[500],
               marginBottom: spacing.lg,
             }}
@@ -92,7 +86,7 @@ export const ImageUrlModal = ({
               borderRadius: borderRadius.sm,
               padding: spacing.md,
               fontSize: fontSize.xl,
-              fontFamily: fontFamily.body,
+              fontFamily: fonts.body,
               color: colors.text.inverse,
               marginBottom: spacing.lg,
             }}
@@ -116,7 +110,7 @@ export const ImageUrlModal = ({
               <Text
                 style={{
                   fontSize: fontSize.xl,
-                  fontFamily: fontFamily.bodyMedium,
+                  fontFamily: fonts.bodyMedium,
                   color: colors.gray[500],
                 }}
               >
@@ -140,7 +134,7 @@ export const ImageUrlModal = ({
               <Text
                 style={{
                   fontSize: fontSize.xl,
-                  fontFamily: fontFamily.bodyMedium,
+                  fontFamily: fonts.bodyMedium,
                   color: colors.white,
                 }}
               >

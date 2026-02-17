@@ -1,18 +1,12 @@
 import { Text, View } from 'react-native';
-import {
-  borderRadius,
-  fontFamily,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface RecipeTagsProps {
   tags: string[];
 }
 
 export const RecipeTags = ({ tags }: RecipeTagsProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   if (tags.length === 0) return null;
 
   return (
@@ -37,7 +31,7 @@ export const RecipeTags = ({ tags }: RecipeTagsProps) => {
           <Text
             style={{
               fontSize: fontSize.base,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.white,
             }}
           >

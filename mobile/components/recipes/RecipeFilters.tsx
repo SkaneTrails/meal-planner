@@ -11,7 +11,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   dotSize,
-  fontFamily,
   fontSize,
   spacing,
   useTheme,
@@ -39,7 +38,7 @@ export const SearchBar = ({
   searchInputRef,
   t,
 }: SearchBarProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}>
@@ -85,7 +84,7 @@ export const SearchBar = ({
               style={{
                 fontSize: fontSize.xl,
                 color: colors.button.primary,
-                fontFamily: fontFamily.bodyMedium,
+                fontFamily: fonts.bodyMedium,
               }}
             >
               {t('common.cancel')}
@@ -122,7 +121,7 @@ export const FilterChips = ({
   onSortPress,
   t,
 }: FilterChipsProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   const dietChips: {
     diet: DietLabel;
@@ -183,7 +182,7 @@ export const FilterChips = ({
             <Text
               style={{
                 fontSize: fontSize.md,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 color:
                   libraryScope === 'all' ? colors.white : colors.content.body,
               }}
@@ -208,7 +207,7 @@ export const FilterChips = ({
             <Text
               style={{
                 fontSize: fontSize.md,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 color:
                   libraryScope === 'mine' ? colors.white : colors.content.body,
               }}
@@ -240,7 +239,7 @@ export const FilterChips = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color:
                 !dietFilter && !showFavoritesOnly
                   ? colors.white
@@ -285,7 +284,7 @@ export const FilterChips = ({
             <Text
               style={{
                 fontSize: fontSize.md,
-                fontFamily: fontFamily.bodySemibold,
+                fontFamily: fonts.bodySemibold,
                 color: dietFilter === diet ? colors.white : colors.content.body,
               }}
             >
@@ -326,7 +325,7 @@ export const FilterChips = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: showFavoritesOnly ? colors.white : colors.content.body,
             }}
           >
@@ -362,7 +361,7 @@ export const FilterChips = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.content.body,
             }}
           >

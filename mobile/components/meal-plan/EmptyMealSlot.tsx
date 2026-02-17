@@ -6,7 +6,6 @@ import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
   circleStyle,
-  fontFamily,
   fontSize,
   spacing,
   useTheme,
@@ -32,7 +31,7 @@ export const EmptyMealSlot = ({
   t,
   onPress,
 }: EmptyMealSlotProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -62,7 +61,7 @@ export const EmptyMealSlot = ({
         <Text
           style={{
             fontSize: fontSize.md,
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.strong,
           }}
         >
@@ -99,7 +98,7 @@ export const EmptyMealSlot = ({
           <Text
             style={{
               fontSize: fontSize.base,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.white,
             }}
           >

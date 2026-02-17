@@ -3,7 +3,6 @@ import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   letterSpacing,
   shadows,
@@ -24,13 +23,13 @@ export const ReviewVersionToggle = ({
   onSelectTab,
   t,
 }: ReviewVersionToggleProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View style={{ marginBottom: spacing.xl }}>
       <Text
         style={{
           fontSize: fontSize.lg,
-          fontFamily: fontFamily.bodySemibold,
+          fontFamily: fonts.bodySemibold,
           color: colors.gray[500],
           marginBottom: spacing.sm,
           textTransform: 'uppercase',
@@ -62,7 +61,7 @@ export const ReviewVersionToggle = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodyMedium,
+              fontFamily: fonts.bodyMedium,
               color:
                 selectedTab === 'original' ? colors.white : colors.text.inverse,
             }}
@@ -94,7 +93,7 @@ export const ReviewVersionToggle = ({
           <Text
             style={{
               fontSize: fontSize.lg,
-              fontFamily: fontFamily.bodyMedium,
+              fontFamily: fonts.bodyMedium,
               color:
                 selectedTab === 'enhanced' ? colors.white : colors.text.inverse,
             }}

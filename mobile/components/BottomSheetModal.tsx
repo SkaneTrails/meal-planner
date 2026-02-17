@@ -5,7 +5,6 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import {
   borderRadius,
-  fontFamily,
   fontSize,
   fontWeight,
   spacing,
@@ -47,7 +46,7 @@ export const BottomSheetModal = ({
   scrollable = true,
   testID,
 }: BottomSheetModalProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const backgroundColor = backgroundColorProp ?? colors.white;
   const backdropContent = (
     <View
@@ -87,7 +86,7 @@ export const BottomSheetModal = ({
         <Text
           style={{
             fontSize: fontSize['3xl'],
-            fontFamily: fontFamily.bodyBold,
+            fontFamily: fonts.bodyBold,
             fontWeight: fontWeight.bold,
             color: colors.content.headingWarm,
             flex: 1,
@@ -111,7 +110,7 @@ export const BottomSheetModal = ({
         <Text
           style={{
             fontSize: fontSize.md,
-            fontFamily: fontFamily.body,
+            fontFamily: fonts.body,
             color: colors.gray[500],
             paddingHorizontal: spacing.xl,
             marginBottom: spacing.md,

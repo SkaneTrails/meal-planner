@@ -6,13 +6,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontFamily,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface EnhancementReviewBannerProps {
   t: TFunction;
@@ -27,7 +21,7 @@ export const EnhancementReviewBanner = ({
   onApprove,
   onReject,
 }: EnhancementReviewBannerProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -55,7 +49,7 @@ export const EnhancementReviewBanner = ({
         <Text
           style={{
             fontSize: fontSize.xl,
-            fontFamily: fontFamily.bodySemibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.ai.primary,
             flex: 1,
           }}
@@ -67,7 +61,7 @@ export const EnhancementReviewBanner = ({
       <Text
         style={{
           fontSize: fontSize.md,
-          fontFamily: fontFamily.body,
+          fontFamily: fonts.body,
           color: colors.content.tertiary,
           marginBottom: spacing.lg,
         }}
@@ -99,7 +93,7 @@ export const EnhancementReviewBanner = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.ai.primary,
             }}
           >
@@ -132,7 +126,7 @@ export const EnhancementReviewBanner = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodySemibold,
+              fontFamily: fonts.bodySemibold,
               color: colors.content.body,
             }}
           >
