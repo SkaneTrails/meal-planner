@@ -2,10 +2,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, type ScrollView } from 'react-native';
 import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
-import {
-  DAY_SECTION_HEIGHT,
-  showConfirmDelete,
-} from '@/components/meal-plan/meal-plan-constants';
+import { showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
 import { showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
@@ -27,13 +24,17 @@ export const useMealPlanActions = () => {
   const { weekStart, settings } = useSettings();
   const { saveSelections } = useGroceryState();
 
-  const MEAL_TYPES: MealTypeOption[] = useMemo(
-    () => [
+  const MEAL_TYPES: MealTypeOption[] = useMemo(() => {
+    const types: MealTypeOption[] = [];
+    if (settings?.includeBreakfast) {
+      types.push({ type: 'breakfast', label: t('labels.mealTime.breakfast') });
+    }
+    types.push(
       { type: 'lunch', label: t('labels.mealTime.lunch') },
       { type: 'dinner', label: t('labels.mealTime.dinner') },
-    ],
-    [t],
-  );
+    );
+    return types;
+  }, [t, settings?.includeBreakfast]);
 
   const DEFAULT_NOTE_SUGGESTIONS = useMemo(
     () => [
@@ -63,7 +64,11 @@ export const useMealPlanActions = () => {
   const [showJumpButton, setShowJumpButton] = useState(false);
   const [editingNoteDate, setEditingNoteDate] = useState<string | null>(null);
   const [noteText, setNoteText] = useState('');
+  const [expandedPastDays, setExpandedPastDays] = useState<Set<string>>(
+    new Set(),
+  );
   const scrollViewRef = useRef<ScrollView>(null);
+  const todayY = useRef(0);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
@@ -129,12 +134,35 @@ export const useMealPlanActions = () => {
     [mealPlan, recipeMap],
   );
 
+  const countMealsForDate = useCallback(
+    (date: Date): number => {
+      if (!mealPlan?.meals) return 0;
+      const dateStr = formatDateLocal(date);
+      return MEAL_TYPES.reduce((count, { type }) => {
+        const key = `${dateStr}_${type}`;
+        return mealPlan.meals[key] ? count + 1 : count;
+      }, 0);
+    },
+    [mealPlan, MEAL_TYPES],
+  );
+
+  const togglePastDay = useCallback((dateStr: string) => {
+    setExpandedPastDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(dateStr)) {
+        next.delete(dateStr);
+      } else {
+        next.add(dateStr);
+      }
+      return next;
+    });
+  }, []);
+
   const handleScroll = useCallback(
     (scrollY: number) => {
       if (todayIndex < 0) return;
-      const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
-      const tolerance = DAY_SECTION_HEIGHT / 2;
-      const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
+      const tolerance = 100;
+      const isNearToday = Math.abs(scrollY - todayY.current) < tolerance;
 
       if (!isNearToday && !showJumpButton) {
         setShowJumpButton(true);
@@ -158,7 +186,7 @@ export const useMealPlanActions = () => {
       setWeekOffset(0);
     } else if (todayIndex >= 0 && scrollViewRef.current) {
       scrollViewRef.current.scrollTo({
-        y: todayIndex * DAY_SECTION_HEIGHT,
+        y: todayY.current,
         animated: true,
       });
     }
@@ -168,7 +196,7 @@ export const useMealPlanActions = () => {
     if (todayIndex >= 0 && scrollViewRef.current) {
       setTimeout(() => {
         scrollViewRef.current?.scrollTo({
-          y: todayIndex * DAY_SECTION_HEIGHT,
+          y: todayY.current,
           animated: false,
         });
       }, 100);
@@ -428,6 +456,7 @@ export const useMealPlanActions = () => {
     noteText,
     setNoteText,
     scrollViewRef,
+    todayY,
     jumpButtonOpacity,
     swipeTranslateX,
     panResponder,
@@ -449,5 +478,8 @@ export const useMealPlanActions = () => {
     getExtrasRecipes,
     handleAddExtra,
     handleRemoveExtra,
+    expandedPastDays,
+    togglePastDay,
+    countMealsForDate,
   };
 };

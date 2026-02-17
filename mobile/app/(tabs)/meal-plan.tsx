@@ -6,10 +6,10 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
-import { GradientBackground, PrimaryButton } from '@/components';
+import { GradientBackground } from '@/components';
+import { CollapsedDayRow } from '@/components/meal-plan/CollapsedDayRow';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
 import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
@@ -21,13 +21,13 @@ import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 import {
   borderRadius,
   colors,
-  fontFamily,
-  fontSize,
+  iconContainer,
+  iconSize,
   layout,
   shadows,
   spacing,
 } from '@/lib/theme';
-import { formatDateLocal } from '@/lib/utils/dateFormatter';
+import { formatDateLocal, isPastDate } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
   const {
@@ -50,6 +50,7 @@ export default function MealPlanScreen() {
     noteText,
     setNoteText,
     scrollViewRef,
+    todayY,
     jumpButtonOpacity,
     swipeTranslateX,
     panResponder,
@@ -71,6 +72,9 @@ export default function MealPlanScreen() {
     getExtrasRecipes,
     handleAddExtra,
     handleRemoveExtra,
+    expandedPastDays,
+    togglePastDay,
+    countMealsForDate,
   } = useMealPlanActions();
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -131,12 +135,34 @@ export default function MealPlanScreen() {
                 const isToday =
                   date.toDateString() === new Date().toDateString();
                 const dateStr = formatDateLocal(date);
+                const isPast = !isToday && isPastDate(date);
+                const isExpanded = expandedPastDays.has(dateStr);
                 const note = getNoteForDate(date);
                 const isEditing = editingNoteDate === dateStr;
+
+                if (isPast && !isExpanded) {
+                  return (
+                    <CollapsedDayRow
+                      key={date.toISOString()}
+                      date={date}
+                      mealCount={countMealsForDate(date)}
+                      language={language}
+                      t={t}
+                      onExpand={() => togglePastDay(dateStr)}
+                    />
+                  );
+                }
 
                 return (
                   <View
                     key={date.toISOString()}
+                    onLayout={
+                      isToday
+                        ? (e) => {
+                            todayY.current = e.nativeEvent.layout.y;
+                          }
+                        : undefined
+                    }
                     style={{
                       marginBottom: spacing.lg,
                       backgroundColor: isToday
@@ -144,11 +170,12 @@ export default function MealPlanScreen() {
                         : colors.glass.solid,
                       borderRadius: borderRadius.lg,
                       padding: spacing['md-lg'],
-                      borderWidth: 1,
+                      borderWidth: isToday ? 2 : 1,
                       borderColor: isToday
-                        ? colors.surface.active
+                        ? colors.ai.primary
                         : colors.glass.border,
                       boxShadow: shadows.cardRaised.boxShadow,
+                      opacity: isPast ? 0.6 : 1,
                     }}
                   >
                     <DayHeader
@@ -165,6 +192,9 @@ export default function MealPlanScreen() {
                       onSaveNote={handleSaveNote}
                       onCancelEdit={handleCancelEditNote}
                       onToggleTag={handleAddTag}
+                      onCollapse={
+                        isPast ? () => togglePastDay(dateStr) : undefined
+                      }
                     />
 
                     {MEAL_TYPES.map(({ type, label }) => {
@@ -239,26 +269,61 @@ export default function MealPlanScreen() {
                 onAddExtra={handleAddExtra}
                 onRemoveExtra={handleRemoveExtra}
               />
-
-              {/* Skapa lista button at end of list */}
-              <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
-                <PrimaryButton
-                  onPress={openGroceryModal}
-                  icon="cart-outline"
-                  label={t('mealPlan.createList')}
-                />
-              </View>
             </ScrollView>
           </Animated.View>
         </View>
 
-        {/* Floating Jump to Today button - refined: smaller, more translucent */}
+        {/* Floating Grocery List FAB - always visible */}
+        <View
+          style={{
+            position: 'absolute',
+            bottom: layout.tabBar.overlayBottomOffset + spacing.xl,
+            right: spacing.xl,
+          }}
+        >
+          <Pressable
+            onPress={openGroceryModal}
+            style={{
+              width: iconContainer.xl,
+              height: iconContainer.xl,
+              borderRadius: borderRadius.full,
+              backgroundColor: colors.surface.overlay,
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: shadows.float.boxShadow,
+            }}
+          >
+            <Ionicons name="cart" size={iconSize.xl} color={colors.white} />
+            {/* Small + badge */}
+            <View
+              style={{
+                position: 'absolute',
+                top: -2,
+                right: -2,
+                width: 18,
+                height: 18,
+                borderRadius: borderRadius.full,
+                backgroundColor: colors.accent,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Ionicons name="add" size={12} color={colors.white} />
+            </View>
+          </Pressable>
+        </View>
+
+        {/* Floating Jump to Today - icon-only circle */}
         {(showJumpButton || weekOffset !== 0) && (
           <Animated.View
             style={{
               position: 'absolute',
-              bottom: 110,
-              alignSelf: 'center',
+              bottom:
+                layout.tabBar.overlayBottomOffset +
+                spacing.xl +
+                iconContainer.xl +
+                spacing.md,
+              right: spacing.xl,
               opacity: weekOffset !== 0 ? 1 : jumpButtonOpacity,
               transform: [
                 {
@@ -276,26 +341,16 @@ export default function MealPlanScreen() {
             <Pressable
               onPress={jumpToToday}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: colors.surface.overlay,
-                paddingHorizontal: spacing.lg,
-                paddingVertical: spacing['sm-md'],
+                width: iconContainer.md,
+                height: iconContainer.md,
                 borderRadius: borderRadius.full,
+                backgroundColor: colors.surface.overlay,
+                alignItems: 'center',
+                justifyContent: 'center',
                 boxShadow: shadows.float.boxShadow,
               }}
             >
-              <Ionicons name="today" size={16} color={colors.white} />
-              <Text
-                style={{
-                  marginLeft: spacing['xs-sm'],
-                  fontSize: fontSize.md,
-                  fontFamily: fontFamily.bodySemibold,
-                  color: colors.white,
-                }}
-              >
-                {t('mealPlan.jumpToToday')}
-              </Text>
+              <Ionicons name="today" size={iconSize.md} color={colors.white} />
             </Pressable>
           </Animated.View>
         )}

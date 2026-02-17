@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
   Pressable,
+  Switch,
   Text,
   TextInput,
   View,
@@ -32,6 +33,7 @@ interface GeneralSectionProps {
   onCancelEditName: () => void;
   isRenamePending: boolean;
   onUpdateServings: (servings: number) => void;
+  onUpdateIncludeBreakfast: (enabled: boolean) => void;
 }
 
 export const GeneralSection = ({
@@ -46,6 +48,7 @@ export const GeneralSection = ({
   onCancelEditName,
   isRenamePending,
   onUpdateServings,
+  onUpdateIncludeBreakfast,
 }: GeneralSectionProps) => {
   const { t } = useTranslation();
 
@@ -173,6 +176,45 @@ export const GeneralSection = ({
           onIncrement={() => onUpdateServings(settings.default_servings + 1)}
           decrementDisabled={!canEdit || settings.default_servings <= 1}
           incrementDisabled={!canEdit}
+        />
+      </View>
+
+      {/* Include Breakfast */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: spacing.lg,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              color: colors.content.strong,
+            }}
+          >
+            {t('householdSettings.general.includeBreakfast')}
+          </Text>
+          <Text
+            style={{
+              fontSize: fontSize.xs,
+              color: colors.content.subtitle,
+              marginTop: spacing['2xs'],
+            }}
+          >
+            {t('householdSettings.general.includeBreakfastDesc')}
+          </Text>
+        </View>
+        <Switch
+          value={settings.include_breakfast ?? false}
+          onValueChange={onUpdateIncludeBreakfast}
+          disabled={!canEdit}
+          trackColor={{
+            false: colors.border,
+            true: colors.primary,
+          }}
         />
       </View>
     </View>

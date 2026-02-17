@@ -7,7 +7,7 @@
 
 import type { ColorTokens } from './colors';
 import { colors } from './colors';
-import { borderRadius, shadows, spacing } from './layout';
+import { borderRadius, spacing } from './layout';
 import { fontSize, fontWeight } from './typography';
 
 /** Build style presets for a given color palette. */

@@ -316,6 +316,8 @@ const sv: Translations = {
     nextWeek: 'Nästa vecka',
     createGroceryList: 'Skapa inköpslista ({{count}} måltider)',
     addNote: '+ anteckning',
+    mealsPlanned: '{{count}} måltider',
+    noMeals: 'Inga måltider',
     dayLabels: {
       office: 'Kontor',
       home: 'Hemma',
@@ -643,6 +645,8 @@ const sv: Translations = {
       nameUpdated: 'Hushållets namn har uppdaterats',
 
       defaultServings: 'Standardportioner',
+      includeBreakfast: 'Inkludera frukost',
+      includeBreakfastDesc: 'Visa frukostplats i veckomenyn',
     },
     dietary: {
       title: 'Kostpreferenser',

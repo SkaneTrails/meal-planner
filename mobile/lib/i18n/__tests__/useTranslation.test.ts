@@ -18,7 +18,7 @@ describe('useTranslation', () => {
   beforeEach(() => {
     // Default: English
     mockUseSettings.mockReturnValue({
-      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [] },
+      settings: { language: 'en', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [], includeBreakfast: false },
       weekStart: 'monday',
       isLoading: false,
       needsLanguagePrompt: false,
@@ -70,7 +70,7 @@ describe('useTranslation', () => {
 
   it('returns Swedish strings when language is sv', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [] },
+      settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [], includeBreakfast: false },
       weekStart: 'monday',
       isLoading: false,
       needsLanguagePrompt: false,
@@ -91,7 +91,7 @@ describe('useTranslation', () => {
 
   it('returns Italian strings when language is it', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [] },
+      settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [], includeBreakfast: false },
       weekStart: 'monday',
       isLoading: false,
       needsLanguagePrompt: false,
@@ -112,7 +112,7 @@ describe('useTranslation', () => {
 
   it('falls back to English for an unknown language', () => {
     mockUseSettings.mockReturnValue({
-      settings: { language: 'xx' as any, itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [] },
+      settings: { language: 'xx' as any, itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [], includeBreakfast: false },
       weekStart: 'monday',
       isLoading: false,
       needsLanguagePrompt: false,

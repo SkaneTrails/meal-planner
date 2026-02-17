@@ -115,6 +115,11 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     setHasChanges(true);
   };
 
+  const updateIncludeBreakfast = (enabled: boolean) => {
+    setSettings((prev) => ({ ...prev, include_breakfast: enabled }));
+    setHasChanges(true);
+  };
+
   const addNoteSuggestion = (suggestion: string) => {
     const trimmed = suggestion.trim();
     if (!trimmed) return;
@@ -227,6 +232,7 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     updateServings,
     toggleEquipment,
     updateAiEnabled,
+    updateIncludeBreakfast,
     addNoteSuggestion,
     removeNoteSuggestion,
     household,
