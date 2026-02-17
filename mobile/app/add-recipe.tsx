@@ -15,9 +15,9 @@ import {
   GradientBackground,
   PrimaryButton,
 } from '@/components';
-import { EnhancementSummaryModal } from '@/components/add-recipe/EnhancementSummaryModal';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { ChipPicker } from '@/components/ChipPicker';
+import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import {
   DIET_OPTIONS,
   MEAL_OPTIONS,
@@ -418,7 +418,23 @@ export default function AddRecipeScreen() {
           </View>
         </ScrollView>
 
-        <EnhancementSummaryModal actions={actions} />
+        <EnhancementReviewModal
+          visible={actions.showSummaryModal}
+          title={actions.importedRecipe?.title ?? ''}
+          headerLabel={t('addRecipe.enhanced.title')}
+          changesMade={actions.importedRecipe?.changes_made ?? []}
+          changesLabel={t('addRecipe.enhanced.changesLabel')}
+          noChangesLabel={t('addRecipe.enhanced.noChangesListed')}
+          rejectLabel={t('addRecipe.enhanced.useOriginal')}
+          approveLabel={t('addRecipe.enhanced.keepAI')}
+          isReviewPending={actions.isReviewPending}
+          onReview={(action) =>
+            action === 'approve'
+              ? actions.handleAcceptEnhancement()
+              : actions.handleRejectEnhancement()
+          }
+          onRequestClose={() => actions.setShowSummaryModal(false)}
+        />
         <EnhancingOverlay
           visible={isPending && enhanceWithAI}
           message={t('addRecipe.importingEnhancing')}

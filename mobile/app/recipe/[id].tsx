@@ -7,9 +7,9 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { EnhancingOverlay, GradientBackground } from '@/components';
+import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
-import { EnhancementReviewModal } from '@/components/recipe-detail/EnhancementReviewModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
 import { PlanMealModal } from '@/components/recipe-detail/PlanMealModal';
 import { RecipeContent } from '@/components/recipe-detail/RecipeContent';
@@ -302,9 +302,14 @@ export default function RecipeDetailScreen() {
 
       <EnhancementReviewModal
         visible={showEnhancementReviewModal}
-        recipe={recipe}
+        title={recipe.title}
+        headerLabel={t('recipe.enhanceSuccess')}
+        changesMade={recipe.changes_made ?? []}
+        changesLabel={t('addRecipe.enhanced.changesLabel')}
+        noChangesLabel={t('addRecipe.enhanced.noChangesListed')}
+        rejectLabel={t('recipe.rejectEnhancement')}
+        approveLabel={t('recipe.approveEnhancement')}
         isReviewPending={isReviewingEnhancement}
-        t={t}
         onReview={handleReviewEnhancement}
       />
 
