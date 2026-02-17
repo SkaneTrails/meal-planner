@@ -8,6 +8,7 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
+  lineHeight,
   shadows,
   spacing,
   typography,
@@ -74,7 +75,7 @@ export const RecipeEnhancedInfo = ({
               fontSize: fontSize.xl,
               fontFamily: fontFamily.body,
               color: colors.text.inverse,
-              lineHeight: 24,
+              lineHeight: lineHeight.xl,
             }}
           >
             {recipe.tips}
@@ -165,7 +166,7 @@ export const RecipeEnhancedInfo = ({
                       fontSize: fontSize.lg,
                       fontFamily: fontFamily.body,
                       color: colors.content.body,
-                      lineHeight: 20,
+                      lineHeight: lineHeight.md,
                     }}
                   >
                     {change}

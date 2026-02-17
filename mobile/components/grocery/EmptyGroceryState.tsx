@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { colors, fontFamily } from '@/lib/theme';
+import { colors, fontFamily, fontSize, lineHeight, spacing } from '@/lib/theme';
 
 export const EmptyGroceryState = () => {
   const { t } = useTranslation();
@@ -11,13 +11,13 @@ export const EmptyGroceryState = () => {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 32,
+        padding: spacing['3xl'],
       }}
     >
       <Text
         style={{
           color: colors.content.body,
-          fontSize: 18,
+          fontSize: fontSize['xl-2xl'],
           fontFamily: fontFamily.bodySemibold,
           textAlign: 'center',
         }}
@@ -27,10 +27,10 @@ export const EmptyGroceryState = () => {
       <Text
         style={{
           color: colors.content.tertiary,
-          fontSize: 15,
-          marginTop: 8,
+          fontSize: fontSize.xl,
+          marginTop: spacing.sm,
           textAlign: 'center',
-          lineHeight: 22,
+          lineHeight: lineHeight.lg,
           maxWidth: 280,
         }}
       >

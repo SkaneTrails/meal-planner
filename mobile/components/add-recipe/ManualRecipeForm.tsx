@@ -17,6 +17,7 @@ import {
   fontSize,
   fontWeight,
   letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -97,7 +98,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
               style={{
                 color: colors.text.secondary,
                 fontSize: fontSize.lg,
-                lineHeight: 22,
+                lineHeight: lineHeight.lg,
               }}
             >
               {t('addRecipe.manualDescription')}
@@ -246,7 +247,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                   marginLeft: spacing.sm,
                   color: colors.text.inverse,
                   fontSize: fontSize.md,
-                  fontWeight: '500',
+                  fontWeight: fontWeight.medium,
                 }}
               >
                 {selectedImage || imageUrl

@@ -191,11 +191,11 @@ export const GroceryListSkeleton = ({
         width="100%"
         height={6}
         borderRadius={3}
-        style={{ marginTop: 16 }}
+        style={{ marginTop: spacing.lg }}
       />
 
       {/* List items */}
-      <View style={{ marginTop: 20 }}>
+      <View style={{ marginTop: spacing.xl }}>
         {Array.from({ length: count }).map((_, i) => (
           <GroceryItemSkeleton key={i} />
         ))}
@@ -223,39 +223,39 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 8,
+    padding: spacing.sm,
   },
   statCard: {
     flex: 1,
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
-    padding: 12,
+    padding: spacing.md,
   },
   homeContainer: {
     flex: 1,
   },
   statsRow: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    gap: 8,
-    marginTop: -8,
+    paddingHorizontal: spacing.lg,
+    gap: spacing.sm,
+    marginTop: -spacing.sm,
   },
   section: {
-    paddingHorizontal: 16,
-    marginTop: 16,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   groceryContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.xl,
   },
   groceryStats: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
-    padding: 16,
+    padding: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -265,10 +265,10 @@ const styles = StyleSheet.create({
     padding: spacing['md-lg'],
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   groceryItemContent: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: spacing.md,
   },
 });

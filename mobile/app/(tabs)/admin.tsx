@@ -157,8 +157,8 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
   return (
     <View
       style={{
-        paddingHorizontal: 24,
-        paddingTop: 60,
+        paddingHorizontal: spacing['2xl'],
+        paddingTop: layout.screenPaddingTop,
         paddingBottom: spacing.md,
         flexDirection: 'row',
         alignItems: 'center',

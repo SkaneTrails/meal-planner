@@ -16,6 +16,7 @@ import {
   fontFamily,
   fontSize,
   layout,
+  shadows,
   spacing,
 } from '@/lib/theme';
 
@@ -126,14 +127,11 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => (
           style={({ pressed }) => ({
             flex: 1,
             paddingVertical: spacing['sm-md'],
-            borderRadius: 10,
+            borderRadius: borderRadius['sm-md'],
             backgroundColor: activeTab === tab ? colors.white : 'transparent',
             alignItems: 'center',
             transform: [{ scale: pressed ? 0.98 : 1 }],
-            boxShadow:
-              activeTab === tab
-                ? '1px 1px 4px 0px rgba(0, 0, 0, 0.08)'
-                : '0px 0px 0px 0px transparent',
+            ...(activeTab === tab ? shadows.card : shadows.none),
           })}
         >
           <Text

@@ -45,8 +45,8 @@ export default function SettingsScreen() {
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
-            padding: 20,
-            paddingTop: 44,
+            padding: spacing.xl,
+            paddingTop: layout.screenPaddingTop,
             paddingBottom: layout.tabBar.contentBottomPadding,
           }}
           keyboardShouldPersistTaps="handled"

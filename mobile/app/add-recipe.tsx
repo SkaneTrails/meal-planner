@@ -33,6 +33,7 @@ import {
   iconContainer,
   layout,
   letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -127,7 +128,7 @@ export default function AddRecipeScreen() {
               style={{
                 color: colors.text.secondary,
                 fontSize: fontSize.lg,
-                lineHeight: 22,
+                lineHeight: lineHeight.lg,
               }}
             >
               {t('addRecipe.description')}
@@ -320,7 +321,7 @@ export default function AddRecipeScreen() {
               style={{
                 color: colors.content.body,
                 fontSize: fontSize.md,
-                fontWeight: '500',
+                fontWeight: fontWeight.medium,
                 marginHorizontal: spacing.lg,
               }}
             >

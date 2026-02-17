@@ -57,7 +57,7 @@ export const AccountSection = ({
           >
             <Text
               style={{
-                fontSize: 20,
+                fontSize: fontSize['3xl'],
                 fontWeight: fontWeight.semibold,
                 color: colors.content.body,
               }}

@@ -8,6 +8,7 @@ import {
   fontFamily,
   fontSize,
   iconContainer,
+  lineHeight,
   spacing,
   typography,
 } from '@/lib/theme';
@@ -168,7 +169,7 @@ export const RecipeInstructions = ({
                 color: isCompleted
                   ? colors.timeline.completedText
                   : colors.text.inverse,
-                lineHeight: 24,
+                lineHeight: lineHeight.xl,
                 textDecorationLine: isCompleted ? 'line-through' : 'none',
               }}
             >

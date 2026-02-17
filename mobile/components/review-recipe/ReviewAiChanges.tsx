@@ -6,6 +6,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -67,7 +68,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
               flex: 1,
               fontSize: fontSize.md,
               color: colors.text.inverse,
-              lineHeight: 20,
+              lineHeight: lineHeight.md,
             }}
           >
             {change}

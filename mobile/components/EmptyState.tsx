@@ -8,6 +8,7 @@ import {
   fontSize,
   iconContainer,
   letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -78,7 +79,7 @@ const EmptyState = ({
           fontFamily: fontFamily.body,
           marginTop: spacing.sm,
           textAlign: 'center',
-          lineHeight: 22,
+          lineHeight: lineHeight.lg,
         }}
       >
         {subtitle}

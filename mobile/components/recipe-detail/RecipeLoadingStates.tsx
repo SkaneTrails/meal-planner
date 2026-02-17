@@ -7,6 +7,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  shadows,
   spacing,
 } from '@/lib/theme';
 
@@ -27,7 +28,7 @@ export const RecipeLoading = ({ structured = true }: RecipeLoadingProps) => (
         borderRadius: borderRadius.md,
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.08)',
+        ...shadows.lg,
       }}
     >
       <BouncingLoader size={12} />
@@ -59,7 +60,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.lg,
-        boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.08)',
+        ...shadows.lg,
       }}
     >
       <Ionicons
@@ -93,7 +94,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => (
       onPress={onGoBack}
       style={({ pressed }) => ({
         marginTop: spacing.xl,
-        paddingHorizontal: 24,
+        paddingHorizontal: spacing['2xl'],
         paddingVertical: spacing.md,
         backgroundColor: pressed
           ? colors.button.primaryDivider

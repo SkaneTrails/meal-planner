@@ -147,7 +147,13 @@ const Header = ({
   t: TFn;
   onSettings: () => void;
 }) => (
-  <View style={{ paddingHorizontal: 20, paddingTop: 44, paddingBottom: 16 }}>
+  <View
+    style={{
+      paddingHorizontal: spacing.xl,
+      paddingTop: layout.screenPaddingTop,
+      paddingBottom: spacing.lg,
+    }}
+  >
     <View
       style={{
         flexDirection: 'row',
@@ -169,7 +175,7 @@ const Header = ({
         style={{
           width: 44,
           height: 44,
-          borderRadius: 22,
+          borderRadius: borderRadius['lg-xl'],
           backgroundColor: colors.border,
           alignItems: 'center',
           justifyContent: 'center',
@@ -183,7 +189,7 @@ const Header = ({
 );
 
 const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => (
-  <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+  <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
     <PrimaryButton
       onPress={onPress}
       icon="add-circle-outline"
@@ -203,13 +209,13 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => (
-  <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+  <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
     <Text
       style={{
         fontSize: fontSize.xl,
         fontFamily: fontFamily.display,
         color: colors.white,
-        marginBottom: 8,
+        marginBottom: spacing.sm,
         letterSpacing: letterSpacing.normal,
       }}
     >
@@ -250,7 +256,7 @@ const NextMealCard = ({
               style={{
                 width: 7,
                 height: 7,
-                borderRadius: 4,
+                borderRadius: borderRadius['2xs'],
                 backgroundColor: colors.ai.primary,
                 marginRight: spacing['xs-sm'],
               }}

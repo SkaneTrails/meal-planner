@@ -8,6 +8,7 @@ import {
   colors,
   fontSize,
   fontWeight,
+  shadows,
   spacing,
 } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
@@ -39,9 +40,9 @@ const ActionButtons = ({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 10,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
+        borderRadius: borderRadius['sm-md'],
         backgroundColor: colors.ai.primary,
       }}
     >
@@ -61,8 +62,8 @@ const ActionButtons = ({
           flexDirection: 'row',
           alignItems: 'center',
           paddingHorizontal: spacing['sm-md'],
-          paddingVertical: 8,
-          borderRadius: 10,
+          paddingVertical: spacing.sm,
+          borderRadius: borderRadius['sm-md'],
           backgroundColor: showClearMenu
             ? colors.surface.pressed
             : colors.surface.hover,
@@ -85,8 +86,8 @@ const ActionButtons = ({
           flexDirection: 'row',
           alignItems: 'center',
           paddingHorizontal: spacing['sm-md'],
-          paddingVertical: 8,
-          borderRadius: 10,
+          paddingVertical: spacing.sm,
+          borderRadius: borderRadius['sm-md'],
           backgroundColor: colors.surface.hover,
         }}
       >
@@ -110,7 +111,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
         style={{
           height: 6,
           backgroundColor: colors.ai.light,
-          borderRadius: 3,
+          borderRadius: borderRadius['3xs'],
           overflow: 'hidden',
         }}
       >
@@ -118,7 +119,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
           style={{
             height: '100%',
             backgroundColor: colors.ai.primary,
-            borderRadius: 3,
+            borderRadius: borderRadius['3xs'],
             width: `${(checkedItemsToBuy / itemsToBuy) * 100}%`,
           }}
         />
@@ -162,10 +163,10 @@ const ItemsAtHomeIndicator = ({
       />
       <Text
         style={{
-          fontSize: 12,
+          fontSize: fontSize.base,
           color: colors.button.primaryPressed,
           flex: 1,
-          fontWeight: '500',
+          fontWeight: fontWeight.medium,
         }}
       >
         {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
@@ -215,7 +216,7 @@ export const StatsCard = ({
         borderRadius: borderRadius.md,
         padding: spacing.md,
         marginBottom: spacing.sm,
-        boxShadow: '1px 1px 4px 0px rgba(0, 0, 0, 0.06)',
+        ...shadows.card,
       }}
     >
       <View
@@ -236,10 +237,10 @@ export const StatsCard = ({
           </Text>
           <Text
             style={{
-              fontSize: 17,
+              fontSize: fontSize['xl-2xl'],
               fontWeight: fontWeight.semibold,
               color: colors.content.heading,
-              marginTop: 4,
+              marginTop: spacing.xs,
             }}
           >
             {itemsToBuy === 0

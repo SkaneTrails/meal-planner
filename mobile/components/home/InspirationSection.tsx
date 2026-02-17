@@ -39,7 +39,7 @@ export const InspirationSection = ({
 
   if (inspirationRecipes.length > 0 && inspirationRecipe) {
     return (
-      <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+      <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
         <InspirationHeader t={t} onShuffle={shuffleInspiration} />
         <InspirationCard
           recipe={inspirationRecipe}
@@ -223,13 +223,13 @@ const GetStartedFallback = ({
   t: Data['t'];
   onPress: () => void;
 }) => (
-  <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+  <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
     <Text
       style={{
         fontSize: fontSize['4xl'],
         fontFamily: fontFamily.display,
         color: colors.white,
-        marginBottom: 8,
+        marginBottom: spacing.sm,
         letterSpacing: letterSpacing.tight,
       }}
     >

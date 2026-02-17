@@ -31,3 +31,4 @@ export {
   Skeleton,
   StatCardSkeleton,
 } from './Skeleton';
+export { StepperControl } from './StepperControl';

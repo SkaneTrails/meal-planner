@@ -14,6 +14,7 @@ import {
   iconContainer,
   layout,
   letterSpacing,
+  lineHeight,
   shadows,
   spacing,
 } from '@/lib/theme';
@@ -326,7 +327,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => (
             style={{
               fontSize: fontSize.base,
               color: colors.gray[500],
-              lineHeight: 18,
+              lineHeight: lineHeight.sm,
             }}
             numberOfLines={2}
           >

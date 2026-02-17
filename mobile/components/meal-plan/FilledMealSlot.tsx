@@ -2,7 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
-import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  circleStyle,
+  colors,
+  fontFamily,
+  fontSize,
+  spacing,
+} from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
@@ -47,7 +54,7 @@ export const FilledMealSlot = ({
         alignItems: 'center',
         backgroundColor: colors.mealPlan.slotBg,
         borderRadius: borderRadius.sm,
-        padding: 12,
+        padding: spacing.md,
         marginBottom: spacing['xs-sm'],
       }}
     >
@@ -82,10 +89,10 @@ export const FilledMealSlot = ({
           }}
           resizeMode="cover"
         />
-        <View style={{ flex: 1, marginLeft: 12 }}>
+        <View style={{ flex: 1, marginLeft: spacing.md }}>
           <Text
             style={{
-              fontSize: 13,
+              fontSize: fontSize.md,
               fontFamily: fontFamily.bodySemibold,
               color: colors.primary,
             }}
@@ -94,10 +101,10 @@ export const FilledMealSlot = ({
           </Text>
           <Text
             style={{
-              fontSize: 11,
+              fontSize: fontSize.sm,
               fontFamily: fontFamily.body,
               color: colors.content.tertiary,
-              marginTop: 2,
+              marginTop: spacing['2xs'],
             }}
           >
             {label}
@@ -110,13 +117,11 @@ export const FilledMealSlot = ({
         hoverScale={1.1}
         pressScale={0.9}
         style={{
-          width: 28,
-          height: 28,
-          borderRadius: 14,
+          ...circleStyle(28),
           backgroundColor: colors.surface.border,
           alignItems: 'center',
           justifyContent: 'center',
-          marginLeft: 8,
+          marginLeft: spacing.sm,
         }}
       >
         <Ionicons name="close" size={18} color={colors.content.body} />

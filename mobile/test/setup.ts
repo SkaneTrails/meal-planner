@@ -122,6 +122,15 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': `radio-${value}` });
   },
+  StepperControl: ({ value, onDecrement, onIncrement, decrementDisabled, incrementDisabled, subtitle }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'stepper-control' },
+      createElement('button', { onClick: onDecrement, disabled: decrementDisabled, 'aria-label': 'Decrease' }, '−'),
+      createElement('span', null, value),
+      createElement('button', { onClick: onIncrement, disabled: incrementDisabled, 'aria-label': 'Increase' }, '+'),
+      subtitle ? createElement('span', null, subtitle) : null,
+    );
+  },
 }));
 
 // Mock @/lib/alert
@@ -296,7 +305,7 @@ vi.mock('@/lib/theme', () => ({
   layout: {
     contentMaxWidth: 720,
     contentContainer: { maxWidth: 720, alignSelf: 'center', width: '100%' },
-    screenPaddingTop: 60,
+    screenPaddingTop: 44,
     screenPaddingHorizontal: 20,
     sectionGap: 24,
     cardGap: 8,
@@ -310,7 +319,7 @@ vi.mock('@/lib/theme', () => ({
       overlayBottomOffset: 60,
     },
   },
-  borderRadius: { xs: 8, sm: 12, md: 16, lg: 20, xl: 24, full: 9999 },
+  borderRadius: { '3xs': 3, '2xs': 4, 'xs-sm': 6, xs: 8, 'sm-md': 10, sm: 12, 'md-lg': 14, md: 16, lg: 20, 'lg-xl': 22, xl: 24, full: 9999 },
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
   shadows: {
@@ -327,7 +336,7 @@ vi.mock('@/lib/theme', () => ({
     float: { boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)' },
   },
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
-  fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, '2xl': 17, '3xl': 20, '4xl': 26, '5xl': 32, '6xl': 40 },
+  fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
   fontFamily: {
     display: '"DM Sans", sans-serif',
@@ -344,7 +353,7 @@ vi.mock('@/lib/theme', () => ({
     display: '600', displayRegular: '400', displayMedium: '500', displayBold: '700',
     body: '400', bodyMedium: '500', bodySemibold: '600', bodyBold: '700', accent: '500',
   },
-  letterSpacing: { tighter: -0.8, tight: -0.5, normal: -0.2, wide: 0.8, wider: 1.2 },
+  letterSpacing: { tighter: -0.8, tight: -0.5, snug: -0.3, normal: -0.2, wide: 0.8, wider: 1.2 },
   typography: {
     displayLarge: {}, displayMedium: {}, displaySmall: {},
     headingLarge: {}, headingMedium: {}, headingSmall: {},
@@ -353,22 +362,19 @@ vi.mock('@/lib/theme', () => ({
     caption: {}, captionSmall: {},
     overline: {},
   },
-  cardStyle: {},
-  glassCardStyle: {},
   inputStyle: {},
-  settingsTitleStyle: { fontSize: 17, fontWeight: '600', color: '#5D4E40' },
+  settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
   accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
   createStyles: () => ({
-    cardStyle: {},
-    glassCardStyle: {},
     inputStyle: {},
-    settingsTitleStyle: { fontSize: 17, fontWeight: '600', color: '#5D4E40' },
+    settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
     settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
     accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
   }),
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
   dotSize: { md: 10 },
+  lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
 }));
 
 // Mock @/lib/settings-context

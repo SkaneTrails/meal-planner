@@ -19,9 +19,7 @@ export {
 export type { ThemeStyles } from './theme/styles';
 export {
   accentUnderlineStyle,
-  cardStyle,
   createStyles,
-  glassCardStyle,
   inputStyle,
   settingsSubtitleStyle,
   settingsTitleStyle,
@@ -33,5 +31,6 @@ export {
   fontSize,
   fontWeight,
   letterSpacing,
+  lineHeight,
   typography,
 } from './theme/typography';

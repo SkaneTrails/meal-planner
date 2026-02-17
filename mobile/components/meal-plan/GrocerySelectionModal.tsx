@@ -8,6 +8,7 @@ import {
   circleStyle,
   colors,
   fontFamily,
+  fontSize,
   iconContainer,
   spacing,
 } from '@/lib/theme';
@@ -68,9 +69,9 @@ export const GrocerySelectionModal = ({
     footer={
       <View
         style={{
-          padding: 20,
+          padding: spacing.xl,
           borderTopWidth: 1,
-          borderTopColor: 'rgba(0, 0, 0, 0.06)',
+          borderTopColor: colors.surface.divider,
         }}
       >
         <PrimaryButton
@@ -94,7 +95,7 @@ export const GrocerySelectionModal = ({
 
     <ScrollView
       style={{ flex: 1 }}
-      contentContainerStyle={{ padding: 20 }}
+      contentContainerStyle={{ padding: spacing.xl }}
       showsVerticalScrollIndicator={false}
     >
       {groceryWeekDates.map((date) => {
@@ -107,10 +108,10 @@ export const GrocerySelectionModal = ({
         const isToday = date.toDateString() === new Date().toDateString();
 
         return (
-          <View key={date.toISOString()} style={{ marginBottom: 16 }}>
+          <View key={date.toISOString()} style={{ marginBottom: spacing.lg }}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: fontSize['lg-xl'],
                 fontFamily: fontFamily.bodySemibold,
                 color: isToday
                   ? colors.content.heading
@@ -171,8 +172,8 @@ const GroceryWeekSelector = ({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginTop: 12,
-      gap: 8,
+      marginTop: spacing.md,
+      gap: spacing.sm,
     }}
   >
     <Pressable
@@ -190,15 +191,15 @@ const GroceryWeekSelector = ({
     </Pressable>
     <View
       style={{
-        paddingHorizontal: 20,
+        paddingHorizontal: spacing.xl,
         paddingVertical: spacing['sm-md'],
         backgroundColor: colors.button.primarySubtle,
-        borderRadius: 14,
+        borderRadius: borderRadius['md-lg'],
       }}
     >
       <Text
         style={{
-          fontSize: 14,
+          fontSize: fontSize.lg,
           fontFamily: fontFamily.bodySemibold,
           color: colors.content.heading,
           textAlign: 'center',
@@ -246,10 +247,10 @@ const GroceryMealItem = ({
     style={{
       backgroundColor: isSelected
         ? colors.ai.selectedBg
-        : 'rgba(0, 0, 0, 0.02)',
-      borderRadius: 14,
+        : colors.surface.subtle,
+      borderRadius: borderRadius['md-lg'],
       padding: spacing['md-lg'],
-      marginBottom: 8,
+      marginBottom: spacing.sm,
       borderWidth: isSelected ? 1 : 0,
       borderColor: colors.ai.border,
     }}
@@ -280,7 +281,7 @@ const GroceryMealItem = ({
       <View style={{ flex: 1 }}>
         <Text
           style={{
-            fontSize: 15,
+            fontSize: fontSize.xl,
             fontFamily: fontFamily.bodySemibold,
             color: colors.content.heading,
           }}
@@ -289,10 +290,10 @@ const GroceryMealItem = ({
         </Text>
         <Text
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
             fontFamily: fontFamily.body,
             color: colors.content.subtitle,
-            marginTop: 2,
+            marginTop: spacing['2xs'],
           }}
         >
           {label}
@@ -305,8 +306,8 @@ const GroceryMealItem = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginTop: 12,
-          marginLeft: 40,
+          marginTop: spacing.md,
+          marginLeft: spacing['4xl'],
           backgroundColor: colors.button.primarySurface,
           borderRadius: borderRadius.sm,
           padding: spacing['xs-sm'],
@@ -316,9 +317,7 @@ const GroceryMealItem = ({
         <Pressable
           onPress={() => onChangeServings(mealKey, -1)}
           style={({ pressed }) => ({
-            width: 30,
-            height: 30,
-            borderRadius: 15,
+            ...circleStyle(iconContainer.sm),
             backgroundColor: pressed
               ? colors.button.primaryDivider
               : colors.glass.medium,
@@ -333,17 +332,17 @@ const GroceryMealItem = ({
             paddingHorizontal: spacing['md-lg'],
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 4,
+            gap: spacing.xs,
           }}
         >
           <Ionicons
             name="restaurant-outline"
-            size={15}
+            size={fontSize.xl}
             color={colors.content.body}
           />
           <Text
             style={{
-              fontSize: 15,
+              fontSize: fontSize.xl,
               fontFamily: fontFamily.bodySemibold,
               color: colors.content.heading,
             }}
@@ -354,9 +353,7 @@ const GroceryMealItem = ({
         <Pressable
           onPress={() => onChangeServings(mealKey, 1)}
           style={({ pressed }) => ({
-            width: 30,
-            height: 30,
-            borderRadius: 15,
+            ...circleStyle(iconContainer.sm),
             backgroundColor: pressed
               ? colors.button.primaryDivider
               : colors.glass.medium,

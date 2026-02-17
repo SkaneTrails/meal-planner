@@ -10,6 +10,7 @@ import {
   colors,
   fontFamily,
   fontSize,
+  shadows,
   spacing,
 } from '@/lib/theme';
 
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing['3xl'],
     alignItems: 'center',
-    boxShadow: '2px 4px 16px 0px rgba(0, 0, 0, 0.12)',
+    ...shadows.cardRaised,
     maxWidth: 300,
     width: '100%',
   },

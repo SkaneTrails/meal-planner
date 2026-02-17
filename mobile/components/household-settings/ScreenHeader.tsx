@@ -2,7 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontWeight, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontSize,
+  fontWeight,
+  layout,
+  spacing,
+} from '@/lib/theme';
 
 interface ScreenHeaderProps {
   canEdit: boolean;
@@ -25,7 +32,7 @@ export const ScreenHeader = ({
     <View
       style={{
         paddingHorizontal: spacing.lg,
-        paddingTop: 44,
+        paddingTop: layout.screenPaddingTop,
         paddingBottom: spacing.md,
       }}
     >
@@ -41,13 +48,17 @@ export const ScreenHeader = ({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            padding: 8,
-            marginLeft: -8,
+            padding: spacing.sm,
+            marginLeft: -spacing.sm,
           }}
         >
           <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
           <Text
-            style={{ color: colors.text.primary, fontSize: 17, marginLeft: 2 }}
+            style={{
+              color: colors.text.primary,
+              fontSize: fontSize['2xl'],
+              marginLeft: spacing['2xs'],
+            }}
           >
             {t('common.back')}
           </Text>
@@ -58,7 +69,7 @@ export const ScreenHeader = ({
             disabled={isSaving}
             style={({ pressed }) => ({
               backgroundColor: pressed ? colors.accentDark : colors.accent,
-              paddingHorizontal: 24,
+              paddingHorizontal: spacing['2xl'],
               paddingVertical: spacing['sm-md'],
               borderRadius: borderRadius.lg,
               opacity: isSaving ? 0.6 : 1,
@@ -71,7 +82,7 @@ export const ScreenHeader = ({
               <Text
                 style={{
                   color: colors.white,
-                  fontSize: 15,
+                  fontSize: fontSize.xl,
                   fontWeight: fontWeight.semibold,
                 }}
               >

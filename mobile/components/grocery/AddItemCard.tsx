@@ -1,7 +1,14 @@
 import { Text, TextInput, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, colors, fontFamily, spacing } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  shadows,
+  spacing,
+} from '@/lib/theme';
 
 interface AddItemCardProps {
   newItemText: string;
@@ -22,28 +29,30 @@ export const AddItemCard = ({
         backgroundColor: colors.white,
         borderRadius: borderRadius.md,
         padding: spacing.md,
-        boxShadow: '1px 1px 3px 0px rgba(0, 0, 0, 0.04)',
+        ...shadows.sm,
       }}
     >
       <Text
         style={{
-          fontSize: 12,
+          fontSize: fontSize.base,
           fontFamily: fontFamily.bodySemibold,
           color: colors.content.tertiary,
-          marginBottom: 8,
+          marginBottom: spacing.sm,
         }}
       >
         {t('grocery.addItemLabel')}
       </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
+      >
         <TextInput
           style={{
             flex: 1,
             backgroundColor: colors.surface.tint,
             borderRadius: borderRadius.sm,
-            paddingHorizontal: 12,
+            paddingHorizontal: spacing.md,
             paddingVertical: spacing['sm-md'],
-            fontSize: 14,
+            fontSize: fontSize.lg,
             color: colors.content.heading,
           }}
           placeholder={t('grocery.addItemExamplePlaceholder')}
@@ -64,15 +73,15 @@ export const AddItemCard = ({
           style={{
             backgroundColor: newItemText.trim()
               ? colors.ai.primary
-              : 'rgba(200, 190, 180, 0.5)',
-            paddingHorizontal: 16,
+              : colors.surface.pressed,
+            paddingHorizontal: spacing.lg,
             paddingVertical: spacing['sm-md'],
             borderRadius: borderRadius.sm,
           }}
         >
           <Text
             style={{
-              fontSize: 14,
+              fontSize: fontSize.lg,
               fontFamily: fontFamily.bodySemibold,
               color: colors.white,
             }}

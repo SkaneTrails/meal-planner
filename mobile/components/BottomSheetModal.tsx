@@ -3,7 +3,14 @@ import type { ReactNode } from 'react';
 import type { DimensionValue } from 'react-native';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { colors } from '@/lib/theme';
+import {
+  borderRadius,
+  colors,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  spacing,
+} from '@/lib/theme';
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -44,21 +51,21 @@ export const BottomSheetModal = ({
     <View
       style={{
         backgroundColor,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        borderTopLeftRadius: borderRadius.xl,
+        borderTopRightRadius: borderRadius.xl,
         maxHeight,
         paddingBottom: footer ? 0 : 40,
       }}
       testID={testID}
     >
       {showDragHandle && (
-        <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+        <View style={{ alignItems: 'center', paddingVertical: spacing.md }}>
           <View
             style={{
               width: 40,
               height: 4,
               backgroundColor: colors.button.disabled,
-              borderRadius: 2,
+              borderRadius: borderRadius['3xs'],
             }}
             testID="drag-handle"
           />
@@ -70,15 +77,16 @@ export const BottomSheetModal = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          paddingHorizontal: 20,
-          paddingTop: showDragHandle ? 0 : 20,
-          marginBottom: subtitle ? 4 : 16,
+          paddingHorizontal: spacing.xl,
+          paddingTop: showDragHandle ? 0 : spacing.xl,
+          marginBottom: subtitle ? spacing.xs : spacing.lg,
         }}
       >
         <Text
           style={{
-            fontSize: 20,
-            fontWeight: '700',
+            fontSize: fontSize['3xl'],
+            fontFamily: fontFamily.bodyBold,
+            fontWeight: fontWeight.bold,
             color: colors.content.headingWarm,
             flex: 1,
           }}
@@ -100,10 +108,11 @@ export const BottomSheetModal = ({
       {subtitle && (
         <Text
           style={{
-            fontSize: 13,
+            fontSize: fontSize.md,
+            fontFamily: fontFamily.body,
             color: colors.gray[500],
-            paddingHorizontal: 20,
-            marginBottom: 12,
+            paddingHorizontal: spacing.xl,
+            marginBottom: spacing.md,
           }}
         >
           {subtitle}
@@ -113,7 +122,7 @@ export const BottomSheetModal = ({
       {scrollable ? (
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 20 }}
+          contentContainerStyle={{ paddingHorizontal: spacing.xl }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
