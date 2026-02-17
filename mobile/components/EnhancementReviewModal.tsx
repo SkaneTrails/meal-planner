@@ -1,12 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
-import type { TFunction } from '@/lib/i18n';
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   borderRadius,
+  circleStyle,
   colors,
   fontSize,
   fontWeight,
   iconContainer,
+  iconSize,
   letterSpacing,
   shadows,
   spacing,
@@ -45,184 +53,75 @@ export const EnhancementReviewModal = ({
     animationType="fade"
     onRequestClose={onRequestClose}
   >
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.overlay.backdrop,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: spacing['2xl'],
-      }}
-    >
-      <View
-        style={{
-          backgroundColor: colors.white,
-          borderRadius: borderRadius.lg,
-          padding: spacing['2xl'],
-          width: '100%',
-          maxWidth: 400,
-          maxHeight: '80%',
-          ...shadows.xl,
-        }}
-      >
+    <View style={styles.backdrop}>
+      <View style={styles.card}>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: spacing.lg,
-          }}
-        >
-          <View
-            style={{
-              width: iconContainer.lg,
-              height: iconContainer.lg,
-              borderRadius: iconContainer.lg / 2,
-              backgroundColor: colors.ai.light,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: spacing.md,
-            }}
-          >
-            <Ionicons name="sparkles" size={22} color={colors.ai.primary} />
+        <View style={styles.header}>
+          <View style={styles.iconCircle}>
+            <Ionicons
+              name="sparkles"
+              size={iconSize.xl}
+              color={colors.ai.primary}
+            />
           </View>
-          <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                fontSize: fontSize['3xl'],
-                fontWeight: '700',
-                color: colors.text.inverse,
-                letterSpacing: letterSpacing.normal,
-              }}
-            >
-              {headerLabel}
-            </Text>
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                color: colors.gray[600],
-                marginTop: spacing.xs,
-              }}
-              numberOfLines={1}
-            >
+          <View style={styles.headerText}>
+            <Text style={styles.headerLabel}>{headerLabel}</Text>
+            <Text style={styles.title} numberOfLines={1}>
               {title}
             </Text>
           </View>
         </View>
 
         {/* Changes list */}
-        <ScrollView style={{ maxHeight: 300, marginBottom: spacing.xl }}>
+        <ScrollView style={styles.changesList}>
           {changesMade.length > 0 ? (
             <>
-              <Text
-                style={{
-                  fontSize: fontSize.lg,
-                  fontWeight: fontWeight.semibold,
-                  color: colors.text.inverse,
-                  marginBottom: spacing.md,
-                }}
-              >
-                {changesLabel}
-              </Text>
+              <Text style={styles.changesLabel}>{changesLabel}</Text>
               {changesMade.map((change, index) => (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    marginBottom: spacing.sm,
-                    backgroundColor: colors.successBg,
-                    padding: spacing.md,
-                    borderRadius: borderRadius.sm,
-                  }}
-                >
+                <View key={index} style={styles.changeItem}>
                   <Ionicons
                     name="checkmark-circle"
-                    size={18}
+                    size={iconSize.md}
                     color={colors.success}
-                    style={{ marginRight: spacing.sm, marginTop: 1 }}
+                    style={styles.changeIcon}
                   />
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: fontSize.lg,
-                      color: colors.text.inverse,
-                      lineHeight: 22,
-                    }}
-                  >
-                    {change}
-                  </Text>
+                  <Text style={styles.changeText}>{change}</Text>
                 </View>
               ))}
             </>
           ) : (
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                color: colors.gray[600],
-                fontStyle: 'italic',
-              }}
-            >
-              {noChangesLabel}
-            </Text>
+            <Text style={styles.noChanges}>{noChangesLabel}</Text>
           )}
         </ScrollView>
 
         {/* Buttons */}
-        <View style={{ flexDirection: 'row', gap: spacing.md }}>
+        <View style={styles.buttonRow}>
           <Pressable
             onPress={() => onReview('reject')}
             disabled={isReviewPending}
-            style={({ pressed }) => ({
-              flex: 1,
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.md,
-              backgroundColor: colors.glass.light,
-              alignItems: 'center',
-              opacity: pressed || isReviewPending ? 0.7 : 1,
-              borderWidth: 1,
-              borderColor: colors.gray[300],
-            })}
+            style={({ pressed }) => [
+              styles.rejectButton,
+              { opacity: pressed || isReviewPending ? 0.7 : 1 },
+            ]}
           >
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                fontWeight: fontWeight.semibold,
-                color: colors.text.inverse,
-              }}
-            >
-              {rejectLabel}
-            </Text>
+            <Text style={styles.rejectLabel}>{rejectLabel}</Text>
           </Pressable>
           <Pressable
             onPress={() => onReview('approve')}
             disabled={isReviewPending}
-            style={({ pressed }) => ({
-              flex: 1,
-              paddingVertical: spacing.md,
-              borderRadius: borderRadius.md,
-              backgroundColor: colors.ai.primary,
-              alignItems: 'center',
-              opacity: pressed || isReviewPending ? 0.7 : 1,
-              ...shadows.sm,
-            })}
+            style={({ pressed }) => [
+              styles.approveButton,
+              { opacity: pressed || isReviewPending ? 0.7 : 1 },
+            ]}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={styles.approveContent}>
               <Ionicons
                 name="sparkles"
-                size={16}
+                size={iconSize.sm}
                 color={colors.white}
-                style={{ marginRight: spacing['xs-sm'] }}
+                style={styles.approveIcon}
               />
-              <Text
-                style={{
-                  fontSize: fontSize.lg,
-                  fontWeight: fontWeight.semibold,
-                  color: colors.white,
-                }}
-              >
-                {approveLabel}
-              </Text>
+              <Text style={styles.approveLabel}>{approveLabel}</Text>
             </View>
           </Pressable>
         </View>
@@ -230,3 +129,119 @@ export const EnhancementReviewModal = ({
     </View>
   </Modal>
 );
+
+const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: colors.overlay.backdrop,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing['2xl'],
+  },
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    padding: spacing['2xl'],
+    width: '100%',
+    maxWidth: 400,
+    maxHeight: '80%',
+    ...shadows.xl,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  iconCircle: {
+    ...circleStyle(iconContainer.lg),
+    backgroundColor: colors.ai.light,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md,
+  },
+  headerText: {
+    flex: 1,
+  },
+  headerLabel: {
+    fontSize: fontSize['3xl'],
+    fontWeight: fontWeight.bold,
+    color: colors.text.inverse,
+    letterSpacing: letterSpacing.normal,
+  },
+  title: {
+    fontSize: fontSize.lg,
+    color: colors.gray[600],
+    marginTop: spacing.xs,
+  },
+  changesList: {
+    maxHeight: 300,
+    marginBottom: spacing.xl,
+  },
+  changesLabel: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    color: colors.text.inverse,
+    marginBottom: spacing.md,
+  },
+  changeItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: spacing.sm,
+    backgroundColor: colors.successBg,
+    padding: spacing.md,
+    borderRadius: borderRadius.sm,
+  },
+  changeIcon: {
+    marginRight: spacing.sm,
+    marginTop: spacing['2xs'],
+  },
+  changeText: {
+    flex: 1,
+    fontSize: fontSize.lg,
+    color: colors.text.inverse,
+    lineHeight: 22,
+  },
+  noChanges: {
+    fontSize: fontSize.lg,
+    color: colors.gray[600],
+    fontStyle: 'italic',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  rejectButton: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.glass.light,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.gray[300],
+  },
+  rejectLabel: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    color: colors.text.inverse,
+  },
+  approveButton: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.ai.primary,
+    alignItems: 'center',
+    ...shadows.sm,
+  },
+  approveContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  approveIcon: {
+    marginRight: spacing['xs-sm'],
+  },
+  approveLabel: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    color: colors.white,
+  },
+});

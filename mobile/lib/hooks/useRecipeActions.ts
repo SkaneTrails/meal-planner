@@ -484,5 +484,6 @@ export const useRecipeActions = (
     handleReviewEnhancement,
     handleEnhanceRecipe,
     showEnhancementReviewModal,
+    closeEnhancementReviewModal: () => setShowEnhancementReviewModal(false),
   };
 };

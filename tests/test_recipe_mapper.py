@@ -132,3 +132,21 @@ class TestBuildRecipeCreateFromEnhanced:
         assert result.title == "Better Original"
         assert result.url == "https://example.com"
         assert result.ingredients == ["1 cup flour"]
+
+    def test_diet_and_meal_labels_preserved(self) -> None:
+        """diet_label and meal_label should fall back from original recipe when enhancer omits them."""
+        fallback = _make_recipe(diet_label="veggie", meal_label="meal")
+        enhanced_data = {"title": "Enhanced Veggie Bowl"}
+        result = build_recipe_create_from_enhanced(enhanced_data, fallback)
+
+        assert result.diet_label == "veggie"
+        assert result.meal_label == "meal"
+
+    def test_diet_and_meal_labels_overridden(self) -> None:
+        """Enhanced data can override diet_label and meal_label."""
+        fallback = _make_recipe(diet_label="veggie", meal_label="meal")
+        enhanced_data = {"diet_label": "fish", "meal_label": "dessert"}
+        result = build_recipe_create_from_enhanced(enhanced_data, fallback)
+
+        assert result.diet_label == "fish"
+        assert result.meal_label == "dessert"
