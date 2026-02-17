@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
 import {
@@ -6,6 +7,7 @@ import {
   dotSize,
   fontFamily,
   fontSize,
+  iconSize,
   spacing,
 } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
@@ -24,6 +26,7 @@ interface DayHeaderProps {
   onSaveNote: () => void;
   onCancelEdit: () => void;
   onToggleTag: (tag: string) => void;
+  onCollapse?: () => void;
 }
 
 export const DayHeader = ({
@@ -40,9 +43,12 @@ export const DayHeader = ({
   onSaveNote,
   onCancelEdit,
   onToggleTag,
+  onCollapse,
 }: DayHeaderProps) => (
   <>
-    <View
+    <Pressable
+      onPress={onCollapse}
+      disabled={!onCollapse}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -82,6 +88,14 @@ export const DayHeader = ({
         >
           {formatDayHeader(date, language, t('mealPlan.today'))}
         </Text>
+        {onCollapse && (
+          <Ionicons
+            name="chevron-up"
+            size={iconSize.sm}
+            color={colors.content.subtitle}
+            style={{ marginLeft: spacing.xs }}
+          />
+        )}
       </View>
 
       {!isEditing && (
@@ -156,7 +170,7 @@ export const DayHeader = ({
           )}
         </Pressable>
       )}
-    </View>
+    </Pressable>
 
     {isEditing && (
       <NoteEditor

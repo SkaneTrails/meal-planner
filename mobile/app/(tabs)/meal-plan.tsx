@@ -50,6 +50,7 @@ export default function MealPlanScreen() {
     noteText,
     setNoteText,
     scrollViewRef,
+    todayY,
     jumpButtonOpacity,
     swipeTranslateX,
     panResponder,
@@ -155,6 +156,13 @@ export default function MealPlanScreen() {
                 return (
                   <View
                     key={date.toISOString()}
+                    onLayout={
+                      isToday
+                        ? (e) => {
+                            todayY.current = e.nativeEvent.layout.y;
+                          }
+                        : undefined
+                    }
                     style={{
                       marginBottom: spacing.lg,
                       backgroundColor: isToday
@@ -162,32 +170,14 @@ export default function MealPlanScreen() {
                         : colors.glass.solid,
                       borderRadius: borderRadius.lg,
                       padding: spacing['md-lg'],
-                      borderWidth: 1,
+                      borderWidth: isToday ? 2 : 1,
                       borderColor: isToday
-                        ? colors.surface.active
+                        ? colors.ai.primary
                         : colors.glass.border,
                       boxShadow: shadows.cardRaised.boxShadow,
                       opacity: isPast ? 0.6 : 1,
                     }}
                   >
-                    {isPast && (
-                      <Pressable
-                        onPress={() => togglePastDay(dateStr)}
-                        style={{
-                          position: 'absolute',
-                          top: spacing.sm,
-                          right: spacing.sm,
-                          padding: spacing.xs,
-                          zIndex: 1,
-                        }}
-                      >
-                        <Ionicons
-                          name="chevron-up"
-                          size={iconSize.md}
-                          color={colors.content.subtitle}
-                        />
-                      </Pressable>
-                    )}
                     <DayHeader
                       date={date}
                       isToday={isToday}
@@ -202,6 +192,9 @@ export default function MealPlanScreen() {
                       onSaveNote={handleSaveNote}
                       onCancelEdit={handleCancelEditNote}
                       onToggleTag={handleAddTag}
+                      onCollapse={
+                        isPast ? () => togglePastDay(dateStr) : undefined
+                      }
                     />
 
                     {MEAL_TYPES.map(({ type, label }) => {

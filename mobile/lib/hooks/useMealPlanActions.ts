@@ -2,10 +2,7 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, type ScrollView } from 'react-native';
 import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
-import {
-  DAY_SECTION_HEIGHT,
-  showConfirmDelete,
-} from '@/components/meal-plan/meal-plan-constants';
+import { showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
 import { showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
@@ -71,6 +68,7 @@ export const useMealPlanActions = () => {
     new Set(),
   );
   const scrollViewRef = useRef<ScrollView>(null);
+  const todayY = useRef(0);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;
 
@@ -163,9 +161,8 @@ export const useMealPlanActions = () => {
   const handleScroll = useCallback(
     (scrollY: number) => {
       if (todayIndex < 0) return;
-      const todayPosition = todayIndex * DAY_SECTION_HEIGHT;
-      const tolerance = DAY_SECTION_HEIGHT / 2;
-      const isNearToday = Math.abs(scrollY - todayPosition) < tolerance;
+      const tolerance = 100;
+      const isNearToday = Math.abs(scrollY - todayY.current) < tolerance;
 
       if (!isNearToday && !showJumpButton) {
         setShowJumpButton(true);
@@ -189,7 +186,7 @@ export const useMealPlanActions = () => {
       setWeekOffset(0);
     } else if (todayIndex >= 0 && scrollViewRef.current) {
       scrollViewRef.current.scrollTo({
-        y: todayIndex * DAY_SECTION_HEIGHT,
+        y: todayY.current,
         animated: true,
       });
     }
@@ -199,7 +196,7 @@ export const useMealPlanActions = () => {
     if (todayIndex >= 0 && scrollViewRef.current) {
       setTimeout(() => {
         scrollViewRef.current?.scrollTo({
-          y: todayIndex * DAY_SECTION_HEIGHT,
+          y: todayY.current,
           animated: false,
         });
       }, 100);
@@ -459,6 +456,7 @@ export const useMealPlanActions = () => {
     noteText,
     setNoteText,
     scrollViewRef,
+    todayY,
     jumpButtonOpacity,
     swipeTranslateX,
     panResponder,
