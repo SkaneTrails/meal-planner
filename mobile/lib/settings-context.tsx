@@ -43,8 +43,9 @@ export type AppLanguage = 'en' | 'sv' | 'it';
  * (e.g. the onUnauthorized callback in AuthProvider).
  * Updated by SettingsProvider whenever the resolved language changes.
  */
-let _currentLanguage: AppLanguage = 'en';
-export const getCurrentLanguage = (): AppLanguage => _currentLanguage;
+import { setCurrentLanguage } from './language-state';
+
+export { getCurrentLanguage } from './language-state';
 
 export const LANGUAGES: { code: AppLanguage; label: string; flag: string }[] = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -164,7 +165,9 @@ export const SettingsProvider = ({
     cloudLanguage && isSupportedLanguage(cloudLanguage) ? cloudLanguage : 'en';
 
   // Keep module-level language in sync for non-React consumers
-  _currentLanguage = resolvedLanguage;
+  useEffect(() => {
+    setCurrentLanguage(resolvedLanguage);
+  }, [resolvedLanguage]);
 
   // Prompt user to pick a language if their own household has none set.
   // Superusers may manage multiple households — only check the user's own.

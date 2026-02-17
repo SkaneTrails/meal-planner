@@ -15,8 +15,9 @@ let getAuthToken: (() => Promise<string | null>) | null = null;
 
 // Sign out callback - called when API returns 401 (expired/invalid token).
 // 403 is NOT handled here — it means "forbidden" (insufficient role), not
-// "unauthenticated".  The no-access redirect in _layout.tsx handles the
-// real "no household" case via useCurrentUser's isError state.
+// "unauthenticated".  The no-access redirect in app/(tabs)/_layout.tsx
+// (TabLayout) handles the real "no household" case via useCurrentUser's
+// isError-based redirect.
 let onUnauthorized: ((hadToken: boolean) => void) | null = null;
 
 export const setAuthTokenGetter = (getter: () => Promise<string | null>) => {

@@ -29,7 +29,7 @@ import { showNotification } from '../alert';
 import { setAuthTokenGetter, setOnUnauthorized } from '../api';
 import { auth, isFirebaseConfigured } from '../firebase';
 import { translateStandalone } from '../i18n';
-import { getCurrentLanguage } from '../settings-context';
+import { getCurrentLanguage } from '../language-state';
 
 interface AuthContextType {
   user: User | null;
