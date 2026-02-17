@@ -56,8 +56,10 @@ export const terminalFontFamily: FontFamilyTokens = {
   accent: MONO,
 };
 
-// For web: fontFamily is just the font name, weight comes from fontWeight
-// For native: fontFamily includes the weight (e.g., DMSans_600SemiBold)
+// Static font family mapping used by the typography presets below. Dynamic,
+// theme-aware font access should go through `useTheme().fonts` where available.
+// The presets are intentionally static — migrating them to a factory that takes
+// `fonts` is planned as a follow-up when runtime theme switching lands.
 /** @deprecated Use `useTheme().fonts` for theme-aware font access. */
 export const fontFamily = defaultFontFamily;
 

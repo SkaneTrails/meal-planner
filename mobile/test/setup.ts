@@ -316,6 +316,18 @@ vi.mock('@/lib/theme', () => {
     accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
   };
 
+  const mockFonts = {
+    display: 'DMSans_600SemiBold',
+    displayRegular: 'DMSans_400Regular',
+    displayMedium: 'DMSans_500Medium',
+    displayBold: 'DMSans_700Bold',
+    body: 'DMSans_400Regular',
+    bodyMedium: 'DMSans_500Medium',
+    bodySemibold: 'DMSans_600SemiBold',
+    bodyBold: 'DMSans_700Bold',
+    accent: 'DMSans_500Medium',
+  };
+
   return {
   colors: c,
   lightColors: undefined, // re-exported but unused in tests
@@ -388,19 +400,21 @@ vi.mock('@/lib/theme', () => {
   circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
   dotSize: { md: 10 },
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
+  defaultFontFamily: mockFonts,
+  terminalFontFamily: {
+    display: 'Courier',
+    displayRegular: 'Courier',
+    displayMedium: 'Courier',
+    displayBold: 'Courier',
+    body: 'Courier',
+    bodyMedium: 'Courier',
+    bodySemibold: 'Courier',
+    bodyBold: 'Courier',
+    accent: 'Courier',
+  },
   useTheme: () => ({
     colors: c,
-    fonts: {
-      display: 'DMSans_600SemiBold',
-      displayRegular: 'DMSans_400Regular',
-      displayMedium: 'DMSans_500Medium',
-      displayBold: 'DMSans_700Bold',
-      body: 'DMSans_400Regular',
-      bodyMedium: 'DMSans_500Medium',
-      bodySemibold: 'DMSans_600SemiBold',
-      bodyBold: 'DMSans_700Bold',
-      accent: 'DMSans_500Medium',
-    },
+    fonts: mockFonts,
     styles: mockStyles,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,

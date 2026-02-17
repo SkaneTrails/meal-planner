@@ -18,7 +18,7 @@ export const ThemeToggle = ({
   disabled = false,
 }: ThemeToggleProps) => {
   const { colors, fonts } = useTheme();
-  const isTerminal = fonts === terminalFontFamily;
+  const isTerminal = fonts.body === terminalFontFamily.body;
 
   if (!isTerminal) {
     return (
@@ -33,10 +33,11 @@ export const ThemeToggle = ({
 
   return (
     <Pressable
-      onPress={() => !disabled && onValueChange(!value)}
+      onPress={() => onValueChange(!value)}
+      disabled={disabled}
       accessibilityRole="switch"
       accessibilityState={{ checked: value, disabled }}
-      style={{ padding: spacing.xs }}
+      style={{ padding: spacing.xs, opacity: disabled ? 0.5 : 1 }}
     >
       <Text
         style={{
