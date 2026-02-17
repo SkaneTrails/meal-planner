@@ -4,6 +4,11 @@
 
 import { Platform } from 'react-native';
 
+/** Structural contract for font family mappings. */
+export type FontFamilyTokens = {
+  readonly [K in keyof typeof fontFamily]: string;
+};
+
 // Font families - DM Sans for everything (unified font)
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
 const isWeb = Platform.OS === 'web';
