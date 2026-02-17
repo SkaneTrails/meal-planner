@@ -1,16 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { IconCircle } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
   borderRadius,
-  circleStyle,
   dotSize,
   fontSize,
   fontWeight,
-  iconContainer,
   layout,
   letterSpacing,
   lineHeight,
@@ -145,17 +144,13 @@ const RandomHeader = ({
 
   return (
     <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
-      <View
-        style={{
-          ...circleStyle(iconContainer.xl),
-          backgroundColor: colors.ai.light,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: spacing.md,
-        }}
+      <IconCircle
+        size="xl"
+        bg={colors.ai.light}
+        style={{ marginBottom: spacing.md }}
       >
         <Ionicons name="dice" size={32} color={colors.ai.primary} />
-      </View>
+      </IconCircle>
       <Text
         style={{
           fontSize: fontSize['3xl'],

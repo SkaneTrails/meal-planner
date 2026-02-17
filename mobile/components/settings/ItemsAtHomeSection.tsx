@@ -1,14 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { IconCircle } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
-  iconContainer,
   shadows,
   spacing,
   useTheme,
@@ -302,17 +301,13 @@ const EmptyItemsState = () => {
         ...shadows.sm,
       }}
     >
-      <View
-        style={{
-          ...circleStyle(iconContainer.lg),
-          backgroundColor: colors.bgDark,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: spacing.sm,
-        }}
+      <IconCircle
+        size="lg"
+        bg={colors.bgDark}
+        style={{ marginBottom: spacing.sm }}
       >
         <Ionicons name="basket-outline" size={24} color={colors.content.body} />
-      </View>
+      </IconCircle>
       <Text
         style={{
           fontSize: fontSize.md,

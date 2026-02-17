@@ -1,10 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { IconCircle } from '@/components';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
-  iconContainer,
   letterSpacing,
   lineHeight,
   shadows,
@@ -132,12 +131,10 @@ export const InstructionItem = ({
         ...shadows.card,
       })}
     >
-      <View
+      <IconCircle
+        size="sm"
+        bg={isCompleted ? colors.success : colors.content.body}
         style={{
-          ...circleStyle(iconContainer.sm),
-          backgroundColor: isCompleted ? colors.success : colors.content.body,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginRight: spacing.md,
           marginTop: 2,
         }}
@@ -155,7 +152,7 @@ export const InstructionItem = ({
             {displayNumber}
           </Text>
         )}
-      </View>
+      </IconCircle>
       <View style={{ flex: 1 }}>
         {hasTime && (
           <View

@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
-  iconContainer,
   lineHeight,
   shadows,
   spacing,
@@ -41,21 +40,17 @@ export const RecipeEnhancedInfo = ({
               marginBottom: spacing.md,
             }}
           >
-            <View
-              style={{
-                ...circleStyle(iconContainer.xs),
-                backgroundColor: colors.ai.iconBg,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: spacing.md,
-              }}
+            <IconCircle
+              size="xs"
+              bg={colors.ai.iconBg}
+              style={{ marginRight: spacing.md }}
             >
               <Ionicons
                 name="bulb-outline"
                 size={18}
                 color={colors.ai.primary}
               />
-            </View>
+            </IconCircle>
             <Text
               style={{
                 ...typography.displaySmall,
@@ -111,17 +106,13 @@ export const RecipeEnhancedInfo = ({
                 opacity: pressed ? 0.7 : 1,
               })}
             >
-              <View
-                style={{
-                  ...circleStyle(iconContainer.xs),
-                  backgroundColor: colors.ai.iconBg,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: spacing.md,
-                }}
+              <IconCircle
+                size="xs"
+                bg={colors.ai.iconBg}
+                style={{ marginRight: spacing.md }}
               >
                 <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
-              </View>
+              </IconCircle>
               <Text
                 style={{
                   ...typography.displaySmall,

@@ -1,15 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import type React from 'react';
 import { Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { AnimatedPressable, IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  circleStyle,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
 interface EmptyMealSlotProps {
@@ -47,17 +41,13 @@ export const EmptyMealSlot = ({
       <View
         style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}
       >
-        <View
-          style={{
-            ...circleStyle(26),
-            backgroundColor: colors.surface.active,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: spacing.sm,
-          }}
+        <IconCircle
+          size={26}
+          bg={colors.surface.active}
+          style={{ marginRight: spacing.sm }}
         >
           <Ionicons name="add" size={16} color={colors.content.subtitle} />
-        </View>
+        </IconCircle>
         <Text
           style={{
             fontSize: fontSize.md,

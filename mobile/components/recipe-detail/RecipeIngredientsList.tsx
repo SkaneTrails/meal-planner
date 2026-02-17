@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
+import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
-  iconContainer,
   lineHeight,
   shadows,
   spacing,
@@ -32,17 +31,13 @@ export const RecipeIngredientsList = ({
           marginBottom: spacing.lg,
         }}
       >
-        <View
-          style={{
-            ...circleStyle(iconContainer.xs),
-            backgroundColor: colors.surface.active,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: spacing.md,
-          }}
+        <IconCircle
+          size="xs"
+          bg={colors.surface.active}
+          style={{ marginRight: spacing.md }}
         >
           <Ionicons name="list" size={18} color={colors.content.body} />
-        </View>
+        </IconCircle>
         <Text
           style={{
             ...typography.displaySmall,

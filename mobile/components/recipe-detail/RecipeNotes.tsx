@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { IconCircle } from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
@@ -22,9 +23,7 @@ import {
 import type { TFunction } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
-  iconContainer,
   lineHeight,
   spacing,
   typography,
@@ -129,21 +128,17 @@ export const RecipeNotes = ({
           marginBottom: spacing.lg,
         }}
       >
-        <View
-          style={{
-            ...circleStyle(iconContainer.xs),
-            backgroundColor: colors.surface.active,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: spacing.md,
-          }}
+        <IconCircle
+          size="xs"
+          bg={colors.surface.active}
+          style={{ marginRight: spacing.md }}
         >
           <Ionicons
             name="chatbubble-ellipses-outline"
             size={18}
             color={colors.content.heading}
           />
-        </View>
+        </IconCircle>
         <Text
           style={{
             ...typography.displaySmall,

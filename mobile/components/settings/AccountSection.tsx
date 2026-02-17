@@ -1,13 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { AnimatedPressable, SectionHeader } from '@/components';
+import { AnimatedPressable, IconCircle, SectionHeader } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
-  iconContainer,
   settingsSubtitleStyle,
   settingsTitleStyle,
   shadows,
@@ -47,14 +45,10 @@ export const AccountSection = ({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View
-            style={{
-              ...circleStyle(iconContainer.lg),
-              backgroundColor: colors.bgDark,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: spacing.md,
-            }}
+          <IconCircle
+            size="lg"
+            bg={colors.bgDark}
+            style={{ marginRight: spacing.md }}
           >
             <Text
               style={{
@@ -65,7 +59,7 @@ export const AccountSection = ({
             >
               {userEmail?.[0]?.toUpperCase() || '?'}
             </Text>
-          </View>
+          </IconCircle>
           <View style={{ flex: 1 }}>
             <Text style={settingsTitleStyle}>
               {displayName || userEmail?.split('@')[0] || 'User'}

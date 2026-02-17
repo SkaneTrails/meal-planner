@@ -5,6 +5,7 @@
 
 export type { ColorTokens } from './theme/colors';
 export { colors, lightColors } from './theme/colors';
+export type { IconContainerSize } from './theme/layout';
 export {
   animation,
   borderRadius,

@@ -1,13 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import {
-  circleStyle,
-  fontSize,
-  fontWeight,
-  iconContainer,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { IconCircle } from '@/components';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface SectionHeaderProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -39,17 +33,9 @@ export const SectionHeader = ({
         marginBottom: spacing.md,
       }}
     >
-      <View
-        style={{
-          ...circleStyle(iconContainer.md),
-          backgroundColor: bgColor,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: spacing.md,
-        }}
-      >
+      <IconCircle size="md" bg={bgColor} style={{ marginRight: spacing.md }}>
         <Ionicons name={icon} size={20} color={iconColor} />
-      </View>
+      </IconCircle>
       <View style={{ flex: 1 }}>
         <Text
           style={{
