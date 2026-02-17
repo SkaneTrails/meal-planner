@@ -4,7 +4,9 @@
 
 import { Platform } from 'react-native';
 import type {
+  DietLabel,
   EnhancementReviewAction,
+  MealLabel,
   PaginatedRecipeList,
   Recipe,
   RecipeCreate,
@@ -56,6 +58,8 @@ export const recipeApi = {
   scrapeRecipe: async (
     url: string,
     enhance: boolean = false,
+    dietLabel?: DietLabel | null,
+    mealLabel?: MealLabel | null,
   ): Promise<Recipe> => {
     // Validate URL before attempting fetch — TypeError from new URL()
     // should be a hard error, not fall through to server-side scraping.
@@ -68,6 +72,14 @@ export const recipeApi = {
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       throw new ApiClientError('Only http and https URLs are supported', 400);
     }
+
+    const buildParams = () => {
+      const params = new URLSearchParams();
+      if (enhance) params.set('enhance', 'true');
+      if (dietLabel) params.set('diet_label', dietLabel);
+      if (mealLabel) params.set('meal_label', mealLabel);
+      return params.toString();
+    };
 
     try {
       const htmlResponse = await fetch(url, {
@@ -88,9 +100,7 @@ export const recipeApi = {
       const html = await htmlResponse.text();
 
       const request: RecipeParseRequest = { url, html };
-      const params = new URLSearchParams();
-      if (enhance) params.set('enhance', 'true');
-      const query = params.toString();
+      const query = buildParams();
 
       return apiRequest<Recipe>(`/recipes/parse${query ? `?${query}` : ''}`, {
         method: 'POST',
@@ -103,9 +113,7 @@ export const recipeApi = {
       // TypeError from fetch means CORS or network error — fall through
       // to server-side scraping. Invalid URLs are already caught above.
       const request: RecipeScrapeRequest = { url };
-      const params = new URLSearchParams();
-      if (enhance) params.set('enhance', 'true');
-      const query = params.toString();
+      const query = buildParams();
       return apiRequest<Recipe>(`/recipes/scrape${query ? `?${query}` : ''}`, {
         method: 'POST',
         body: JSON.stringify(request),

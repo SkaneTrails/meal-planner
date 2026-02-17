@@ -28,6 +28,8 @@ def build_recipe_create_from_scraped(scraped_data: dict[str, Any]) -> RecipeCrea
         prep_time=scraped_data.get("prep_time"),
         cook_time=scraped_data.get("cook_time"),
         total_time=scraped_data.get("total_time"),
+        diet_label=scraped_data.get("diet_label"),
+        meal_label=scraped_data.get("meal_label"),
     )
 
 
@@ -53,6 +55,8 @@ def build_recipe_create_from_enhanced(enhanced_data: dict[str, Any], fallback: R
         prep_time=enhanced_data.get("prep_time", fallback.prep_time),
         cook_time=enhanced_data.get("cook_time", fallback.cook_time),
         total_time=enhanced_data.get("total_time", fallback.total_time),
+        diet_label=enhanced_data.get("diet_label", fallback.diet_label),
+        meal_label=enhanced_data.get("meal_label", fallback.meal_label),
         cuisine=enhanced_data.get("cuisine"),
         category=enhanced_data.get("category"),
         tags=enhanced_data.get("tags", []),

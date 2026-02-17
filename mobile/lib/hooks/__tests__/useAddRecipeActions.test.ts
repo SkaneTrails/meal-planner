@@ -154,6 +154,8 @@ describe('useAddRecipeActions', () => {
       expect(mockScrapeRecipeMutateAsync).toHaveBeenCalledWith({
         url: 'https://example.com/recipe',
         enhance: false,
+        dietLabel: null,
+        mealLabel: null,
       });
     });
 

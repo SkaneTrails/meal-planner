@@ -12,7 +12,9 @@ import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import { useSettings } from '../settings-context';
 import type {
+  DietLabel,
   EnhancementReviewAction,
+  MealLabel,
   PaginatedRecipeList,
   Recipe,
   RecipeCreate,
@@ -140,10 +142,14 @@ export const useScrapeRecipe = () => {
     mutationFn: ({
       url,
       enhance = false,
+      dietLabel,
+      mealLabel,
     }: {
       url: string;
       enhance?: boolean;
-    }) => api.scrapeRecipe(url, enhance),
+      dietLabel?: DietLabel | null;
+      mealLabel?: MealLabel | null;
+    }) => api.scrapeRecipe(url, enhance, dietLabel, mealLabel),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
     },
