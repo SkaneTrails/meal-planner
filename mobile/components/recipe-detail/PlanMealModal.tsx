@@ -11,7 +11,7 @@ import {
 } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { isPastDate, toBcp47 } from '@/lib/utils/dateFormatter';
-import { MEAL_TYPES } from './recipe-detail-constants';
+import { DEFAULT_MEAL_TYPES } from './recipe-detail-constants';
 
 interface PlanMealModalProps {
   visible: boolean;
@@ -42,7 +42,7 @@ export const PlanMealModal = ({
   onClearMeal,
   getMealForSlot,
 }: PlanMealModalProps) => {
-  const resolvedMealTypes = mealTypesProp ?? MEAL_TYPES;
+  const resolvedMealTypes = mealTypesProp ?? DEFAULT_MEAL_TYPES;
 
   return (
     <BottomSheetModal

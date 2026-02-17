@@ -274,11 +274,87 @@ describe('useMealPlanActions', () => {
   });
 
   describe('MEAL_TYPES', () => {
-    it('provides lunch and dinner options', () => {
+    it('provides lunch and dinner options by default', () => {
       const { result } = renderActions();
       expect(result.current.MEAL_TYPES).toHaveLength(2);
       expect(result.current.MEAL_TYPES[0].type).toBe('lunch');
       expect(result.current.MEAL_TYPES[1].type).toBe('dinner');
+    });
+
+    it('includes breakfast when includeBreakfast setting is true', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        ...vi.mocked(useSettings)(),
+        settings: {
+          ...vi.mocked(useSettings)().settings,
+          includeBreakfast: true,
+        },
+      });
+
+      const { result } = renderActions();
+      expect(result.current.MEAL_TYPES).toHaveLength(3);
+      expect(result.current.MEAL_TYPES[0].type).toBe('breakfast');
+      expect(result.current.MEAL_TYPES[1].type).toBe('lunch');
+      expect(result.current.MEAL_TYPES[2].type).toBe('dinner');
+
+      // Restore default mock
+      vi.mocked(useSettings).mockReturnValue({
+        ...vi.mocked(useSettings)(),
+        settings: {
+          ...vi.mocked(useSettings)().settings,
+          includeBreakfast: false,
+        },
+      });
+    });
+  });
+
+  describe('countMealsForDate', () => {
+    it('counts meals that exist for a given date', () => {
+      const { result } = renderActions();
+      // 2026-01-05 has lunch (recipe-1) and dinner (custom:Pasta night) = 2
+      expect(result.current.countMealsForDate(new Date('2026-01-05'))).toBe(2);
+    });
+
+    it('returns 0 for a date with no meals', () => {
+      const { result } = renderActions();
+      expect(result.current.countMealsForDate(new Date('2026-01-07'))).toBe(0);
+    });
+
+    it('counts only matching meal types (unknown-id counts as present)', () => {
+      const { result } = renderActions();
+      // 2026-01-06 has only lunch (unknown-id) = 1
+      expect(result.current.countMealsForDate(new Date('2026-01-06'))).toBe(1);
+    });
+  });
+
+  describe('expandedPastDays / togglePastDay', () => {
+    it('starts with empty expanded set', () => {
+      const { result } = renderActions();
+      expect(result.current.expandedPastDays.size).toBe(0);
+    });
+
+    it('adds a date to expanded set', () => {
+      const { result } = renderActions();
+      act(() => result.current.togglePastDay('2026-01-05'));
+      expect(result.current.expandedPastDays.has('2026-01-05')).toBe(true);
+    });
+
+    it('removes a date from expanded set on second toggle', () => {
+      const { result } = renderActions();
+      act(() => result.current.togglePastDay('2026-01-05'));
+      act(() => result.current.togglePastDay('2026-01-05'));
+      expect(result.current.expandedPastDays.has('2026-01-05')).toBe(false);
+    });
+
+    it('manages multiple expanded dates independently', () => {
+      const { result } = renderActions();
+      act(() => result.current.togglePastDay('2026-01-05'));
+      act(() => result.current.togglePastDay('2026-01-06'));
+      expect(result.current.expandedPastDays.size).toBe(2);
+
+      act(() => result.current.togglePastDay('2026-01-05'));
+      expect(result.current.expandedPastDays.has('2026-01-05')).toBe(false);
+      expect(result.current.expandedPastDays.has('2026-01-06')).toBe(true);
     });
   });
 });

@@ -215,6 +215,23 @@ describe('useHouseholdSettingsForm', () => {
     });
   });
 
+  describe('updateIncludeBreakfast', () => {
+    it('updates include_breakfast and marks changes', () => {
+      const { result } = render('h1');
+      act(() => result.current.updateIncludeBreakfast(true));
+      expect(result.current.settings.include_breakfast).toBe(true);
+      expect(result.current.hasChanges).toBe(true);
+    });
+
+    it('toggles include_breakfast off', () => {
+      mockRemoteSettings = { include_breakfast: true };
+      const { result } = render('h1');
+      act(() => result.current.updateIncludeBreakfast(false));
+      expect(result.current.settings.include_breakfast).toBe(false);
+      expect(result.current.hasChanges).toBe(true);
+    });
+  });
+
   describe('addNoteSuggestion', () => {
     it('adds a new suggestion and marks changes', () => {
       const { result } = render('h1');

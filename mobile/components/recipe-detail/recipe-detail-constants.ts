@@ -67,7 +67,7 @@ export const MEAL_OPTIONS: { value: MealLabel | null; labelKey: string }[] = [
   { value: 'grill', labelKey: 'labels.meal.grill' },
 ];
 
-export const MEAL_TYPES: { type: MealType; labelKey: string }[] = [
+export const DEFAULT_MEAL_TYPES: { type: MealType; labelKey: string }[] = [
   { type: 'lunch', labelKey: 'labels.mealTime.lunch' },
   { type: 'dinner', labelKey: 'labels.mealTime.dinner' },
 ];

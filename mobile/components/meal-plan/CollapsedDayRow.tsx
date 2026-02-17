@@ -90,6 +90,6 @@ const styles = StyleSheet.create({
   },
   summary: {
     fontSize: fontSize.sm,
-    color: colors.content.tertiary,
+    color: colors.content.icon,
   },
 });
