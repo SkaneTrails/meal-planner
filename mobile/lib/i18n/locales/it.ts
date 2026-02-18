@@ -64,6 +64,8 @@ const it: Translations = {
       newest: 'Più recente',
       oldest: 'Più vecchio',
       name: 'Nome',
+      quickest: 'Più veloce',
+      longest: 'Più lungo',
     },
     time: {
       prep: 'Prep.',
@@ -132,6 +134,7 @@ const it: Translations = {
   recipes: {
     title: 'Libreria ricette',
     collectionCount: '{{count}} ricette nella tua collezione',
+    filteredCount: '{{count}} ricette',
     searchPlaceholder: 'Cerca ricette...',
     filterByDiet: 'Filtra per dieta',
     filterByMealType: 'Filtra per tipo di pasto',

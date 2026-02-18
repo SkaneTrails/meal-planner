@@ -23,6 +23,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, fontWeight, layout, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
+import { type SortOption, sortRecipes } from '@/lib/utils/recipeSorter';
 
 if (
   Platform.OS === 'android' &&
@@ -38,7 +39,7 @@ export default function RecipesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
   const [mealFilters, setMealFilters] = useState<MealLabel[]>([]);
-  const [sortBy, setSortBy] = useState('newest');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [libraryScope, setLibraryScope] = useState<LibraryScope>('all');
   const { isFavorite } = useSettings();
@@ -61,6 +62,8 @@ export default function RecipesScreen() {
     { value: 'newest', label: t('labels.sort.newest') },
     { value: 'oldest', label: t('labels.sort.oldest') },
     { value: 'name', label: t('labels.sort.name') },
+    { value: 'quickest', label: t('labels.sort.quickest') },
+    { value: 'longest', label: t('labels.sort.longest') },
   ];
 
   const [showSortPicker, setShowSortPicker] = useState(false);
@@ -83,8 +86,15 @@ export default function RecipesScreen() {
 
   const totalCount = data?.pages[0]?.total_count ?? 0;
 
+  const hasActiveFilters =
+    searchQuery !== '' ||
+    dietFilter !== null ||
+    mealFilters.length > 0 ||
+    showFavoritesOnly ||
+    libraryScope !== 'all';
+
   const filteredRecipes = useMemo(() => {
-    let result = recipes.filter((recipe) => {
+    const result = recipes.filter((recipe) => {
       const query = searchQuery.toLowerCase();
       const matchesSearch =
         searchQuery === '' ||
@@ -110,13 +120,7 @@ export default function RecipesScreen() {
       );
     });
 
-    if (sortBy === 'name') {
-      result = [...result].sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy === 'oldest') {
-      result = [...result].reverse();
-    }
-
-    return result;
+    return sortRecipes(result, sortBy);
   }, [
     recipes,
     searchQuery,
@@ -156,7 +160,11 @@ export default function RecipesScreen() {
         >
           <ScreenTitle
             title={t('recipes.title')}
-            subtitle={t('recipes.collectionCount', { count: totalCount })}
+            subtitle={
+              hasActiveFilters
+                ? t('recipes.filteredCount', { count: filteredRecipes.length })
+                : t('recipes.collectionCount', { count: totalCount })
+            }
             style={{ marginBottom: 8 }}
           />
         </View>
@@ -221,7 +229,7 @@ export default function RecipesScreen() {
             key={option.value}
             onPress={() => {
               hapticSelection();
-              setSortBy(option.value);
+              setSortBy(option.value as SortOption);
               setShowSortPicker(false);
             }}
             style={{

@@ -64,6 +64,8 @@ const sv: Translations = {
       newest: 'Nyast',
       oldest: 'Äldst',
       name: 'Namn',
+      quickest: 'Snabbast',
+      longest: 'Längst',
     },
     time: {
       prep: 'Förb.',
@@ -132,6 +134,7 @@ const sv: Translations = {
   recipes: {
     title: 'Receptbibliotek',
     collectionCount: '{{count}} recept i din samling',
+    filteredCount: '{{count}} recept',
     searchPlaceholder: 'Sök recept...',
     filterByDiet: 'Filtrera på kost',
     filterByMealType: 'Filtrera på måltidstyp',
