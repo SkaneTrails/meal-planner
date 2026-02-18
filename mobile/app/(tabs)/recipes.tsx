@@ -84,6 +84,15 @@ export default function RecipesScreen() {
     [data?.pages],
   );
 
+  const totalCount = data?.pages[0]?.total_count ?? 0;
+
+  const hasActiveFilters =
+    searchQuery !== '' ||
+    dietFilter !== null ||
+    mealFilters.length > 0 ||
+    showFavoritesOnly ||
+    libraryScope !== 'all';
+
   const filteredRecipes = useMemo(() => {
     const result = recipes.filter((recipe) => {
       const query = searchQuery.toLowerCase();
@@ -151,9 +160,11 @@ export default function RecipesScreen() {
         >
           <ScreenTitle
             title={t('recipes.title')}
-            subtitle={t('recipes.filteredCount', {
-              count: filteredRecipes.length,
-            })}
+            subtitle={
+              hasActiveFilters
+                ? t('recipes.filteredCount', { count: filteredRecipes.length })
+                : t('recipes.collectionCount', { count: totalCount })
+            }
             style={{ marginBottom: 8 }}
           />
         </View>
