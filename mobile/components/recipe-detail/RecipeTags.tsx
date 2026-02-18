@@ -25,8 +25,8 @@ export const RecipeTags = ({ tags }: RecipeTagsProps) => {
           label={tag}
           variant="display"
           prefix="#"
-          bg={colors.glass.solid}
-          color={colors.white}
+          bg={colors.chip.bg}
+          color={colors.content.body}
         />
       ))}
     </View>
