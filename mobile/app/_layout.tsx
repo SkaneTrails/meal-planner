@@ -25,7 +25,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppState, type AppStateStatus, View } from 'react-native';
 import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -46,13 +46,10 @@ import {
   useSettings,
 } from '@/lib/settings-context';
 import {
+  lightTheme,
+  type ThemeName,
   ThemeProvider,
-  terminalBorderRadius,
-  terminalButtonDisplay,
-  terminalColors,
-  terminalCRT,
-  terminalFontFamily,
-  terminalShadows,
+  themes,
   useTheme,
 } from '@/lib/theme';
 import '../global.css';
@@ -139,54 +136,43 @@ const AppContent = () => {
 
 const THEME_STORAGE_KEY = '@meal_planner_theme';
 
+const DEFAULT_THEME: ThemeName = 'light';
+
+/** Validate that a stored string is a known theme key. */
+const isThemeName = (value: string): value is ThemeName => value in themes;
+
 interface ThemeRootProps {
   children: React.ReactNode;
-  envTerminal: boolean;
+  envTheme: ThemeName;
   fontsReady: boolean;
 }
 
-const ThemeRoot = ({ children, envTerminal }: ThemeRootProps) => {
-  const [isTerminal, setIsTerminal] = useState(envTerminal);
+const ThemeRoot = ({ children, envTheme }: ThemeRootProps) => {
+  const [themeName, setThemeNameState] = useState<ThemeName>(envTheme);
 
   useEffect(() => {
     void AsyncStorage.getItem(THEME_STORAGE_KEY)
       .then((stored) => {
-        if (stored !== null) setIsTerminal(stored === 'terminal');
+        if (stored !== null && isThemeName(stored)) {
+          setThemeNameState(stored);
+        }
       })
       .catch(() => {});
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setIsTerminal((prev) => {
-      const next = !prev;
-      void AsyncStorage.setItem(
-        THEME_STORAGE_KEY,
-        next ? 'terminal' : 'default',
-      ).catch(() => {});
-      return next;
-    });
+  const setThemeName = useCallback((name: string) => {
+    if (!isThemeName(name)) return;
+    setThemeNameState(name);
+    void AsyncStorage.setItem(THEME_STORAGE_KEY, name).catch(() => {});
   }, []);
 
-  const themeProps = useMemo(
-    () =>
-      isTerminal
-        ? {
-            palette: terminalColors,
-            fonts: terminalFontFamily,
-            radii: terminalBorderRadius,
-            shadowTokens: terminalShadows,
-            buttonConfig: terminalButtonDisplay,
-            crt: terminalCRT,
-          }
-        : {},
-    [isTerminal],
-  );
+  const theme = themes[themeName] ?? lightTheme;
 
   return (
     <ThemeProvider
-      {...themeProps}
-      isTerminal={isTerminal}
-      toggleTheme={toggleTheme}
+      theme={theme}
+      themeName={themeName}
+      setThemeName={setThemeName}
     >
       {children}
     </ThemeProvider>
@@ -236,11 +222,12 @@ export default function RootLayout() {
     return null;
   }
 
-  const envTerminal = process.env.EXPO_PUBLIC_THEME === 'terminal';
+  const envTheme: ThemeName =
+    process.env.EXPO_PUBLIC_THEME === 'terminal' ? 'terminal' : DEFAULT_THEME;
 
   return (
     <ErrorBoundary>
-      <ThemeRoot envTerminal={envTerminal} fontsReady>
+      <ThemeRoot envTheme={envTheme} fontsReady>
         <AuthProvider>
           <QueryProvider>
             <SettingsProvider>

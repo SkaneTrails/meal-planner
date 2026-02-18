@@ -10,6 +10,7 @@
 
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
+import type { ImageSourcePropType } from 'react-native';
 import type { ColorTokens } from './colors';
 import { colors as defaultPalette } from './colors';
 import {
@@ -80,6 +81,21 @@ export const terminalButtonDisplay: ButtonDisplayConfig = {
   interaction: 'highlight',
 };
 
+/** A complete set of design tokens that fully describes one visual theme. */
+export interface ThemeDefinition {
+  /** Human-readable display name — shown in the theme picker. */
+  name: string;
+  colors: ColorTokens;
+  fonts: FontFamilyTokens;
+  borderRadius: BorderRadiusTokens;
+  shadows: ShadowTokens;
+  buttonDisplay: ButtonDisplayConfig;
+  /** Only CRT-style themes provide this. */
+  crt?: CRTConfig;
+  /** Static background image used by GradientBackground. Omit for solid-color backgrounds. */
+  backgroundImage?: ImageSourcePropType;
+}
+
 export interface ThemeValue {
   colors: ColorTokens;
   fonts: FontFamilyTokens;
@@ -91,10 +107,14 @@ export interface ThemeValue {
   buttonDisplay: ButtonDisplayConfig;
   /** CRT overlay config — undefined for themes without the effect. */
   crt?: CRTConfig;
-  /** Whether the terminal theme is currently active. */
+  /** Static background image for screen backgrounds. Undefined = solid color. */
+  backgroundImage?: ImageSourcePropType;
+  /** Registry key of the active theme. */
+  themeName: string;
+  /** Switch to a different theme by registry key. */
+  setThemeName: (name: string) => void;
+  /** Whether the terminal theme is active (convenience shortcut). */
   isTerminal: boolean;
-  /** Toggle between terminal and default themes at runtime. */
-  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeValue | null>(null);
@@ -108,24 +128,24 @@ export const useTheme = (): ThemeValue => {
   return value;
 };
 
+/** Default (light) theme assembled from module-level tokens. */
+const defaultTheme: ThemeDefinition = {
+  name: 'Elegant',
+  colors: defaultPalette,
+  fonts: defaultFontFamily,
+  borderRadius: defaultBorderRadius,
+  shadows: defaultShadows,
+  buttonDisplay: defaultButtonDisplay,
+};
+
 interface ThemeProviderProps {
   children: React.ReactNode;
-  /** Optional color palette override. Defaults to the built-in light palette. */
-  palette?: ColorTokens;
-  /** Optional font family override. Defaults to DM Sans. */
-  fonts?: FontFamilyTokens;
-  /** Optional border radius override. Defaults to the standard scale. */
-  radii?: BorderRadiusTokens;
-  /** Optional shadow presets override. Defaults to the standard depth shadows. */
-  shadowTokens?: ShadowTokens;
-  /** Optional button display config. Defaults to the standard animated wrapper. */
-  buttonConfig?: ButtonDisplayConfig;
-  /** Optional CRT overlay configuration. Omit to disable the effect. */
-  crt?: CRTConfig;
-  /** Whether the terminal theme is currently active. */
-  isTerminal?: boolean;
-  /** Callback to toggle the theme at runtime. */
-  toggleTheme?: () => void;
+  /** Complete theme definition. Defaults to the light theme. */
+  theme?: ThemeDefinition;
+  /** Registry key of the active theme. */
+  themeName?: string;
+  /** Callback to switch theme by registry key. */
+  setThemeName?: (name: string) => void;
 }
 
 const noop = () => {};
@@ -133,44 +153,41 @@ const noop = () => {};
 /** Wraps children with the resolved theme value. */
 export const ThemeProvider = ({
   children,
-  palette = defaultPalette,
-  fonts = defaultFontFamily,
-  radii = defaultBorderRadius,
-  shadowTokens = defaultShadows,
-  buttonConfig = defaultButtonDisplay,
-  crt,
-  isTerminal = false,
-  toggleTheme = noop,
+  theme = defaultTheme,
+  themeName = 'light',
+  setThemeName = noop as unknown as (name: string) => void,
 }: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(() => {
+    const {
+      colors,
+      fonts,
+      borderRadius: radii,
+      shadows: shadowTokens,
+      buttonDisplay,
+      crt,
+      backgroundImage,
+    } = theme;
     const isFlat = radii.full === 0;
     const themedCircleStyle: CircleStyleFn = isFlat
       ? (size) => ({ width: size, height: size, borderRadius: 0 }) as const
       : defaultCircleStyle;
 
     return {
-      colors: palette,
+      colors,
       fonts,
       typography: createTypography(fonts),
-      styles: createStyles(palette, radii),
+      styles: createStyles(colors, radii),
       borderRadius: radii,
       shadows: shadowTokens,
       circleStyle: themedCircleStyle,
-      buttonDisplay: buttonConfig,
+      buttonDisplay,
       crt,
-      isTerminal,
-      toggleTheme,
+      backgroundImage,
+      themeName,
+      setThemeName,
+      isTerminal: themeName === 'terminal',
     };
-  }, [
-    palette,
-    fonts,
-    radii,
-    shadowTokens,
-    buttonConfig,
-    crt,
-    isTerminal,
-    toggleTheme,
-  ]);
+  }, [theme, themeName, setThemeName]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

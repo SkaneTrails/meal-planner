@@ -12,6 +12,9 @@ const baseMock = {
   shadows: {} as Record<string, unknown>,
   circleStyle: (s: number) => ({ width: s, height: s, borderRadius: s / 2 }),
   crt: undefined as undefined | Record<string, unknown>,
+  themeName: 'light' as string,
+  setThemeName: vi.fn(),
+  isTerminal: false,
 };
 
 const mockCRT = {

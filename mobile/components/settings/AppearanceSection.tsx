@@ -1,9 +1,10 @@
-import { Section, SettingToggleRow, SurfaceCard } from '@/components';
+import { Section } from '@/components';
+import { ThemePicker } from '@/components/settings/ThemePicker';
 import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 
 export const AppearanceSection = () => {
-  const { isTerminal, toggleTheme } = useTheme();
+  const { themeName, setThemeName } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -13,14 +14,7 @@ export const AppearanceSection = () => {
       subtitle={t('settings.appearanceDesc')}
       spacing={spacing['2xl']}
     >
-      <SurfaceCard>
-        <SettingToggleRow
-          label={t('settings.terminalMode')}
-          subtitle={t('settings.terminalModeDesc')}
-          value={isTerminal}
-          onValueChange={toggleTheme}
-        />
-      </SurfaceCard>
+      <ThemePicker currentTheme={themeName} onChangeTheme={setThemeName} />
     </Section>
   );
 };
