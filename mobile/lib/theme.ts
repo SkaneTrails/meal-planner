@@ -22,6 +22,7 @@ export {
   spacing,
   terminal,
 } from './theme/layout';
+export { pastelColors } from './theme/pastel-colors';
 export type { ThemeStyles } from './theme/styles';
 export {
   accentUnderlineStyle,
@@ -40,6 +41,7 @@ export type {
   ButtonDisplayConfig,
   CircleStyleFn,
   CRTConfig,
+  ThemeDefinition,
 } from './theme/theme-context';
 export {
   defaultButtonDisplay,
@@ -47,6 +49,8 @@ export {
   terminalButtonDisplay,
   useTheme,
 } from './theme/theme-context';
+export type { ThemeName } from './theme/themes';
+export { lightTheme, pastelTheme, terminalTheme, themes } from './theme/themes';
 export type { FontFamilyTokens, TypographyTokens } from './theme/typography';
 export {
   createTypography,
@@ -57,6 +61,7 @@ export {
   fontWeight,
   letterSpacing,
   lineHeight,
+  pastelFontFamily,
   terminalFontFamily,
   typography,
 } from './theme/typography';

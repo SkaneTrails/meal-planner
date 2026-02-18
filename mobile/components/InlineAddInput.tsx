@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, TextInput, View } from 'react-native';
+import { Pressable, TextInput } from 'react-native';
 import { SurfaceCard } from '@/components/SurfaceCard';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 

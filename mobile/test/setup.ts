@@ -423,6 +423,34 @@ vi.mock('@/lib/theme', () => {
     },
   };
 
+  const mockLightTheme = {
+    name: 'Elegant',
+    colors: c,
+    fonts: mockFonts,
+    borderRadius: mockBorderRadius,
+    shadows: mockShadows,
+    buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+  };
+
+  const mockTerminalTheme = {
+    name: 'Terminal CRT',
+    colors: {},
+    fonts: {},
+    borderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
+    shadows: {},
+    buttonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
+    crt: { scanlineOpacity: 0.08, flickerMin: 0.97, flickerMs: 4000, glowColor: 'rgba(51, 255, 51, 0.07)', glowSpread: 60, glowSize: 20 },
+  };
+
+  const mockPastelTheme = {
+    name: 'Bubbly Pastel',
+    colors: c,
+    fonts: mockFonts,
+    borderRadius: mockBorderRadius,
+    shadows: mockShadows,
+    buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+  };
+
   return {
   colors: c,
   lightColors: undefined, // re-exported but unused in tests
@@ -524,8 +552,18 @@ vi.mock('@/lib/theme', () => {
     circleStyle: mockCircleStyle,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     crt: undefined,
+    backgroundImage: undefined,
+    themeName: 'light',
+    setThemeName: vi.fn(),
+    isTerminal: false,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  lightTheme: mockLightTheme,
+  terminalTheme: mockTerminalTheme,
+  pastelTheme: mockPastelTheme,
+  pastelColors: c,
+  pastelFontFamily: mockFonts,
+  themes: { light: mockLightTheme, terminal: mockTerminalTheme, pastel: mockPastelTheme },
   };
 });
 

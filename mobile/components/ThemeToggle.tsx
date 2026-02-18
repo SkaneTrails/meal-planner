@@ -4,7 +4,7 @@
  */
 
 import { Pressable, Switch, Text } from 'react-native';
-import { fontSize, spacing, terminalFontFamily, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface ThemeToggleProps {
   value: boolean;
@@ -17,8 +17,7 @@ export const ThemeToggle = ({
   onValueChange,
   disabled = false,
 }: ThemeToggleProps) => {
-  const { colors, fonts } = useTheme();
-  const isTerminal = fonts.body === terminalFontFamily.body;
+  const { colors, fonts, isTerminal } = useTheme();
 
   if (!isTerminal) {
     return (

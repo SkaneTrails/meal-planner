@@ -1,7 +1,13 @@
 /**
- * Background component with two modes:
- * - Default: Static background image (background.png)
- * - Animated: Floating color orbs with smooth curved movement (for sign-in/no-access)
+ * Background component with multiple modes:
+ * - Default: Theme background image (if provided) or solid bgBase color
+ * - Muted: Desaturated overlay for settings screens
+ * - Structured: Faint gradient for content-heavy screens (meal plan, etc.)
+ * - Animated: Floating color orbs with smooth curved movement (sign-in/no-access)
+ * - Neutral: Solid warm surface for grocery list
+ *
+ * The background image is owned by the active theme. Themes that don't
+ * provide a backgroundImage get a solid bgBase fill instead.
  */
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,7 +18,6 @@ import {
   Dimensions,
   Easing,
   ImageBackground,
-  Platform,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -20,9 +25,6 @@ import {
 import { useTheme } from '@/lib/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-const _BACKGROUND_IMAGE = require('@/assets/images/background.png');
-const BACKGROUND_GRADIENT = require('@/assets/images/bck_b.png');
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
@@ -171,10 +173,8 @@ export const GradientBackground = ({
   structured = false,
   neutral = false,
 }: GradientBackgroundProps) => {
-  const { colors } = useTheme();
+  const { colors, backgroundImage } = useTheme();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-
-  const _isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
 
   // Neutral variant: warm beige-grey solid surface for grocery list
   if (neutral) {
@@ -195,7 +195,7 @@ export const GradientBackground = ({
     );
   }
 
-  // Muted variant for settings - uses gradient background image with darker overlay
+  // Muted variant for settings - background image with darker overlay, or solid bgBase
   if (muted) {
     return (
       <View
@@ -205,31 +205,83 @@ export const GradientBackground = ({
           { width: windowWidth, height: windowHeight, overflow: 'hidden' },
         ]}
       >
-        <ImageBackground
-          source={BACKGROUND_GRADIENT}
-          style={{
-            width: windowWidth,
-            height: windowHeight + 200,
-            marginTop: -100,
-          }}
-          resizeMode="cover"
-        >
-          {/* Darker overlay for settings */}
+        {backgroundImage ? (
+          <ImageBackground
+            source={backgroundImage}
+            style={{
+              width: windowWidth,
+              height: windowHeight + 200,
+              marginTop: -100,
+            }}
+            resizeMode="cover"
+          >
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: colors.background.mutedOverlay },
+              ]}
+            />
+          </ImageBackground>
+        ) : (
           <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: colors.background.mutedOverlay,
-              },
-            ]}
-          />
-        </ImageBackground>
+            style={{
+              width: windowWidth,
+              height: windowHeight + 200,
+              marginTop: -100,
+              backgroundColor: colors.bgBase,
+            }}
+          >
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: colors.background.mutedOverlay },
+              ]}
+            />
+          </View>
+        )}
         <View style={[StyleSheet.absoluteFill]}>{children}</View>
       </View>
     );
   }
 
   if (!animated) {
+    const overlays = (
+      <>
+        {!structured && (
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: colors.background.defaultOverlay },
+            ]}
+          />
+        )}
+        {structured && (
+          <>
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                { backgroundColor: colors.background.structuredWash },
+              ]}
+            />
+            <LinearGradient
+              colors={[
+                colors.background.structuredGradientStart,
+                colors.background.structuredGradientEnd,
+              ]}
+              locations={[0, 0.3]}
+              style={[StyleSheet.absoluteFill]}
+            />
+          </>
+        )}
+      </>
+    );
+
+    const backgroundStyle = {
+      width: windowWidth,
+      height: windowHeight + 200,
+      marginTop: -100,
+    };
+
     return (
       <View
         style={[
@@ -238,50 +290,19 @@ export const GradientBackground = ({
           { width: windowWidth, height: windowHeight, overflow: 'hidden' },
         ]}
       >
-        <ImageBackground
-          source={BACKGROUND_GRADIENT}
-          style={{
-            width: windowWidth,
-            height: windowHeight + 200,
-            marginTop: -100,
-          }}
-          resizeMode="cover"
-        >
-          {/* Brighten the image slightly for main page */}
-          {!structured && (
-            <View
-              style={[
-                StyleSheet.absoluteFill,
-                {
-                  backgroundColor: colors.background.defaultOverlay,
-                },
-              ]}
-            />
-          )}
-          {/* Structured variant: stronger neutral wash for content-heavy screens */}
-          {structured && (
-            <>
-              {/* Warm beige-grey surface for content screens */}
-              <View
-                style={[
-                  StyleSheet.absoluteFill,
-                  {
-                    backgroundColor: colors.background.structuredWash,
-                  },
-                ]}
-              />
-              {/* Very subtle warm tint at top only */}
-              <LinearGradient
-                colors={[
-                  colors.background.structuredGradientStart,
-                  colors.background.structuredGradientEnd,
-                ]}
-                locations={[0, 0.3]}
-                style={[StyleSheet.absoluteFill]}
-              />
-            </>
-          )}
-        </ImageBackground>
+        {backgroundImage ? (
+          <ImageBackground
+            source={backgroundImage}
+            style={backgroundStyle}
+            resizeMode="cover"
+          >
+            {overlays}
+          </ImageBackground>
+        ) : (
+          <View style={[backgroundStyle, { backgroundColor: colors.bgBase }]}>
+            {overlays}
+          </View>
+        )}
         <View style={[StyleSheet.absoluteFill]}>{children}</View>
       </View>
     );

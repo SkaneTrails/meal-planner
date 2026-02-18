@@ -60,6 +60,29 @@ export const terminalFontFamily: FontFamilyTokens = {
   accent: MONO,
 };
 
+// Rounded/comic system font for the pastel "bubbly" theme.
+// No custom font loading needed — relies on platform system fonts.
+const COMIC = isWeb
+  ? '"Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive'
+  : Platform.select({
+      ios: 'Chalkboard SE',
+      android: 'casual',
+      default: 'sans-serif',
+    });
+
+/** Comic Sans / Chalkboard — pastel bubbly theme font family. */
+export const pastelFontFamily: FontFamilyTokens = {
+  display: COMIC,
+  displayRegular: COMIC,
+  displayMedium: COMIC,
+  displayBold: COMIC,
+  body: COMIC,
+  bodyMedium: COMIC,
+  bodySemibold: COMIC,
+  bodyBold: COMIC,
+  accent: COMIC,
+};
+
 // Static font family mapping used by the typography presets below. Dynamic,
 // theme-aware font access should go through `useTheme().fonts` where available.
 // The presets are intentionally static — migrating them to a factory that takes
