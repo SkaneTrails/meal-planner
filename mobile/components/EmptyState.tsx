@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { Pressable, Text, View, type ViewStyle } from 'react-native';
-import { IconCircle } from '@/components';
 import {
   fontSize,
   letterSpacing,
@@ -9,6 +8,7 @@ import {
   spacing,
   useTheme,
 } from '@/lib/theme';
+import { IconCircle } from './IconCircle';
 
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 

@@ -129,3 +129,11 @@ export const animation = {
     stiffness: 100,
   },
 } as const;
+
+// Terminal box-drawing layout constants
+export const terminal = {
+  /** Line height for single/double-line box-drawing chars (TerminalFrame, TerminalDivider). */
+  charHeight: 14,
+  /** Line height for FAB bar box-drawing chars (slightly taller for touch targets). */
+  fabCharHeight: 16,
+} as const;

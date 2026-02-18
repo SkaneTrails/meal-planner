@@ -1,8 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  fontWeight,
+  iconSize,
+  spacing,
+  terminal,
+  useTheme,
+} from '@/lib/theme';
 import { toBcp47 } from '@/lib/utils/dateFormatter';
+
+// ── Box-drawing characters ──────────────────────────────────────────────
+const B = {
+  h: '\u2550', // ═
+  labelL: '\u2561', // ╡
+  labelR: '\u255E', // ╞
+} as const;
 
 interface CollapsedDayRowProps {
   date: Date;
@@ -19,7 +33,7 @@ export const CollapsedDayRow = ({
   t,
   onExpand,
 }: CollapsedDayRowProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
   const bcp47 = toBcp47(language);
   const dayName = date.toLocaleDateString(bcp47, { weekday: 'short' });
   const monthDay = date.toLocaleDateString(bcp47, {
@@ -30,6 +44,111 @@ export const CollapsedDayRow = ({
     mealCount > 0
       ? t('mealPlan.mealsPlanned', { count: mealCount })
       : t('mealPlan.noMeals');
+
+  if (crt) {
+    const charStyle = {
+      color: colors.border,
+      fontFamily: fonts.body,
+      fontSize: fontSize.md,
+      lineHeight: terminal.charHeight,
+    };
+
+    const labelStyle = {
+      color: colors.primary,
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.base,
+      letterSpacing: 1,
+      paddingHorizontal: spacing.xs,
+    };
+
+    return (
+      <Pressable
+        onPress={onExpand}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: spacing.sm,
+        }}
+      >
+        {/* ═══ leading line */}
+        <View
+          style={{ flex: 1, overflow: 'hidden', height: terminal.charHeight }}
+        >
+          <Text style={charStyle} selectable={false}>
+            {B.h.repeat(200)}
+          </Text>
+        </View>
+
+        {/* ╡ dag · datum ╞ */}
+        <Text style={charStyle} selectable={false}>
+          {B.labelL}
+        </Text>
+        <Text style={labelStyle} selectable={false}>
+          {dayName} {'\u00B7'} {monthDay}
+        </Text>
+        <Text style={charStyle} selectable={false}>
+          {B.labelR}
+        </Text>
+
+        {/* ═══ */}
+        <View
+          style={{ flex: 1, overflow: 'hidden', height: terminal.charHeight }}
+        >
+          <Text style={charStyle} selectable={false}>
+            {B.h.repeat(200)}
+          </Text>
+        </View>
+
+        {/* ╡ summary ╞ */}
+        <Text style={charStyle} selectable={false}>
+          {B.labelL}
+        </Text>
+        <Text style={labelStyle} selectable={false}>
+          {summary}
+        </Text>
+        <Text style={charStyle} selectable={false}>
+          {B.labelR}
+        </Text>
+
+        {/* ═══ middle line */}
+        <View
+          style={{
+            width: spacing.sm,
+            overflow: 'hidden',
+            height: terminal.charHeight,
+          }}
+        >
+          <Text style={charStyle} selectable={false}>
+            {B.h.repeat(10)}
+          </Text>
+        </View>
+
+        {/* ╡ ▼ ╞ */}
+        <Text style={charStyle} selectable={false}>
+          {B.labelL}
+        </Text>
+        <Text style={labelStyle} selectable={false}>
+          {'\u25BC'}
+        </Text>
+        <Text style={charStyle} selectable={false}>
+          {B.labelR}
+        </Text>
+
+        {/* ═══ trailing line */}
+        <View
+          style={{
+            width: spacing.sm,
+            overflow: 'hidden',
+            height: terminal.charHeight,
+          }}
+        >
+          <Text style={charStyle} selectable={false}>
+            {B.h.repeat(10)}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  }
 
   return (
     <Pressable
@@ -44,15 +163,30 @@ export const CollapsedDayRow = ({
       ]}
     >
       <View style={styles.left}>
-        <Text style={[styles.dayName, { color: colors.content.body }]}>
+        <Text
+          style={[
+            styles.dayName,
+            { color: colors.content.body, fontFamily: fonts.bodySemibold },
+          ]}
+        >
           {dayName}
         </Text>
-        <Text style={[styles.monthDay, { color: colors.content.subtitle }]}>
+        <Text
+          style={[
+            styles.monthDay,
+            { color: colors.content.subtitle, fontFamily: fonts.body },
+          ]}
+        >
           {monthDay}
         </Text>
       </View>
       <View style={styles.right}>
-        <Text style={[styles.summary, { color: colors.content.icon }]}>
+        <Text
+          style={[
+            styles.summary,
+            { color: colors.content.icon, fontFamily: fonts.body },
+          ]}
+        >
           {summary}
         </Text>
         <Ionicons

@@ -36,4 +36,9 @@ export {
 } from './Skeleton';
 export { StepperControl } from './StepperControl';
 export { SurfaceCard } from './SurfaceCard';
+export { TerminalDivider } from './TerminalDivider';
+export type { FabSlot } from './TerminalFabBar';
+export { TerminalFabBar } from './TerminalFabBar';
+export type { FrameSegment } from './TerminalFrame';
+export { TerminalFrame } from './TerminalFrame';
 export { ThemeToggle } from './ThemeToggle';

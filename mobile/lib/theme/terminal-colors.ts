@@ -21,8 +21,7 @@ const GREEN_DIM = '#22CC22'; // medium brightness
 const GREEN_DARK = '#1A9A1A'; // muted / tertiary
 const GREEN_SUBTLE = '#115511'; // borders, faint accents
 
-const CYAN = '#00CCCC'; // accent — AI, links
-const CYAN_DIM = '#009999';
+// No cyan — terminal is monochrome green
 
 const RED = '#FF3333'; // errors, destructive
 const AMBER = '#CCAA00'; // warnings
@@ -44,9 +43,9 @@ export const terminalColors: ColorTokens = {
   bgDark: BLACK_CARD,
   bgWarm: BLACK_LIGHT,
 
-  accent: CYAN,
-  accentDark: CYAN_DIM,
-  accentLight: CYAN,
+  accent: GREEN_DIM,
+  accentDark: GREEN_DARK,
+  accentLight: GREEN,
   coral: GREEN,
   coralSoft: GREEN_DIM,
   gold: AMBER,
@@ -67,10 +66,10 @@ export const terminalColors: ColorTokens = {
       border: g(0.4),
     },
     fish: {
-      bg: 'rgba(0, 204, 204, 0.08)',
-      text: CYAN,
-      cardBg: 'rgba(0, 204, 204, 0.06)',
-      border: 'rgba(0, 204, 204, 0.4)',
+      bg: g(0.08),
+      text: GREEN_DIM,
+      cardBg: g(0.06),
+      border: g(0.4),
     },
     meat: {
       bg: 'rgba(255, 51, 51, 0.08)',
@@ -92,6 +91,7 @@ export const terminalColors: ColorTokens = {
   },
   border: g(0.25),
   borderLight: g(0.12),
+  borderFaint: g(0.05),
 
   content: {
     heading: GREEN,
@@ -163,10 +163,10 @@ export const terminalColors: ColorTokens = {
   },
 
   mealPlan: {
-    slotBg: bk(0.85),
+    slotBg: 'rgba(17, 85, 17, 0.3)',
     containerBg: bk(0.92),
-    emptyBg: bk(0.7),
-    emptyStateBg: bk(0.5),
+    emptyBg: 'rgba(17, 85, 17, 0.2)',
+    emptyStateBg: 'rgba(17, 85, 17, 0.15)',
   },
 
   rating: {
@@ -186,7 +186,7 @@ export const terminalColors: ColorTokens = {
     bg: g(0.08),
     border: g(0.25),
     divider: g(0.12),
-    fishActive: CYAN,
+    fishActive: GREEN_DIM,
     meatActive: RED,
     favoriteActive: '#FF5555',
   },
@@ -223,16 +223,16 @@ export const terminalColors: ColorTokens = {
   },
 
   ai: {
-    primary: CYAN,
-    primaryDark: CYAN_DIM,
-    bg: 'rgba(0, 204, 204, 0.06)',
-    bgPressed: 'rgba(0, 204, 204, 0.15)',
-    muted: 'rgba(0, 204, 204, 0.4)',
-    iconBg: 'rgba(0, 204, 204, 0.1)',
-    light: 'rgba(0, 204, 204, 0.12)',
-    badge: 'rgba(0, 204, 204, 0.9)',
-    selectedBg: 'rgba(0, 204, 204, 0.08)',
-    border: 'rgba(0, 204, 204, 0.25)',
+    primary: GREEN_DIM,
+    primaryDark: GREEN_DARK,
+    bg: g(0.06),
+    bgPressed: g(0.15),
+    muted: g(0.4),
+    iconBg: g(0.1),
+    light: g(0.12),
+    badge: g(0.9),
+    selectedBg: g(0.08),
+    border: g(0.25),
   },
 
   destructive: {
@@ -259,7 +259,16 @@ export const terminalColors: ColorTokens = {
     animatedOverlay: bk(1),
   },
 
-  tagDot: [GREEN, CYAN, GREEN_DIM, GREEN_DARK, CYAN_DIM, AMBER, RED, BLUE],
+  tagDot: [
+    GREEN,
+    GREEN_DIM,
+    GREEN_DARK,
+    GREEN_SUBTLE,
+    AMBER,
+    RED,
+    BLUE,
+    g(0.6),
+  ],
 };
 
 // ── Terminal border radius — sharp corners, no rounding ────────────────

@@ -4,9 +4,13 @@
  * Extracted to its own module to avoid circular dependencies between
  * settings-context (which imports use-auth) and use-auth (which needs
  * the current language for translateStandalone).
+ *
+ * AppLanguage is defined here (rather than settings-context) so that
+ * i18n/translate.ts can import it without creating a cycle through
+ * settings-context → use-auth.
  */
 
-import type { AppLanguage } from './settings-context';
+export type AppLanguage = 'en' | 'sv' | 'it';
 
 let _currentLanguage: AppLanguage = 'en';
 

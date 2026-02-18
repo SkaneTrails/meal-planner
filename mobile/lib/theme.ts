@@ -20,6 +20,7 @@ export {
   layout,
   shadows,
   spacing,
+  terminal,
 } from './theme/layout';
 export type { ThemeStyles } from './theme/styles';
 export {

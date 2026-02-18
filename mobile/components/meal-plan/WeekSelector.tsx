@@ -25,7 +25,7 @@ export const WeekSelector = ({
   onNextWeek,
   onJumpToToday,
 }: WeekSelectorProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
   return (
     <View
       style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}
@@ -52,17 +52,31 @@ export const WeekSelector = ({
             backgroundColor: colors.glass.subtle,
           }}
         >
-          <Ionicons
-            name="chevron-back"
-            size={18}
-            color={colors.content.tertiary}
-          />
+          {crt ? (
+            <Text
+              style={{
+                color: colors.primary,
+                fontFamily: fonts.body,
+                fontSize: 18,
+              }}
+              selectable={false}
+            >
+              {'\u25C4'}
+            </Text>
+          ) : (
+            <Ionicons
+              name="chevron-back"
+              size={18}
+              color={colors.content.tertiary}
+            />
+          )}
         </AnimatedPressable>
 
         <View style={{ alignItems: 'center' }}>
           <Text
             style={{
               fontSize: fontSize.md,
+              fontFamily: fonts.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.strong,
             }}
@@ -79,6 +93,7 @@ export const WeekSelector = ({
               <Text
                 style={{
                   fontSize: fontSize.xs,
+                  fontFamily: fonts.body,
                   color: colors.accent,
                   marginTop: 2,
                   fontWeight: fontWeight.medium,
@@ -103,11 +118,24 @@ export const WeekSelector = ({
             backgroundColor: colors.glass.subtle,
           }}
         >
-          <Ionicons
-            name="chevron-forward"
-            size={18}
-            color={colors.content.tertiary}
-          />
+          {crt ? (
+            <Text
+              style={{
+                color: colors.primary,
+                fontFamily: fonts.body,
+                fontSize: 18,
+              }}
+              selectable={false}
+            >
+              {'\u25BA'}
+            </Text>
+          ) : (
+            <Ionicons
+              name="chevron-forward"
+              size={18}
+              color={colors.content.tertiary}
+            />
+          )}
         </AnimatedPressable>
       </View>
     </View>

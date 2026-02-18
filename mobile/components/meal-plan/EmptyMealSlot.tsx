@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import type React from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable, IconCircle } from '@/components';
-import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
@@ -10,7 +9,6 @@ interface EmptyMealSlotProps {
   date: Date;
   mealType: MealType;
   label: string;
-  t: TFunction;
   onPress: (
     date: Date,
     mealType: MealType,
@@ -22,7 +20,6 @@ export const EmptyMealSlot = ({
   date,
   mealType,
   label,
-  t,
   onPress,
 }: EmptyMealSlotProps) => {
   const { colors, fonts, borderRadius } = useTheme();
@@ -69,34 +66,13 @@ export const EmptyMealSlot = ({
           gap: spacing['xs-sm'],
         }}
       >
-        {/* Primary action: Library */}
-        <AnimatedPressable
+        {/* Library action — same style as other icon buttons */}
+        <SecondaryActionButton
+          icon="book-outline"
           onPress={() => onPress(date, mealType, 'library')}
-          hoverScale={1.03}
-          pressScale={0.97}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: colors.content.body,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing['xs-sm'],
-            borderRadius: borderRadius['sm-md'],
-            gap: spacing['xs-sm'],
-          }}
-        >
-          <Ionicons name="book-outline" size={13} color={colors.white} />
-          <Text
-            style={{
-              fontSize: fontSize.base,
-              fontFamily: fonts.bodySemibold,
-              color: colors.white,
-            }}
-          >
-            {t('mealPlan.library')}
-          </Text>
-        </AnimatedPressable>
+        />
 
-        {/* Secondary actions: icon-only ghost buttons */}
+        {/* Other actions */}
         <SecondaryActionButton
           icon="dice-outline"
           onPress={() => onPress(date, mealType, 'random')}
