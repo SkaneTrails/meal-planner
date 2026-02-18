@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { Button, IconCircle } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
-import { PrimaryButton } from '@/components/PrimaryButton';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
@@ -84,43 +83,31 @@ export const RandomTab = ({ state }: RandomTabProps) => {
         {/* Action buttons */}
         <View style={{ flexDirection: 'row', gap: spacing.md, width: '100%' }}>
           <View style={{ flex: 1 }}>
-            <PrimaryButton
+            <Button
+              variant="primary"
               onPress={() => handleSelectRecipe(randomRecipe.id)}
               disabled={setMeal.isPending}
               icon="checkmark-circle"
               label={t('selectRecipe.random.addToPlan')}
-              pressedColor={colors.button.primaryPressed}
             />
           </View>
-          <Pressable
+          <Button
+            variant="text"
             onPress={shuffleRandom}
             disabled={setMeal.isPending}
-            style={({ pressed }) => ({
+            icon="shuffle"
+            iconSize={20}
+            label={t('selectRecipe.random.shuffle')}
+            textColor={colors.text.inverse}
+            color={colors.glass.card}
+            style={{
               flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
               justifyContent: 'center',
               paddingVertical: spacing.md,
               borderRadius: borderRadius.sm,
-              backgroundColor: pressed
-                ? colors.glass.medium
-                : colors.glass.card,
-              opacity: setMeal.isPending ? 0.5 : 1,
               ...shadows.sm,
-            })}
-          >
-            <Ionicons name="shuffle" size={20} color={colors.text.inverse} />
-            <Text
-              style={{
-                marginLeft: spacing.sm,
-                fontSize: fontSize.lg,
-                fontWeight: fontWeight.semibold,
-                color: colors.text.inverse,
-              }}
-            >
-              {t('selectRecipe.random.shuffle')}
-            </Text>
-          </Pressable>
+            }}
+          />
         </View>
       </View>
     </ScrollView>

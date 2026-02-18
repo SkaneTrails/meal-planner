@@ -125,7 +125,7 @@ export const FloatingTabBar = () => {
   return (
     <View style={styles.container} pointerEvents="box-none">
       <View style={styles.barOuter}>
-        <View style={styles.bar}>
+        <View style={[styles.bar, shadows.md]}>
           <TabBarBackground />
           {TABS.map((tab) => {
             const active = isTabActive(pathname, tab);

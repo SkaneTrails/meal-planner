@@ -8,8 +8,12 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import { GradientBackground } from '@/components';
-import { CollapsedDayRow } from '@/components/meal-plan/CollapsedDayRow';
+import {
+  GradientBackground,
+  TerminalDivider,
+  TerminalFabBar,
+  TerminalFrame,
+} from '@/components';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
 import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
@@ -25,10 +29,14 @@ import {
   spacing,
   useTheme,
 } from '@/lib/theme';
-import { formatDateLocal, isPastDate } from '@/lib/utils/dateFormatter';
+import {
+  formatDateLocal,
+  formatDayHeader,
+  isPastDate,
+} from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius, shadows, crt } = useTheme();
   const {
     t,
     language,
@@ -139,127 +147,140 @@ export default function MealPlanScreen() {
                 const note = getNoteForDate(date);
                 const isEditing = editingNoteDate === dateStr;
 
-                if (isPast && !isExpanded) {
-                  return (
-                    <CollapsedDayRow
-                      key={date.toISOString()}
-                      date={date}
-                      mealCount={countMealsForDate(date)}
-                      language={language}
-                      t={t}
-                      onExpand={() => togglePastDay(dateStr)}
-                    />
-                  );
-                }
+                const isCollapsed = isPast && !isExpanded;
+                const mealCount = countMealsForDate(date);
+                const summary =
+                  mealCount > 0
+                    ? t('mealPlan.mealsPlanned', { count: mealCount })
+                    : t('mealPlan.noMeals');
+
+                const rightSegments = isCollapsed
+                  ? [
+                      { label: summary },
+                      {
+                        label: '\u25BC',
+                        onPress: () => togglePastDay(dateStr),
+                      },
+                    ]
+                  : [
+                      ...(note
+                        ? [
+                            {
+                              label: note,
+                              onPress: () => handleStartEditNote(date),
+                            },
+                          ]
+                        : [
+                            {
+                              label: '+',
+                              onPress: () => handleStartEditNote(date),
+                            },
+                          ]),
+                      ...(isPast
+                        ? [
+                            {
+                              label: '\u25B2',
+                              onPress: () => togglePastDay(dateStr),
+                            },
+                          ]
+                        : []),
+                    ];
+
+                const frameLabel = isCollapsed
+                  ? formatDayHeader(date, language, '')
+                  : isToday
+                    ? t('mealPlan.today').toUpperCase()
+                    : undefined;
 
                 return (
-                  <View
+                  <TerminalFrame
                     key={date.toISOString()}
-                    onLayout={
-                      isToday
-                        ? (e) => {
-                            todayY.current = e.nativeEvent.layout.y;
-                          }
-                        : undefined
-                    }
+                    label={frameLabel}
+                    rightSegments={rightSegments}
+                    variant={isToday ? 'double' : 'single'}
+                    collapsed={isCollapsed}
                     style={{
-                      marginBottom: spacing.lg,
-                      backgroundColor: isToday
-                        ? colors.glass.heavy
-                        : colors.glass.solid,
-                      borderRadius: borderRadius.lg,
-                      padding: spacing['md-lg'],
-                      borderWidth: isToday ? 2 : 1,
-                      borderColor: isToday
-                        ? colors.ai.primary
-                        : colors.glass.border,
-                      boxShadow: shadows.cardRaised.boxShadow,
+                      marginBottom: isCollapsed ? spacing.sm : spacing.lg,
                       opacity: isPast ? 0.6 : 1,
                     }}
                   >
-                    <DayHeader
-                      date={date}
-                      isToday={isToday}
-                      language={language}
-                      t={t}
-                      note={note}
-                      isEditing={isEditing}
-                      noteText={noteText}
-                      noteSuggestions={NOTE_SUGGESTIONS}
-                      onNoteTextChange={setNoteText}
-                      onStartEdit={() => handleStartEditNote(date)}
-                      onSaveNote={handleSaveNote}
-                      onCancelEdit={handleCancelEditNote}
-                      onToggleTag={handleAddTag}
-                      onCollapse={
-                        isPast ? () => togglePastDay(dateStr) : undefined
+                    <View
+                      onLayout={
+                        isToday
+                          ? (e) => {
+                              todayY.current = e.nativeEvent.layout.y;
+                            }
+                          : undefined
                       }
-                    />
+                      style={{
+                        backgroundColor: crt
+                          ? colors.bgBase
+                          : isToday
+                            ? colors.glass.heavy
+                            : colors.glass.solid,
+                        borderRadius: borderRadius.lg,
+                        padding: spacing['md-lg'],
+                        borderWidth: crt ? 0 : isToday ? 2 : 1,
+                        borderColor: isToday
+                          ? colors.ai.primary
+                          : colors.glass.border,
+                        boxShadow: crt
+                          ? undefined
+                          : shadows.cardRaised.boxShadow,
+                      }}
+                    >
+                      <DayHeader
+                        date={date}
+                        isToday={isToday}
+                        language={language}
+                        t={t}
+                        note={note}
+                        isEditing={isEditing}
+                        noteText={noteText}
+                        noteSuggestions={NOTE_SUGGESTIONS}
+                        onNoteTextChange={setNoteText}
+                        onStartEdit={() => handleStartEditNote(date)}
+                        onSaveNote={handleSaveNote}
+                        onCancelEdit={handleCancelEditNote}
+                        onToggleTag={handleAddTag}
+                        onCollapse={
+                          isPast ? () => togglePastDay(dateStr) : undefined
+                        }
+                      />
 
-                    {MEAL_TYPES.map(({ type, label }) => {
-                      const meal = getMealForSlot(date, type);
-                      if (!meal) {
+                      {MEAL_TYPES.map(({ type, label }) => {
+                        const meal = getMealForSlot(date, type);
+                        if (!meal) {
+                          return (
+                            <EmptyMealSlot
+                              key={`${date.toISOString()}-${type}`}
+                              date={date}
+                              mealType={type}
+                              label={label}
+                              onPress={handleMealPress}
+                            />
+                          );
+                        }
                         return (
-                          <EmptyMealSlot
+                          <FilledMealSlot
                             key={`${date.toISOString()}-${type}`}
                             date={date}
                             mealType={type}
                             label={label}
-                            t={t}
-                            onPress={handleMealPress}
+                            recipe={meal.recipe}
+                            customText={meal.customText}
+                            onRemove={handleRemoveMeal}
+                            onMealPress={handleMealPress}
                           />
                         );
-                      }
-                      return (
-                        <FilledMealSlot
-                          key={`${date.toISOString()}-${type}`}
-                          date={date}
-                          mealType={type}
-                          label={label}
-                          recipe={meal.recipe}
-                          customText={meal.customText}
-                          onRemove={handleRemoveMeal}
-                          onMealPress={handleMealPress}
-                        />
-                      );
-                    })}
-                  </View>
+                      })}
+                    </View>
+                  </TerminalFrame>
                 );
               })}
 
               {/* Separator line before Others */}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginVertical: spacing.lg,
-                  marginHorizontal: spacing.sm,
-                }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    height: 1,
-                    backgroundColor: colors.surface.divider,
-                  }}
-                />
-                <View
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: borderRadius['2xs'],
-                    backgroundColor: colors.surface.border,
-                    marginHorizontal: spacing.md,
-                  }}
-                />
-                <View
-                  style={{
-                    flex: 1,
-                    height: 1,
-                    backgroundColor: colors.surface.divider,
-                  }}
-                />
-              </View>
+              <TerminalDivider decoration="◆" />
 
               {/* Other/Extras section */}
               <ExtrasSection
@@ -272,86 +293,116 @@ export default function MealPlanScreen() {
           </Animated.View>
         </View>
 
-        {/* Floating Grocery List FAB - always visible */}
-        <View
-          style={{
-            position: 'absolute',
-            bottom: layout.tabBar.overlayBottomOffset + spacing.xl,
-            right: spacing.xl,
-          }}
-        >
-          <Pressable
-            onPress={openGroceryModal}
+        {/* Floating action buttons — CRT: fixed grid bar, Light: stacked circles */}
+        {crt ? (
+          <TerminalFabBar
             style={{
-              width: iconContainer.xl,
-              height: iconContainer.xl,
-              borderRadius: borderRadius.full,
-              backgroundColor: colors.surface.overlay,
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: shadows.float.boxShadow,
+              position: 'absolute',
+              bottom: layout.tabBar.overlayBottomOffset + spacing.lg,
+              right: spacing.lg,
             }}
-          >
-            <Ionicons name="cart" size={iconSize.xl} color={colors.white} />
-            {/* Small + badge */}
+            slots={[
+              {
+                key: 'today',
+                label: `\u25C8 ${t('mealPlan.today').toUpperCase()}`,
+                active: showJumpButton || weekOffset !== 0,
+                onPress: jumpToToday,
+              },
+              {
+                key: 'grocery',
+                label: `\u2637 ${t('tabs.grocery').toUpperCase()}`,
+                active: true,
+                onPress: openGroceryModal,
+              },
+            ]}
+          />
+        ) : (
+          <>
+            {/* Floating Grocery List FAB */}
             <View
               style={{
                 position: 'absolute',
-                top: -2,
-                right: -2,
-                width: 18,
-                height: 18,
-                borderRadius: borderRadius.full,
-                backgroundColor: colors.accent,
-                alignItems: 'center',
-                justifyContent: 'center',
+                bottom: layout.tabBar.overlayBottomOffset + spacing.xl,
+                right: spacing.xl,
               }}
             >
-              <Ionicons name="add" size={12} color={colors.white} />
+              <Pressable
+                onPress={openGroceryModal}
+                style={{
+                  width: iconContainer.xl,
+                  height: iconContainer.xl,
+                  borderRadius: borderRadius.full,
+                  backgroundColor: colors.surface.overlay,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: shadows.float.boxShadow,
+                }}
+              >
+                <Ionicons name="cart" size={iconSize.xl} color={colors.white} />
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: -2,
+                    right: -2,
+                    width: 18,
+                    height: 18,
+                    borderRadius: borderRadius.full,
+                    backgroundColor: colors.accent,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Ionicons name="add" size={12} color={colors.white} />
+                </View>
+              </Pressable>
             </View>
-          </Pressable>
-        </View>
 
-        {/* Floating Jump to Today - icon-only circle */}
-        {(showJumpButton || weekOffset !== 0) && (
-          <Animated.View
-            style={{
-              position: 'absolute',
-              bottom:
-                layout.tabBar.overlayBottomOffset +
-                spacing.xl +
-                iconContainer.xl +
-                spacing.md,
-              right: spacing.xl,
-              opacity: weekOffset !== 0 ? 1 : jumpButtonOpacity,
-              transform: [
-                {
-                  scale:
-                    weekOffset !== 0
-                      ? 1
-                      : jumpButtonOpacity.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0.85, 1],
-                        }),
-                },
-              ],
-            }}
-          >
-            <Pressable
-              onPress={jumpToToday}
-              style={{
-                width: iconContainer.md,
-                height: iconContainer.md,
-                borderRadius: borderRadius.full,
-                backgroundColor: colors.surface.overlay,
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: shadows.float.boxShadow,
-              }}
-            >
-              <Ionicons name="today" size={iconSize.md} color={colors.white} />
-            </Pressable>
-          </Animated.View>
+            {/* Floating Jump to Today */}
+            {(showJumpButton || weekOffset !== 0) && (
+              <Animated.View
+                style={{
+                  position: 'absolute',
+                  bottom:
+                    layout.tabBar.overlayBottomOffset +
+                    spacing.xl +
+                    iconContainer.xl +
+                    spacing.md,
+                  right: spacing.xl,
+                  opacity: weekOffset !== 0 ? 1 : jumpButtonOpacity,
+                  transform: [
+                    {
+                      scale:
+                        weekOffset !== 0
+                          ? 1
+                          : jumpButtonOpacity.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0.85, 1],
+                            }),
+                    },
+                  ],
+                }}
+              >
+                <Pressable
+                  onPress={jumpToToday}
+                  style={{
+                    width: iconContainer.md,
+                    height: iconContainer.md,
+                    borderRadius: borderRadius.full,
+                    backgroundColor: colors.surface.overlay,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: shadows.float.boxShadow,
+                  }}
+                >
+                  <Ionicons
+                    name="today"
+                    size={iconSize.md}
+                    color={colors.white}
+                  />
+                </Pressable>
+              </Animated.View>
+            )}
+          </>
         )}
       </View>
 

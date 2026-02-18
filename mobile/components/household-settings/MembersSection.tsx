@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
   Pressable,
@@ -6,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
@@ -109,14 +108,14 @@ const MemberCard = ({
         </View>
       </View>
       {canEdit && !isSelf && (
-        <AnimatedPressable
+        <Button
+          variant="icon"
+          tone="destructive"
           onPress={onRemove}
-          hoverScale={1.1}
-          pressScale={0.9}
+          icon="trash-outline"
+          iconSize={18}
           style={{ padding: spacing.sm }}
-        >
-          <Ionicons name="trash-outline" size={18} color={colors.error} />
-        </AnimatedPressable>
+        />
       )}
     </View>
   );
@@ -204,49 +203,24 @@ const AddMemberForm = ({
           </Pressable>
         ))}
 
-        <AnimatedPressable
+        <Button
+          variant="text"
           onPress={onAddMember}
-          disabled={!newMemberEmail.trim() || isAddPending}
-          hoverScale={1.02}
-          pressScale={0.97}
-          disableAnimation={!newMemberEmail.trim() || isAddPending}
+          disabled={!newMemberEmail.trim()}
+          isPending={isAddPending}
+          icon="person-add"
+          iconSize={14}
+          label={t('admin.addMemberButton')}
+          textColor={
+            newMemberEmail.trim() ? colors.white : colors.content.subtitle
+          }
+          color={newMemberEmail.trim() ? colors.primary : colors.bgDark}
           style={{
-            backgroundColor: newMemberEmail.trim()
-              ? colors.primary
-              : colors.bgDark,
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.xs,
             borderRadius: borderRadius.sm,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
           }}
-        >
-          {isAddPending ? (
-            <ActivityIndicator size="small" color={colors.white} />
-          ) : (
-            <>
-              <Ionicons
-                name="person-add"
-                size={14}
-                color={
-                  newMemberEmail.trim() ? colors.white : colors.content.subtitle
-                }
-              />
-              <Text
-                style={{
-                  color: newMemberEmail.trim()
-                    ? colors.white
-                    : colors.content.subtitle,
-                  fontWeight: fontWeight.medium,
-                  fontSize: fontSize.sm,
-                }}
-              >
-                {t('admin.addMemberButton')}
-              </Text>
-            </>
-          )}
-        </AnimatedPressable>
+        />
       </View>
     </View>
   );

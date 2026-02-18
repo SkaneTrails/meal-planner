@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Button } from '@/components';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
@@ -106,20 +105,17 @@ export const FilledMealSlot = ({
         </View>
       </Pressable>
 
-      <AnimatedPressable
+      <Button
+        variant="icon"
         onPress={() => onRemove(date, mealType, title, label)}
-        hoverScale={1.1}
-        pressScale={0.9}
+        icon="close"
+        iconSize={18}
         style={{
           ...circleStyle(28),
           backgroundColor: colors.surface.border,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginLeft: spacing.sm,
         }}
-      >
-        <Ionicons name="close" size={18} color={colors.content.body} />
-      </AnimatedPressable>
+      />
     </View>
   );
 };

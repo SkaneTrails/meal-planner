@@ -8,11 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
-import {
-  AnimatedPressable,
-  FullScreenLoading,
-  GradientBackground,
-} from '@/components';
+import { Button, FullScreenLoading, GradientBackground } from '@/components';
 import {
   CreateHouseholdModal,
   HouseholdCard,
@@ -163,21 +159,18 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
         alignItems: 'center',
       }}
     >
-      <AnimatedPressable
+      <Button
+        variant="icon"
         onPress={onBack}
-        hoverScale={1.1}
-        pressScale={0.9}
+        icon="chevron-back"
+        iconSize={22}
         style={{
           ...circleStyle(iconContainer.md),
           backgroundColor: colors.glass.button,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginRight: spacing.md,
           ...shadows.sm,
         }}
-      >
-        <Ionicons name="chevron-back" size={22} color={colors.white} />
-      </AnimatedPressable>
+      />
       <View style={{ flex: 1 }}>
         <ScreenTitle
           variant="large"
@@ -272,30 +265,19 @@ const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
       >
         {t('admin.households')}
       </Text>
-      <AnimatedPressable
+      <Button
+        variant="text"
         onPress={onCreateNew}
-        hoverScale={1.05}
-        pressScale={0.95}
+        icon="add"
+        label={t('admin.newButton')}
+        textColor={colors.white}
+        color={colors.primary}
         style={{
-          backgroundColor: colors.primary,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.lg,
-          flexDirection: 'row',
-          alignItems: 'center',
         }}
-      >
-        <Ionicons name="add" size={18} color={colors.white} />
-        <Text
-          style={{
-            color: colors.white,
-            fontWeight: fontWeight.medium,
-            marginLeft: 4,
-          }}
-        >
-          {t('admin.newButton')}
-        </Text>
-      </AnimatedPressable>
+      />
     </View>
   );
 };

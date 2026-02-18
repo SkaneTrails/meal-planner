@@ -1,9 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { AnimatedPressable, Button } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
@@ -81,34 +80,24 @@ const InspirationHeader = ({
       >
         {t('home.inspiration.title')}
       </Text>
-      <AnimatedPressable
+      <Button
+        variant="text"
+        size="sm"
         onPress={() => {
           hapticLight();
           onShuffle();
         }}
-        hoverScale={1.05}
-        pressScale={0.95}
+        icon="shuffle"
+        iconSize={12}
+        label={t('home.inspiration.shuffle')}
+        textColor={colors.content.body}
+        color={'rgba(255, 255, 255, 0.25)'}
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.25)',
           paddingHorizontal: spacing['sm-md'],
           paddingVertical: spacing['xs-sm'],
           borderRadius: borderRadius.full,
         }}
-      >
-        <Ionicons name="shuffle" size={12} color={colors.text.secondary} />
-        <Text
-          style={{
-            color: colors.content.body,
-            fontFamily: fonts.bodyMedium,
-            fontSize: fontSize.xs,
-            marginLeft: 4,
-          }}
-        >
-          {t('home.inspiration.shuffle')}
-        </Text>
-      </AnimatedPressable>
+      />
     </View>
   );
 };

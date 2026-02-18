@@ -1,8 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import type React from 'react';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, IconCircle } from '@/components';
-import type { TFunction } from '@/lib/i18n';
+import { Button, ButtonGroup, IconCircle } from '@/components';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
@@ -10,7 +8,6 @@ interface EmptyMealSlotProps {
   date: Date;
   mealType: MealType;
   label: string;
-  t: TFunction;
   onPress: (
     date: Date,
     mealType: MealType,
@@ -22,7 +19,6 @@ export const EmptyMealSlot = ({
   date,
   mealType,
   label,
-  t,
   onPress,
 }: EmptyMealSlotProps) => {
   const { colors, fonts, borderRadius } = useTheme();
@@ -59,86 +55,48 @@ export const EmptyMealSlot = ({
         </Text>
       </View>
 
-      {/* Actions: Primary (Library) + Secondary icon buttons */}
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: spacing['xs-sm'],
-        }}
+      {/* Actions: icon buttons in a row */}
+      <ButtonGroup
+        gap={spacing['xs-sm']}
+        style={{ flex: 1, justifyContent: 'flex-end' }}
       >
-        {/* Primary action: Library */}
-        <AnimatedPressable
+        <Button
+          variant="icon"
+          tone="subtle"
+          icon="book-outline"
+          label="Book"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'library')}
-          hoverScale={1.03}
-          pressScale={0.97}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: colors.content.body,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing['xs-sm'],
-            borderRadius: borderRadius['sm-md'],
-            gap: spacing['xs-sm'],
-          }}
-        >
-          <Ionicons name="book-outline" size={13} color={colors.white} />
-          <Text
-            style={{
-              fontSize: fontSize.base,
-              fontFamily: fonts.bodySemibold,
-              color: colors.white,
-            }}
-          >
-            {t('mealPlan.library')}
-          </Text>
-        </AnimatedPressable>
-
-        {/* Secondary actions: icon-only ghost buttons */}
-        <SecondaryActionButton
+          style={{ width: 34, height: 34 }}
+        />
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="dice-outline"
+          label="Random"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'random')}
+          style={{ width: 34, height: 34 }}
         />
-        <SecondaryActionButton
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="copy-outline"
+          label="Copy"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'copy')}
+          style={{ width: 34, height: 34 }}
         />
-        <SecondaryActionButton
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="create-outline"
+          label="Quick"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'quick')}
+          style={{ width: 34, height: 34 }}
         />
-      </View>
+      </ButtonGroup>
     </View>
-  );
-};
-
-interface SecondaryActionButtonProps {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  onPress: () => void;
-}
-
-const SecondaryActionButton = ({
-  icon,
-  onPress,
-}: SecondaryActionButtonProps) => {
-  const { colors, borderRadius } = useTheme();
-  return (
-    <AnimatedPressable
-      onPress={onPress}
-      hoverScale={1.1}
-      pressScale={0.9}
-      style={{
-        width: 34,
-        height: 34,
-        borderRadius: borderRadius['sm-md'],
-        backgroundColor: colors.surface.active,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Ionicons name={icon} size={17} color={colors.content.tertiary} />
-    </AnimatedPressable>
   );
 };

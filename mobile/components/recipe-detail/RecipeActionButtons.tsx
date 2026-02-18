@@ -1,6 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Button, ButtonGroup } from '@/components';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
 import { iconContainer, useTheme } from '@/lib/theme';
@@ -38,17 +36,14 @@ export const RecipeActionButtons = ({
 }: RecipeActionButtonsProps) => {
   const { colors, circleStyle } = useTheme();
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
-
-  const actionButtonStyle = {
-    ...circleStyle(iconContainer.md),
-    backgroundColor: colors.glass.solid,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-  };
+  const iconBtnSize = iconContainer.md;
 
   return (
-    <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-      <AnimatedPressable
+    <ButtonGroup gap={8}>
+      <Button
+        variant="icon"
+        icon="create"
+        iconSize={20}
         onPress={
           canEdit
             ? onOpenEditModal
@@ -64,62 +59,69 @@ export const RecipeActionButtons = ({
                   ],
                 )
         }
-        hoverScale={1.1}
-        pressScale={0.9}
+        label={t('recipe.edit')}
+        disabled={!canEdit}
         disableAnimation={!canEdit}
-        style={{ ...actionButtonStyle, opacity: canEdit ? 1 : 0.5 }}
-      >
-        <Ionicons name="create" size={20} color={colors.text.inverse} />
-      </AnimatedPressable>
-      <AnimatedPressable
+        color={colors.glass.solid}
+        textColor={colors.text.inverse}
+        style={{
+          ...circleStyle(iconBtnSize),
+          opacity: canEdit ? 1 : 0.5,
+        }}
+      />
+      <Button
+        variant="icon"
+        icon="calendar"
+        iconSize={20}
         onPress={onShowPlanModal}
-        hoverScale={1.1}
-        pressScale={0.9}
-        style={actionButtonStyle}
-      >
-        <Ionicons name="calendar" size={20} color={colors.text.inverse} />
-      </AnimatedPressable>
-      <AnimatedPressable
+        label={t('mealPlan.title')}
+        color={colors.glass.solid}
+        textColor={colors.text.inverse}
+        style={circleStyle(iconBtnSize)}
+      />
+      <Button
+        variant="icon"
+        icon="share"
+        iconSize={20}
         onPress={onShare}
-        hoverScale={1.1}
-        pressScale={0.9}
-        style={actionButtonStyle}
-      >
-        <Ionicons name="share" size={20} color={colors.text.inverse} />
-      </AnimatedPressable>
+        label={t('recipe.share')}
+        color={colors.glass.solid}
+        textColor={colors.text.inverse}
+        style={circleStyle(iconBtnSize)}
+      />
       {canCopy && (
-        <AnimatedPressable
+        <Button
+          variant="icon"
+          icon="copy-outline"
+          iconSize={20}
           onPress={onCopy}
-          hoverScale={1.1}
-          pressScale={0.9}
+          label={t('recipe.copy')}
           disabled={isCopying}
+          color={colors.glass.solid}
+          textColor={colors.text.inverse}
           style={{
-            ...actionButtonStyle,
+            ...circleStyle(iconBtnSize),
             opacity: isCopying ? 0.5 : 1,
           }}
-        >
-          <Ionicons name="copy-outline" size={20} color={colors.text.inverse} />
-        </AnimatedPressable>
+        />
       )}
       {canEnhance && (
-        <AnimatedPressable
+        <Button
+          variant="icon"
+          icon="sparkles"
+          iconSize={20}
           onPress={onEnhance}
-          hoverScale={1.1}
-          pressScale={0.9}
+          label={t('recipe.enhance')}
           disabled={enhanceDisabled}
           disableAnimation={enhanceDisabled}
+          color={colors.glass.solid}
+          textColor={enhanceDisabled ? colors.gray[400] : colors.ai.primary}
           style={{
-            ...actionButtonStyle,
+            ...circleStyle(iconBtnSize),
             opacity: enhanceDisabled ? 0.5 : 1,
           }}
-        >
-          <Ionicons
-            name="sparkles"
-            size={20}
-            color={enhanceDisabled ? colors.gray[400] : colors.ai.primary}
-          />
-        </AnimatedPressable>
+        />
       )}
-    </View>
+    </ButtonGroup>
   );
 };

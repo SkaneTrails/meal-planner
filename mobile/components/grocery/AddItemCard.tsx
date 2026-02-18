@@ -1,5 +1,5 @@
 import { Text, TextInput, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -58,31 +58,22 @@ export const AddItemCard = ({
           returnKeyType="done"
           autoFocus
         />
-        <AnimatedPressable
+        <Button
+          variant="text"
           onPress={onSubmit}
           disabled={!newItemText.trim()}
-          hoverScale={1.05}
-          pressScale={0.95}
           disableAnimation={!newItemText.trim()}
+          label={t('grocery.addButton')}
+          textColor={colors.white}
+          color={
+            newItemText.trim() ? colors.ai.primary : colors.surface.pressed
+          }
           style={{
-            backgroundColor: newItemText.trim()
-              ? colors.ai.primary
-              : colors.surface.pressed,
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing['sm-md'],
             borderRadius: borderRadius.sm,
           }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodySemibold,
-              color: colors.white,
-            }}
-          >
-            {t('grocery.addButton')}
-          </Text>
-        </AnimatedPressable>
+        />
       </View>
     </View>
   );

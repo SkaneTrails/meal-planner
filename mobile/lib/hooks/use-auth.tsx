@@ -28,7 +28,7 @@ import { Platform } from 'react-native';
 import { showNotification } from '../alert';
 import { setAuthTokenGetter, setOnUnauthorized } from '../api';
 import { auth, isFirebaseConfigured } from '../firebase';
-import { translateStandalone } from '../i18n';
+import { translateStandalone } from '../i18n/translate';
 import { getCurrentLanguage } from '../language-state';
 
 interface AuthContextType {

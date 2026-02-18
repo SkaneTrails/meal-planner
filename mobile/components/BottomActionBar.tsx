@@ -9,7 +9,7 @@ interface BottomActionBarProps {
 
 /**
  * Absolute-positioned bottom bar that floats above the tab bar.
- * Handles only positioning — button rendering is delegated to children (e.g. PrimaryButton).
+ * Handles only positioning — button rendering is delegated to children (e.g. Button).
  */
 const BottomActionBar = ({ children, style }: BottomActionBarProps) => (
   <View

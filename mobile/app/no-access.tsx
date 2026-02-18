@@ -5,8 +5,8 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
-import { FullScreenLoading, GradientBackground } from '@/components';
+import { Text, View } from 'react-native';
+import { Button, FullScreenLoading, GradientBackground } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -117,38 +117,21 @@ export default function NoAccessScreen() {
         </Text>
 
         {/* Sign Out Button - Glass style */}
-        <Pressable
+        <Button
+          variant="text"
           onPress={handleSignOut}
-          style={({ pressed }) => ({
-            backgroundColor: pressed
-              ? colors.glass.buttonPressed
-              : colors.glass.buttonDefault,
+          icon="log-out-outline"
+          label={t('noAccess.signOutButton')}
+          textColor={colors.text.primary}
+          style={{
+            backgroundColor: colors.glass.buttonDefault,
             borderRadius: borderRadius.lg,
             paddingHorizontal: spacing.xl,
             paddingVertical: spacing.lg,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
             width: '100%',
             maxWidth: 320,
-          })}
-        >
-          <Ionicons
-            name="log-out-outline"
-            size={20}
-            color={colors.text.primary}
-          />
-          <Text
-            style={{
-              color: colors.text.primary,
-              fontFamily: fonts.bodySemibold,
-              fontSize: fontSize.lg,
-              marginLeft: spacing.md,
-            }}
-          >
-            {t('noAccess.signOutButton')}
-          </Text>
-        </Pressable>
+          }}
+        />
       </View>
 
       {/* Footer */}

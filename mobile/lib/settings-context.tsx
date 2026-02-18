@@ -36,7 +36,9 @@ const STORAGE_KEY = '@meal_planner_settings';
 
 import type { WeekStart } from '@/lib/utils/dateFormatter';
 
-export type AppLanguage = 'en' | 'sv' | 'it';
+import type { AppLanguage } from './language-state';
+
+export type { AppLanguage } from './language-state';
 
 /**
  * Module-level language for use outside the React component tree

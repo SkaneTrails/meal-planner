@@ -6,7 +6,16 @@ export { AnimatedPressable } from './AnimatedPressable';
 export { BottomActionBar } from './BottomActionBar';
 export { BottomSheetModal } from './BottomSheetModal';
 export { BouncingLoader } from './BouncingLoader';
+export type {
+  ButtonProps,
+  ButtonSize,
+  ButtonTone,
+  ButtonVariant,
+} from './Button';
+export { Button } from './Button';
+export { ButtonGroup } from './ButtonGroup';
 export { ChipPicker } from './ChipPicker';
+export { CRTOverlay } from './CRTOverlay';
 export { EmptyState } from './EmptyState';
 export { EnhancingOverlay } from './EnhancingOverlay';
 export { ErrorBoundary } from './ErrorBoundary';
@@ -19,7 +28,6 @@ export { GroceryItemRow } from './GroceryItemRow';
 export { GroceryListView } from './GroceryListView';
 export { IconCircle } from './IconCircle';
 export { DayColumn, MealCell } from './MealGrid';
-export { PrimaryButton } from './PrimaryButton';
 export { RadioGroup } from './RadioGroup';
 export { RecipeCard } from './RecipeCard';
 export { ScreenTitle } from './ScreenTitle';
@@ -35,4 +43,9 @@ export {
 } from './Skeleton';
 export { StepperControl } from './StepperControl';
 export { SurfaceCard } from './SurfaceCard';
+export { TerminalDivider } from './TerminalDivider';
+export type { FabSlot } from './TerminalFabBar';
+export { TerminalFabBar } from './TerminalFabBar';
+export type { FrameSegment } from './TerminalFrame';
+export { TerminalFrame } from './TerminalFrame';
 export { ThemeToggle } from './ThemeToggle';

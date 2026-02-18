@@ -8,10 +8,10 @@ import { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import {
   BottomActionBar,
+  Button,
   ChipPicker,
   FullScreenLoading,
   GradientBackground,
-  PrimaryButton,
 } from '@/components';
 import {
   getDietOptions,
@@ -157,7 +157,8 @@ export default function ReviewRecipeScreen() {
 
       {/* Save Button */}
       <BottomActionBar>
-        <PrimaryButton
+        <Button
+          variant="primary"
           onPress={handleSave}
           isPending={createRecipe.isPending}
           label={t('reviewRecipe.saveRecipe')}

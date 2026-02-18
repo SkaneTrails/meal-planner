@@ -1,8 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { View } from 'react-native';
+import { Button, ButtonGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
 
 interface ClearMenuProps {
   onClearMealPlanItems: () => void;
@@ -15,89 +14,36 @@ export const ClearMenu = ({
   onClearManualItems,
   onClearAll,
 }: ClearMenuProps) => {
-  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        marginTop: spacing.sm,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: spacing.xs,
-      }}
-    >
-      <AnimatedPressable
-        onPress={onClearMealPlanItems}
-        hoverScale={1.02}
-        pressScale={0.98}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius.md,
-          backgroundColor: colors.surface.hover,
-          gap: spacing.xs,
-        }}
-      >
-        <Ionicons
-          name="calendar-outline"
-          size={14}
-          color={colors.content.tertiary}
+    <View style={{ marginTop: spacing.sm }}>
+      <ButtonGroup gap={spacing.xs} style={{ flexWrap: 'wrap' }}>
+        <Button
+          variant="text"
+          tone="subtle"
+          size="sm"
+          icon="calendar-outline"
+          label={t('grocery.clearMealPlanItems')}
+          onPress={onClearMealPlanItems}
         />
-        <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
-          {t('grocery.clearMealPlanItems')}
-        </Text>
-      </AnimatedPressable>
-
-      <AnimatedPressable
-        onPress={onClearManualItems}
-        hoverScale={1.02}
-        pressScale={0.98}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius.md,
-          backgroundColor: colors.surface.hover,
-          gap: spacing.xs,
-        }}
-      >
-        <Ionicons
-          name="create-outline"
-          size={14}
-          color={colors.content.tertiary}
+        <Button
+          variant="text"
+          tone="subtle"
+          size="sm"
+          icon="create-outline"
+          label={t('grocery.clearManualItems')}
+          onPress={onClearManualItems}
         />
-        <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
-          {t('grocery.clearManualItems')}
-        </Text>
-      </AnimatedPressable>
-
-      <AnimatedPressable
-        onPress={onClearAll}
-        hoverScale={1.02}
-        pressScale={0.98}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius.md,
-          backgroundColor: colors.destructive.bg,
-          gap: spacing.xs,
-        }}
-      >
-        <Ionicons
-          name="trash-outline"
-          size={14}
-          color={colors.destructive.icon}
+        <Button
+          variant="text"
+          tone="destructive"
+          size="sm"
+          icon="trash-outline"
+          label={t('grocery.clearEntireList')}
+          onPress={onClearAll}
         />
-        <Text style={{ fontSize: fontSize.sm, color: colors.destructive.text }}>
-          {t('grocery.clearEntireList')}
-        </Text>
-      </AnimatedPressable>
+      </ButtonGroup>
     </View>
   );
 };

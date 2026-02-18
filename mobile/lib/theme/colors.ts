@@ -74,6 +74,7 @@ export const lightColors = {
   },
   border: 'rgba(255, 255, 255, 0.2)',
   borderLight: 'rgba(255, 255, 255, 0.1)',
+  borderFaint: 'rgba(255, 255, 255, 0.04)',
 
   // Content colors — dark text/icons on light backgrounds (warm brown family)
   content: {

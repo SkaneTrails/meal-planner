@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Button } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
@@ -25,7 +24,7 @@ export const WeekSelector = ({
   onNextWeek,
   onJumpToToday,
 }: WeekSelectorProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}
@@ -39,30 +38,28 @@ export const WeekSelector = ({
           paddingVertical: spacing['sm-md'],
         }}
       >
-        <AnimatedPressable
+        <Button
+          variant="icon"
           onPress={() => {
             hapticLight();
             onPreviousWeek();
           }}
-          hoverScale={1.1}
-          pressScale={0.9}
+          icon="chevron-back"
+          label="\u25C4"
+          iconSize={18}
+          textColor={colors.content.tertiary}
+          color={colors.glass.subtle}
           style={{
             padding: spacing.sm,
             borderRadius: borderRadius.full,
-            backgroundColor: colors.glass.subtle,
           }}
-        >
-          <Ionicons
-            name="chevron-back"
-            size={18}
-            color={colors.content.tertiary}
-          />
-        </AnimatedPressable>
+        />
 
         <View style={{ alignItems: 'center' }}>
           <Text
             style={{
               fontSize: fontSize.md,
+              fontFamily: fonts.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.strong,
             }}
@@ -79,6 +76,7 @@ export const WeekSelector = ({
               <Text
                 style={{
                   fontSize: fontSize.xs,
+                  fontFamily: fonts.body,
                   color: colors.accent,
                   marginTop: 2,
                   fontWeight: fontWeight.medium,
@@ -90,25 +88,22 @@ export const WeekSelector = ({
           )}
         </View>
 
-        <AnimatedPressable
+        <Button
+          variant="icon"
           onPress={() => {
             hapticLight();
             onNextWeek();
           }}
-          hoverScale={1.1}
-          pressScale={0.9}
+          icon="chevron-forward"
+          label="\u25BA"
+          iconSize={18}
+          textColor={colors.content.tertiary}
+          color={colors.glass.subtle}
           style={{
             padding: spacing.sm,
             borderRadius: borderRadius.full,
-            backgroundColor: colors.glass.subtle,
           }}
-        >
-          <Ionicons
-            name="chevron-forward"
-            size={18}
-            color={colors.content.tertiary}
-          />
-        </AnimatedPressable>
+        />
       </View>
     </View>
   );

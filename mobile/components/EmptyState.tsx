@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
-import { Pressable, Text, View, type ViewStyle } from 'react-native';
-import { IconCircle } from '@/components';
+import { Text, View, type ViewStyle } from 'react-native';
 import {
   fontSize,
   letterSpacing,
@@ -9,6 +8,8 @@ import {
   spacing,
   useTheme,
 } from '@/lib/theme';
+import { Button } from './Button';
+import { IconCircle } from './IconCircle';
 
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
@@ -32,7 +33,7 @@ const EmptyState = ({
   action,
   style,
 }: EmptyStateProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={[
@@ -79,28 +80,18 @@ const EmptyState = ({
         </Text>
       )}
       {action && (
-        <Pressable
+        <Button
+          variant="primary"
+          label={action.label}
           onPress={action.onPress}
-          style={({ pressed }) => ({
+          color={colors.primary}
+          style={{
             marginTop: spacing['2xl'],
             paddingHorizontal: spacing['2xl'],
             paddingVertical: spacing.md,
-            backgroundColor: colors.primary,
             borderRadius: borderRadius.sm,
-            ...shadows.lg,
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-          })}
-        >
-          <Text
-            style={{
-              color: colors.white,
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodySemibold,
-            }}
-          >
-            {action.label}
-          </Text>
-        </Pressable>
+          }}
+        />
       )}
     </View>
   );

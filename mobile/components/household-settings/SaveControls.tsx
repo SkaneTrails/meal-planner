@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { BottomActionBar, PrimaryButton } from '@/components';
+import { BottomActionBar, Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -41,7 +41,8 @@ export const BottomSaveBar = ({
 
   return (
     <BottomActionBar>
-      <PrimaryButton
+      <Button
+        variant="primary"
         onPress={onSave}
         isPending={isSaving}
         label={t('householdSettings.saveChanges')}

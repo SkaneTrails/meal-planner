@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Button, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -20,117 +20,98 @@ export const ExtrasSection = ({
   onAddExtra,
   onRemoveExtra,
 }: ExtrasSectionProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
   return (
-    <View
-      style={{
-        marginBottom: spacing.lg,
-        backgroundColor: colors.mealPlan.containerBg,
-        borderRadius: borderRadius.lg,
-        padding: spacing['md-lg'],
-        borderWidth: 1.5,
-        borderColor: colors.surface.pressed,
-        borderStyle: 'dashed',
-      }}
+    <TerminalFrame
+      label={crt ? t('mealPlan.extras.headerTitle').toUpperCase() : undefined}
+      variant="single"
+      style={{ marginBottom: spacing.lg }}
     >
-      {/* Header */}
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: spacing['sm-md'],
+          backgroundColor: colors.mealPlan.containerBg,
+          borderRadius: borderRadius.lg,
+          padding: spacing['md-lg'],
+          borderWidth: crt ? 0 : 1.5,
+          borderColor: colors.surface.pressed,
+          borderStyle: 'dashed',
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Ionicons
-            name="bookmark-outline"
-            size={18}
-            color={colors.content.secondary}
-            style={{ marginRight: spacing['xs-sm'] }}
-          />
-          <Text
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: spacing['sm-md'],
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons
+              name="bookmark-outline"
+              size={18}
+              color={colors.content.secondary}
+              style={{ marginRight: spacing['xs-sm'] }}
+            />
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontFamily: fonts.displayBold,
+                fontWeight: fontWeight.semibold,
+                color: colors.content.body,
+                fontStyle: 'italic',
+              }}
+            >
+              {t('mealPlan.extras.headerTitle')}
+            </Text>
+          </View>
+          <Button
+            variant="text"
+            size="sm"
+            onPress={onAddExtra}
+            icon="add"
+            iconSize={16}
+            label={t('mealPlan.extras.add')}
+            color={colors.surface.subtle}
             style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.displayBold,
-              fontWeight: fontWeight.semibold,
-              color: colors.content.body,
-              fontStyle: 'italic',
+              paddingHorizontal: spacing.sm,
+              paddingVertical: 4,
+              borderRadius: borderRadius.full,
             }}
-          >
-            {t('mealPlan.extras.headerTitle')}
-          </Text>
+          />
         </View>
-        <AnimatedPressable
-          onPress={onAddExtra}
-          hoverScale={1.05}
-          pressScale={0.95}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: spacing.sm,
-            paddingVertical: 4,
-            backgroundColor: colors.surface.subtle,
-            borderRadius: borderRadius.full,
-          }}
-        >
-          <Ionicons name="add" size={16} color={colors.content.body} />
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              fontFamily: fonts.body,
-              color: colors.content.body,
-              marginLeft: spacing.xs,
-            }}
-          >
-            {t('mealPlan.extras.add')}
-          </Text>
-        </AnimatedPressable>
-      </View>
 
-      {/* Empty state */}
-      {recipes.length === 0 && (
-        <Pressable
-          onPress={onAddExtra}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: colors.mealPlan.emptyStateBg,
-            borderRadius: borderRadius.sm,
-            padding: spacing.lg,
-            borderWidth: 1,
-            borderColor: colors.surface.subtle,
-            borderStyle: 'dashed',
-          }}
-        >
-          <Ionicons
-            name="add-circle-outline"
-            size={20}
-            color={colors.content.icon}
+        {/* Empty state */}
+        {recipes.length === 0 && (
+          <Button
+            variant="text"
+            onPress={onAddExtra}
+            icon="add-circle-outline"
+            iconSize={20}
+            label={t('mealPlan.extras.emptyState')}
+            textColor={colors.content.subtitle}
+            style={{
+              justifyContent: 'center',
+              backgroundColor: colors.mealPlan.emptyStateBg,
+              borderRadius: borderRadius.sm,
+              padding: spacing.lg,
+              borderWidth: 1,
+              borderColor: colors.surface.subtle,
+              borderStyle: 'dashed',
+            }}
           />
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              fontFamily: fonts.body,
-              color: colors.content.subtitle,
-              marginLeft: spacing.sm,
-            }}
-          >
-            {t('mealPlan.extras.emptyState')}
-          </Text>
-        </Pressable>
-      )}
+        )}
 
-      {/* Recipe list */}
-      {recipes.map((recipe) => (
-        <ExtraRecipeRow
-          key={recipe.id}
-          recipe={recipe}
-          onRemove={() => onRemoveExtra(recipe.id, recipe.title)}
-        />
-      ))}
-    </View>
+        {/* Recipe list */}
+        {recipes.map((recipe) => (
+          <ExtraRecipeRow
+            key={recipe.id}
+            recipe={recipe}
+            onRemove={() => onRemoveExtra(recipe.id, recipe.title)}
+          />
+        ))}
+      </View>
+    </TerminalFrame>
   );
 };
 
@@ -195,20 +176,17 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         </View>
       </Pressable>
 
-      <AnimatedPressable
+      <Button
+        variant="icon"
         onPress={onRemove}
-        hoverScale={1.1}
-        pressScale={0.9}
+        icon="close"
+        iconSize={18}
         style={{
           ...circleStyle(28),
           backgroundColor: colors.surface.border,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginLeft: spacing.sm,
         }}
-      >
-        <Ionicons name="close" size={18} color={colors.content.body} />
-      </AnimatedPressable>
+      />
     </View>
   );
 };

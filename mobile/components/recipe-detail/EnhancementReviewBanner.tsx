@@ -4,7 +4,8 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -70,69 +71,39 @@ export const EnhancementReviewBanner = ({
       </Text>
 
       <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-        <Pressable
+        <Button
+          variant="text"
+          tone="ai"
           onPress={onApprove}
           disabled={isSubmitting}
-          style={({ pressed }) => ({
+          icon="checkmark-circle"
+          iconSize={18}
+          label={t('recipe.approveEnhancement')}
+          color={colors.ai.iconBg}
+          textColor={colors.ai.primary}
+          style={{
             flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: spacing.md,
             borderRadius: borderRadius.md,
-            backgroundColor: pressed ? colors.ai.bgPressed : colors.ai.iconBg,
-            opacity: isSubmitting ? 0.5 : 1,
-          })}
-        >
-          <Ionicons
-            name="checkmark-circle"
-            size={18}
-            color={colors.ai.primary}
-            style={{ marginRight: spacing.xs }}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: colors.ai.primary,
-            }}
-          >
-            {t('recipe.approveEnhancement')}
-          </Text>
-        </Pressable>
+          }}
+        />
 
-        <Pressable
+        <Button
+          variant="text"
           onPress={onReject}
           disabled={isSubmitting}
-          style={({ pressed }) => ({
+          icon="close-circle"
+          iconSize={18}
+          label={t('recipe.rejectEnhancement')}
+          color={colors.surface.hover}
+          style={{
             flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
             justifyContent: 'center',
             paddingVertical: spacing.md,
             borderRadius: borderRadius.md,
-            backgroundColor: pressed
-              ? colors.surface.pressed
-              : colors.surface.hover,
-            opacity: isSubmitting ? 0.5 : 1,
-          })}
-        >
-          <Ionicons
-            name="close-circle"
-            size={18}
-            color={colors.content.body}
-            style={{ marginRight: spacing.xs }}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: colors.content.body,
-            }}
-          >
-            {t('recipe.rejectEnhancement')}
-          </Text>
-        </Pressable>
+          }}
+        />
       </View>
     </View>
   );

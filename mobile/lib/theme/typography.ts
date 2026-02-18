@@ -30,12 +30,16 @@ const MONO = isWeb
       default: 'monospace',
     });
 
-/** DM Sans — default light theme font family. */
+/** Playfair Display for display headings, DM Sans for body text. */
 export const defaultFontFamily: FontFamilyTokens = {
-  display: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
-  displayRegular: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
-  displayMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
-  displayBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
+  display: isWeb ? '"Playfair Display", serif' : 'PlayfairDisplay_600SemiBold',
+  displayRegular: isWeb
+    ? '"Playfair Display", serif'
+    : 'PlayfairDisplay_400Regular',
+  displayMedium: isWeb
+    ? '"Playfair Display", serif'
+    : 'PlayfairDisplay_500Medium',
+  displayBold: isWeb ? '"Playfair Display", serif' : 'PlayfairDisplay_700Bold',
   body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
   bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
   bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
@@ -122,55 +126,63 @@ export const letterSpacing = {
   wider: 1.2,
 } as const;
 
-// Typography presets — use specific font families for cross-platform rendering
-export const typography = {
-  displayLarge: {
-    fontFamily: fontFamily.displayBold,
-    fontSize: fontSize['6xl'],
-    letterSpacing: letterSpacing.tighter,
-  },
-  displayMedium: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize['4xl'],
-    letterSpacing: letterSpacing.tight,
-  },
-  displaySmall: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize['3xl'],
-    letterSpacing: letterSpacing.normal,
-  },
+/** Build typography presets from the given font family tokens. */
+export const createTypography = (fonts: FontFamilyTokens) =>
+  ({
+    displayLarge: {
+      fontFamily: fonts.displayBold,
+      fontSize: fontSize['6xl'],
+      letterSpacing: letterSpacing.tighter,
+    },
+    displayMedium: {
+      fontFamily: fonts.display,
+      fontSize: fontSize['4xl'],
+      letterSpacing: letterSpacing.tight,
+    },
+    displaySmall: {
+      fontFamily: fonts.display,
+      fontSize: fontSize['3xl'],
+      letterSpacing: letterSpacing.normal,
+    },
 
-  headingLarge: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize['3xl'],
-    letterSpacing: letterSpacing.normal,
-  },
-  headingMedium: {
-    fontFamily: fontFamily.bodySemibold,
-    fontSize: fontSize['2xl'],
-    letterSpacing: letterSpacing.normal,
-  },
-  headingSmall: {
-    fontFamily: fontFamily.bodySemibold,
-    fontSize: fontSize.xl,
-    letterSpacing: letterSpacing.normal,
-  },
+    headingLarge: {
+      fontFamily: fonts.bodyBold,
+      fontSize: fontSize['3xl'],
+      letterSpacing: letterSpacing.normal,
+    },
+    headingMedium: {
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize['2xl'],
+      letterSpacing: letterSpacing.normal,
+    },
+    headingSmall: {
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.xl,
+      letterSpacing: letterSpacing.normal,
+    },
 
-  bodyLarge: { fontFamily: fontFamily.body, fontSize: fontSize.lg },
-  bodyMedium: { fontFamily: fontFamily.body, fontSize: fontSize.md },
-  bodySmall: { fontFamily: fontFamily.body, fontSize: fontSize.base },
+    bodyLarge: { fontFamily: fonts.body, fontSize: fontSize.lg },
+    bodyMedium: { fontFamily: fonts.body, fontSize: fontSize.md },
+    bodySmall: { fontFamily: fonts.body, fontSize: fontSize.base },
 
-  labelLarge: { fontFamily: fontFamily.bodySemibold, fontSize: fontSize.lg },
-  labelMedium: { fontFamily: fontFamily.bodySemibold, fontSize: fontSize.md },
-  labelSmall: { fontFamily: fontFamily.bodySemibold, fontSize: fontSize.sm },
+    labelLarge: { fontFamily: fonts.bodySemibold, fontSize: fontSize.lg },
+    labelMedium: { fontFamily: fonts.bodySemibold, fontSize: fontSize.md },
+    labelSmall: { fontFamily: fonts.bodySemibold, fontSize: fontSize.sm },
 
-  caption: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.base },
-  captionSmall: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.sm },
+    caption: { fontFamily: fonts.bodyMedium, fontSize: fontSize.base },
+    captionSmall: { fontFamily: fonts.bodyMedium, fontSize: fontSize.sm },
 
-  overline: {
-    fontFamily: fontFamily.bodySemibold,
-    fontSize: fontSize.xs,
-    letterSpacing: letterSpacing.wider,
-    textTransform: 'uppercase' as const,
-  },
-} as const;
+    overline: {
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.xs,
+      letterSpacing: letterSpacing.wider,
+      textTransform: 'uppercase' as const,
+    },
+  }) as const;
+
+/** Resolved typography presets (return type of `createTypography`). */
+export type TypographyTokens = ReturnType<typeof createTypography>;
+
+// Static default presets for backward-compat and non-hook contexts.
+/** @deprecated Use `useTheme().typography` for theme-aware access. */
+export const typography = createTypography(fontFamily);

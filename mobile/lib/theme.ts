@@ -20,6 +20,7 @@ export {
   layout,
   shadows,
   spacing,
+  terminal,
 } from './theme/layout';
 export type { ThemeStyles } from './theme/styles';
 export {
@@ -32,12 +33,23 @@ export {
 export {
   terminalBorderRadius,
   terminalColors,
+  terminalCRT,
   terminalShadows,
 } from './theme/terminal-colors';
-export type { CircleStyleFn } from './theme/theme-context';
-export { ThemeProvider, useTheme } from './theme/theme-context';
-export type { FontFamilyTokens } from './theme/typography';
+export type {
+  ButtonDisplayConfig,
+  CircleStyleFn,
+  CRTConfig,
+} from './theme/theme-context';
 export {
+  defaultButtonDisplay,
+  ThemeProvider,
+  terminalButtonDisplay,
+  useTheme,
+} from './theme/theme-context';
+export type { FontFamilyTokens, TypographyTokens } from './theme/typography';
+export {
+  createTypography,
   defaultFontFamily,
   fontFamily,
   fontFamilyWeight,

@@ -14,6 +14,7 @@ const SUPPRESSED_PATTERNS = [
   'cannot be a descendant of',
   'cannot contain a nested',
   'will cause a hydration error',
+  'non-boolean attribute',
 ];
 console.error = (...args: unknown[]) => {
   const message = typeof args[0] === 'string' ? args[0] : String(args[0]);
@@ -76,32 +77,30 @@ const FullScreenLoadingMock = ({ children, title, subtitle, icon }: any) => {
   );
 };
 
-const PrimaryButtonMock = ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
-  const { createElement } = require('react');
-  const displayLabel = isPending && loadingLabel ? loadingLabel : label;
-  return createElement('button', {
-    onClick: onPress,
-    disabled: disabled || isPending,
-    'data-testid': 'primary-button',
-  },
-    icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
-    displayLabel,
-  );
-};
-
 vi.mock('@/components/FullScreenLoading', () => ({
   FullScreenLoading: FullScreenLoadingMock,
-}));
-
-vi.mock('@/components/PrimaryButton', () => ({
-  PrimaryButton: PrimaryButtonMock,
 }));
 
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
-  PrimaryButton: PrimaryButtonMock,
+  BottomSheetModal: ({ visible, children, title, onClose }: any) => {
+    if (!visible) return null;
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'bottom-sheet-modal' },
+      title && createElement('span', null, title),
+      children,
+    );
+  },
+  Button: ({ label, onPress, icon, disabled, testID, ...props }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID }, label ?? icon ?? '');
+  },
+  ButtonGroup: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'button-group' }, children);
+  },
   AnimatedPressable: ({ children, onPress, ...props }: any) => {
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);
@@ -363,6 +362,34 @@ vi.mock('@/lib/theme', () => {
 
   const mockCircleStyle = (size: number) => ({ width: size, height: size, borderRadius: size / 2 });
 
+  const makeTextStyle = (size: number) => ({
+    fontFamily: 'System',
+    fontSize: size,
+    letterSpacing: 0,
+    textTransform: 'none' as const,
+  });
+
+  const mockTypography = {
+    displayLarge: makeTextStyle(32),
+    displayMedium: makeTextStyle(28),
+    displaySmall: makeTextStyle(24),
+    headingLarge: makeTextStyle(22),
+    headingMedium: makeTextStyle(20),
+    headingSmall: makeTextStyle(18),
+    bodyLarge: makeTextStyle(16),
+    bodyMedium: makeTextStyle(14),
+    bodySmall: makeTextStyle(12),
+    labelLarge: makeTextStyle(14),
+    labelMedium: makeTextStyle(12),
+    labelSmall: makeTextStyle(10),
+    caption: makeTextStyle(12),
+    captionSmall: makeTextStyle(10),
+    overline: {
+      ...makeTextStyle(10),
+      textTransform: 'uppercase' as const,
+    },
+  };
+
   return {
   colors: c,
   lightColors: undefined, // re-exported but unused in tests
@@ -388,6 +415,7 @@ vi.mock('@/lib/theme', () => {
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
   shadows: mockShadows,
+  terminal: { charHeight: 14, fabCharHeight: 16 },
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
@@ -407,14 +435,8 @@ vi.mock('@/lib/theme', () => {
     body: '400', bodyMedium: '500', bodySemibold: '600', bodyBold: '700', accent: '500',
   },
   letterSpacing: { tighter: -0.8, tight: -0.5, snug: -0.3, normal: -0.2, wide: 0.8, wider: 1.2 },
-  typography: {
-    displayLarge: {}, displayMedium: {}, displaySmall: {},
-    headingLarge: {}, headingMedium: {}, headingSmall: {},
-    bodyLarge: {}, bodyMedium: {}, bodySmall: {},
-    labelLarge: {}, labelMedium: {}, labelSmall: {},
-    caption: {}, captionSmall: {},
-    overline: {},
-  },
+  typography: mockTypography,
+  createTypography: (_fonts = mockFonts) => mockTypography,
   inputStyle: {},
   settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
@@ -436,6 +458,8 @@ vi.mock('@/lib/theme', () => {
     accent: 'Courier',
   },
   terminalBorderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
+  defaultButtonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+  terminalButtonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
   terminalShadows: {
     none: { boxShadow: '0px 0px 0px 0px transparent' },
     xs: { boxShadow: '0px 0px 0px 0px transparent' },
@@ -449,13 +473,24 @@ vi.mock('@/lib/theme', () => {
     cardRaised: { boxShadow: '0px 0px 0px 0px transparent' },
     float: { boxShadow: '0px 0px 0px 0px transparent' },
   },
+  terminalCRT: {
+    scanlineOpacity: 0.08,
+    flickerMin: 0.97,
+    flickerMs: 4000,
+    glowColor: 'rgba(51, 255, 51, 0.07)',
+    glowSpread: 60,
+    glowSize: 20,
+  },
   useTheme: () => ({
     colors: c,
     fonts: mockFonts,
+    typography: mockTypography,
     styles: mockStyles,
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     circleStyle: mockCircleStyle,
+    buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    crt: undefined,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
   };

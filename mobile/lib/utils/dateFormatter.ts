@@ -95,7 +95,10 @@ export const formatDayHeader = (
     month: 'short',
     day: 'numeric',
   });
-  return isToday ? `${todayLabel} · ${monthDay}` : `${dayName} · ${monthDay}`;
+  if (isToday) {
+    return todayLabel ? `${todayLabel} · ${monthDay}` : monthDay;
+  }
+  return `${dayName} · ${monthDay}`;
 };
 
 /**

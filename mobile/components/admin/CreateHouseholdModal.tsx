@@ -1,13 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Modal, Text, TextInput, View } from 'react-native';
+import { Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
@@ -61,9 +53,13 @@ export const CreateHouseholdModal = ({
           >
             {t('admin.createHousehold.button')}
           </Text>
-          <Pressable onPress={onClose}>
-            <Ionicons name="close" size={28} color={colors.content.secondary} />
-          </Pressable>
+          <Button
+            variant="icon"
+            onPress={onClose}
+            icon="close"
+            iconSize={28}
+            textColor={colors.content.secondary}
+          />
         </View>
 
         <View style={{ marginTop: spacing.xl }}>
@@ -94,36 +90,17 @@ export const CreateHouseholdModal = ({
           />
         </View>
 
-        <AnimatedPressable
+        <Button
+          variant="primary"
           onPress={onCreate}
-          disabled={!householdName.trim() || isPending}
-          hoverScale={1.02}
-          pressScale={0.97}
-          disableAnimation={!householdName.trim() || isPending}
+          disabled={!householdName.trim()}
+          isPending={isPending}
+          label={t('admin.createHousehold.button')}
+          color={colors.content.body}
           style={{
-            backgroundColor: !householdName.trim()
-              ? colors.button.disabled
-              : colors.content.body,
-            padding: spacing.md,
-            borderRadius: borderRadius.lg,
             marginTop: spacing.xl,
-            alignItems: 'center',
           }}
-        >
-          {isPending ? (
-            <ActivityIndicator color={colors.white} />
-          ) : (
-            <Text
-              style={{
-                color: colors.white,
-                fontSize: fontSize.lg,
-                fontWeight: fontWeight.semibold,
-              }}
-            >
-              {t('admin.createHousehold.button')}
-            </Text>
-          )}
-        </AnimatedPressable>
+        />
       </View>
     </Modal>
   );
