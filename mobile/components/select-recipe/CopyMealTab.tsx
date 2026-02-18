@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { Button, IconCircle } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
@@ -79,17 +79,17 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           gap: spacing.sm,
         }}
       >
-        <Pressable
+        <Button
+          variant="icon"
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
-          style={({ pressed }) => ({
+          icon="chevron-back"
+          iconSize={20}
+          textColor={colors.text.inverse}
+          color={colors.glass.card}
+          style={{
             ...circleStyle(iconContainer.xs),
-            backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
-            alignItems: 'center',
-            justifyContent: 'center',
-          })}
-        >
-          <Ionicons name="chevron-back" size={20} color={colors.text.inverse} />
-        </Pressable>
+          }}
+        />
         <View
           style={{
             paddingHorizontal: spacing.lg,
@@ -117,21 +117,17 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
             })}
           </Text>
         </View>
-        <Pressable
+        <Button
+          variant="icon"
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
-          style={({ pressed }) => ({
+          icon="chevron-forward"
+          iconSize={20}
+          textColor={colors.text.inverse}
+          color={colors.glass.card}
+          style={{
             ...circleStyle(iconContainer.xs),
-            backgroundColor: pressed ? colors.glass.medium : colors.glass.card,
-            alignItems: 'center',
-            justifyContent: 'center',
-          })}
-        >
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={colors.text.inverse}
-          />
-        </Pressable>
+          }}
+        />
       </View>
 
       {existingMeals.length === 0 ? (
@@ -191,37 +187,23 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
       )}
 
       {/* Clear meal button */}
-      <Pressable
+      <Button
+        variant="text"
+        tone="destructive"
         onPress={state.handleRemoveMeal}
         disabled={state.removeMeal.isPending}
-        style={({ pressed }) => ({
-          flexDirection: 'row',
-          alignItems: 'center',
+        icon="trash-outline"
+        iconSize={18}
+        label={t('selectRecipe.clearMeal')}
+        textColor={colors.content.tertiary}
+        color={colors.surface.hover}
+        style={{
           justifyContent: 'center',
           paddingVertical: spacing.md,
           borderRadius: borderRadius.sm,
-          backgroundColor: pressed
-            ? colors.surface.active
-            : colors.surface.hover,
           marginTop: spacing.lg,
-        })}
-      >
-        <Ionicons
-          name="trash-outline"
-          size={18}
-          color={colors.content.tertiary}
-        />
-        <Text
-          style={{
-            marginLeft: spacing.sm,
-            fontSize: fontSize.lg,
-            fontWeight: fontWeight.semibold,
-            color: colors.content.tertiary,
-          }}
-        >
-          {t('selectRecipe.clearMeal')}
-        </Text>
-      </Pressable>
+        }}
+      />
     </ScrollView>
   );
 };

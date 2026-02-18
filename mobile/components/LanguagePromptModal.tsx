@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { BottomSheetModal } from '@/components/BottomSheetModal';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import { BottomSheetModal, Button } from '@/components';
 import { LanguagePicker } from '@/components/settings/LanguagePicker';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
@@ -52,7 +51,8 @@ export const LanguagePromptModal = ({
           currentLanguage={selected}
           onChangeLanguage={setSelected}
         />
-        <PrimaryButton
+        <Button
+          variant="primary"
           label={t('common.confirm')}
           onPress={() => onConfirm(selected)}
           isPending={isSaving}

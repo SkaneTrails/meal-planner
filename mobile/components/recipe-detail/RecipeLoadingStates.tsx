@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
-import { BouncingLoader, GradientBackground } from '@/components';
+import { Text, View } from 'react-native';
+import { BouncingLoader, Button, GradientBackground } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -88,28 +88,15 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
       >
         {t('recipe.notFoundMessage')}
       </Text>
-      <Pressable
+      <Button
+        variant="primary"
         onPress={onGoBack}
-        style={({ pressed }) => ({
+        label={t('common.goBack')}
+        color={colors.button.primaryActive}
+        style={{
           marginTop: spacing.xl,
-          paddingHorizontal: spacing['2xl'],
-          paddingVertical: spacing.md,
-          backgroundColor: pressed
-            ? colors.button.primaryDivider
-            : colors.button.primaryActive,
-          borderRadius: borderRadius.sm,
-        })}
-      >
-        <Text
-          style={{
-            color: colors.content.body,
-            fontSize: fontSize.lg,
-            fontFamily: fonts.bodySemibold,
-          }}
-        >
-          {t('common.goBack')}
-        </Text>
-      </Pressable>
+        }}
+      />
     </GradientBackground>
   );
 };

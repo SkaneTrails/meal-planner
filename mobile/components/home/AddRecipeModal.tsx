@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal } from '@/components';
+import { BottomSheetModal, Button } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -80,33 +80,23 @@ export const AddRecipeModal = ({
             onSubmitEditing={handleSubmit}
             returnKeyType="go"
           />
-          <Pressable
+          <Button
+            variant="primary"
             onPress={handleSubmit}
             disabled={!recipeUrl.trim()}
-            style={({ pressed }) => ({
-              backgroundColor: recipeUrl.trim()
-                ? pressed
-                  ? colors.accentDark
-                  : colors.accent
-                : colors.surface.pressed,
+            label={t('home.addRecipe.importButton')}
+            color={recipeUrl.trim() ? colors.accent : colors.surface.pressed}
+            textColor={
+              recipeUrl.trim() ? colors.white : colors.content.secondary
+            }
+            size="sm"
+            style={{
               borderRadius: borderRadius.sm,
               paddingVertical: spacing['sm-md'],
               paddingHorizontal: spacing['md-lg'],
               marginRight: 2,
-            })}
-          >
-            <Text
-              style={{
-                color: recipeUrl.trim()
-                  ? colors.white
-                  : colors.content.secondary,
-                fontSize: fontSize.sm,
-                fontFamily: fonts.bodySemibold,
-              }}
-            >
-              {t('home.addRecipe.importButton')}
-            </Text>
-          </Pressable>
+            }}
+          />
         </View>
       </View>
 

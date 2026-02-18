@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Text, View } from 'react-native';
 import {
   AnimatedPressable,
+  Button,
   IconCircle,
   SectionHeader,
   SurfaceCard,
@@ -71,32 +72,21 @@ export const AccountSection = ({
         </View>
       </SurfaceCard>
 
-      <AnimatedPressable
+      <Button
+        variant="text"
+        tone="destructive"
+        icon="log-out-outline"
+        label={t('settings.signOut')}
         onPress={onSignOut}
-        hoverScale={1.02}
-        pressScale={0.97}
+        iconSize={20}
         style={{
           backgroundColor: colors.glass.card,
           borderRadius: borderRadius.md,
           padding: spacing.lg,
-          flexDirection: 'row',
-          alignItems: 'center',
           justifyContent: 'center',
           ...shadows.sm,
         }}
-      >
-        <Ionicons name="log-out-outline" size={20} color={colors.danger} />
-        <Text
-          style={{
-            fontSize: fontSize.md,
-            fontWeight: fontWeight.semibold,
-            color: colors.danger,
-            marginLeft: spacing.sm,
-          }}
-        >
-          {t('settings.signOut')}
-        </Text>
-      </AnimatedPressable>
+      />
     </View>
   );
 };

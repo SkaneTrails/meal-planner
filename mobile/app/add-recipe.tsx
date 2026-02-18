@@ -10,11 +10,11 @@ import {
   View,
 } from 'react-native';
 import {
+  Button,
   EnhancingOverlay,
   FormField,
   GradientBackground,
   IconCircle,
-  PrimaryButton,
   SurfaceCard,
 } from '@/components';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
@@ -277,7 +277,8 @@ export default function AddRecipeScreen() {
           />
 
           {/* Import button */}
-          <PrimaryButton
+          <Button
+            variant="primary"
             onPress={handleImport}
             disabled={!url}
             isPending={isPending}
@@ -325,43 +326,27 @@ export default function AddRecipeScreen() {
             />
           </View>
 
-          <Pressable
+          <Button
+            variant="text"
             onPress={() =>
               actions.router.push({
                 pathname: '/add-recipe',
                 params: { manual: 'true' },
               })
             }
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
+            icon="create-outline"
+            iconSize={20}
+            label={t('home.addRecipe.manualEntry')}
+            textColor={colors.content.body}
+            style={{
               paddingVertical: spacing.lg,
               paddingHorizontal: spacing.lg,
               borderRadius: borderRadius.md,
-              backgroundColor: pressed
-                ? colors.surface.pressed
-                : colors.surface.hover,
+              backgroundColor: colors.surface.hover,
               borderWidth: 2,
               borderColor: colors.surface.border,
-            })}
-          >
-            <Ionicons
-              name="create-outline"
-              size={20}
-              color={colors.content.body}
-            />
-            <Text
-              style={{
-                marginLeft: spacing.sm,
-                color: colors.content.body,
-                fontSize: fontSize.lg,
-                fontWeight: fontWeight.semibold,
-              }}
-            >
-              {t('home.addRecipe.manualEntry')}
-            </Text>
-          </Pressable>
+            }}
+          />
 
           {/* Supported sites */}
           <View style={{ marginTop: spacing['3xl'] }}>

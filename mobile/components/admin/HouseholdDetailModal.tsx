@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, Modal, Text, View } from 'react-native';
-import { AnimatedPressable, GradientBackground } from '@/components';
+import { Button, GradientBackground } from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
@@ -166,21 +165,18 @@ const ModalHeader = ({
         paddingBottom: spacing.md,
       }}
     >
-      <AnimatedPressable
+      <Button
+        variant="icon"
         onPress={onClose}
-        hoverScale={1.1}
-        pressScale={0.9}
+        icon="chevron-back"
+        iconSize={22}
         style={{
           ...circleStyle(iconContainer.md),
           backgroundColor: colors.glass.button,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginRight: spacing.md,
           ...shadows.sm,
         }}
-      >
-        <Ionicons name="chevron-back" size={22} color={colors.white} />
-      </AnimatedPressable>
+      />
       <View style={{ flex: 1 }}>
         <Text
           style={{
@@ -221,30 +217,20 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
       >
         {t('admin.members')}
       </Text>
-      <AnimatedPressable
+      <Button
+        variant="text"
         onPress={onAddMember}
-        hoverScale={1.05}
-        pressScale={0.95}
+        icon="person-add"
+        iconSize={16}
+        label={t('admin.addMemberButton')}
+        textColor={colors.white}
+        color={colors.primary}
         style={{
-          backgroundColor: colors.primary,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.lg,
-          flexDirection: 'row',
-          alignItems: 'center',
         }}
-      >
-        <Ionicons name="person-add" size={16} color={colors.white} />
-        <Text
-          style={{
-            color: colors.white,
-            fontWeight: fontWeight.medium,
-            marginLeft: 4,
-          }}
-        >
-          {t('admin.addMemberButton')}
-        </Text>
-      </AnimatedPressable>
+      />
     </View>
   );
 };
@@ -311,14 +297,14 @@ const MemberCard = ({
           </Text>
         </View>
       </View>
-      <AnimatedPressable
+      <Button
+        variant="icon"
+        tone="destructive"
         onPress={onRemove}
-        hoverScale={1.1}
-        pressScale={0.9}
+        icon="trash-outline"
+        iconSize={20}
         style={{ padding: spacing.sm }}
-      >
-        <Ionicons name="trash-outline" size={20} color={colors.error} />
-      </AnimatedPressable>
+      />
     </View>
   );
 };

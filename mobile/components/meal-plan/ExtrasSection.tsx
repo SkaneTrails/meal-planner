@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
-import { AnimatedPressable, TerminalFrame } from '@/components';
+import { Button, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -65,40 +65,32 @@ export const ExtrasSection = ({
               {t('mealPlan.extras.headerTitle')}
             </Text>
           </View>
-          <AnimatedPressable
+          <Button
+            variant="text"
+            size="sm"
             onPress={onAddExtra}
-            hoverScale={1.05}
-            pressScale={0.95}
+            icon="add"
+            iconSize={16}
+            label={t('mealPlan.extras.add')}
+            color={colors.surface.subtle}
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
               paddingHorizontal: spacing.sm,
               paddingVertical: 4,
-              backgroundColor: colors.surface.subtle,
               borderRadius: borderRadius.full,
             }}
-          >
-            <Ionicons name="add" size={16} color={colors.content.body} />
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                fontFamily: fonts.body,
-                color: colors.content.body,
-                marginLeft: spacing.xs,
-              }}
-            >
-              {t('mealPlan.extras.add')}
-            </Text>
-          </AnimatedPressable>
+          />
         </View>
 
         {/* Empty state */}
         {recipes.length === 0 && (
-          <Pressable
+          <Button
+            variant="text"
             onPress={onAddExtra}
+            icon="add-circle-outline"
+            iconSize={20}
+            label={t('mealPlan.extras.emptyState')}
+            textColor={colors.content.subtitle}
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: colors.mealPlan.emptyStateBg,
               borderRadius: borderRadius.sm,
@@ -107,23 +99,7 @@ export const ExtrasSection = ({
               borderColor: colors.surface.subtle,
               borderStyle: 'dashed',
             }}
-          >
-            <Ionicons
-              name="add-circle-outline"
-              size={20}
-              color={colors.content.icon}
-            />
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                fontFamily: fonts.body,
-                color: colors.content.subtitle,
-                marginLeft: spacing.sm,
-              }}
-            >
-              {t('mealPlan.extras.emptyState')}
-            </Text>
-          </Pressable>
+          />
         )}
 
         {/* Recipe list */}
@@ -200,20 +176,17 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         </View>
       </Pressable>
 
-      <AnimatedPressable
+      <Button
+        variant="icon"
         onPress={onRemove}
-        hoverScale={1.1}
-        pressScale={0.9}
+        icon="close"
+        iconSize={18}
         style={{
           ...circleStyle(28),
           backgroundColor: colors.surface.border,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginLeft: spacing.sm,
         }}
-      >
-        <Ionicons name="close" size={18} color={colors.content.body} />
-      </AnimatedPressable>
+      />
     </View>
   );
 };

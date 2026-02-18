@@ -1,6 +1,10 @@
 /**
  * AnimatedPressable - A Pressable component with smooth hover and press animations.
  * Provides consistent button feel across the app with scale animations on hover/press.
+ *
+ * Respects the theme's `interaction` token:
+ * - `'scale'` (default): scale animations on hover/press.
+ * - `'highlight'`: scale animations disabled globally (consumers handle bg changes).
  */
 
 import type React from 'react';
@@ -16,6 +20,7 @@ import {
   StyleSheet,
   type ViewStyle,
 } from 'react-native';
+import { useTheme } from '@/lib/theme';
 
 interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
   children: React.ReactNode;
@@ -45,13 +50,17 @@ export const AnimatedPressable = ({
   onHoverOut,
   ...props
 }: AnimatedPressableProps) => {
+  const { buttonDisplay } = useTheme();
+  const themeDisabled = buttonDisplay.interaction === 'highlight';
+  const effectivelyDisabled = disableAnimation || themeDisabled;
+
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const isHovered = useRef(false);
   const isPressed = useRef(false);
 
   const animateTo = useCallback(
     (toValue: number, useSpring = false) => {
-      if (disableAnimation) return;
+      if (effectivelyDisabled) return;
 
       if (useSpring) {
         Animated.spring(scaleAnim, {
@@ -68,7 +77,7 @@ export const AnimatedPressable = ({
         }).start();
       }
     },
-    [scaleAnim, animationDuration, disableAnimation],
+    [scaleAnim, animationDuration, effectivelyDisabled],
   );
 
   const handlePressIn = useCallback(

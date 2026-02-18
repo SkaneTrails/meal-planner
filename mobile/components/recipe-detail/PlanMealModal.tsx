@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { BottomSheetModal } from '@/components';
+import { BottomSheetModal, Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
@@ -56,13 +56,15 @@ export const PlanMealModal = ({
           gap: spacing.xl,
         }}
       >
-        <Pressable
+        <Button
+          variant="icon"
           onPress={() => onSetWeekOffset(0)}
           disabled={weekOffset === 0}
+          icon="chevron-back"
+          iconSize={24}
+          textColor={colors.text.inverse}
           style={{ padding: spacing.sm, opacity: weekOffset === 0 ? 0.3 : 1 }}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.text.inverse} />
-        </Pressable>
+        />
         <Text
           style={{
             fontSize: fontSize.xl,
@@ -72,17 +74,15 @@ export const PlanMealModal = ({
         >
           {weekOffset === 0 ? t('recipe.thisWeek') : t('recipe.nextWeek')}
         </Text>
-        <Pressable
+        <Button
+          variant="icon"
           onPress={() => onSetWeekOffset(1)}
           disabled={weekOffset === 1}
+          icon="chevron-forward"
+          iconSize={24}
+          textColor={colors.text.inverse}
           style={{ padding: spacing.sm, opacity: weekOffset === 1 ? 0.3 : 1 }}
-        >
-          <Ionicons
-            name="chevron-forward"
-            size={24}
-            color={colors.text.inverse}
-          />
-        </Pressable>
+        />
       </View>
 
       <Text

@@ -14,6 +14,7 @@ const SUPPRESSED_PATTERNS = [
   'cannot be a descendant of',
   'cannot contain a nested',
   'will cause a hydration error',
+  'non-boolean attribute',
 ];
 console.error = (...args: unknown[]) => {
   const message = typeof args[0] === 'string' ? args[0] : String(args[0]);
@@ -76,32 +77,30 @@ const FullScreenLoadingMock = ({ children, title, subtitle, icon }: any) => {
   );
 };
 
-const PrimaryButtonMock = ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
-  const { createElement } = require('react');
-  const displayLabel = isPending && loadingLabel ? loadingLabel : label;
-  return createElement('button', {
-    onClick: onPress,
-    disabled: disabled || isPending,
-    'data-testid': 'primary-button',
-  },
-    icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
-    displayLabel,
-  );
-};
-
 vi.mock('@/components/FullScreenLoading', () => ({
   FullScreenLoading: FullScreenLoadingMock,
-}));
-
-vi.mock('@/components/PrimaryButton', () => ({
-  PrimaryButton: PrimaryButtonMock,
 }));
 
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
-  PrimaryButton: PrimaryButtonMock,
+  BottomSheetModal: ({ visible, children, title, onClose }: any) => {
+    if (!visible) return null;
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'bottom-sheet-modal' },
+      title && createElement('span', null, title),
+      children,
+    );
+  },
+  Button: ({ label, onPress, icon, disabled, testID, ...props }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID }, label ?? icon ?? '');
+  },
+  ButtonGroup: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'button-group' }, children);
+  },
   AnimatedPressable: ({ children, onPress, ...props }: any) => {
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);
@@ -416,6 +415,7 @@ vi.mock('@/lib/theme', () => {
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
   shadows: mockShadows,
+  terminal: { charHeight: 14, fabCharHeight: 16 },
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
@@ -458,6 +458,8 @@ vi.mock('@/lib/theme', () => {
     accent: 'Courier',
   },
   terminalBorderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
+  defaultButtonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+  terminalButtonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
   terminalShadows: {
     none: { boxShadow: '0px 0px 0px 0px transparent' },
     xs: { boxShadow: '0px 0px 0px 0px transparent' },
@@ -487,6 +489,7 @@ vi.mock('@/lib/theme', () => {
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     circleStyle: mockCircleStyle,
+    buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     crt: undefined,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,

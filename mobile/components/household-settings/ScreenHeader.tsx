@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Button } from '@/components';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
+import { layout, spacing, useTheme } from '@/lib/theme';
 
 interface ScreenHeaderProps {
   canEdit: boolean;
@@ -19,7 +19,7 @@ export const ScreenHeader = ({
   onSave,
   onBack,
 }: ScreenHeaderProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -37,53 +37,29 @@ export const ScreenHeader = ({
           justifyContent: 'space-between',
         }}
       >
-        <Pressable
+        <Button
+          variant="text"
           onPress={onBack}
+          icon="chevron-back"
+          iconSize={24}
+          label={t('common.back')}
+          textColor={colors.text.primary}
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
             padding: spacing.sm,
             marginLeft: -spacing.sm,
           }}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
-          <Text
-            style={{
-              color: colors.text.primary,
-              fontSize: fontSize['2xl'],
-              marginLeft: spacing['2xs'],
-            }}
-          >
-            {t('common.back')}
-          </Text>
-        </Pressable>
+        />
         {canEdit && hasChanges && (
-          <Pressable
+          <Button
+            variant="primary"
             onPress={onSave}
-            disabled={isSaving}
-            style={({ pressed }) => ({
-              backgroundColor: pressed ? colors.accentDark : colors.accent,
-              paddingHorizontal: spacing['2xl'],
-              paddingVertical: spacing['sm-md'],
-              borderRadius: borderRadius.lg,
-              opacity: isSaving ? 0.6 : 1,
+            isPending={isSaving}
+            label={t('common.save')}
+            color={colors.accent}
+            style={{
               boxShadow: `0px 2px 4px 0px ${colors.accent}4D`,
-            })}
-          >
-            {isSaving ? (
-              <ActivityIndicator color={colors.white} size="small" />
-            ) : (
-              <Text
-                style={{
-                  color: colors.white,
-                  fontSize: fontSize.xl,
-                  fontWeight: fontWeight.semibold,
-                }}
-              >
-                {t('common.save')}
-              </Text>
-            )}
-          </Pressable>
+            }}
+          />
         )}
       </View>
       <ScreenTitle

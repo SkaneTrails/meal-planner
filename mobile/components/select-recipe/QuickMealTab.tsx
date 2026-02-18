@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { Text, TextInput, View } from 'react-native';
+import { Button, IconCircle } from '@/components';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
@@ -96,65 +96,34 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           onSubmitEditing={handleSetCustomText}
         />
 
-        <Pressable
+        <Button
+          variant="primary"
           onPress={handleSetCustomText}
           disabled={!customText.trim() || setMeal.isPending}
-          style={({ pressed }) => ({
-            backgroundColor: customText.trim()
-              ? pressed
-                ? colors.ai.primaryDark
-                : colors.ai.primary
-              : colors.gray[300],
-            borderRadius: borderRadius.md,
-            paddingVertical: spacing.lg,
-            alignItems: 'center',
-            opacity: pressed ? 0.9 : 1,
-          })}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontWeight: fontWeight.semibold,
-              color: customText.trim() ? colors.white : colors.gray[500],
-            }}
-          >
-            {t('selectRecipe.quick.addButton')}
-          </Text>
-        </Pressable>
+          label={t('selectRecipe.quick.addButton')}
+          color={customText.trim() ? colors.ai.primary : colors.gray[300]}
+          textColor={customText.trim() ? colors.white : colors.gray[500]}
+        />
       </View>
 
       {/* Clear meal button */}
-      <Pressable
+      <Button
+        variant="text"
+        tone="destructive"
         onPress={handleRemoveMeal}
         disabled={removeMeal.isPending}
-        style={({ pressed }) => ({
-          flexDirection: 'row',
-          alignItems: 'center',
+        icon="trash-outline"
+        iconSize={18}
+        label={t('selectRecipe.clearMeal')}
+        textColor={colors.content.tertiary}
+        color={colors.surface.hover}
+        style={{
           justifyContent: 'center',
           paddingVertical: spacing.md,
           borderRadius: borderRadius.sm,
-          backgroundColor: pressed
-            ? colors.surface.active
-            : colors.surface.hover,
           marginTop: spacing.xl,
-        })}
-      >
-        <Ionicons
-          name="trash-outline"
-          size={18}
-          color={colors.content.tertiary}
-        />
-        <Text
-          style={{
-            marginLeft: spacing.sm,
-            fontSize: fontSize.lg,
-            fontWeight: fontWeight.semibold,
-            color: colors.content.tertiary,
-          }}
-        >
-          {t('selectRecipe.clearMeal')}
-        </Text>
-      </Pressable>
+        }}
+      />
     </View>
   );
 };
