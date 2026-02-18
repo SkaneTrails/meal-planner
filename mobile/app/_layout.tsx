@@ -13,6 +13,7 @@ import {
   DMSans_600SemiBold,
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
+import { NotoEmoji_400Regular } from '@expo-google-fonts/noto-emoji';
 import {
   PlayfairDisplay_400Regular,
   PlayfairDisplay_500Medium,
@@ -25,6 +26,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState, type AppStateStatus, View } from 'react-native';
+import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { LanguagePromptModal } from '@/components/LanguagePromptModal';
@@ -46,6 +48,7 @@ import {
   ThemeProvider,
   terminalBorderRadius,
   terminalColors,
+  terminalCRT,
   terminalFontFamily,
   terminalShadows,
   useTheme,
@@ -121,6 +124,7 @@ const AppContent = () => {
           />
         </Stack>
         <FloatingTabBar />
+        <CRTOverlay />
       </View>
       <LanguagePromptModal
         visible={needsLanguagePrompt}
@@ -143,6 +147,7 @@ export default function RootLayout() {
     PlayfairDisplay_500Medium,
     PlayfairDisplay_600SemiBold,
     PlayfairDisplay_700Bold,
+    NotoEmoji_400Regular,
   });
 
   useEffect(() => {
@@ -178,6 +183,7 @@ export default function RootLayout() {
   const themeFonts = isTerminal ? terminalFontFamily : undefined;
   const themeRadii = isTerminal ? terminalBorderRadius : undefined;
   const themeShadows = isTerminal ? terminalShadows : undefined;
+  const themeCRT = isTerminal ? terminalCRT : undefined;
 
   return (
     <ErrorBoundary>
@@ -186,6 +192,7 @@ export default function RootLayout() {
         fonts={themeFonts}
         radii={themeRadii}
         shadowTokens={themeShadows}
+        crt={themeCRT}
       >
         <AuthProvider>
           <QueryProvider>

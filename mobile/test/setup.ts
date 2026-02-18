@@ -363,6 +363,34 @@ vi.mock('@/lib/theme', () => {
 
   const mockCircleStyle = (size: number) => ({ width: size, height: size, borderRadius: size / 2 });
 
+  const makeTextStyle = (size: number) => ({
+    fontFamily: 'System',
+    fontSize: size,
+    letterSpacing: 0,
+    textTransform: 'none' as const,
+  });
+
+  const mockTypography = {
+    displayLarge: makeTextStyle(32),
+    displayMedium: makeTextStyle(28),
+    displaySmall: makeTextStyle(24),
+    headingLarge: makeTextStyle(22),
+    headingMedium: makeTextStyle(20),
+    headingSmall: makeTextStyle(18),
+    bodyLarge: makeTextStyle(16),
+    bodyMedium: makeTextStyle(14),
+    bodySmall: makeTextStyle(12),
+    labelLarge: makeTextStyle(14),
+    labelMedium: makeTextStyle(12),
+    labelSmall: makeTextStyle(10),
+    caption: makeTextStyle(12),
+    captionSmall: makeTextStyle(10),
+    overline: {
+      ...makeTextStyle(10),
+      textTransform: 'uppercase' as const,
+    },
+  };
+
   return {
   colors: c,
   lightColors: undefined, // re-exported but unused in tests
@@ -407,14 +435,8 @@ vi.mock('@/lib/theme', () => {
     body: '400', bodyMedium: '500', bodySemibold: '600', bodyBold: '700', accent: '500',
   },
   letterSpacing: { tighter: -0.8, tight: -0.5, snug: -0.3, normal: -0.2, wide: 0.8, wider: 1.2 },
-  typography: {
-    displayLarge: {}, displayMedium: {}, displaySmall: {},
-    headingLarge: {}, headingMedium: {}, headingSmall: {},
-    bodyLarge: {}, bodyMedium: {}, bodySmall: {},
-    labelLarge: {}, labelMedium: {}, labelSmall: {},
-    caption: {}, captionSmall: {},
-    overline: {},
-  },
+  typography: mockTypography,
+  createTypography: (_fonts = mockFonts) => mockTypography,
   inputStyle: {},
   settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
@@ -449,13 +471,23 @@ vi.mock('@/lib/theme', () => {
     cardRaised: { boxShadow: '0px 0px 0px 0px transparent' },
     float: { boxShadow: '0px 0px 0px 0px transparent' },
   },
+  terminalCRT: {
+    scanlineOpacity: 0.08,
+    flickerMin: 0.97,
+    flickerMs: 4000,
+    glowColor: 'rgba(51, 255, 51, 0.07)',
+    glowSpread: 60,
+    glowSize: 20,
+  },
   useTheme: () => ({
     colors: c,
     fonts: mockFonts,
+    typography: mockTypography,
     styles: mockStyles,
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     circleStyle: mockCircleStyle,
+    crt: undefined,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
   };

@@ -20,8 +20,24 @@ import {
   type ShadowTokens,
 } from './layout';
 import { createStyles, type ThemeStyles } from './styles';
-import type { FontFamilyTokens } from './typography';
-import { defaultFontFamily } from './typography';
+import type { FontFamilyTokens, TypographyTokens } from './typography';
+import { createTypography, defaultFontFamily } from './typography';
+
+/** CRT visual-effect parameters — provided only by themes that want the effect. */
+export interface CRTConfig {
+  /** Opacity of the dark scanline bands (0–1). */
+  scanlineOpacity: number;
+  /** Minimum opacity during flicker dip. */
+  flickerMin: number;
+  /** Duration of one flicker half-cycle in ms. */
+  flickerMs: number;
+  /** CSS color for the inner glow vignette. */
+  glowColor: string;
+  /** Blur radius of the inner glow in px. */
+  glowSpread: number;
+  /** Spread radius of the inner glow in px. */
+  glowSize: number;
+}
 
 /** Return type of the circleStyle helper (width/height/borderRadius). */
 export type CircleStyleFn = (size: number) => {
@@ -33,10 +49,13 @@ export type CircleStyleFn = (size: number) => {
 export interface ThemeValue {
   colors: ColorTokens;
   fonts: FontFamilyTokens;
+  typography: TypographyTokens;
   styles: ThemeStyles;
   borderRadius: BorderRadiusTokens;
   shadows: ShadowTokens;
   circleStyle: CircleStyleFn;
+  /** CRT overlay config — undefined for themes without the effect. */
+  crt?: CRTConfig;
 }
 
 const ThemeContext = createContext<ThemeValue | null>(null);
@@ -60,6 +79,8 @@ interface ThemeProviderProps {
   radii?: BorderRadiusTokens;
   /** Optional shadow presets override. Defaults to the standard depth shadows. */
   shadowTokens?: ShadowTokens;
+  /** Optional CRT overlay configuration. Omit to disable the effect. */
+  crt?: CRTConfig;
 }
 
 /** Wraps children with the resolved theme value. */
@@ -69,6 +90,7 @@ export const ThemeProvider = ({
   fonts = defaultFontFamily,
   radii = defaultBorderRadius,
   shadowTokens = defaultShadows,
+  crt,
 }: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(() => {
     const isFlat = radii.full === 0;
@@ -79,12 +101,14 @@ export const ThemeProvider = ({
     return {
       colors: palette,
       fonts,
+      typography: createTypography(fonts),
       styles: createStyles(palette, radii),
       borderRadius: radii,
       shadows: shadowTokens,
       circleStyle: themedCircleStyle,
+      crt,
     };
-  }, [palette, fonts, radii, shadowTokens]);
+  }, [palette, fonts, radii, shadowTokens, crt]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
