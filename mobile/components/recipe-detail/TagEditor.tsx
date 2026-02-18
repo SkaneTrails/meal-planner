@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 interface TagEditorProps {
   editTags: string;
@@ -17,7 +11,7 @@ interface TagEditorProps {
 }
 
 export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const [newTag, setNewTag] = useState('');
 
   const handleAddTag = () => {

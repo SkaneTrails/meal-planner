@@ -12,7 +12,6 @@ import DraggableFlatList, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
 import {
-  borderRadius,
   fontSize,
   fontWeight,
   layout,
@@ -36,7 +35,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);

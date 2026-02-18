@@ -3,11 +3,9 @@ import type { ComponentProps } from 'react';
 import { Pressable, Text, View, type ViewStyle } from 'react-native';
 import { IconCircle } from '@/components';
 import {
-  borderRadius,
   fontSize,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -34,7 +32,7 @@ const EmptyState = ({
   action,
   style,
 }: EmptyStateProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   return (
     <View
       style={[

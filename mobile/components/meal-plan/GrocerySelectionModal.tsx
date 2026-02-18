@@ -3,14 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal, PrimaryButton } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  circleStyle,
-  fontSize,
-  iconContainer,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
   formatDateLocal,
@@ -172,7 +165,7 @@ const GroceryWeekSelector = ({
   onPreviousWeek,
   onNextWeek,
 }: GroceryWeekSelectorProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, circleStyle } = useTheme();
   return (
     <View
       style={{
@@ -255,7 +248,7 @@ const GroceryMealItem = ({
   onToggle,
   onChangeServings,
 }: GroceryMealItemProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, circleStyle } = useTheme();
   return (
     <View
       style={{

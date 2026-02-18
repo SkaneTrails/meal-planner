@@ -1,14 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  dotSize,
-  fontSize,
-  iconSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { dotSize, fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -44,7 +37,7 @@ export const DayHeader = ({
   onToggleTag,
   onCollapse,
 }: DayHeaderProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <>
       <Pressable
@@ -210,7 +203,7 @@ const NoteEditor = ({
   onCancel,
   onToggleTag,
 }: NoteEditorProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View style={{ marginBottom: spacing.md }}>
       <View

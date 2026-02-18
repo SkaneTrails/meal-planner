@@ -61,6 +61,11 @@ export const borderRadius = {
   full: 9999,
 } as const;
 
+/** Structural contract for border radius scales. */
+export type BorderRadiusTokens = {
+  readonly [K in keyof typeof borderRadius]: number;
+};
+
 // Icon sizes - standardized
 export const iconSize = {
   xs: 14,
@@ -108,6 +113,11 @@ export const shadows = {
   cardRaised: { boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)' },
   float: { boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)' },
 } as const;
+
+/** Structural contract for shadow presets. */
+export type ShadowTokens = {
+  readonly [K in keyof typeof shadows]: { readonly boxShadow: string };
+};
 
 // Animation durations - smooth, premium feel
 export const animation = {

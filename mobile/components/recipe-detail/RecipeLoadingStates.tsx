@@ -2,20 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { BouncingLoader, GradientBackground } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface RecipeLoadingProps {
   structured?: boolean;
 }
 
 export const RecipeLoading = ({ structured = true }: RecipeLoadingProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   return (
     <GradientBackground
       structured={structured}
@@ -44,7 +38,7 @@ interface RecipeNotFoundProps {
 }
 
 export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   return (
     <GradientBackground
       structured

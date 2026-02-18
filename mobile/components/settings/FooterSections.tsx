@@ -3,11 +3,9 @@ import { Text, View } from 'react-native';
 import { AnimatedPressable, SectionHeader, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
-  borderRadius,
   fontWeight,
   settingsSubtitleStyle,
   settingsTitleStyle,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -17,7 +15,7 @@ interface AdminSectionProps {
 }
 
 export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (

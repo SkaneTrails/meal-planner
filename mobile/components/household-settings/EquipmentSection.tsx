@@ -1,14 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import { EQUIPMENT_CATEGORIES } from './constants';
 
 interface EquipmentSectionProps {
@@ -26,7 +19,7 @@ const SelectedEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   if (equipment.length === 0) return null;
@@ -101,7 +94,7 @@ const AvailableEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (

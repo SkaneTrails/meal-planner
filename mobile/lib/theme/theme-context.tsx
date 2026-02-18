@@ -12,14 +12,31 @@ import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import type { ColorTokens } from './colors';
 import { colors as defaultPalette } from './colors';
+import {
+  type BorderRadiusTokens,
+  borderRadius as defaultBorderRadius,
+  circleStyle as defaultCircleStyle,
+  shadows as defaultShadows,
+  type ShadowTokens,
+} from './layout';
 import { createStyles, type ThemeStyles } from './styles';
 import type { FontFamilyTokens } from './typography';
 import { defaultFontFamily } from './typography';
+
+/** Return type of the circleStyle helper (width/height/borderRadius). */
+export type CircleStyleFn = (size: number) => {
+  readonly width: number;
+  readonly height: number;
+  readonly borderRadius: number;
+};
 
 export interface ThemeValue {
   colors: ColorTokens;
   fonts: FontFamilyTokens;
   styles: ThemeStyles;
+  borderRadius: BorderRadiusTokens;
+  shadows: ShadowTokens;
+  circleStyle: CircleStyleFn;
 }
 
 const ThemeContext = createContext<ThemeValue | null>(null);
@@ -39,6 +56,10 @@ interface ThemeProviderProps {
   palette?: ColorTokens;
   /** Optional font family override. Defaults to DM Sans. */
   fonts?: FontFamilyTokens;
+  /** Optional border radius override. Defaults to the standard scale. */
+  radii?: BorderRadiusTokens;
+  /** Optional shadow presets override. Defaults to the standard depth shadows. */
+  shadowTokens?: ShadowTokens;
 }
 
 /** Wraps children with the resolved theme value. */
@@ -46,15 +67,24 @@ export const ThemeProvider = ({
   children,
   palette = defaultPalette,
   fonts = defaultFontFamily,
+  radii = defaultBorderRadius,
+  shadowTokens = defaultShadows,
 }: ThemeProviderProps) => {
-  const value = useMemo<ThemeValue>(
-    () => ({
+  const value = useMemo<ThemeValue>(() => {
+    const isFlat = radii.full === 0;
+    const themedCircleStyle: CircleStyleFn = isFlat
+      ? (size) => ({ width: size, height: size, borderRadius: 0 }) as const
+      : defaultCircleStyle;
+
+    return {
       colors: palette,
       fonts,
-      styles: createStyles(palette),
-    }),
-    [palette, fonts],
-  );
+      styles: createStyles(palette, radii),
+      borderRadius: radii,
+      shadows: shadowTokens,
+      circleStyle: themedCircleStyle,
+    };
+  }, [palette, fonts, radii, shadowTokens]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

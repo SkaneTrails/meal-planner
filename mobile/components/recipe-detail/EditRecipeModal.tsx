@@ -9,13 +9,7 @@ import {
 } from 'react-native';
 import { BottomSheetModal, ChipPicker } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type {
   DietLabel,
   Household,
@@ -62,7 +56,7 @@ export const EditRecipeModal = ({
   onTransferRecipe,
   onDelete,
 }: EditRecipeModalProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const [editDietLabel, setEditDietLabel] = useState<DietLabel | null>(
     recipe.diet_label,
   );

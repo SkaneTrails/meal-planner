@@ -6,14 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -63,7 +56,7 @@ export const GroceryItemRow = ({
   isActive,
   showReorder,
 }: GroceryItemRowProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 

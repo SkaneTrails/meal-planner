@@ -8,14 +8,7 @@ import {
 } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
 
 interface MembersSectionProps {
@@ -43,7 +36,7 @@ const MemberCard = ({
   canEdit: boolean;
   onRemove: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
@@ -145,7 +138,7 @@ const AddMemberForm = ({
   | 'onAddMember'
   | 'isAddPending'
 >) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -272,7 +265,7 @@ export const MembersSection = ({
   onRemoveMember,
   isAddPending,
 }: MembersSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (

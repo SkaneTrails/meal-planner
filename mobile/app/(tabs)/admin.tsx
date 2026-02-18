@@ -27,13 +27,10 @@ import {
 } from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';
 import {
-  borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
   iconContainer,
   layout,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -154,7 +151,7 @@ export default function AdminScreen() {
 
 const AdminHeader = ({ onBack }: { onBack: () => void }) => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, circleStyle, shadows } = useTheme();
 
   return (
     <View
@@ -194,7 +191,7 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
 
 const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
 
   return (
     <View
@@ -254,7 +251,7 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
 
 const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
 
   return (
     <View

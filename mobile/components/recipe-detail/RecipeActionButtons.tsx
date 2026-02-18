@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { circleStyle, iconContainer, useTheme } from '@/lib/theme';
+import { iconContainer, useTheme } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -36,7 +36,7 @@ export const RecipeActionButtons = ({
   onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => {
-  const { colors } = useTheme();
+  const { colors, circleStyle } = useTheme();
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
   const actionButtonStyle = {

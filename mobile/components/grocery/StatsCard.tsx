@@ -3,14 +3,7 @@ import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
@@ -32,7 +25,7 @@ const ActionButtons = ({
   onToggleClearMenu,
   onClearChecked,
 }: ActionButtonsProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   return (
     <View style={{ flexDirection: 'row', gap: spacing['xs-sm'] }}>
       <AnimatedPressable
@@ -106,7 +99,7 @@ interface ProgressBarProps {
 }
 
 const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   if (itemsToBuy <= 0) return null;
 
   return (
@@ -139,7 +132,7 @@ interface ItemsAtHomeIndicatorProps {
 const ItemsAtHomeIndicator = ({
   hiddenAtHomeCount,
 }: ItemsAtHomeIndicatorProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -212,7 +205,7 @@ export const StatsCard = ({
   onClearManualItems,
   onClearAll,
 }: StatsCardProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (

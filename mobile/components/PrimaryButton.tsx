@@ -10,13 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
-import {
-  borderRadius,
-  fontSize,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 type IconName = ComponentProps<typeof IoniconsType>['name'];
 
@@ -52,7 +46,7 @@ export function PrimaryButton({
   pressedColor,
   disabledColor: disabledColorProp,
 }: PrimaryButtonProps) {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   const color = colorProp ?? colors.button.primary;
   const disabledColor = disabledColorProp ?? colors.button.disabled;
   const isDisabled = disabled || isPending;
@@ -74,6 +68,8 @@ export function PrimaryButton({
         styles.button,
         {
           backgroundColor: pressed && pressedColor ? pressedColor : activeColor,
+          borderRadius: borderRadius.md,
+          ...shadows.md,
           opacity: pressed && !pressedColor ? 0.9 : 1,
         },
       ]}
@@ -111,8 +107,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.md,
-    ...shadows.md,
   },
   icon: {
     marginRight: spacing.sm,

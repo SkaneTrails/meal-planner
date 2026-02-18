@@ -10,14 +10,7 @@ import {
   type TabType,
   useSelectRecipeState,
 } from '@/lib/hooks/useSelectRecipeState';
-import {
-  borderRadius,
-  fontSize,
-  layout,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, layout, spacing, useTheme } from '@/lib/theme';
 
 const TAB_KEYS: TabType[] = ['library', 'random', 'quick', 'copy'];
 
@@ -109,7 +102,7 @@ interface TabBarProps {
 }
 
 const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>

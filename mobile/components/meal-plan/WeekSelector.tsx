@@ -3,13 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import { formatWeekRange } from '@/lib/utils/dateFormatter';
 
 interface WeekSelectorProps {
@@ -31,7 +25,7 @@ export const WeekSelector = ({
   onNextWeek,
   onJumpToToday,
 }: WeekSelectorProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   return (
     <View
       style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}

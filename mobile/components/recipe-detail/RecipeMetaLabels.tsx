@@ -1,13 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  dotSize,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { dotSize, fontSize, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { getDietLabels } from './recipe-detail-constants';
 
@@ -17,7 +11,7 @@ interface RecipeMetaLabelsProps {
 }
 
 export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const dietLabels = getDietLabels(colors);
   return (
     <View

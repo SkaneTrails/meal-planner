@@ -2,11 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { IconCircle } from '@/components';
 import {
-  borderRadius,
   fontSize,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -27,7 +25,7 @@ export const InstructionItem = ({
   onToggle,
   stepNumber,
 }: InstructionItemProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   const { type, content, time } = instruction;
 
   if (type === 'tip') {

@@ -7,15 +7,18 @@
 
 import type { ColorTokens } from './colors';
 import { colors } from './colors';
-import { borderRadius, spacing } from './layout';
+import { type BorderRadiusTokens, borderRadius, spacing } from './layout';
 import { fontSize, fontWeight } from './typography';
 
 /** Build style presets for a given color palette. */
-export const createStyles = (c: ColorTokens) =>
+export const createStyles = (
+  c: ColorTokens,
+  radii: BorderRadiusTokens = borderRadius,
+) =>
   ({
     inputStyle: {
       backgroundColor: c.white,
-      borderRadius: borderRadius.md,
+      borderRadius: radii.md,
       paddingHorizontal: spacing.lg,
       paddingVertical: spacing.md,
       fontSize: fontSize.lg,

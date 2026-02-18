@@ -11,16 +11,10 @@ import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  lineHeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 
 export default function NoAccessScreen() {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
   const { t } = useTranslation();

@@ -3,13 +3,7 @@ import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 import { SurfaceCard } from '@/components';
 import { type AppLanguage, LANGUAGES } from '@/lib/settings-context';
-import {
-  circleStyle,
-  fontSize,
-  iconContainer,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
 
 const FLAG_URLS: Record<AppLanguage, string> = {
   en: 'https://flagcdn.com/w80/gb.png',
@@ -26,7 +20,7 @@ export const LanguagePicker = ({
   currentLanguage,
   onChangeLanguage,
 }: LanguagePickerProps) => {
-  const { colors } = useTheme();
+  const { colors, circleStyle } = useTheme();
 
   return (
     <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>

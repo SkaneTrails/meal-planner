@@ -3,7 +3,6 @@ import { Pressable, Text, View } from 'react-native';
 import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
-  borderRadius,
   fontSize,
   lineHeight,
   spacing,
@@ -26,7 +25,7 @@ export const RecipeInstructions = ({
   t,
   onToggleStep,
 }: RecipeInstructionsProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
       <View

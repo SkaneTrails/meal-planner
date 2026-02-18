@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
-import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
@@ -24,7 +24,7 @@ export const AddRecipeModal = ({
   onImport,
   t,
 }: AddRecipeModalProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const router = useRouter();
 
   const handleSubmit = () => {
