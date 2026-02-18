@@ -7,6 +7,7 @@ export { BottomActionBar } from './BottomActionBar';
 export { BottomSheetModal } from './BottomSheetModal';
 export { BouncingLoader } from './BouncingLoader';
 export { ChipPicker } from './ChipPicker';
+export { CRTOverlay } from './CRTOverlay';
 export { EmptyState } from './EmptyState';
 export { EnhancingOverlay } from './EnhancingOverlay';
 export { ErrorBoundary } from './ErrorBoundary';

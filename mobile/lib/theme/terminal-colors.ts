@@ -7,6 +7,7 @@
 
 import type { ColorTokens } from './colors';
 import type { BorderRadiusTokens, ShadowTokens } from './layout';
+import type { CRTConfig } from './theme-context';
 
 // ── Base palette ───────────────────────────────────────────────────────
 const BLACK = '#0A0A0A';
@@ -292,4 +293,14 @@ export const terminalShadows: ShadowTokens = {
   glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
   cardRaised: NONE,
   float: NONE,
+};
+
+// ── CRT visual effects — scanlines, glow, flicker ─────────────────────
+export const terminalCRT: CRTConfig = {
+  scanlineOpacity: 0.08,
+  flickerMin: 0.97,
+  flickerMs: 4000,
+  glowColor: g(0.07),
+  glowSpread: 60,
+  glowSize: 20,
 };
