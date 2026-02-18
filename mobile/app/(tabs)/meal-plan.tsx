@@ -304,13 +304,13 @@ export default function MealPlanScreen() {
             slots={[
               {
                 key: 'today',
-                label: '\u25C8 IDAG',
+                label: `\u25C8 ${t('mealPlan.today').toUpperCase()}`,
                 active: showJumpButton || weekOffset !== 0,
                 onPress: jumpToToday,
               },
               {
                 key: 'grocery',
-                label: '\u2637 INK\u00D6P',
+                label: `\u2637 ${t('tabs.grocery').toUpperCase()}`,
                 active: true,
                 onPress: openGroceryModal,
               },
