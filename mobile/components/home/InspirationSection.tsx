@@ -2,7 +2,8 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, Button } from '@/components';
+import type { FrameSegment } from '@/components';
+import { AnimatedPressable, Button, TerminalFrame } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
@@ -33,8 +34,44 @@ export const InspirationSection = ({
   t,
 }: InspirationSectionProps) => {
   const router = useRouter();
+  const { crt } = useTheme();
 
   if (inspirationRecipes.length > 0 && inspirationRecipe) {
+    if (crt) {
+      const shuffleSegment: FrameSegment = {
+        label: t('home.inspiration.shuffle').toUpperCase(),
+        onPress: () => {
+          hapticLight();
+          shuffleInspiration();
+        },
+      };
+
+      const mealLabel = inspirationRecipe.meal_label
+        ? t(`labels.meal.${inspirationRecipe.meal_label}`).toUpperCase()
+        : undefined;
+
+      return (
+        <View
+          style={{
+            paddingHorizontal: spacing.lg,
+            marginBottom: spacing.lg,
+          }}
+        >
+          <TerminalFrame
+            label={t('home.inspiration.title').toUpperCase()}
+            bottomLabel={mealLabel}
+            rightSegments={[shuffleSegment]}
+            variant="single"
+          >
+            <InspirationCardCrt
+              recipe={inspirationRecipe}
+              onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
+            />
+          </TerminalFrame>
+        </View>
+      );
+    }
+
     return (
       <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
         <InspirationHeader t={t} onShuffle={shuffleInspiration} />
@@ -178,6 +215,40 @@ const InspirationCard = ({
           )}
         </View>
       </LinearGradient>
+    </AnimatedPressable>
+  );
+};
+
+const InspirationCardCrt = ({
+  recipe,
+  onPress,
+}: {
+  recipe: Recipe;
+  onPress: () => void;
+}) => {
+  const { colors, fonts } = useTheme();
+
+  return (
+    <AnimatedPressable onPress={onPress} hoverScale={1.01} pressScale={0.99}>
+      <Image
+        source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
+        style={{ width: '100%', height: 160 }}
+        contentFit="cover"
+        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+        transition={200}
+      />
+      <Text
+        style={{
+          fontSize: fontSize['2xl'],
+          fontFamily: fonts.bodySemibold,
+          color: colors.content.body,
+          letterSpacing: letterSpacing.tight,
+          marginTop: spacing.sm,
+        }}
+        numberOfLines={2}
+      >
+        {recipe.title}
+      </Text>
     </AnimatedPressable>
   );
 };

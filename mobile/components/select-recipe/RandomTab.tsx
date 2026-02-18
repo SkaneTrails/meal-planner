@@ -22,7 +22,7 @@ interface RandomTabProps {
 }
 
 export const RandomTab = ({ state }: RandomTabProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius, shadows, crt, fonts } = useTheme();
   const {
     t,
     randomRecipe,
@@ -125,7 +125,35 @@ const RandomHeader = ({
   mealTypeCount,
   mealTypeLabel,
 }: RandomHeaderProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts, crt } = useTheme();
+
+  if (crt) {
+    return (
+      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+        <Text
+          style={{
+            fontSize: fontSize['2xl'],
+            fontFamily: fonts.bodySemibold,
+            color: colors.primary,
+            textAlign: 'center',
+          }}
+        >
+          {t('selectRecipe.random.howAbout')}
+        </Text>
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            fontFamily: fonts.body,
+            color: colors.content.tertiary,
+            marginTop: spacing.xs,
+          }}
+        >
+          {t('selectRecipe.random.matchCount', { count: mealTypeCount })}{' '}
+          {mealTypeLabel}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
@@ -174,7 +202,90 @@ interface RandomRecipeCardProps {
 }
 
 const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+
+  if (crt) {
+    return (
+      <Pressable
+        onPress={() => onSelect(recipe.id)}
+        style={({ pressed }) => ({
+          backgroundColor: colors.mealPlan.slotBg,
+          borderRadius: borderRadius.sm,
+          overflow: 'hidden',
+          transform: [{ scale: pressed ? 0.99 : 1 }],
+        })}
+      >
+        {(recipe.thumbnail_url || recipe.image_url) && (
+          <Image
+            source={{
+              uri: (recipe.thumbnail_url || recipe.image_url) ?? undefined,
+            }}
+            style={{ width: '100%', height: 180 }}
+            resizeMode="cover"
+          />
+        )}
+        <View style={{ padding: spacing.lg }}>
+          <Text
+            style={{
+              fontSize: fontSize['2xl'],
+              fontFamily: fonts.bodySemibold,
+              color: colors.primary,
+              marginBottom: spacing.sm,
+            }}
+          >
+            {recipe.title}
+          </Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: spacing.md,
+            }}
+          >
+            {recipe.total_time && (
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.body,
+                  color: colors.content.tertiary,
+                }}
+              >
+                {t('selectRecipe.random.time', { count: recipe.total_time })}
+              </Text>
+            )}
+            {recipe.servings && (
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.body,
+                  color: colors.content.tertiary,
+                }}
+              >
+                {'\u263B'}{' '}
+                {t('selectRecipe.random.servings', { count: recipe.servings })}
+              </Text>
+            )}
+          </View>
+
+          {recipe.ingredients && recipe.ingredients.length > 0 && (
+            <Text
+              style={{
+                fontSize: fontSize.base,
+                fontFamily: fonts.body,
+                color: colors.content.subtitle,
+                lineHeight: lineHeight.sm,
+                marginTop: spacing.sm,
+              }}
+              numberOfLines={2}
+            >
+              {recipe.ingredients.slice(0, 5).join(' \u2022 ')}
+              {recipe.ingredients.length > 5 ? ' ...' : ''}
+            </Text>
+          )}
+        </View>
+      </Pressable>
+    );
+  }
 
   return (
     <Pressable

@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { Section, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 
@@ -13,32 +12,83 @@ export const RecipeIngredientsList = ({
   ingredients,
   t,
 }: RecipeIngredientsListProps) => {
-  const { colors, fonts, typography, borderRadius, shadows } = useTheme();
-  return (
-    <View style={{ marginTop: spacing.xl }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: spacing.lg,
-        }}
-      >
-        <IconCircle
-          size="xs"
-          bg={colors.surface.active}
-          style={{ marginRight: spacing.md }}
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+
+  if (crt) {
+    return (
+      <View style={{ marginTop: spacing.xl }}>
+        <TerminalFrame
+          variant="single"
+          label={t('recipe.ingredients').toUpperCase()}
         >
-          <Ionicons name="list" size={18} color={colors.content.body} />
-        </IconCircle>
-        <Text
-          style={{
-            ...typography.displaySmall,
-            color: colors.content.heading,
-          }}
-        >
-          {t('recipe.ingredients')}
-        </Text>
+          <View
+            style={{
+              backgroundColor: colors.mealPlan.slotBg,
+              padding: spacing.lg,
+            }}
+          >
+            {ingredients.length === 0 ? (
+              <Text
+                style={{
+                  color: colors.content.secondary,
+                  fontSize: fontSize.xl,
+                  fontFamily: fonts.body,
+                  fontStyle: 'italic',
+                }}
+              >
+                {t('recipe.noIngredients')}
+              </Text>
+            ) : (
+              ingredients.map((ingredient, index) => (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'flex-start',
+                    paddingVertical: spacing.sm,
+                    borderBottomWidth: index < ingredients.length - 1 ? 1 : 0,
+                    borderBottomColor: colors.border,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: colors.primary,
+                      fontFamily: fonts.body,
+                      marginRight: spacing.sm,
+                      fontSize: fontSize.xl,
+                      lineHeight: lineHeight.lg,
+                    }}
+                  >
+                    {'\u2022'}
+                  </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontSize: fontSize.xl,
+                      fontFamily: fonts.body,
+                      color: colors.content.body,
+                      lineHeight: lineHeight.lg,
+                    }}
+                  >
+                    {ingredient}
+                  </Text>
+                </View>
+              ))
+            )}
+          </View>
+        </TerminalFrame>
       </View>
+    );
+  }
+
+  return (
+    <Section
+      title={t('recipe.ingredients')}
+      icon="list"
+      size="sm"
+      spacing={0}
+      style={{ marginTop: spacing.xl }}
+    >
       {ingredients.length === 0 ? (
         <Text
           style={{
@@ -94,6 +144,6 @@ export const RecipeIngredientsList = ({
           ))}
         </View>
       )}
-    </View>
+    </Section>
   );
 };

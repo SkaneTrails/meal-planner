@@ -20,11 +20,12 @@ import {
   PlayfairDisplay_600SemiBold,
   PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AppState, type AppStateStatus, View } from 'react-native';
 import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -136,6 +137,57 @@ const AppContent = () => {
   );
 };
 
+const THEME_STORAGE_KEY = '@meal_planner_theme';
+
+interface ThemeRootProps {
+  children: React.ReactNode;
+  envTerminal: boolean;
+  fontsReady: boolean;
+}
+
+const ThemeRoot = ({ children, envTerminal }: ThemeRootProps) => {
+  const [isTerminal, setIsTerminal] = useState(envTerminal);
+
+  useEffect(() => {
+    AsyncStorage.getItem(THEME_STORAGE_KEY).then((stored) => {
+      if (stored !== null) setIsTerminal(stored === 'terminal');
+    });
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setIsTerminal((prev) => {
+      const next = !prev;
+      AsyncStorage.setItem(THEME_STORAGE_KEY, next ? 'terminal' : 'default');
+      return next;
+    });
+  }, []);
+
+  const themeProps = useMemo(
+    () =>
+      isTerminal
+        ? {
+            palette: terminalColors,
+            fonts: terminalFontFamily,
+            radii: terminalBorderRadius,
+            shadowTokens: terminalShadows,
+            buttonConfig: terminalButtonDisplay,
+            crt: terminalCRT,
+          }
+        : {},
+    [isTerminal],
+  );
+
+  return (
+    <ThemeProvider
+      {...themeProps}
+      isTerminal={isTerminal}
+      toggleTheme={toggleTheme}
+    >
+      {children}
+    </ThemeProvider>
+  );
+};
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -179,24 +231,11 @@ export default function RootLayout() {
     return null;
   }
 
-  const isTerminal = process.env.EXPO_PUBLIC_THEME === 'terminal';
-  const themePalette = isTerminal ? terminalColors : undefined;
-  const themeFonts = isTerminal ? terminalFontFamily : undefined;
-  const themeRadii = isTerminal ? terminalBorderRadius : undefined;
-  const themeShadows = isTerminal ? terminalShadows : undefined;
-  const themeCRT = isTerminal ? terminalCRT : undefined;
-  const themeButtonConfig = isTerminal ? terminalButtonDisplay : undefined;
+  const envTerminal = process.env.EXPO_PUBLIC_THEME === 'terminal';
 
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        palette={themePalette}
-        fonts={themeFonts}
-        radii={themeRadii}
-        shadowTokens={themeShadows}
-        buttonConfig={themeButtonConfig}
-        crt={themeCRT}
-      >
+      <ThemeRoot envTerminal={envTerminal} fontsReady>
         <AuthProvider>
           <QueryProvider>
             <SettingsProvider>
@@ -206,7 +245,7 @@ export default function RootLayout() {
             </SettingsProvider>
           </QueryProvider>
         </AuthProvider>
-      </ThemeProvider>
+      </ThemeRoot>
     </ErrorBoundary>
   );
 }

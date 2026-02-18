@@ -14,15 +14,22 @@ export const OriginalEnhancedToggle = ({
   t,
   onToggle,
 }: OriginalEnhancedToggleProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
+
+  const trackBg = crt ? colors.mealPlan.slotBg : colors.text.light;
+  const activeBg = crt ? colors.bgBase : colors.glass.card;
+  const activeColor = crt ? colors.primary : colors.content.body;
+  const inactiveColor = crt ? colors.content.secondary : colors.content.icon;
+
   return (
     <View
       style={{
         marginTop: spacing.xl,
         flexDirection: 'row',
-        backgroundColor: colors.text.light,
+        backgroundColor: trackBg,
         borderRadius: borderRadius.lg,
         padding: 4,
+        ...(crt && { borderWidth: 1, borderColor: colors.border }),
       }}
     >
       <Pressable
@@ -34,20 +41,20 @@ export const OriginalEnhancedToggle = ({
           justifyContent: 'center',
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.md,
-          backgroundColor: showOriginal ? colors.glass.card : 'transparent',
+          backgroundColor: showOriginal ? activeBg : 'transparent',
         }}
       >
         <Ionicons
           name="document-text-outline"
           size={16}
-          color={showOriginal ? colors.content.body : colors.content.icon}
+          color={showOriginal ? activeColor : inactiveColor}
           style={{ marginRight: spacing.xs }}
         />
         <Text
           style={{
             fontSize: fontSize.md,
             fontFamily: showOriginal ? fonts.bodySemibold : fonts.body,
-            color: showOriginal ? colors.content.body : colors.content.icon,
+            color: showOriginal ? activeColor : inactiveColor,
           }}
         >
           {t('recipe.showOriginal')}
@@ -62,7 +69,7 @@ export const OriginalEnhancedToggle = ({
           justifyContent: 'center',
           paddingVertical: spacing.sm,
           borderRadius: borderRadius.md,
-          backgroundColor: showOriginal ? 'transparent' : colors.glass.card,
+          backgroundColor: showOriginal ? 'transparent' : activeBg,
         }}
       >
         <Ionicons

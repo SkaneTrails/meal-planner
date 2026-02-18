@@ -99,6 +99,7 @@ const it: Translations = {
     greetingEvening: 'Buona sera',
     subtitle: 'Cosa cuciniamo oggi?',
     stats: {
+      title: 'Statistiche',
       recipes: 'Ricette',
       planned: 'Pianificati',
       toBuy: 'Da comprare',
@@ -438,6 +439,9 @@ const it: Translations = {
     sortItems: 'Ordina articoli',
     reorderHintWeb: 'Trascina per riordinare',
     reorderHintMobile: 'Tieni premuto e trascina per riordinare',
+    reorderHintArrows: 'Usa le frecce per riordinare',
+    itemCount: '{{count}} articoli',
+    itemCountOne: '1 articolo',
     addItemLabel: 'Aggiungi articolo',
     addItemExamplePlaceholder: 'es. Latte, 2 litri',
     goToMealPlan:
@@ -510,6 +514,10 @@ const it: Translations = {
     weekStartDesc: 'Scegli quando inizia la tua settimana di pianificazione',
     weekStartMonday: 'Lunedì',
     weekStartSaturday: 'Sabato',
+    appearance: 'Aspetto',
+    appearanceDesc: "Personalizza l'aspetto dell'app",
+    terminalMode: 'Modalità Terminale',
+    terminalModeDesc: 'Tema retro CRT verde fosforescente su nero',
     membersSection: 'Membri',
     membersSectionDesc: 'Persone nel tuo nucleo familiare',
     addMemberPlaceholder: 'Indirizzo email',

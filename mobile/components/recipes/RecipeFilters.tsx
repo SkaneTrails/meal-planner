@@ -14,11 +14,12 @@ import type { DietLabel, LibraryScope } from '@/lib/types';
 interface SearchBarProps {
   searchQuery: string;
   onSearchChange: (text: string) => void;
-  isSearchFocused: boolean;
-  onFocus: () => void;
-  onBlur: () => void;
-  onClear: () => void;
-  searchInputRef: React.RefObject<TextInput | null>;
+  isSearchFocused?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onClear?: () => void;
+  searchInputRef?: React.RefObject<TextInput | null>;
+  placeholder?: string;
   t: TFunction;
 }
 
@@ -30,9 +31,10 @@ export const SearchBar = ({
   onBlur,
   onClear,
   searchInputRef,
+  placeholder,
   t,
 }: SearchBarProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}>
@@ -40,25 +42,32 @@ export const SearchBar = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: colors.glass.light,
-          borderRadius: borderRadius.md,
+          backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.light,
+          borderRadius: crt ? borderRadius.sm : borderRadius.md,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderWidth: 1,
-          borderColor: colors.glass.border,
+          borderColor: crt ? colors.border : colors.glass.border,
         }}
       >
-        <Ionicons name="search" size={18} color={colors.content.secondary} />
+        <Ionicons
+          name="search"
+          size={18}
+          color={crt ? colors.border : colors.content.secondary}
+        />
         <TextInput
           ref={searchInputRef}
           style={{
             flex: 1,
             fontSize: fontSize.md,
-            color: colors.content.body,
+            fontFamily: crt ? fonts.body : undefined,
+            color: crt ? colors.primary : colors.content.body,
             marginLeft: spacing.sm,
           }}
-          placeholder={t('recipes.searchPlaceholder')}
-          placeholderTextColor={colors.content.secondary}
+          placeholder={placeholder ?? t('recipes.searchPlaceholder')}
+          placeholderTextColor={
+            crt ? colors.content.placeholder : colors.content.secondary
+          }
           value={searchQuery}
           onChangeText={onSearchChange}
           onFocus={onFocus}
@@ -66,18 +75,22 @@ export const SearchBar = ({
         />
         {searchQuery !== '' && (
           <Pressable
-            onPress={() => onSearchChange('')}
+            onPress={onClear ?? (() => onSearchChange(''))}
             style={{ padding: spacing.xs }}
           >
-            <Ionicons name="close-circle" size={18} color={colors.text.muted} />
+            <Ionicons
+              name="close-circle"
+              size={18}
+              color={crt ? colors.content.placeholder : colors.text.muted}
+            />
           </Pressable>
         )}
-        {isSearchFocused && (
+        {isSearchFocused && onClear && (
           <Pressable onPress={onClear} style={{ marginLeft: spacing.sm }}>
             <Text
               style={{
                 fontSize: fontSize.xl,
-                color: colors.button.primary,
+                color: crt ? colors.primary : colors.button.primary,
                 fontFamily: fonts.bodyMedium,
               }}
             >

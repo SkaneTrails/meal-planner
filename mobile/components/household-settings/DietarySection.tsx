@@ -1,7 +1,11 @@
-import { Text, View } from 'react-native';
-import { RadioGroup, ThemeToggle } from '@/components';
+import {
+  RadioGroup,
+  SectionLabel,
+  SettingToggleRow,
+  SurfaceCard,
+} from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
 import type { DairyPreference, HouseholdSettings } from '@/lib/types';
 
 interface DietarySectionProps {
@@ -18,7 +22,6 @@ export const DietarySection = ({
   canEdit,
   onUpdateDietary,
 }: DietarySectionProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   const dairyOptions: {
@@ -46,61 +49,18 @@ export const DietarySection = ({
   return (
     <>
       {/* Seafood Toggle */}
-      <View
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.lg,
-          padding: spacing.lg,
-          marginBottom: spacing.md,
-          ...shadows.sm,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <View>
-            <Text
-              style={{
-                fontSize: fontSize.md,
-                fontWeight: fontWeight.medium,
-                color: colors.content.body,
-              }}
-            >
-              {t('householdSettings.dietary.seafood')}
-            </Text>
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                color: colors.content.strong,
-              }}
-            >
-              {t('householdSettings.dietary.seafoodDesc')}
-            </Text>
-          </View>
-          <ThemeToggle
-            value={dietary.seafood_ok}
-            onValueChange={(value) => onUpdateDietary('seafood_ok', value)}
-            disabled={!canEdit}
-          />
-        </View>
-      </View>
+      <SurfaceCard radius="lg" style={{ marginBottom: spacing.md }}>
+        <SettingToggleRow
+          label={t('householdSettings.dietary.seafood')}
+          subtitle={t('householdSettings.dietary.seafoodDesc')}
+          value={dietary.seafood_ok}
+          onValueChange={(value) => onUpdateDietary('seafood_ok', value)}
+          disabled={!canEdit}
+        />
+      </SurfaceCard>
 
       {/* Dairy Preference */}
-      <Text
-        style={{
-          fontSize: fontSize.sm,
-          fontWeight: fontWeight.semibold,
-          color: colors.text.muted,
-          marginBottom: spacing.sm,
-          textTransform: 'uppercase' as const,
-        }}
-      >
-        {t('householdSettings.dietary.dairy')}
-      </Text>
+      <SectionLabel text={t('householdSettings.dietary.dairy')} />
       <RadioGroup
         options={dairyOptions}
         value={dietary.dairy}

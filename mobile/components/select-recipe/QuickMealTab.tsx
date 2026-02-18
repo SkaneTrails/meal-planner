@@ -18,7 +18,7 @@ interface QuickMealTabProps {
 }
 
 export const QuickMealTab = ({ state }: QuickMealTabProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
   const {
     t,
     customText,
@@ -33,62 +33,91 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
     <View style={{ flex: 1, padding: spacing.xl }}>
       <View
         style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.lg,
+          backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.card,
+          borderRadius: crt ? borderRadius.sm : borderRadius.lg,
           padding: spacing['2xl'],
         }}
       >
-        <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
-          <IconCircle
-            size="xl"
-            bg={colors.ai.light}
-            style={{ marginBottom: spacing.md }}
-          >
-            <Ionicons
-              name="create-outline"
-              size={28}
-              color={colors.ai.primary}
+        {crt ? (
+          <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
+            <Text
+              style={{
+                fontSize: fontSize['2xl'],
+                fontFamily: fonts.bodySemibold,
+                color: colors.primary,
+              }}
+            >
+              {t('selectRecipe.quick.title')}
+            </Text>
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontFamily: fonts.body,
+                color: colors.content.tertiary,
+                marginTop: spacing.sm,
+              }}
+            >
+              {t('selectRecipe.quick.placeholder')}
+            </Text>
+          </View>
+        ) : (
+          <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
+            <IconCircle
+              size="xl"
+              bg={colors.ai.light}
+              style={{ marginBottom: spacing.md }}
+            >
+              <Ionicons
+                name="create-outline"
+                size={28}
+                color={colors.ai.primary}
+              />
+            </IconCircle>
+            <Text
+              style={{
+                fontSize: fontSize['3xl'],
+                fontWeight: fontWeight.semibold,
+                color: colors.text.inverse,
+                letterSpacing: letterSpacing.normal,
+              }}
+            >
+              {t('selectRecipe.quick.title')}
+            </Text>
+            <View
+              style={{
+                ...accentUnderlineStyle,
+                marginTop: spacing.sm,
+              }}
             />
-          </IconCircle>
-          <Text
-            style={{
-              fontSize: fontSize['3xl'],
-              fontWeight: fontWeight.semibold,
-              color: colors.text.inverse,
-              letterSpacing: letterSpacing.normal,
-            }}
-          >
-            {t('selectRecipe.quick.title')}
-          </Text>
-          <View
-            style={{
-              ...accentUnderlineStyle,
-              marginTop: spacing.sm,
-            }}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              color: colors.gray[600],
-              marginTop: spacing.sm,
-            }}
-          >
-            {t('selectRecipe.quick.placeholder')}
-          </Text>
-        </View>
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                color: colors.gray[600],
+                marginTop: spacing.sm,
+              }}
+            >
+              {t('selectRecipe.quick.placeholder')}
+            </Text>
+          </View>
+        )}
 
         <TextInput
           style={{
-            backgroundColor: colors.glass.light,
-            borderRadius: borderRadius.md,
+            backgroundColor: crt ? colors.bgBase : colors.glass.light,
+            borderRadius: crt ? borderRadius.sm : borderRadius.md,
+            borderWidth: crt ? 1 : 0,
+            borderColor: crt ? colors.border : undefined,
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.lg,
             fontSize: fontSize.lg,
-            color: colors.text.inverse,
+            fontFamily: crt ? fonts.body : undefined,
+            color: crt ? colors.primary : colors.text.inverse,
             marginBottom: spacing.lg,
           }}
           placeholder={t('selectRecipe.quickPlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={
+            crt ? colors.content.placeholder : colors.gray[500]
+          }
           value={customText}
           onChangeText={setCustomText}
           autoFocus

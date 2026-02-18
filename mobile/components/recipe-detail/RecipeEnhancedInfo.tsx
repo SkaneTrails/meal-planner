@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { IconCircle, Section, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -20,38 +20,109 @@ export const RecipeEnhancedInfo = ({
   t,
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => {
-  const { colors, fonts, typography, borderRadius, shadows } = useTheme();
+  const { colors, fonts, typography, borderRadius, shadows, crt } = useTheme();
+
+  if (crt) {
+    return (
+      <>
+        {recipe.enhanced && !showOriginal && recipe.tips && (
+          <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
+            <TerminalFrame
+              variant="single"
+              label={t('recipe.tips').toUpperCase()}
+            >
+              <View
+                style={{
+                  backgroundColor: colors.mealPlan.slotBg,
+                  padding: spacing.lg,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.xl,
+                    fontFamily: fonts.body,
+                    color: colors.content.body,
+                    lineHeight: lineHeight.xl,
+                  }}
+                >
+                  {recipe.tips}
+                </Text>
+              </View>
+            </TerminalFrame>
+          </View>
+        )}
+
+        {recipe.enhanced &&
+          !showOriginal &&
+          recipe.changes_made &&
+          recipe.changes_made.length > 0 && (
+            <View style={{ marginBottom: spacing.xl }}>
+              <TerminalFrame
+                variant="single"
+                label={t('recipe.aiImprovements').toUpperCase()}
+              >
+                <View
+                  style={{
+                    backgroundColor: colors.mealPlan.slotBg,
+                    padding: spacing.lg,
+                  }}
+                >
+                  {recipe.changes_made.map((change, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'flex-start',
+                        marginBottom:
+                          index < (recipe.changes_made?.length ?? 0) - 1
+                            ? spacing.sm
+                            : 0,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.primary,
+                          fontFamily: fonts.body,
+                          marginRight: spacing.sm,
+                          fontSize: fontSize.lg,
+                          lineHeight: lineHeight.md,
+                        }}
+                      >
+                        {'\u2713'}
+                      </Text>
+                      <Text
+                        style={{
+                          flex: 1,
+                          fontSize: fontSize.lg,
+                          fontFamily: fonts.body,
+                          color: colors.content.body,
+                          lineHeight: lineHeight.md,
+                        }}
+                      >
+                        {change}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </TerminalFrame>
+            </View>
+          )}
+      </>
+    );
+  }
+
   return (
     <>
       {recipe.enhanced && !showOriginal && recipe.tips && (
-        <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: spacing.md,
-            }}
-          >
-            <IconCircle
-              size="xs"
-              bg={colors.ai.iconBg}
-              style={{ marginRight: spacing.md }}
-            >
-              <Ionicons
-                name="bulb-outline"
-                size={18}
-                color={colors.ai.primary}
-              />
-            </IconCircle>
-            <Text
-              style={{
-                ...typography.displaySmall,
-                color: colors.content.heading,
-              }}
-            >
-              {t('recipe.tips')}
-            </Text>
-          </View>
+        <Section
+          title={t('recipe.tips')}
+          icon="bulb-outline"
+          iconColor={colors.ai.primary}
+          iconBg={colors.ai.iconBg}
+          size="sm"
+          spacing={0}
+          style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}
+        >
           <View
             style={{
               backgroundColor: colors.glass.solid,
@@ -73,7 +144,7 @@ export const RecipeEnhancedInfo = ({
               {recipe.tips}
             </Text>
           </View>
-        </View>
+        </Section>
       )}
 
       {recipe.enhanced &&

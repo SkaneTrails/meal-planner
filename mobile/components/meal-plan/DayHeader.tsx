@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { Button, ButtonGroup } from '@/components';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { Button, ButtonGroup, Chip, ChipGroup } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { dotSize, fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -116,35 +116,12 @@ export const DayHeader = ({
                           ? colors.tagDot[tagIndex % colors.tagDot.length]
                           : colors.content.icon;
                       return (
-                        <View
+                        <Chip
                           key={`${tag}-${index}`}
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: spacing.xs,
-                            backgroundColor: colors.surface.tint,
-                            paddingHorizontal: spacing.sm,
-                            paddingVertical: spacing.xs,
-                            borderRadius: borderRadius.md,
-                          }}
-                        >
-                          <View
-                            style={{
-                              width: dotSize.md,
-                              height: dotSize.md,
-                              borderRadius: dotSize.md / 2,
-                              backgroundColor: tagDotColor,
-                            }}
-                          />
-                          <Text
-                            style={{
-                              fontSize: fontSize.base,
-                              color: colors.content.secondary,
-                            }}
-                          >
-                            {tag}
-                          </Text>
-                        </View>
+                          label={tag}
+                          variant="display"
+                          dot={tagDotColor}
+                        />
                       );
                     })}
                 </View>
@@ -260,72 +237,27 @@ const NoteEditor = ({
           />
         </ButtonGroup>
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ marginTop: spacing.xs }}
-      >
-        <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+      <View style={{ marginTop: spacing.xs }}>
+        <ChipGroup layout="horizontal">
           {noteSuggestions.map((suggestion) => {
             const isActive = activeTags.includes(suggestion);
             return (
-              <Pressable
+              <Chip
                 key={suggestion}
+                label={suggestion}
+                variant="toggle"
+                active={isActive}
+                dot={
+                  colors.tagDot[
+                    noteSuggestions.indexOf(suggestion) % colors.tagDot.length
+                  ]
+                }
                 onPress={() => onToggleTag(suggestion)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: crt ? 0 : spacing.sm,
-                  backgroundColor: isActive
-                    ? crt
-                      ? colors.primary
-                      : colors.surface.active
-                    : crt
-                      ? colors.bgBase
-                      : colors.white,
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  borderRadius: borderRadius.full,
-                  borderWidth: 1,
-                  borderColor: isActive
-                    ? crt
-                      ? colors.primary
-                      : colors.content.headingWarm
-                    : colors.surface.divider,
-                }}
-              >
-                {!crt && (
-                  <View
-                    style={{
-                      width: dotSize.md,
-                      height: dotSize.md,
-                      borderRadius: dotSize.md / 2,
-                      backgroundColor:
-                        colors.tagDot[
-                          noteSuggestions.indexOf(suggestion) %
-                            colors.tagDot.length
-                        ],
-                    }}
-                  />
-                )}
-                <Text
-                  style={{
-                    fontSize: fontSize.md,
-                    fontFamily: fonts.body,
-                    color: crt
-                      ? isActive
-                        ? colors.bgBase
-                        : colors.primary
-                      : colors.content.headingWarm,
-                  }}
-                >
-                  {suggestion}
-                </Text>
-              </Pressable>
+              />
             );
           })}
-        </View>
-      </ScrollView>
+        </ChipGroup>
+      </View>
     </View>
   );
 };

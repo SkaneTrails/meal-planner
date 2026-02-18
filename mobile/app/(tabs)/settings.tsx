@@ -11,6 +11,7 @@ import {
   AboutSection,
   AccountSection,
   AdminSection,
+  AppearanceSection,
   HouseholdSettingsLink,
   RecipeLibrarySection,
   WeekStartSection,
@@ -86,6 +87,8 @@ export default function SettingsScreen() {
             weekStart={weekStart}
             onSetWeekStart={setWeekStart}
           />
+
+          <AppearanceSection />
 
           {currentUser?.role === 'superuser' && (
             <AdminSection onNavigateToAdmin={() => router.push('/admin')} />

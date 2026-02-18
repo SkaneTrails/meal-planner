@@ -1,9 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { Text, View } from 'react-native';
+import {
+  Chip,
+  ChipGroup,
+  IconCircle,
+  InlineAddInput,
+  SurfaceCard,
+} from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { dotSize, fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 const DEFAULT_SUGGESTION_KEYS = [
   'office',
@@ -58,52 +64,12 @@ export const NoteSuggestionsSection = ({
       )}
 
       {canEdit && (
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.md,
-            padding: spacing.xs,
-            marginBottom: spacing.md,
-            ...shadows.sm,
-          }}
-        >
-          <TextInput
-            style={{
-              flex: 1,
-              paddingHorizontal: spacing.md,
-              paddingVertical: spacing.sm,
-              fontSize: fontSize.md,
-              color: colors.content.body,
-            }}
-            placeholder={t('settings.addSuggestionPlaceholder')}
-            placeholderTextColor={colors.content.placeholderHex}
-            value={newSuggestion}
-            onChangeText={setNewSuggestion}
-            onSubmitEditing={handleAdd}
-            returnKeyType="done"
-          />
-          <Pressable
-            onPress={handleAdd}
-            disabled={!newSuggestion.trim()}
-            style={({ pressed }) => ({
-              backgroundColor: newSuggestion.trim()
-                ? colors.primary
-                : colors.bgDark,
-              borderRadius: borderRadius.sm,
-              padding: spacing.sm,
-              opacity: pressed ? 0.8 : 1,
-            })}
-          >
-            <Ionicons
-              name="add"
-              size={20}
-              color={
-                newSuggestion.trim() ? colors.white : colors.button.disabled
-              }
-            />
-          </Pressable>
-        </View>
+        <InlineAddInput
+          value={newSuggestion}
+          onChangeText={setNewSuggestion}
+          onSubmit={handleAdd}
+          placeholder={t('settings.addSuggestionPlaceholder')}
+        />
       )}
 
       {canEdit && presetsNotAdded.length > 0 && (
@@ -124,19 +90,11 @@ const CurrentSuggestions = ({
   canEdit: boolean;
   onRemove: (item: string) => void;
 }) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        marginBottom: spacing.md,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard padding={spacing.md} style={{ marginBottom: spacing.md }}>
       <Text
         style={{
           fontSize: fontSize.xs,
@@ -147,50 +105,19 @@ const CurrentSuggestions = ({
       >
         {t('settings.yourSuggestions', { count: items.length })}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+      <ChipGroup>
         {items.map((item, index) => (
-          <Pressable
+          <Chip
             key={item}
-            onPress={() => canEdit && onRemove(item)}
+            label={item}
+            variant="filled"
+            dot={colors.tagDot[index % colors.tagDot.length]}
             disabled={!canEdit}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor:
-                pressed && canEdit ? colors.errorBg : colors.bgDark,
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.xs,
-              borderRadius: borderRadius.full,
-              gap: spacing.sm,
-            })}
-          >
-            <View
-              style={{
-                width: dotSize.md,
-                height: dotSize.md,
-                borderRadius: dotSize.md / 2,
-                backgroundColor: colors.tagDot[index % colors.tagDot.length],
-              }}
-            />
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                color: colors.content.body,
-              }}
-            >
-              {item}
-            </Text>
-            {canEdit && (
-              <Ionicons
-                name="close-circle"
-                size={14}
-                color={colors.content.placeholder}
-              />
-            )}
-          </Pressable>
+            onPress={() => onRemove(item)}
+          />
         ))}
-      </View>
-    </View>
+      </ChipGroup>
+    </SurfaceCard>
   );
 };
 
@@ -201,18 +128,11 @@ const PresetSuggestions = ({
   items: string[];
   onAdd: (item: string) => void;
 }) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard padding={spacing.md}>
       <Text
         style={{
           fontSize: fontSize.xs,
@@ -223,62 +143,28 @@ const PresetSuggestions = ({
       >
         {t('settings.suggestions')}
       </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+      <ChipGroup>
         {items.map((item) => (
-          <Pressable
+          <Chip
             key={item}
+            label={item}
+            variant="outline"
+            showAdd={false}
+            dot={colors.surface.borderLight}
             onPress={() => onAdd(item)}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: pressed ? colors.successBg : 'transparent',
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.xs,
-              borderRadius: borderRadius.full,
-              borderWidth: 1,
-              borderColor: colors.surface.divider,
-              borderStyle: 'dashed',
-              gap: spacing.sm,
-            })}
-          >
-            <View
-              style={{
-                width: dotSize.md,
-                height: dotSize.md,
-                borderRadius: dotSize.md / 2,
-                backgroundColor: colors.surface.borderLight,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                color: colors.content.icon,
-              }}
-            >
-              {item}
-            </Text>
-          </Pressable>
+          />
         ))}
-      </View>
-    </View>
+      </ChipGroup>
+    </SurfaceCard>
   );
 };
 
 const EmptyState = () => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.md,
-        padding: spacing.lg,
-        alignItems: 'center',
-        marginTop: spacing.sm,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard style={{ alignItems: 'center', marginTop: spacing.sm }}>
       <IconCircle
         size={48}
         bg={colors.bgDark}
@@ -309,6 +195,6 @@ const EmptyState = () => {
       >
         {t('settings.addSuggestionsHint')}
       </Text>
-    </View>
+    </SurfaceCard>
   );
 };

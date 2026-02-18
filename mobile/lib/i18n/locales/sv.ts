@@ -99,6 +99,7 @@ const sv: Translations = {
     greetingEvening: 'God kväll',
     subtitle: 'Vad ska vi laga idag?',
     stats: {
+      title: 'Statistik',
       recipes: 'Recept',
       planned: 'Planerat',
       toBuy: 'Att köpa',
@@ -429,6 +430,9 @@ const sv: Translations = {
     sortItems: 'Sortera varor',
     reorderHintWeb: 'Dra för att ändra ordning',
     reorderHintMobile: 'Håll och dra för att ändra ordning',
+    reorderHintArrows: 'Använd pilar för att ändra ordning',
+    itemCount: '{{count}} varor',
+    itemCountOne: '1 vara',
     addItemLabel: 'Lägg till vara',
     addItemExamplePlaceholder: 't.ex. Mjölk, 2 liter',
     goToMealPlan:
@@ -500,6 +504,10 @@ const sv: Translations = {
     weekStartDesc: 'Välj när din veckoplanering börjar',
     weekStartMonday: 'Måndag',
     weekStartSaturday: 'Lördag',
+    appearance: 'Utseende',
+    appearanceDesc: 'Anpassa appens utseende',
+    terminalMode: 'Terminalläge',
+    terminalModeDesc: 'Retro grön-på-svart CRT-tema',
     membersSection: 'Medlemmar',
     membersSectionDesc: 'Personer i ditt hushåll',
     addMemberPlaceholder: 'E-postadress',

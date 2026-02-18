@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Chip } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { dotSize, fontSize, spacing, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { getDietLabels } from './recipe-detail-constants';
 
@@ -11,8 +11,14 @@ interface RecipeMetaLabelsProps {
 }
 
 export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, crt } = useTheme();
   const dietLabels = getDietLabels(colors);
+
+  const mealChipBg = crt ? colors.mealPlan.slotBg : colors.bgDark;
+  const mealChipColor = crt ? colors.primary : colors.text.inverse;
+  const visChipBg = crt ? colors.mealPlan.slotBg : colors.glass.solid;
+  const visChipColor = crt ? colors.primary : colors.text.inverse;
+
   return (
     <View
       style={{
@@ -24,89 +30,38 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
       }}
     >
       {recipe.diet_label && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: dietLabels[recipe.diet_label].bgColor,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.sm,
-            borderRadius: borderRadius.md,
-            gap: spacing.xs,
-          }}
-        >
-          <View
-            style={{
-              width: dotSize.md,
-              height: dotSize.md,
-              borderRadius: dotSize.md / 2,
-              backgroundColor: dietLabels[recipe.diet_label].dotColor,
-            }}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: dietLabels[recipe.diet_label].color,
-            }}
-          >
-            {t(`labels.diet.${recipe.diet_label}`)}
-          </Text>
-        </View>
+        <Chip
+          label={t(`labels.diet.${recipe.diet_label}`)}
+          variant="display"
+          dot={dietLabels[recipe.diet_label].dotColor}
+          bg={
+            crt ? colors.mealPlan.slotBg : dietLabels[recipe.diet_label].bgColor
+          }
+          color={dietLabels[recipe.diet_label].color}
+        />
       )}
       {recipe.meal_label && (
-        <View
-          style={{
-            backgroundColor: colors.bgDark,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.sm,
-            borderRadius: borderRadius.lg,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: colors.text.inverse,
-            }}
-          >
-            {t(`labels.meal.${recipe.meal_label}`)}
-          </Text>
-        </View>
+        <Chip
+          label={t(`labels.meal.${recipe.meal_label}`)}
+          variant="display"
+          bg={mealChipBg}
+          color={mealChipColor}
+        />
       )}
-      {recipe.visibility && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: colors.glass.solid,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.sm,
-            borderRadius: borderRadius.lg,
-            gap: spacing.xs,
-          }}
-        >
-          <Ionicons
-            name={
-              recipe.visibility === 'shared'
-                ? 'globe-outline'
-                : 'lock-closed-outline'
-            }
-            size={14}
-            color={colors.text.inverse}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: colors.text.inverse,
-            }}
-          >
-            {t(
-              `labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`,
-            )}
-          </Text>
-        </View>
+      {!crt && recipe.visibility && (
+        <Chip
+          label={t(
+            `labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`,
+          )}
+          variant="display"
+          icon={
+            recipe.visibility === 'shared'
+              ? 'globe-outline'
+              : 'lock-closed-outline'
+          }
+          bg={visChipBg}
+          color={visChipColor}
+        />
       )}
     </View>
   );

@@ -116,7 +116,7 @@ export const Button = ({
   const isDisabled = disabled || isPending;
   const sizeConfig = SIZE_CONFIG[size];
   const defaultUseSegment =
-    buttonDisplay.wrapper === 'segment' || inGroup ? true : variant !== 'icon';
+    variant === 'icon' ? false : buttonDisplay.wrapper === 'segment' || inGroup;
   const useSegment = segmentProp ?? defaultUseSegment;
 
   // ── Resolve colors per tone ────────────────────────────────────────
@@ -264,10 +264,13 @@ export const Button = ({
   };
 
   // The theme controls whether icon, text, or both are shown for all variants.
-  // For icon variant, the label is a terminal-only fallback — hide it when icons are visible.
+  // Icon-variant buttons always show their icon (even in text-only themes like terminal).
+  // The label is a terminal-only fallback — hidden when the icon is visible.
   const showIcon =
     !!displayIcon &&
-    (buttonDisplay.display === 'icon' || buttonDisplay.display === 'both');
+    (variant === 'icon' ||
+      buttonDisplay.display === 'icon' ||
+      buttonDisplay.display === 'both');
   const showLabel =
     !!displayLabel &&
     (buttonDisplay.display === 'text' ||
