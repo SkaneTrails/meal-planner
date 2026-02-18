@@ -67,7 +67,7 @@ export const CollapsedDayRow = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginBottom: spacing.sm,
+          marginVertical: spacing.xs,
         }}
       >
         {/* ═══ leading line */}

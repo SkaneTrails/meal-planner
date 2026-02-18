@@ -104,6 +104,7 @@ const en = {
     greetingEvening: 'Good evening',
     subtitle: 'What shall we cook today?',
     stats: {
+      title: 'Stats',
       recipes: 'Recipes',
       planned: 'Planned',
       toBuy: 'To Buy',
@@ -440,6 +441,9 @@ const en = {
     sortItems: 'Sort items',
     reorderHintWeb: 'Drag to reorder items',
     reorderHintMobile: 'Hold and drag to reorder items',
+    reorderHintArrows: 'Use arrows to reorder items',
+    itemCount: '{{count}} items',
+    itemCountOne: '1 item',
     addItemLabel: 'Add Item',
     addItemExamplePlaceholder: 'e.g. Milk, 2 liters',
     goToMealPlan:
@@ -512,6 +516,10 @@ const en = {
     weekStartDesc: 'Choose when your meal planning week begins',
     weekStartMonday: 'Monday',
     weekStartSaturday: 'Saturday',
+    appearance: 'Appearance',
+    appearanceDesc: 'Customize the look and feel',
+    terminalMode: 'Terminal Mode',
+    terminalModeDesc: 'Retro phosphor green-on-black CRT theme',
     membersSection: 'Members',
     membersSectionDesc: 'People in your household',
     addMemberPlaceholder: 'Email address',

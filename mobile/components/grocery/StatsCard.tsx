@@ -1,7 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, Button, ButtonGroup } from '@/components';
+import {
+  AnimatedPressable,
+  Button,
+  ButtonGroup,
+  TerminalFrame,
+} from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
@@ -109,7 +114,7 @@ interface ItemsAtHomeIndicatorProps {
 const ItemsAtHomeIndicator = ({
   hiddenAtHomeCount,
 }: ItemsAtHomeIndicatorProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -139,6 +144,7 @@ const ItemsAtHomeIndicator = ({
       <Text
         style={{
           fontSize: fontSize.base,
+          fontFamily: fonts.bodyMedium,
           color: colors.button.primaryPressed,
           flex: 1,
           fontWeight: fontWeight.medium,
@@ -182,18 +188,22 @@ export const StatsCard = ({
   onClearManualItems,
   onClearAll,
 }: StatsCardProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
   const { t } = useTranslation();
 
-  return (
+  const content = (
     <View
-      style={{
-        backgroundColor: colors.white,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        marginBottom: spacing.sm,
-        ...shadows.card,
-      }}
+      style={
+        crt
+          ? {}
+          : {
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
+              padding: spacing.md,
+              marginBottom: spacing.sm,
+              ...shadows.card,
+            }
+      }
     >
       <View
         style={{
@@ -206,6 +216,7 @@ export const StatsCard = ({
           <Text
             style={{
               fontSize: fontSize.sm,
+              fontFamily: fonts.body,
               color: colors.content.tertiary,
             }}
           >
@@ -214,6 +225,7 @@ export const StatsCard = ({
           <Text
             style={{
               fontSize: fontSize['xl-2xl'],
+              fontFamily: fonts.bodySemibold,
               fontWeight: fontWeight.semibold,
               color: colors.content.heading,
               marginTop: spacing.xs,
@@ -247,12 +259,32 @@ export const StatsCard = ({
         />
       )}
 
-      <ProgressBar
-        itemsToBuy={itemsToBuy}
-        checkedItemsToBuy={checkedItemsToBuy}
-      />
+      {!crt && (
+        <ProgressBar
+          itemsToBuy={itemsToBuy}
+          checkedItemsToBuy={checkedItemsToBuy}
+        />
+      )}
 
       <ItemsAtHomeIndicator hiddenAtHomeCount={hiddenAtHomeCount} />
     </View>
   );
+
+  if (crt) {
+    const progressLabel =
+      itemsToBuy > 0 ? `${checkedItemsToBuy}/${itemsToBuy}` : undefined;
+    return (
+      <View style={{ marginBottom: spacing.sm }}>
+        <TerminalFrame
+          label={t('grocery.title').toUpperCase()}
+          rightSegments={progressLabel ? [{ label: progressLabel }] : undefined}
+          variant="double"
+        >
+          {content}
+        </TerminalFrame>
+      </View>
+    );
+  }
+
+  return content;
 };

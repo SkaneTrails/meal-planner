@@ -10,6 +10,7 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { TerminalFrame } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   fontSize,
@@ -35,7 +36,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
@@ -93,6 +94,16 @@ export const GroceryListView = ({
     setOrderedItems(data);
   }, []);
 
+  const handleMoveItem = useCallback((index: number, direction: -1 | 1) => {
+    setOrderedItems((prev) => {
+      const next = [...prev];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= next.length) return prev;
+      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+      return next;
+    });
+  }, []);
+
   const renderDraggableItem = useCallback(
     ({ item, drag, isActive }: RenderItemParams<GroceryItem>) => (
       <ScaleDecorator>
@@ -118,19 +129,25 @@ export const GroceryListView = ({
           padding: 32,
         }}
       >
-        <View
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 24,
-            backgroundColor: colors.glass.faint,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: spacing.xl,
-          }}
-        >
-          <Ionicons name="cart-outline" size={40} color={colors.content.body} />
-        </View>
+        {!crt && (
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 24,
+              backgroundColor: colors.glass.faint,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: spacing.xl,
+            }}
+          >
+            <Ionicons
+              name="cart-outline"
+              size={40}
+              color={colors.content.body}
+            />
+          </View>
+        )}
         <Text
           style={{
             color: colors.content.body,
@@ -155,6 +172,137 @@ export const GroceryListView = ({
         >
           {t('grocery.emptyFromMealPlan')}
         </Text>
+      </View>
+    );
+  }
+
+  const sortLabel = reorderMode
+    ? t('grocery.doneSorting')
+    : t('grocery.sortItems');
+  const sortSegment = {
+    label: sortLabel.toUpperCase(),
+    onPress: handleToggleReorder,
+  };
+
+  if (crt) {
+    return (
+      <View
+        style={{
+          paddingHorizontal: spacing.xl,
+          flex: 1,
+          paddingBottom: layout.tabBar.contentBottomPadding,
+        }}
+      >
+        <TerminalFrame
+          label={(displayItems.length === 1
+            ? t('grocery.itemCountOne')
+            : t('grocery.itemCount', { count: displayItems.length })
+          ).toUpperCase()}
+          rightSegments={[sortSegment]}
+          variant="single"
+          style={{ flex: 1 }}
+        >
+          {reorderMode ? (
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  fontSize: fontSize.base,
+                  fontFamily: fonts.body,
+                  color: colors.content.tertiary,
+                  marginBottom: spacing['sm-md'],
+                  fontStyle: 'italic',
+                }}
+              >
+                {t('grocery.reorderHintArrows')}
+              </Text>
+              <ScrollView
+                style={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+              >
+                {orderedItems.map((item, index) => (
+                  <View
+                    key={`${item.name}-${index}`}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginRight: spacing.xs,
+                        gap: spacing['2xs'],
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Pressable
+                        onPress={() => handleMoveItem(index, -1)}
+                        disabled={index === 0}
+                        style={{
+                          opacity: index === 0 ? 0.25 : 1,
+                          padding: spacing['2xs'],
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontFamily: fonts.body,
+                            fontSize: fontSize.xl,
+                            color: colors.primary,
+                          }}
+                        >
+                          ▲
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => handleMoveItem(index, 1)}
+                        disabled={index === orderedItems.length - 1}
+                        style={{
+                          opacity: index === orderedItems.length - 1 ? 0.25 : 1,
+                          padding: spacing['2xs'],
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontFamily: fonts.body,
+                            fontSize: fontSize.xl,
+                            color: colors.primary,
+                          }}
+                        >
+                          ▼
+                        </Text>
+                      </Pressable>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <GroceryItemRow
+                        item={{
+                          ...item,
+                          checked: checkedItems.has(item.name),
+                        }}
+                        onToggle={(checked) =>
+                          handleItemToggle(item.name, checked)
+                        }
+                        showReorder={false}
+                      />
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          ) : (
+            <ScrollView
+              style={{ flex: 1 }}
+              showsVerticalScrollIndicator={false}
+            >
+              {displayItems.map((item) => (
+                <GroceryItemRow
+                  key={item.name}
+                  item={{ ...item, checked: checkedItems.has(item.name) }}
+                  onToggle={(checked) => handleItemToggle(item.name, checked)}
+                  showReorder={false}
+                />
+              ))}
+            </ScrollView>
+          )}
+        </TerminalFrame>
       </View>
     );
   }

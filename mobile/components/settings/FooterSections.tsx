@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, SectionHeader, SurfaceCard } from '@/components';
+import { AnimatedPressable, Section, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   fontWeight,
@@ -15,48 +15,48 @@ interface AdminSectionProps {
 }
 
 export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="shield-checkmark"
-        title={t('settings.adminSection')}
-        subtitle={t('settings.adminSectionDesc')}
-      />
-
+    <Section
+      icon="shield-checkmark"
+      title={t('settings.adminSection')}
+      subtitle={t('settings.adminSectionDesc')}
+      spacing={spacing['2xl']}
+    >
       <AnimatedPressable
         onPress={onNavigateToAdmin}
         hoverScale={1.02}
         pressScale={0.97}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
-          ...shadows.sm,
-        }}
       >
-        <View style={{ flex: 1 }}>
-          <Text style={settingsTitleStyle}>{t('settings.adminDashboard')}</Text>
-          <Text
-            style={{
-              ...settingsSubtitleStyle,
-              marginTop: 4,
-            }}
-          >
-            {t('settings.adminDashboardDesc')}
-          </Text>
-        </View>
-        <Ionicons
-          name="chevron-forward"
-          size={20}
-          color={colors.content.strong}
-        />
+        <SurfaceCard
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={settingsTitleStyle}>
+              {t('settings.adminDashboard')}
+            </Text>
+            <Text
+              style={{
+                ...settingsSubtitleStyle,
+                marginTop: 4,
+              }}
+            >
+              {t('settings.adminDashboardDesc')}
+            </Text>
+          </View>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={colors.content.strong}
+          />
+        </SurfaceCard>
       </AnimatedPressable>
-    </View>
+    </Section>
   );
 };
 
@@ -65,13 +65,12 @@ export const AboutSection = () => {
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="information-circle"
-        title={t('settings.about')}
-        subtitle={t('settings.aboutDesc')}
-      />
-
+    <Section
+      icon="information-circle"
+      title={t('settings.about')}
+      subtitle={t('settings.aboutDesc')}
+      spacing={spacing['2xl']}
+    >
       <SurfaceCard>
         <View
           style={{
@@ -106,6 +105,6 @@ export const AboutSection = () => {
           <Text style={settingsTitleStyle}>❤️</Text>
         </View>
       </SurfaceCard>
-    </View>
+    </Section>
   );
 };

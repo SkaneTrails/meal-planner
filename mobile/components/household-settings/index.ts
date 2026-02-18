@@ -1,5 +1,4 @@
 export { AiSection } from './AiSection';
-export { CollapsibleSection } from './CollapsibleSection';
 export { DEFAULT_SETTINGS, EQUIPMENT_CATEGORIES } from './constants';
 export { DietarySection } from './DietarySection';
 export { EquipmentSection } from './EquipmentSection';

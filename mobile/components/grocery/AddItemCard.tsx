@@ -1,5 +1,5 @@
 import { Text, TextInput, View } from 'react-native';
-import { Button } from '@/components';
+import { Button, TerminalFrame } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -14,40 +14,48 @@ export const AddItemCard = ({
   onChangeText,
   onSubmit,
 }: AddItemCardProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
   const { t } = useTranslation();
 
-  return (
+  const inner = (
     <View
-      style={{
-        backgroundColor: colors.white,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        ...shadows.sm,
-      }}
+      style={
+        crt
+          ? {}
+          : {
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.md,
+              padding: spacing.md,
+              ...shadows.sm,
+            }
+      }
     >
-      <Text
-        style={{
-          fontSize: fontSize.base,
-          fontFamily: fonts.bodySemibold,
-          color: colors.content.tertiary,
-          marginBottom: spacing.sm,
-        }}
-      >
-        {t('grocery.addItemLabel')}
-      </Text>
+      {!crt && (
+        <Text
+          style={{
+            fontSize: fontSize.base,
+            fontFamily: fonts.bodySemibold,
+            color: colors.content.tertiary,
+            marginBottom: spacing.sm,
+          }}
+        >
+          {t('grocery.addItemLabel')}
+        </Text>
+      )}
       <View
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}
       >
         <TextInput
           style={{
             flex: 1,
-            backgroundColor: colors.surface.tint,
+            backgroundColor: crt ? colors.bgBase : colors.surface.tint,
             borderRadius: borderRadius.sm,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing['sm-md'],
             fontSize: fontSize.lg,
             color: colors.content.heading,
+            fontFamily: crt ? fonts.body : undefined,
+            ...(crt && { borderWidth: 1, borderColor: colors.border }),
           }}
           placeholder={t('grocery.addItemExamplePlaceholder')}
           placeholderTextColor={colors.content.placeholder}
@@ -77,4 +85,14 @@ export const AddItemCard = ({
       </View>
     </View>
   );
+
+  if (crt) {
+    return (
+      <TerminalFrame variant="single" padding={spacing.sm}>
+        {inner}
+      </TerminalFrame>
+    );
+  }
+
+  return inner;
 };

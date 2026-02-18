@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { SectionHeader, SurfaceCard, ThemeToggle } from '@/components';
+import { Section, SettingToggleRow, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
 import {
@@ -23,38 +23,21 @@ export const RecipeLibrarySection = ({
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="book"
-        title={t('settings.recipeLibrary')}
-        subtitle={t('settings.recipeLibraryDesc')}
-      />
-
+    <Section
+      icon="book"
+      title={t('settings.recipeLibrary')}
+      subtitle={t('settings.recipeLibraryDesc')}
+      spacing={spacing['2xl']}
+    >
       <SurfaceCard>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <View style={{ flex: 1, marginRight: spacing.md }}>
-            <Text style={settingsTitleStyle}>
-              {t('settings.showHiddenRecipes')}
-            </Text>
-            <Text
-              style={{
-                ...settingsSubtitleStyle,
-                marginTop: 4,
-              }}
-            >
-              {t('settings.showHiddenRecipesDesc')}
-            </Text>
-          </View>
-          <ThemeToggle value={showHiddenRecipes} onValueChange={onToggle} />
-        </View>
+        <SettingToggleRow
+          label={t('settings.showHiddenRecipes')}
+          subtitle={t('settings.showHiddenRecipesDesc')}
+          value={showHiddenRecipes}
+          onValueChange={onToggle}
+        />
       </SurfaceCard>
-    </View>
+    </Section>
   );
 };
 
@@ -71,13 +54,12 @@ export const WeekStartSection = ({
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="calendar"
-        title={t('settings.weekStart')}
-        subtitle={t('settings.weekStartDesc')}
-      />
-
+    <Section
+      icon="calendar"
+      title={t('settings.weekStart')}
+      subtitle={t('settings.weekStartDesc')}
+      spacing={spacing['2xl']}
+    >
       <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
         {(['monday', 'saturday'] as const).map((day, index) => (
           <Pressable
@@ -114,7 +96,7 @@ export const WeekStartSection = ({
           </Pressable>
         ))}
       </SurfaceCard>
-    </View>
+    </Section>
   );
 };
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, Modal, Text, View } from 'react-native';
-import { Button, GradientBackground } from '@/components';
+import { Button, Chip, GradientBackground } from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
@@ -275,26 +275,15 @@ const MemberCard = ({
             {member.email}
           </Text>
         )}
-        <View
-          style={{
-            backgroundColor: roleColor + '20',
-            paddingHorizontal: spacing.sm,
-            paddingVertical: 2,
-            borderRadius: borderRadius.full,
-            alignSelf: 'flex-start',
-            marginTop: spacing.xs,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.xs,
-              color: roleColor,
-              fontWeight: fontWeight.medium,
-              textTransform: 'uppercase',
-            }}
-          >
-            {t(`labels.role.${member.role}` as 'labels.role.member')}
-          </Text>
+        <View style={{ alignSelf: 'flex-start', marginTop: spacing.xs }}>
+          <Chip
+            label={t(`labels.role.${member.role}` as 'labels.role.member')}
+            variant="display"
+            bg={roleColor + '20'}
+            color={roleColor}
+            uppercase
+            size="sm"
+          />
         </View>
       </View>
       <Button

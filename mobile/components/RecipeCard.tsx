@@ -55,7 +55,7 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
-  const { colors, fonts, borderRadius, shadows, circleStyle } = useTheme();
+  const { colors, fonts, borderRadius, shadows, circleStyle, crt } = useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
@@ -95,6 +95,97 @@ export const RecipeCard = ({
   };
 
   if (compact) {
+    if (crt) {
+      return (
+        <Pressable
+          onPress={onPress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={{ marginBottom: spacing.sm }}
+        >
+          <Animated.View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: spacing.md,
+              backgroundColor: colors.mealPlan.slotBg,
+              borderRadius: borderRadius.sm,
+              transform: [{ scale: scaleAnim }],
+            }}
+          >
+            <Image
+              source={{
+                uri:
+                  recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE,
+              }}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: borderRadius.sm,
+              }}
+              contentFit="cover"
+              placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+              transition={200}
+            />
+            <View style={{ flex: 1, marginLeft: spacing.md }}>
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.bodySemibold,
+                  color: colors.primary,
+                }}
+                numberOfLines={2}
+              >
+                {recipe.title}
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: spacing['2xs'],
+                  gap: spacing.sm,
+                }}
+              >
+                {recipe.enhanced && (
+                  <Text
+                    style={{
+                      fontSize: fontSize.sm,
+                      fontFamily: fonts.bodySemibold,
+                      color: colors.border,
+                    }}
+                  >
+                    {'\u2726'}
+                  </Text>
+                )}
+                {totalTime && (
+                  <Text
+                    style={{
+                      fontSize: fontSize.sm,
+                      fontFamily: fonts.body,
+                      color: colors.content.tertiary,
+                    }}
+                  >
+                    {totalTime} MIN
+                  </Text>
+                )}
+                {recipe.servings && (
+                  <Text
+                    style={{
+                      fontSize: fontSize.sm,
+                      fontFamily: fonts.body,
+                      color: colors.content.tertiary,
+                    }}
+                  >
+                    {'\u263B'} {recipe.servings}
+                  </Text>
+                )}
+              </View>
+            </View>
+          </Animated.View>
+        </Pressable>
+      );
+    }
+
     return (
       <Pressable
         onPress={onPress}
@@ -253,6 +344,206 @@ export const RecipeCard = ({
   const CARD_CONTENT_HEIGHT = 64;
   const imageHeight = cardSize ? cardSize * 0.65 : 120;
   const cardHeight = imageHeight + CARD_CONTENT_HEIGHT;
+
+  if (crt) {
+    const aiLabel = recipe.enhanced ? '\u2726' : undefined;
+    const favLabel = showFavorite
+      ? isRecipeFavorite
+        ? '\u2665'
+        : '\u2661'
+      : undefined;
+    const favDimmed = showFavorite && !isRecipeFavorite;
+    const servingsLabel = recipe.servings
+      ? `\u263B ${recipe.servings}`
+      : undefined;
+    const timeLabel = totalTime ? `${totalTime} MIN` : undefined;
+
+    const borderColor = colors.border;
+    const labelColor = colors.primary;
+    const bChar = {
+      color: borderColor,
+      fontFamily: fonts.body,
+      fontSize: fontSize.md,
+      lineHeight: 14 as number,
+    };
+    const bLabel = {
+      color: labelColor,
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.base,
+      letterSpacing: 1.5,
+      paddingHorizontal: spacing.xs,
+    };
+    const bLabelDim = { ...bLabel, color: borderColor };
+
+    // View-based vertical bar that stretches to fill parent height
+    const vBar = { width: 1, backgroundColor: borderColor } as const;
+
+    // Fixed text area height: 3 lines + vertical padding + bottom padding
+    const textAreaHeight = lineHeight.sm * 3 + spacing['xs-sm'] * 2 + 8;
+
+    return (
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <Animated.View
+          style={{
+            width: cardSize,
+            backgroundColor: colors.mealPlan.slotBg,
+            transform: [{ scale: scaleAnim }],
+          }}
+        >
+          {/* ── Top border: ┌─┤✦├────┤♡├─┐ */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={bChar} selectable={false}>
+              {'\u250C'}
+              {aiLabel ? '\u2500' : ''}
+            </Text>
+            {aiLabel && (
+              <>
+                <Text style={bChar} selectable={false}>
+                  {'\u2524'}
+                </Text>
+                <Text style={bLabel} selectable={false}>
+                  {aiLabel}
+                </Text>
+                <Text style={bChar} selectable={false}>
+                  {'\u251C'}
+                </Text>
+              </>
+            )}
+            <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+              <Text style={bChar} selectable={false}>
+                {'\u2500'.repeat(200)}
+              </Text>
+            </View>
+            {favLabel && (
+              <>
+                <Text style={bChar} selectable={false}>
+                  {'\u2524'}
+                </Text>
+                <Text style={favDimmed ? bLabelDim : bLabel} selectable={false}>
+                  {favLabel}
+                </Text>
+                <Text style={bChar} selectable={false}>
+                  {'\u251C'}
+                </Text>
+              </>
+            )}
+            <Text style={bChar} selectable={false}>
+              {'\u2510'}
+            </Text>
+          </View>
+
+          {/* ── Image with vertical bars */}
+          <View style={{ flexDirection: 'row' }}>
+            <View style={vBar} />
+            <Image
+              source={{
+                uri:
+                  recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE,
+              }}
+              style={{ flex: 1, height: imageHeight }}
+              contentFit="cover"
+              placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+              transition={300}
+            />
+            <View style={vBar} />
+          </View>
+
+          {/* ── Mid separator: ├─────────┤ */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={bChar} selectable={false}>
+              {'\u251C'}
+            </Text>
+            <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+              <Text style={bChar} selectable={false}>
+                {'\u2500'.repeat(200)}
+              </Text>
+            </View>
+            <Text style={bChar} selectable={false}>
+              {'\u2524'}
+            </Text>
+          </View>
+
+          {/* ── Text area with vertical bars */}
+          <View
+            style={{
+              flexDirection: 'row',
+              height: textAreaHeight,
+            }}
+          >
+            <View style={vBar} />
+            <View
+              style={{
+                flex: 1,
+                paddingHorizontal: spacing['sm-md'],
+                paddingVertical: spacing['xs-sm'],
+                paddingBottom: 8,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.bodySemibold,
+                  color: colors.content.heading,
+                  lineHeight: lineHeight.sm,
+                  height: lineHeight.sm * 3,
+                }}
+                numberOfLines={3}
+              >
+                {recipe.title}
+              </Text>
+            </View>
+            <View style={vBar} />
+          </View>
+
+          {/* ── Bottom border: └─┤☻ 4├────┤30 MIN├─┘ */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={bChar} selectable={false}>
+              {'\u2514'}
+              {servingsLabel ? '\u2500' : ''}
+            </Text>
+            {servingsLabel && (
+              <>
+                <Text style={bChar} selectable={false}>
+                  {'\u2524'}
+                </Text>
+                <Text style={bLabel} selectable={false}>
+                  {servingsLabel}
+                </Text>
+                <Text style={bChar} selectable={false}>
+                  {'\u251C'}
+                </Text>
+              </>
+            )}
+            <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+              <Text style={bChar} selectable={false}>
+                {'\u2500'.repeat(200)}
+              </Text>
+            </View>
+            {timeLabel && (
+              <>
+                <Text style={bChar} selectable={false}>
+                  {'\u2524'}
+                </Text>
+                <Text style={bLabel} selectable={false}>
+                  {timeLabel}
+                </Text>
+                <Text style={bChar} selectable={false}>
+                  {'\u251C'}
+                </Text>
+              </>
+            )}
+            <Text style={bChar} selectable={false}>
+              {'\u2518'}
+            </Text>
+          </View>
+        </Animated.View>
+      </Pressable>
+    );
+  }
 
   return (
     <Pressable

@@ -6,9 +6,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { StepperControl, ThemeToggle } from '@/components';
+import { SettingToggleRow, StepperControl, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
+  borderRadius,
   fontSize,
   fontWeight,
   iconContainer,
@@ -46,18 +47,11 @@ export const GeneralSection = ({
   onUpdateServings,
   onUpdateIncludeBreakfast,
 }: GeneralSectionProps) => {
-  const { colors, borderRadius, shadows, circleStyle } = useTheme();
+  const { colors, circleStyle } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.lg,
-        padding: spacing.lg,
-        ...shadows.sm,
-      }}
-    >
+    <SurfaceCard radius="lg">
       {/* Household Name */}
       <View style={{ marginBottom: spacing.lg }}>
         <Text
@@ -177,39 +171,15 @@ export const GeneralSection = ({
       </View>
 
       {/* Include Breakfast */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: spacing.lg,
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              color: colors.content.strong,
-            }}
-          >
-            {t('householdSettings.general.includeBreakfast')}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize.xs,
-              color: colors.content.subtitle,
-              marginTop: spacing['2xs'],
-            }}
-          >
-            {t('householdSettings.general.includeBreakfastDesc')}
-          </Text>
-        </View>
-        <ThemeToggle
+      <View style={{ marginTop: spacing.lg }}>
+        <SettingToggleRow
+          label={t('householdSettings.general.includeBreakfast')}
+          subtitle={t('householdSettings.general.includeBreakfastDesc')}
           value={settings.include_breakfast ?? false}
           onValueChange={onUpdateIncludeBreakfast}
           disabled={!canEdit}
         />
       </View>
-    </View>
+    </SurfaceCard>
   );
 };

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { IconCircle, Section, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -19,47 +19,110 @@ export const RecipeInstructions = ({
   t,
   onToggleStep,
 }: RecipeInstructionsProps) => {
-  const { colors, fonts, typography, borderRadius } = useTheme();
-  return (
-    <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
-      <View
+  const { colors, fonts, borderRadius, crt } = useTheme();
+
+  const stepCounter =
+    completedSteps.size > 0 && recipe.instructions.length > 0 ? (
+      <Text
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: spacing.lg,
+          fontSize: fontSize.md,
+          color: colors.success,
+          fontFamily: fonts.bodyMedium,
         }}
       >
-        <IconCircle
-          size="xs"
-          bg={colors.surface.active}
-          style={{ marginRight: spacing.md }}
+        {t('recipe.stepsDone', {
+          completed: completedSteps.size,
+          total: recipe.instructions.length,
+        })}
+      </Text>
+    ) : undefined;
+
+  const stepsLabel =
+    completedSteps.size > 0 && recipe.instructions.length > 0
+      ? `${completedSteps.size}/${recipe.instructions.length}`
+      : undefined;
+
+  if (crt) {
+    return (
+      <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
+        <TerminalFrame
+          variant="single"
+          label={t('recipe.instructions').toUpperCase()}
+          rightLabel={stepsLabel}
         >
-          <Ionicons name="book" size={18} color={colors.content.body} />
-        </IconCircle>
-        <Text
-          style={{
-            ...typography.displaySmall,
-            color: colors.content.heading,
-          }}
-        >
-          {t('recipe.instructions')}
-        </Text>
-        {completedSteps.size > 0 && recipe.instructions.length > 0 && (
-          <Text
-            style={{
-              marginLeft: 'auto',
-              fontSize: fontSize.md,
-              color: colors.success,
-              fontFamily: fonts.bodyMedium,
-            }}
-          >
-            {t('recipe.stepsDone', {
-              completed: completedSteps.size,
-              total: recipe.instructions.length,
-            })}
-          </Text>
-        )}
+          <View style={{ backgroundColor: colors.bgBase, padding: spacing.lg }}>
+            {recipe.instructions.length === 0 ? (
+              <Text
+                style={{
+                  color: colors.content.secondary,
+                  fontSize: fontSize.xl,
+                  fontFamily: fonts.body,
+                  fontStyle: 'italic',
+                }}
+              >
+                {t('recipe.noInstructions')}
+              </Text>
+            ) : (
+              recipe.instructions.map((instruction, index) => {
+                const isCompleted = completedSteps.has(index);
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => onToggleStep(index)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      paddingVertical: spacing.md,
+                      borderBottomWidth:
+                        index < recipe.instructions.length - 1 ? 1 : 0,
+                      borderBottomColor: colors.border,
+                      opacity: isCompleted ? 0.5 : 1,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: isCompleted ? colors.success : colors.primary,
+                        fontFamily: fonts.bodyBold,
+                        fontSize: fontSize.lg,
+                        marginRight: spacing.md,
+                        minWidth: 24,
+                      }}
+                    >
+                      {isCompleted ? '\u2713' : `${index + 1}.`}
+                    </Text>
+                    <Text
+                      style={{
+                        flex: 1,
+                        fontSize: fontSize.xl,
+                        fontFamily: fonts.body,
+                        color: colors.content.body,
+                        lineHeight: lineHeight.xl,
+                        textDecorationLine: isCompleted
+                          ? 'line-through'
+                          : 'none',
+                      }}
+                    >
+                      {instruction}
+                    </Text>
+                  </Pressable>
+                );
+              })
+            )}
+          </View>
+        </TerminalFrame>
       </View>
+    );
+  }
+
+  return (
+    <Section
+      title={t('recipe.instructions')}
+      icon="book"
+      size="sm"
+      spacing={0}
+      style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}
+      rightAccessory={stepCounter}
+    >
       {recipe.instructions.length === 0 ? (
         <Text
           style={{
@@ -166,6 +229,6 @@ export const RecipeInstructions = ({
           );
         })
       )}
-    </View>
+    </Section>
   );
 };

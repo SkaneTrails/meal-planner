@@ -1,13 +1,14 @@
-import { Text, View } from 'react-native';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { View } from 'react-native';
+import { Chip } from '@/components';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface RecipeTagsProps {
   tags: string[];
 }
 
 export const RecipeTags = ({ tags }: RecipeTagsProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
-  if (tags.length === 0) return null;
+  const { colors, crt } = useTheme();
+  if (tags.length === 0 || crt) return null;
 
   return (
     <View
@@ -19,25 +20,14 @@ export const RecipeTags = ({ tags }: RecipeTagsProps) => {
       }}
     >
       {tags.map((tag) => (
-        <View
+        <Chip
           key={tag}
-          style={{
-            backgroundColor: 'rgba(93, 78, 64, 0.65)',
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.xs,
-            borderRadius: borderRadius.lg,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.base,
-              fontFamily: fonts.bodySemibold,
-              color: colors.white,
-            }}
-          >
-            #{tag}
-          </Text>
-        </View>
+          label={tag}
+          variant="display"
+          prefix="#"
+          bg={colors.chip.bg}
+          color={colors.content.body}
+        />
       ))}
     </View>
   );

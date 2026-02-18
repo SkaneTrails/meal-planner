@@ -91,6 +91,10 @@ export interface ThemeValue {
   buttonDisplay: ButtonDisplayConfig;
   /** CRT overlay config — undefined for themes without the effect. */
   crt?: CRTConfig;
+  /** Whether the terminal theme is currently active. */
+  isTerminal: boolean;
+  /** Toggle between terminal and default themes at runtime. */
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeValue | null>(null);
@@ -118,7 +122,13 @@ interface ThemeProviderProps {
   buttonConfig?: ButtonDisplayConfig;
   /** Optional CRT overlay configuration. Omit to disable the effect. */
   crt?: CRTConfig;
+  /** Whether the terminal theme is currently active. */
+  isTerminal?: boolean;
+  /** Callback to toggle the theme at runtime. */
+  toggleTheme?: () => void;
 }
+
+const noop = () => {};
 
 /** Wraps children with the resolved theme value. */
 export const ThemeProvider = ({
@@ -129,6 +139,8 @@ export const ThemeProvider = ({
   shadowTokens = defaultShadows,
   buttonConfig = defaultButtonDisplay,
   crt,
+  isTerminal = false,
+  toggleTheme = noop,
 }: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(() => {
     const isFlat = radii.full === 0;
@@ -146,8 +158,19 @@ export const ThemeProvider = ({
       circleStyle: themedCircleStyle,
       buttonDisplay: buttonConfig,
       crt,
+      isTerminal,
+      toggleTheme,
     };
-  }, [palette, fonts, radii, shadowTokens, buttonConfig, crt]);
+  }, [
+    palette,
+    fonts,
+    radii,
+    shadowTokens,
+    buttonConfig,
+    crt,
+    isTerminal,
+    toggleTheme,
+  ]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

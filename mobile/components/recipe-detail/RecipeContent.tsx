@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
+import { Text, View } from 'react-native';
+import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type { EnhancementReviewAction, Recipe } from '@/lib/types';
 import { EnhancementReviewBanner } from './EnhancementReviewBanner';
 import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
@@ -97,8 +100,39 @@ export const RecipeContent = ({
     [showOriginal, recipe, displayIngredients, displayInstructions],
   );
 
+  const { colors, fonts, crt } = useTheme();
+
+  const actionSegments: FrameSegment[] | undefined = crt
+    ? [
+        { label: '\u270e', onPress: onOpenEditModal },
+        { label: '\u2261', onPress: onShowPlanModal },
+        { label: '\u2197', onPress: onShare },
+      ]
+    : undefined;
+
+  const visibilityLabel =
+    crt && recipe.visibility
+      ? t(
+          `labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`,
+        ).toUpperCase()
+      : undefined;
+
   return (
     <>
+      {crt && (
+        <Text
+          style={{
+            fontSize: fontSize['4xl'],
+            fontFamily: fonts.display,
+            color: colors.primary,
+            letterSpacing: letterSpacing.tight,
+            marginBottom: spacing.sm,
+          }}
+        >
+          {recipe.title}
+        </Text>
+      )}
+
       <RecipeActionButtons
         canEdit={canEdit}
         canCopy={canCopy}
@@ -122,6 +156,9 @@ export const RecipeContent = ({
         cookTime={recipe.cook_time}
         totalTime={totalTime}
         servings={recipe.servings}
+        tags={recipe.tags}
+        actionSegments={actionSegments}
+        visibilityLabel={visibilityLabel}
         t={t}
       />
 

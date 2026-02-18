@@ -105,6 +105,25 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);
   },
+  Chip: ({ label, prefix, onPress, disabled, testID }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', {
+      onClick: disabled ? undefined : onPress,
+      disabled: disabled ?? false,
+      'data-testid': testID ?? `chip-${label}`,
+    }, prefix ? `${prefix}${label}` : label);
+  },
+  ChipGroup: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'chip-group' }, children);
+  },
+  InlineAddInput: ({ value, onChangeText, onSubmit, placeholder }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'inline-add-input' },
+      createElement('input', { placeholder, value, onChange: (e: any) => onChangeText(e.target.value) }),
+      createElement('button', { onClick: onSubmit, disabled: !value?.trim() }, 'Add'),
+    );
+  },
   FilterChip: ({ label, selected, onPress }: any) => {
     const { createElement } = require('react');
     return createElement('button', {
@@ -113,9 +132,23 @@ vi.mock('@/components', () => ({
       'data-testid': `chip-${label}`,
     }, label);
   },
-  SectionHeader: ({ title }: any) => {
+  Section: ({ title, children }: any) => {
     const { createElement } = require('react');
-    return createElement('div', { 'data-testid': `section-${title}` }, title);
+    return createElement('div', { 'data-testid': `section-${title}` }, title, children);
+  },
+  SectionLabel: ({ text }: any) => {
+    const { createElement } = require('react');
+    return createElement('span', { 'data-testid': `label-${text}` }, text);
+  },
+  SettingToggleRow: ({ label, value, onValueChange, disabled }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', {
+      'data-testid': `toggle-${label}`,
+      role: 'switch',
+      'aria-checked': value,
+      disabled: disabled ?? false,
+      onClick: () => onValueChange(!value),
+    }, label);
   },
   IconCircle: ({ children }: any) => {
     const { createElement } = require('react');
