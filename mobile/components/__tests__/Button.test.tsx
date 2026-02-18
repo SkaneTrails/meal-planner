@@ -145,6 +145,25 @@ describe('Button — display config', () => {
     // Label should be hidden, only icon shown
     expect(screen.queryByText('Add')).toBeNull();
   });
+
+  it('icon variant hides label when icon is displayed (display "both")', () => {
+    useThemeSpy.mockReturnValue(lightTheme());
+
+    render(<Button variant="icon" icon="add" label="Add" onPress={() => {}} />);
+    // icon variant: label is a fallback, icon takes priority
+    expect(screen.queryByText('Add')).toBeNull();
+  });
+
+  it('icon variant shows label when display is "text" (no icon visible)', () => {
+    useThemeSpy.mockReturnValue({
+      ...lightTheme(),
+      buttonDisplay: { display: 'text', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    });
+
+    render(<Button variant="icon" icon="add" label="Add" onPress={() => {}} />);
+    // In text-only mode, icon variant falls back to label
+    expect(screen.getByText('Add')).toBeTruthy();
+  });
 });
 
 // ── Terminal segment rendering ───────────────────────────────────────

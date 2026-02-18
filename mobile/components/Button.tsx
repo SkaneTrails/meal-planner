@@ -264,6 +264,7 @@ export const Button = ({
   };
 
   // The theme controls whether icon, text, or both are shown for all variants.
+  // For icon variant, the label is a terminal-only fallback — hide it when icons are visible.
   const showIcon =
     !!displayIcon &&
     (buttonDisplay.display === 'icon' || buttonDisplay.display === 'both');
@@ -271,7 +272,8 @@ export const Button = ({
     !!displayLabel &&
     (buttonDisplay.display === 'text' ||
       buttonDisplay.display === 'both' ||
-      variant === 'primary');
+      variant === 'primary') &&
+    !(variant === 'icon' && showIcon);
 
   return (
     <AnimatedPressable
