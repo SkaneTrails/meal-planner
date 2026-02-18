@@ -37,7 +37,7 @@ export const DayHeader = ({
   onToggleTag,
   onCollapse,
 }: DayHeaderProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
   return (
     <>
       <Pressable
@@ -51,7 +51,7 @@ export const DayHeader = ({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {isToday && (
+          {isToday && !crt && (
             <View
               style={{
                 backgroundColor: colors.ai.primary,
@@ -80,93 +80,104 @@ export const DayHeader = ({
               letterSpacing: -0.2,
             }}
           >
-            {formatDayHeader(date, language, t('mealPlan.today'))}
+            {formatDayHeader(
+              date,
+              language,
+              crt && isToday ? '' : t('mealPlan.today'),
+            )}
           </Text>
-          {onCollapse && (
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.sm,
+          }}
+        >
+          {!isEditing && !crt && (
+            <Pressable onPress={onStartEdit}>
+              {note ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: spacing.sm,
+                  }}
+                >
+                  {note
+                    .split(' ')
+                    .filter((t) => t.trim())
+                    .map((tag, index) => {
+                      const tagIndex = noteSuggestions.indexOf(tag);
+                      const tagDotColor =
+                        tagIndex >= 0
+                          ? colors.tagDot[tagIndex % colors.tagDot.length]
+                          : colors.content.icon;
+                      return (
+                        <View
+                          key={`${tag}-${index}`}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: spacing.xs,
+                            backgroundColor: colors.surface.tint,
+                            paddingHorizontal: spacing.sm,
+                            paddingVertical: spacing.xs,
+                            borderRadius: borderRadius.md,
+                          }}
+                        >
+                          <View
+                            style={{
+                              width: dotSize.md,
+                              height: dotSize.md,
+                              borderRadius: dotSize.md / 2,
+                              backgroundColor: tagDotColor,
+                            }}
+                          />
+                          <Text
+                            style={{
+                              fontSize: fontSize.base,
+                              color: colors.content.secondary,
+                            }}
+                          >
+                            {tag}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: colors.surface.hover,
+                    paddingHorizontal: spacing.sm,
+                    paddingVertical: spacing.xs,
+                    borderRadius: borderRadius.md,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: fontSize.base,
+                      color: colors.content.icon,
+                    }}
+                  >
+                    {t('mealPlan.addNote')}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+          )}
+          {onCollapse && !crt && (
             <Ionicons
               name="chevron-up"
               size={iconSize.sm}
               color={colors.content.subtitle}
-              style={{ marginLeft: spacing.xs }}
             />
           )}
         </View>
-
-        {!isEditing && (
-          <Pressable onPress={onStartEdit}>
-            {note ? (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: spacing.sm,
-                }}
-              >
-                {note
-                  .split(' ')
-                  .filter((t) => t.trim())
-                  .map((tag, index) => {
-                    const tagIndex = noteSuggestions.indexOf(tag);
-                    const tagDotColor =
-                      tagIndex >= 0
-                        ? colors.tagDot[tagIndex % colors.tagDot.length]
-                        : colors.content.icon;
-                    return (
-                      <View
-                        key={`${tag}-${index}`}
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: spacing.xs,
-                          backgroundColor: colors.surface.tint,
-                          paddingHorizontal: spacing.sm,
-                          paddingVertical: spacing.xs,
-                          borderRadius: borderRadius.md,
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: dotSize.md,
-                            height: dotSize.md,
-                            borderRadius: dotSize.md / 2,
-                            backgroundColor: tagDotColor,
-                          }}
-                        />
-                        <Text
-                          style={{
-                            fontSize: fontSize.base,
-                            color: colors.content.secondary,
-                          }}
-                        >
-                          {tag}
-                        </Text>
-                      </View>
-                    );
-                  })}
-              </View>
-            ) : (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  backgroundColor: colors.surface.hover,
-                  paddingHorizontal: spacing.sm,
-                  paddingVertical: spacing.xs,
-                  borderRadius: borderRadius.md,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: fontSize.base,
-                    color: colors.content.icon,
-                  }}
-                >
-                  {t('mealPlan.addNote')}
-                </Text>
-              </View>
-            )}
-          </Pressable>
-        )}
       </Pressable>
 
       {isEditing && (
@@ -203,7 +214,8 @@ const NoteEditor = ({
   onCancel,
   onToggleTag,
 }: NoteEditorProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
+  const activeTags = noteText.split(' ').filter((w) => w.trim());
   return (
     <View style={{ marginBottom: spacing.md }}>
       <View
@@ -211,7 +223,7 @@ const NoteEditor = ({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: colors.surface.tint,
-          borderRadius: borderRadius.md,
+          borderRadius: crt ? 0 : borderRadius.md,
           padding: spacing.sm,
           gap: spacing.xs,
         }}
@@ -223,6 +235,7 @@ const NoteEditor = ({
           style={{
             flex: 1,
             fontSize: fontSize.lg,
+            fontFamily: fonts.body,
             color: colors.content.headingWarm,
             padding: 0,
           }}
@@ -241,7 +254,13 @@ const NoteEditor = ({
           </Text>
         </Pressable>
         <Pressable onPress={onCancel}>
-          <Text style={{ fontSize: fontSize.lg, color: colors.content.icon }}>
+          <Text
+            style={{
+              fontSize: fontSize.lg,
+              fontFamily: fonts.body,
+              color: colors.content.icon,
+            }}
+          >
             {t('mealPlan.notesCancel')}
           </Text>
         </Pressable>
@@ -252,44 +271,64 @@ const NoteEditor = ({
         style={{ marginTop: spacing.xs }}
       >
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-          {noteSuggestions.map((suggestion, index) => (
-            <Pressable
-              key={suggestion}
-              onPress={() => onToggleTag(suggestion)}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: spacing.sm,
-                backgroundColor: noteText.split(' ').includes(suggestion)
-                  ? colors.surface.active
-                  : colors.white,
-                paddingHorizontal: spacing.md,
-                paddingVertical: spacing.sm,
-                borderRadius: borderRadius.full,
-                borderWidth: 1,
-                borderColor: noteText.split(' ').includes(suggestion)
-                  ? colors.content.headingWarm
-                  : colors.surface.divider,
-              }}
-            >
-              <View
+          {noteSuggestions.map((suggestion) => {
+            const isActive = activeTags.includes(suggestion);
+            return (
+              <Pressable
+                key={suggestion}
+                onPress={() => onToggleTag(suggestion)}
                 style={{
-                  width: dotSize.md,
-                  height: dotSize.md,
-                  borderRadius: dotSize.md / 2,
-                  backgroundColor: colors.tagDot[index % colors.tagDot.length],
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: fontSize.md,
-                  color: colors.content.headingWarm,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: crt ? 0 : spacing.sm,
+                  backgroundColor: isActive
+                    ? crt
+                      ? colors.primary
+                      : colors.surface.active
+                    : crt
+                      ? colors.bgBase
+                      : colors.white,
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.sm,
+                  borderRadius: borderRadius.full,
+                  borderWidth: 1,
+                  borderColor: isActive
+                    ? crt
+                      ? colors.primary
+                      : colors.content.headingWarm
+                    : colors.surface.divider,
                 }}
               >
-                {suggestion}
-              </Text>
-            </Pressable>
-          ))}
+                {!crt && (
+                  <View
+                    style={{
+                      width: dotSize.md,
+                      height: dotSize.md,
+                      borderRadius: dotSize.md / 2,
+                      backgroundColor:
+                        colors.tagDot[
+                          noteSuggestions.indexOf(suggestion) %
+                            colors.tagDot.length
+                        ],
+                    }}
+                  />
+                )}
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    fontFamily: fonts.body,
+                    color: crt
+                      ? isActive
+                        ? colors.bgBase
+                        : colors.primary
+                      : colors.content.headingWarm,
+                  }}
+                >
+                  {suggestion}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </ScrollView>
     </View>

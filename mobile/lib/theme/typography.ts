@@ -30,12 +30,16 @@ const MONO = isWeb
       default: 'monospace',
     });
 
-/** DM Sans — default light theme font family. */
+/** Playfair Display for display headings, DM Sans for body text. */
 export const defaultFontFamily: FontFamilyTokens = {
-  display: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
-  displayRegular: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
-  displayMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
-  displayBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
+  display: isWeb ? '"Playfair Display", serif' : 'PlayfairDisplay_600SemiBold',
+  displayRegular: isWeb
+    ? '"Playfair Display", serif'
+    : 'PlayfairDisplay_400Regular',
+  displayMedium: isWeb
+    ? '"Playfair Display", serif'
+    : 'PlayfairDisplay_500Medium',
+  displayBold: isWeb ? '"Playfair Display", serif' : 'PlayfairDisplay_700Bold',
   body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
   bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
   bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { IconCircle } from '@/components';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { IconCircle } from './IconCircle';
 
 interface SectionHeaderProps {
   icon: keyof typeof Ionicons.glyphMap;
