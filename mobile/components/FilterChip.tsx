@@ -1,12 +1,6 @@
 import type { ReactNode } from 'react';
 import { Pressable, Text, type TextStyle, type ViewStyle } from 'react-native';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface FilterChipProps {
   label: string;
@@ -50,7 +44,7 @@ const FilterChip = ({
   style,
   labelStyle,
 }: FilterChipProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const activeColor = activeColorProp ?? colors.content.body;
   const activeTextColor = activeTextColorProp ?? colors.white;
   const inactiveTextColor = inactiveTextColorProp ?? colors.content.body;

@@ -4,14 +4,7 @@ import { Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
@@ -85,7 +78,7 @@ const StatCard = ({
   iconColor,
   onPress,
 }: StatCardProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
 
   return (
     <AnimatedPressable

@@ -5,13 +5,7 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
-import {
-  borderRadius,
-  fontSize,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface EnhancingOverlayProps {
   visible: boolean;
@@ -22,7 +16,7 @@ export const EnhancingOverlay = ({
   visible,
   message,
 }: EnhancingOverlayProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   return (
     <Modal
       visible={visible}
@@ -34,7 +28,16 @@ export const EnhancingOverlay = ({
       <View
         style={[styles.backdrop, { backgroundColor: colors.overlay.backdrop }]}
       >
-        <View style={[styles.card, { backgroundColor: colors.glass.heavy }]}>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: colors.glass.heavy,
+              borderRadius: borderRadius.lg,
+              ...shadows.cardRaised,
+            },
+          ]}
+        >
           <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
           <ActivityIndicator
             size="large"
@@ -63,10 +66,8 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   card: {
-    borderRadius: borderRadius.lg,
     padding: spacing['3xl'],
     alignItems: 'center',
-    ...shadows.cardRaised,
     maxWidth: 300,
     width: '100%',
   },

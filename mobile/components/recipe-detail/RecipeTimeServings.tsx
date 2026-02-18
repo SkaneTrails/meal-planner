@@ -1,13 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface TimeStatProps {
   icon: 'timer' | 'flame' | 'time' | 'people';
@@ -65,7 +59,7 @@ export const RecipeTimeServings = ({
   servings,
   t,
 }: RecipeTimeServingsProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const hasAnyTime = prepTime || cookTime || totalTime;
   if (!hasAnyTime && !servings) return null;
 

@@ -3,14 +3,7 @@ import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  circleStyle,
-  fontSize,
-  fontWeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
 
@@ -27,7 +20,7 @@ export const ExtrasSection = ({
   onAddExtra,
   onRemoveExtra,
 }: ExtrasSectionProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={{
@@ -147,7 +140,7 @@ interface ExtraRecipeRowProps {
 }
 
 const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, circleStyle } = useTheme();
   const router = useRouter();
   const imageUrl =
     recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE;

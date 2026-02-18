@@ -6,6 +6,7 @@
  */
 
 import type { ColorTokens } from './colors';
+import type { BorderRadiusTokens, ShadowTokens } from './layout';
 
 // ── Base palette ───────────────────────────────────────────────────────
 const BLACK = '#0A0A0A';
@@ -258,4 +259,37 @@ export const terminalColors: ColorTokens = {
   },
 
   tagDot: [GREEN, CYAN, GREEN_DIM, GREEN_DARK, CYAN_DIM, AMBER, RED, BLUE],
+};
+
+// ── Terminal border radius — sharp corners, no rounding ────────────────
+export const terminalBorderRadius: BorderRadiusTokens = {
+  '3xs': 0,
+  '2xs': 0,
+  'xs-sm': 0,
+  xs: 0,
+  'sm-md': 0,
+  sm: 0,
+  'md-lg': 0,
+  md: 0,
+  lg: 0,
+  'lg-xl': 0,
+  xl: 0,
+  full: 0,
+};
+
+// ── Terminal shadows — flat screen, no depth ───────────────────────────
+const NONE = { boxShadow: '0px 0px 0px 0px transparent' } as const;
+
+export const terminalShadows: ShadowTokens = {
+  none: NONE,
+  xs: NONE,
+  sm: NONE,
+  card: NONE,
+  md: NONE,
+  lg: NONE,
+  xl: NONE,
+  glow: { boxShadow: '0px 0px 8px 0px rgba(51, 255, 51, 0.3)' },
+  glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
+  cardRaised: NONE,
+  float: NONE,
 };

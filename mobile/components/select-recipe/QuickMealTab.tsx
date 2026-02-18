@@ -4,7 +4,6 @@ import { IconCircle } from '@/components';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
-  borderRadius,
   fontSize,
   fontWeight,
   letterSpacing,
@@ -19,7 +18,7 @@ interface QuickMealTabProps {
 }
 
 export const QuickMealTab = ({ state }: QuickMealTabProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const {
     t,
     customText,

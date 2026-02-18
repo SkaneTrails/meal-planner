@@ -5,7 +5,11 @@
 
 export type { ColorTokens } from './theme/colors';
 export { colors, lightColors } from './theme/colors';
-export type { IconContainerSize } from './theme/layout';
+export type {
+  BorderRadiusTokens,
+  IconContainerSize,
+  ShadowTokens,
+} from './theme/layout';
 export {
   animation,
   borderRadius,
@@ -25,7 +29,12 @@ export {
   settingsSubtitleStyle,
   settingsTitleStyle,
 } from './theme/styles';
-export { terminalColors } from './theme/terminal-colors';
+export {
+  terminalBorderRadius,
+  terminalColors,
+  terminalShadows,
+} from './theme/terminal-colors';
+export type { CircleStyleFn } from './theme/theme-context';
 export { ThemeProvider, useTheme } from './theme/theme-context';
 export type { FontFamilyTokens } from './theme/typography';
 export {

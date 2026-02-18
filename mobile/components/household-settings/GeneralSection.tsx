@@ -9,12 +9,9 @@ import {
 import { StepperControl, ThemeToggle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
-  borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
   iconContainer,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -49,7 +46,7 @@ export const GeneralSection = ({
   onUpdateServings,
   onUpdateIncludeBreakfast,
 }: GeneralSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows, circleStyle } = useTheme();
   const { t } = useTranslation();
 
   return (

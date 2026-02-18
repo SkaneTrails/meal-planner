@@ -5,14 +5,11 @@ import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
-  borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
   iconContainer,
   layout,
   letterSpacing,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -25,7 +22,7 @@ interface CopyMealTabProps {
 }
 
 export const CopyMealTab = ({ state }: CopyMealTabProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows, circleStyle } = useTheme();
   const {
     t,
     bcp47,

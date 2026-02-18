@@ -44,8 +44,10 @@ import {
 } from '@/lib/settings-context';
 import {
   ThemeProvider,
+  terminalBorderRadius,
   terminalColors,
   terminalFontFamily,
+  terminalShadows,
   useTheme,
 } from '@/lib/theme';
 import '../global.css';
@@ -174,10 +176,17 @@ export default function RootLayout() {
   const isTerminal = process.env.EXPO_PUBLIC_THEME === 'terminal';
   const themePalette = isTerminal ? terminalColors : undefined;
   const themeFonts = isTerminal ? terminalFontFamily : undefined;
+  const themeRadii = isTerminal ? terminalBorderRadius : undefined;
+  const themeShadows = isTerminal ? terminalShadows : undefined;
 
   return (
     <ErrorBoundary>
-      <ThemeProvider palette={themePalette} fonts={themeFonts}>
+      <ThemeProvider
+        palette={themePalette}
+        fonts={themeFonts}
+        radii={themeRadii}
+        shadowTokens={themeShadows}
+      >
         <AuthProvider>
           <QueryProvider>
             <SettingsProvider>

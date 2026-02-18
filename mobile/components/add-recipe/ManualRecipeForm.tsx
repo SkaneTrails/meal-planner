@@ -12,12 +12,10 @@ import {
 import { FormField, GradientBackground, PrimaryButton } from '@/components';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
-  borderRadius,
   fontSize,
   fontWeight,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -29,7 +27,7 @@ interface ManualRecipeFormProps {
 }
 
 export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const {
     t,
     isPending,
@@ -299,7 +297,7 @@ const NumericField = ({
   onChangeText,
   disabled,
 }: NumericFieldProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
 
   return (
     <FormField label={label} compact>

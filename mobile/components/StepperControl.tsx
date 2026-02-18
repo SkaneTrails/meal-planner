@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
-  circleStyle,
   fontSize,
   fontWeight,
   iconContainer,
@@ -26,7 +25,7 @@ export const StepperControl = ({
   incrementDisabled = false,
   subtitle,
 }: StepperControlProps) => {
-  const { colors } = useTheme();
+  const { colors, circleStyle } = useTheme();
   return (
     <View
       style={{

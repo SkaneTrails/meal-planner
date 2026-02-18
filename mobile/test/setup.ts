@@ -345,6 +345,24 @@ vi.mock('@/lib/theme', () => {
     accent: 'DMSans_500Medium',
   };
 
+  const mockBorderRadius = { '3xs': 3, '2xs': 4, 'xs-sm': 6, xs: 8, 'sm-md': 10, sm: 12, 'md-lg': 14, md: 16, lg: 20, 'lg-xl': 22, xl: 24, full: 9999 };
+
+  const mockShadows = {
+    none: { boxShadow: '0px 0px 0px 0px transparent' },
+    xs: { boxShadow: '1px 1px 2px 0px rgba(0, 0, 0, 0.03)' },
+    sm: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.04)' },
+    card: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)' },
+    md: { boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.06)' },
+    lg: { boxShadow: '2px 8px 20px 0px rgba(0, 0, 0, 0.08)' },
+    xl: { boxShadow: '3px 12px 28px 0px rgba(0, 0, 0, 0.12)' },
+    glow: { boxShadow: '1px 4px 16px 0px rgba(232, 168, 124, 0.25)' },
+    glowSoft: { boxShadow: '1px 2px 10px 0px rgba(232, 168, 124, 0.15)' },
+    cardRaised: { boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)' },
+    float: { boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)' },
+  };
+
+  const mockCircleStyle = (size: number) => ({ width: size, height: size, borderRadius: size / 2 });
+
   return {
   colors: c,
   lightColors: undefined, // re-exported but unused in tests
@@ -366,22 +384,10 @@ vi.mock('@/lib/theme', () => {
       overlayBottomOffset: 60,
     },
   },
-  borderRadius: { '3xs': 3, '2xs': 4, 'xs-sm': 6, xs: 8, 'sm-md': 10, sm: 12, 'md-lg': 14, md: 16, lg: 20, 'lg-xl': 22, xl: 24, full: 9999 },
+  borderRadius: mockBorderRadius,
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
-  shadows: {
-    none: { boxShadow: '0px 0px 0px 0px transparent' },
-    xs: { boxShadow: '1px 1px 2px 0px rgba(0, 0, 0, 0.03)' },
-    sm: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.04)' },
-    card: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)' },
-    md: { boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.06)' },
-    lg: { boxShadow: '2px 8px 20px 0px rgba(0, 0, 0, 0.08)' },
-    xl: { boxShadow: '3px 12px 28px 0px rgba(0, 0, 0, 0.12)' },
-    glow: { boxShadow: '1px 4px 16px 0px rgba(232, 168, 124, 0.25)' },
-    glowSoft: { boxShadow: '1px 2px 10px 0px rgba(232, 168, 124, 0.15)' },
-    cardRaised: { boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)' },
-    float: { boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)' },
-  },
+  shadows: mockShadows,
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
@@ -414,7 +420,7 @@ vi.mock('@/lib/theme', () => {
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
   accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
   createStyles: () => mockStyles,
-  circleStyle: (size: number) => ({ width: size, height: size, borderRadius: size / 2 }),
+  circleStyle: mockCircleStyle,
   dotSize: { md: 10 },
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
   defaultFontFamily: mockFonts,
@@ -429,10 +435,27 @@ vi.mock('@/lib/theme', () => {
     bodyBold: 'Courier',
     accent: 'Courier',
   },
+  terminalBorderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
+  terminalShadows: {
+    none: { boxShadow: '0px 0px 0px 0px transparent' },
+    xs: { boxShadow: '0px 0px 0px 0px transparent' },
+    sm: { boxShadow: '0px 0px 0px 0px transparent' },
+    card: { boxShadow: '0px 0px 0px 0px transparent' },
+    md: { boxShadow: '0px 0px 0px 0px transparent' },
+    lg: { boxShadow: '0px 0px 0px 0px transparent' },
+    xl: { boxShadow: '0px 0px 0px 0px transparent' },
+    glow: { boxShadow: '0px 0px 8px 0px rgba(51, 255, 51, 0.3)' },
+    glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
+    cardRaised: { boxShadow: '0px 0px 0px 0px transparent' },
+    float: { boxShadow: '0px 0px 0px 0px transparent' },
+  },
   useTheme: () => ({
     colors: c,
     fonts: mockFonts,
     styles: mockStyles,
+    borderRadius: mockBorderRadius,
+    shadows: mockShadows,
+    circleStyle: mockCircleStyle,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
   };

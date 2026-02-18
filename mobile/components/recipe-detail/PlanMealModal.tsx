@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { BottomSheetModal } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { isPastDate, toBcp47 } from '@/lib/utils/dateFormatter';
 import { DEFAULT_MEAL_TYPES } from './recipe-detail-constants';
@@ -36,7 +36,7 @@ export const PlanMealModal = ({
   onClearMeal,
   getMealForSlot,
 }: PlanMealModalProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const resolvedMealTypes = mealTypesProp ?? DEFAULT_MEAL_TYPES;
 
   return (

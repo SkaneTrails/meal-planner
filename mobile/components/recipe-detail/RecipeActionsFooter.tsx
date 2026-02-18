@@ -3,7 +3,7 @@ import { Linking, Pressable, Text, View } from 'react-native';
 import { PrimaryButton } from '@/components';
 import { showNotification } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontSize, layout, spacing, useTheme } from '@/lib/theme';
+import { fontSize, layout, spacing, useTheme } from '@/lib/theme';
 
 interface RecipeActionsFooterProps {
   url: string;
@@ -16,7 +16,7 @@ export const RecipeActionsFooter = ({
   t,
   onShowPlanModal,
 }: RecipeActionsFooterProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <>
       {url && (

@@ -4,13 +4,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { IconCircle, SurfaceCard } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 const SUGGESTED_ITEM_KEYS = [
   'salt',
@@ -41,7 +35,7 @@ export const ItemsAtHomeSection = ({
   onAddItem,
   onRemoveItem,
 }: ItemsAtHomeSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 
@@ -145,7 +139,7 @@ const CurrentItems = ({
   items: string[];
   onRemove: (item: string) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -209,7 +203,7 @@ const SuggestedItems = ({
   items: string[];
   onAdd: (item: string) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -1,12 +1,12 @@
 import { Text, View } from 'react-native';
-import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface RecipeTagsProps {
   tags: string[];
 }
 
 export const RecipeTags = ({ tags }: RecipeTagsProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   if (tags.length === 0) return null;
 
   return (

@@ -22,18 +22,12 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
-import {
-  circleStyle,
-  iconContainer,
-  layout,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { iconContainer, layout, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export default function RecipeDetailScreen() {
-  const { colors } = useTheme();
+  const { colors, circleStyle } = useTheme();
   const HEADER_BUTTON_BG = colors.surface.overlayMedium;
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();

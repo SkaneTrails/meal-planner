@@ -1,13 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
 interface HouseholdCardProps {
@@ -16,7 +9,7 @@ interface HouseholdCardProps {
 }
 
 export const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   return (
     <Pressable
       onPress={onPress}

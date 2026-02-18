@@ -8,13 +8,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  dotSize,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { dotSize, fontSize, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope } from '@/lib/types';
 
 interface SearchBarProps {
@@ -38,7 +32,7 @@ export const SearchBar = ({
   searchInputRef,
   t,
 }: SearchBarProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}>
@@ -121,7 +115,7 @@ export const FilterChips = ({
   onSortPress,
   t,
 }: FilterChipsProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   const dietChips: {
     diet: DietLabel;

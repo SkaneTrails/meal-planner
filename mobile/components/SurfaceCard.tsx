@@ -9,7 +9,7 @@
 import type React from 'react';
 import type { ViewStyle } from 'react-native';
 import { View } from 'react-native';
-import { borderRadius, shadows, spacing, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface SurfaceCardProps {
   children: React.ReactNode;
@@ -24,7 +24,7 @@ export const SurfaceCard = ({
   padding = spacing.lg,
   style,
 }: SurfaceCardProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
 
   return (
     <View

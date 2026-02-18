@@ -19,14 +19,11 @@ import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import {
-  borderRadius,
-  circleStyle,
   fontSize,
   fontWeight,
   iconContainer,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -58,7 +55,7 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows, circleStyle } = useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);

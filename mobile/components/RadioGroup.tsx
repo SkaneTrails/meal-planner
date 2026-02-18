@@ -1,12 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import {
-  borderRadius,
-  circleStyle,
-  fontSize,
-  fontWeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface RadioOption<T extends string> {
   value: T;
@@ -27,7 +20,7 @@ export const RadioGroup = <T extends string>({
   onChange,
   disabled = false,
 }: RadioGroupProps<T>) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, circleStyle } = useTheme();
   return (
     <View style={{ gap: spacing.sm }}>
       {options.map((option) => {

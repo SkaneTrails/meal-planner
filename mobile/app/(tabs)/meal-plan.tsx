@@ -19,18 +19,16 @@ import { WeekSelector } from '@/components/meal-plan/WeekSelector';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 import {
-  borderRadius,
   iconContainer,
   iconSize,
   layout,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
 import { formatDateLocal, isPastDate } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const {
     t,
     language,

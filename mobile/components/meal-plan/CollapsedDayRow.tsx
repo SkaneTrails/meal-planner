@@ -1,15 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  iconSize,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import { toBcp47 } from '@/lib/utils/dateFormatter';
 
 interface CollapsedDayRowProps {
@@ -27,7 +19,7 @@ export const CollapsedDayRow = ({
   t,
   onExpand,
 }: CollapsedDayRowProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const bcp47 = toBcp47(language);
   const dayName = date.toLocaleDateString(bcp47, { weekday: 'short' });
   const monthDay = date.toLocaleDateString(bcp47, {
@@ -42,7 +34,14 @@ export const CollapsedDayRow = ({
   return (
     <Pressable
       onPress={onExpand}
-      style={[styles.container, { backgroundColor: colors.glass.card }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.glass.card,
+          borderRadius: borderRadius.sm,
+          ...shadows.xs,
+        },
+      ]}
     >
       <View style={styles.left}>
         <Text style={[styles.dayName, { color: colors.content.body }]}>
@@ -71,11 +70,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     marginBottom: spacing.sm,
-    ...shadows.xs,
   },
   left: {
     flexDirection: 'row',

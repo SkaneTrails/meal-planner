@@ -2,14 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  layout,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 
 interface ScreenHeaderProps {
   canEdit: boolean;
@@ -26,7 +19,7 @@ export const ScreenHeader = ({
   onSave,
   onBack,
 }: ScreenHeaderProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface ImageUrlModalProps {
   visible: boolean;
@@ -18,7 +18,7 @@ export const ImageUrlModal = ({
   onClose,
   onSave,
 }: ImageUrlModalProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const [imageUrlInput, setImageUrlInput] = useState(initialUrl);
 
   useEffect(() => {

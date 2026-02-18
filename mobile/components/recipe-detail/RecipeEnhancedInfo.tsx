@@ -3,10 +3,8 @@ import { Pressable, Text, View } from 'react-native';
 import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import {
-  borderRadius,
   fontSize,
   lineHeight,
-  shadows,
   spacing,
   typography,
   useTheme,
@@ -28,7 +26,7 @@ export const RecipeEnhancedInfo = ({
   t,
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   return (
     <>
       {recipe.enhanced && !showOriginal && recipe.tips && (

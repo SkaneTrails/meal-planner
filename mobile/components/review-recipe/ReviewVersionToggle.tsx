@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { SurfaceCard } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 type VersionTab = 'original' | 'enhanced';
 
@@ -23,7 +17,7 @@ export const ReviewVersionToggle = ({
   onSelectTab,
   t,
 }: ReviewVersionToggleProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View style={{ marginBottom: spacing.xl }}>
       <Text

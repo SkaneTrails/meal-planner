@@ -3,7 +3,7 @@ import type React from 'react';
 import { Text, View } from 'react-native';
 import { AnimatedPressable, IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
 interface EmptyMealSlotProps {
@@ -25,7 +25,7 @@ export const EmptyMealSlot = ({
   t,
   onPress,
 }: EmptyMealSlotProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={{
@@ -123,7 +123,7 @@ const SecondaryActionButton = ({
   icon,
   onPress,
 }: SecondaryActionButtonProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   return (
     <AnimatedPressable
       onPress={onPress}

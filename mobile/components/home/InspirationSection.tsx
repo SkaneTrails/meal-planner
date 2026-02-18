@@ -7,7 +7,6 @@ import { AnimatedPressable } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
-  borderRadius,
   fontSize,
   fontWeight,
   letterSpacing,
@@ -61,7 +60,7 @@ const InspirationHeader = ({
   t: Data['t'];
   onShuffle: () => void;
 }) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <View
@@ -123,7 +122,7 @@ const InspirationCard = ({
   t: Data['t'];
   onPress: () => void;
 }) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <AnimatedPressable
@@ -201,7 +200,7 @@ const LabelBadge = ({
   label: string;
   borderColor: string;
 }) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <View
@@ -234,7 +233,7 @@ const GetStartedFallback = ({
   t: Data['t'];
   onPress: () => void;
 }) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>

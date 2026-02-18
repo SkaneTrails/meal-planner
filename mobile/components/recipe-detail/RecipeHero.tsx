@@ -8,13 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import {
   PLACEHOLDER_BLURHASH,
   PLACEHOLDER_IMAGE,
@@ -46,7 +40,7 @@ export const RecipeHero = ({
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <Animated.View
       style={{

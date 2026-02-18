@@ -9,14 +9,7 @@ import {
 } from 'react-native';
 import { AnimatedPressable } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface CreateHouseholdModalProps {
   visible: boolean;
@@ -35,7 +28,7 @@ export const CreateHouseholdModal = ({
   onClose,
   isPending,
 }: CreateHouseholdModalProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -14,11 +14,9 @@ import { ScreenTitle } from '@/components/ScreenTitle';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
-  borderRadius,
   fontSize,
   layout,
   letterSpacing,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -147,7 +145,7 @@ const Header = ({
   t: TFn;
   onSettings: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
 
   return (
     <View
@@ -213,7 +211,7 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>

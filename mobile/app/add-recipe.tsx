@@ -28,13 +28,11 @@ import { showNotification } from '@/lib/alert';
 import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 import {
-  borderRadius,
   fontSize,
   fontWeight,
   layout,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -51,7 +49,7 @@ const SUPPORTED_SITES = [
 ];
 
 export default function AddRecipeScreen() {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const actions = useAddRecipeActions();
   const { settings } = useSettings();
   const aiEnabled = settings.aiEnabled;

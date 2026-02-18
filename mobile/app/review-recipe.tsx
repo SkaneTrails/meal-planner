@@ -25,7 +25,7 @@ import { ReviewVersionToggle } from '@/components/review-recipe/ReviewVersionTog
 import { showNotification } from '@/lib/alert';
 import { useCreateRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
-import { borderRadius, fontSize, layout, spacing, useTheme } from '@/lib/theme';
+import { fontSize, layout, spacing, useTheme } from '@/lib/theme';
 import type {
   DietLabel,
   MealLabel,
@@ -36,7 +36,7 @@ import type {
 type VersionTab = 'original' | 'enhanced';
 
 export default function ReviewRecipeScreen() {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams<{ preview: string }>();
   const { t } = useTranslation();

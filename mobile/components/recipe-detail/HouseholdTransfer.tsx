@@ -1,13 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
 interface HouseholdTransferProps {
@@ -25,7 +19,7 @@ export const HouseholdTransfer = ({
   t,
   onTransfer,
 }: HouseholdTransferProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View style={{ marginBottom: spacing.xl }}>
       <Text

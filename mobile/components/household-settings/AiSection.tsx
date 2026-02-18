@@ -2,14 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { RadioGroup, StepperControl } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdSettings, MincedMeatPreference } from '@/lib/types';
 import { EQUIPMENT_CATEGORIES } from './constants';
 
@@ -33,7 +26,7 @@ export const AiSection = ({
   onUpdateDietary,
   onToggleEquipment,
 }: AiSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   const meatPortions = Math.min(
@@ -256,7 +249,7 @@ const SelectedEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   if (equipment.length === 0) return null;
@@ -331,7 +324,7 @@ const AvailableEquipment = ({
   canEdit: boolean;
   onToggle: (key: string) => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (

@@ -9,13 +9,11 @@ import {
 } from 'react-native';
 import { IconCircle } from '@/components';
 import {
-  borderRadius,
   fontSize,
   fontWeight,
   iconSize,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -47,7 +45,7 @@ export const EnhancementReviewModal = ({
   onReview,
   onRequestClose,
 }: EnhancementReviewModalProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   return (
     <Modal
       visible={visible}
@@ -58,7 +56,16 @@ export const EnhancementReviewModal = ({
       <View
         style={[styles.backdrop, { backgroundColor: colors.overlay.backdrop }]}
       >
-        <View style={[styles.card, { backgroundColor: colors.white }]}>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.lg,
+              ...shadows.xl,
+            },
+          ]}
+        >
           {/* Header */}
           <View style={styles.header}>
             <IconCircle
@@ -101,7 +108,10 @@ export const EnhancementReviewModal = ({
                     key={index}
                     style={[
                       styles.changeItem,
-                      { backgroundColor: colors.successBg },
+                      {
+                        backgroundColor: colors.successBg,
+                        borderRadius: borderRadius.sm,
+                      },
                     ]}
                   >
                     <Ionicons
@@ -138,6 +148,7 @@ export const EnhancementReviewModal = ({
                 {
                   backgroundColor: colors.glass.light,
                   borderColor: colors.gray[300],
+                  borderRadius: borderRadius.md,
                   opacity: pressed || isReviewPending ? 0.7 : 1,
                 },
               ]}
@@ -155,6 +166,8 @@ export const EnhancementReviewModal = ({
                 styles.approveButton,
                 {
                   backgroundColor: colors.ai.primary,
+                  borderRadius: borderRadius.md,
+                  ...shadows.sm,
                   opacity: pressed || isReviewPending ? 0.7 : 1,
                 },
               ]}
@@ -186,12 +199,10 @@ const styles = StyleSheet.create({
     padding: spacing['2xl'],
   },
   card: {
-    borderRadius: borderRadius.lg,
     padding: spacing['2xl'],
     width: '100%',
     maxWidth: 400,
     maxHeight: '80%',
-    ...shadows.xl,
   },
   header: {
     flexDirection: 'row',
@@ -224,7 +235,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.sm,
     padding: spacing.md,
-    borderRadius: borderRadius.sm,
   },
   changeIcon: {
     marginRight: spacing.sm,
@@ -246,7 +256,6 @@ const styles = StyleSheet.create({
   rejectButton: {
     flex: 1,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
     alignItems: 'center',
     borderWidth: 1,
   },
@@ -257,9 +266,7 @@ const styles = StyleSheet.create({
   approveButton: {
     flex: 1,
     paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
     alignItems: 'center',
-    ...shadows.sm,
   },
   approveContent: {
     flexDirection: 'row',

@@ -3,14 +3,7 @@ import { FlatList, Pressable, TextInput, View } from 'react-native';
 import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
-import {
-  borderRadius,
-  fontSize,
-  layout,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, layout, spacing, useTheme } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 
@@ -19,7 +12,7 @@ interface LibraryTabProps {
 }
 
 export const LibraryTab = ({ state }: LibraryTabProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const {
     t,
     mode,

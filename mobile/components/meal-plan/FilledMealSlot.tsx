@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
 import { AnimatedPressable } from '@/components';
-import {
-  borderRadius,
-  circleStyle,
-  fontSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal } from '@/lib/utils/dateFormatter';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
@@ -41,7 +35,7 @@ export const FilledMealSlot = ({
   onRemove,
   onMealPress,
 }: FilledMealSlotProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius, circleStyle } = useTheme();
   const router = useRouter();
   const title = recipe?.title || customText || '';
   const imageUrl =

@@ -9,10 +9,10 @@ import { FullScreenLoading, GradientBackground } from '../components';
 import { GoogleLogo } from '../components/GoogleLogo';
 import { useAuth } from '../lib/hooks/use-auth';
 import { useTranslation } from '../lib/i18n';
-import { borderRadius, fontSize, spacing, useTheme } from '../lib/theme';
+import { fontSize, spacing, useTheme } from '../lib/theme';
 
 export default function SignInScreen() {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { user, loading, error, signIn, signOut } = useAuth();
   const { t } = useTranslation();
 

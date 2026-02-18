@@ -1,14 +1,7 @@
 import { Text, View } from 'react-native';
 import { RadioGroup, ThemeToggle } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  shadows,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { DairyPreference, HouseholdSettings } from '@/lib/types';
 
 interface DietarySectionProps {
@@ -25,7 +18,7 @@ export const DietarySection = ({
   canEdit,
   onUpdateDietary,
 }: DietarySectionProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   const dairyOptions: {

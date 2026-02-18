@@ -6,14 +6,12 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
-  borderRadius,
   dotSize,
   fontSize,
   fontWeight,
   layout,
   letterSpacing,
   lineHeight,
-  shadows,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -25,7 +23,7 @@ interface RandomTabProps {
 }
 
 export const RandomTab = ({ state }: RandomTabProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const {
     t,
     randomRecipe,
@@ -189,7 +187,7 @@ interface RandomRecipeCardProps {
 }
 
 const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
 
   return (
     <Pressable

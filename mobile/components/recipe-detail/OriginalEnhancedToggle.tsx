@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface OriginalEnhancedToggleProps {
   showOriginal: boolean;
@@ -14,7 +14,7 @@ export const OriginalEnhancedToggle = ({
   t,
   onToggle,
 }: OriginalEnhancedToggleProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={{

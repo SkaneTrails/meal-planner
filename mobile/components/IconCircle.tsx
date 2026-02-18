@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react';
 import { View, type ViewStyle } from 'react-native';
-import {
-  circleStyle,
-  type IconContainerSize,
-  iconContainer,
-} from '@/lib/theme';
+import { type IconContainerSize, iconContainer, useTheme } from '@/lib/theme';
 
 interface IconCircleProps {
   size: IconContainerSize | number;
@@ -14,6 +10,7 @@ interface IconCircleProps {
 }
 
 export const IconCircle = ({ size, bg, style, children }: IconCircleProps) => {
+  const { circleStyle } = useTheme();
   const dimension = typeof size === 'number' ? size : iconContainer[size];
 
   return (

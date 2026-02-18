@@ -21,13 +21,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import {
-  borderRadius,
-  fontSize,
-  fontWeight,
-  layout,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, layout, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 if (
@@ -38,7 +32,7 @@ if (
 }
 
 export default function RecipesScreen() {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
