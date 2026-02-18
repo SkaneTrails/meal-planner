@@ -52,6 +52,7 @@ export const InlineAddInput = ({
         returnKeyType="done"
       />
       <Pressable
+        testID="inline-add-button"
         onPress={onSubmit}
         disabled={!hasContent}
         style={({ pressed }) => ({

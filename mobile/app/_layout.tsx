@@ -149,15 +149,20 @@ const ThemeRoot = ({ children, envTerminal }: ThemeRootProps) => {
   const [isTerminal, setIsTerminal] = useState(envTerminal);
 
   useEffect(() => {
-    AsyncStorage.getItem(THEME_STORAGE_KEY).then((stored) => {
-      if (stored !== null) setIsTerminal(stored === 'terminal');
-    });
+    void AsyncStorage.getItem(THEME_STORAGE_KEY)
+      .then((stored) => {
+        if (stored !== null) setIsTerminal(stored === 'terminal');
+      })
+      .catch(() => {});
   }, []);
 
   const toggleTheme = useCallback(() => {
     setIsTerminal((prev) => {
       const next = !prev;
-      AsyncStorage.setItem(THEME_STORAGE_KEY, next ? 'terminal' : 'default');
+      void AsyncStorage.setItem(
+        THEME_STORAGE_KEY,
+        next ? 'terminal' : 'default',
+      ).catch(() => {});
       return next;
     });
   }, []);

@@ -42,7 +42,8 @@ describe('InlineAddInput', () => {
         placeholder="Add item..."
       />,
     );
-    expect(screen.getByPlaceholderText('Add item...')).toBeDefined();
+    fireEvent.click(screen.getByTestId('inline-add-button'));
+    expect(onSubmit).toHaveBeenCalled();
   });
 
   it('renders with custom placeholder color', () => {

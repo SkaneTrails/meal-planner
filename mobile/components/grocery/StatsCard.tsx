@@ -5,7 +5,6 @@ import {
   AnimatedPressable,
   Button,
   ButtonGroup,
-  TerminalDivider,
   TerminalFrame,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
