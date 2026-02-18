@@ -65,6 +65,8 @@ const en = {
       newest: 'Newest',
       oldest: 'Oldest',
       name: 'Name',
+      quickest: 'Quickest',
+      longest: 'Longest',
     },
     time: {
       prep: 'Prep',
@@ -135,6 +137,7 @@ const en = {
   recipes: {
     title: 'Recipe Library',
     collectionCount: '{{count}} recipes in your collection',
+    filteredCount: '{{count}} recipes',
     searchPlaceholder: 'Search recipes...',
     filterByDiet: 'Filter by Diet',
     filterByMealType: 'Filter by Meal Type',

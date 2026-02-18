@@ -117,7 +117,7 @@ export const FloatingTabBar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius } = useTheme();
 
   // Hide on auth screens or when not logged in
   if (!user || HIDDEN_ON.includes(pathname)) return null;
