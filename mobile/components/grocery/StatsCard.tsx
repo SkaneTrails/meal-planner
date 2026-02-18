@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { AnimatedPressable, Button, ButtonGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
@@ -25,71 +25,48 @@ const ActionButtons = ({
   onToggleClearMenu,
   onClearChecked,
 }: ActionButtonsProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   return (
-    <View style={{ flexDirection: 'row', gap: spacing['xs-sm'] }}>
-      <AnimatedPressable
+    <ButtonGroup gap={spacing['xs-sm']}>
+      <Button
+        variant="icon"
+        tone="ai"
+        icon={showAddItem ? 'close' : 'add'}
+        iconSize={18}
         onPress={onToggleAddItem}
+        label={showAddItem ? 'Close' : 'Add'}
+        color={colors.ai.primary}
+        textColor={colors.white}
         hoverScale={1.08}
         pressScale={0.95}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius['sm-md'],
-          backgroundColor: colors.ai.primary,
-        }}
-      >
-        <Ionicons
-          name={showAddItem ? 'close' : 'add'}
-          size={18}
-          color={colors.white}
-        />
-      </AnimatedPressable>
-
+      />
       {totalItems > 0 && (
-        <AnimatedPressable
+        <Button
+          variant="icon"
+          tone="subtle"
+          icon={showClearMenu ? 'close' : 'trash-outline'}
+          iconSize={16}
           onPress={onToggleClearMenu}
+          label={showClearMenu ? 'Close' : 'Clear'}
+          color={showClearMenu ? colors.surface.pressed : colors.surface.hover}
+          textColor={colors.content.icon}
           hoverScale={1.08}
           pressScale={0.95}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: spacing['sm-md'],
-            paddingVertical: spacing.sm,
-            borderRadius: borderRadius['sm-md'],
-            backgroundColor: showClearMenu
-              ? colors.surface.pressed
-              : colors.surface.hover,
-          }}
-        >
-          <Ionicons
-            name={showClearMenu ? 'close' : 'trash-outline'}
-            size={16}
-            color={colors.content.icon}
-          />
-        </AnimatedPressable>
+        />
       )}
-
       {checkedCount > 0 && (
-        <AnimatedPressable
+        <Button
+          variant="icon"
+          tone="subtle"
+          icon="refresh"
+          iconSize={16}
           onPress={onClearChecked}
+          label="Reset"
           hoverScale={1.08}
           pressScale={0.95}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: spacing['sm-md'],
-            paddingVertical: spacing.sm,
-            borderRadius: borderRadius['sm-md'],
-            backgroundColor: colors.surface.hover,
-          }}
-        >
-          <Ionicons name="refresh" size={16} color={colors.content.icon} />
-        </AnimatedPressable>
+        />
       )}
-    </View>
+    </ButtonGroup>
   );
 };
 

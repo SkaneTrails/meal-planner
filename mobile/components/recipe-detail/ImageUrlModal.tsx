@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { Modal, Text, TextInput, View } from 'react-native';
+import { Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -98,49 +99,23 @@ export const ImageUrlModal = ({
               gap: spacing.md,
             }}
           >
-            <Pressable
+            <Button
+              variant="text"
               onPress={onClose}
-              style={({ pressed }) => ({
-                paddingHorizontal: spacing.xl,
-                paddingVertical: spacing.sm,
-                borderRadius: borderRadius.sm,
-                backgroundColor: pressed ? colors.gray[100] : 'transparent',
-              })}
-            >
-              <Text
-                style={{
-                  fontSize: fontSize.xl,
-                  fontFamily: fonts.bodyMedium,
-                  color: colors.gray[500],
-                }}
-              >
-                {t('common.cancel')}
-              </Text>
-            </Pressable>
-            <Pressable
+              label={t('common.cancel')}
+              textColor={colors.gray[500]}
+            />
+            <Button
+              variant="primary"
               onPress={() => {
                 if (imageUrlInput.trim()) {
                   onSave(imageUrlInput.trim());
                 }
                 onClose();
               }}
-              style={({ pressed }) => ({
-                paddingHorizontal: spacing.xl,
-                paddingVertical: spacing.sm,
-                borderRadius: borderRadius.sm,
-                backgroundColor: pressed ? colors.primaryDark : colors.primary,
-              })}
-            >
-              <Text
-                style={{
-                  fontSize: fontSize.xl,
-                  fontFamily: fonts.bodyMedium,
-                  color: colors.white,
-                }}
-              >
-                {t('common.save')}
-              </Text>
-            </Pressable>
+              label={t('common.save')}
+              color={colors.primary}
+            />
           </View>
         </View>
       </View>

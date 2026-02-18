@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import type React from 'react';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, IconCircle } from '@/components';
+import { Button, ButtonGroup, IconCircle } from '@/components';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
@@ -56,65 +55,48 @@ export const EmptyMealSlot = ({
         </Text>
       </View>
 
-      {/* Actions: Primary (Library) + Secondary icon buttons */}
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: spacing['xs-sm'],
-        }}
+      {/* Actions: icon buttons in a row */}
+      <ButtonGroup
+        gap={spacing['xs-sm']}
+        style={{ flex: 1, justifyContent: 'flex-end' }}
       >
-        {/* Library action — same style as other icon buttons */}
-        <SecondaryActionButton
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="book-outline"
+          label="Book"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'library')}
+          style={{ width: 34, height: 34 }}
         />
-
-        {/* Other actions */}
-        <SecondaryActionButton
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="dice-outline"
+          label="Random"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'random')}
+          style={{ width: 34, height: 34 }}
         />
-        <SecondaryActionButton
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="copy-outline"
+          label="Copy"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'copy')}
+          style={{ width: 34, height: 34 }}
         />
-        <SecondaryActionButton
+        <Button
+          variant="icon"
+          tone="subtle"
           icon="create-outline"
+          label="Quick"
+          iconSize={17}
           onPress={() => onPress(date, mealType, 'quick')}
+          style={{ width: 34, height: 34 }}
         />
-      </View>
+      </ButtonGroup>
     </View>
-  );
-};
-
-interface SecondaryActionButtonProps {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  onPress: () => void;
-}
-
-const SecondaryActionButton = ({
-  icon,
-  onPress,
-}: SecondaryActionButtonProps) => {
-  const { colors, borderRadius } = useTheme();
-  return (
-    <AnimatedPressable
-      onPress={onPress}
-      hoverScale={1.1}
-      pressScale={0.9}
-      style={{
-        width: 34,
-        height: 34,
-        borderRadius: borderRadius['sm-md'],
-        backgroundColor: colors.surface.active,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Ionicons name={icon} size={17} color={colors.content.tertiary} />
-    </AnimatedPressable>
   );
 };

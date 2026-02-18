@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { BottomSheetModal, PrimaryButton } from '@/components';
+import { BottomSheetModal, Button } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
@@ -68,7 +68,8 @@ export const GrocerySelectionModal = ({
             borderTopColor: colors.surface.divider,
           }}
         >
-          <PrimaryButton
+          <Button
+            variant="primary"
             onPress={() => {
               hapticSuccess();
               onCreateGroceryList();
@@ -77,7 +78,6 @@ export const GrocerySelectionModal = ({
             label={t('mealPlan.createGroceryList', {
               count: selectedMeals.size,
             })}
-            pressedColor={colors.content.body}
           />
         </View>
       }
@@ -176,19 +176,15 @@ const GroceryWeekSelector = ({
         gap: spacing.sm,
       }}
     >
-      <Pressable
+      <Button
+        variant="icon"
         onPress={onPreviousWeek}
-        style={({ pressed }) => ({
-          ...circleStyle(iconContainer.xs),
-          backgroundColor: pressed
-            ? colors.button.primaryHover
-            : colors.button.primarySubtle,
-          alignItems: 'center',
-          justifyContent: 'center',
-        })}
-      >
-        <Ionicons name="chevron-back" size={20} color={colors.content.body} />
-      </Pressable>
+        icon="chevron-back"
+        iconSize={20}
+        textColor={colors.content.body}
+        color={colors.button.primarySubtle}
+        style={circleStyle(iconContainer.xs)}
+      />
       <View
         style={{
           paddingHorizontal: spacing.xl,
@@ -208,23 +204,15 @@ const GroceryWeekSelector = ({
           {formatWeekRange(weekDates, language)}
         </Text>
       </View>
-      <Pressable
+      <Button
+        variant="icon"
         onPress={onNextWeek}
-        style={({ pressed }) => ({
-          ...circleStyle(iconContainer.xs),
-          backgroundColor: pressed
-            ? colors.button.primaryHover
-            : colors.button.primarySubtle,
-          alignItems: 'center',
-          justifyContent: 'center',
-        })}
-      >
-        <Ionicons
-          name="chevron-forward"
-          size={20}
-          color={colors.content.body}
-        />
-      </Pressable>
+        icon="chevron-forward"
+        iconSize={20}
+        textColor={colors.content.body}
+        color={colors.button.primarySubtle}
+        style={circleStyle(iconContainer.xs)}
+      />
     </View>
   );
 };
@@ -321,19 +309,15 @@ const GroceryMealItem = ({
             alignSelf: 'flex-start',
           }}
         >
-          <Pressable
+          <Button
+            variant="icon"
             onPress={() => onChangeServings(mealKey, -1)}
-            style={({ pressed }) => ({
-              ...circleStyle(iconContainer.sm),
-              backgroundColor: pressed
-                ? colors.button.primaryDivider
-                : colors.glass.medium,
-              alignItems: 'center',
-              justifyContent: 'center',
-            })}
-          >
-            <Ionicons name="remove" size={18} color={colors.content.body} />
-          </Pressable>
+            icon="remove"
+            iconSize={18}
+            textColor={colors.content.body}
+            color={colors.glass.medium}
+            style={circleStyle(iconContainer.sm)}
+          />
           <View
             style={{
               paddingHorizontal: spacing['md-lg'],
@@ -357,19 +341,15 @@ const GroceryMealItem = ({
               {currentServings}
             </Text>
           </View>
-          <Pressable
+          <Button
+            variant="icon"
             onPress={() => onChangeServings(mealKey, 1)}
-            style={({ pressed }) => ({
-              ...circleStyle(iconContainer.sm),
-              backgroundColor: pressed
-                ? colors.button.primaryDivider
-                : colors.glass.medium,
-              alignItems: 'center',
-              justifyContent: 'center',
-            })}
-          >
-            <Ionicons name="add" size={18} color={colors.content.body} />
-          </Pressable>
+            icon="add"
+            iconSize={18}
+            textColor={colors.content.body}
+            color={colors.glass.medium}
+            style={circleStyle(iconContainer.sm)}
+          />
         </View>
       )}
     </View>

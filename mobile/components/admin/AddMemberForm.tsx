@@ -1,12 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
@@ -63,9 +56,13 @@ export const AddMemberForm = ({
         >
           {t('admin.addMember.title')}
         </Text>
-        <Pressable onPress={onClose}>
-          <Ionicons name="close" size={24} color={colors.content.secondary} />
-        </Pressable>
+        <Button
+          variant="icon"
+          onPress={onClose}
+          icon="close"
+          iconSize={24}
+          textColor={colors.content.secondary}
+        />
       </View>
 
       <TextInput
@@ -115,35 +112,14 @@ export const AddMemberForm = ({
         ))}
       </View>
 
-      <AnimatedPressable
+      <Button
+        variant="primary"
         onPress={onSubmit}
-        disabled={!newMemberEmail.trim() || isPending}
-        hoverScale={1.02}
-        pressScale={0.97}
-        disableAnimation={!newMemberEmail.trim() || isPending}
-        style={{
-          backgroundColor: !newMemberEmail.trim()
-            ? colors.button.disabled
-            : colors.content.heading,
-          padding: spacing.md,
-          borderRadius: borderRadius.lg,
-          alignItems: 'center',
-        }}
-      >
-        {isPending ? (
-          <ActivityIndicator color={colors.white} />
-        ) : (
-          <Text
-            style={{
-              color: colors.white,
-              fontSize: fontSize.md,
-              fontWeight: fontWeight.semibold,
-            }}
-          >
-            {t('admin.addMember.button')}
-          </Text>
-        )}
-      </AnimatedPressable>
+        disabled={!newMemberEmail.trim()}
+        isPending={isPending}
+        label={t('admin.addMember.button')}
+        color={colors.content.heading}
+      />
     </View>
   );
 };

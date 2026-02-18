@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Button, ButtonGroup } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { dotSize, fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
@@ -242,28 +243,22 @@ const NoteEditor = ({
           placeholderTextColor={colors.content.placeholderHex}
           autoFocus
         />
-        <Pressable onPress={onSave}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodySemibold,
-              color: colors.content.headingWarm,
-            }}
-          >
-            {t('mealPlan.notesSave')}
-          </Text>
-        </Pressable>
-        <Pressable onPress={onCancel}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.body,
-              color: colors.content.icon,
-            }}
-          >
-            {t('mealPlan.notesCancel')}
-          </Text>
-        </Pressable>
+        <ButtonGroup>
+          <Button
+            variant="text"
+            label={t('mealPlan.notesSave')}
+            size="md"
+            onPress={onSave}
+            textColor={colors.content.headingWarm}
+          />
+          <Button
+            variant="text"
+            tone="subtle"
+            label={t('mealPlan.notesCancel')}
+            size="md"
+            onPress={onCancel}
+          />
+        </ButtonGroup>
       </View>
       <ScrollView
         horizontal

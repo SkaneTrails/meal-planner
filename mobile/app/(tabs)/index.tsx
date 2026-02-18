@@ -3,9 +3,9 @@ import { Image } from 'expo-image';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import {
   AnimatedPressable,
+  Button,
   GradientBackground,
   HomeScreenSkeleton,
-  PrimaryButton,
 } from '@/components';
 import { AddRecipeModal } from '@/components/home/AddRecipeModal';
 import { InspirationSection } from '@/components/home/InspirationSection';
@@ -169,22 +169,19 @@ const Header = ({
             subtitle={t('home.subtitle')}
           />
         </View>
-        <AnimatedPressable
+        <Button
+          variant="icon"
           onPress={onSettings}
-          hoverScale={1.08}
-          pressScale={0.95}
+          icon="settings-outline"
+          iconSize={24}
           style={{
             width: 44,
             height: 44,
             borderRadius: borderRadius['lg-xl'],
             backgroundColor: colors.border,
-            alignItems: 'center',
-            justifyContent: 'center',
             ...shadows.sm,
           }}
-        >
-          <Ionicons name="settings-outline" size={24} color={colors.white} />
-        </AnimatedPressable>
+        />
       </View>
     </View>
   );
@@ -192,7 +189,8 @@ const Header = ({
 
 const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => (
   <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
-    <PrimaryButton
+    <Button
+      variant="primary"
       onPress={onPress}
       icon="add-circle-outline"
       label={t('home.addRecipe.title')}

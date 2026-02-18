@@ -46,6 +46,40 @@ export type CircleStyleFn = (size: number) => {
   readonly borderRadius: number;
 };
 
+/**
+ * Button display configuration — drives how `<Button>` renders.
+ *
+ * Components read these tokens instead of branching on theme name.
+ * Light theme: animated pressable with icon/text.
+ * Terminal theme: box-drawing segment `╡ LABEL ╞`.
+ */
+export interface ButtonDisplayConfig {
+  /** What content to render inside the button. */
+  display: 'icon' | 'text' | 'both';
+  /** Wrapper component: animated scale vs box-drawing segment. */
+  wrapper: 'animated' | 'segment';
+  /** Icon-only button shape (ignored when wrapper is segment). */
+  shape: 'circle' | 'rounded' | 'none';
+  /** Interaction style: scale animation or background color highlight. */
+  interaction: 'scale' | 'highlight';
+}
+
+/** Defaults for the light (standard) theme. */
+export const defaultButtonDisplay: ButtonDisplayConfig = {
+  display: 'both',
+  wrapper: 'animated',
+  shape: 'circle',
+  interaction: 'scale',
+};
+
+/** Terminal theme: everything rendered as box-drawing segments. */
+export const terminalButtonDisplay: ButtonDisplayConfig = {
+  display: 'text',
+  wrapper: 'segment',
+  shape: 'none',
+  interaction: 'highlight',
+};
+
 export interface ThemeValue {
   colors: ColorTokens;
   fonts: FontFamilyTokens;
@@ -54,6 +88,7 @@ export interface ThemeValue {
   borderRadius: BorderRadiusTokens;
   shadows: ShadowTokens;
   circleStyle: CircleStyleFn;
+  buttonDisplay: ButtonDisplayConfig;
   /** CRT overlay config — undefined for themes without the effect. */
   crt?: CRTConfig;
 }
@@ -79,6 +114,8 @@ interface ThemeProviderProps {
   radii?: BorderRadiusTokens;
   /** Optional shadow presets override. Defaults to the standard depth shadows. */
   shadowTokens?: ShadowTokens;
+  /** Optional button display config. Defaults to the standard animated wrapper. */
+  buttonConfig?: ButtonDisplayConfig;
   /** Optional CRT overlay configuration. Omit to disable the effect. */
   crt?: CRTConfig;
 }
@@ -90,6 +127,7 @@ export const ThemeProvider = ({
   fonts = defaultFontFamily,
   radii = defaultBorderRadius,
   shadowTokens = defaultShadows,
+  buttonConfig = defaultButtonDisplay,
   crt,
 }: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(() => {
@@ -106,9 +144,10 @@ export const ThemeProvider = ({
       borderRadius: radii,
       shadows: shadowTokens,
       circleStyle: themedCircleStyle,
+      buttonDisplay: buttonConfig,
       crt,
     };
-  }, [palette, fonts, radii, shadowTokens, crt]);
+  }, [palette, fonts, radii, shadowTokens, buttonConfig, crt]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

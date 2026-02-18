@@ -47,6 +47,7 @@ import {
 import {
   ThemeProvider,
   terminalBorderRadius,
+  terminalButtonDisplay,
   terminalColors,
   terminalCRT,
   terminalFontFamily,
@@ -184,6 +185,7 @@ export default function RootLayout() {
   const themeRadii = isTerminal ? terminalBorderRadius : undefined;
   const themeShadows = isTerminal ? terminalShadows : undefined;
   const themeCRT = isTerminal ? terminalCRT : undefined;
+  const themeButtonConfig = isTerminal ? terminalButtonDisplay : undefined;
 
   return (
     <ErrorBoundary>
@@ -192,6 +194,7 @@ export default function RootLayout() {
         fonts={themeFonts}
         radii={themeRadii}
         shadowTokens={themeShadows}
+        buttonConfig={themeButtonConfig}
         crt={themeCRT}
       >
         <AuthProvider>

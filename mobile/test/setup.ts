@@ -76,32 +76,22 @@ const FullScreenLoadingMock = ({ children, title, subtitle, icon }: any) => {
   );
 };
 
-const PrimaryButtonMock = ({ label, onPress, disabled, isPending, icon, loadingLabel }: any) => {
-  const { createElement } = require('react');
-  const displayLabel = isPending && loadingLabel ? loadingLabel : label;
-  return createElement('button', {
-    onClick: onPress,
-    disabled: disabled || isPending,
-    'data-testid': 'primary-button',
-  },
-    icon && createElement('span', { 'data-testid': 'primary-button-icon' }, isPending ? 'hourglass-outline' : icon),
-    displayLabel,
-  );
-};
-
 vi.mock('@/components/FullScreenLoading', () => ({
   FullScreenLoading: FullScreenLoadingMock,
-}));
-
-vi.mock('@/components/PrimaryButton', () => ({
-  PrimaryButton: PrimaryButtonMock,
 }));
 
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
-  PrimaryButton: PrimaryButtonMock,
+  Button: ({ label, onPress, icon, disabled, testID, ...props }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID }, label ?? icon ?? '');
+  },
+  ButtonGroup: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'button-group' }, children);
+  },
   AnimatedPressable: ({ children, onPress, ...props }: any) => {
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, ...props }, children);
@@ -458,6 +448,8 @@ vi.mock('@/lib/theme', () => {
     accent: 'Courier',
   },
   terminalBorderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
+  defaultButtonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+  terminalButtonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
   terminalShadows: {
     none: { boxShadow: '0px 0px 0px 0px transparent' },
     xs: { boxShadow: '0px 0px 0px 0px transparent' },
@@ -487,6 +479,7 @@ vi.mock('@/lib/theme', () => {
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     circleStyle: mockCircleStyle,
+    buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     crt: undefined,
   }),
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,

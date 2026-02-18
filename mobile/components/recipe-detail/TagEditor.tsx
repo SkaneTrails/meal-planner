@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
@@ -77,27 +78,19 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
             borderColor: colors.bgDark,
           }}
         />
-        <Pressable
+        <Button
+          variant="icon"
           onPress={handleAddTag}
           disabled={!newTag.trim()}
-          style={({ pressed }) => ({
-            backgroundColor: newTag.trim()
-              ? pressed
-                ? colors.primaryDark
-                : colors.primary
-              : colors.gray[200],
+          icon="add"
+          iconSize={24}
+          color={newTag.trim() ? colors.primary : colors.gray[200]}
+          textColor={newTag.trim() ? colors.white : colors.gray[400]}
+          style={{
             paddingHorizontal: spacing.lg,
             borderRadius: borderRadius.md,
-            alignItems: 'center',
-            justifyContent: 'center',
-          })}
-        >
-          <Ionicons
-            name="add"
-            size={24}
-            color={newTag.trim() ? colors.white : colors.gray[400]}
-          />
-        </Pressable>
+          }}
+        />
       </View>
 
       {editTags ? (

@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { FormField, GradientBackground, PrimaryButton } from '@/components';
+import { Button, FormField, GradientBackground } from '@/components';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   fontSize,
@@ -267,7 +267,8 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
           </View>
 
           {/* Create button */}
-          <PrimaryButton
+          <Button
+            variant="primary"
             onPress={handleCreateManual}
             disabled={!title.trim()}
             isPending={isPending}
