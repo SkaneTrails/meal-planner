@@ -1,7 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { IconCircle, SurfaceCard } from '@/components';
+import { Text } from 'react-native';
+import {
+  Chip,
+  ChipGroup,
+  IconCircle,
+  InlineAddInput,
+  SurfaceCard,
+} from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
@@ -84,42 +90,13 @@ export const ItemsAtHomeSection = ({
       )}
 
       {/* Add new item input */}
-      <SurfaceCard
-        padding={4}
-        style={{ flexDirection: 'row', marginBottom: spacing.md }}
-      >
-        <TextInput
-          style={{
-            flex: 1,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.sm,
-            fontSize: fontSize.md,
-            color: colors.content.body,
-          }}
-          placeholder={t('settings.addItemPlaceholder')}
-          placeholderTextColor={colors.content.subtitle}
-          value={newItem}
-          onChangeText={setNewItem}
-          onSubmitEditing={handleAddItem}
-          returnKeyType="done"
-        />
-        <Pressable
-          onPress={handleAddItem}
-          disabled={!newItem.trim()}
-          style={({ pressed }) => ({
-            backgroundColor: newItem.trim() ? colors.primary : colors.bgDark,
-            borderRadius: borderRadius.sm,
-            padding: spacing.sm,
-            opacity: pressed ? 0.8 : 1,
-          })}
-        >
-          <Ionicons
-            name="add"
-            size={20}
-            color={newItem.trim() ? colors.white : colors.text.inverse + '60'}
-          />
-        </Pressable>
-      </SurfaceCard>
+      <InlineAddInput
+        value={newItem}
+        onChangeText={setNewItem}
+        onSubmit={handleAddItem}
+        placeholder={t('settings.addItemPlaceholder')}
+        placeholderTextColor={colors.content.subtitle}
+      />
 
       {/* Suggested items */}
       {suggestedNotAdded.length > 0 && (
@@ -139,7 +116,7 @@ const CurrentItems = ({
   items: string[];
   onRemove: (item: string) => void;
 }) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -154,44 +131,17 @@ const CurrentItems = ({
       >
         {t('settings.yourItems', { count: items.length })}
       </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: spacing['xs-sm'],
-        }}
-      >
+      <ChipGroup gap={spacing['xs-sm']}>
         {items.map((item) => (
-          <Pressable
+          <Chip
             key={item}
+            label={item}
+            variant="filled"
+            capitalize
             onPress={() => onRemove(item)}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: pressed ? colors.errorBg : colors.bgDark,
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.xs,
-              borderRadius: borderRadius.full,
-              gap: 4,
-            })}
-          >
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                color: colors.content.body,
-                textTransform: 'capitalize',
-              }}
-            >
-              {item}
-            </Text>
-            <Ionicons
-              name="close-circle"
-              size={14}
-              color={colors.content.subtitle}
-            />
-          </Pressable>
+          />
         ))}
-      </View>
+      </ChipGroup>
     </SurfaceCard>
   );
 };
@@ -203,7 +153,7 @@ const SuggestedItems = ({
   items: string[];
   onAdd: (item: string) => void;
 }) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -218,42 +168,16 @@ const SuggestedItems = ({
       >
         {t('settings.suggestions')}
       </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: spacing['xs-sm'],
-        }}
-      >
+      <ChipGroup gap={spacing['xs-sm']}>
         {items.map((item) => (
-          <Pressable
+          <Chip
             key={item}
+            label={item}
+            variant="outline"
             onPress={() => onAdd(item)}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: pressed ? colors.successBg : 'transparent',
-              paddingHorizontal: spacing.sm,
-              paddingVertical: spacing.xs,
-              borderRadius: borderRadius.full,
-              borderWidth: 1,
-              borderColor: colors.surface.borderLight,
-              borderStyle: 'dashed',
-              gap: 4,
-            })}
-          >
-            <Ionicons name="add" size={14} color={colors.content.strong} />
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                color: colors.content.strong,
-              }}
-            >
-              {item}
-            </Text>
-          </Pressable>
+          />
         ))}
-      </View>
+      </ChipGroup>
     </SurfaceCard>
   );
 };

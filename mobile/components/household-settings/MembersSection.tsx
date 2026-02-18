@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Button } from '@/components';
+import { Button, Chip, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
@@ -35,21 +35,19 @@ const MemberCard = ({
   canEdit: boolean;
   onRemove: () => void;
 }) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <View
+    <SurfaceCard
+      radius="lg"
+      padding={spacing.md}
       style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.lg,
-        padding: spacing.md,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        ...shadows.sm,
       }}
     >
       <View style={{ flex: 1 }}>
@@ -85,26 +83,15 @@ const MemberCard = ({
             {member.email}
           </Text>
         )}
-        <View
-          style={{
-            backgroundColor: roleColor + '20',
-            paddingHorizontal: spacing.sm,
-            paddingVertical: 2,
-            borderRadius: borderRadius.full,
-            alignSelf: 'flex-start',
-            marginTop: spacing.xs,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: fontSize.xs,
-              color: roleColor,
-              fontWeight: fontWeight.medium,
-              textTransform: 'uppercase',
-            }}
-          >
-            {t(`labels.role.${member.role}` as 'labels.role.member')}
-          </Text>
+        <View style={{ alignSelf: 'flex-start', marginTop: spacing.xs }}>
+          <Chip
+            label={t(`labels.role.${member.role}` as 'labels.role.member')}
+            variant="display"
+            bg={roleColor + '20'}
+            color={roleColor}
+            uppercase
+            size="sm"
+          />
         </View>
       </View>
       {canEdit && !isSelf && (
@@ -117,7 +104,7 @@ const MemberCard = ({
           style={{ padding: spacing.sm }}
         />
       )}
-    </View>
+    </SurfaceCard>
   );
 };
 
@@ -137,18 +124,14 @@ const AddMemberForm = ({
   | 'onAddMember'
   | 'isAddPending'
 >) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.lg,
-        padding: spacing.md,
-        marginTop: spacing.sm,
-        ...shadows.sm,
-      }}
+    <SurfaceCard
+      radius="lg"
+      padding={spacing.md}
+      style={{ marginTop: spacing.sm }}
     >
       <View
         style={{
@@ -222,7 +205,7 @@ const AddMemberForm = ({
           }}
         />
       </View>
-    </View>
+    </SurfaceCard>
   );
 };
 
@@ -239,7 +222,7 @@ export const MembersSection = ({
   onRemoveMember,
   isAddPending,
 }: MembersSectionProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -263,19 +246,11 @@ export const MembersSection = ({
           ))}
         </View>
       ) : (
-        <View
-          style={{
-            backgroundColor: colors.glass.card,
-            borderRadius: borderRadius.lg,
-            padding: spacing.lg,
-            alignItems: 'center',
-            ...shadows.sm,
-          }}
-        >
+        <SurfaceCard radius="lg" style={{ alignItems: 'center' }}>
           <Text style={{ color: colors.content.strong, fontSize: fontSize.sm }}>
             {t('admin.noMembers')}
           </Text>
-        </View>
+        </SurfaceCard>
       )}
 
       {canEdit && (

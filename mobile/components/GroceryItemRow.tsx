@@ -56,7 +56,7 @@ export const GroceryItemRow = ({
   isActive,
   showReorder,
 }: GroceryItemRowProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 
@@ -74,11 +74,15 @@ export const GroceryItemRow = ({
         alignItems: 'center',
         padding: spacing['sm-md'],
         paddingVertical: spacing.md,
-        backgroundColor: isActive ? colors.white : colors.glass.solid,
+        backgroundColor: crt
+          ? colors.mealPlan.slotBg
+          : isActive
+            ? colors.white
+            : colors.glass.solid,
         borderRadius: borderRadius['sm-md'],
         marginBottom: spacing.sm,
-        opacity: checked ? 0.85 : 1,
-        ...shadows.card,
+        opacity: checked ? (crt ? 0.7 : 0.85) : 1,
+        ...(crt ? {} : shadows.card),
       }}
     >
       {showReorder && (
@@ -110,13 +114,21 @@ export const GroceryItemRow = ({
           style={{
             width: 22,
             height: 22,
-            borderRadius: borderRadius['xs-sm'],
-            borderWidth: 2,
+            borderRadius: crt ? 0 : borderRadius['xs-sm'],
+            borderWidth: crt ? 1 : 2,
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: spacing.md,
-            backgroundColor: checked ? colors.ai.primary : 'transparent',
-            borderColor: checked ? colors.ai.primary : colors.surface.border,
+            backgroundColor: checked
+              ? crt
+                ? colors.primary
+                : colors.ai.primary
+              : 'transparent',
+            borderColor: checked
+              ? crt
+                ? colors.primary
+                : colors.ai.primary
+              : colors.surface.border,
           }}
         >
           {checked && (
@@ -131,7 +143,11 @@ export const GroceryItemRow = ({
               fontFamily: fonts.bodyMedium,
               fontWeight: fontWeight.medium,
               textDecorationLine: checked ? 'line-through' : 'none',
-              color: checked ? colors.content.subtitle : colors.content.body,
+              color: checked
+                ? crt
+                  ? colors.content.placeholder
+                  : colors.content.subtitle
+                : colors.content.body,
             }}
           >
             {quantity ? `${quantity} ${item.name}` : item.name}
@@ -141,7 +157,11 @@ export const GroceryItemRow = ({
               style={{
                 fontSize: fontSize.base,
                 fontFamily: fonts.body,
-                color: colors.content.tertiary,
+                color: checked
+                  ? crt
+                    ? colors.content.placeholder
+                    : colors.content.subtitle
+                  : colors.content.tertiary,
                 marginTop: spacing['2xs'],
               }}
             >

@@ -168,6 +168,26 @@ Never use a surface token for text color or a content token for backgrounds — 
 - Platform-specific variants → put in theme with `Platform.select()`, not scattered in components
 - If unsure between two tokens → pick the closest and accept the 1-2px difference; consistency beats pixel-perfection
 
+**Component reuse — MANDATORY checklist before writing UI:**
+
+Before writing _any_ new visual element (card, header row, chip, toggle row, section, button, input row), run this checklist in order:
+
+1. **Can an existing shared component do this?** Check `components/` barrel exports first. If yes → use it.
+2. **Can an existing component be extended?** If it's close but missing a prop (e.g., optional icon, size variant), add the prop to the existing component rather than creating a new one — provided the change is cohesive and doesn't bloat the component.
+3. **Create a new shared component** only when (1) and (2) fail. Place in `components/`, export from barrel, add tests.
+4. **Never hand-roll** a pattern that a shared component already covers — even "just this once." Inline one-offs drift from the design system and break theme consistency.
+
+Violations are a **blocking review issue**, same as hardcoded colors.
+
+**All themes must render correctly:**
+
+The app supports multiple themes via `ThemeProvider`. New themes can be added or existing ones replaced at any time. Every new or modified component must work in **any theme**, not just the one you're looking at:
+
+- Use `useTheme()` for all visual values — colors, fonts, borderRadius, shadows, typography presets
+- Never assume specific token values (e.g., non-zero borderRadius, proportional fonts, presence of shadows). A theme may zero out radii, use monospace fonts, or remove shadows entirely
+- If a component needs conditional rendering, branch on **theme token values** (e.g., `borderRadius.md === 0`, `crt`, `buttonDisplay.wrapper`), never on a theme name string
+- When a theme token is `undefined`/absent, the component must still render — use sensible defaults
+
 **Shared visual patterns → reusable components:**
 
 - If 2+ screens use the same visual pattern (e.g., floating bar, glass card, gradient header), extract to `components/`

@@ -15,32 +15,55 @@ export const RecipeActionsFooter = ({
   t,
   onShowPlanModal,
 }: RecipeActionsFooterProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, borderRadius, crt } = useTheme();
+
+  const openUrl = () => {
+    try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
+        return;
+      }
+      Linking.openURL(url).catch(() => {
+        showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
+      });
+    } catch {
+      showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
+    }
+  };
+
+  if (crt) {
+    return (
+      <>
+        {url && (
+          <Button
+            variant="text"
+            onPress={openUrl}
+            icon="link"
+            iconSize={18}
+            label={t('recipe.viewSource')}
+            color={colors.mealPlan.slotBg}
+            textColor={colors.primary}
+            style={{
+              justifyContent: 'center',
+              paddingVertical: spacing.lg,
+              marginTop: spacing.sm,
+              borderRadius: borderRadius.md,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       {url && (
         <Button
           variant="text"
-          onPress={() => {
-            try {
-              const parsed = new URL(url);
-              if (!['http:', 'https:'].includes(parsed.protocol)) {
-                showNotification(
-                  t('common.error'),
-                  t('recipe.couldNotOpenUrl'),
-                );
-                return;
-              }
-              Linking.openURL(url).catch(() => {
-                showNotification(
-                  t('common.error'),
-                  t('recipe.couldNotOpenUrl'),
-                );
-              });
-            } catch {
-              showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
-            }
-          }}
+          onPress={openUrl}
           icon="link"
           iconSize={18}
           label={t('recipe.viewSource')}

@@ -4,7 +4,7 @@ import {
   AnimatedPressable,
   Button,
   IconCircle,
-  SectionHeader,
+  Section,
   SurfaceCard,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
@@ -28,17 +28,16 @@ export const AccountSection = ({
   displayName,
   onSignOut,
 }: AccountSectionProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="person-circle"
-        title={t('settings.account')}
-        subtitle={userEmail || 'Email unavailable'}
-      />
-
+    <Section
+      icon="person-circle"
+      title={t('settings.account')}
+      subtitle={userEmail || 'Email unavailable'}
+      spacing={spacing['2xl']}
+    >
       <SurfaceCard style={{ marginBottom: spacing.md }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <IconCircle
@@ -80,14 +79,10 @@ export const AccountSection = ({
         onPress={onSignOut}
         iconSize={20}
         style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
           justifyContent: 'center',
-          ...shadows.sm,
         }}
       />
-    </View>
+    </Section>
   );
 };
 
@@ -102,60 +97,58 @@ export const HouseholdSettingsLink = ({
   isLoading,
   onPress,
 }: HouseholdSettingsLinkProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View style={{ marginBottom: spacing['2xl'] }}>
-      <SectionHeader
-        icon="people"
-        title={t('settings.householdInfo')}
-        subtitle={t('settings.householdSettingsDesc')}
-      />
-
+    <Section
+      icon="people"
+      title={t('settings.householdInfo')}
+      subtitle={t('settings.householdSettingsDesc')}
+      spacing={spacing['2xl']}
+    >
       <AnimatedPressable
         onPress={onPress}
         disabled={isLoading || !householdId}
         hoverScale={1.02}
         pressScale={0.97}
         disableAnimation={isLoading || !householdId}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing.lg,
-          opacity: isLoading ? 0.6 : householdId ? 1 : 0.5,
-          ...shadows.sm,
-        }}
       >
-        <View style={{ flex: 1 }}>
-          <Text style={settingsTitleStyle}>
-            {t('settings.householdSettings')}
-          </Text>
-          <Text
-            style={{
-              ...settingsSubtitleStyle,
-              marginTop: 4,
-            }}
-          >
-            {isLoading
-              ? t('settings.loadingHousehold')
-              : householdId
-                ? t('settings.householdSettingsDesc')
-                : t('settings.noHousehold')}
-          </Text>
-        </View>
-        {isLoading ? (
-          <ActivityIndicator size="small" color={colors.content.strong} />
-        ) : (
-          <Ionicons
-            name="chevron-forward"
-            size={20}
-            color={colors.content.strong}
-          />
-        )}
+        <SurfaceCard
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            opacity: isLoading ? 0.6 : householdId ? 1 : 0.5,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={settingsTitleStyle}>
+              {t('settings.householdSettings')}
+            </Text>
+            <Text
+              style={{
+                ...settingsSubtitleStyle,
+                marginTop: 4,
+              }}
+            >
+              {isLoading
+                ? t('settings.loadingHousehold')
+                : householdId
+                  ? t('settings.householdSettingsDesc')
+                  : t('settings.noHousehold')}
+            </Text>
+          </View>
+          {isLoading ? (
+            <ActivityIndicator size="small" color={colors.content.strong} />
+          ) : (
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={colors.content.strong}
+            />
+          )}
+        </SurfaceCard>
       </AnimatedPressable>
-    </View>
+    </Section>
   );
 };

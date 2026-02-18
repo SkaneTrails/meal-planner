@@ -10,11 +10,11 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 import {
   FullScreenLoading,
   GradientBackground,
+  Section,
   ThemeToggle,
 } from '@/components';
 import {
   AiSection,
-  CollapsibleSection,
   DietarySection,
   GeneralSection,
   MembersSection,
@@ -112,10 +112,11 @@ export default function HouseholdSettingsScreen() {
           >
             {!form.canEdit && <ReadOnlyBanner />}
 
-            <CollapsibleSection
+            <Section
               icon="home"
               title={t('householdSettings.general.title')}
               subtitle={t('householdSettings.general.subtitle')}
+              collapsible
               expanded={expandedSections.has('general')}
               onToggle={() => toggleSection('general')}
             >
@@ -133,12 +134,13 @@ export default function HouseholdSettingsScreen() {
                 onUpdateServings={form.updateServings}
                 onUpdateIncludeBreakfast={form.updateIncludeBreakfast}
               />
-            </CollapsibleSection>
+            </Section>
 
-            <CollapsibleSection
+            <Section
               icon="people"
               title={t('settings.membersSection')}
               subtitle={t('settings.membersSectionDesc')}
+              collapsible
               expanded={expandedSections.has('members')}
               onToggle={() => toggleSection('members')}
             >
@@ -155,12 +157,13 @@ export default function HouseholdSettingsScreen() {
                 onRemoveMember={form.handleRemoveMember}
                 isAddPending={form.isAddPending}
               />
-            </CollapsibleSection>
+            </Section>
 
-            <CollapsibleSection
+            <Section
               icon="nutrition"
               title={t('householdSettings.dietary.title')}
               subtitle={t('householdSettings.dietary.subtitle')}
+              collapsible
               expanded={expandedSections.has('dietary')}
               onToggle={() => toggleSection('dietary')}
             >
@@ -169,12 +172,13 @@ export default function HouseholdSettingsScreen() {
                 canEdit={form.canEdit}
                 onUpdateDietary={form.updateDietary}
               />
-            </CollapsibleSection>
+            </Section>
 
-            <CollapsibleSection
+            <Section
               icon="sparkles"
               title={t('householdSettings.ai.title')}
               subtitle={t('householdSettings.ai.subtitle')}
+              collapsible
               expanded={
                 (form.settings.ai_features_enabled ?? true) &&
                 expandedSections.has('ai')
@@ -197,12 +201,13 @@ export default function HouseholdSettingsScreen() {
                 onUpdateDietary={form.updateDietary}
                 onToggleEquipment={form.toggleEquipment}
               />
-            </CollapsibleSection>
+            </Section>
 
-            <CollapsibleSection
+            <Section
               icon="cart"
               title={t('settings.itemsAtHome')}
               subtitle={t('settings.itemsAtHomeDesc')}
+              collapsible
               expanded={expandedSections.has('pantry')}
               onToggle={() => toggleSection('pantry')}
             >
@@ -211,12 +216,13 @@ export default function HouseholdSettingsScreen() {
                 onAddItem={addItemAtHome}
                 onRemoveItem={removeItemAtHome}
               />
-            </CollapsibleSection>
+            </Section>
 
-            <CollapsibleSection
+            <Section
               icon="document-text-outline"
               title={t('settings.noteSuggestions')}
               subtitle={t('settings.noteSuggestionsDesc')}
+              collapsible
               expanded={expandedSections.has('notes')}
               onToggle={() => toggleSection('notes')}
             >
@@ -226,12 +232,13 @@ export default function HouseholdSettingsScreen() {
                 onAdd={form.addNoteSuggestion}
                 onRemove={form.removeNoteSuggestion}
               />
-            </CollapsibleSection>
+            </Section>
 
-            <CollapsibleSection
+            <Section
               icon="language"
               title={t('settings.language')}
               subtitle={t('settings.languageDesc')}
+              collapsible
               expanded={expandedSections.has('language')}
               onToggle={() => toggleSection('language')}
             >
@@ -239,7 +246,7 @@ export default function HouseholdSettingsScreen() {
                 currentLanguage={settings.language}
                 onChangeLanguage={handleLanguageChange}
               />
-            </CollapsibleSection>
+            </Section>
           </ScrollView>
         </View>
       )}

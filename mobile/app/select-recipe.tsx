@@ -102,17 +102,17 @@ interface TabBarProps {
 }
 
 const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
       <View
         style={{
           flexDirection: 'row',
-          gap: 8,
-          backgroundColor: colors.surface.tint,
+          gap: crt ? 0 : 8,
+          backgroundColor: crt ? 'transparent' : colors.surface.tint,
           borderRadius: borderRadius.sm,
-          padding: 4,
+          padding: crt ? 0 : 4,
         }}
       >
         {tabs.map((tab) => (
@@ -122,19 +122,35 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
             style={({ pressed }) => ({
               flex: 1,
               paddingVertical: spacing['sm-md'],
-              borderRadius: borderRadius['sm-md'],
-              backgroundColor: activeTab === tab ? colors.white : 'transparent',
+              borderRadius: crt ? 0 : borderRadius['sm-md'],
+              backgroundColor: crt
+                ? activeTab === tab
+                  ? colors.mealPlan.slotBg
+                  : 'transparent'
+                : activeTab === tab
+                  ? colors.white
+                  : 'transparent',
               alignItems: 'center',
               transform: [{ scale: pressed ? 0.98 : 1 }],
-              ...(activeTab === tab ? shadows.card : shadows.none),
+              ...(crt
+                ? {
+                    borderBottomWidth: activeTab === tab ? 1 : 0,
+                    borderBottomColor: colors.primary,
+                  }
+                : activeTab === tab
+                  ? shadows.card
+                  : shadows.none),
             })}
           >
             <Text
               style={{
                 fontSize: fontSize.sm,
                 fontFamily: fonts.bodySemibold,
-                color:
-                  activeTab === tab
+                color: crt
+                  ? activeTab === tab
+                    ? colors.primary
+                    : colors.border
+                  : activeTab === tab
                     ? colors.content.heading
                     : colors.content.subtitle,
               }}

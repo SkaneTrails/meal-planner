@@ -6,7 +6,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
-import { EnhancingOverlay, GradientBackground } from '@/components';
+import {
+  EnhancingOverlay,
+  GradientBackground,
+  TerminalFabBar,
+} from '@/components';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
@@ -27,7 +31,7 @@ import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export default function RecipeDetailScreen() {
-  const { colors, circleStyle } = useTheme();
+  const { colors, circleStyle, crt } = useTheme();
   const HEADER_BUTTON_BG = colors.surface.overlayMedium;
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -135,12 +139,44 @@ export default function RecipeDetailScreen() {
     recipe.prep_time ||
     recipe.cook_time;
 
+  const recipeContentProps = {
+    recipe,
+    recipeId: id,
+    totalTime,
+    completedSteps,
+    showAiChanges,
+    showOriginal,
+    isOwned,
+    canEdit,
+    canCopy,
+    isCopying,
+    canEnhance,
+    isEnhancing,
+    aiEnabled: settings.aiEnabled,
+    needsEnhancementReview,
+    isReviewingEnhancement,
+    t,
+    onToggleStep: toggleStep,
+    onToggleAiChanges: () => setShowAiChanges(!showAiChanges),
+    onToggleOriginal: () => {
+      hapticSelection();
+      setShowOriginal(!showOriginal);
+      setCompletedSteps(new Set());
+    },
+    onOpenEditModal: () => setShowEditModal(true),
+    onShowPlanModal: () => setShowPlanModal(true),
+    onShare: handleShare,
+    onCopy: handleCopyRecipe,
+    onEnhance: handleEnhanceRecipe,
+    onReviewEnhancement: handleReviewEnhancement,
+  };
+
   return (
     <GradientBackground style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           title: '',
-          headerShown: true,
+          headerShown: !crt,
           headerStyle: { backgroundColor: 'transparent' },
           headerTransparent: true,
           headerTintColor: colors.white,
@@ -204,72 +240,110 @@ export default function RecipeDetailScreen() {
           onThumbDown={handleThumbDown}
         />
 
-        <MirroredBackground
-          source={require('@/assets/images/background2.png')}
-          tileCount={4}
-          style={{
-            borderTopLeftRadius: 32,
-            borderTopRightRadius: 32,
-            flex: 1,
-            width: '100%',
-            minWidth: '100%',
-            marginTop: -32,
-          }}
-          borderTopLeftRadius={32}
-          borderTopRightRadius={32}
-        >
-          {/* Warm grey overlay matching other screens */}
+        {crt ? (
           <View
             style={{
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: 'rgba(235, 232, 228, 0.94)',
+              backgroundColor: colors.bgBase,
+              flex: 1,
+              width: '100%',
+              minWidth: '100%',
+            }}
+          >
+            <View
+              style={[
+                {
+                  padding: spacing.xl,
+                  paddingBottom: layout.tabBar.contentBottomPadding,
+                },
+                layout.contentContainer,
+              ]}
+            >
+              <RecipeContent {...recipeContentProps} />
+            </View>
+          </View>
+        ) : (
+          <MirroredBackground
+            source={require('@/assets/images/background2.png')}
+            tileCount={4}
+            style={{
               borderTopLeftRadius: 32,
               borderTopRightRadius: 32,
+              flex: 1,
+              width: '100%',
+              minWidth: '100%',
+              marginTop: -32,
             }}
-          />
-          <View
-            style={[
-              {
-                padding: spacing.xl,
-                paddingBottom: layout.tabBar.contentBottomPadding,
-              },
-              layout.contentContainer,
-            ]}
+            borderTopLeftRadius={32}
+            borderTopRightRadius={32}
           >
-            <RecipeContent
-              recipe={recipe}
-              recipeId={id}
-              totalTime={totalTime}
-              completedSteps={completedSteps}
-              showAiChanges={showAiChanges}
-              showOriginal={showOriginal}
-              isOwned={isOwned}
-              canEdit={canEdit}
-              canCopy={canCopy}
-              isCopying={isCopying}
-              canEnhance={canEnhance}
-              isEnhancing={isEnhancing}
-              aiEnabled={settings.aiEnabled}
-              needsEnhancementReview={needsEnhancementReview}
-              isReviewingEnhancement={isReviewingEnhancement}
-              t={t}
-              onToggleStep={toggleStep}
-              onToggleAiChanges={() => setShowAiChanges(!showAiChanges)}
-              onToggleOriginal={() => {
-                hapticSelection();
-                setShowOriginal(!showOriginal);
-                setCompletedSteps(new Set());
+            <View
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: 'rgba(235, 232, 228, 0.94)',
+                borderTopLeftRadius: 32,
+                borderTopRightRadius: 32,
               }}
-              onOpenEditModal={() => setShowEditModal(true)}
-              onShowPlanModal={() => setShowPlanModal(true)}
-              onShare={handleShare}
-              onCopy={handleCopyRecipe}
-              onEnhance={handleEnhanceRecipe}
-              onReviewEnhancement={handleReviewEnhancement}
             />
-          </View>
-        </MirroredBackground>
+            <View
+              style={[
+                {
+                  padding: spacing.xl,
+                  paddingBottom: layout.tabBar.contentBottomPadding,
+                },
+                layout.contentContainer,
+              ]}
+            >
+              <RecipeContent {...recipeContentProps} />
+            </View>
+          </MirroredBackground>
+        )}
       </Animated.ScrollView>
+
+      {crt && (
+        <TerminalFabBar
+          slots={[
+            {
+              key: 'back',
+              label: '◀',
+              active: true,
+              onPress: () => router.replace('/(tabs)/recipes'),
+            },
+            {
+              key: 'camera',
+              label: '◉',
+              active: true,
+              onPress: handlePickImage,
+            },
+            {
+              key: 'thumbDown',
+              label: recipe.rating === -1 ? '▼' : '▽',
+              active: true,
+              onPress: handleThumbDown,
+            },
+            {
+              key: 'thumbUp',
+              label: recipe.rating === 1 ? '▲' : '△',
+              active: true,
+              onPress: handleThumbUp,
+            },
+            {
+              key: 'favorite',
+              label: isRecipeFavorite ? '♥' : '♡',
+              active: true,
+              onPress: () => {
+                hapticLight();
+                if (id) toggleFavorite(id);
+              },
+            },
+          ]}
+          style={{
+            position: 'absolute',
+            top: spacing.lg,
+            left: spacing.lg,
+            right: spacing.lg,
+          }}
+        />
+      )}
 
       <PlanMealModal
         visible={showPlanModal}

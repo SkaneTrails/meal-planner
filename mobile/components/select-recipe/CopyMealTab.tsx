@@ -22,7 +22,7 @@ interface CopyMealTabProps {
 }
 
 export const CopyMealTab = ({ state }: CopyMealTabProps) => {
-  const { colors, fonts, borderRadius, shadows, circleStyle } = useTheme();
+  const { colors, fonts, borderRadius, shadows, circleStyle, crt } = useTheme();
   const {
     t,
     bcp47,
@@ -41,33 +41,48 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
         paddingBottom: layout.tabBar.contentBottomPadding,
       }}
     >
-      {/* Header with sage accent */}
-      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
-        <IconCircle
-          size="lg"
-          bg={colors.ai.light}
-          style={{ marginBottom: spacing.sm }}
-        >
-          <Ionicons name="copy" size={24} color={colors.ai.primary} />
-        </IconCircle>
-        <Text
-          style={{
-            fontSize: fontSize['2xl'],
-            fontWeight: fontWeight.bold,
-            color: colors.text.inverse,
-            textAlign: 'center',
-            letterSpacing: letterSpacing.snug,
-          }}
-        >
-          {t('selectRecipe.copy.title')}
-        </Text>
-        <View
-          style={{
-            ...accentUnderlineStyle,
-            marginTop: spacing.sm,
-          }}
-        />
-      </View>
+      {/* Header */}
+      {crt ? (
+        <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+          <Text
+            style={{
+              fontSize: fontSize['2xl'],
+              fontFamily: fonts.bodySemibold,
+              color: colors.primary,
+              textAlign: 'center',
+            }}
+          >
+            {t('selectRecipe.copy.title')}
+          </Text>
+        </View>
+      ) : (
+        <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+          <IconCircle
+            size="lg"
+            bg={colors.ai.light}
+            style={{ marginBottom: spacing.sm }}
+          >
+            <Ionicons name="copy" size={24} color={colors.ai.primary} />
+          </IconCircle>
+          <Text
+            style={{
+              fontSize: fontSize['2xl'],
+              fontWeight: fontWeight.bold,
+              color: colors.text.inverse,
+              textAlign: 'center',
+              letterSpacing: letterSpacing.snug,
+            }}
+          >
+            {t('selectRecipe.copy.title')}
+          </Text>
+          <View
+            style={{
+              ...accentUnderlineStyle,
+              marginTop: spacing.sm,
+            }}
+          />
+        </View>
+      )}
 
       {/* Week selector */}
       <View
@@ -84,8 +99,8 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
           icon="chevron-back"
           iconSize={20}
-          textColor={colors.text.inverse}
-          color={colors.glass.card}
+          textColor={crt ? colors.primary : colors.text.inverse}
+          color={crt ? colors.mealPlan.slotBg : colors.glass.card}
           style={{
             ...circleStyle(iconContainer.xs),
           }}
@@ -94,7 +109,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           style={{
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.sm,
-            backgroundColor: colors.glass.card,
+            backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.card,
             borderRadius: borderRadius.sm,
           }}
         >
@@ -102,7 +117,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
             style={{
               fontSize: fontSize.md,
               fontFamily: fonts.bodySemibold,
-              color: colors.text.inverse,
+              color: crt ? colors.primary : colors.text.inverse,
               textAlign: 'center',
             }}
           >
@@ -122,8 +137,8 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
           icon="chevron-forward"
           iconSize={20}
-          textColor={colors.text.inverse}
-          color={colors.glass.card}
+          textColor={crt ? colors.primary : colors.text.inverse}
+          color={crt ? colors.mealPlan.slotBg : colors.glass.card}
           style={{
             ...circleStyle(iconContainer.xs),
           }}
@@ -145,21 +160,25 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: pressed
-                ? colors.glass.medium
-                : colors.glass.card,
+              backgroundColor: crt
+                ? pressed
+                  ? colors.surface.pressed
+                  : colors.mealPlan.slotBg
+                : pressed
+                  ? colors.glass.medium
+                  : colors.glass.card,
               borderRadius: borderRadius.sm,
               padding: spacing.lg,
               marginBottom: spacing.sm,
-              ...shadows.sm,
+              ...(crt ? {} : shadows.sm),
             })}
           >
             <View style={{ flex: 1 }}>
               <Text
                 style={{
                   fontSize: fontSize.lg,
-                  fontWeight: fontWeight.semibold,
-                  color: colors.text.inverse,
+                  fontFamily: fonts.bodySemibold,
+                  color: crt ? colors.primary : colors.text.inverse,
                 }}
               >
                 {meal.recipe?.title || meal.customText}
@@ -167,21 +186,34 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
               <Text
                 style={{
                   fontSize: fontSize.md,
-                  color: colors.gray[600],
+                  fontFamily: fonts.body,
+                  color: crt ? colors.content.tertiary : colors.gray[600],
                   marginTop: spacing.xs,
                 }}
               >
-                {formatMealDate(meal.date)} ·{' '}
+                {formatMealDate(meal.date)} \u00B7{' '}
                 {MEAL_TYPE_LABELS[meal.mealType as MealType] || meal.mealType}
               </Text>
             </View>
-            <IconCircle size="md" bg={colors.glass.light}>
-              <Ionicons
-                name="copy-outline"
-                size={18}
-                color={colors.text.inverse}
-              />
-            </IconCircle>
+            {crt ? (
+              <Text
+                style={{
+                  fontFamily: fonts.body,
+                  fontSize: fontSize.md,
+                  color: colors.border,
+                }}
+              >
+                {'\u25B6'}
+              </Text>
+            ) : (
+              <IconCircle size="md" bg={colors.glass.light}>
+                <Ionicons
+                  name="copy-outline"
+                  size={18}
+                  color={colors.text.inverse}
+                />
+              </IconCircle>
+            )}
           </Pressable>
         ))
       )}

@@ -154,15 +154,15 @@ describe('Button — display config', () => {
     expect(screen.queryByText('Add')).toBeNull();
   });
 
-  it('icon variant shows label when display is "text" (no icon visible)', () => {
+  it('icon variant always shows icon even when display is "text"', () => {
     useThemeSpy.mockReturnValue({
       ...lightTheme(),
       buttonDisplay: { display: 'text', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     });
 
     render(<Button variant="icon" icon="add" label="Add" onPress={() => {}} />);
-    // In text-only mode, icon variant falls back to label
-    expect(screen.getByText('Add')).toBeTruthy();
+    // Icon variant overrides theme — icon always visible, label hidden
+    expect(screen.queryByText('Add')).toBeNull();
   });
 });
 
@@ -204,10 +204,11 @@ describe('Button — terminal segment', () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
-  it('defaults to segment for all variants when wrapper is "segment"', () => {
-    // Even icon variant defaults to segment when wrapper='segment'
-    render(<Button variant="icon" icon="close" onPress={() => {}} />);
-    expect(screen.getByText(/╡ CLOSE ╞/)).toBeTruthy();
+  it('icon variant skips segment — renders icon instead of text', () => {
+    // Icon-variant buttons always render their icon, never as segment text
+    render(<Button variant="icon" icon="close" label="Close" onPress={() => {}} />);
+    expect(screen.queryByText(/╡ CLOSE ╞/)).toBeNull();
+    expect(screen.queryByText('Close')).toBeNull();
   });
 
   it('can opt out of segment with segment={false}', () => {

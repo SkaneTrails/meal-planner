@@ -6,6 +6,8 @@ import {
   Button,
   GradientBackground,
   HomeScreenSkeleton,
+  TerminalFabBar,
+  TerminalFrame,
 } from '@/components';
 import { AddRecipeModal } from '@/components/home/AddRecipeModal';
 import { InspirationSection } from '@/components/home/InspirationSection';
@@ -145,7 +147,7 @@ const Header = ({
   t: TFn;
   onSettings: () => void;
 }) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius, shadows, crt } = useTheme();
 
   return (
     <View
@@ -169,34 +171,80 @@ const Header = ({
             subtitle={t('home.subtitle')}
           />
         </View>
-        <Button
-          variant="icon"
-          onPress={onSettings}
-          icon="settings-outline"
-          iconSize={24}
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: borderRadius['lg-xl'],
-            backgroundColor: colors.border,
-            ...shadows.sm,
-          }}
-        />
+        {crt ? (
+          <TerminalFabBar
+            slots={[
+              {
+                key: 'settings',
+                label: '\u2699',
+                active: true,
+                onPress: onSettings,
+              },
+            ]}
+          />
+        ) : (
+          <Button
+            variant="icon"
+            onPress={onSettings}
+            icon="settings-outline"
+            iconSize={24}
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: borderRadius['lg-xl'],
+              backgroundColor: colors.border,
+              ...shadows.sm,
+            }}
+          />
+        )}
       </View>
     </View>
   );
 };
 
-const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => (
-  <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
-    <Button
-      variant="primary"
-      onPress={onPress}
-      icon="add-circle-outline"
-      label={t('home.addRecipe.title')}
-    />
-  </View>
-);
+const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => {
+  const { crt, colors, fonts } = useTheme();
+
+  if (crt) {
+    return (
+      <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
+        <TerminalFrame variant="single">
+          <AnimatedPressable
+            onPress={onPress}
+            hoverScale={1.01}
+            pressScale={0.97}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: spacing.sm,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontFamily: fonts.bodySemibold,
+                color: colors.primary,
+              }}
+            >
+              + {t('home.addRecipe.title').toUpperCase()}
+            </Text>
+          </AnimatedPressable>
+        </TerminalFrame>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
+      <Button
+        variant="primary"
+        onPress={onPress}
+        icon="add-circle-outline"
+        label={t('home.addRecipe.title')}
+      />
+    </View>
+  );
+};
 
 type NextMealType = ReturnType<typeof useHomeScreenData>['nextMeal'];
 
@@ -209,7 +257,110 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
+
+  const mealTimeLabel = nextMeal
+    ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
+    : t('home.nextUp.noMealPlanned');
+
+  const content = (
+    <AnimatedPressable
+      onPress={onPress}
+      hoverScale={1.01}
+      pressScale={0.99}
+      style={{
+        backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.card,
+        borderRadius: crt ? 0 : borderRadius.md,
+        padding: spacing['md-lg'],
+        flexDirection: 'row',
+        alignItems: 'center',
+        ...(!crt && {
+          borderWidth: 1,
+          borderColor: colors.glass.border,
+        }),
+      }}
+    >
+      <Image
+        source={nextMeal?.imageUrl ? { uri: nextMeal.imageUrl } : HOMEPAGE_HERO}
+        style={{
+          width: 72,
+          height: 72,
+          borderRadius: crt ? 0 : borderRadius.md,
+        }}
+        contentFit="cover"
+        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+        transition={200}
+      />
+      <View style={{ flex: 1, marginLeft: spacing['md-lg'] }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: spacing['xs-sm'],
+          }}
+        >
+          {!crt && nextMeal && !nextMeal.isTomorrow && (
+            <View
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: borderRadius['2xs'],
+                backgroundColor: colors.ai.primary,
+                marginRight: spacing['xs-sm'],
+              }}
+            />
+          )}
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              color:
+                nextMeal && !nextMeal.isTomorrow
+                  ? colors.content.body
+                  : colors.content.secondary,
+              fontFamily:
+                nextMeal && !nextMeal.isTomorrow
+                  ? fonts.bodySemibold
+                  : fonts.body,
+              textTransform: 'uppercase',
+              letterSpacing: letterSpacing.wide,
+            }}
+          >
+            {mealTimeLabel}
+          </Text>
+        </View>
+        <Text
+          style={{
+            fontSize: fontSize.xl,
+            fontFamily: fonts.bodySemibold,
+            color: colors.content.body,
+          }}
+          numberOfLines={2}
+        >
+          {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
+        </Text>
+      </View>
+      {!crt && (
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.content.secondary}
+        />
+      )}
+    </AnimatedPressable>
+  );
+
+  if (crt) {
+    return (
+      <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
+        <TerminalFrame
+          label={t('home.nextUp.title').toUpperCase()}
+          variant="single"
+        >
+          {content}
+        </TerminalFrame>
+      </View>
+    );
+  }
 
   return (
     <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
@@ -224,86 +375,7 @@ const NextMealCard = ({
       >
         {t('home.nextUp.title')}
       </Text>
-
-      <AnimatedPressable
-        onPress={onPress}
-        hoverScale={1.01}
-        pressScale={0.99}
-        style={{
-          backgroundColor: colors.glass.card,
-          borderRadius: borderRadius.md,
-          padding: spacing['md-lg'],
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderWidth: 1,
-          borderColor: colors.glass.border,
-        }}
-      >
-        <Image
-          source={
-            nextMeal?.imageUrl ? { uri: nextMeal.imageUrl } : HOMEPAGE_HERO
-          }
-          style={{ width: 72, height: 72, borderRadius: borderRadius.md }}
-          contentFit="cover"
-          placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
-          transition={200}
-        />
-        <View style={{ flex: 1, marginLeft: spacing['md-lg'] }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: spacing['xs-sm'],
-            }}
-          >
-            {nextMeal && !nextMeal.isTomorrow && (
-              <View
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: borderRadius['2xs'],
-                  backgroundColor: colors.ai.primary,
-                  marginRight: spacing['xs-sm'],
-                }}
-              />
-            )}
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                color:
-                  nextMeal && !nextMeal.isTomorrow
-                    ? colors.content.body
-                    : colors.content.secondary,
-                fontFamily:
-                  nextMeal && !nextMeal.isTomorrow
-                    ? fonts.bodySemibold
-                    : fonts.body,
-                textTransform: 'uppercase',
-                letterSpacing: letterSpacing.wide,
-              }}
-            >
-              {nextMeal
-                ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
-                : t('home.nextUp.noMealPlanned')}
-            </Text>
-          </View>
-          <Text
-            style={{
-              fontSize: fontSize.xl,
-              fontFamily: fonts.bodySemibold,
-              color: colors.content.body,
-            }}
-            numberOfLines={2}
-          >
-            {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
-          </Text>
-        </View>
-        <Ionicons
-          name="chevron-forward"
-          size={20}
-          color={colors.content.secondary}
-        />
-      </AnimatedPressable>
+      {content}
     </View>
   );
 };

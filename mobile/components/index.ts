@@ -14,6 +14,9 @@ export type {
 } from './Button';
 export { Button } from './Button';
 export { ButtonGroup } from './ButtonGroup';
+export type { ChipProps } from './Chip';
+export { Chip } from './Chip';
+export { ChipGroup } from './ChipGroup';
 export { ChipPicker } from './ChipPicker';
 export { CRTOverlay } from './CRTOverlay';
 export { EmptyState } from './EmptyState';
@@ -27,11 +30,15 @@ export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow } from './GroceryItemRow';
 export { GroceryListView } from './GroceryListView';
 export { IconCircle } from './IconCircle';
+export { InlineAddInput } from './InlineAddInput';
 export { DayColumn, MealCell } from './MealGrid';
 export { RadioGroup } from './RadioGroup';
 export { RecipeCard } from './RecipeCard';
 export { ScreenTitle } from './ScreenTitle';
-export { SectionHeader } from './SectionHeader';
+export type { SectionProps } from './Section';
+export { Section } from './Section';
+export { SectionLabel } from './SectionLabel';
+export { SettingToggleRow } from './SettingToggleRow';
 export {
   GroceryItemSkeleton,
   GroceryListSkeleton,

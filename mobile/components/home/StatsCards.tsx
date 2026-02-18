@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { AnimatedPressable, TerminalFrame } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
@@ -23,8 +23,66 @@ export const StatsCards = ({
   groceryItemsCount,
   t,
 }: StatsCardsProps) => {
-  const { colors } = useTheme();
+  const { colors, crt } = useTheme();
   const router = useRouter();
+
+  const statCards = [
+    <StatCard
+      key="recipes"
+      icon="book-outline"
+      value={recipesCount}
+      label={t('home.stats.recipes')}
+      iconColor={colors.content.secondary}
+      onPress={() => router.push('/recipes')}
+    />,
+    <StatCard
+      key="planned"
+      icon="calendar-outline"
+      value={`${plannedMealsPercentage}%`}
+      subtitle={`${plannedMealsCount}/${WEEKLY_TRACKABLE_MEALS}`}
+      label={t('home.stats.planned')}
+      iconColor={colors.content.secondary}
+      onPress={() => router.push('/meal-plan')}
+    />,
+    <StatCard
+      key="grocery"
+      icon="cart-outline"
+      value={groceryItemsCount}
+      label={t('home.stats.toBuy')}
+      iconColor={colors.content.secondary}
+      onPress={() => router.push('/grocery')}
+    />,
+  ];
+
+  if (crt) {
+    return (
+      <View
+        style={{
+          paddingHorizontal: spacing.lg,
+          marginBottom: spacing.lg,
+        }}
+      >
+        <TerminalFrame variant="single">
+          <View style={{ flexDirection: 'row' }}>
+            {statCards.map((card, i) => (
+              <View key={i} style={{ flex: 1, flexDirection: 'row' }}>
+                {card}
+                {i < statCards.length - 1 && (
+                  <View
+                    style={{
+                      width: 1,
+                      backgroundColor: colors.primary,
+                      opacity: 0.3,
+                    }}
+                  />
+                )}
+              </View>
+            ))}
+          </View>
+        </TerminalFrame>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -35,28 +93,7 @@ export const StatsCards = ({
         marginBottom: spacing.lg,
       }}
     >
-      <StatCard
-        icon="book-outline"
-        value={recipesCount}
-        label={t('home.stats.recipes')}
-        iconColor={colors.content.secondary}
-        onPress={() => router.push('/recipes')}
-      />
-      <StatCard
-        icon="calendar-outline"
-        value={`${plannedMealsPercentage}%`}
-        subtitle={`${plannedMealsCount}/${WEEKLY_TRACKABLE_MEALS}`}
-        label={t('home.stats.planned')}
-        iconColor={colors.content.secondary}
-        onPress={() => router.push('/meal-plan')}
-      />
-      <StatCard
-        icon="cart-outline"
-        value={groceryItemsCount}
-        label={t('home.stats.toBuy')}
-        iconColor={colors.content.secondary}
-        onPress={() => router.push('/grocery')}
-      />
+      {statCards}
     </View>
   );
 };
@@ -78,7 +115,7 @@ const StatCard = ({
   iconColor,
   onPress,
 }: StatCardProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
 
   return (
     <AnimatedPressable
@@ -87,20 +124,24 @@ const StatCard = ({
       pressScale={0.97}
       style={{
         flex: 1,
-        backgroundColor: colors.glass.solid,
-        borderRadius: borderRadius.md,
+        backgroundColor: crt ? 'transparent' : colors.glass.solid,
+        borderRadius: crt ? 0 : borderRadius.md,
         padding: 12,
-        borderWidth: 1,
-        borderColor: colors.glass.border,
-        ...shadows.sm,
+        ...(!crt && {
+          borderWidth: 1,
+          borderColor: colors.glass.border,
+          ...shadows.sm,
+        }),
       }}
     >
-      <Ionicons
-        name={icon}
-        size={18}
-        color={iconColor}
-        style={{ marginBottom: 8 }}
-      />
+      {!crt && (
+        <Ionicons
+          name={icon}
+          size={18}
+          color={iconColor}
+          style={{ marginBottom: 8 }}
+        />
+      )}
       <Text
         style={{
           fontSize: fontSize['3xl'],
@@ -124,6 +165,7 @@ const StatCard = ({
       <Text
         style={{
           fontSize: fontSize.xs,
+          fontFamily: fonts.body,
           color: colors.content.secondary,
           letterSpacing: letterSpacing.wide,
           textTransform: 'uppercase',

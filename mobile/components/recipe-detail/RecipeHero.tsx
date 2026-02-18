@@ -40,7 +40,7 @@ export const RecipeHero = ({
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, crt } = useTheme();
   return (
     <Animated.View
       style={{
@@ -73,72 +73,76 @@ export const RecipeHero = ({
         transition={400}
       />
 
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.7)']}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          paddingTop: Math.round((headerHeight * 2) / 7),
-          paddingBottom: spacing['4xl'] + spacing.sm,
-          paddingHorizontal: spacing.xl,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-          }}
-        >
-          <Text
+      {!crt && (
+        <>
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.7)']}
             style={{
-              fontSize: fontSize['4xl'],
-              fontFamily: fonts.display,
-              color: colors.white,
-              letterSpacing: letterSpacing.tight,
-              flex: 1,
-              marginRight: spacing.md,
-              textShadowColor: colors.overlay.backdrop,
-              textShadowOffset: { width: 1, height: 2 },
-              textShadowRadius: 4,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              paddingTop: Math.round((headerHeight * 2) / 7),
+              paddingBottom: spacing['4xl'] + spacing.sm,
+              paddingHorizontal: spacing.xl,
             }}
           >
-            {title}
-          </Text>
-          <ThumbRating
-            rating={rating}
-            hidden={hidden}
-            onThumbUp={onThumbUp}
-            onThumbDown={onThumbDown}
-            size={24}
-          />
-        </View>
-      </LinearGradient>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: fontSize['4xl'],
+                  fontFamily: fonts.display,
+                  color: colors.white,
+                  letterSpacing: letterSpacing.tight,
+                  flex: 1,
+                  marginRight: spacing.md,
+                  textShadowColor: colors.overlay.backdrop,
+                  textShadowOffset: { width: 1, height: 2 },
+                  textShadowRadius: 4,
+                }}
+              >
+                {title}
+              </Text>
+              <ThumbRating
+                rating={rating}
+                hidden={hidden}
+                onThumbUp={onThumbUp}
+                onThumbDown={onThumbDown}
+                size={24}
+              />
+            </View>
+          </LinearGradient>
 
-      <Pressable
-        onPress={onPickImage}
-        style={({ pressed }) => ({
-          position: 'absolute',
-          top: 60,
-          right: spacing.lg,
-          backgroundColor: pressed
-            ? colors.glass.buttonPressed
-            : colors.glass.button,
-          borderRadius: borderRadius.xl,
-          width: 44,
-          height: 44,
-          alignItems: 'center',
-          justifyContent: 'center',
-        })}
-      >
-        {isUpdatingImage ? (
-          <ActivityIndicator size="small" color={colors.white} />
-        ) : (
-          <Ionicons name="camera" size={20} color={colors.white} />
-        )}
-      </Pressable>
+          <Pressable
+            onPress={onPickImage}
+            style={({ pressed }) => ({
+              position: 'absolute',
+              top: 60,
+              right: spacing.lg,
+              backgroundColor: pressed
+                ? colors.glass.buttonPressed
+                : colors.glass.button,
+              borderRadius: borderRadius.xl,
+              width: 44,
+              height: 44,
+              alignItems: 'center',
+              justifyContent: 'center',
+            })}
+          >
+            {isUpdatingImage ? (
+              <ActivityIndicator size="small" color={colors.white} />
+            ) : (
+              <Ionicons name="camera" size={20} color={colors.white} />
+            )}
+          </Pressable>
+        </>
+      )}
     </Animated.View>
   );
 };

@@ -39,6 +39,14 @@ interface TerminalFrameProps {
   children: React.ReactNode;
   /** Optional label rendered in the top border (left). */
   label?: string;
+  /** Optional label rendered in the top border (right), static text. */
+  rightLabel?: string;
+  /** When true, renders rightLabel in dim border color instead of bright label color. */
+  rightLabelDimmed?: boolean;
+  /** Optional label rendered in the bottom border (left). */
+  bottomLabel?: string;
+  /** Optional label rendered in the bottom border (right), static text. */
+  bottomRightLabel?: string;
   /** Optional segments rendered in the top border (right), each independently pressable. */
   rightSegments?: FrameSegment[];
   /** Additional styles applied to the outer wrapper. */
@@ -65,6 +73,10 @@ const SINGLE = {
 export const TerminalFrame = ({
   children,
   label,
+  rightLabel,
+  rightLabelDimmed,
+  bottomLabel,
+  bottomRightLabel,
   rightSegments,
   style,
   padding = spacing.md,
@@ -242,19 +254,15 @@ export const TerminalFrame = ({
     );
   }
 
-  // ── Top border ─────────────────────────────────────────────────────
-  const topBorder = label ? (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={charStyle} selectable={false}>
-        {B.tl}
-        {B.h}
-      </Text>
+  // ── Helper: renders ┤ LABEL ├ fragment for border labels ────────────
+  const labelFragment = (text: string, dimmed = false) => (
+    <>
       <Text style={charStyle} selectable={false}>
         {B.labelL}
       </Text>
       <Text
         style={{
-          color: labelColor,
+          color: dimmed ? borderColor : labelColor,
           fontFamily: fonts.bodySemibold,
           fontSize: fontSize.base,
           letterSpacing: 1.5,
@@ -263,17 +271,29 @@ export const TerminalFrame = ({
         }}
         selectable={false}
       >
-        {label}
+        {text}
       </Text>
       <Text style={charStyle} selectable={false}>
         {B.labelR}
       </Text>
+    </>
+  );
+
+  // ── Top border ─────────────────────────────────────────────────────
+  const topBorder = label ? (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Text style={charStyle} selectable={false}>
+        {B.tl}
+        {B.h}
+      </Text>
+      {labelFragment(label)}
       <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
         <Text style={charStyle} selectable={false}>
           {B.h.repeat(200)}
         </Text>
       </View>
       {rightFragment}
+      {rightLabel && labelFragment(rightLabel, rightLabelDimmed)}
       <Text style={charStyle} selectable={false}>
         {B.tr}
       </Text>
@@ -289,6 +309,7 @@ export const TerminalFrame = ({
         </Text>
       </View>
       {rightFragment}
+      {rightLabel && labelFragment(rightLabel, rightLabelDimmed)}
       <Text style={charStyle} selectable={false}>
         {B.tr}
       </Text>
@@ -296,7 +317,25 @@ export const TerminalFrame = ({
   );
 
   // ── Bottom border ──────────────────────────────────────────────────
-  const bottomBorder = (
+  const hasBottomLabels = bottomLabel || bottomRightLabel;
+  const bottomBorder = hasBottomLabels ? (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Text style={charStyle} selectable={false}>
+        {B.bl}
+        {bottomLabel ? B.h : ''}
+      </Text>
+      {bottomLabel && labelFragment(bottomLabel)}
+      <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+        <Text style={charStyle} selectable={false}>
+          {B.h.repeat(200)}
+        </Text>
+      </View>
+      {bottomRightLabel && labelFragment(bottomRightLabel)}
+      <Text style={charStyle} selectable={false}>
+        {B.br}
+      </Text>
+    </View>
+  ) : (
     <View style={{ flexDirection: 'row' }}>
       <Text style={charStyle} selectable={false}>
         {B.bl}
@@ -315,7 +354,7 @@ export const TerminalFrame = ({
   return (
     <View style={style}>
       {topBorder}
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', flex: 1 }}>
         <Text style={charStyle} selectable={false}>
           {B.v}
         </Text>
