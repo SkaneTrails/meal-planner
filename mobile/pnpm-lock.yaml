@@ -11,6 +11,9 @@ importers:
       '@expo-google-fonts/dm-sans':
         specifier: ^0.4.2
         version: 0.4.2
+      '@expo-google-fonts/noto-emoji':
+        specifier: ^0.4.6
+        version: 0.4.6
       '@expo-google-fonts/playfair-display':
         specifier: ^0.4.2
         version: 0.4.2
@@ -976,6 +979,9 @@ packages:
 
   '@expo-google-fonts/dm-sans@0.4.2':
     resolution: {integrity: sha512-e/fLH5aCJzkEenz7axvEn8N7IJAKhUwNjIxS75h9j+Ip1M9S7d22M19gJN3A7QW4egVkBJRyQh1hQFhngQn9yA==}
+
+  '@expo-google-fonts/noto-emoji@0.4.6':
+    resolution: {integrity: sha512-Nj3M51ztOpLyrGDswKRZSbaq8QZCwxDdoiTPQXIz9YyRVbY5SE63mcGTDs9xb16nEMiiKM/RrWQ1EVFpvSn+Hw==}
 
   '@expo-google-fonts/playfair-display@0.4.2':
     resolution: {integrity: sha512-mWhBV59RUjSS3aYpytUb7UyHHTnXcHh7epAn7gq+M4XAEh5PuMKUrP8eiUfkJLb6UwHZCi7EhQpUzxHu5OL96w==}
@@ -5805,6 +5811,8 @@ snapshots:
   '@exodus/bytes@1.11.0': {}
 
   '@expo-google-fonts/dm-sans@0.4.2': {}
+
+  '@expo-google-fonts/noto-emoji@0.4.6': {}
 
   '@expo-google-fonts/playfair-display@0.4.2': {}
 
