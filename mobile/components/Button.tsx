@@ -53,9 +53,9 @@ interface ButtonProps {
   onPress: () => void;
   /** Whether the button is disabled. */
   disabled?: boolean;
-  /** Show loading state (primary variant only). */
+  /** Show loading state (all variants). Disables interaction and swaps to pending visuals. */
   isPending?: boolean;
-  /** Label to show during loading. */
+  /** Label to show during loading (when isPending is true). */
   loadingLabel?: string;
   /** Background color override. */
   color?: string;
@@ -71,8 +71,8 @@ interface ButtonProps {
   disableAnimation?: boolean;
   /**
    * Render as a terminal segment (`╡ LABEL ╞`) in CRT mode.
-   * Defaults to `true` for text/primary, `false` for icon.
-   * Override per-button to opt icon buttons into segments or keep text buttons as-is.
+   * Defaults to `true` when wrapper is 'segment' or inside a ButtonGroup.
+   * Override per-button with `segment={false}` to opt out.
    */
   segment?: boolean;
   /** Additional outer style (flex, margin, etc.). */
@@ -115,7 +115,9 @@ export const Button = ({
   const inGroup = useButtonGroup();
   const isDisabled = disabled || isPending;
   const sizeConfig = SIZE_CONFIG[size];
-  const useSegment = segmentProp ?? variant !== 'icon';
+  const defaultUseSegment =
+    buttonDisplay.wrapper === 'segment' || inGroup ? true : variant !== 'icon';
+  const useSegment = segmentProp ?? defaultUseSegment;
 
   // ── Resolve colors per tone ────────────────────────────────────────
   const resolveColors = (): { bg: string; fg: string; pressedBg?: string } => {
@@ -189,6 +191,7 @@ export const Button = ({
         style={[{ opacity: isDisabled ? 0.4 : 1 }, segmentStyle]}
       >
         <Text
+          selectable={false}
           style={{
             fontFamily: fonts.body,
             fontSize: sizeConfig.fontSize,
@@ -260,19 +263,15 @@ export const Button = ({
     color: activeFg,
   };
 
-  // Decide what to render based on buttonDisplay.display.
-  // Icon-variant buttons that skipped the segment path always show their icon.
+  // The theme controls whether icon, text, or both are shown for all variants.
   const showIcon =
-    displayIcon &&
-    (variant === 'icon' ||
-      buttonDisplay.display === 'icon' ||
-      buttonDisplay.display === 'both');
+    !!displayIcon &&
+    (buttonDisplay.display === 'icon' || buttonDisplay.display === 'both');
   const showLabel =
-    displayLabel &&
+    !!displayLabel &&
     (buttonDisplay.display === 'text' ||
       buttonDisplay.display === 'both' ||
-      variant === 'primary') &&
-    variant !== 'icon';
+      variant === 'primary');
 
   return (
     <AnimatedPressable

@@ -48,14 +48,22 @@ export const ButtonGroup = ({
     return (
       <ButtonGroupContext.Provider value={true}>
         <View style={[{ flexDirection: 'row', alignItems: 'center' }, style]}>
-          <Text style={segTextStyle}>{SEG.l}</Text>
+          <Text selectable={false} style={segTextStyle}>
+            {SEG.l}
+          </Text>
           {items.map((child, i) => (
             <React.Fragment key={i}>
               {child}
-              {i < items.length - 1 && <Text style={segTextStyle}>|</Text>}
+              {i < items.length - 1 && (
+                <Text selectable={false} style={segTextStyle}>
+                  |
+                </Text>
+              )}
             </React.Fragment>
           ))}
-          <Text style={segTextStyle}>{SEG.r}</Text>
+          <Text selectable={false} style={segTextStyle}>
+            {SEG.r}
+          </Text>
         </View>
       </ButtonGroupContext.Provider>
     );
