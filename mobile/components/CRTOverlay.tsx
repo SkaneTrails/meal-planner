@@ -12,7 +12,13 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Platform,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { useTheme } from '@/lib/theme';
 
 export const CRTOverlay = () => {
@@ -43,9 +49,9 @@ export const CRTOverlay = () => {
 
   if (!crt) return null;
 
-  const scanlineStyle =
+  const scanlineStyle: ViewStyle | undefined =
     Platform.OS === 'web'
-      ? {
+      ? ({
           backgroundImage: `repeating-linear-gradient(
             0deg,
             transparent,
@@ -53,7 +59,7 @@ export const CRTOverlay = () => {
             rgba(0, 0, 0, ${crt.scanlineOpacity}) 2px,
             rgba(0, 0, 0, ${crt.scanlineOpacity}) 4px
           )`,
-        }
+        } as ViewStyle)
       : undefined;
 
   return (
