@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  fontSize,
-  lineHeight,
-  spacing,
-  typography,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 
 interface RecipeEnhancedInfoProps {
@@ -26,7 +20,7 @@ export const RecipeEnhancedInfo = ({
   t,
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, typography, borderRadius, shadows } = useTheme();
   return (
     <>
       {recipe.enhanced && !showOriginal && recipe.tips && (

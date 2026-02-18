@@ -20,8 +20,8 @@ import {
   type ShadowTokens,
 } from './layout';
 import { createStyles, type ThemeStyles } from './styles';
-import type { FontFamilyTokens } from './typography';
-import { defaultFontFamily } from './typography';
+import type { FontFamilyTokens, TypographyTokens } from './typography';
+import { createTypography, defaultFontFamily } from './typography';
 
 /** Return type of the circleStyle helper (width/height/borderRadius). */
 export type CircleStyleFn = (size: number) => {
@@ -33,6 +33,7 @@ export type CircleStyleFn = (size: number) => {
 export interface ThemeValue {
   colors: ColorTokens;
   fonts: FontFamilyTokens;
+  typography: TypographyTokens;
   styles: ThemeStyles;
   borderRadius: BorderRadiusTokens;
   shadows: ShadowTokens;
@@ -79,6 +80,7 @@ export const ThemeProvider = ({
     return {
       colors: palette,
       fonts,
+      typography: createTypography(fonts),
       styles: createStyles(palette, radii),
       borderRadius: radii,
       shadows: shadowTokens,

@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  fontSize,
-  lineHeight,
-  spacing,
-  typography,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { InstructionItem } from './InstructionItem';
 
@@ -25,7 +19,7 @@ export const RecipeInstructions = ({
   t,
   onToggleStep,
 }: RecipeInstructionsProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, typography, borderRadius } = useTheme();
   return (
     <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
       <View

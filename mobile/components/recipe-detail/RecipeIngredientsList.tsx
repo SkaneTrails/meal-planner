@@ -2,13 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { IconCircle } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import {
-  fontSize,
-  lineHeight,
-  spacing,
-  typography,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 
 interface RecipeIngredientsListProps {
   ingredients: string[];
@@ -19,7 +13,7 @@ export const RecipeIngredientsList = ({
   ingredients,
   t,
 }: RecipeIngredientsListProps) => {
-  const { colors, fonts, borderRadius, shadows } = useTheme();
+  const { colors, fonts, typography, borderRadius, shadows } = useTheme();
   return (
     <View style={{ marginTop: spacing.xl }}>
       <View

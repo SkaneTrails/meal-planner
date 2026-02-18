@@ -363,6 +363,15 @@ vi.mock('@/lib/theme', () => {
 
   const mockCircleStyle = (size: number) => ({ width: size, height: size, borderRadius: size / 2 });
 
+  const mockTypography = {
+    displayLarge: {}, displayMedium: {}, displaySmall: {},
+    headingLarge: {}, headingMedium: {}, headingSmall: {},
+    bodyLarge: {}, bodyMedium: {}, bodySmall: {},
+    labelLarge: {}, labelMedium: {}, labelSmall: {},
+    caption: {}, captionSmall: {},
+    overline: {},
+  };
+
   return {
   colors: c,
   lightColors: undefined, // re-exported but unused in tests
@@ -407,14 +416,8 @@ vi.mock('@/lib/theme', () => {
     body: '400', bodyMedium: '500', bodySemibold: '600', bodyBold: '700', accent: '500',
   },
   letterSpacing: { tighter: -0.8, tight: -0.5, snug: -0.3, normal: -0.2, wide: 0.8, wider: 1.2 },
-  typography: {
-    displayLarge: {}, displayMedium: {}, displaySmall: {},
-    headingLarge: {}, headingMedium: {}, headingSmall: {},
-    bodyLarge: {}, bodyMedium: {}, bodySmall: {},
-    labelLarge: {}, labelMedium: {}, labelSmall: {},
-    caption: {}, captionSmall: {},
-    overline: {},
-  },
+  typography: mockTypography,
+  createTypography: () => mockTypography,
   inputStyle: {},
   settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
@@ -452,6 +455,7 @@ vi.mock('@/lib/theme', () => {
   useTheme: () => ({
     colors: c,
     fonts: mockFonts,
+    typography: mockTypography,
     styles: mockStyles,
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
