@@ -15,7 +15,6 @@ const FALLBACK = {
   textMuted: '#757575',
   primary: '#2D2D2D',
   white: '#FFFFFF',
-  font: 'System',
 } as const;
 
 interface ErrorBoundaryProps {
@@ -76,7 +75,6 @@ export class ErrorBoundary extends Component<
         <Text
           style={{
             fontSize: fontSize.xl,
-            fontFamily: FALLBACK.font,
             color: FALLBACK.textDark,
             textAlign: 'center',
             marginBottom: spacing.md,
@@ -87,7 +85,6 @@ export class ErrorBoundary extends Component<
         <Text
           style={{
             fontSize: fontSize.sm,
-            fontFamily: FALLBACK.font,
             color: FALLBACK.textMuted,
             textAlign: 'center',
             marginBottom: spacing['2xl'],
@@ -109,7 +106,6 @@ export class ErrorBoundary extends Component<
             style={{
               color: FALLBACK.white,
               fontSize: fontSize.md,
-              fontFamily: FALLBACK.font,
             }}
           >
             Reload App
