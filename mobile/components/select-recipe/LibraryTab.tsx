@@ -3,7 +3,7 @@ import { RecipeCard } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import { SearchBar } from '@/components/recipes/RecipeFilters';
 import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
-import { layout, spacing } from '@/lib/theme';
+import { layout } from '@/lib/theme';
 
 type State = ReturnType<typeof useSelectRecipeState>;
 

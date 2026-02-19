@@ -31,7 +31,7 @@ import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export default function RecipeDetailScreen() {
-  const { colors, circleStyle, visibility, crt } = useTheme();
+  const { colors, circleStyle, visibility, chrome } = useTheme();
   const HEADER_BUTTON_BG = colors.surface.overlayMedium;
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -240,7 +240,7 @@ export default function RecipeDetailScreen() {
           onThumbDown={handleThumbDown}
         />
 
-        {crt ? (
+        {chrome === 'flat' ? (
           <View
             style={{
               backgroundColor: colors.bgBase,
@@ -299,7 +299,7 @@ export default function RecipeDetailScreen() {
         )}
       </Animated.ScrollView>
 
-      {crt && (
+      {chrome === 'flat' && (
         <TerminalFabBar
           slots={[
             {

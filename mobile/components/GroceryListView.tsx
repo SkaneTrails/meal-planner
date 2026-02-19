@@ -36,7 +36,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors, fonts, borderRadius, visibility, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility, chrome } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
@@ -184,7 +184,7 @@ export const GroceryListView = ({
     onPress: handleToggleReorder,
   };
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <View
         style={{

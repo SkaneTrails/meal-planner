@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
@@ -100,18 +100,19 @@ export const RecipeContent = ({
     [showOriginal, recipe, displayIngredients, displayInstructions],
   );
 
-  const { colors, fonts, crt } = useTheme();
+  const { colors, fonts, chrome } = useTheme();
 
-  const actionSegments: FrameSegment[] | undefined = crt
-    ? [
-        { label: '\u270e', onPress: onOpenEditModal },
-        { label: '\u2261', onPress: onShowPlanModal },
-        { label: '\u2197', onPress: onShare },
-      ]
-    : undefined;
+  const actionSegments: FrameSegment[] | undefined =
+    chrome === 'flat'
+      ? [
+          { label: '\u270e', onPress: onOpenEditModal },
+          { label: '\u2261', onPress: onShowPlanModal },
+          { label: '\u2197', onPress: onShare },
+        ]
+      : undefined;
 
   const visibilityLabel =
-    crt && recipe.visibility
+    chrome === 'flat' && recipe.visibility
       ? t(
           `labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`,
         ).toUpperCase()
@@ -119,7 +120,7 @@ export const RecipeContent = ({
 
   return (
     <>
-      {crt && (
+      {chrome === 'flat' && (
         <Text
           style={{
             fontSize: fontSize['4xl'],

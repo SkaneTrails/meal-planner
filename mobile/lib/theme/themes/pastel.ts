@@ -110,5 +110,6 @@ export const pastelTheme: ThemeDefinition = {
   buttonDisplay,
   overrides,
   visibility,
+  chrome: 'full',
   requiredFonts: {}, // uses system rounded font — no custom fonts needed
 };

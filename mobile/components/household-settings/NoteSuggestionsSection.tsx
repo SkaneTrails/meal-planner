@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import {
   Chip,
   ChipGroup,
@@ -33,7 +33,6 @@ export const NoteSuggestionsSection = ({
   onAdd,
   onRemove,
 }: NoteSuggestionsSectionProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
   const [newSuggestion, setNewSuggestion] = useState('');
 

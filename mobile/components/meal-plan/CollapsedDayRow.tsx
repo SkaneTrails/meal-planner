@@ -33,7 +33,7 @@ export const CollapsedDayRow = ({
   t,
   onExpand,
 }: CollapsedDayRowProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
   const bcp47 = toBcp47(language);
   const dayName = date.toLocaleDateString(bcp47, { weekday: 'short' });
   const monthDay = date.toLocaleDateString(bcp47, {
@@ -45,7 +45,7 @@ export const CollapsedDayRow = ({
       ? t('mealPlan.mealsPlanned', { count: mealCount })
       : t('mealPlan.noMeals');
 
-  if (crt) {
+  if (chrome === 'flat') {
     const charStyle = {
       color: colors.border,
       fontFamily: fonts.body,

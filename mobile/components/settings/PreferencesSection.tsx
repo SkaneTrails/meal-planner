@@ -1,14 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { Section, SettingToggleRow, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
-import {
-  settingsSubtitleStyle,
-  settingsTitleStyle,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { settingsTitleStyle, spacing, useTheme } from '@/lib/theme';
 import { LanguagePicker } from './LanguagePicker';
 
 interface RecipeLibrarySectionProps {

@@ -38,7 +38,7 @@ export const RecipeNotes = ({
   t,
   onCopy,
 }: RecipeNotesProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, chrome } = useTheme();
   const [text, setText] = useState('');
   const { data: notes, isLoading } = useRecipeNotes(recipeId);
   const createNote = useCreateRecipeNote();
@@ -111,7 +111,7 @@ export const RecipeNotes = ({
     });
   };
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <View style={{ marginTop: spacing.xl }}>
         <TerminalFrame variant="single" label={t('recipe.notes').toUpperCase()}>

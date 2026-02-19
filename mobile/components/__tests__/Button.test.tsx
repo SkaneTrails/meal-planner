@@ -47,7 +47,7 @@ const lightTheme = () =>
     crt: undefined,
     themeName: 'light',
     setThemeName: vi.fn(),
-    isTerminal: false,
+    chrome: 'full' as const,
   });
 
 const terminalTheme = () =>
@@ -60,7 +60,7 @@ const terminalTheme = () =>
       interaction: 'highlight' as const,
     },
     themeName: 'terminal',
-    isTerminal: true,
+    chrome: 'flat' as const,
   });
 
 afterEach(() => {

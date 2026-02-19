@@ -14,7 +14,7 @@ const baseMock = {
   crt: undefined as undefined | Record<string, unknown>,
   themeName: 'light' as string,
   setThemeName: vi.fn(),
-  isTerminal: false,
+  chrome: 'full' as const,
 };
 
 const mockCRT = {

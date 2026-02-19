@@ -55,7 +55,8 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
-  const { colors, fonts, borderRadius, shadows, circleStyle, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, circleStyle, chrome } =
+    useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
@@ -95,7 +96,7 @@ export const RecipeCard = ({
   };
 
   if (compact) {
-    if (crt) {
+    if (chrome === 'flat') {
       return (
         <Pressable
           onPress={onPress}
@@ -345,7 +346,7 @@ export const RecipeCard = ({
   const imageHeight = cardSize ? cardSize * 0.65 : 120;
   const cardHeight = imageHeight + CARD_CONTENT_HEIGHT;
 
-  if (crt) {
+  if (chrome === 'flat') {
     const aiLabel = recipe.enhanced ? '\u2726' : undefined;
     const favLabel = showFavorite
       ? isRecipeFavorite

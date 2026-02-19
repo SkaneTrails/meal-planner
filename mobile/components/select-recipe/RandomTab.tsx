@@ -22,7 +22,7 @@ interface RandomTabProps {
 }
 
 export const RandomTab = ({ state }: RandomTabProps) => {
-  const { colors, borderRadius, shadows, fonts } = useTheme();
+  const { colors, borderRadius, shadows } = useTheme();
   const {
     t,
     randomRecipe,
@@ -184,9 +184,9 @@ interface RandomRecipeCardProps {
 }
 
 const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <Pressable
         onPress={() => onSelect(recipe.id)}

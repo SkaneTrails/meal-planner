@@ -1,8 +1,8 @@
 /**
  * ASCII box-drawing frame — wraps content in ╔═╗║╚═╝ borders.
  *
- * Only renders box-drawing decorations when the terminal CRT theme is active
- * (detected via `useTheme().crt`). In the light theme it renders children
+ * Only renders box-drawing decorations when the active theme uses flat chrome
+ * (detected via `useTheme().chrome`). Full-chrome themes render children
  * inside a plain View with no visual border so callers can use it
  * unconditionally.
  *
@@ -10,7 +10,7 @@
  * border, matching classic DOS/BIOS panel aesthetics.
  *
  * When `collapsed` is true, only the header is rendered — children are hidden.
- * CRT shows the top border line only. Light theme shows a compact card row.
+ * Flat chrome shows the top border line only. Full chrome shows a compact card row.
  */
 
 import { Ionicons } from '@expo/vector-icons';
@@ -83,10 +83,10 @@ export const TerminalFrame = ({
   variant = 'double',
   collapsed = false,
 }: TerminalFrameProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
 
-  // ── Light theme ────────────────────────────────────────────────────
-  if (!crt) {
+  // ── Full chrome (light/pastel) ─────────────────────────────────────
+  if (chrome !== 'flat') {
     if (collapsed) {
       return (
         <Pressable

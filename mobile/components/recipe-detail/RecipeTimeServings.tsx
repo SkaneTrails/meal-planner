@@ -69,7 +69,7 @@ export const RecipeTimeServings = ({
   visibilityLabel,
   t,
 }: RecipeTimeServingsProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
   const hasAnyTime = prepTime || cookTime || totalTime;
   if (!hasAnyTime && !servings) return null;
 
@@ -83,7 +83,7 @@ export const RecipeTimeServings = ({
   if (servings)
     stats.push({ label: t('labels.time.serves'), value: String(servings) });
 
-  if (crt) {
+  if (chrome === 'flat') {
     const bottomLabel =
       tags && tags.length > 0 ? tags.map((t) => `#${t}`).join(' ') : undefined;
     return (
