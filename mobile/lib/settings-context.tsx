@@ -94,6 +94,10 @@ const isSupportedLanguage = (value: string): value is AppLanguage => {
   return SUPPORTED_LANGUAGES.includes(value as AppLanguage);
 };
 
+const isValidWeekStart = (value: unknown): value is WeekStart => {
+  return typeof value === 'string' && WEEK_DAYS.includes(value as WeekStart);
+};
+
 const SettingsContext = createContext<SettingsContextType | null>(null);
 
 export const SettingsProvider = ({
@@ -184,10 +188,9 @@ export const SettingsProvider = ({
     !cloudLanguage;
 
   // Resolve week start from household settings
-  const resolvedWeekStart: WeekStart = WEEK_DAYS.includes(
-    householdSettings?.week_start as WeekStart,
-  )
-    ? (householdSettings?.week_start as WeekStart)
+  const weekStartValue = householdSettings?.week_start;
+  const resolvedWeekStart: WeekStart = isValidWeekStart(weekStartValue)
+    ? weekStartValue
     : 'monday';
 
   // Combined settings object
