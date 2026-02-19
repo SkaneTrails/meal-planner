@@ -60,6 +60,30 @@ export interface ButtonDisplayConfig {
   interaction: 'scale' | 'highlight';
 }
 
+/**
+ * Style and layout overrides that vary between themes.
+ *
+ * These replace inline `crt ? X : Y` style ternaries so that themes
+ * can declare their own values without consumers branching on theme identity.
+ */
+export interface StyleOverrides {
+  /** Opacity for checked grocery items (0–1). */
+  checkedOpacity: number;
+  /** Border width for checkboxes. */
+  checkboxBorderWidth: number;
+  /** Border width for dashed container outlines (extras section). 0 = no border. */
+  dashedBorderWidth: number;
+  /** Day card border widths. */
+  dayCardBorderWidth: number;
+  dayCardBorderWidthToday: number;
+  /** Segmented control track gap. */
+  segmentedControlGap: number;
+  /** Segmented control track padding. */
+  segmentedControlPadding: number;
+  /** How the active segmented tab is indicated. */
+  segmentedControlActiveIndicator: 'shadow' | 'underline';
+}
+
 /** A complete set of design tokens that fully describes one visual theme. */
 export interface ThemeDefinition {
   /** Unique registry key — used for storage and lookup. */
@@ -71,6 +95,7 @@ export interface ThemeDefinition {
   borderRadius: BorderRadiusTokens;
   shadows: ShadowTokens;
   buttonDisplay: ButtonDisplayConfig;
+  overrides: StyleOverrides;
   /** Only CRT-style themes provide this. */
   crt?: CRTConfig;
   /** Static background image used by GradientBackground. Omit for solid-color backgrounds. */
@@ -92,6 +117,7 @@ export interface ThemeValue {
   shadows: ShadowTokens;
   circleStyle: CircleStyleFn;
   buttonDisplay: ButtonDisplayConfig;
+  overrides: StyleOverrides;
   /** CRT overlay config — undefined for themes without the effect. */
   crt?: CRTConfig;
   /** Static background image for screen backgrounds. Undefined = solid color. */
@@ -139,6 +165,7 @@ export const ThemeProvider = ({
       borderRadius: radii,
       shadows: shadowTokens,
       buttonDisplay,
+      overrides,
       crt,
       backgroundImage,
     } = theme;
@@ -156,6 +183,7 @@ export const ThemeProvider = ({
       shadows: shadowTokens,
       circleStyle: themedCircleStyle,
       buttonDisplay,
+      overrides,
       crt,
       backgroundImage,
       themeName: id,

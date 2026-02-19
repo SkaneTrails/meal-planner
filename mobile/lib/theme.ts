@@ -34,6 +34,7 @@ export type {
   ButtonDisplayConfig,
   CircleStyleFn,
   CRTConfig,
+  StyleOverrides,
   ThemeDefinition,
 } from './theme/theme-context';
 export { ThemeProvider, useTheme } from './theme/theme-context';

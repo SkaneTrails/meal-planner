@@ -22,8 +22,23 @@ import {
 import ELEGANT_BACKGROUND from '@/assets/images/bck_b.png';
 import { lightColors } from '../colors';
 import { borderRadius, shadows } from '../layout';
-import type { ButtonDisplayConfig, ThemeDefinition } from '../theme-context';
+import type {
+  ButtonDisplayConfig,
+  StyleOverrides,
+  ThemeDefinition,
+} from '../theme-context';
 import { defaultFontFamily } from '../typography';
+
+const defaultOverrides: StyleOverrides = {
+  checkedOpacity: 0.85,
+  checkboxBorderWidth: 2,
+  dashedBorderWidth: 1.5,
+  dayCardBorderWidth: 1,
+  dayCardBorderWidthToday: 2,
+  segmentedControlGap: 8,
+  segmentedControlPadding: 4,
+  segmentedControlActiveIndicator: 'shadow',
+};
 
 const buttonDisplay: ButtonDisplayConfig = {
   display: 'both',
@@ -40,6 +55,7 @@ export const lightTheme: ThemeDefinition = {
   borderRadius,
   shadows,
   buttonDisplay,
+  overrides: defaultOverrides,
   backgroundImage: ELEGANT_BACKGROUND,
   requiredFonts: {
     DMSans_400Regular,

@@ -56,7 +56,7 @@ export const GroceryItemRow = ({
   isActive,
   showReorder,
 }: GroceryItemRowProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
   const [checked, setChecked] = useState(item.checked);
   const quantity = formatQuantity(item);
 
@@ -79,7 +79,7 @@ export const GroceryItemRow = ({
           : colors.listItem.bg,
         borderRadius: borderRadius['sm-md'],
         marginBottom: spacing.sm,
-        opacity: checked ? (crt ? 0.7 : 0.85) : 1,
+        opacity: checked ? overrides.checkedOpacity : 1,
         ...shadows.card,
       }}
     >
@@ -113,7 +113,7 @@ export const GroceryItemRow = ({
             width: 22,
             height: 22,
             borderRadius: borderRadius['xs-sm'],
-            borderWidth: crt ? 1 : 2,
+            borderWidth: overrides.checkboxBorderWidth,
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: spacing.md,

@@ -503,6 +503,7 @@ vi.mock('@/lib/theme', () => {
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow' },
     requiredFonts: {},
   };
 
@@ -514,6 +515,7 @@ vi.mock('@/lib/theme', () => {
     borderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
     shadows: {},
     buttonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
+    overrides: { checkedOpacity: 0.7, checkboxBorderWidth: 1, dashedBorderWidth: 0, dayCardBorderWidth: 0, dayCardBorderWidthToday: 0, segmentedControlGap: 0, segmentedControlPadding: 0, segmentedControlActiveIndicator: 'underline' },
     crt: { scanlineOpacity: 0.08, flickerMin: 0.97, flickerMs: 4000, glowColor: 'rgba(51, 255, 51, 0.07)', glowSpread: 60, glowSize: 20 },
     requiredFonts: {},
   };
@@ -526,6 +528,7 @@ vi.mock('@/lib/theme', () => {
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow' },
     requiredFonts: {},
   };
 
@@ -571,6 +574,7 @@ vi.mock('@/lib/theme', () => {
     shadows: mockShadows,
     circleStyle: mockCircleStyle,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow' },
     crt: undefined,
     backgroundImage: undefined,
     themeName: 'light',
