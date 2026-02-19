@@ -7,19 +7,7 @@
 // communication correctly. The expo-web-browser maybeCompleteAuthSession is only
 // needed for native platforms using expo-auth-session.
 
-import {
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_600SemiBold,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans';
 import { NotoEmoji_400Regular } from '@expo-google-fonts/noto-emoji';
-import {
-  PlayfairDisplay_400Regular,
-  PlayfairDisplay_500Medium,
-  PlayfairDisplay_600SemiBold,
-  PlayfairDisplay_700Bold,
-} from '@expo-google-fonts/playfair-display';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -46,8 +34,9 @@ import {
   useSettings,
 } from '@/lib/settings-context';
 import {
-  lightTheme,
-  type ThemeName,
+  allRequiredFonts,
+  defaultThemeId,
+  isThemeId,
   ThemeProvider,
   themes,
   useTheme,
@@ -136,44 +125,35 @@ const AppContent = () => {
 
 const THEME_STORAGE_KEY = '@meal_planner_theme';
 
-const DEFAULT_THEME: ThemeName = 'light';
-
-/** Validate that a stored string is a known theme key. */
-const isThemeName = (value: string): value is ThemeName => value in themes;
-
 interface ThemeRootProps {
   children: React.ReactNode;
-  envTheme: ThemeName;
+  envTheme: string;
   fontsReady: boolean;
 }
 
 const ThemeRoot = ({ children, envTheme }: ThemeRootProps) => {
-  const [themeName, setThemeNameState] = useState<ThemeName>(envTheme);
+  const [themeId, setThemeIdState] = useState(envTheme);
 
   useEffect(() => {
     void AsyncStorage.getItem(THEME_STORAGE_KEY)
       .then((stored) => {
-        if (stored !== null && isThemeName(stored)) {
-          setThemeNameState(stored);
+        if (stored !== null && isThemeId(stored)) {
+          setThemeIdState(stored);
         }
       })
       .catch(() => {});
   }, []);
 
   const setThemeName = useCallback((name: string) => {
-    if (!isThemeName(name)) return;
-    setThemeNameState(name);
+    if (!isThemeId(name)) return;
+    setThemeIdState(name);
     void AsyncStorage.setItem(THEME_STORAGE_KEY, name).catch(() => {});
   }, []);
 
-  const theme = themes[themeName] ?? lightTheme;
+  const theme = themes[themeId] ?? themes[defaultThemeId];
 
   return (
-    <ThemeProvider
-      theme={theme}
-      themeName={themeName}
-      setThemeName={setThemeName}
-    >
+    <ThemeProvider theme={theme} setThemeName={setThemeName}>
       {children}
     </ThemeProvider>
   );
@@ -183,15 +163,9 @@ export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     Ionicons: require('../public/fonts/Ionicons.ttf'),
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_600SemiBold,
-    DMSans_700Bold,
-    PlayfairDisplay_400Regular,
-    PlayfairDisplay_500Medium,
-    PlayfairDisplay_600SemiBold,
-    PlayfairDisplay_700Bold,
     NotoEmoji_400Regular,
+    // Theme-specific fonts are collected from the registry at build time
+    ...allRequiredFonts,
   });
 
   useEffect(() => {
@@ -222,8 +196,9 @@ export default function RootLayout() {
     return null;
   }
 
-  const envTheme: ThemeName =
-    process.env.EXPO_PUBLIC_THEME === 'terminal' ? 'terminal' : DEFAULT_THEME;
+  const envOverride = process.env.EXPO_PUBLIC_THEME;
+  const envTheme =
+    envOverride && isThemeId(envOverride) ? envOverride : defaultThemeId;
 
   return (
     <ErrorBoundary>

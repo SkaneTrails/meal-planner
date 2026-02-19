@@ -60,6 +60,14 @@ vi.mock('expo-haptics', () => ({
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
 }));
 
+// Mock expo-font — native module, same as expo-haptics/expo-image above.
+// Theme files import @expo-google-fonts/* which re-export from expo-font.
+vi.mock('expo-font', () => ({
+  loadAsync: vi.fn().mockResolvedValue(undefined),
+  useFonts: vi.fn(() => [true, null]),
+  isLoaded: vi.fn(() => true),
+}));
+
 // Mock expo-linear-gradient
 vi.mock('expo-linear-gradient', () => ({
   LinearGradient: ({ children }: any) => children,
@@ -488,15 +496,18 @@ vi.mock('@/lib/theme', () => {
   };
 
   const mockLightTheme = {
+    id: 'light',
     name: 'Elegant',
     colors: c,
     fonts: mockFonts,
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    requiredFonts: {},
   };
 
   const mockTerminalTheme = {
+    id: 'terminal',
     name: 'Terminal CRT',
     colors: {},
     fonts: {},
@@ -504,15 +515,18 @@ vi.mock('@/lib/theme', () => {
     shadows: {},
     buttonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
     crt: { scanlineOpacity: 0.08, flickerMin: 0.97, flickerMs: 4000, glowColor: 'rgba(51, 255, 51, 0.07)', glowSpread: 60, glowSize: 20 },
+    requiredFonts: {},
   };
 
   const mockPastelTheme = {
+    id: 'pastel',
     name: 'Bubbly Pastel',
     colors: c,
     fonts: mockFonts,
     borderRadius: mockBorderRadius,
     shadows: mockShadows,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    requiredFonts: {},
   };
 
   return {
@@ -571,33 +585,7 @@ vi.mock('@/lib/theme', () => {
   dotSize: { md: 10 },
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
   defaultFontFamily: mockFonts,
-  terminalFontFamily: {
-    display: 'Courier',
-    displayRegular: 'Courier',
-    displayMedium: 'Courier',
-    displayBold: 'Courier',
-    body: 'Courier',
-    bodyMedium: 'Courier',
-    bodySemibold: 'Courier',
-    bodyBold: 'Courier',
-    accent: 'Courier',
-  },
-  terminalBorderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
-  defaultButtonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
-  terminalButtonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
-  terminalShadows: {
-    none: { boxShadow: '0px 0px 0px 0px transparent' },
-    xs: { boxShadow: '0px 0px 0px 0px transparent' },
-    sm: { boxShadow: '0px 0px 0px 0px transparent' },
-    card: { boxShadow: '0px 0px 0px 0px transparent' },
-    md: { boxShadow: '0px 0px 0px 0px transparent' },
-    lg: { boxShadow: '0px 0px 0px 0px transparent' },
-    xl: { boxShadow: '0px 0px 0px 0px transparent' },
-    glow: { boxShadow: '0px 0px 8px 0px rgba(51, 255, 51, 0.3)' },
-    glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
-    cardRaised: { boxShadow: '0px 0px 0px 0px transparent' },
-    float: { boxShadow: '0px 0px 0px 0px transparent' },
-  },
+  terminalColors: {},
   terminalCRT: {
     scanlineOpacity: 0.08,
     flickerMin: 0.97,
@@ -625,9 +613,10 @@ vi.mock('@/lib/theme', () => {
   lightTheme: mockLightTheme,
   terminalTheme: mockTerminalTheme,
   pastelTheme: mockPastelTheme,
-  pastelColors: c,
-  pastelFontFamily: mockFonts,
   themes: { light: mockLightTheme, terminal: mockTerminalTheme, pastel: mockPastelTheme },
+  defaultThemeId: 'light',
+  allRequiredFonts: {},
+  isThemeId: (value: string) => ['light', 'terminal', 'pastel'].includes(value),
   };
 });
 

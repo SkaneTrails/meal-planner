@@ -4,15 +4,12 @@ import { SurfaceCard } from '@/components';
 import {
   fontSize,
   spacing,
-  type ThemeName,
+  type ThemeDefinition,
   themes,
   useTheme,
 } from '@/lib/theme';
 
-const THEME_ENTRIES = Object.entries(themes) as [
-  ThemeName,
-  (typeof themes)[ThemeName],
-][];
+const THEME_ENTRIES = Object.entries(themes) as [string, ThemeDefinition][];
 
 interface ThemePickerProps {
   currentTheme: string;
