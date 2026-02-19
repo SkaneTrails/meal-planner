@@ -1,5 +1,9 @@
 /**
  * Typography scale, font families, weights, letter spacing, and presets.
+ *
+ * Shared constants (fontSize, fontWeight, etc.) and the default (light theme)
+ * font family live here. Per-theme font families are defined in each theme's
+ * own file under `themes/`.
  */
 
 import { Platform } from 'react-native';
@@ -17,18 +21,8 @@ export type FontFamilyTokens = {
   readonly accent: string;
 };
 
-// Font families - DM Sans for everything (unified font)
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
 const isWeb = Platform.OS === 'web';
-
-// Monospace font family for the terminal CRT theme
-const MONO = isWeb
-  ? '"Courier New", "Courier", monospace'
-  : Platform.select({
-      ios: 'Courier',
-      android: 'monospace',
-      default: 'monospace',
-    });
 
 /** Playfair Display for display headings, DM Sans for body text. */
 export const defaultFontFamily: FontFamilyTokens = {
@@ -47,46 +41,7 @@ export const defaultFontFamily: FontFamilyTokens = {
   accent: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
 };
 
-/** Monospace — terminal CRT theme font family. */
-export const terminalFontFamily: FontFamilyTokens = {
-  display: MONO,
-  displayRegular: MONO,
-  displayMedium: MONO,
-  displayBold: MONO,
-  body: MONO,
-  bodyMedium: MONO,
-  bodySemibold: MONO,
-  bodyBold: MONO,
-  accent: MONO,
-};
-
-// Rounded/comic system font for the pastel "bubbly" theme.
-// No custom font loading needed — relies on platform system fonts.
-const COMIC = isWeb
-  ? '"Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive'
-  : Platform.select({
-      ios: 'Chalkboard SE',
-      android: 'casual',
-      default: 'sans-serif',
-    });
-
-/** Comic Sans / Chalkboard — pastel bubbly theme font family. */
-export const pastelFontFamily: FontFamilyTokens = {
-  display: COMIC,
-  displayRegular: COMIC,
-  displayMedium: COMIC,
-  displayBold: COMIC,
-  body: COMIC,
-  bodyMedium: COMIC,
-  bodySemibold: COMIC,
-  bodyBold: COMIC,
-  accent: COMIC,
-};
-
-// Static font family mapping used by the typography presets below. Dynamic,
-// theme-aware font access should go through `useTheme().fonts` where available.
-// The presets are intentionally static — migrating them to a factory that takes
-// `fonts` is planned as a follow-up when runtime theme switching lands.
+// Static font family mapping used by ErrorBoundary (class component, can't use hooks).
 /** @deprecated Use `useTheme().fonts` for theme-aware font access. */
 export const fontFamily = defaultFontFamily;
 

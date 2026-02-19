@@ -1,0 +1,71 @@
+/**
+ * Pastel theme — "Bubbly Pastel"
+ *
+ * Candy-soft pastels with Comic Sans / rounded system fonts,
+ * double-sized border radii, and standard depth shadows.
+ */
+
+import { Platform } from 'react-native';
+import { type BorderRadiusTokens, borderRadius, shadows } from '../layout';
+import { pastelColors } from '../pastel-colors';
+import type { ButtonDisplayConfig, ThemeDefinition } from '../theme-context';
+import type { FontFamilyTokens } from '../typography';
+
+// ── Platform-resolved comic / rounded font ─────────────────────────────
+
+const isWeb = Platform.OS === 'web';
+
+const COMIC = isWeb
+  ? '"Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive'
+  : (Platform.select({
+      ios: 'Chalkboard SE',
+      android: 'casual',
+      default: 'sans-serif',
+    }) ?? 'sans-serif');
+
+const fonts: FontFamilyTokens = {
+  display: COMIC,
+  displayRegular: COMIC,
+  displayMedium: COMIC,
+  displayBold: COMIC,
+  body: COMIC,
+  bodyMedium: COMIC,
+  bodySemibold: COMIC,
+  bodyBold: COMIC,
+  accent: COMIC,
+};
+
+// ── Derived overrides ──────────────────────────────────────────────────
+
+const scaleRadii = (
+  source: BorderRadiusTokens,
+  factor: number,
+): BorderRadiusTokens =>
+  Object.fromEntries(
+    Object.entries(source).map(([k, v]) => [
+      k,
+      k === 'full' ? v : Math.round((v as number) * factor),
+    ]),
+  ) as unknown as BorderRadiusTokens;
+
+// ── Button config ──────────────────────────────────────────────────────
+
+const buttonDisplay: ButtonDisplayConfig = {
+  display: 'both',
+  wrapper: 'animated',
+  shape: 'circle',
+  interaction: 'scale',
+};
+
+// ── Theme definition ───────────────────────────────────────────────────
+
+export const pastelTheme: ThemeDefinition = {
+  id: 'pastel',
+  name: 'Bubbly Pastel',
+  colors: pastelColors,
+  fonts,
+  borderRadius: scaleRadii(borderRadius, 2),
+  shadows,
+  buttonDisplay,
+  requiredFonts: {}, // uses system rounded font — no custom fonts needed
+};

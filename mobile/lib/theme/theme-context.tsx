@@ -1,28 +1,23 @@
 /**
  * Theme context and provider.
  *
- * Provides the resolved color palette and derived style presets via React
- * context so components can opt into theme-aware rendering incrementally.
- *
- * Pass a custom `palette` to `ThemeProvider` to override the default light
- * colors. When no palette is supplied, the built-in light palette is used.
+ * Provides the resolved theme tokens via React context so components can
+ * access colors, fonts, radii, shadows, and other design tokens through
+ * `useTheme()`. The `ThemeProvider` accepts a complete `ThemeDefinition`.
  */
 
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { ColorTokens } from './colors';
-import { colors as defaultPalette } from './colors';
 import {
   type BorderRadiusTokens,
-  borderRadius as defaultBorderRadius,
   circleStyle as defaultCircleStyle,
-  shadows as defaultShadows,
   type ShadowTokens,
 } from './layout';
 import { createStyles, type ThemeStyles } from './styles';
 import type { FontFamilyTokens, TypographyTokens } from './typography';
-import { createTypography, defaultFontFamily } from './typography';
+import { createTypography } from './typography';
 
 /** CRT visual-effect parameters — provided only by themes that want the effect. */
 export interface CRTConfig {
@@ -65,24 +60,10 @@ export interface ButtonDisplayConfig {
   interaction: 'scale' | 'highlight';
 }
 
-/** Defaults for the light (standard) theme. */
-export const defaultButtonDisplay: ButtonDisplayConfig = {
-  display: 'both',
-  wrapper: 'animated',
-  shape: 'circle',
-  interaction: 'scale',
-};
-
-/** Terminal theme: everything rendered as box-drawing segments. */
-export const terminalButtonDisplay: ButtonDisplayConfig = {
-  display: 'text',
-  wrapper: 'segment',
-  shape: 'none',
-  interaction: 'highlight',
-};
-
 /** A complete set of design tokens that fully describes one visual theme. */
 export interface ThemeDefinition {
+  /** Unique registry key — used for storage and lookup. */
+  id: string;
   /** Human-readable display name — shown in the theme picker. */
   name: string;
   colors: ColorTokens;
@@ -94,6 +75,12 @@ export interface ThemeDefinition {
   crt?: CRTConfig;
   /** Static background image used by GradientBackground. Omit for solid-color backgrounds. */
   backgroundImage?: ImageSourcePropType;
+  /**
+   * Custom font assets this theme requires (name → asset source).
+   * Collected at startup and passed to `useFonts`. Themes using only
+   * system fonts (monospace, Comic Sans) leave this empty.
+   */
+  requiredFonts: Record<string, number>;
 }
 
 export interface ThemeValue {
@@ -113,7 +100,7 @@ export interface ThemeValue {
   themeName: string;
   /** Switch to a different theme by registry key. */
   setThemeName: (name: string) => void;
-  /** Whether the terminal theme is active (convenience shortcut). */
+  /** Whether the active theme has CRT visual effects. */
   isTerminal: boolean;
 }
 
@@ -128,22 +115,10 @@ export const useTheme = (): ThemeValue => {
   return value;
 };
 
-/** Default (light) theme assembled from module-level tokens. */
-const defaultTheme: ThemeDefinition = {
-  name: 'Elegant',
-  colors: defaultPalette,
-  fonts: defaultFontFamily,
-  borderRadius: defaultBorderRadius,
-  shadows: defaultShadows,
-  buttonDisplay: defaultButtonDisplay,
-};
-
 interface ThemeProviderProps {
   children: React.ReactNode;
-  /** Complete theme definition. Defaults to the light theme. */
-  theme?: ThemeDefinition;
-  /** Registry key of the active theme. */
-  themeName?: string;
+  /** Complete theme definition — required, no default. */
+  theme: ThemeDefinition;
   /** Callback to switch theme by registry key. */
   setThemeName?: (name: string) => void;
 }
@@ -153,12 +128,12 @@ const noop = () => {};
 /** Wraps children with the resolved theme value. */
 export const ThemeProvider = ({
   children,
-  theme = defaultTheme,
-  themeName = 'light',
+  theme,
   setThemeName = noop as unknown as (name: string) => void,
 }: ThemeProviderProps) => {
   const value = useMemo<ThemeValue>(() => {
     const {
+      id,
       colors,
       fonts,
       borderRadius: radii,
@@ -183,11 +158,11 @@ export const ThemeProvider = ({
       buttonDisplay,
       crt,
       backgroundImage,
-      themeName,
+      themeName: id,
       setThemeName,
-      isTerminal: themeName === 'terminal',
+      isTerminal: !!crt,
     };
-  }, [theme, themeName, setThemeName]);
+  }, [theme, setThemeName]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
