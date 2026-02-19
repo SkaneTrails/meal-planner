@@ -34,7 +34,7 @@ import { useAuth } from './hooks/use-auth';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
-import type { WeekStart } from '@/lib/utils/dateFormatter';
+import { WEEK_DAYS, type WeekStart } from '@/lib/utils/dateFormatter';
 
 import type { AppLanguage } from './language-state';
 
@@ -184,8 +184,11 @@ export const SettingsProvider = ({
     !cloudLanguage;
 
   // Resolve week start from household settings
-  const resolvedWeekStart: WeekStart =
-    householdSettings?.week_start === 'saturday' ? 'saturday' : 'monday';
+  const resolvedWeekStart: WeekStart = WEEK_DAYS.includes(
+    householdSettings?.week_start as WeekStart,
+  )
+    ? (householdSettings?.week_start as WeekStart)
+    : 'monday';
 
   // Combined settings object
   const aiEnabled = householdSettings?.ai_features_enabled ?? true;

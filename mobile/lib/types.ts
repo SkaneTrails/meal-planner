@@ -320,11 +320,13 @@ export interface DietarySettings {
   meat_alternative?: string | null;
 }
 
+import type { WeekStart } from '@/lib/utils/dateFormatter';
+
 export interface HouseholdSettings {
   household_size: number;
   default_servings: number;
   language: string;
-  week_start?: 'monday' | 'saturday';
+  week_start?: WeekStart;
   ai_features_enabled?: boolean;
   include_breakfast?: boolean;
   items_at_home?: string[];

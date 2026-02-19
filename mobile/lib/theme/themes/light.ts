@@ -60,6 +60,7 @@ const visibility: VisibilityTokens = {
   showChipToggleDot: true,
   showStatDividers: false,
   showSectionHeaderIcon: true,
+  showCheckmarkIndicator: true,
 };
 
 const buttonDisplay: ButtonDisplayConfig = {

@@ -1,13 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
-import { SurfaceCard } from '@/components';
-import {
-  fontSize,
-  spacing,
-  type ThemeDefinition,
-  themes,
-  useTheme,
-} from '@/lib/theme';
+import { useMemo } from 'react';
+import { View } from 'react-native';
+import { DropdownPicker } from '@/components/DropdownPicker';
+import { spacing, type ThemeDefinition, themes, useTheme } from '@/lib/theme';
 
 const THEME_ENTRIES = Object.entries(themes) as [string, ThemeDefinition][];
 
@@ -22,21 +16,12 @@ export const ThemePicker = ({
 }: ThemePickerProps) => {
   const { colors, borderRadius } = useTheme();
 
-  return (
-    <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
-      {THEME_ENTRIES.map(([key, definition], index) => (
-        <Pressable
-          key={key}
-          onPress={() => onChangeTheme(key)}
-          style={({ pressed }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: spacing.md,
-            backgroundColor: pressed ? colors.bgMid : 'transparent',
-            borderBottomWidth: index < THEME_ENTRIES.length - 1 ? 1 : 0,
-            borderBottomColor: colors.surface.pressed,
-          })}
-        >
+  const options = useMemo(
+    () =>
+      THEME_ENTRIES.map(([key, definition]) => ({
+        value: key,
+        label: definition.name,
+        adornment: (
           <View
             style={{
               width: 28,
@@ -48,25 +33,17 @@ export const ThemePicker = ({
               borderColor: colors.gray[200],
             }}
           />
-          <Text
-            style={{
-              flex: 1,
-              fontSize: fontSize.md,
-              color: colors.content.body,
-              fontFamily: definition.fonts.body,
-            }}
-          >
-            {definition.name}
-          </Text>
-          {currentTheme === key && (
-            <Ionicons
-              name="checkmark-circle"
-              size={20}
-              color={colors.ai.primary}
-            />
-          )}
-        </Pressable>
-      ))}
-    </SurfaceCard>
+        ),
+      })),
+    [colors.gray, borderRadius.full],
+  );
+
+  return (
+    <DropdownPicker
+      options={options}
+      value={currentTheme}
+      onSelect={onChangeTheme}
+      testID="theme-picker"
+    />
   );
 };

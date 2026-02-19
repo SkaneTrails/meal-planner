@@ -127,6 +127,8 @@ export interface VisibilityTokens {
   showStatDividers: boolean;
   /** Icon circle + accent underline in section/tab headers. */
   showSectionHeaderIcon: boolean;
+  /** Ionicons checkmark indicator for pickers (false = text-based [X]/[ ] indicator). */
+  showCheckmarkIndicator: boolean;
 }
 
 /**
