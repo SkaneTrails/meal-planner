@@ -6,7 +6,6 @@ import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
   fontSize,
-  fontWeight,
   iconContainer,
   layout,
   letterSpacing,
@@ -22,7 +21,8 @@ interface CopyMealTabProps {
 }
 
 export const CopyMealTab = ({ state }: CopyMealTabProps) => {
-  const { colors, fonts, borderRadius, shadows, circleStyle, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, circleStyle, visibility } =
+    useTheme();
   const {
     t,
     bcp47,
@@ -42,21 +42,8 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
       }}
     >
       {/* Header */}
-      {crt ? (
-        <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
-          <Text
-            style={{
-              fontSize: fontSize['2xl'],
-              fontFamily: fonts.bodySemibold,
-              color: colors.primary,
-              textAlign: 'center',
-            }}
-          >
-            {t('selectRecipe.copy.title')}
-          </Text>
-        </View>
-      ) : (
-        <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+        {visibility.showSectionHeaderIcon && (
           <IconCircle
             size="lg"
             bg={colors.ai.light}
@@ -64,25 +51,27 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           >
             <Ionicons name="copy" size={24} color={colors.ai.primary} />
           </IconCircle>
-          <Text
-            style={{
-              fontSize: fontSize['2xl'],
-              fontWeight: fontWeight.bold,
-              color: colors.text.inverse,
-              textAlign: 'center',
-              letterSpacing: letterSpacing.snug,
-            }}
-          >
-            {t('selectRecipe.copy.title')}
-          </Text>
+        )}
+        <Text
+          style={{
+            fontSize: fontSize['2xl'],
+            fontFamily: fonts.bodySemibold,
+            color: colors.content.heading,
+            textAlign: 'center',
+            letterSpacing: letterSpacing.snug,
+          }}
+        >
+          {t('selectRecipe.copy.title')}
+        </Text>
+        {visibility.showSectionHeaderIcon && (
           <View
             style={{
               ...accentUnderlineStyle,
               marginTop: spacing.sm,
             }}
           />
-        </View>
-      )}
+        )}
+      </View>
 
       {/* Week selector */}
       <View
@@ -189,7 +178,15 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
                 {MEAL_TYPE_LABELS[meal.mealType as MealType] || meal.mealType}
               </Text>
             </View>
-            {crt ? (
+            {visibility.showSectionHeaderIcon ? (
+              <IconCircle size="md" bg={colors.glass.light}>
+                <Ionicons
+                  name="copy-outline"
+                  size={18}
+                  color={colors.text.inverse}
+                />
+              </IconCircle>
+            ) : (
               <Text
                 style={{
                   fontFamily: fonts.body,
@@ -199,14 +196,6 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
               >
                 {'\u25B6'}
               </Text>
-            ) : (
-              <IconCircle size="md" bg={colors.glass.light}>
-                <Ionicons
-                  name="copy-outline"
-                  size={18}
-                  color={colors.text.inverse}
-                />
-              </IconCircle>
             )}
           </Pressable>
         ))

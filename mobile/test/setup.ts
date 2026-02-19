@@ -504,7 +504,7 @@ vi.mock('@/lib/theme', () => {
     shadows: mockShadows,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
-    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true },
+    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true },
     requiredFonts: {},
   };
 
@@ -517,7 +517,7 @@ vi.mock('@/lib/theme', () => {
     shadows: {},
     buttonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
     overrides: { checkedOpacity: 0.7, checkboxBorderWidth: 1, dashedBorderWidth: 0, dayCardBorderWidth: 0, dayCardBorderWidthToday: 0, segmentedControlGap: 0, segmentedControlPadding: 0, segmentedControlActiveIndicator: 'underline', chipToggleGap: 0 },
-    visibility: { showStackHeader: false, showTodayDot: false, showTodayBadge: false, showDayNotes: false, showChevrons: false, showStatIcons: false, showProgressBar: false, showAddItemLabel: false, showEmptyStateIcon: false, showHeroOverlay: false, showRecipeActionButtons: false, showVisibilityChip: false, showRecipeTags: false, showFrameLabels: true, showChipToggleDot: false },
+    visibility: { showStackHeader: false, showTodayDot: false, showTodayBadge: false, showDayNotes: false, showChevrons: false, showStatIcons: false, showProgressBar: false, showAddItemLabel: false, showEmptyStateIcon: false, showHeroOverlay: false, showRecipeActionButtons: false, showVisibilityChip: false, showRecipeTags: false, showFrameLabels: true, showChipToggleDot: false, showStatDividers: true, showSectionHeaderIcon: false },
     crt: { scanlineOpacity: 0.08, flickerMin: 0.97, flickerMs: 4000, glowColor: 'rgba(51, 255, 51, 0.07)', glowSpread: 60, glowSize: 20 },
     requiredFonts: {},
   };
@@ -531,7 +531,7 @@ vi.mock('@/lib/theme', () => {
     shadows: mockShadows,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
-    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true },
+    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true },
     requiredFonts: {},
   };
 
@@ -578,7 +578,7 @@ vi.mock('@/lib/theme', () => {
     circleStyle: mockCircleStyle,
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
-    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true },
+    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true },
     crt: undefined,
     backgroundImage: undefined,
     themeName: 'light',

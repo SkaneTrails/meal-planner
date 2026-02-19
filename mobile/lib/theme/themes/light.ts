@@ -58,6 +58,8 @@ const visibility: VisibilityTokens = {
   showRecipeTags: true,
   showFrameLabels: false,
   showChipToggleDot: true,
+  showStatDividers: false,
+  showSectionHeaderIcon: true,
 };
 
 const buttonDisplay: ButtonDisplayConfig = {

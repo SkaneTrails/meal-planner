@@ -18,6 +18,7 @@ export type { ChipProps } from './Chip';
 export { Chip } from './Chip';
 export { ChipGroup } from './ChipGroup';
 export { ChipPicker } from './ChipPicker';
+export { ContentCard } from './ContentCard';
 export { CRTOverlay } from './CRTOverlay';
 export { EmptyState } from './EmptyState';
 export { EnhancingOverlay } from './EnhancingOverlay';

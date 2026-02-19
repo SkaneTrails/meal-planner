@@ -15,7 +15,7 @@ export const RecipeActionsFooter = ({
   t,
   onShowPlanModal,
 }: RecipeActionsFooterProps) => {
-  const { colors, borderRadius, crt } = useTheme();
+  const { colors, borderRadius, visibility } = useTheme();
 
   const openUrl = () => {
     try {
@@ -31,32 +31,6 @@ export const RecipeActionsFooter = ({
       showNotification(t('common.error'), t('recipe.couldNotOpenUrl'));
     }
   };
-
-  if (crt) {
-    return (
-      <>
-        {url && (
-          <Button
-            variant="text"
-            onPress={openUrl}
-            icon="link"
-            iconSize={18}
-            label={t('recipe.viewSource')}
-            color={colors.mealPlan.slotBg}
-            textColor={colors.primary}
-            style={{
-              justifyContent: 'center',
-              paddingVertical: spacing.lg,
-              marginTop: spacing.sm,
-              borderRadius: borderRadius.md,
-              borderWidth: 1,
-              borderColor: colors.border,
-            }}
-          />
-        )}
-      </>
-    );
-  }
 
   return (
     <>
@@ -77,20 +51,22 @@ export const RecipeActionsFooter = ({
         />
       )}
 
-      <View
-        style={{
-          marginTop: spacing.md,
-          marginBottom: layout.tabBar.contentBottomPadding,
-        }}
-      >
-        <Button
-          variant="primary"
-          onPress={onShowPlanModal}
-          icon="calendar"
-          label={t('recipe.addToMealPlan')}
-          color={colors.ai.primary}
-        />
-      </View>
+      {visibility.showRecipeActionButtons && (
+        <View
+          style={{
+            marginTop: spacing.md,
+            marginBottom: layout.tabBar.contentBottomPadding,
+          }}
+        >
+          <Button
+            variant="primary"
+            onPress={onShowPlanModal}
+            icon="calendar"
+            label={t('recipe.addToMealPlan')}
+            color={colors.ai.primary}
+          />
+        </View>
+      )}
     </>
   );
 };

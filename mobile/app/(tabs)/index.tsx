@@ -4,6 +4,7 @@ import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import {
   AnimatedPressable,
   Button,
+  ContentCard,
   GradientBackground,
   HomeScreenSkeleton,
   TerminalFabBar,
@@ -257,7 +258,7 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => {
-  const { colors, fonts, borderRadius, visibility, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility } = useTheme();
 
   const mealTimeLabel = nextMeal
     ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
@@ -347,33 +348,24 @@ const NextMealCard = ({
     </AnimatedPressable>
   );
 
-  if (crt) {
-    return (
-      <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
-        <TerminalFrame
-          label={t('home.nextUp.title').toUpperCase()}
-          variant="single"
-        >
-          {content}
-        </TerminalFrame>
-      </View>
-    );
-  }
-
   return (
     <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
-      <Text
-        style={{
-          fontSize: fontSize.xl,
-          fontFamily: fonts.display,
-          color: colors.white,
-          marginBottom: spacing.sm,
-          letterSpacing: letterSpacing.normal,
-        }}
-      >
-        {t('home.nextUp.title')}
-      </Text>
-      {content}
+      {!visibility.showFrameLabels && (
+        <Text
+          style={{
+            fontSize: fontSize.xl,
+            fontFamily: fonts.display,
+            color: colors.white,
+            marginBottom: spacing.sm,
+            letterSpacing: letterSpacing.normal,
+          }}
+        >
+          {t('home.nextUp.title')}
+        </Text>
+      )}
+      <ContentCard card={false} label={t('home.nextUp.title').toUpperCase()}>
+        {content}
+      </ContentCard>
     </View>
   );
 };

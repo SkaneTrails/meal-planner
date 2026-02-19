@@ -5,7 +5,6 @@ import type { useSelectRecipeState } from '@/lib/hooks/useSelectRecipeState';
 import {
   accentUnderlineStyle,
   fontSize,
-  fontWeight,
   letterSpacing,
   spacing,
   useTheme,
@@ -18,7 +17,7 @@ interface QuickMealTabProps {
 }
 
 export const QuickMealTab = ({ state }: QuickMealTabProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility } = useTheme();
   const {
     t,
     customText,
@@ -38,30 +37,8 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
           padding: spacing['2xl'],
         }}
       >
-        {crt ? (
-          <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
-            <Text
-              style={{
-                fontSize: fontSize['2xl'],
-                fontFamily: fonts.bodySemibold,
-                color: colors.primary,
-              }}
-            >
-              {t('selectRecipe.quick.title')}
-            </Text>
-            <Text
-              style={{
-                fontSize: fontSize.md,
-                fontFamily: fonts.body,
-                color: colors.content.tertiary,
-                marginTop: spacing.sm,
-              }}
-            >
-              {t('selectRecipe.quick.placeholder')}
-            </Text>
-          </View>
-        ) : (
-          <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
+        <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
+          {visibility.showSectionHeaderIcon && (
             <IconCircle
               size="xl"
               bg={colors.ai.light}
@@ -73,33 +50,38 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
                 color={colors.ai.primary}
               />
             </IconCircle>
-            <Text
-              style={{
-                fontSize: fontSize['3xl'],
-                fontWeight: fontWeight.semibold,
-                color: colors.text.inverse,
-                letterSpacing: letterSpacing.normal,
-              }}
-            >
-              {t('selectRecipe.quick.title')}
-            </Text>
+          )}
+          <Text
+            style={{
+              fontSize:
+                fontSize[visibility.showSectionHeaderIcon ? '3xl' : '2xl'],
+              fontFamily: fonts.bodySemibold,
+              color: colors.content.heading,
+              letterSpacing: letterSpacing.normal,
+            }}
+          >
+            {t('selectRecipe.quick.title')}
+          </Text>
+          {visibility.showSectionHeaderIcon && (
             <View
               style={{
                 ...accentUnderlineStyle,
                 marginTop: spacing.sm,
               }}
             />
-            <Text
-              style={{
-                fontSize: fontSize.lg,
-                color: colors.gray[600],
-                marginTop: spacing.sm,
-              }}
-            >
-              {t('selectRecipe.quick.placeholder')}
-            </Text>
-          </View>
-        )}
+          )}
+          <Text
+            style={{
+              fontSize:
+                fontSize[visibility.showSectionHeaderIcon ? 'lg' : 'md'],
+              fontFamily: fonts.body,
+              color: colors.content.tertiary,
+              marginTop: spacing.sm,
+            }}
+          >
+            {t('selectRecipe.quick.placeholder')}
+          </Text>
+        </View>
 
         <TextInput
           style={{

@@ -1,5 +1,5 @@
 import { Text, TextInput, View } from 'react-native';
-import { Button, TerminalFrame } from '@/components';
+import { Button, ContentCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -14,22 +14,11 @@ export const AddItemCard = ({
   onChangeText,
   onSubmit,
 }: AddItemCardProps) => {
-  const { colors, fonts, borderRadius, shadows, visibility, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility } = useTheme();
   const { t } = useTranslation();
 
-  const inner = (
-    <View
-      style={
-        crt
-          ? {}
-          : {
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.md,
-              padding: spacing.md,
-              ...shadows.sm,
-            }
-      }
-    >
+  return (
+    <ContentCard frameVariant="single" framePadding={spacing.sm}>
       {visibility.showAddItemLabel && (
         <Text
           style={{
@@ -84,16 +73,6 @@ export const AddItemCard = ({
           }}
         />
       </View>
-    </View>
+    </ContentCard>
   );
-
-  if (crt) {
-    return (
-      <TerminalFrame variant="single" padding={spacing.sm}>
-        {inner}
-      </TerminalFrame>
-    );
-  }
-
-  return inner;
 };
