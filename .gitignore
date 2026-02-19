@@ -93,6 +93,9 @@ infra/**/access/allowed_users.txt
 data/*
 !data/.gitkeep
 
+# Temporary files (PR bodies, scratch)
+tmp/
+
 # Node.js / React Native / Expo
 node_modules/
 npm-debug.log*
