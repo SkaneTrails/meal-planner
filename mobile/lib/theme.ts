@@ -36,6 +36,7 @@ export type {
   CRTConfig,
   StyleOverrides,
   ThemeDefinition,
+  VisibilityTokens,
 } from './theme/theme-context';
 export { ThemeProvider, useTheme } from './theme/theme-context';
 export {

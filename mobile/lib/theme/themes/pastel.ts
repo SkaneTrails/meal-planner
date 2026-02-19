@@ -12,6 +12,7 @@ import type {
   ButtonDisplayConfig,
   StyleOverrides,
   ThemeDefinition,
+  VisibilityTokens,
 } from '../theme-context';
 import type { FontFamilyTokens } from '../typography';
 
@@ -63,6 +64,27 @@ const overrides: StyleOverrides = {
   segmentedControlGap: 8,
   segmentedControlPadding: 4,
   segmentedControlActiveIndicator: 'shadow',
+  chipToggleGap: 8,
+};
+
+// ── Visibility ─────────────────────────────────────────────────────────
+
+const visibility: VisibilityTokens = {
+  showStackHeader: true,
+  showTodayDot: true,
+  showTodayBadge: true,
+  showDayNotes: true,
+  showChevrons: true,
+  showStatIcons: true,
+  showProgressBar: true,
+  showAddItemLabel: true,
+  showEmptyStateIcon: true,
+  showHeroOverlay: true,
+  showRecipeActionButtons: true,
+  showVisibilityChip: true,
+  showRecipeTags: true,
+  showFrameLabels: false,
+  showChipToggleDot: true,
 };
 
 // ── Button config ──────────────────────────────────────────────────────
@@ -85,5 +107,6 @@ export const pastelTheme: ThemeDefinition = {
   shadows,
   buttonDisplay,
   overrides,
+  visibility,
   requiredFonts: {}, // uses system rounded font — no custom fonts needed
 };

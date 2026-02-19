@@ -40,7 +40,7 @@ export const RecipeHero = ({
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility } = useTheme();
   return (
     <Animated.View
       style={{
@@ -73,7 +73,7 @@ export const RecipeHero = ({
         transition={400}
       />
 
-      {!crt && (
+      {visibility.showHeroOverlay && (
         <>
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.7)']}

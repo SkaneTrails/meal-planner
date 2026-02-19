@@ -115,7 +115,7 @@ const StatCard = ({
   iconColor,
   onPress,
 }: StatCardProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
 
   return (
     <AnimatedPressable
@@ -132,7 +132,7 @@ const StatCard = ({
         ...shadows.sm,
       }}
     >
-      {!crt && (
+      {visibility.showStatIcons && (
         <Ionicons
           name={icon}
           size={18}

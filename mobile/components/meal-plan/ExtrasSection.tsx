@@ -20,10 +20,14 @@ export const ExtrasSection = ({
   onAddExtra,
   onRemoveExtra,
 }: ExtrasSectionProps) => {
-  const { colors, fonts, borderRadius, overrides, crt } = useTheme();
+  const { colors, fonts, borderRadius, overrides, visibility } = useTheme();
   return (
     <TerminalFrame
-      label={crt ? t('mealPlan.extras.headerTitle').toUpperCase() : undefined}
+      label={
+        visibility.showFrameLabels
+          ? t('mealPlan.extras.headerTitle').toUpperCase()
+          : undefined
+      }
       variant="single"
       style={{ marginBottom: spacing.lg }}
     >

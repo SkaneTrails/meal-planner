@@ -82,6 +82,47 @@ export interface StyleOverrides {
   segmentedControlPadding: number;
   /** How the active segmented tab is indicated. */
   segmentedControlActiveIndicator: 'shadow' | 'underline';
+  /** Inner gap for toggle-variant chips. */
+  chipToggleGap: number;
+}
+
+/**
+ * Element visibility flags that vary between themes.
+ *
+ * These replace inline `!crt && (...)` conditionals so that themes
+ * can independently control which decorative elements are shown.
+ */
+export interface VisibilityTokens {
+  /** Show the native navigation header on recipe detail screen. */
+  showStackHeader: boolean;
+  /** Green dot "today" indicator on next meal card. */
+  showTodayDot: boolean;
+  /** "Today" pill badge on day headers + today label in header text. */
+  showTodayBadge: boolean;
+  /** Note tags and add-note pressable on day headers. */
+  showDayNotes: boolean;
+  /** Forward/collapse chevron icons. */
+  showChevrons: boolean;
+  /** Ionicons on stat cards. */
+  showStatIcons: boolean;
+  /** Progress bar on grocery stats card. */
+  showProgressBar: boolean;
+  /** "Add item" label text on grocery add card. */
+  showAddItemLabel: boolean;
+  /** Empty-state icon circle on grocery list. */
+  showEmptyStateIcon: boolean;
+  /** Gradient + title overlay on recipe hero image. */
+  showHeroOverlay: boolean;
+  /** Action buttons row on recipe detail (hidden when using FAB bar). */
+  showRecipeActionButtons: boolean;
+  /** Visibility chip on recipe meta labels. */
+  showVisibilityChip: boolean;
+  /** Tags section on recipe detail. */
+  showRecipeTags: boolean;
+  /** TerminalFrame label text in section headers (e.g. "EXTRAS"). */
+  showFrameLabels: boolean;
+  /** Whether toggle chips show the colored dot indicator. */
+  showChipToggleDot: boolean;
 }
 
 /** A complete set of design tokens that fully describes one visual theme. */
@@ -96,6 +137,7 @@ export interface ThemeDefinition {
   shadows: ShadowTokens;
   buttonDisplay: ButtonDisplayConfig;
   overrides: StyleOverrides;
+  visibility: VisibilityTokens;
   /** Only CRT-style themes provide this. */
   crt?: CRTConfig;
   /** Static background image used by GradientBackground. Omit for solid-color backgrounds. */
@@ -118,6 +160,7 @@ export interface ThemeValue {
   circleStyle: CircleStyleFn;
   buttonDisplay: ButtonDisplayConfig;
   overrides: StyleOverrides;
+  visibility: VisibilityTokens;
   /** CRT overlay config — undefined for themes without the effect. */
   crt?: CRTConfig;
   /** Static background image for screen backgrounds. Undefined = solid color. */
@@ -166,6 +209,7 @@ export const ThemeProvider = ({
       shadows: shadowTokens,
       buttonDisplay,
       overrides,
+      visibility,
       crt,
       backgroundImage,
     } = theme;
@@ -184,6 +228,7 @@ export const ThemeProvider = ({
       circleStyle: themedCircleStyle,
       buttonDisplay,
       overrides,
+      visibility,
       crt,
       backgroundImage,
       themeName: id,

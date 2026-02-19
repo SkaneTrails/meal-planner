@@ -188,7 +188,7 @@ export const StatsCard = ({
   onClearManualItems,
   onClearAll,
 }: StatsCardProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, visibility, crt } = useTheme();
   const { t } = useTranslation();
 
   const content = (
@@ -259,7 +259,7 @@ export const StatsCard = ({
         />
       )}
 
-      {!crt && (
+      {visibility.showProgressBar && (
         <ProgressBar
           itemsToBuy={itemsToBuy}
           checkedItemsToBuy={checkedItemsToBuy}

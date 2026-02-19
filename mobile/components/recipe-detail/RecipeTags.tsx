@@ -7,8 +7,8 @@ interface RecipeTagsProps {
 }
 
 export const RecipeTags = ({ tags }: RecipeTagsProps) => {
-  const { colors, crt } = useTheme();
-  if (tags.length === 0 || crt) return null;
+  const { colors, visibility } = useTheme();
+  if (tags.length === 0 || !visibility.showRecipeTags) return null;
 
   return (
     <View

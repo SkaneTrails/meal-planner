@@ -66,7 +66,7 @@ export const Chip = ({
   onPress,
   testID,
 }: ChipProps) => {
-  const { colors, borderRadius, crt } = useTheme();
+  const { colors, borderRadius, overrides, visibility } = useTheme();
 
   const resolvedShowRemove = showRemove ?? variant === 'filled';
   const resolvedShowAdd = showAdd ?? variant === 'outline';
@@ -82,7 +82,7 @@ export const Chip = ({
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'center',
-        gap: variant === 'toggle' ? (crt ? 0 : spacing.sm) : spacing.xs,
+        gap: variant === 'toggle' ? overrides.chipToggleGap : spacing.xs,
         paddingHorizontal: isSmall
           ? spacing.sm
           : variant === 'toggle'
@@ -107,7 +107,7 @@ export const Chip = ({
       {icon && <Ionicons name={icon} size={iconSize} color={resolvedColor} />}
 
       {/* Colored dot */}
-      {dot && !(crt && variant === 'toggle') && (
+      {dot && (variant !== 'toggle' || visibility.showChipToggleDot) && (
         <View
           style={{
             width: dotSize.md,

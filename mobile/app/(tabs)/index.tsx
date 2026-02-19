@@ -257,7 +257,7 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility, crt } = useTheme();
 
   const mealTimeLabel = nextMeal
     ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
@@ -297,7 +297,7 @@ const NextMealCard = ({
             marginBottom: spacing['xs-sm'],
           }}
         >
-          {!crt && nextMeal && !nextMeal.isTomorrow && (
+          {visibility.showTodayDot && nextMeal && !nextMeal.isTomorrow && (
             <View
               style={{
                 width: 7,
@@ -337,7 +337,7 @@ const NextMealCard = ({
           {nextMeal?.title || t('home.nextUp.planYourNextMeal')}
         </Text>
       </View>
-      {!crt && (
+      {visibility.showChevrons && (
         <Ionicons
           name="chevron-forward"
           size={20}
