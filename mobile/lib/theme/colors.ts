@@ -182,6 +182,11 @@ export const lightColors = {
     fishActive: '#2D7AB8',
     meatActive: '#B85C38',
     favoriteActive: '#C75050',
+    toggleActiveBg: 'rgba(93, 78, 64, 0.12)',
+    toggleInactiveBg: '#FFFFFF',
+    toggleActiveBorder: '#4A3728',
+    toggleActiveText: '#4A3728',
+    toggleInactiveText: '#4A3728',
   },
 
   // Shadow colors — baked-in alpha for textShadow (no separate opacity prop)
@@ -270,6 +275,88 @@ export const lightColors = {
     '#B07070', // dusty rose
     '#6B8FA3', // slate blue
   ] as readonly string[],
+
+  // ── Semantic component tokens ────────────────────────────────────────
+  // Eliminate per-component CRT overrides — each theme sets correct values.
+
+  // Card / container surfaces
+  card: {
+    bg: 'rgba(255, 255, 255, 0.85)',
+    bgPressed: 'rgba(255, 255, 255, 0.78)',
+    textPrimary: '#2D2D2D',
+    textSecondary: '#757575',
+    borderColor: 'rgba(0, 0, 0, 0.04)',
+  },
+
+  // Search bar (RecipeFilters)
+  searchBar: {
+    bg: 'rgba(255, 255, 255, 0.88)',
+    border: 'rgba(0, 0, 0, 0.04)',
+    icon: '#8B7355',
+    text: '#5D4E40',
+    placeholder: '#8B7355',
+    clearIcon: 'rgba(255, 255, 255, 0.6)',
+    cancelText: '#7A6858',
+  },
+
+  // Text input fields
+  input: {
+    bg: 'rgba(255, 255, 255, 0.88)',
+    bgSubtle: 'rgba(93, 78, 64, 0.06)',
+    border: 'transparent',
+    text: '#2D2D2D',
+    placeholder: '#9E9E9E',
+  },
+
+  // Original/Enhanced toggle (recipe detail)
+  toggle: {
+    trackBg: 'rgba(255, 255, 255, 0.4)',
+    activeBg: 'rgba(255, 255, 255, 0.85)',
+    activeText: '#5D4E40',
+    inactiveText: 'rgba(93, 78, 64, 0.5)',
+    borderColor: 'transparent',
+  },
+
+  // Recipe detail meta chips (meal type, visibility)
+  metaChip: {
+    mealBg: '#E8CDB5',
+    mealText: '#2D2D2D',
+    visibilityBg: 'rgba(255, 255, 255, 0.92)',
+    visibilityText: '#2D2D2D',
+  },
+
+  // Checkbox (grocery list)
+  checkbox: {
+    checkedBg: '#6B8E6B',
+    checkedBorder: '#6B8E6B',
+  },
+
+  // List item rows (grocery)
+  listItem: {
+    bg: 'rgba(255, 255, 255, 0.92)',
+    bgActive: '#FFFFFF',
+    checkedText: 'rgba(93, 78, 64, 0.6)',
+  },
+
+  // Stats cards (home screen)
+  statsCard: {
+    bg: 'rgba(255, 255, 255, 0.92)',
+    borderColor: 'rgba(0, 0, 0, 0.04)',
+  },
+
+  // Meal plan day card container
+  dayCard: {
+    bg: 'rgba(255, 255, 255, 0.92)',
+    bgToday: 'rgba(255, 255, 255, 0.95)',
+  },
+
+  // Segmented tab control (select-recipe)
+  segmentedControl: {
+    trackBg: 'rgba(93, 78, 64, 0.06)',
+    activeBg: '#FFFFFF',
+    activeText: '#3D3D3D',
+    inactiveText: 'rgba(93, 78, 64, 0.6)',
+  },
 } as const;
 
 /** Structural contract that every color palette must satisfy. */

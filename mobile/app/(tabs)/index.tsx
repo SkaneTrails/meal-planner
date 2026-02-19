@@ -269,15 +269,13 @@ const NextMealCard = ({
       hoverScale={1.01}
       pressScale={0.99}
       style={{
-        backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.card,
-        borderRadius: crt ? 0 : borderRadius.md,
+        backgroundColor: colors.card.bg,
+        borderRadius: borderRadius.md,
         padding: spacing['md-lg'],
         flexDirection: 'row',
         alignItems: 'center',
-        ...(!crt && {
-          borderWidth: 1,
-          borderColor: colors.glass.border,
-        }),
+        borderWidth: 1,
+        borderColor: colors.card.borderColor,
       }}
     >
       <Image
@@ -285,7 +283,7 @@ const NextMealCard = ({
         style={{
           width: 72,
           height: 72,
-          borderRadius: crt ? 0 : borderRadius.md,
+          borderRadius: borderRadius.md,
         }}
         contentFit="cover"
         placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}

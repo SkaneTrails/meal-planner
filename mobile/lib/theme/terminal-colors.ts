@@ -60,19 +60,19 @@ export const terminalColors: ColorTokens = {
 
   diet: {
     veggie: {
-      bg: g(0.08),
+      bg: 'rgba(17, 85, 17, 0.3)',
       text: GREEN,
       cardBg: g(0.06),
       border: g(0.4),
     },
     fish: {
-      bg: g(0.08),
+      bg: 'rgba(17, 85, 17, 0.3)',
       text: GREEN_DIM,
       cardBg: g(0.06),
       border: g(0.4),
     },
     meat: {
-      bg: 'rgba(255, 51, 51, 0.08)',
+      bg: 'rgba(17, 85, 17, 0.3)',
       text: RED,
       cardBg: 'rgba(255, 51, 51, 0.06)',
       border: 'rgba(255, 51, 51, 0.4)',
@@ -189,6 +189,11 @@ export const terminalColors: ColorTokens = {
     fishActive: GREEN_DIM,
     meatActive: RED,
     favoriteActive: '#FF5555',
+    toggleActiveBg: GREEN,
+    toggleInactiveBg: BLACK,
+    toggleActiveBorder: GREEN,
+    toggleActiveText: BLACK,
+    toggleInactiveText: GREEN,
   },
 
   shadow: {
@@ -269,6 +274,77 @@ export const terminalColors: ColorTokens = {
     BLUE,
     g(0.6),
   ],
+
+  // ── Semantic component tokens ────────────────────────────────────────
+
+  card: {
+    bg: 'rgba(17, 85, 17, 0.3)',
+    bgPressed: g(0.12),
+    textPrimary: GREEN,
+    textSecondary: g(0.65),
+    borderColor: 'transparent',
+  },
+
+  searchBar: {
+    bg: 'rgba(17, 85, 17, 0.3)',
+    border: g(0.25),
+    icon: g(0.25),
+    text: GREEN,
+    placeholder: g(0.35),
+    clearIcon: g(0.35),
+    cancelText: GREEN,
+  },
+
+  input: {
+    bg: BLACK,
+    bgSubtle: BLACK,
+    border: g(0.25),
+    text: GREEN,
+    placeholder: g(0.35),
+  },
+
+  toggle: {
+    trackBg: 'rgba(17, 85, 17, 0.3)',
+    activeBg: BLACK,
+    activeText: GREEN,
+    inactiveText: GREEN_DARK,
+    borderColor: g(0.25),
+  },
+
+  metaChip: {
+    mealBg: 'rgba(17, 85, 17, 0.3)',
+    mealText: GREEN,
+    visibilityBg: 'rgba(17, 85, 17, 0.3)',
+    visibilityText: GREEN,
+  },
+
+  checkbox: {
+    checkedBg: GREEN,
+    checkedBorder: GREEN,
+  },
+
+  listItem: {
+    bg: 'rgba(17, 85, 17, 0.3)',
+    bgActive: 'rgba(17, 85, 17, 0.3)',
+    checkedText: g(0.35),
+  },
+
+  statsCard: {
+    bg: 'transparent',
+    borderColor: 'transparent',
+  },
+
+  dayCard: {
+    bg: BLACK,
+    bgToday: BLACK,
+  },
+
+  segmentedControl: {
+    trackBg: 'transparent',
+    activeBg: 'rgba(17, 85, 17, 0.3)',
+    activeText: GREEN,
+    inactiveText: g(0.25),
+  },
 };
 
 // ── Terminal border radius — sharp corners, no rounding ────────────────

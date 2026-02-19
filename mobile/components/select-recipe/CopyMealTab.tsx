@@ -99,8 +99,8 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
           icon="chevron-back"
           iconSize={20}
-          textColor={crt ? colors.primary : colors.text.inverse}
-          color={crt ? colors.mealPlan.slotBg : colors.glass.card}
+          textColor={colors.card.textPrimary}
+          color={colors.card.bg}
           style={{
             ...circleStyle(iconContainer.xs),
           }}
@@ -109,7 +109,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           style={{
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.sm,
-            backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.card,
+            backgroundColor: colors.card.bg,
             borderRadius: borderRadius.sm,
           }}
         >
@@ -117,7 +117,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
             style={{
               fontSize: fontSize.md,
               fontFamily: fonts.bodySemibold,
-              color: crt ? colors.primary : colors.text.inverse,
+              color: colors.card.textPrimary,
               textAlign: 'center',
             }}
           >
@@ -137,8 +137,8 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
           icon="chevron-forward"
           iconSize={20}
-          textColor={crt ? colors.primary : colors.text.inverse}
-          color={crt ? colors.mealPlan.slotBg : colors.glass.card}
+          textColor={colors.card.textPrimary}
+          color={colors.card.bg}
           style={{
             ...circleStyle(iconContainer.xs),
           }}
@@ -160,17 +160,11 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: crt
-                ? pressed
-                  ? colors.surface.pressed
-                  : colors.mealPlan.slotBg
-                : pressed
-                  ? colors.glass.medium
-                  : colors.glass.card,
+              backgroundColor: pressed ? colors.card.bgPressed : colors.card.bg,
               borderRadius: borderRadius.sm,
               padding: spacing.lg,
               marginBottom: spacing.sm,
-              ...(crt ? {} : shadows.sm),
+              ...shadows.sm,
             })}
           >
             <View style={{ flex: 1 }}>
@@ -178,7 +172,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
                 style={{
                   fontSize: fontSize.lg,
                   fontFamily: fonts.bodySemibold,
-                  color: crt ? colors.primary : colors.text.inverse,
+                  color: colors.card.textPrimary,
                 }}
               >
                 {meal.recipe?.title || meal.customText}
@@ -187,7 +181,7 @@ export const CopyMealTab = ({ state }: CopyMealTabProps) => {
                 style={{
                   fontSize: fontSize.md,
                   fontFamily: fonts.body,
-                  color: crt ? colors.content.tertiary : colors.gray[600],
+                  color: colors.card.textSecondary,
                   marginTop: spacing.xs,
                 }}
               >

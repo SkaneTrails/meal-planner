@@ -48,14 +48,15 @@ export const AddItemCard = ({
         <TextInput
           style={{
             flex: 1,
-            backgroundColor: crt ? colors.bgBase : colors.surface.tint,
+            backgroundColor: colors.input.bgSubtle,
             borderRadius: borderRadius.sm,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing['sm-md'],
             fontSize: fontSize.lg,
             color: colors.content.heading,
-            fontFamily: crt ? fonts.body : undefined,
-            ...(crt && { borderWidth: 1, borderColor: colors.border }),
+            fontFamily: fonts.body,
+            borderWidth: 1,
+            borderColor: colors.input.border,
           }}
           placeholder={t('grocery.addItemExamplePlaceholder')}
           placeholderTextColor={colors.content.placeholder}

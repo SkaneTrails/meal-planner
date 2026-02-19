@@ -74,15 +74,13 @@ export const GroceryItemRow = ({
         alignItems: 'center',
         padding: spacing['sm-md'],
         paddingVertical: spacing.md,
-        backgroundColor: crt
-          ? colors.mealPlan.slotBg
-          : isActive
-            ? colors.white
-            : colors.glass.solid,
+        backgroundColor: isActive
+          ? colors.listItem.bgActive
+          : colors.listItem.bg,
         borderRadius: borderRadius['sm-md'],
         marginBottom: spacing.sm,
         opacity: checked ? (crt ? 0.7 : 0.85) : 1,
-        ...(crt ? {} : shadows.card),
+        ...shadows.card,
       }}
     >
       {showReorder && (
@@ -114,20 +112,16 @@ export const GroceryItemRow = ({
           style={{
             width: 22,
             height: 22,
-            borderRadius: crt ? 0 : borderRadius['xs-sm'],
+            borderRadius: borderRadius['xs-sm'],
             borderWidth: crt ? 1 : 2,
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: spacing.md,
             backgroundColor: checked
-              ? crt
-                ? colors.primary
-                : colors.ai.primary
+              ? colors.checkbox.checkedBg
               : 'transparent',
             borderColor: checked
-              ? crt
-                ? colors.primary
-                : colors.ai.primary
+              ? colors.checkbox.checkedBorder
               : colors.surface.border,
           }}
         >
@@ -144,9 +138,7 @@ export const GroceryItemRow = ({
               fontWeight: fontWeight.medium,
               textDecorationLine: checked ? 'line-through' : 'none',
               color: checked
-                ? crt
-                  ? colors.content.placeholder
-                  : colors.content.subtitle
+                ? colors.listItem.checkedText
                 : colors.content.body,
             }}
           >
@@ -158,9 +150,7 @@ export const GroceryItemRow = ({
                 fontSize: fontSize.base,
                 fontFamily: fonts.body,
                 color: checked
-                  ? crt
-                    ? colors.content.placeholder
-                    : colors.content.subtitle
+                  ? colors.listItem.checkedText
                   : colors.content.tertiary,
                 marginTop: spacing['2xs'],
               }}

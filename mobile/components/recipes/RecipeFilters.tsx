@@ -34,7 +34,7 @@ export const SearchBar = ({
   placeholder,
   t,
 }: SearchBarProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}>
@@ -42,32 +42,26 @@ export const SearchBar = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.light,
-          borderRadius: crt ? borderRadius.sm : borderRadius.md,
+          backgroundColor: colors.searchBar.bg,
+          borderRadius: borderRadius.md,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           borderWidth: 1,
-          borderColor: crt ? colors.border : colors.glass.border,
+          borderColor: colors.searchBar.border,
         }}
       >
-        <Ionicons
-          name="search"
-          size={18}
-          color={crt ? colors.border : colors.content.secondary}
-        />
+        <Ionicons name="search" size={18} color={colors.searchBar.icon} />
         <TextInput
           ref={searchInputRef}
           style={{
             flex: 1,
             fontSize: fontSize.md,
-            fontFamily: crt ? fonts.body : undefined,
-            color: crt ? colors.primary : colors.content.body,
+            fontFamily: fonts.body,
+            color: colors.searchBar.text,
             marginLeft: spacing.sm,
           }}
           placeholder={placeholder ?? t('recipes.searchPlaceholder')}
-          placeholderTextColor={
-            crt ? colors.content.placeholder : colors.content.secondary
-          }
+          placeholderTextColor={colors.searchBar.placeholder}
           value={searchQuery}
           onChangeText={onSearchChange}
           onFocus={onFocus}
@@ -81,7 +75,7 @@ export const SearchBar = ({
             <Ionicons
               name="close-circle"
               size={18}
-              color={crt ? colors.content.placeholder : colors.text.muted}
+              color={colors.searchBar.clearIcon}
             />
           </Pressable>
         )}
@@ -90,7 +84,7 @@ export const SearchBar = ({
             <Text
               style={{
                 fontSize: fontSize.xl,
-                color: crt ? colors.primary : colors.button.primary,
+                color: colors.searchBar.cancelText,
                 fontFamily: fonts.bodyMedium,
               }}
             >
