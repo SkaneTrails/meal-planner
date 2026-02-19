@@ -135,7 +135,50 @@ Reply with reasoning, then resolve the thread. Do not leave threads open.
 
 ---
 
-## 5. Creating PRs and Issues
+## 5. Branch Strategy — Avoiding Merge Conflicts
+
+### The problem
+
+Parallel branches created from the same base that modify the same lines will conflict when the first one merges. This is especially painful for **conflict magnets** — files where many PRs converge on the same lines (e.g., mock theme objects in `setup.ts` where every new token addition touches all theme blocks).
+
+### Before creating a new branch
+
+1. Check for open PRs: `GH_PAGER="" gh pr list --limit 20 2>&1`
+2. For each open PR, check which files it touches: `gh pr diff <NUMBER> --name-only`
+3. If the new work will modify any of the same files, choose a strategy:
+
+| Situation | Strategy |
+|-----------|----------|
+| New work depends on the open PR | **Stack**: branch from the open PR's branch, not main |
+| Same files but independent work | **Wait**: let the open PR merge first, then branch from updated main |
+| Overlap is trivial (1-2 lines, different sections) | **Proceed**: create from main, accept minor rebase work |
+
+### Stacking branches
+
+When stacking branch B on top of open PR branch A:
+
+```bash
+git switch branch-a
+git pull origin branch-a
+git switch -c branch-b
+# ... work on branch B ...
+# When branch A merges into main:
+git fetch origin
+git rebase origin/main
+```
+
+### Known conflict magnets in this project
+
+| File | Why | Frequency |
+|------|-----|-----------|
+| `mobile/test/setup.ts` | Mock theme objects — every new theme token touches 4+ blocks on adjacent lines | Every theme PR |
+| `mobile/components/settings/PreferencesSection.tsx` | Shared imports for settings sections | Settings feature PRs |
+
+Update this table when new patterns emerge.
+
+---
+
+## 6. Creating PRs and Issues
 
 ### Avoiding Terminal Escaping Issues
 

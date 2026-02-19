@@ -1,9 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { Pressable, Text, View } from 'react-native';
-import { SurfaceCard } from '@/components';
+import { useMemo } from 'react';
+import { View } from 'react-native';
+import { DropdownPicker } from '@/components/DropdownPicker';
 import { type AppLanguage, LANGUAGES } from '@/lib/settings-context';
-import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
+import { iconContainer, spacing, useTheme } from '@/lib/theme';
 
 const FLAG_URLS: Record<AppLanguage, string> = {
   en: 'https://flagcdn.com/w80/gb.png',
@@ -22,21 +22,12 @@ export const LanguagePicker = ({
 }: LanguagePickerProps) => {
   const { colors, circleStyle } = useTheme();
 
-  return (
-    <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
-      {LANGUAGES.map((lang, index) => (
-        <Pressable
-          key={lang.code}
-          onPress={() => onChangeLanguage(lang.code)}
-          style={({ pressed }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            padding: spacing.md,
-            backgroundColor: pressed ? colors.bgMid : 'transparent',
-            borderBottomWidth: index < LANGUAGES.length - 1 ? 1 : 0,
-            borderBottomColor: colors.surface.pressed,
-          })}
-        >
+  const options = useMemo(
+    () =>
+      LANGUAGES.map((lang) => ({
+        value: lang.code,
+        label: lang.label,
+        adornment: (
           <View
             style={{
               ...circleStyle(iconContainer.sm),
@@ -51,24 +42,17 @@ export const LanguagePicker = ({
               contentFit="cover"
             />
           </View>
-          <Text
-            style={{
-              flex: 1,
-              fontSize: fontSize.md,
-              color: colors.content.body,
-            }}
-          >
-            {lang.label}
-          </Text>
-          {currentLanguage === lang.code && (
-            <Ionicons
-              name="checkmark-circle"
-              size={20}
-              color={colors.ai.primary}
-            />
-          )}
-        </Pressable>
-      ))}
-    </SurfaceCard>
+        ),
+      })),
+    [colors.gray[200], circleStyle],
+  );
+
+  return (
+    <DropdownPicker
+      options={options}
+      value={currentLanguage}
+      onSelect={onChangeLanguage}
+      testID="language-picker"
+    />
   );
 };

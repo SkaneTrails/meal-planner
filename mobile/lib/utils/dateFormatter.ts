@@ -5,7 +5,17 @@
  * All screens read it from SettingsContext via `useSettings().weekStart`.
  */
 
-export type WeekStart = 'monday' | 'saturday';
+export const WEEK_DAYS = [
+  'sunday',
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+] as const;
+
+export type WeekStart = (typeof WEEK_DAYS)[number];
 
 /**
  * Format a Date as "YYYY-MM-DD" using local timezone (no UTC shift).
@@ -27,10 +37,8 @@ export const getWeekDatesArray = (
   const today = new Date();
   const currentDay = today.getDay(); // 0=Sun … 6=Sat
 
-  const daysSinceStart =
-    weekStart === 'monday'
-      ? (currentDay + 6) % 7 // Mon=0 … Sun=6
-      : (currentDay + 1) % 7; // Sat=0 … Fri=6
+  const startIndex = WEEK_DAYS.indexOf(weekStart); // 0=Sun … 6=Sat
+  const daysSinceStart = (currentDay - startIndex + 7) % 7;
 
   const firstDay = new Date(today);
   firstDay.setDate(today.getDate() - daysSinceStart + weekOffset * 7);

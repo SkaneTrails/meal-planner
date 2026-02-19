@@ -20,6 +20,8 @@ export { ChipGroup } from './ChipGroup';
 export { ChipPicker } from './ChipPicker';
 export { ContentCard } from './ContentCard';
 export { CRTOverlay } from './CRTOverlay';
+export type { DropdownOption } from './DropdownPicker';
+export { DropdownPicker } from './DropdownPicker';
 export { EmptyState } from './EmptyState';
 export { EnhancingOverlay } from './EnhancingOverlay';
 export { ErrorBoundary } from './ErrorBoundary';

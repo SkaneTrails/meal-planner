@@ -51,6 +51,7 @@ const visibility: VisibilityTokens = {
   showChipToggleDot: false,
   showStatDividers: true,
   showSectionHeaderIcon: false,
+  showCheckmarkIndicator: false,
 };
 
 // ── Platform-resolved monospace font ───────────────────────────────────

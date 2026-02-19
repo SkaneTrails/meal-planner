@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text } from 'react-native';
+import { useMemo } from 'react';
 import { Section, SettingToggleRow, SurfaceCard } from '@/components';
+import { DropdownPicker } from '@/components/DropdownPicker';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
-import { settingsTitleStyle, spacing, useTheme } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
+import { WEEK_DAYS, type WeekStart } from '@/lib/utils/dateFormatter';
 import { LanguagePicker } from './LanguagePicker';
 
 interface RecipeLibrarySectionProps {
@@ -36,17 +37,35 @@ export const RecipeLibrarySection = ({
   );
 };
 
+const WEEKDAY_I18N_KEY: Record<WeekStart, string> = {
+  sunday: 'settings.weekStartSunday',
+  monday: 'settings.weekStartMonday',
+  tuesday: 'settings.weekStartTuesday',
+  wednesday: 'settings.weekStartWednesday',
+  thursday: 'settings.weekStartThursday',
+  friday: 'settings.weekStartFriday',
+  saturday: 'settings.weekStartSaturday',
+};
+
 interface WeekStartSectionProps {
-  weekStart: 'monday' | 'saturday';
-  onSetWeekStart: (day: 'monday' | 'saturday') => void;
+  weekStart: WeekStart;
+  onSetWeekStart: (day: WeekStart) => void;
 }
 
 export const WeekStartSection = ({
   weekStart,
   onSetWeekStart,
 }: WeekStartSectionProps) => {
-  const { colors } = useTheme();
   const { t } = useTranslation();
+
+  const options = useMemo(
+    () =>
+      WEEK_DAYS.map((day) => ({
+        value: day,
+        label: t(WEEKDAY_I18N_KEY[day]),
+      })),
+    [t],
+  );
 
   return (
     <Section
@@ -55,42 +74,12 @@ export const WeekStartSection = ({
       subtitle={t('settings.weekStartDesc')}
       spacing={spacing['2xl']}
     >
-      <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
-        {(['monday', 'saturday'] as const).map((day, index) => (
-          <Pressable
-            key={day}
-            onPress={() => onSetWeekStart(day)}
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: spacing.md,
-              backgroundColor: pressed ? colors.bgMid : 'transparent',
-              borderBottomWidth: index === 0 ? 1 : 0,
-              borderBottomColor: colors.surface.pressed,
-            })}
-          >
-            <Text
-              style={{
-                flex: 1,
-                ...settingsTitleStyle,
-              }}
-            >
-              {t(
-                day === 'monday'
-                  ? 'settings.weekStartMonday'
-                  : 'settings.weekStartSaturday',
-              )}
-            </Text>
-            {weekStart === day && (
-              <Ionicons
-                name="checkmark-circle"
-                size={20}
-                color={colors.ai.primary}
-              />
-            )}
-          </Pressable>
-        ))}
-      </SurfaceCard>
+      <DropdownPicker
+        options={options}
+        value={weekStart}
+        onSelect={onSetWeekStart}
+        testID="week-start-picker"
+      />
     </Section>
   );
 };

@@ -19,8 +19,10 @@ describe('LanguagePromptModal', () => {
     ).toBeTruthy();
   });
 
-  it('renders all language options', () => {
+  it('renders all language options after expanding picker', () => {
     render(<LanguagePromptModal {...defaultProps} />);
+    // Picker starts collapsed — expand it first
+    fireEvent.click(screen.getByTestId('language-picker-collapsed'));
     expect(screen.getByText('English')).toBeTruthy();
     expect(screen.getByText('Svenska')).toBeTruthy();
     expect(screen.getByText('Italiano')).toBeTruthy();
@@ -39,7 +41,9 @@ describe('LanguagePromptModal', () => {
     const onConfirm = vi.fn();
     render(<LanguagePromptModal {...defaultProps} onConfirm={onConfirm} />);
 
-    fireEvent.click(screen.getByText('Svenska'));
+    // Expand picker, select Svenska, then confirm
+    fireEvent.click(screen.getByTestId('language-picker-collapsed'));
+    fireEvent.click(screen.getByTestId('language-picker-option-sv'));
     fireEvent.click(screen.getByText('Confirm'));
 
     expect(onConfirm).toHaveBeenCalledWith('sv');
