@@ -36,7 +36,7 @@ import {
 } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
-  const { colors, borderRadius, shadows, crt } = useTheme();
+  const { colors, borderRadius, shadows, overrides, crt } = useTheme();
   const {
     t,
     language,
@@ -218,7 +218,9 @@ export default function MealPlanScreen() {
                           : colors.dayCard.bg,
                         borderRadius: borderRadius.lg,
                         padding: spacing['md-lg'],
-                        borderWidth: crt ? 0 : isToday ? 2 : 1,
+                        borderWidth: isToday
+                          ? overrides.dayCardBorderWidthToday
+                          : overrides.dayCardBorderWidth,
                         borderColor: isToday
                           ? colors.ai.primary
                           : colors.glass.border,

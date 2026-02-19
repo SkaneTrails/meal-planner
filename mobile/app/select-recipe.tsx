@@ -102,17 +102,17 @@ interface TabBarProps {
 }
 
 const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
 
   return (
     <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
       <View
         style={{
           flexDirection: 'row',
-          gap: crt ? 0 : 8,
+          gap: overrides.segmentedControlGap,
           backgroundColor: colors.segmentedControl.trackBg,
           borderRadius: borderRadius.sm,
-          padding: crt ? 0 : 4,
+          padding: overrides.segmentedControlPadding,
         }}
       >
         {tabs.map((tab) => (
@@ -129,7 +129,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
                   : 'transparent',
               alignItems: 'center',
               transform: [{ scale: pressed ? 0.98 : 1 }],
-              ...(crt
+              ...(overrides.segmentedControlActiveIndicator === 'underline'
                 ? {
                     borderBottomWidth: activeTab === tab ? 1 : 0,
                     borderBottomColor: colors.primary,

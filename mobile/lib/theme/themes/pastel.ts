@@ -8,7 +8,11 @@
 import { Platform } from 'react-native';
 import { type BorderRadiusTokens, borderRadius, shadows } from '../layout';
 import { pastelColors } from '../pastel-colors';
-import type { ButtonDisplayConfig, ThemeDefinition } from '../theme-context';
+import type {
+  ButtonDisplayConfig,
+  StyleOverrides,
+  ThemeDefinition,
+} from '../theme-context';
 import type { FontFamilyTokens } from '../typography';
 
 // ── Platform-resolved comic / rounded font ─────────────────────────────
@@ -48,6 +52,19 @@ const scaleRadii = (
     ]),
   ) as unknown as BorderRadiusTokens;
 
+// ── Style overrides ────────────────────────────────────────────────────
+
+const overrides: StyleOverrides = {
+  checkedOpacity: 0.85,
+  checkboxBorderWidth: 2,
+  dashedBorderWidth: 1.5,
+  dayCardBorderWidth: 1,
+  dayCardBorderWidthToday: 2,
+  segmentedControlGap: 8,
+  segmentedControlPadding: 4,
+  segmentedControlActiveIndicator: 'shadow',
+};
+
 // ── Button config ──────────────────────────────────────────────────────
 
 const buttonDisplay: ButtonDisplayConfig = {
@@ -67,5 +84,6 @@ export const pastelTheme: ThemeDefinition = {
   borderRadius: scaleRadii(borderRadius, 2),
   shadows,
   buttonDisplay,
+  overrides,
   requiredFonts: {}, // uses system rounded font — no custom fonts needed
 };

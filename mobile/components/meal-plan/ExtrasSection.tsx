@@ -20,7 +20,7 @@ export const ExtrasSection = ({
   onAddExtra,
   onRemoveExtra,
 }: ExtrasSectionProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, overrides, crt } = useTheme();
   return (
     <TerminalFrame
       label={crt ? t('mealPlan.extras.headerTitle').toUpperCase() : undefined}
@@ -32,7 +32,7 @@ export const ExtrasSection = ({
           backgroundColor: colors.mealPlan.containerBg,
           borderRadius: borderRadius.lg,
           padding: spacing['md-lg'],
-          borderWidth: crt ? 0 : 1.5,
+          borderWidth: overrides.dashedBorderWidth,
           borderColor: colors.surface.pressed,
           borderStyle: 'dashed',
         }}

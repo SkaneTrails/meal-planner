@@ -13,8 +13,23 @@ import {
   shadows,
 } from '../layout';
 import { terminalColors, terminalCRT } from '../terminal-colors';
-import type { ButtonDisplayConfig, ThemeDefinition } from '../theme-context';
+import type {
+  ButtonDisplayConfig,
+  StyleOverrides,
+  ThemeDefinition,
+} from '../theme-context';
 import type { FontFamilyTokens } from '../typography';
+
+const overrides: StyleOverrides = {
+  checkedOpacity: 0.7,
+  checkboxBorderWidth: 1,
+  dashedBorderWidth: 0,
+  dayCardBorderWidth: 0,
+  dayCardBorderWidthToday: 0,
+  segmentedControlGap: 0,
+  segmentedControlPadding: 0,
+  segmentedControlActiveIndicator: 'underline',
+};
 
 // ── Platform-resolved monospace font ───────────────────────────────────
 
@@ -81,6 +96,7 @@ export const terminalTheme: ThemeDefinition = {
     glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
   }),
   buttonDisplay,
+  overrides,
   crt: terminalCRT,
   requiredFonts: {}, // uses system monospace — no custom fonts needed
 };
