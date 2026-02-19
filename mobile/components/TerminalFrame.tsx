@@ -15,7 +15,13 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import type React from 'react';
-import { Pressable, Text, View, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  type StyleProp,
+  Text,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { fontSize, iconSize, spacing, terminal, useTheme } from '@/lib/theme';
 
 // ── Box-drawing characters (Unicode block 0x2500) ──────────────────────
@@ -50,7 +56,7 @@ interface TerminalFrameProps {
   /** Optional segments rendered in the top border (right), each independently pressable. */
   rightSegments?: FrameSegment[];
   /** Additional styles applied to the outer wrapper. */
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   /** Padding inside the frame. Defaults to `spacing.md` (12). */
   padding?: number;
   /** If true, uses single-line box drawing (\u250C\u2500\u2510\u2502\u2514\u2500\u2518) instead of double. */

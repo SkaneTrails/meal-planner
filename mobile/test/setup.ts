@@ -505,6 +505,7 @@ vi.mock('@/lib/theme', () => {
     buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true },
+    chrome: 'full' as const,
     requiredFonts: {},
   };
 

@@ -10,7 +10,7 @@
  */
 
 import type React from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { type StyleProp, View, type ViewStyle } from 'react-native';
 import { spacing, useTheme } from '@/lib/theme';
 import type { FrameSegment } from './TerminalFrame';
 import { TerminalFrame } from './TerminalFrame';
@@ -26,11 +26,11 @@ interface ContentCardProps {
   /** Flat chrome: inner padding inside the frame. Default: spacing.md. */
   framePadding?: number;
   /** Full chrome: override the default card styling (merged on top of defaults). */
-  cardStyle?: ViewStyle;
+  cardStyle?: StyleProp<ViewStyle>;
   /** When false, light mode renders a bare View (no card bg/shadow). Default: true. */
   card?: boolean;
   /** Outer wrapper style applied in both modes. */
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const ContentCard = ({
@@ -67,7 +67,7 @@ export const ContentCard = ({
     <View
       style={[
         {
-          backgroundColor: colors.white,
+          backgroundColor: colors.card.bg,
           borderRadius: borderRadius.md,
           padding: spacing.md,
           ...shadows.sm,
