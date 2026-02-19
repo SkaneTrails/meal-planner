@@ -192,7 +192,7 @@ const NoteEditor = ({
   onCancel,
   onToggleTag,
 }: NoteEditorProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const activeTags = noteText.split(' ').filter((w) => w.trim());
   return (
     <View style={{ marginBottom: spacing.md }}>
@@ -201,7 +201,7 @@ const NoteEditor = ({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: colors.surface.tint,
-          borderRadius: crt ? 0 : borderRadius.md,
+          borderRadius: borderRadius.md,
           padding: spacing.sm,
           gap: spacing.xs,
         }}

@@ -33,8 +33,8 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
     <View style={{ flex: 1, padding: spacing.xl }}>
       <View
         style={{
-          backgroundColor: crt ? colors.mealPlan.slotBg : colors.glass.card,
-          borderRadius: crt ? borderRadius.sm : borderRadius.lg,
+          backgroundColor: colors.card.bg,
+          borderRadius: borderRadius.lg,
           padding: spacing['2xl'],
         }}
       >
@@ -103,21 +103,19 @@ export const QuickMealTab = ({ state }: QuickMealTabProps) => {
 
         <TextInput
           style={{
-            backgroundColor: crt ? colors.bgBase : colors.glass.light,
-            borderRadius: crt ? borderRadius.sm : borderRadius.md,
-            borderWidth: crt ? 1 : 0,
-            borderColor: crt ? colors.border : undefined,
+            backgroundColor: colors.input.bg,
+            borderRadius: borderRadius.md,
+            borderWidth: 1,
+            borderColor: colors.input.border,
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.lg,
             fontSize: fontSize.lg,
-            fontFamily: crt ? fonts.body : undefined,
-            color: crt ? colors.primary : colors.text.inverse,
+            fontFamily: fonts.body,
+            color: colors.input.text,
             marginBottom: spacing.lg,
           }}
           placeholder={t('selectRecipe.quickPlaceholder')}
-          placeholderTextColor={
-            crt ? colors.content.placeholder : colors.gray[500]
-          }
+          placeholderTextColor={colors.input.placeholder}
           value={customText}
           onChangeText={setCustomText}
           autoFocus

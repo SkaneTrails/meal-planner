@@ -201,6 +201,11 @@ export const pastelColors: ColorTokens = {
     fishActive: SKY,
     meatActive: ROSE,
     favoriteActive: PINK,
+    toggleActiveBg: 'rgba(107, 80, 112, 0.1)',
+    toggleInactiveBg: '#FFFFFF',
+    toggleActiveBorder: '#6B3860',
+    toggleActiveText: '#6B3860',
+    toggleInactiveText: '#6B3860',
   },
 
   // Shadow
@@ -280,4 +285,75 @@ export const pastelColors: ColorTokens = {
 
   // Tag dots — candy rainbow
   tagDot: [PINK, LAVENDER, MINT, SKY, BABY_BLUE, LEMON, ROSE, '#B8A0D8'],
+
+  // ── Semantic component tokens ────────────────────────────────────────
+
+  card: {
+    bg: 'rgba(255, 255, 255, 0.85)',
+    bgPressed: 'rgba(255, 255, 255, 0.8)',
+    textPrimary: '#4A3050',
+    textSecondary: '#A08090',
+    borderColor: 'rgba(200, 160, 200, 0.08)',
+  },
+
+  searchBar: {
+    bg: 'rgba(255, 255, 255, 0.9)',
+    border: 'rgba(200, 160, 200, 0.08)',
+    icon: '#9070A0',
+    text: '#6B5070',
+    placeholder: '#9070A0',
+    clearIcon: 'rgba(255, 255, 255, 0.65)',
+    cancelText: LAVENDER_DARK,
+  },
+
+  input: {
+    bg: 'rgba(255, 255, 255, 0.9)',
+    bgSubtle: 'rgba(107, 80, 112, 0.03)',
+    border: 'transparent',
+    text: '#4A3050',
+    placeholder: '#C0A0B0',
+  },
+
+  toggle: {
+    trackBg: 'rgba(255, 255, 255, 0.45)',
+    activeBg: 'rgba(255, 255, 255, 0.85)',
+    activeText: '#6B5070',
+    inactiveText: 'rgba(107, 80, 112, 0.5)',
+    borderColor: 'transparent',
+  },
+
+  metaChip: {
+    mealBg: '#FFD6E4',
+    mealText: '#4A3050',
+    visibilityBg: 'rgba(255, 255, 255, 0.92)',
+    visibilityText: '#4A3050',
+  },
+
+  checkbox: {
+    checkedBg: MINT,
+    checkedBorder: MINT,
+  },
+
+  listItem: {
+    bg: 'rgba(255, 255, 255, 0.92)',
+    bgActive: '#FFFFFF',
+    checkedText: 'rgba(107, 80, 112, 0.55)',
+  },
+
+  statsCard: {
+    bg: 'rgba(255, 255, 255, 0.92)',
+    borderColor: 'rgba(200, 160, 200, 0.08)',
+  },
+
+  dayCard: {
+    bg: 'rgba(255, 255, 255, 0.92)',
+    bgToday: 'rgba(255, 255, 255, 0.95)',
+  },
+
+  segmentedControl: {
+    trackBg: 'rgba(107, 80, 112, 0.03)',
+    activeBg: '#FFFFFF',
+    activeText: '#4A3050',
+    inactiveText: 'rgba(107, 80, 112, 0.55)',
+  },
 };

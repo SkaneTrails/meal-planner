@@ -14,10 +14,10 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
   const { colors, crt } = useTheme();
   const dietLabels = getDietLabels(colors);
 
-  const mealChipBg = crt ? colors.mealPlan.slotBg : colors.bgDark;
-  const mealChipColor = crt ? colors.primary : colors.text.inverse;
-  const visChipBg = crt ? colors.mealPlan.slotBg : colors.glass.solid;
-  const visChipColor = crt ? colors.primary : colors.text.inverse;
+  const mealChipBg = colors.metaChip.mealBg;
+  const mealChipColor = colors.metaChip.mealText;
+  const visChipBg = colors.metaChip.visibilityBg;
+  const visChipColor = colors.metaChip.visibilityText;
 
   return (
     <View
@@ -34,9 +34,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
           label={t(`labels.diet.${recipe.diet_label}`)}
           variant="display"
           dot={dietLabels[recipe.diet_label].dotColor}
-          bg={
-            crt ? colors.mealPlan.slotBg : dietLabels[recipe.diet_label].bgColor
-          }
+          bg={dietLabels[recipe.diet_label].bgColor}
           color={dietLabels[recipe.diet_label].color}
         />
       )}

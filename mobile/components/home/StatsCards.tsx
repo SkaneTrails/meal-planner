@@ -124,14 +124,12 @@ const StatCard = ({
       pressScale={0.97}
       style={{
         flex: 1,
-        backgroundColor: crt ? 'transparent' : colors.glass.solid,
-        borderRadius: crt ? 0 : borderRadius.md,
+        backgroundColor: colors.statsCard.bg,
+        borderRadius: borderRadius.md,
         padding: 12,
-        ...(!crt && {
-          borderWidth: 1,
-          borderColor: colors.glass.border,
-          ...shadows.sm,
-        }),
+        borderWidth: 1,
+        borderColor: colors.statsCard.borderColor,
+        ...shadows.sm,
       }}
     >
       {!crt && (

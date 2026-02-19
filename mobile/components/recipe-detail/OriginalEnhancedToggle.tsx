@@ -14,12 +14,12 @@ export const OriginalEnhancedToggle = ({
   t,
   onToggle,
 }: OriginalEnhancedToggleProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
-  const trackBg = crt ? colors.mealPlan.slotBg : colors.text.light;
-  const activeBg = crt ? colors.bgBase : colors.glass.card;
-  const activeColor = crt ? colors.primary : colors.content.body;
-  const inactiveColor = crt ? colors.content.secondary : colors.content.icon;
+  const trackBg = colors.toggle.trackBg;
+  const activeBg = colors.toggle.activeBg;
+  const activeColor = colors.toggle.activeText;
+  const inactiveColor = colors.toggle.inactiveText;
 
   return (
     <View
@@ -29,7 +29,8 @@ export const OriginalEnhancedToggle = ({
         backgroundColor: trackBg,
         borderRadius: borderRadius.lg,
         padding: 4,
-        ...(crt && { borderWidth: 1, borderColor: colors.border }),
+        borderWidth: 1,
+        borderColor: colors.toggle.borderColor,
       }}
     >
       <Pressable

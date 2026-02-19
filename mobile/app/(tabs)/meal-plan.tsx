@@ -213,20 +213,16 @@ export default function MealPlanScreen() {
                           : undefined
                       }
                       style={{
-                        backgroundColor: crt
-                          ? colors.bgBase
-                          : isToday
-                            ? colors.glass.heavy
-                            : colors.glass.solid,
+                        backgroundColor: isToday
+                          ? colors.dayCard.bgToday
+                          : colors.dayCard.bg,
                         borderRadius: borderRadius.lg,
                         padding: spacing['md-lg'],
                         borderWidth: crt ? 0 : isToday ? 2 : 1,
                         borderColor: isToday
                           ? colors.ai.primary
                           : colors.glass.border,
-                        boxShadow: crt
-                          ? undefined
-                          : shadows.cardRaised.boxShadow,
+                        boxShadow: shadows.cardRaised.boxShadow,
                       }}
                     >
                       <DayHeader

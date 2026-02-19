@@ -110,7 +110,7 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
         style={{
           flexDirection: 'row',
           gap: crt ? 0 : 8,
-          backgroundColor: crt ? 'transparent' : colors.surface.tint,
+          backgroundColor: colors.segmentedControl.trackBg,
           borderRadius: borderRadius.sm,
           padding: crt ? 0 : 4,
         }}
@@ -122,13 +122,10 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
             style={({ pressed }) => ({
               flex: 1,
               paddingVertical: spacing['sm-md'],
-              borderRadius: crt ? 0 : borderRadius['sm-md'],
-              backgroundColor: crt
-                ? activeTab === tab
-                  ? colors.mealPlan.slotBg
-                  : 'transparent'
-                : activeTab === tab
-                  ? colors.white
+              borderRadius: borderRadius['sm-md'],
+              backgroundColor:
+                activeTab === tab
+                  ? colors.segmentedControl.activeBg
                   : 'transparent',
               alignItems: 'center',
               transform: [{ scale: pressed ? 0.98 : 1 }],
@@ -146,13 +143,10 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
               style={{
                 fontSize: fontSize.sm,
                 fontFamily: fonts.bodySemibold,
-                color: crt
-                  ? activeTab === tab
-                    ? colors.primary
-                    : colors.border
-                  : activeTab === tab
-                    ? colors.content.heading
-                    : colors.content.subtitle,
+                color:
+                  activeTab === tab
+                    ? colors.segmentedControl.activeText
+                    : colors.segmentedControl.inactiveText,
               }}
             >
               {labels[tab]}

@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { dotSize, fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
-import type { CRTConfig } from '@/lib/theme/theme-context';
 
 type ChipVariant = 'filled' | 'outline' | 'toggle' | 'display';
 type ChipSize = 'sm' | 'md';
@@ -72,8 +71,7 @@ export const Chip = ({
   const resolvedShowRemove = showRemove ?? variant === 'filled';
   const resolvedShowAdd = showAdd ?? variant === 'outline';
   const isSmall = size === 'sm';
-  const resolvedColor =
-    colorOverride ?? labelColor(variant, active, colors, crt);
+  const resolvedColor = colorOverride ?? labelColor(variant, active, colors);
   const iconSize = isSmall ? 12 : 14;
 
   return (
@@ -97,7 +95,7 @@ export const Chip = ({
             : spacing.xs,
         borderRadius:
           variant === 'display' ? borderRadius.md : borderRadius.full,
-        ...variantStyle(variant, active, pressed && !disabled, colors, crt, bg),
+        ...variantStyle(variant, active, pressed && !disabled, colors, bg),
       })}
     >
       {/* Leading add icon (outline variant) */}
@@ -164,7 +162,6 @@ const variantStyle = (
   active: boolean,
   pressed: boolean,
   colors: Colors,
-  crt?: CRTConfig,
   bg?: string,
 ) => {
   if (bg) return { backgroundColor: bg };
@@ -184,16 +181,10 @@ const variantStyle = (
       return {
         borderWidth: 1,
         backgroundColor: active
-          ? crt
-            ? colors.primary
-            : colors.surface.active
-          : crt
-            ? colors.bgBase
-            : colors.white,
+          ? colors.chip.toggleActiveBg
+          : colors.chip.toggleInactiveBg,
         borderColor: active
-          ? crt
-            ? colors.primary
-            : colors.content.headingWarm
+          ? colors.chip.toggleActiveBorder
           : colors.surface.divider,
       };
     case 'display':
@@ -203,20 +194,16 @@ const variantStyle = (
   }
 };
 
-const labelColor = (
-  variant: ChipVariant,
-  active: boolean,
-  colors: Colors,
-  crt?: CRTConfig,
-) => {
+const labelColor = (variant: ChipVariant, active: boolean, colors: Colors) => {
   switch (variant) {
     case 'filled':
       return colors.content.body;
     case 'outline':
       return colors.content.strong;
     case 'toggle':
-      if (crt) return active ? colors.bgBase : colors.primary;
-      return colors.content.headingWarm;
+      return active
+        ? colors.chip.toggleActiveText
+        : colors.chip.toggleInactiveText;
     case 'display':
       return colors.content.secondary;
   }

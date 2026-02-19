@@ -299,6 +299,11 @@ vi.mock('@/lib/theme', () => {
       fishActive: '#2D7AB8',
       meatActive: '#B85C38',
       favoriteActive: '#C75050',
+      toggleActiveBg: 'rgba(93, 78, 64, 0.12)',
+      toggleInactiveBg: '#FFFFFF',
+      toggleActiveBorder: '#4A3728',
+      toggleActiveText: '#4A3728',
+      toggleInactiveText: '#4A3728',
     },
     shadow: { text: 'rgba(0, 0, 0, 0.15)' },
     glass: {
@@ -356,6 +361,65 @@ vi.mock('@/lib/theme', () => {
       animatedOverlay: 'rgba(255, 255, 255, 0.08)',
     },
     tagDot: ['#7A9BBD', '#8B9D77', '#C47D5A', '#9B7BB8', '#5BA3A3', '#D4A574', '#B07070', '#6B8FA3'],
+    card: {
+      bg: 'rgba(255, 255, 255, 0.85)',
+      bgPressed: 'rgba(255, 255, 255, 0.78)',
+      textPrimary: '#2D2D2D',
+      textSecondary: '#757575',
+      borderColor: 'rgba(0, 0, 0, 0.04)',
+    },
+    searchBar: {
+      bg: 'rgba(255, 255, 255, 0.88)',
+      border: 'rgba(0, 0, 0, 0.04)',
+      icon: '#8B7355',
+      text: '#5D4E40',
+      placeholder: '#8B7355',
+      clearIcon: 'rgba(255, 255, 255, 0.6)',
+      cancelText: '#7A6858',
+    },
+    input: {
+      bg: 'rgba(255, 255, 255, 0.88)',
+      bgSubtle: 'rgba(93, 78, 64, 0.06)',
+      border: 'transparent',
+      text: '#2D2D2D',
+      placeholder: '#9E9E9E',
+    },
+    toggle: {
+      trackBg: 'rgba(255, 255, 255, 0.4)',
+      activeBg: 'rgba(255, 255, 255, 0.85)',
+      activeText: '#5D4E40',
+      inactiveText: 'rgba(93, 78, 64, 0.5)',
+      borderColor: 'transparent',
+    },
+    metaChip: {
+      mealBg: '#E8CDB5',
+      mealText: '#2D2D2D',
+      visibilityBg: 'rgba(255, 255, 255, 0.92)',
+      visibilityText: '#2D2D2D',
+    },
+    checkbox: {
+      checkedBg: '#6B8E6B',
+      checkedBorder: '#6B8E6B',
+    },
+    listItem: {
+      bg: 'rgba(255, 255, 255, 0.92)',
+      bgActive: '#FFFFFF',
+      checkedText: 'rgba(93, 78, 64, 0.6)',
+    },
+    statsCard: {
+      bg: 'rgba(255, 255, 255, 0.92)',
+      borderColor: 'rgba(0, 0, 0, 0.04)',
+    },
+    dayCard: {
+      bg: 'rgba(255, 255, 255, 0.92)',
+      bgToday: 'rgba(255, 255, 255, 0.95)',
+    },
+    segmentedControl: {
+      trackBg: 'rgba(93, 78, 64, 0.06)',
+      activeBg: '#FFFFFF',
+      activeText: '#3D3D3D',
+      inactiveText: 'rgba(93, 78, 64, 0.6)',
+    },
   };
 
   const mockStyles = {
