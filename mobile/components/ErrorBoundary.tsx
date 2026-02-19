@@ -5,13 +5,18 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
-import {
-  borderRadius,
-  colors,
-  fontFamily,
-  fontSize,
-  spacing,
-} from '@/lib/theme';
+import { borderRadius, fontSize, spacing } from '@/lib/theme';
+
+// Hardcoded fallback values — class components can't call useTheme().
+// This is a last-resort error UI, so it intentionally avoids theme machinery.
+const FALLBACK = {
+  bgLight: '#FDF6F0',
+  textDark: '#2D2D2D',
+  textMuted: '#757575',
+  primary: '#2D2D2D',
+  white: '#FFFFFF',
+  font: 'System',
+} as const;
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -56,7 +61,7 @@ export class ErrorBoundary extends Component<
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: colors.bgLight,
+          backgroundColor: FALLBACK.bgLight,
           padding: spacing['3xl'],
         }}
       >
@@ -71,8 +76,8 @@ export class ErrorBoundary extends Component<
         <Text
           style={{
             fontSize: fontSize.xl,
-            fontFamily: fontFamily.displayBold,
-            color: colors.text.inverse,
+            fontFamily: FALLBACK.font,
+            color: FALLBACK.textDark,
             textAlign: 'center',
             marginBottom: spacing.md,
           }}
@@ -82,8 +87,8 @@ export class ErrorBoundary extends Component<
         <Text
           style={{
             fontSize: fontSize.sm,
-            fontFamily: fontFamily.body,
-            color: colors.gray[600],
+            fontFamily: FALLBACK.font,
+            color: FALLBACK.textMuted,
             textAlign: 'center',
             marginBottom: spacing['2xl'],
             lineHeight: fontSize.sm * 1.5,
@@ -94,7 +99,7 @@ export class ErrorBoundary extends Component<
         <Pressable
           onPress={this.handleReload}
           style={{
-            backgroundColor: colors.primary,
+            backgroundColor: FALLBACK.primary,
             paddingHorizontal: spacing['2xl'],
             paddingVertical: spacing.md,
             borderRadius: borderRadius.full,
@@ -102,9 +107,9 @@ export class ErrorBoundary extends Component<
         >
           <Text
             style={{
-              color: colors.white,
+              color: FALLBACK.white,
               fontSize: fontSize.md,
-              fontFamily: fontFamily.bodyMedium,
+              fontFamily: FALLBACK.font,
             }}
           >
             Reload App
