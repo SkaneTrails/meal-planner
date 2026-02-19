@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, TerminalFrame } from '@/components';
+import { AnimatedPressable, ContentCard } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
@@ -23,7 +23,7 @@ export const StatsCards = ({
   groceryItemsCount,
   t,
 }: StatsCardsProps) => {
-  const { colors, crt } = useTheme();
+  const { colors, visibility } = useTheme();
   const router = useRouter();
 
   const statCards = [
@@ -54,46 +54,36 @@ export const StatsCards = ({
     />,
   ];
 
-  if (crt) {
-    return (
-      <View
-        style={{
-          paddingHorizontal: spacing.lg,
-          marginBottom: spacing.lg,
-        }}
-      >
-        <TerminalFrame variant="single">
-          <View style={{ flexDirection: 'row' }}>
-            {statCards.map((card, i) => (
-              <View key={i} style={{ flex: 1, flexDirection: 'row' }}>
-                {card}
-                {i < statCards.length - 1 && (
-                  <View
-                    style={{
-                      width: 1,
-                      backgroundColor: colors.primary,
-                      opacity: 0.3,
-                    }}
-                  />
-                )}
-              </View>
-            ))}
-          </View>
-        </TerminalFrame>
-      </View>
-    );
-  }
-
   return (
     <View
       style={{
-        flexDirection: 'row',
         paddingHorizontal: spacing.lg,
-        gap: spacing.sm,
         marginBottom: spacing.lg,
       }}
     >
-      {statCards}
+      <ContentCard card={false}>
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: visibility.showStatDividers ? 0 : spacing.sm,
+          }}
+        >
+          {statCards.map((card, i) => (
+            <View key={i} style={{ flex: 1, flexDirection: 'row' }}>
+              {card}
+              {visibility.showStatDividers && i < statCards.length - 1 && (
+                <View
+                  style={{
+                    width: 1,
+                    backgroundColor: colors.primary,
+                    opacity: 0.3,
+                  }}
+                />
+              )}
+            </View>
+          ))}
+        </View>
+      </ContentCard>
     </View>
   );
 };

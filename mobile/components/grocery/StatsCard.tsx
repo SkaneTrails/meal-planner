@@ -5,7 +5,7 @@ import {
   AnimatedPressable,
   Button,
   ButtonGroup,
-  TerminalFrame,
+  ContentCard,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
@@ -188,22 +188,19 @@ export const StatsCard = ({
   onClearManualItems,
   onClearAll,
 }: StatsCardProps) => {
-  const { colors, fonts, borderRadius, shadows, visibility, crt } = useTheme();
+  const { colors, fonts, shadows, visibility } = useTheme();
   const { t } = useTranslation();
 
-  const content = (
-    <View
-      style={
-        crt
-          ? {}
-          : {
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.md,
-              padding: spacing.md,
-              marginBottom: spacing.sm,
-              ...shadows.card,
-            }
-      }
+  const progressLabel =
+    itemsToBuy > 0 ? `${checkedItemsToBuy}/${itemsToBuy}` : undefined;
+
+  return (
+    <ContentCard
+      label={t('grocery.title').toUpperCase()}
+      rightSegments={progressLabel ? [{ label: progressLabel }] : undefined}
+      frameVariant="double"
+      cardStyle={{ ...shadows.card, marginBottom: spacing.sm }}
+      style={{ marginBottom: spacing.sm }}
     >
       <View
         style={{
@@ -267,24 +264,6 @@ export const StatsCard = ({
       )}
 
       <ItemsAtHomeIndicator hiddenAtHomeCount={hiddenAtHomeCount} />
-    </View>
+    </ContentCard>
   );
-
-  if (crt) {
-    const progressLabel =
-      itemsToBuy > 0 ? `${checkedItemsToBuy}/${itemsToBuy}` : undefined;
-    return (
-      <View style={{ marginBottom: spacing.sm }}>
-        <TerminalFrame
-          label={t('grocery.title').toUpperCase()}
-          rightSegments={progressLabel ? [{ label: progressLabel }] : undefined}
-          variant="double"
-        >
-          {content}
-        </TerminalFrame>
-      </View>
-    );
-  }
-
-  return content;
 };

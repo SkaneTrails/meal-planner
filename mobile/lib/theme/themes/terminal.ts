@@ -49,6 +49,8 @@ const visibility: VisibilityTokens = {
   showRecipeTags: false,
   showFrameLabels: true,
   showChipToggleDot: false,
+  showStatDividers: true,
+  showSectionHeaderIcon: false,
 };
 
 // ── Platform-resolved monospace font ───────────────────────────────────

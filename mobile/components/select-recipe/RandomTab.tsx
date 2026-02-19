@@ -22,7 +22,7 @@ interface RandomTabProps {
 }
 
 export const RandomTab = ({ state }: RandomTabProps) => {
-  const { colors, borderRadius, shadows, crt, fonts } = useTheme();
+  const { colors, borderRadius, shadows, fonts } = useTheme();
   const {
     t,
     randomRecipe,
@@ -125,66 +125,48 @@ const RandomHeader = ({
   mealTypeCount,
   mealTypeLabel,
 }: RandomHeaderProps) => {
-  const { colors, fonts, crt } = useTheme();
-
-  if (crt) {
-    return (
-      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
-        <Text
-          style={{
-            fontSize: fontSize['2xl'],
-            fontFamily: fonts.bodySemibold,
-            color: colors.primary,
-            textAlign: 'center',
-          }}
-        >
-          {t('selectRecipe.random.howAbout')}
-        </Text>
-        <Text
-          style={{
-            fontSize: fontSize.md,
-            fontFamily: fonts.body,
-            color: colors.content.tertiary,
-            marginTop: spacing.xs,
-          }}
-        >
-          {t('selectRecipe.random.matchCount', { count: mealTypeCount })}{' '}
-          {mealTypeLabel}
-        </Text>
-      </View>
-    );
-  }
+  const { colors, fonts, visibility } = useTheme();
 
   return (
-    <View style={{ alignItems: 'center', marginBottom: spacing['2xl'] }}>
-      <IconCircle
-        size="xl"
-        bg={colors.ai.light}
-        style={{ marginBottom: spacing.md }}
-      >
-        <Ionicons name="dice" size={32} color={colors.ai.primary} />
-      </IconCircle>
+    <View
+      style={{
+        alignItems: 'center',
+        marginBottom: spacing[visibility.showSectionHeaderIcon ? '2xl' : 'lg'],
+      }}
+    >
+      {visibility.showSectionHeaderIcon && (
+        <IconCircle
+          size="xl"
+          bg={colors.ai.light}
+          style={{ marginBottom: spacing.md }}
+        >
+          <Ionicons name="dice" size={32} color={colors.ai.primary} />
+        </IconCircle>
+      )}
       <Text
         style={{
-          fontSize: fontSize['3xl'],
-          fontWeight: fontWeight.bold,
-          color: colors.text.inverse,
+          fontSize: fontSize[visibility.showSectionHeaderIcon ? '3xl' : '2xl'],
+          fontFamily: fonts.bodySemibold,
+          color: colors.content.heading,
           textAlign: 'center',
           letterSpacing: letterSpacing.normal,
         }}
       >
         {t('selectRecipe.random.howAbout')}
       </Text>
-      <View
-        style={{
-          ...accentUnderlineStyle,
-          marginTop: spacing.sm,
-        }}
-      />
+      {visibility.showSectionHeaderIcon && (
+        <View
+          style={{
+            ...accentUnderlineStyle,
+            marginTop: spacing.sm,
+          }}
+        />
+      )}
       <Text
         style={{
-          fontSize: fontSize.lg,
-          color: colors.gray[600],
+          fontSize: fontSize[visibility.showSectionHeaderIcon ? 'lg' : 'md'],
+          fontFamily: fonts.body,
+          color: colors.content.tertiary,
           marginTop: spacing.xs,
         }}
       >

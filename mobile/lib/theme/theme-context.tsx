@@ -123,6 +123,10 @@ export interface VisibilityTokens {
   showFrameLabels: boolean;
   /** Whether toggle chips show the colored dot indicator. */
   showChipToggleDot: boolean;
+  /** Vertical dividers between stat cards (CRT groups cards into a single frame). */
+  showStatDividers: boolean;
+  /** Icon circle + accent underline in section/tab headers. */
+  showSectionHeaderIcon: boolean;
 }
 
 /** A complete set of design tokens that fully describes one visual theme. */

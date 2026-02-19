@@ -85,6 +85,8 @@ const visibility: VisibilityTokens = {
   showRecipeTags: true,
   showFrameLabels: false,
   showChipToggleDot: true,
+  showStatDividers: false,
+  showSectionHeaderIcon: true,
 };
 
 // ── Button config ──────────────────────────────────────────────────────
