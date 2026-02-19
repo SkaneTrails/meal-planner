@@ -148,7 +148,7 @@ const Header = ({
   t: TFn;
   onSettings: () => void;
 }) => {
-  const { colors, borderRadius, shadows, crt } = useTheme();
+  const { colors, borderRadius, shadows, chrome } = useTheme();
 
   return (
     <View
@@ -172,7 +172,7 @@ const Header = ({
             subtitle={t('home.subtitle')}
           />
         </View>
-        {crt ? (
+        {chrome === 'flat' ? (
           <TerminalFabBar
             slots={[
               {
@@ -204,9 +204,9 @@ const Header = ({
 };
 
 const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => {
-  const { crt, colors, fonts } = useTheme();
+  const { chrome, colors, fonts } = useTheme();
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
         <TerminalFrame variant="single">

@@ -12,7 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Section, TerminalFrame } from '@/components';
+import { Section } from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
@@ -38,7 +38,7 @@ export const RecipeNotes = ({
   t,
   onCopy,
 }: RecipeNotesProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const [text, setText] = useState('');
   const { data: notes, isLoading } = useRecipeNotes(recipeId);
   const createNote = useCreateRecipeNote();
@@ -111,154 +111,7 @@ export const RecipeNotes = ({
     });
   };
 
-  if (crt) {
-    return (
-      <View style={{ marginTop: spacing.xl }}>
-        <TerminalFrame variant="single" label={t('recipe.notes').toUpperCase()}>
-          <View
-            style={{
-              backgroundColor: colors.mealPlan.slotBg,
-              padding: spacing.lg,
-            }}
-          >
-            {/* Input row */}
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: spacing.md,
-              }}
-            >
-              <TextInput
-                value={text}
-                onChangeText={setText}
-                placeholder={t('recipe.notesPlaceholder')}
-                placeholderTextColor={colors.content.placeholderHex}
-                multiline
-                style={{
-                  flex: 1,
-                  backgroundColor: colors.bgBase,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: borderRadius.md,
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  fontSize: fontSize.lg,
-                  fontFamily: fonts.body,
-                  color: colors.content.body,
-                  minHeight: 42,
-                  maxHeight: 100,
-                }}
-              />
-              <Pressable
-                onPress={handleAdd}
-                disabled={!text.trim() || createNote.isPending}
-                style={{
-                  marginLeft: spacing.sm,
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.sm,
-                  borderWidth: 1,
-                  borderColor: colors.primary,
-                  borderRadius: borderRadius.md,
-                  minHeight: 42,
-                  justifyContent: 'center',
-                  opacity: !text.trim() || createNote.isPending ? 0.4 : 1,
-                }}
-              >
-                {createNote.isPending ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <Text
-                    style={{
-                      color: colors.primary,
-                      fontFamily: fonts.bodySemibold,
-                      fontSize: fontSize.lg,
-                    }}
-                  >
-                    {t('recipe.addNote')}
-                  </Text>
-                )}
-              </Pressable>
-            </View>
-
-            {/* Notes list */}
-            {isLoading && (
-              <ActivityIndicator
-                size="small"
-                color={colors.primary}
-                style={{ marginVertical: spacing.md }}
-              />
-            )}
-
-            {!isLoading && (!notes || notes.length === 0) && (
-              <Text
-                style={{
-                  color: colors.content.secondary,
-                  fontFamily: fonts.body,
-                  fontSize: fontSize.lg,
-                  textAlign: 'center',
-                  paddingVertical: spacing.md,
-                }}
-              >
-                {t('recipe.noNotes')}
-              </Text>
-            )}
-
-            {notes?.map((note) => (
-              <View
-                key={note.id}
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors.border,
-                  paddingVertical: spacing.md,
-                }}
-              >
-                <Text
-                  style={{
-                    color: colors.content.body,
-                    fontFamily: fonts.body,
-                    fontSize: fontSize.lg,
-                    lineHeight: lineHeight.lg,
-                  }}
-                >
-                  {note.text}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: spacing.xs,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: colors.content.secondary,
-                      fontFamily: fonts.body,
-                      fontSize: fontSize.sm,
-                    }}
-                  >
-                    {formatDate(note.created_at)}
-                  </Text>
-                  <Pressable
-                    onPress={() => handleDelete(note.id)}
-                    hitSlop={8}
-                    style={{ padding: spacing.xs }}
-                  >
-                    <Text
-                      style={{ color: colors.primary, fontSize: fontSize.sm }}
-                    >
-                      {'\u2717'}
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-            ))}
-          </View>
-        </TerminalFrame>
-      </View>
-    );
-  }
+  const isDisabled = !text.trim() || createNote.isPending;
 
   return (
     <Section
@@ -284,7 +137,9 @@ export const RecipeNotes = ({
           multiline
           style={{
             flex: 1,
-            backgroundColor: colors.glass.subtle,
+            backgroundColor: colors.input.bg,
+            borderWidth: 1,
+            borderColor: colors.input.border,
             borderRadius: borderRadius.md,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
@@ -297,28 +152,25 @@ export const RecipeNotes = ({
         />
         <Pressable
           onPress={handleAdd}
-          disabled={!text.trim() || createNote.isPending}
-          style={({ pressed }) => ({
+          disabled={isDisabled}
+          style={{
             marginLeft: spacing.sm,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
+            borderWidth: 1,
+            borderColor: colors.primary,
             borderRadius: borderRadius.md,
-            backgroundColor:
-              !text.trim() || createNote.isPending
-                ? colors.surface.active
-                : pressed
-                  ? colors.ai.primaryDark
-                  : colors.ai.primary,
             minHeight: 42,
             justifyContent: 'center',
-          })}
+            opacity: isDisabled ? 0.4 : 1,
+          }}
         >
           {createNote.isPending ? (
-            <ActivityIndicator size="small" color={colors.white} />
+            <ActivityIndicator size="small" color={colors.primary} />
           ) : (
             <Text
               style={{
-                color: !text.trim() ? colors.content.placeholder : colors.white,
+                color: colors.primary,
                 fontFamily: fonts.bodySemibold,
                 fontSize: fontSize.lg,
               }}
@@ -356,10 +208,9 @@ export const RecipeNotes = ({
         <View
           key={note.id}
           style={{
-            backgroundColor: colors.glass.faint,
-            borderRadius: borderRadius.md,
-            padding: spacing.md,
-            marginBottom: spacing.sm,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.surface.divider,
+            paddingVertical: spacing.md,
           }}
         >
           <Text

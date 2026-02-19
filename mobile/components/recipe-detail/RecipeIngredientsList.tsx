@@ -12,9 +12,9 @@ export const RecipeIngredientsList = ({
   ingredients,
   t,
 }: RecipeIngredientsListProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <View style={{ marginTop: spacing.xl }}>
         <TerminalFrame

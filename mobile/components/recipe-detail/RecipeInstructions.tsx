@@ -19,7 +19,7 @@ export const RecipeInstructions = ({
   t,
   onToggleStep,
 }: RecipeInstructionsProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, chrome } = useTheme();
 
   const stepCounter =
     completedSteps.size > 0 && recipe.instructions.length > 0 ? (
@@ -42,7 +42,7 @@ export const RecipeInstructions = ({
       ? `${completedSteps.size}/${recipe.instructions.length}`
       : undefined;
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <View style={{ marginTop: spacing.xl, marginBottom: spacing.xl }}>
         <TerminalFrame

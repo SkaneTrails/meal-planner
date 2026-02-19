@@ -34,6 +34,7 @@ export type {
   ButtonDisplayConfig,
   CircleStyleFn,
   CRTConfig,
+  LayoutChrome,
   StyleOverrides,
   ThemeDefinition,
   VisibilityTokens,

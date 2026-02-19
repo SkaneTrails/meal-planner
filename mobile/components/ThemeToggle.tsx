@@ -17,9 +17,9 @@ export const ThemeToggle = ({
   onValueChange,
   disabled = false,
 }: ThemeToggleProps) => {
-  const { colors, fonts, isTerminal } = useTheme();
+  const { colors, fonts, chrome } = useTheme();
 
-  if (!isTerminal) {
+  if (chrome !== 'flat') {
     return (
       <Switch
         value={value}

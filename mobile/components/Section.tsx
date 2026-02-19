@@ -83,7 +83,7 @@ export const Section = ({
       duration: 250,
       useNativeDriver: true,
     }).start();
-    onToggle!();
+    onToggle?.();
   };
 
   const chevronRotation = rotateAnim.interpolate({

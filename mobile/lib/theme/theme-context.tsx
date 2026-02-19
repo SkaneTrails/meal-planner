@@ -129,6 +129,15 @@ export interface VisibilityTokens {
   showSectionHeaderIcon: boolean;
 }
 
+/**
+ * Layout chrome — controls whether components use box-drawing frames
+ * (flat) or card containers with rounded corners and shadows (full).
+ *
+ * Themes declare this once; consumers branch on it instead of checking
+ * for a specific theme identity.
+ */
+export type LayoutChrome = 'flat' | 'full';
+
 /** A complete set of design tokens that fully describes one visual theme. */
 export interface ThemeDefinition {
   /** Unique registry key — used for storage and lookup. */
@@ -142,7 +151,12 @@ export interface ThemeDefinition {
   buttonDisplay: ButtonDisplayConfig;
   overrides: StyleOverrides;
   visibility: VisibilityTokens;
-  /** Only CRT-style themes provide this. */
+  /**
+   * Layout chrome: 'flat' uses box-drawing frames and minimal decoration,
+   * 'full' uses cards with rounded corners and shadows.
+   */
+  chrome: LayoutChrome;
+  /** CRT visual overlay config (scanlines, flicker, glow). Omit for themes without the effect. */
   crt?: CRTConfig;
   /** Static background image used by GradientBackground. Omit for solid-color backgrounds. */
   backgroundImage?: ImageSourcePropType;
@@ -165,7 +179,9 @@ export interface ThemeValue {
   buttonDisplay: ButtonDisplayConfig;
   overrides: StyleOverrides;
   visibility: VisibilityTokens;
-  /** CRT overlay config — undefined for themes without the effect. */
+  /** Layout chrome: 'flat' (box-drawing frames) or 'full' (cards/shadows). */
+  chrome: LayoutChrome;
+  /** CRT visual overlay config (scanlines, flicker, glow). Undefined = no overlay. */
   crt?: CRTConfig;
   /** Static background image for screen backgrounds. Undefined = solid color. */
   backgroundImage?: ImageSourcePropType;
@@ -173,8 +189,6 @@ export interface ThemeValue {
   themeName: string;
   /** Switch to a different theme by registry key. */
   setThemeName: (name: string) => void;
-  /** Whether the active theme has CRT visual effects. */
-  isTerminal: boolean;
 }
 
 const ThemeContext = createContext<ThemeValue | null>(null);
@@ -214,13 +228,14 @@ export const ThemeProvider = ({
       buttonDisplay,
       overrides,
       visibility,
+      chrome,
       crt,
       backgroundImage,
     } = theme;
-    const isFlat = radii.full === 0;
-    const themedCircleStyle: CircleStyleFn = isFlat
-      ? (size) => ({ width: size, height: size, borderRadius: 0 }) as const
-      : defaultCircleStyle;
+    const themedCircleStyle: CircleStyleFn =
+      chrome === 'flat'
+        ? (size) => ({ width: size, height: size, borderRadius: 0 }) as const
+        : defaultCircleStyle;
 
     return {
       colors,
@@ -233,11 +248,11 @@ export const ThemeProvider = ({
       buttonDisplay,
       overrides,
       visibility,
+      chrome,
       crt,
       backgroundImage,
       themeName: id,
       setThemeName,
-      isTerminal: !!crt,
     };
   }, [theme, setThemeName]);
 

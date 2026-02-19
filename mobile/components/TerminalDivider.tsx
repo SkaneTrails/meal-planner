@@ -26,9 +26,9 @@ export const TerminalDivider = ({
   variant = 'single',
   decoration,
 }: TerminalDividerProps) => {
-  const { colors, fonts, crt } = useTheme();
+  const { colors, fonts, chrome } = useTheme();
 
-  if (!crt) {
+  if (chrome !== 'flat') {
     return (
       <View
         style={[

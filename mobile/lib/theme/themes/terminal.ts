@@ -120,6 +120,7 @@ export const terminalTheme: ThemeDefinition = {
   buttonDisplay,
   overrides,
   visibility,
+  chrome: 'flat',
   crt: terminalCRT,
   requiredFonts: {}, // uses system monospace — no custom fonts needed
 };

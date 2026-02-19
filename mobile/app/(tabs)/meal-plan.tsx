@@ -36,7 +36,7 @@ import {
 } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
-  const { colors, borderRadius, shadows, overrides, crt } = useTheme();
+  const { colors, borderRadius, shadows, overrides, chrome } = useTheme();
   const {
     t,
     language,
@@ -291,8 +291,8 @@ export default function MealPlanScreen() {
           </Animated.View>
         </View>
 
-        {/* Floating action buttons — CRT: fixed grid bar, Light: stacked circles */}
-        {crt ? (
+        {/* Floating action buttons — flat: fixed grid bar, full: stacked circles */}
+        {chrome === 'flat' ? (
           <TerminalFabBar
             style={{
               position: 'absolute',

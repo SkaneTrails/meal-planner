@@ -34,10 +34,10 @@ export const InspirationSection = ({
   t,
 }: InspirationSectionProps) => {
   const router = useRouter();
-  const { crt } = useTheme();
+  const { chrome } = useTheme();
 
   if (inspirationRecipes.length > 0 && inspirationRecipe) {
-    if (crt) {
+    if (chrome === 'flat') {
       const shuffleSegment: FrameSegment = {
         label: t('home.inspiration.shuffle').toUpperCase(),
         onPress: () => {

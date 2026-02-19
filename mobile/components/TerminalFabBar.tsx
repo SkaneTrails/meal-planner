@@ -52,9 +52,9 @@ const B = {
 } as const;
 
 export const TerminalFabBar = ({ slots, style }: TerminalFabBarProps) => {
-  const { colors, fonts, crt } = useTheme();
+  const { colors, fonts, chrome } = useTheme();
 
-  if (!crt) return null;
+  if (chrome !== 'flat') return null;
 
   const borderColor = colors.border;
   const charStyle = {

@@ -79,6 +79,7 @@ export const lightTheme: ThemeDefinition = {
   buttonDisplay,
   overrides: defaultOverrides,
   visibility,
+  chrome: 'full',
   backgroundImage: ELEGANT_BACKGROUND,
   requiredFonts: {
     DMSans_400Regular,

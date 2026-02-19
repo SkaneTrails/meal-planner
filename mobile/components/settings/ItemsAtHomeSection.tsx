@@ -41,7 +41,7 @@ export const ItemsAtHomeSection = ({
   onAddItem,
   onRemoveItem,
 }: ItemsAtHomeSectionProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const [newItem, setNewItem] = useState('');
 

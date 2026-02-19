@@ -20,9 +20,10 @@ export const RecipeEnhancedInfo = ({
   t,
   onToggleAiChanges,
 }: RecipeEnhancedInfoProps) => {
-  const { colors, fonts, typography, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, typography, borderRadius, shadows, chrome } =
+    useTheme();
 
-  if (crt) {
+  if (chrome === 'flat') {
     return (
       <>
         {recipe.enhanced && !showOriginal && recipe.tips && (
