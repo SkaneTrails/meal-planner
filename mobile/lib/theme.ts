@@ -1,10 +1,13 @@
 /**
- * Theme constants for consistent styling across the app.
- * Re-exports all theme modules for a unified import surface.
+ * Public theme API surface.
+ *
+ * Only the supported consumer-facing exports are re-exported here.
+ * Theme internals (raw color palettes, per-theme font families, factory
+ * functions, etc.) are intentionally kept internal to `theme/` and
+ * imported via relative paths by theme infrastructure only.
  */
 
 export type { ColorTokens } from './theme/colors';
-export { colors, lightColors } from './theme/colors';
 export type {
   BorderRadiusTokens,
   IconContainerSize,
@@ -18,19 +21,15 @@ export {
   iconContainer,
   iconSize,
   layout,
-  shadows,
   spacing,
   terminal,
 } from './theme/layout';
 export type { ThemeStyles } from './theme/styles';
 export {
   accentUnderlineStyle,
-  createStyles,
-  inputStyle,
   settingsSubtitleStyle,
   settingsTitleStyle,
 } from './theme/styles';
-export { terminalColors, terminalCRT } from './theme/terminal-colors';
 export type {
   ButtonDisplayConfig,
   CircleStyleFn,
@@ -49,13 +48,8 @@ export {
 } from './theme/themes';
 export type { FontFamilyTokens, TypographyTokens } from './theme/typography';
 export {
-  createTypography,
-  defaultFontFamily,
-  fontFamily,
-  fontFamilyWeight,
   fontSize,
   fontWeight,
   letterSpacing,
   lineHeight,
-  typography,
 } from './theme/typography';

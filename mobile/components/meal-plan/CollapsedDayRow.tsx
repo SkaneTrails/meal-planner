@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    marginBottom: spacing.sm,
+    marginVertical: spacing.xs,
   },
   left: {
     flexDirection: 'row',

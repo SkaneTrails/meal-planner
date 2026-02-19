@@ -530,8 +530,6 @@ vi.mock('@/lib/theme', () => {
   };
 
   return {
-  colors: c,
-  lightColors: undefined, // re-exported but unused in tests
   spacing: { '2xs': 2, xs: 4, 'xs-sm': 6, sm: 8, 'sm-md': 10, md: 12, 'md-lg': 14, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
     contentMaxWidth: 720,
@@ -553,47 +551,17 @@ vi.mock('@/lib/theme', () => {
   borderRadius: mockBorderRadius,
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
-  shadows: mockShadows,
   terminal: { charHeight: 14, fabCharHeight: 16 },
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
-  fontFamily: {
-    display: '"DM Sans", sans-serif',
-    displayRegular: '"DM Sans", sans-serif',
-    displayMedium: '"DM Sans", sans-serif',
-    displayBold: '"DM Sans", sans-serif',
-    body: '"DM Sans", sans-serif',
-    bodyMedium: '"DM Sans", sans-serif',
-    bodySemibold: '"DM Sans", sans-serif',
-    bodyBold: '"DM Sans", sans-serif',
-    accent: '"DM Sans", sans-serif',
-  },
-  fontFamilyWeight: {
-    display: '600', displayRegular: '400', displayMedium: '500', displayBold: '700',
-    body: '400', bodyMedium: '500', bodySemibold: '600', bodyBold: '700', accent: '500',
-  },
   letterSpacing: { tighter: -0.8, tight: -0.5, snug: -0.3, normal: -0.2, wide: 0.8, wider: 1.2 },
-  typography: mockTypography,
-  createTypography: (_fonts = mockFonts) => mockTypography,
-  inputStyle: {},
   settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
   settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
   accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
-  createStyles: () => mockStyles,
   circleStyle: mockCircleStyle,
   dotSize: { md: 10 },
   lineHeight: { sm: 18, md: 20, lg: 22, xl: 24, '2xl': 26 },
-  defaultFontFamily: mockFonts,
-  terminalColors: {},
-  terminalCRT: {
-    scanlineOpacity: 0.08,
-    flickerMin: 0.97,
-    flickerMs: 4000,
-    glowColor: 'rgba(51, 255, 51, 0.07)',
-    glowSpread: 60,
-    glowSize: 20,
-  },
   useTheme: () => ({
     colors: c,
     fonts: mockFonts,
