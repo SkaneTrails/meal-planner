@@ -17,6 +17,7 @@ import type {
   ButtonDisplayConfig,
   StyleOverrides,
   ThemeDefinition,
+  VisibilityTokens,
 } from '../theme-context';
 import type { FontFamilyTokens } from '../typography';
 
@@ -29,6 +30,25 @@ const overrides: StyleOverrides = {
   segmentedControlGap: 0,
   segmentedControlPadding: 0,
   segmentedControlActiveIndicator: 'underline',
+  chipToggleGap: 0,
+};
+
+const visibility: VisibilityTokens = {
+  showStackHeader: false,
+  showTodayDot: false,
+  showTodayBadge: false,
+  showDayNotes: false,
+  showChevrons: false,
+  showStatIcons: false,
+  showProgressBar: false,
+  showAddItemLabel: false,
+  showEmptyStateIcon: false,
+  showHeroOverlay: false,
+  showRecipeActionButtons: false,
+  showVisibilityChip: false,
+  showRecipeTags: false,
+  showFrameLabels: true,
+  showChipToggleDot: false,
 };
 
 // ── Platform-resolved monospace font ───────────────────────────────────
@@ -97,6 +117,7 @@ export const terminalTheme: ThemeDefinition = {
   }),
   buttonDisplay,
   overrides,
+  visibility,
   crt: terminalCRT,
   requiredFonts: {}, // uses system monospace — no custom fonts needed
 };

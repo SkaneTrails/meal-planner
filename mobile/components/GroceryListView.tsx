@@ -36,7 +36,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility, crt } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
@@ -129,7 +129,7 @@ export const GroceryListView = ({
           padding: 32,
         }}
       >
-        {!crt && (
+        {visibility.showEmptyStateIcon && (
           <View
             style={{
               width: 80,

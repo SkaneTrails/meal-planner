@@ -14,7 +14,7 @@ export const AddItemCard = ({
   onChangeText,
   onSubmit,
 }: AddItemCardProps) => {
-  const { colors, fonts, borderRadius, shadows, crt } = useTheme();
+  const { colors, fonts, borderRadius, shadows, visibility, crt } = useTheme();
   const { t } = useTranslation();
 
   const inner = (
@@ -30,7 +30,7 @@ export const AddItemCard = ({
             }
       }
     >
-      {!crt && (
+      {visibility.showAddItemLabel && (
         <Text
           style={{
             fontSize: fontSize.base,

@@ -38,7 +38,7 @@ export const DayHeader = ({
   onToggleTag,
   onCollapse,
 }: DayHeaderProps) => {
-  const { colors, fonts, borderRadius, crt } = useTheme();
+  const { colors, fonts, borderRadius, visibility } = useTheme();
   return (
     <>
       <Pressable
@@ -52,7 +52,7 @@ export const DayHeader = ({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {isToday && !crt && (
+          {isToday && visibility.showTodayBadge && (
             <View
               style={{
                 backgroundColor: colors.ai.primary,
@@ -84,7 +84,7 @@ export const DayHeader = ({
             {formatDayHeader(
               date,
               language,
-              crt && isToday ? '' : t('mealPlan.today'),
+              !visibility.showTodayBadge && isToday ? '' : t('mealPlan.today'),
             )}
           </Text>
         </View>
@@ -96,7 +96,7 @@ export const DayHeader = ({
             gap: spacing.sm,
           }}
         >
-          {!isEditing && !crt && (
+          {!isEditing && visibility.showDayNotes && (
             <Pressable onPress={onStartEdit}>
               {note ? (
                 <View
@@ -148,7 +148,7 @@ export const DayHeader = ({
               )}
             </Pressable>
           )}
-          {onCollapse && !crt && (
+          {onCollapse && visibility.showChevrons && (
             <Ionicons
               name="chevron-up"
               size={iconSize.sm}

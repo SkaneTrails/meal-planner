@@ -34,8 +34,8 @@ export const RecipeActionButtons = ({
   onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => {
-  const { colors, circleStyle, crt } = useTheme();
-  if (crt) return null;
+  const { colors, circleStyle, visibility } = useTheme();
+  if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
   const iconBtnSize = iconContainer.md;
 

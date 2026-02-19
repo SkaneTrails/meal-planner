@@ -31,7 +31,7 @@ import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export default function RecipeDetailScreen() {
-  const { colors, circleStyle, crt } = useTheme();
+  const { colors, circleStyle, visibility, crt } = useTheme();
   const HEADER_BUTTON_BG = colors.surface.overlayMedium;
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -176,7 +176,7 @@ export default function RecipeDetailScreen() {
       <Stack.Screen
         options={{
           title: '',
-          headerShown: !crt,
+          headerShown: visibility.showStackHeader,
           headerStyle: { backgroundColor: 'transparent' },
           headerTransparent: true,
           headerTintColor: colors.white,

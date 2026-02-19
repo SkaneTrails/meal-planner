@@ -11,7 +11,7 @@ interface RecipeMetaLabelsProps {
 }
 
 export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
-  const { colors, crt } = useTheme();
+  const { colors, visibility } = useTheme();
   const dietLabels = getDietLabels(colors);
 
   const mealChipBg = colors.metaChip.mealBg;
@@ -46,7 +46,7 @@ export const RecipeMetaLabels = ({ recipe, t }: RecipeMetaLabelsProps) => {
           color={mealChipColor}
         />
       )}
-      {!crt && recipe.visibility && (
+      {visibility.showVisibilityChip && recipe.visibility && (
         <Chip
           label={t(
             `labels.visibility.${recipe.visibility === 'shared' ? 'shared' : 'private'}`,

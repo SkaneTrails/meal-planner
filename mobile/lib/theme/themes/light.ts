@@ -26,6 +26,7 @@ import type {
   ButtonDisplayConfig,
   StyleOverrides,
   ThemeDefinition,
+  VisibilityTokens,
 } from '../theme-context';
 import { defaultFontFamily } from '../typography';
 
@@ -38,6 +39,25 @@ const defaultOverrides: StyleOverrides = {
   segmentedControlGap: 8,
   segmentedControlPadding: 4,
   segmentedControlActiveIndicator: 'shadow',
+  chipToggleGap: 8,
+};
+
+const visibility: VisibilityTokens = {
+  showStackHeader: true,
+  showTodayDot: true,
+  showTodayBadge: true,
+  showDayNotes: true,
+  showChevrons: true,
+  showStatIcons: true,
+  showProgressBar: true,
+  showAddItemLabel: true,
+  showEmptyStateIcon: true,
+  showHeroOverlay: true,
+  showRecipeActionButtons: true,
+  showVisibilityChip: true,
+  showRecipeTags: true,
+  showFrameLabels: false,
+  showChipToggleDot: true,
 };
 
 const buttonDisplay: ButtonDisplayConfig = {
@@ -56,6 +76,7 @@ export const lightTheme: ThemeDefinition = {
   shadows,
   buttonDisplay,
   overrides: defaultOverrides,
+  visibility,
   backgroundImage: ELEGANT_BACKGROUND,
   requiredFonts: {
     DMSans_400Regular,
