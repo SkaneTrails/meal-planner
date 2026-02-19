@@ -63,6 +63,26 @@ describe('getWeekDatesArray', () => {
     expect(formatDateLocal(dates[6])).toBe('2025-01-17');
   });
 
+  it.each([
+    // Fake date: Wed Jan 15, 2025 (getDay()=3)
+    { start: 'sunday', expectedDay: 0, expectedDate: '2025-01-12' },
+    { start: 'tuesday', expectedDay: 2, expectedDate: '2025-01-14' },
+    { start: 'wednesday', expectedDay: 3, expectedDate: '2025-01-15' },
+    { start: 'thursday', expectedDay: 4, expectedDate: '2025-01-09' },
+    { start: 'friday', expectedDay: 5, expectedDate: '2025-01-10' },
+  ] as const)(
+    'starts on $start (day $expectedDay) with correct date',
+    ({ start, expectedDay, expectedDate }) => {
+      const dates = getWeekDatesArray(0, start);
+      expect(dates[0].getDay()).toBe(expectedDay);
+      expect(formatDateLocal(dates[0])).toBe(expectedDate);
+      expect(dates).toHaveLength(7);
+      // Last day should be 6 days after start
+      const lastDay = (expectedDay + 6) % 7;
+      expect(dates[6].getDay()).toBe(lastDay);
+    },
+  );
+
   it('offsets forward by one week', () => {
     const dates = getWeekDatesArray(1);
     expect(formatDateLocal(dates[0])).toBe('2025-01-20');

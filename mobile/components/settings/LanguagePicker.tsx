@@ -44,7 +44,7 @@ export const LanguagePicker = ({
           </View>
         ),
       })),
-    [colors.gray, circleStyle],
+    [colors.gray[200], circleStyle],
   );
 
   return (

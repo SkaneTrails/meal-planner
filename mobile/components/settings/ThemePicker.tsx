@@ -35,7 +35,7 @@ export const ThemePicker = ({
           />
         ),
       })),
-    [colors.gray, borderRadius.full],
+    [colors.gray[200], borderRadius.full],
   );
 
   return (
