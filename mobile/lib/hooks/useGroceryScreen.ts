@@ -1,8 +1,10 @@
 /**
  * Hook managing grocery screen state, item aggregation, and persistence.
+ *
+ * All state is managed by GroceryContext (Firestore-backed, household-level).
+ * This hook handles: item aggregation, display formatting, and screen-level UI state.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import React, {
   useCallback,
@@ -19,15 +21,25 @@ import type { GroceryItem } from '@/lib/types';
 import { aggregateIngredients } from '@/lib/utils/groceryAggregator';
 
 export const useGroceryScreen = () => {
-  const { checkedItems, setCheckedItems, clearChecked } = useGroceryState();
-  const [customItems, setCustomItems] = useState<GroceryItem[]>([]);
+  const {
+    checkedItems,
+    setCheckedItems,
+    clearChecked,
+    customItems: contextCustomItems,
+    selectedMealKeys,
+    mealServings,
+    addCustomItem,
+    setCustomItems: setContextCustomItems,
+    saveSelections,
+    clearAll,
+    refreshFromApi,
+    isLoading: contextLoading,
+  } = useGroceryState();
+
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
   const [showClearMenu, setShowClearMenu] = useState(false);
-  const [selectedMealKeys, setSelectedMealKeys] = useState<string[]>([]);
-  const [mealServings, setMealServings] = useState<Record<string, number>>({});
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const { t } = useTranslation();
@@ -40,54 +52,33 @@ export const useGroceryScreen = () => {
     [isItemAtHome],
   );
 
+  // Track when first load completes to avoid skeleton flash on refresh
+  useEffect(() => {
+    if (!contextLoading && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [contextLoading, hasLoadedOnce]);
+
+  // Refresh from Firestore when screen gains focus
   useFocusEffect(
     React.useCallback(() => {
-      const loadData = async () => {
-        try {
-          const [customData, mealsData, servingsData] = await Promise.all([
-            AsyncStorage.getItem('grocery_custom_items'),
-            AsyncStorage.getItem('grocery_selected_meals'),
-            AsyncStorage.getItem('grocery_meal_servings'),
-          ]);
-
-          setCustomItems(customData ? JSON.parse(customData) : []);
-          setSelectedMealKeys(mealsData ? JSON.parse(mealsData) : []);
-          setMealServings(servingsData ? JSON.parse(servingsData) : {});
-        } catch (error) {
-          if (__DEV__) {
-            console.error('[Grocery] Error loading data:', error);
-          }
-        } finally {
-          setIsLoading(false);
-          setHasLoadedOnce(true);
-        }
-      };
-
-      loadData();
-    }, []),
+      void refreshFromApi().catch(() => {});
+    }, [refreshFromApi]),
   );
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (isLoading && !hasLoadedOnce) {
-        setIsLoading(false);
-        setHasLoadedOnce(true);
-      }
-    }, 2000);
-    return () => clearTimeout(timeout);
-  }, [isLoading, hasLoadedOnce]);
-
-  const _mealPlanMealsJson = useMemo(
-    () => JSON.stringify(mealPlan?.meals || {}),
-    [mealPlan?.meals],
-  );
-  const _mealServingsJson = useMemo(
-    () => JSON.stringify(mealServings),
-    [mealServings],
-  );
-  const _selectedMealKeysStr = useMemo(
-    () => selectedMealKeys.join(','),
-    [selectedMealKeys],
+  // Convert CustomGroceryItem[] from context to GroceryItem[] for display
+  const customItems: GroceryItem[] = useMemo(
+    () =>
+      contextCustomItems.map((ci) => ({
+        name: ci.name,
+        quantity: null,
+        unit: null,
+        category: ci.category,
+        checked: false,
+        recipe_sources: [],
+        quantity_sources: [],
+      })),
+    [contextCustomItems],
   );
 
   const prevGeneratedItemsLengthRef = useRef(0);
@@ -123,19 +114,6 @@ export const useGroceryScreen = () => {
     selectedMealKeys,
   ]);
 
-  useEffect(() => {
-    if (!isLoading) {
-      AsyncStorage.setItem(
-        'grocery_custom_items',
-        JSON.stringify(customItems),
-      ).catch((error) => {
-        if (__DEV__) {
-          console.error('[Grocery] Error saving custom items:', error);
-        }
-      });
-    }
-  }, [customItems, isLoading]);
-
   const groceryListWithChecked = useMemo(() => {
     const allItems = [...generatedItems, ...customItems];
     return {
@@ -161,20 +139,10 @@ export const useGroceryScreen = () => {
   const handleClearAll = () => {
     const doClear = async () => {
       try {
-        await Promise.all([
-          AsyncStorage.removeItem('grocery_selected_meals'),
-          AsyncStorage.removeItem('grocery_custom_items'),
-          AsyncStorage.removeItem('grocery_checked_items'),
-        ]);
-        setCustomItems([]);
+        await clearAll();
         setGeneratedItems([]);
-        setSelectedMealKeys([]);
-        clearChecked();
         setShowClearMenu(false);
-      } catch (error) {
-        if (__DEV__) {
-          console.error('[Grocery] Error clearing data:', error);
-        }
+      } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
     };
@@ -192,22 +160,14 @@ export const useGroceryScreen = () => {
   const handleClearMealPlanItems = () => {
     const doClear = async () => {
       try {
-        await Promise.all([
-          AsyncStorage.removeItem('grocery_selected_meals'),
-          AsyncStorage.removeItem('grocery_meal_servings'),
-        ]);
-        const customNames = new Set(customItems.map((i) => i.name));
+        const customNames = new Set(contextCustomItems.map((i) => i.name));
         setCheckedItems(
           new Set([...checkedItems].filter((name) => customNames.has(name))),
         );
+        await saveSelections([], {});
         setGeneratedItems([]);
-        setSelectedMealKeys([]);
-        setMealServings({});
         setShowClearMenu(false);
-      } catch (error) {
-        if (__DEV__) {
-          console.error('[Grocery] Error clearing meal plan items:', error);
-        }
+      } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
     };
@@ -225,17 +185,13 @@ export const useGroceryScreen = () => {
   const handleClearManualItems = () => {
     const doClear = async () => {
       try {
-        await AsyncStorage.removeItem('grocery_custom_items');
         const generatedNames = new Set(generatedItems.map((i) => i.name));
         setCheckedItems(
           new Set([...checkedItems].filter((name) => generatedNames.has(name))),
         );
-        setCustomItems([]);
+        setContextCustomItems([]);
         setShowClearMenu(false);
-      } catch (error) {
-        if (__DEV__) {
-          console.error('[Grocery] Error clearing manual items:', error);
-        }
+      } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
     };
@@ -252,18 +208,7 @@ export const useGroceryScreen = () => {
 
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
-
-    const newItem: GroceryItem = {
-      name: newItemText.trim(),
-      quantity: null,
-      unit: null,
-      category: 'other',
-      checked: false,
-      recipe_sources: [],
-      quantity_sources: [],
-    };
-
-    setCustomItems((prev) => [...prev, newItem]);
+    addCustomItem({ name: newItemText.trim(), category: 'other' });
     setNewItemText('');
   };
 
@@ -288,7 +233,7 @@ export const useGroceryScreen = () => {
   );
 
   return {
-    isLoading,
+    isLoading: contextLoading,
     hasLoadedOnce,
     showAddItem,
     setShowAddItem,

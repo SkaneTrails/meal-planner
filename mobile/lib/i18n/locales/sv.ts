@@ -414,6 +414,7 @@ const sv: Translations = {
       'Detta tar bort alla varor från recept i din måltidsplan.',
     clearManualItems: 'Rensa manuella varor',
     clearManualItemsMessage: 'Detta tar bort alla manuellt tillagda varor.',
+    clearChecked: 'Avmarkera alla',
     clear: 'Rensa',
     failedToClearList: 'Kunde inte rensa listan',
     categories: {

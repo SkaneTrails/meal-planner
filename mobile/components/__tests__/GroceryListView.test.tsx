@@ -12,11 +12,10 @@ vi.mock('react-native-draggable-flatlist', () => ({
       { 'data-testid': 'draggable-list' },
       data.map((item: any, index: number) =>
         React.createElement(React.Fragment, { key: index },
-          renderItem({ item, drag: vi.fn(), isActive: false }).props.children,
+          renderItem({ item, drag: vi.fn(), isActive: false }),
         ),
       ),
     ),
-  ScaleDecorator: ({ children }: any) => children,
 }));
 
 vi.mock('react-native-gesture-handler', () => ({
@@ -26,6 +25,10 @@ vi.mock('react-native-gesture-handler', () => ({
 
 vi.mock('@/lib/haptics', () => ({
   hapticSelection: vi.fn(),
+}));
+
+vi.mock('@/lib/hooks/useIsTouchDevice', () => ({
+  useIsTouchDevice: () => true,
 }));
 
 const buildItem = (overrides: Partial<GroceryItem> = {}): GroceryItem => ({

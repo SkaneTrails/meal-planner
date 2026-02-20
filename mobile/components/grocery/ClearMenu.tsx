@@ -4,21 +4,35 @@ import { useTranslation } from '@/lib/i18n';
 import { spacing } from '@/lib/theme';
 
 interface ClearMenuProps {
+  onClearChecked: () => void;
   onClearMealPlanItems: () => void;
   onClearManualItems: () => void;
   onClearAll: () => void;
+  checkedCount: number;
 }
 
 export const ClearMenu = ({
+  onClearChecked,
   onClearMealPlanItems,
   onClearManualItems,
   onClearAll,
+  checkedCount,
 }: ClearMenuProps) => {
   const { t } = useTranslation();
 
   return (
     <View style={{ marginTop: spacing.sm }}>
       <ButtonGroup gap={spacing.xs} style={{ flexWrap: 'wrap' }}>
+        {checkedCount > 0 && (
+          <Button
+            variant="text"
+            tone="subtle"
+            size="sm"
+            icon="refresh"
+            label={t('grocery.clearChecked')}
+            onPress={onClearChecked}
+          />
+        )}
         <Button
           variant="text"
           tone="subtle"

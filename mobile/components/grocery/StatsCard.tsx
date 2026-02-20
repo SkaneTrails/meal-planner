@@ -8,27 +8,30 @@ import {
   ContentCard,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  fontWeight,
+  iconContainer,
+  iconSize,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
   showAddItem: boolean;
   showClearMenu: boolean;
   totalItems: number;
-  checkedCount: number;
   onToggleAddItem: () => void;
   onToggleClearMenu: () => void;
-  onClearChecked: () => void;
 }
 
 const ActionButtons = ({
   showAddItem,
   showClearMenu,
   totalItems,
-  checkedCount,
   onToggleAddItem,
   onToggleClearMenu,
-  onClearChecked,
 }: ActionButtonsProps) => {
   const { colors } = useTheme();
   return (
@@ -37,38 +40,28 @@ const ActionButtons = ({
         variant="icon"
         tone="ai"
         icon={showAddItem ? 'close' : 'add'}
-        iconSize={18}
+        iconSize={iconSize.md}
         onPress={onToggleAddItem}
         label={showAddItem ? 'Close' : 'Add'}
         color={colors.ai.primary}
         textColor={colors.white}
         hoverScale={1.08}
         pressScale={0.95}
+        style={{ width: iconContainer.xs, height: iconContainer.xs }}
       />
       {totalItems > 0 && (
         <Button
           variant="icon"
           tone="subtle"
-          icon={showClearMenu ? 'close' : 'trash-outline'}
-          iconSize={16}
+          icon={showClearMenu ? 'close' : 'create-outline'}
+          iconSize={iconSize.md}
           onPress={onToggleClearMenu}
-          label={showClearMenu ? 'Close' : 'Clear'}
+          label={showClearMenu ? 'Close' : 'Edit'}
           color={showClearMenu ? colors.surface.pressed : colors.surface.hover}
           textColor={colors.content.icon}
           hoverScale={1.08}
           pressScale={0.95}
-        />
-      )}
-      {checkedCount > 0 && (
-        <Button
-          variant="icon"
-          tone="subtle"
-          icon="refresh"
-          iconSize={16}
-          onPress={onClearChecked}
-          label="Reset"
-          hoverScale={1.08}
-          pressScale={0.95}
+          style={{ width: iconContainer.xs, height: iconContainer.xs }}
         />
       )}
     </ButtonGroup>
@@ -88,7 +81,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
     <View style={{ marginTop: spacing['md-lg'] }}>
       <View
         style={{
-          height: 6,
+          height: spacing['xs-sm'],
           backgroundColor: colors.ai.light,
           borderRadius: borderRadius['3xs'],
           overflow: 'hidden',
@@ -138,7 +131,7 @@ const ItemsAtHomeIndicator = ({
     >
       <Ionicons
         name="home-outline"
-        size={14}
+        size={iconSize.xs}
         color={colors.content.secondary}
       />
       <Text
@@ -152,7 +145,11 @@ const ItemsAtHomeIndicator = ({
       >
         {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
       </Text>
-      <Ionicons name="chevron-forward" size={14} color={colors.content.body} />
+      <Ionicons
+        name="chevron-forward"
+        size={iconSize.xs}
+        color={colors.content.body}
+      />
     </AnimatedPressable>
   );
 };
@@ -241,15 +238,15 @@ export const StatsCard = ({
           showAddItem={showAddItem}
           showClearMenu={showClearMenu}
           totalItems={totalItems}
-          checkedCount={checkedCount}
           onToggleAddItem={onToggleAddItem}
           onToggleClearMenu={onToggleClearMenu}
-          onClearChecked={onClearChecked}
         />
       </View>
 
       {showClearMenu && (
         <ClearMenu
+          checkedCount={checkedCount}
+          onClearChecked={onClearChecked}
           onClearMealPlanItems={onClearMealPlanItems}
           onClearManualItems={onClearManualItems}
           onClearAll={onClearAll}
