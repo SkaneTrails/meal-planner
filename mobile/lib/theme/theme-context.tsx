@@ -180,6 +180,8 @@ export interface ThemeDefinition {
   chrome: LayoutChrome;
   /** CRT visual overlay config (scanlines, flicker, glow). Omit for themes without the effect. */
   crt?: CRTConfig;
+  /** Whether this theme supports animated gradient backgrounds. Defaults to true when omitted. */
+  animatedBackground?: boolean;
   /**
    * Custom font assets this theme requires (name → asset source).
    * Collected at startup and passed to `useFonts`. Themes using only
@@ -205,6 +207,8 @@ export interface ThemeValue {
   chrome: LayoutChrome;
   /** CRT visual overlay config (scanlines, flicker, glow). Undefined = no overlay. */
   crt?: CRTConfig;
+  /** Whether this theme supports animated gradient backgrounds. False = always plain bgBase. */
+  animatedBackground: boolean;
   /** Registry key of the active theme. */
   themeName: string;
   /** Switch to a different theme by registry key. */
@@ -251,6 +255,7 @@ export const ThemeProvider = ({
       tabBar,
       chrome,
       crt,
+      animatedBackground,
     } = theme;
     const themedCircleStyle: CircleStyleFn =
       chrome === 'flat'
@@ -271,6 +276,7 @@ export const ThemeProvider = ({
       tabBar,
       chrome,
       crt,
+      animatedBackground: animatedBackground !== false,
       themeName: id,
       setThemeName,
     };

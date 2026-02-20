@@ -151,11 +151,11 @@ export const GradientBackground = ({
   style,
   animated = false,
 }: GradientBackgroundProps) => {
-  const { colors } = useTheme();
+  const { colors, animatedBackground } = useTheme();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
-  // Non-animated: plain beige background
-  if (!animated) {
+  // Non-animated, or theme disables animation: plain bgBase background
+  if (!animated || !animatedBackground) {
     return (
       <View
         style={[

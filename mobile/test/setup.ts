@@ -605,6 +605,7 @@ vi.mock('@/lib/theme', () => {
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true, showCheckmarkIndicator: true },
     chrome: 'full' as const,
     crt: undefined,
+    animatedBackground: true,
     tabBar: { borderRadius: 16, borderWidth: 0.5, blur: true, blurIntensity: 40, blurTint: 'light' },
     themeName: 'light',
     setThemeName: vi.fn(),
