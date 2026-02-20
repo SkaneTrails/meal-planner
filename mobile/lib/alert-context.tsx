@@ -16,7 +16,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -114,7 +113,6 @@ export const AlertProvider = ({
 }: AlertProviderProps) => {
   const [queue, setQueue] = useState<AlertRequest[]>([]);
   const currentAlert = queue[0] ?? null;
-  const buttonsRef = useRef<AlertButton[] | undefined>(undefined);
 
   const enqueue = useCallback(
     (title: string, message?: string, buttons?: AlertButton[]) => {
@@ -127,9 +125,6 @@ export const AlertProvider = ({
     setGlobalAlertRef(enqueue);
     return () => setGlobalAlertRef(null);
   }, [enqueue]);
-
-  // Keep a ref to current alert's buttons for the dismiss handler
-  buttonsRef.current = currentAlert?.buttons;
 
   const handleDismiss = useCallback((button?: AlertButton) => {
     button?.onPress?.();
