@@ -15,20 +15,16 @@ interface ActionButtonsProps {
   showAddItem: boolean;
   showClearMenu: boolean;
   totalItems: number;
-  checkedCount: number;
   onToggleAddItem: () => void;
   onToggleClearMenu: () => void;
-  onClearChecked: () => void;
 }
 
 const ActionButtons = ({
   showAddItem,
   showClearMenu,
   totalItems,
-  checkedCount,
   onToggleAddItem,
   onToggleClearMenu,
-  onClearChecked,
 }: ActionButtonsProps) => {
   const { colors } = useTheme();
   return (
@@ -37,38 +33,28 @@ const ActionButtons = ({
         variant="icon"
         tone="ai"
         icon={showAddItem ? 'close' : 'add'}
-        iconSize={18}
+        iconSize={17}
         onPress={onToggleAddItem}
         label={showAddItem ? 'Close' : 'Add'}
         color={colors.ai.primary}
         textColor={colors.white}
         hoverScale={1.08}
         pressScale={0.95}
+        style={{ width: 34, height: 34 }}
       />
       {totalItems > 0 && (
         <Button
           variant="icon"
           tone="subtle"
-          icon={showClearMenu ? 'close' : 'trash-outline'}
-          iconSize={16}
+          icon={showClearMenu ? 'close' : 'create-outline'}
+          iconSize={17}
           onPress={onToggleClearMenu}
-          label={showClearMenu ? 'Close' : 'Clear'}
+          label={showClearMenu ? 'Close' : 'Edit'}
           color={showClearMenu ? colors.surface.pressed : colors.surface.hover}
           textColor={colors.content.icon}
           hoverScale={1.08}
           pressScale={0.95}
-        />
-      )}
-      {checkedCount > 0 && (
-        <Button
-          variant="icon"
-          tone="subtle"
-          icon="refresh"
-          iconSize={16}
-          onPress={onClearChecked}
-          label="Reset"
-          hoverScale={1.08}
-          pressScale={0.95}
+          style={{ width: 34, height: 34 }}
         />
       )}
     </ButtonGroup>
@@ -241,15 +227,15 @@ export const StatsCard = ({
           showAddItem={showAddItem}
           showClearMenu={showClearMenu}
           totalItems={totalItems}
-          checkedCount={checkedCount}
           onToggleAddItem={onToggleAddItem}
           onToggleClearMenu={onToggleClearMenu}
-          onClearChecked={onClearChecked}
         />
       </View>
 
       {showClearMenu && (
         <ClearMenu
+          checkedCount={checkedCount}
+          onClearChecked={onClearChecked}
           onClearMealPlanItems={onClearMealPlanItems}
           onClearManualItems={onClearManualItems}
           onClearAll={onClearAll}

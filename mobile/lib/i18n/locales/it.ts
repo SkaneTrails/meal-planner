@@ -423,6 +423,7 @@ const it: Translations = {
     clearManualItems: 'Cancella articoli manuali',
     clearManualItemsMessage:
       'Questo rimuoverà tutti gli articoli aggiunti manualmente.',
+    clearChecked: 'Deseleziona tutti',
     clear: 'Cancella',
     failedToClearList: 'Impossibile cancellare la lista',
     categories: {
