@@ -25,6 +25,7 @@ import { borderRadius, type ShadowTokens, shadows } from '../layout';
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
+  TabBarTokens,
   ThemeDefinition,
   VisibilityTokens,
 } from '../theme-context';
@@ -88,6 +89,13 @@ export const lightTheme: ThemeDefinition = {
   buttonDisplay,
   overrides: defaultOverrides,
   visibility,
+  tabBar: {
+    borderRadius: 16,
+    borderWidth: 0.5,
+    blur: true,
+    blurIntensity: 40,
+    blurTint: 'light',
+  },
   chrome: 'full',
   backgroundImage: ELEGANT_BACKGROUND,
   requiredFonts: {

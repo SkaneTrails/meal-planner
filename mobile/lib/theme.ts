@@ -36,6 +36,7 @@ export type {
   CRTConfig,
   LayoutChrome,
   StyleOverrides,
+  TabBarTokens,
   ThemeDefinition,
   VisibilityTokens,
 } from './theme/theme-context';
