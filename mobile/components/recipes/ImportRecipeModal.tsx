@@ -174,16 +174,10 @@ export const ImportRecipeModal = ({
         visible={visible}
         onClose={resetAndClose}
         title={t('home.addRecipe.title')}
-        animationType="fade"
-        dismissOnBackdropPress={!isPending}
-        showDragHandle
-        showCloseButton={false}
-        backgroundColor={colors.surface.modal}
+        dismissable={!isPending}
       >
         {/* URL input */}
-        <View
-          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.lg }}
-        >
+        <View style={{ marginBottom: spacing.lg }}>
           <View
             style={{
               backgroundColor: colors.glass.subtle,
@@ -250,7 +244,7 @@ export const ImportRecipeModal = ({
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingHorizontal: spacing.xl,
+
               paddingVertical: spacing.md,
               marginBottom: spacing.md,
               opacity: aiEnabled ? 1 : 0.5,
@@ -322,7 +316,7 @@ export const ImportRecipeModal = ({
         {/* Diet & Meal type pickers */}
         <View
           style={{
-            marginHorizontal: spacing.xl,
+            marginHorizontal: 0,
             backgroundColor: colors.card.bg,
             borderRadius: borderRadius.lg,
             borderWidth: 1,
@@ -351,9 +345,7 @@ export const ImportRecipeModal = ({
         </View>
 
         {/* Import button */}
-        <View
-          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.lg }}
-        >
+        <View style={{ marginBottom: spacing.lg }}>
           <Button
             variant="primary"
             onPress={handleImport}
@@ -375,7 +367,6 @@ export const ImportRecipeModal = ({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            paddingHorizontal: spacing.xl,
             marginBottom: spacing.sm,
           }}
         >
@@ -406,9 +397,7 @@ export const ImportRecipeModal = ({
         </View>
 
         {/* Manual entry button */}
-        <View
-          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.lg }}
-        >
+        <View style={{ marginBottom: spacing.lg }}>
           <Button
             variant="primary"
             onPress={() => {

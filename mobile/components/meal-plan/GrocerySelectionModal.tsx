@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { BottomSheetModal, Button } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
@@ -59,7 +59,6 @@ export const GrocerySelectionModal = ({
       onClose={onClose}
       title={t('mealPlan.selectMeals')}
       subtitle={t('mealPlan.selectMealsSubtitle')}
-      scrollable={false}
       footer={
         <View
           style={{
@@ -89,11 +88,7 @@ export const GrocerySelectionModal = ({
         onNextWeek={onNextWeek}
       />
 
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: spacing.xl }}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={{ paddingTop: spacing.xl }}>
         {groceryWeekDates.map((date) => {
           const hasAnyMeal = mealTypes.some((mt) => {
             const meal = getMealForSlot(date, mt.type);
@@ -147,7 +142,7 @@ export const GrocerySelectionModal = ({
             </View>
           );
         })}
-      </ScrollView>
+      </View>
     </BottomSheetModal>
   );
 };

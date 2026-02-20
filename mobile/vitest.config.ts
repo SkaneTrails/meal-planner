@@ -52,7 +52,6 @@ export default defineConfig({
         'app/\\(tabs\\)/**',
         'app/add-recipe.tsx',
         'app/review-recipe.tsx',
-        'app/select-recipe.tsx',
         'app/sign-in.tsx',
         'app/recipe/**',
         // Orchestration hooks — compose already-tested hooks/utils with

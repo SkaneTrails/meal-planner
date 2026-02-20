@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import {
   Animated,
   type NativeScrollEvent,
@@ -20,6 +21,7 @@ import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
 import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
 import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
+import { SelectMealModal } from '@/components/meal-plan/SelectMealModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
@@ -38,6 +40,7 @@ import {
 
 export default function MealPlanScreen() {
   const { colors, borderRadius, shadows, overrides, chrome } = useTheme();
+  const router = useRouter();
   const {
     t,
     language,
@@ -72,6 +75,7 @@ export default function MealPlanScreen() {
     handleCancelEditNote,
     handleAddTag,
     handleMealPress,
+    handleEditCustomText,
     handleRemoveMeal,
     handleToggleMeal,
     handleChangeServings,
@@ -83,6 +87,11 @@ export default function MealPlanScreen() {
     expandedPastDays,
     togglePastDay,
     countMealsForDate,
+    activeModal,
+    modalDate,
+    modalMealType,
+    modalInitialText,
+    closeModal,
   } = useMealPlanActions();
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -272,6 +281,8 @@ export default function MealPlanScreen() {
                             customText={meal.customText}
                             onRemove={handleRemoveMeal}
                             onMealPress={handleMealPress}
+                            onEditCustomText={handleEditCustomText}
+                            onRecipePress={(id) => router.push(`/recipe/${id}`)}
                           />
                         );
                       })}
@@ -422,6 +433,15 @@ export default function MealPlanScreen() {
         onChangeServings={handleChangeServings}
         onPreviousWeek={() => setGroceryWeekOffset((prev) => prev - 1)}
         onNextWeek={() => setGroceryWeekOffset((prev) => prev + 1)}
+      />
+
+      <SelectMealModal
+        visible={activeModal !== null}
+        onClose={closeModal}
+        date={modalDate}
+        mealType={modalMealType}
+        mode={activeModal ?? 'library'}
+        initialText={modalInitialText}
       />
     </GradientBackground>
   );

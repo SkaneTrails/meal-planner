@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ReactNode } from 'react';
-import type { DimensionValue } from 'react-native';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { CRTOverlay } from '@/components/CRTOverlay';
@@ -11,16 +10,14 @@ interface BottomSheetModalProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
-  animationType?: 'slide' | 'fade';
-  dismissOnBackdropPress?: boolean;
-  showDragHandle?: boolean;
-  showCloseButton?: boolean;
+  /** Prevents backdrop dismiss and hides the close button. */
+  blocking?: boolean;
+  /** Override backdrop dismiss (e.g. disable during async work). Defaults to `true` unless `blocking`. */
+  dismissable?: boolean;
   subtitle?: string;
+  /** Replaces the default close button in the header. */
   headerRight?: ReactNode;
   footer?: ReactNode;
-  maxHeight?: DimensionValue;
-  backgroundColor?: string;
-  scrollable?: boolean;
   testID?: string;
 }
 
@@ -29,55 +26,40 @@ export const BottomSheetModal = ({
   onClose,
   title,
   children,
-  animationType = 'slide',
-  dismissOnBackdropPress = false,
-  showDragHandle = false,
-  showCloseButton = true,
+  blocking = false,
+  dismissable: dismissableProp,
   subtitle,
   headerRight,
   footer,
-  maxHeight = '80%' as DimensionValue,
-  backgroundColor: backgroundColorProp,
-  scrollable = true,
   testID,
 }: BottomSheetModalProps) => {
   const { colors, fonts, borderRadius } = useTheme();
-  const backgroundColor = backgroundColorProp ?? colors.white;
-  const backdropContent = (
+  const dismissable = dismissableProp ?? !blocking;
+  const showCloseButton = !blocking && !headerRight;
+
+  const sheetContent = (
     <View
       style={{
-        backgroundColor,
+        backgroundColor: colors.surface.modal,
         borderTopLeftRadius: borderRadius.xl,
         borderTopRightRadius: borderRadius.xl,
-        maxHeight,
         maxWidth: layout.contentMaxWidth,
         width: '100%',
         alignSelf: 'center',
         paddingBottom: footer ? 0 : 40,
+        flexShrink: 1,
+        minHeight: 0,
+        overflow: 'hidden',
       }}
       testID={testID}
     >
-      {showDragHandle && (
-        <View style={{ alignItems: 'center', paddingVertical: spacing.md }}>
-          <View
-            style={{
-              width: 40,
-              height: 4,
-              backgroundColor: colors.button.disabled,
-              borderRadius: borderRadius['3xs'],
-            }}
-            testID="drag-handle"
-          />
-        </View>
-      )}
-
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingHorizontal: spacing.xl,
-          paddingTop: showDragHandle ? 0 : spacing.xl,
+          paddingTop: spacing.xl,
           marginBottom: subtitle ? spacing.xs : spacing.lg,
         }}
       >
@@ -93,7 +75,7 @@ export const BottomSheetModal = ({
           {title}
         </Text>
         {headerRight}
-        {showCloseButton && !headerRight && (
+        {showCloseButton && (
           <Pressable onPress={onClose} testID="close-button">
             <Ionicons
               name="close"
@@ -118,18 +100,14 @@ export const BottomSheetModal = ({
         </Text>
       )}
 
-      {scrollable ? (
-        <ScrollView
-          style={{ flexGrow: 0, flexShrink: 1 }}
-          contentContainerStyle={{ paddingHorizontal: spacing.xl }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {children}
-        </ScrollView>
-      ) : (
-        children
-      )}
+      <ScrollView
+        style={{ flexGrow: 0, flexShrink: 1, minHeight: 0 }}
+        contentContainerStyle={{ paddingHorizontal: spacing.xl }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {children}
+      </ScrollView>
 
       {footer}
     </View>
@@ -139,10 +117,10 @@ export const BottomSheetModal = ({
     <Modal
       visible={visible}
       transparent
-      animationType={animationType}
+      animationType="slide"
       onRequestClose={onClose}
     >
-      {dismissOnBackdropPress ? (
+      {dismissable ? (
         <Pressable
           style={{
             flex: 1,
@@ -154,9 +132,11 @@ export const BottomSheetModal = ({
           <View
             style={{
               position: 'absolute',
+              top: 0,
               bottom: 0,
               left: 0,
               right: 0,
+              justifyContent: 'flex-end',
               alignItems: 'center',
             }}
           >
@@ -164,11 +144,12 @@ export const BottomSheetModal = ({
               onPress={(e) => e.stopPropagation()}
               style={{
                 width: '100%',
+                maxHeight: '90%',
                 maxWidth: layout.contentMaxWidth,
                 alignSelf: 'center',
               }}
             >
-              {backdropContent}
+              {sheetContent}
             </Pressable>
           </View>
         </Pressable>
@@ -183,13 +164,23 @@ export const BottomSheetModal = ({
           <View
             style={{
               position: 'absolute',
+              top: 0,
               bottom: 0,
               left: 0,
               right: 0,
+              justifyContent: 'flex-end',
               alignItems: 'center',
             }}
           >
-            {backdropContent}
+            <View
+              style={{
+                maxHeight: '90%',
+                width: '100%',
+                maxWidth: layout.contentMaxWidth,
+              }}
+            >
+              {sheetContent}
+            </View>
           </View>
         </View>
       )}

@@ -20,6 +20,9 @@ const it: Translations = {
     search: 'Cerca',
     done: 'Fatto',
     back: 'Indietro',
+    previous: 'Precedente',
+    next: 'Successivo',
+    pageOf: '{{current}} / {{total}}',
     confirm: 'Conferma',
     aiDisabledHint:
       'Abilita AI nelle impostazioni del nucleo familiare per usare questa funzione',

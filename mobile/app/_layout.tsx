@@ -99,13 +99,6 @@ const AppContent = () => {
             }}
           />
           <Stack.Screen
-            name="select-recipe"
-            options={{
-              headerShown: false,
-              animation: 'slide_from_right',
-            }}
-          />
-          <Stack.Screen
             name="add-recipe"
             options={{
               headerShown: false,

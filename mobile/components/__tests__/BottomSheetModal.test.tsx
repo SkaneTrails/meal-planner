@@ -34,11 +34,6 @@ describe('BottomSheetModal', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('hides close button when showCloseButton is false', () => {
-    render(<BottomSheetModal {...defaultProps} showCloseButton={false} />);
-    expect(screen.queryByTestId('close-button')).toBeNull();
-  });
-
   it('hides close button when headerRight is provided', () => {
     render(
       <BottomSheetModal
@@ -48,16 +43,6 @@ describe('BottomSheetModal', () => {
     );
     expect(screen.queryByTestId('close-button')).toBeNull();
     expect(screen.getByText('Save')).toBeTruthy();
-  });
-
-  it('renders drag handle when showDragHandle is true', () => {
-    render(<BottomSheetModal {...defaultProps} showDragHandle />);
-    expect(screen.getByTestId('drag-handle')).toBeTruthy();
-  });
-
-  it('does not render drag handle by default', () => {
-    render(<BottomSheetModal {...defaultProps} />);
-    expect(screen.queryByTestId('drag-handle')).toBeNull();
   });
 
   it('renders footer when provided', () => {
@@ -71,24 +56,31 @@ describe('BottomSheetModal', () => {
     expect(screen.getByText('Footer content')).toBeTruthy();
   });
 
-  it('calls onClose when backdrop is pressed with dismissOnBackdropPress', () => {
+  it('dismisses on backdrop press by default', () => {
     const onClose = vi.fn();
-    render(
-      <BottomSheetModal
-        {...defaultProps}
-        onClose={onClose}
-        dismissOnBackdropPress
-        showCloseButton={false}
-      />,
-    );
+    render(<BottomSheetModal {...defaultProps} onClose={onClose} />);
     fireEvent.click(screen.getByTestId('backdrop'));
     expect(onClose).toHaveBeenCalledOnce();
   });
 
-  it('does not dismiss on backdrop press by default', () => {
+  it('does not dismiss on backdrop press when blocking', () => {
     const onClose = vi.fn();
-    render(<BottomSheetModal {...defaultProps} onClose={onClose} />);
-    // Backdrop is a View, not pressable — just confirm it renders
+    render(<BottomSheetModal {...defaultProps} blocking onClose={onClose} />);
+    // Backdrop is a non-pressable View when blocking
+    expect(screen.getByTestId('backdrop')).toBeTruthy();
+  });
+
+  it('hides close button when blocking', () => {
+    render(<BottomSheetModal {...defaultProps} blocking />);
+    expect(screen.queryByTestId('close-button')).toBeNull();
+  });
+
+  it('disables backdrop dismiss when dismissable is false', () => {
+    const onClose = vi.fn();
+    render(
+      <BottomSheetModal {...defaultProps} onClose={onClose} dismissable={false} />,
+    );
+    // Non-pressable backdrop
     expect(screen.getByTestId('backdrop')).toBeTruthy();
   });
 

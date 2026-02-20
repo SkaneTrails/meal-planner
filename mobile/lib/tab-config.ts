@@ -32,7 +32,7 @@ export const TABS: TabDef[] = [
   },
   {
     route: '/(tabs)/meal-plan',
-    matchPrefixes: ['/meal-plan', '/select-recipe'],
+    matchPrefixes: ['/meal-plan'],
     icon: 'calendar-outline',
     iconFocused: 'calendar',
     labelKey: 'tabs.mealPlan',
