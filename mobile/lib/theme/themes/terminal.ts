@@ -121,6 +121,13 @@ export const terminalTheme: ThemeDefinition = {
   buttonDisplay,
   overrides,
   visibility,
+  tabBar: {
+    borderRadius: 0,
+    borderWidth: 1,
+    blur: false,
+    blurIntensity: 0,
+    blurTint: 'dark',
+  },
   chrome: 'flat',
   crt: terminalCRT,
   requiredFonts: {}, // uses system monospace — no custom fonts needed

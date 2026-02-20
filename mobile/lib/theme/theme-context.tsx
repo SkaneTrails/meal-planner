@@ -132,6 +132,25 @@ export interface VisibilityTokens {
 }
 
 /**
+ * Tab bar appearance tokens — shape, border, and blur/transparency.
+ *
+ * Colors are already in `ColorTokens.tabBar`. These control the
+ * structural appearance so each theme can define its own bar shape.
+ */
+export interface TabBarTokens {
+  /** Border radius of the floating bar. */
+  borderRadius: number;
+  /** Border width around the bar (web/Android). */
+  borderWidth: number;
+  /** Whether the bar uses backdrop blur (iOS BlurView / web backdrop-filter). */
+  blur: boolean;
+  /** iOS BlurView intensity (0–100). Ignored when blur=false. */
+  blurIntensity: number;
+  /** iOS BlurView tint. Ignored when blur=false. */
+  blurTint: 'light' | 'dark' | 'default';
+}
+
+/**
  * Layout chrome — controls whether components use box-drawing frames
  * (flat) or card containers with rounded corners and shadows (full).
  *
@@ -153,6 +172,8 @@ export interface ThemeDefinition {
   buttonDisplay: ButtonDisplayConfig;
   overrides: StyleOverrides;
   visibility: VisibilityTokens;
+  /** Tab bar shape, border, and blur configuration. */
+  tabBar: TabBarTokens;
   /**
    * Layout chrome: 'flat' uses box-drawing frames and minimal decoration,
    * 'full' uses cards with rounded corners and shadows.
@@ -181,6 +202,8 @@ export interface ThemeValue {
   buttonDisplay: ButtonDisplayConfig;
   overrides: StyleOverrides;
   visibility: VisibilityTokens;
+  /** Tab bar shape, border, and blur configuration. */
+  tabBar: TabBarTokens;
   /** Layout chrome: 'flat' (box-drawing frames) or 'full' (cards/shadows). */
   chrome: LayoutChrome;
   /** CRT visual overlay config (scanlines, flicker, glow). Undefined = no overlay. */
@@ -230,6 +253,7 @@ export const ThemeProvider = ({
       buttonDisplay,
       overrides,
       visibility,
+      tabBar,
       chrome,
       crt,
       backgroundImage,
@@ -250,6 +274,7 @@ export const ThemeProvider = ({
       buttonDisplay,
       overrides,
       visibility,
+      tabBar,
       chrome,
       crt,
       backgroundImage,

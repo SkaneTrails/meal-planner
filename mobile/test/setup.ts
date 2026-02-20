@@ -518,6 +518,7 @@ vi.mock('@/lib/theme', () => {
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true, showCheckmarkIndicator: true },
     chrome: 'full' as const,
+    tabBar: { borderRadius: 16, borderWidth: 0.5, blur: true, blurIntensity: 40, blurTint: 'light' },
     requiredFonts: {},
   };
 
@@ -533,6 +534,7 @@ vi.mock('@/lib/theme', () => {
     visibility: { showStackHeader: false, showTodayDot: false, showTodayBadge: false, showDayNotes: false, showChevrons: false, showStatIcons: false, showProgressBar: false, showAddItemLabel: false, showEmptyStateIcon: false, showHeroOverlay: false, showRecipeActionButtons: false, showVisibilityChip: false, showRecipeTags: false, showFrameLabels: true, showChipToggleDot: false, showStatDividers: true, showSectionHeaderIcon: false, showCheckmarkIndicator: false },
     chrome: 'flat' as const,
     crt: { scanlineOpacity: 0.08, flickerMin: 0.97, flickerMs: 4000, glowColor: 'rgba(51, 255, 51, 0.07)', glowSpread: 60, glowSize: 20 },
+    tabBar: { borderRadius: 0, borderWidth: 1, blur: false, blurIntensity: 0, blurTint: 'dark' },
     requiredFonts: {},
   };
 
@@ -547,6 +549,7 @@ vi.mock('@/lib/theme', () => {
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true, showCheckmarkIndicator: true },
     chrome: 'full' as const,
+    tabBar: { borderRadius: 0, borderWidth: 2, blur: true, blurIntensity: 30, blurTint: 'light' },
     requiredFonts: {},
   };
 
@@ -564,7 +567,6 @@ vi.mock('@/lib/theme', () => {
       height: 44,
       bottomOffset: 16,
       horizontalMargin: 20,
-      borderRadius: 16,
       contentBottomPadding: 76,
       overlayBottomOffset: 60,
     },
@@ -597,6 +599,7 @@ vi.mock('@/lib/theme', () => {
     chrome: 'full' as const,
     crt: undefined,
     backgroundImage: undefined,
+    tabBar: { borderRadius: 16, borderWidth: 0.5, blur: true, blurIntensity: 40, blurTint: 'light' },
     themeName: 'light',
     setThemeName: vi.fn(),
   }),

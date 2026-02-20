@@ -133,6 +133,13 @@ export const bubblegumTheme: ThemeDefinition = {
   buttonDisplay,
   overrides,
   visibility,
+  tabBar: {
+    borderRadius: 0,
+    borderWidth: 2,
+    blur: true,
+    blurIntensity: 30,
+    blurTint: 'light',
+  },
   chrome: 'full',
   requiredFonts: {}, // uses system rounded font — no custom fonts needed
 };
