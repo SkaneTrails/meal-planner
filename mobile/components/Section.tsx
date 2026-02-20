@@ -106,7 +106,7 @@ export const Section = ({
       : {
           fontSize: fontSize.lg,
           fontWeight: fontWeight.bold,
-          color: colors.text.primary,
+          color: colors.content.heading,
         };
 
   const headerMarginBottom = isCollapsible
@@ -135,7 +135,7 @@ export const Section = ({
           <Text
             style={{
               fontSize: fontSize.sm,
-              color: colors.text.secondary,
+              color: colors.content.subtitle,
               marginTop: 2,
             }}
           >

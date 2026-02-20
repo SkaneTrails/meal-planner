@@ -341,7 +341,7 @@ const NextMealCard = ({
           style={{
             fontSize: fontSize.xl,
             fontFamily: fonts.display,
-            color: colors.white,
+            color: colors.content.heading,
             marginBottom: spacing.sm,
             letterSpacing: letterSpacing.normal,
           }}

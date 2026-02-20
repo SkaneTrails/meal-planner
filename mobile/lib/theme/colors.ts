@@ -65,16 +65,16 @@ export const lightColors = {
   white: '#FFFFFF',
   offWhite: '#FAFAFA',
   text: {
-    primary: '#FFFFFF',
-    secondary: 'rgba(255, 255, 255, 0.8)',
-    muted: 'rgba(255, 255, 255, 0.6)',
-    light: 'rgba(255, 255, 255, 0.4)',
+    primary: '#5D4E40',
+    secondary: 'rgba(93, 78, 64, 0.7)',
+    muted: 'rgba(93, 78, 64, 0.5)',
+    light: 'rgba(93, 78, 64, 0.35)',
     inverse: '#2D2D2D',
     dark: '#5D4E40',
   },
-  border: 'rgba(255, 255, 255, 0.2)',
-  borderLight: 'rgba(255, 255, 255, 0.1)',
-  borderFaint: 'rgba(255, 255, 255, 0.04)',
+  border: 'rgba(93, 78, 64, 0.18)',
+  borderLight: 'rgba(93, 78, 64, 0.1)',
+  borderFaint: 'rgba(93, 78, 64, 0.04)',
 
   // Content colors — dark text/icons on light backgrounds (warm brown family)
   content: {
