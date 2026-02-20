@@ -19,7 +19,9 @@ import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { LanguagePromptModal } from '@/components/LanguagePromptModal';
+import { ThemedAlert } from '@/components/ThemedAlert';
 import { showNotification } from '@/lib/alert';
+import { AlertProvider } from '@/lib/alert-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
@@ -203,15 +205,21 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <ThemeRoot envTheme={envTheme} fontsReady>
-        <AuthProvider>
-          <QueryProvider>
-            <SettingsProvider>
-              <GroceryProvider>
-                <AppContent />
-              </GroceryProvider>
-            </SettingsProvider>
-          </QueryProvider>
-        </AuthProvider>
+        <AlertProvider
+          renderAlert={(alert, onDismiss) => (
+            <ThemedAlert alert={alert} onDismiss={onDismiss} />
+          )}
+        >
+          <AuthProvider>
+            <QueryProvider>
+              <SettingsProvider>
+                <GroceryProvider>
+                  <AppContent />
+                </GroceryProvider>
+              </SettingsProvider>
+            </QueryProvider>
+          </AuthProvider>
+        </AlertProvider>
       </ThemeRoot>
     </ErrorBoundary>
   );

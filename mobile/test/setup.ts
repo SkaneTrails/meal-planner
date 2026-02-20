@@ -190,9 +190,21 @@ vi.mock('@/components', () => ({
   },
 }));
 
-// Mock @/lib/alert
-vi.mock('@/lib/alert', () => ({
+// Mock @/lib/alert-context — imperative alert functions used throughout the app
+vi.mock('@/lib/alert-context', () => ({
+  showAlert: vi.fn(),
   showNotification: vi.fn(),
+  showConfirm: vi.fn().mockResolvedValue(true),
+  setGlobalAlertRef: vi.fn(),
+  AlertProvider: ({ children }: { children: unknown }) => children,
+  useAlert: () => ({ showAlert: vi.fn() }),
+}));
+
+// Mock @/lib/alert — re-exports from alert-context
+vi.mock('@/lib/alert', () => ({
+  showAlert: vi.fn(),
+  showNotification: vi.fn(),
+  showConfirm: vi.fn().mockResolvedValue(true),
 }));
 
 // Mock @/lib/theme — values must match real theme exports
