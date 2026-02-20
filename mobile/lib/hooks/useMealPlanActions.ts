@@ -67,6 +67,14 @@ export const useMealPlanActions = () => {
   const [expandedPastDays, setExpandedPastDays] = useState<Set<string>>(
     new Set(),
   );
+
+  // Modal state for select-recipe modals
+  const [activeModal, setActiveModal] = useState<
+    'library' | 'random' | 'quick' | 'copy' | 'extras' | null
+  >(null);
+  const [modalDate, setModalDate] = useState('');
+  const [modalMealType, setModalMealType] = useState<MealType>('dinner');
+  const [modalInitialText, setModalInitialText] = useState('');
   const scrollViewRef = useRef<ScrollView>(null);
   const todayY = useRef(0);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
@@ -307,14 +315,30 @@ export const useMealPlanActions = () => {
       mealType: MealType,
       mode?: 'library' | 'copy' | 'quick' | 'random',
     ) => {
-      const dateStr = formatDateLocal(date);
-      router.push({
-        pathname: '/select-recipe',
-        params: { date: dateStr, mealType, mode: mode || 'library' },
-      });
+      hapticLight();
+      setModalDate(formatDateLocal(date));
+      setModalMealType(mealType);
+      setModalInitialText('');
+      setActiveModal(mode || 'library');
     },
-    [router],
+    [],
   );
+
+  const handleEditCustomText = useCallback(
+    (date: Date, mealType: MealType, initialText: string) => {
+      hapticLight();
+      setModalDate(formatDateLocal(date));
+      setModalMealType(mealType);
+      setModalInitialText(initialText);
+      setActiveModal('quick');
+    },
+    [],
+  );
+
+  const closeModal = useCallback(() => {
+    setActiveModal(null);
+    setModalInitialText('');
+  }, []);
 
   const handleRemoveMeal = useCallback(
     (date: Date, mealType: MealType, title: string, label: string) => {
@@ -407,11 +431,8 @@ export const useMealPlanActions = () => {
 
   const handleAddExtra = useCallback(() => {
     hapticLight();
-    router.push({
-      pathname: '/select-recipe',
-      params: { mode: 'extras' },
-    });
-  }, [router]);
+    setActiveModal('extras');
+  }, []);
 
   const handleRemoveExtra = useCallback(
     (recipeId: string, title: string) => {
@@ -469,7 +490,13 @@ export const useMealPlanActions = () => {
     handleSaveNote,
     handleCancelEditNote,
     handleAddTag,
+    activeModal,
+    modalDate,
+    modalMealType,
+    modalInitialText,
+    closeModal,
     handleMealPress,
+    handleEditCustomText,
     handleRemoveMeal,
     handleToggleMeal,
     handleChangeServings,

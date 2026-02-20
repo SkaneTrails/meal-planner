@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { BottomSheetModal, Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -51,7 +51,6 @@ export const PlanMealModal = ({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingHorizontal: spacing.xl,
           marginBottom: spacing.lg,
           gap: spacing.xl,
         }}
@@ -90,14 +89,13 @@ export const PlanMealModal = ({
           fontSize: fontSize.xl,
           fontFamily: fonts.body,
           color: colors.gray[500],
-          paddingHorizontal: spacing.xl,
           marginBottom: spacing.lg,
         }}
       >
         {t('recipe.selectDayPrompt', { title: recipeTitle })}
       </Text>
 
-      <ScrollView style={{ paddingHorizontal: spacing.xl }}>
+      <View>
         {weekDates.map((date) => {
           const isToday = date.toDateString() === new Date().toDateString();
           const isPast = isPastDate(date);
@@ -246,7 +244,7 @@ export const PlanMealModal = ({
             </View>
           );
         })}
-      </ScrollView>
+      </View>
     </BottomSheetModal>
   );
 };

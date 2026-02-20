@@ -39,14 +39,8 @@ export const AddRecipeModal = ({
       visible={visible}
       onClose={onClose}
       title={t('home.addRecipe.title')}
-      animationType="fade"
-      dismissOnBackdropPress
-      showDragHandle
-      showCloseButton={false}
-      backgroundColor={colors.surface.modal}
-      scrollable={false}
     >
-      <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
+      <View style={{ marginBottom: 12 }}>
         <View
           style={{
             backgroundColor: colors.glass.subtle,
@@ -104,7 +98,6 @@ export const AddRecipeModal = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 20,
           marginVertical: 8,
         }}
       >
@@ -142,7 +135,6 @@ export const AddRecipeModal = ({
           flexDirection: 'row',
           alignItems: 'center',
           paddingVertical: 16,
-          paddingHorizontal: 20,
           backgroundColor: pressed ? colors.text.light : 'transparent',
         })}
       >

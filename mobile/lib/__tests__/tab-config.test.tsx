@@ -53,10 +53,6 @@ describe('isTabActive', () => {
       expect(isTabActive('/meal-plan', mealPlanTab)).toBe(true);
     });
 
-    it('matches "/select-recipe"', () => {
-      expect(isTabActive('/select-recipe', mealPlanTab)).toBe(true);
-    });
-
     it('does not match "/recipes"', () => {
       expect(isTabActive('/recipes', mealPlanTab)).toBe(false);
     });

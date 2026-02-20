@@ -20,6 +20,9 @@ const sv: Translations = {
     search: 'Sök',
     done: 'Klar',
     back: 'Tillbaka',
+    previous: 'Föregående',
+    next: 'Nästa',
+    pageOf: '{{current}} / {{total}}',
     confirm: 'Bekräfta',
     aiDisabledHint:
       'Aktivera AI i hushållsinställningar för att använda denna funktion',

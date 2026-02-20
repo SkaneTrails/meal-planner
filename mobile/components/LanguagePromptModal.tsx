@@ -32,12 +32,10 @@ export const LanguagePromptModal = ({
       visible={visible}
       onClose={() => {}}
       title={t('settings.chooseLanguageTitle')}
-      dismissOnBackdropPress={false}
-      showCloseButton={false}
-      scrollable={false}
+      blocking
       testID="language-prompt-modal"
     >
-      <View style={{ paddingHorizontal: spacing.md, gap: spacing.lg }}>
+      <View style={{ gap: spacing.lg }}>
         <Text
           style={{
             fontSize: fontSize.md,

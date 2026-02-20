@@ -210,22 +210,20 @@ describe('useMealPlanActions', () => {
   });
 
   describe('handleMealPress', () => {
-    it('navigates to select-recipe with correct params', () => {
+    it('opens modal with correct mode and date', () => {
       const { result } = renderActions();
       act(() => result.current.handleMealPress(new Date('2026-01-05'), 'lunch', 'random'));
-      expect(mockRouterPush).toHaveBeenCalledWith({
-        pathname: '/select-recipe',
-        params: { date: '2026-01-05', mealType: 'lunch', mode: 'random' },
-      });
+      expect(result.current.activeModal).toBe('random');
+      expect(result.current.modalDate).toBe('2026-01-05');
+      expect(result.current.modalMealType).toBe('lunch');
     });
 
     it('defaults mode to library', () => {
       const { result } = renderActions();
       act(() => result.current.handleMealPress(new Date('2026-01-05'), 'dinner'));
-      expect(mockRouterPush).toHaveBeenCalledWith({
-        pathname: '/select-recipe',
-        params: { date: '2026-01-05', mealType: 'dinner', mode: 'library' },
-      });
+      expect(result.current.activeModal).toBe('library');
+      expect(result.current.modalDate).toBe('2026-01-05');
+      expect(result.current.modalMealType).toBe('dinner');
     });
   });
 

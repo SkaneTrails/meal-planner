@@ -154,12 +154,7 @@ export const ManualRecipeModal = ({
       visible={visible}
       onClose={resetAndClose}
       title={t('addRecipe.manualTitle')}
-      animationType="fade"
-      dismissOnBackdropPress={!isPending}
-      showDragHandle
-      showCloseButton={false}
-      backgroundColor={colors.surface.modal}
-      maxHeight="90%"
+      dismissable={!isPending}
     >
       {/* Title */}
       <FormField label={`${t('addRecipe.recipeTitle')} *`}>

@@ -105,8 +105,6 @@ export const EditRecipeModal = ({
       visible={visible}
       onClose={onClose}
       title={t('recipe.editRecipe')}
-      maxHeight="90%"
-      showCloseButton={false}
       headerRight={
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
           <Pressable

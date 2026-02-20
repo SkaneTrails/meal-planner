@@ -264,12 +264,6 @@ export default function RecipesScreen() {
         visible={showSortPicker}
         onClose={() => setShowSortPicker(false)}
         title={t('recipes.sortBy')}
-        animationType="fade"
-        dismissOnBackdropPress
-        showDragHandle
-        showCloseButton={false}
-        backgroundColor={colors.surface.modal}
-        scrollable={false}
       >
         {SORT_OPTIONS.map((option) => (
           <Pressable
@@ -284,11 +278,10 @@ export default function RecipesScreen() {
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingVertical: spacing.lg,
-              paddingHorizontal: spacing.xl,
+              paddingHorizontal: spacing.sm,
               backgroundColor:
                 sortBy === option.value ? colors.glass.subtle : 'transparent',
               borderRadius: borderRadius.sm,
-              marginHorizontal: spacing.sm,
             }}
           >
             <Text
