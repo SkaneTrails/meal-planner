@@ -63,6 +63,7 @@ export const EmptyGroceryState = ({
           textAlign: 'center',
           lineHeight: lineHeight.lg,
           maxWidth: 280,
+          fontFamily: fonts.body,
         }}
       >
         {subtitle}
