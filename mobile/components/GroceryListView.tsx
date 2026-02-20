@@ -12,7 +12,14 @@ import DraggableFlatList, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useIsTouchDevice } from '@/lib/hooks/useIsTouchDevice';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, iconSize, layout, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  fontWeight,
+  iconSize,
+  layout,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
 import { EmptyGroceryState } from './grocery/EmptyGroceryState';
