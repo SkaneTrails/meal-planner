@@ -62,7 +62,7 @@ export const useGroceryScreen = () => {
   // Refresh from Firestore when screen gains focus
   useFocusEffect(
     React.useCallback(() => {
-      refreshFromApi();
+      void refreshFromApi().catch(() => {});
     }, [refreshFromApi]),
   );
 

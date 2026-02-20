@@ -12,9 +12,14 @@ export const useIsTouchDevice = (): boolean => {
   if (Platform.OS !== 'web') return true;
   if (cachedResult !== null) return cachedResult;
 
-  cachedResult =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(pointer: coarse)').matches;
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return true;
+  }
+
+  cachedResult = window.matchMedia('(pointer: coarse)').matches;
 
   return cachedResult;
 };
