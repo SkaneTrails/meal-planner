@@ -111,6 +111,7 @@ export const lightColors = {
   button: {
     primary: '#7A6858',
     primaryPressed: '#6B5B4B',
+    primaryText: '#FFFFFF',
     disabled: '#C5B8A8',
     primarySubtle: 'rgba(122, 104, 88, 0.08)',
     primarySurface: 'rgba(122, 104, 88, 0.1)',

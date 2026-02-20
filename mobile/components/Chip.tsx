@@ -164,11 +164,38 @@ const variantStyle = (
   colors: Colors,
   bg?: string,
 ) => {
-  if (bg) return { backgroundColor: bg };
+  if (bg) {
+    // Custom bg overrides variant background but preserves variant border
+    const base = bg ? { backgroundColor: bg } : {};
+    switch (variant) {
+      case 'filled':
+      case 'display':
+        return { ...base, borderWidth: 1, borderColor: colors.chip.border };
+      case 'outline':
+        return {
+          ...base,
+          borderWidth: 1,
+          borderColor: colors.surface.borderLight,
+          borderStyle: 'dashed' as const,
+        };
+      case 'toggle':
+        return {
+          ...base,
+          borderWidth: 1,
+          borderColor: active
+            ? colors.chip.toggleActiveBorder
+            : colors.surface.divider,
+        };
+      default:
+        return base;
+    }
+  }
   switch (variant) {
     case 'filled':
       return {
         backgroundColor: pressed ? colors.errorBg : colors.bgDark,
+        borderWidth: 1,
+        borderColor: colors.chip.border,
       };
     case 'outline':
       return {
@@ -190,6 +217,8 @@ const variantStyle = (
     case 'display':
       return {
         backgroundColor: colors.surface.tint,
+        borderWidth: 1,
+        borderColor: colors.chip.border,
       };
   }
 };

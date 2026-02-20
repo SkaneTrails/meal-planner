@@ -10,13 +10,17 @@
  */
 
 import type { ThemeDefinition } from '../theme-context';
+import { bubblegumTheme } from './bubblegum';
 import { lightTheme } from './light';
-import { pastelTheme } from './pastel';
 import { terminalTheme } from './terminal';
 
 // ── Theme list — first entry is the default ────────────────────────────
 
-const allThemes: ThemeDefinition[] = [lightTheme, terminalTheme, pastelTheme];
+const allThemes: ThemeDefinition[] = [
+  lightTheme,
+  terminalTheme,
+  bubblegumTheme,
+];
 
 // ── Derived registry exports ───────────────────────────────────────────
 
@@ -42,4 +46,4 @@ export const allRequiredFonts: Record<string, number> = Object.assign(
 export const isThemeId = (value: string): boolean => value in themes;
 
 // Re-export individual themes for direct access
-export { lightTheme, pastelTheme, terminalTheme };
+export { bubblegumTheme, lightTheme, terminalTheme };

@@ -106,6 +106,8 @@ export const TerminalFrame = ({
               borderRadius: borderRadius.sm,
               paddingHorizontal: spacing.lg,
               paddingVertical: spacing.md,
+              borderWidth: 1,
+              borderColor: colors.card.borderColor,
               ...shadows.xs,
             },
             style,

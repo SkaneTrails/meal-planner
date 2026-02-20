@@ -141,7 +141,7 @@ export const Button = ({
           case 'primary':
             return {
               bg: colors.button.primary,
-              fg: colors.white,
+              fg: colors.button.primaryText,
               pressedBg: colors.button.primaryPressed,
             };
           case 'icon':

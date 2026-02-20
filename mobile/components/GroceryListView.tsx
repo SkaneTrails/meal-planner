@@ -10,7 +10,6 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TerminalFrame } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   fontSize,
@@ -22,6 +21,7 @@ import {
 } from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
+import { TerminalFrame } from './TerminalFrame';
 
 interface GroceryListViewProps {
   groceryList: GroceryList;
