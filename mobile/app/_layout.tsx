@@ -164,7 +164,7 @@ const ThemeRoot = ({ children, envTheme }: ThemeRootProps) => {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    Ionicons: require('../public/fonts/Ionicons.ttf'),
+    ionicons: require('../public/fonts/Ionicons.ttf'),
     NotoEmoji_400Regular,
     // Theme-specific fonts are collected from the registry at build time
     ...allRequiredFonts,
