@@ -3,7 +3,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
@@ -58,6 +58,12 @@ export const GroceryItemRow = ({
 }: GroceryItemRowProps) => {
   const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
   const [checked, setChecked] = useState(item.checked);
+
+  // Sync with prop when parent updates (e.g., Firestore refresh, new items generated)
+  useEffect(() => {
+    setChecked(item.checked);
+  }, [item.checked]);
+
   const quantity = formatQuantity(item);
 
   const handleToggle = () => {
