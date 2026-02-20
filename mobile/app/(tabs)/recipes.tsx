@@ -3,8 +3,8 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Platform,
   Pressable,
@@ -13,7 +13,9 @@ import {
   UIManager,
   View,
 } from 'react-native';
-import { BottomSheetModal, GradientBackground } from '@/components';
+import { BottomSheetModal, Button, GradientBackground } from '@/components';
+import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
+import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
 import { ScreenTitle } from '@/components/ScreenTitle';
@@ -35,7 +37,10 @@ if (
 export default function RecipesScreen() {
   const { colors, borderRadius } = useTheme();
   const router = useRouter();
+  const { addRecipe } = useLocalSearchParams<{ addRecipe?: string }>();
   const { t } = useTranslation();
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showManualModal, setShowManualModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
   const [mealFilters, setMealFilters] = useState<MealLabel[]>([]);
@@ -44,6 +49,13 @@ export default function RecipesScreen() {
   const [libraryScope, setLibraryScope] = useState<LibraryScope>('all');
   const { isFavorite } = useSettings();
   const { data: currentUser } = useCurrentUser();
+
+  useEffect(() => {
+    if (addRecipe === 'true') {
+      setShowImportModal(true);
+      router.setParams({ addRecipe: undefined });
+    }
+  }, [addRecipe, router]);
 
   useFocusEffect(
     useCallback(() => {
@@ -184,6 +196,17 @@ export default function RecipesScreen() {
           t={t}
         />
 
+        <View
+          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.sm }}
+        >
+          <Button
+            variant="primary"
+            onPress={() => setShowImportModal(true)}
+            icon="add-circle-outline"
+            label={t('home.addRecipe.title')}
+          />
+        </View>
+
         <FilterChips
           dietFilter={dietFilter}
           showFavoritesOnly={showFavoritesOnly}
@@ -215,6 +238,17 @@ export default function RecipesScreen() {
           t={t}
         />
       </View>
+
+      <ImportRecipeModal
+        visible={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onManualMode={() => setShowManualModal(true)}
+      />
+
+      <ManualRecipeModal
+        visible={showManualModal}
+        onClose={() => setShowManualModal(false)}
+      />
 
       {/* Sort Picker Modal */}
       <BottomSheetModal

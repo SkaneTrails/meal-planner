@@ -14,6 +14,7 @@ import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   fontSize,
   fontWeight,
+  layout,
   letterSpacing,
   lineHeight,
   spacing,
@@ -69,7 +70,10 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
       <GradientBackground style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ padding: spacing.lg, paddingBottom: 120 }}
+          contentContainerStyle={[
+            { padding: spacing.lg, paddingBottom: 120 },
+            layout.contentContainer,
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

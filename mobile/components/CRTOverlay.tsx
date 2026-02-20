@@ -58,7 +58,9 @@ export const CRTOverlay = () => {
       *::-webkit-scrollbar-track { background: #0A0A0A; }
       *::-webkit-scrollbar-thumb { background: #22CC22; border-radius: 0; }
       *::-webkit-scrollbar-thumb:hover { background: #33FF33; }
-      * { scrollbar-color: #22CC22 #0A0A0A; }\n    `;
+      * { scrollbar-color: #22CC22 #0A0A0A; }
+      input:focus, textarea:focus { outline: 1px solid #33FF33; outline-offset: -1px; }
+    `;
     document.head.appendChild(style);
 
     return () => {
