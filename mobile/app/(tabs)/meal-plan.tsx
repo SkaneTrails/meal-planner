@@ -89,7 +89,7 @@ export default function MealPlanScreen() {
   };
 
   return (
-    <GradientBackground structured>
+    <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         {/* Header */}
         <View

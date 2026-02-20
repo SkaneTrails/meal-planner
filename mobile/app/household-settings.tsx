@@ -72,18 +72,15 @@ export default function HouseholdSettingsScreen() {
 
   if (!form.householdId) {
     if (form.userLoading) {
-      return <FullScreenLoading background="muted" />;
+      return <FullScreenLoading />;
     }
     return (
-      <FullScreenLoading
-        background="muted"
-        title={t('householdSettings.invalidHouseholdId')}
-      />
+      <FullScreenLoading title={t('householdSettings.invalidHouseholdId')} />
     );
   }
 
   return (
-    <GradientBackground muted>
+    <GradientBackground>
       <Stack.Screen options={{ headerShown: false }} />
 
       {form.isLoading ? (

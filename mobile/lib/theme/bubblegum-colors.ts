@@ -276,6 +276,8 @@ export const bubblegumColors: ColorTokens = {
     orb2: ELECTRIC_BLUE_LIGHT,
     orb3: '#B8F0A0',
     orb4: '#FFE680',
+    orb5: '#F5A0C0',
+    orb6: '#A0D8F0',
     stop1: HOT_PINK_LIGHT,
     stop2: ELECTRIC_BLUE_LIGHT,
   },

@@ -1,25 +1,25 @@
 /**
  * Light theme — "Elegant"
  *
- * Warm earth tones with Playfair Display headings, DM Sans body text,
- * and a subtle linen background image. This is the default theme.
+ * Warm earth tones with Cormorant Garamond headings, DM Sans body text,
+ * and a subtle animated gradient background. This is the default theme.
  */
 
+import {
+  CormorantGaramond_400Regular,
+  CormorantGaramond_500Medium,
+  CormorantGaramond_600SemiBold,
+  CormorantGaramond_700Bold,
+} from '@expo-google-fonts/cormorant-garamond';
 import {
   DMSans_400Regular,
   DMSans_500Medium,
   DMSans_600SemiBold,
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
-import {
-  PlayfairDisplay_400Regular,
-  PlayfairDisplay_500Medium,
-  PlayfairDisplay_600SemiBold,
-  PlayfairDisplay_700Bold,
-} from '@expo-google-fonts/playfair-display';
 
-// Asset import — typed by expo-env.d.ts; Vite handles it in test via resolve.alias
-import ELEGANT_BACKGROUND from '@/assets/images/bck_b.png';
+import { Platform } from 'react-native';
+
 import { lightColors } from '../colors';
 import { borderRadius, type ShadowTokens, shadows } from '../layout';
 import type {
@@ -28,14 +28,14 @@ import type {
   ThemeDefinition,
   VisibilityTokens,
 } from '../theme-context';
-import { defaultFontFamily } from '../typography';
+import type { FontFamilyTokens } from '../typography';
 
 const defaultOverrides: StyleOverrides = {
   checkedOpacity: 0.85,
   checkboxBorderWidth: 2,
   dashedBorderWidth: 1.5,
   dayCardBorderWidth: 1,
-  dayCardBorderWidthToday: 2,
+  dayCardBorderWidthToday: 0,
   segmentedControlGap: 8,
   segmentedControlPadding: 4,
   segmentedControlActiveIndicator: 'shadow',
@@ -63,6 +63,28 @@ const visibility: VisibilityTokens = {
   showCheckmarkIndicator: true,
 };
 
+const isWeb = Platform.OS === 'web';
+
+const fonts: FontFamilyTokens = {
+  display: isWeb
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_600SemiBold',
+  displayRegular: isWeb
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_400Regular',
+  displayMedium: isWeb
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_500Medium',
+  displayBold: isWeb
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_700Bold',
+  body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
+  bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+  bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
+  bodyBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
+  accent: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+};
+
 /** Elegant uses no drop shadows — clean, flat design. */
 const flatShadows = Object.fromEntries(
   Object.keys(shadows).map((k) => [
@@ -82,7 +104,7 @@ export const lightTheme: ThemeDefinition = {
   id: 'light',
   name: 'Elegant',
   colors: lightColors,
-  fonts: defaultFontFamily,
+  fonts,
   borderRadius,
   shadows: flatShadows,
   buttonDisplay,
@@ -96,15 +118,14 @@ export const lightTheme: ThemeDefinition = {
     blurTint: 'light',
   },
   chrome: 'full',
-  backgroundImage: ELEGANT_BACKGROUND,
   requiredFonts: {
     DMSans_400Regular,
     DMSans_500Medium,
     DMSans_600SemiBold,
     DMSans_700Bold,
-    PlayfairDisplay_400Regular,
-    PlayfairDisplay_500Medium,
-    PlayfairDisplay_600SemiBold,
-    PlayfairDisplay_700Bold,
+    CormorantGaramond_400Regular,
+    CormorantGaramond_500Medium,
+    CormorantGaramond_600SemiBold,
+    CormorantGaramond_700Bold,
   },
 };

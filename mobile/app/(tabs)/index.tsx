@@ -48,14 +48,14 @@ export default function HomeScreen() {
 
   if (isLoading && recipes.length === 0) {
     return (
-      <GradientBackground>
+      <GradientBackground animated>
         <HomeScreenSkeleton />
       </GradientBackground>
     );
   }
 
   return (
-    <GradientBackground>
+    <GradientBackground animated>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         <ScrollView
           style={{ flex: 1 }}

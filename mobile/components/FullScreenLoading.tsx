@@ -3,8 +3,8 @@
  * Wraps GradientBackground with centered content for loading, error, and info screens.
  *
  * Usage:
- *   <FullScreenLoading background="muted" />                          — spinner
- *   <FullScreenLoading background="muted" icon="lock-closed" ... />   — message with icon
+ *   <FullScreenLoading />                          — spinner
+ *   <FullScreenLoading icon="lock-closed" ... />   — message with icon
  */
 
 import type { Ionicons as IoniconsType } from '@expo/vector-icons';
@@ -16,7 +16,7 @@ import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface FullScreenLoadingProps {
   /** GradientBackground visual mode (default: 'default') */
-  background?: 'default' | 'muted' | 'animated';
+  background?: 'default' | 'animated';
   /** Ionicons name — shows icon instead of spinner */
   icon?: ComponentProps<typeof IoniconsType>['name'];
   /** Primary message text */
@@ -28,7 +28,6 @@ interface FullScreenLoadingProps {
 }
 
 const bgVariant = (bg: FullScreenLoadingProps['background']) => ({
-  muted: bg === 'muted',
   animated: bg === 'animated',
 });
 

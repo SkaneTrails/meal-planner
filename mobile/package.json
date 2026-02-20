@@ -17,6 +17,7 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/noto-emoji": "^0.4.6",
     "@expo-google-fonts/playfair-display": "^0.4.2",

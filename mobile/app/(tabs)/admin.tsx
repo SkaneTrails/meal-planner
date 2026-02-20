@@ -51,13 +51,12 @@ export default function AdminScreen() {
   const [newHouseholdName, setNewHouseholdName] = useState('');
 
   if (userLoading) {
-    return <FullScreenLoading background="muted" />;
+    return <FullScreenLoading />;
   }
 
   if (!currentUser || currentUser.role !== 'superuser') {
     return (
       <FullScreenLoading
-        background="muted"
         icon="lock-closed"
         title={t('admin.accessRequired')}
         subtitle={t('admin.accessRequiredMessage')}
@@ -79,7 +78,7 @@ export default function AdminScreen() {
   };
 
   return (
-    <GradientBackground muted>
+    <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         <AdminHeader onBack={() => router.back()} />
 

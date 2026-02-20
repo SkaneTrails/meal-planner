@@ -164,7 +164,7 @@ export default function RecipesScreen() {
   }, []);
 
   return (
-    <GradientBackground structured>
+    <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         {/* Header */}
         <View

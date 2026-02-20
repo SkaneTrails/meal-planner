@@ -32,7 +32,7 @@ export const ScreenTitle = ({
           isCentered
             ? { color: colors.content.heading, fontFamily: fonts.displayBold }
             : {
-                color: colors.text.primary,
+                color: colors.content.heading,
                 textShadowColor: colors.shadow.text,
                 fontFamily: fonts.display,
               },
@@ -47,7 +47,7 @@ export const ScreenTitle = ({
             {
               color: isCentered
                 ? colors.content.subtitle
-                : colors.text.secondary,
+                : colors.content.subtitle,
               fontFamily: fonts.body,
             },
           ]}

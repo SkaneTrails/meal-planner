@@ -98,7 +98,7 @@ export const HouseholdDetailModal = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <GradientBackground muted>
+      <GradientBackground>
         <View style={{ flex: 1 }}>
           <ModalHeader household={household} onClose={onClose} />
 

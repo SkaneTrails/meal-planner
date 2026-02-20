@@ -250,6 +250,8 @@ export const terminalColors: ColorTokens = {
     orb2: BLACK,
     orb3: BLACK,
     orb4: BLACK,
+    orb5: BLACK,
+    orb6: BLACK,
     stop1: BLACK,
     stop2: BLACK,
   },

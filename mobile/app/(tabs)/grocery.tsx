@@ -46,7 +46,7 @@ export default function GroceryScreen() {
 
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground structured>
+      <GradientBackground>
         <View style={[{ flex: 1 }, layout.contentContainer]}>
           <GroceryHeader />
           <GroceryListSkeleton />
@@ -56,7 +56,7 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground structured>
+    <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         <GroceryHeader />
 

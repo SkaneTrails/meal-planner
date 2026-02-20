@@ -56,7 +56,6 @@ export default function SelectRecipeScreen() {
       />
 
       <GradientBackground
-        structured
         style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
       >
         <View style={[{ flex: 1 }, layout.contentContainer]}>

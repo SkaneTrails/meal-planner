@@ -107,8 +107,8 @@ export const shadows = {
   md: { boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.06)' },
   lg: { boxShadow: '2px 8px 20px 0px rgba(0, 0, 0, 0.08)' },
   xl: { boxShadow: '3px 12px 28px 0px rgba(0, 0, 0, 0.12)' },
-  glow: { boxShadow: '1px 4px 16px 0px rgba(232, 168, 124, 0.25)' },
-  glowSoft: { boxShadow: '1px 2px 10px 0px rgba(232, 168, 124, 0.15)' },
+  glow: { boxShadow: '1px 4px 16px 0px rgba(212, 132, 90, 0.25)' },
+  glowSoft: { boxShadow: '1px 2px 10px 0px rgba(212, 132, 90, 0.15)' },
   cardRaised: { boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)' },
   float: { boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)' },
 } as const;
