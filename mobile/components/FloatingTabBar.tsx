@@ -11,59 +11,9 @@ import { usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
+import { HIDDEN_ON, isTabActive, TABS } from '@/lib/tab-config';
 import type { TabBarTokens } from '@/lib/theme';
 import { layout, spacing, useTheme } from '@/lib/theme';
-
-type TabDef = {
-  route: string;
-  matchPrefixes: string[];
-  icon: keyof typeof Ionicons.glyphMap;
-  iconFocused: keyof typeof Ionicons.glyphMap;
-  labelKey: string;
-};
-
-const TABS: TabDef[] = [
-  {
-    route: '/(tabs)',
-    matchPrefixes: ['/(tabs)', '/index'],
-    icon: 'home-outline',
-    iconFocused: 'home',
-    labelKey: 'tabs.home',
-  },
-  {
-    route: '/(tabs)/recipes',
-    matchPrefixes: ['/(tabs)/recipes', '/recipe/'],
-    icon: 'book-outline',
-    iconFocused: 'book',
-    labelKey: 'tabs.recipes',
-  },
-  {
-    route: '/(tabs)/meal-plan',
-    matchPrefixes: ['/(tabs)/meal-plan', '/select-recipe'],
-    icon: 'calendar-outline',
-    iconFocused: 'calendar',
-    labelKey: 'tabs.mealPlan',
-  },
-  {
-    route: '/(tabs)/grocery',
-    matchPrefixes: ['/(tabs)/grocery'],
-    icon: 'cart-outline',
-    iconFocused: 'cart',
-    labelKey: 'tabs.grocery',
-  },
-];
-
-const HIDDEN_ON = ['/sign-in', '/no-access'];
-
-const isTabActive = (pathname: string, tab: TabDef): boolean =>
-  tab.matchPrefixes.some((prefix) => {
-    if (prefix === '/(tabs)' || prefix === '/index') {
-      return (
-        pathname === '/' || pathname === '/(tabs)' || pathname === '/index'
-      );
-    }
-    return pathname.startsWith(prefix);
-  });
 
 const TabBarBackground = ({ tokens }: { tokens: TabBarTokens }) => {
   const { colors } = useTheme();

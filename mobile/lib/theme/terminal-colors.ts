@@ -218,8 +218,8 @@ export const terminalColors: ColorTokens = {
   },
 
   tabBar: {
-    bg: bk(0.7),
-    bgFallback: bk(0.9),
+    bg: bk(1),
+    bgFallback: bk(1),
     bottomFill: BLACK,
     border: g(0.15),
     active: GREEN,

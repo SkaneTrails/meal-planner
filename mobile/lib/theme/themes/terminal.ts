@@ -123,7 +123,7 @@ export const terminalTheme: ThemeDefinition = {
   visibility,
   tabBar: {
     borderRadius: 0,
-    borderWidth: 1,
+    borderWidth: 2,
     blur: false,
     blurIntensity: 0,
     blurTint: 'dark',
