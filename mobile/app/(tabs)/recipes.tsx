@@ -21,7 +21,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { fontSize, fontWeight, layout, useTheme } from '@/lib/theme';
+import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 import { type SortOption, sortRecipes } from '@/lib/utils/recipeSorter';
 
@@ -156,7 +156,11 @@ export default function RecipesScreen() {
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         {/* Header */}
         <View
-          style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}
+          style={{
+            paddingHorizontal: spacing.xl,
+            paddingTop: spacing.lg,
+            paddingBottom: spacing.xs,
+          }}
         >
           <ScreenTitle
             title={t('recipes.title')}
@@ -165,7 +169,7 @@ export default function RecipesScreen() {
                 ? t('recipes.filteredCount', { count: filteredRecipes.length })
                 : t('recipes.collectionCount', { count: totalCount })
             }
-            style={{ marginBottom: 8 }}
+            style={{ marginBottom: spacing.sm }}
           />
         </View>
 
@@ -236,12 +240,12 @@ export default function RecipesScreen() {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingVertical: 16,
-              paddingHorizontal: 20,
+              paddingVertical: spacing.lg,
+              paddingHorizontal: spacing.xl,
               backgroundColor:
                 sortBy === option.value ? colors.glass.subtle : 'transparent',
               borderRadius: borderRadius.sm,
-              marginHorizontal: 8,
+              marginHorizontal: spacing.sm,
             }}
           >
             <Text
