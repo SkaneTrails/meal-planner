@@ -25,7 +25,6 @@ import { borderRadius, type ShadowTokens, shadows } from '../layout';
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
-  TabBarTokens,
   ThemeDefinition,
   VisibilityTokens,
 } from '../theme-context';

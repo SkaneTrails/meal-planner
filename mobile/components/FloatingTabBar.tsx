@@ -86,6 +86,8 @@ const TabBarBackground = ({ tokens }: { tokens: TabBarTokens }) => {
             borderRadius: barRadius,
             overflow: 'hidden',
             backgroundColor: colors.tabBar.bg,
+            borderWidth,
+            borderColor: colors.tabBar.border,
           },
         ]}
       />
@@ -112,7 +114,7 @@ const TabBarBackground = ({ tokens }: { tokens: TabBarTokens }) => {
           {
             borderRadius: barRadius,
             borderWidth,
-            backgroundColor: colors.tabBar.bg,
+            backgroundColor: blur ? colors.tabBar.bg : colors.tabBar.bgFallback,
             borderColor: colors.tabBar.border,
           },
           blur &&

@@ -17,7 +17,6 @@ import {
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
-  TabBarTokens,
   ThemeDefinition,
   VisibilityTokens,
 } from '../theme-context';

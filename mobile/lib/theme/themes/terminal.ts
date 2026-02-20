@@ -16,7 +16,6 @@ import { terminalColors, terminalCRT } from '../terminal-colors';
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
-  TabBarTokens,
   ThemeDefinition,
   VisibilityTokens,
 } from '../theme-context';
