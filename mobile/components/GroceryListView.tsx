@@ -4,7 +4,7 @@
  */
 
 import { Ionicons } from '@expo/vector-icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
   type RenderItemParams,
@@ -46,6 +46,14 @@ export const GroceryListView = ({
     () =>
       new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
   );
+
+  // Sync local checked state when the parent's grocery list changes
+  // (e.g., generated items arrive after recipes load, or Firestore refreshes)
+  useEffect(() => {
+    setCheckedItems(
+      new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
+    );
+  }, [groceryList]);
 
   const filteredItems = filterOutItems
     ? groceryList.items.filter((item) => !filterOutItems(item.name))

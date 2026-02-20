@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { GroceryItemRow } from '../GroceryItemRow';
@@ -186,5 +186,51 @@ describe('GroceryListView', () => {
     );
     fireEvent.click(screen.getByText('Butter'));
     expect(handleToggle).toHaveBeenCalledWith('Butter', true);
+  });
+
+  it('syncs checked state when groceryList prop updates', () => {
+    const handleToggle = vi.fn();
+    const uncheckedList = buildList([
+      buildItem({ name: 'Milk', checked: false }),
+      buildItem({ name: 'Eggs', checked: false }),
+    ]);
+
+    const { rerender, container } = render(
+      <GroceryListView groceryList={uncheckedList} onItemToggle={handleToggle} />,
+    );
+
+    // Items appear sorted: unchecked first; Milk is unchecked so it's at top
+    const getItemOrder = () =>
+      Array.from(container.querySelectorAll('[data-component="Text"]'))
+        .map((el) => el.textContent)
+        .filter((t) => ['Milk', 'Eggs'].includes(t || ''));
+    expect(getItemOrder()).toEqual(['Milk', 'Eggs']);
+
+    // Simulate Firestore refresh: parent passes Milk as checked → should sort to bottom
+    const updatedList = buildList([
+      buildItem({ name: 'Milk', checked: true }),
+      buildItem({ name: 'Eggs', checked: false }),
+    ]);
+    rerender(<GroceryListView groceryList={updatedList} onItemToggle={handleToggle} />);
+
+    // Milk is now checked → sorted after Eggs
+    expect(getItemOrder()).toEqual(['Eggs', 'Milk']);
+  });
+
+  it('syncs when items are added after initial render', () => {
+    const emptyList = buildList([]);
+    const { rerender } = render(
+      <GroceryListView groceryList={emptyList} />,
+    );
+
+    // Items arrive later (e.g., generated from meal plan after recipes load)
+    const populatedList = buildList([
+      buildItem({ name: 'Flour', checked: true }),
+      buildItem({ name: 'Sugar', checked: false }),
+    ]);
+    rerender(<GroceryListView groceryList={populatedList} />);
+
+    expect(screen.getByText('Flour')).toBeDefined();
+    expect(screen.getByText('Sugar')).toBeDefined();
   });
 });
