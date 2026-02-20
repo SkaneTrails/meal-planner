@@ -21,7 +21,7 @@ import {
 // Asset import — typed by expo-env.d.ts; Vite handles it in test via resolve.alias
 import ELEGANT_BACKGROUND from '@/assets/images/bck_b.png';
 import { lightColors } from '../colors';
-import { borderRadius, shadows } from '../layout';
+import { borderRadius, type ShadowTokens, shadows } from '../layout';
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
@@ -63,6 +63,14 @@ const visibility: VisibilityTokens = {
   showCheckmarkIndicator: true,
 };
 
+/** Elegant uses no drop shadows — clean, flat design. */
+const flatShadows = Object.fromEntries(
+  Object.keys(shadows).map((k) => [
+    k,
+    { boxShadow: '0px 0px 0px 0px transparent' },
+  ]),
+) as unknown as ShadowTokens;
+
 const buttonDisplay: ButtonDisplayConfig = {
   display: 'both',
   wrapper: 'animated',
@@ -76,7 +84,7 @@ export const lightTheme: ThemeDefinition = {
   colors: lightColors,
   fonts: defaultFontFamily,
   borderRadius,
-  shadows,
+  shadows: flatShadows,
   buttonDisplay,
   overrides: defaultOverrides,
   visibility,

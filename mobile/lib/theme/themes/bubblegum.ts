@@ -1,13 +1,19 @@
 /**
- * Pastel theme — "Bubbly Pastel"
+ * Bubblegum theme — "'90s Bubblegum"
  *
- * Candy-soft pastels with Comic Sans / rounded system fonts,
- * double-sized border radii, and standard depth shadows.
+ * Bold hot-pink, electric blue, and neon candy accents.
+ * Comic Sans / rounded system fonts, small border radii for a chunky
+ * boxy '90s feel, thick colorful borders instead of shadows.
+ * Inspired by the Bubblegum Tumblr theme's naive grid layout.
  */
 
 import { Platform } from 'react-native';
-import { type BorderRadiusTokens, borderRadius, shadows } from '../layout';
-import { pastelColors } from '../pastel-colors';
+import { bubblegumColors } from '../bubblegum-colors';
+import {
+  type BorderRadiusTokens,
+  borderRadius,
+  type ShadowTokens,
+} from '../layout';
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
@@ -42,29 +48,45 @@ const fonts: FontFamilyTokens = {
 
 // ── Derived overrides ──────────────────────────────────────────────────
 
-const scaleRadii = (
+/** Halve radii for a chunky, boxy '90s card look. */
+const shrinkRadii = (
   source: BorderRadiusTokens,
   factor: number,
 ): BorderRadiusTokens =>
   Object.fromEntries(
     Object.entries(source).map(([k, v]) => [
       k,
-      k === 'full' ? v : Math.round((v as number) * factor),
+      k === 'full' ? v : Math.max(0, Math.round((v as number) * factor)),
     ]),
   ) as unknown as BorderRadiusTokens;
+
+/** Bold hard-offset shadows — '90s raised-element look, zero blur. */
+const bubblegumShadows: ShadowTokens = {
+  none: { boxShadow: '0px 0px 0px 0px transparent' },
+  xs: { boxShadow: '1px 1px 0px 0px rgba(0, 0, 0, 0.12)' },
+  sm: { boxShadow: '2px 2px 0px 0px rgba(0, 0, 0, 0.12)' },
+  card: { boxShadow: '2px 2px 0px 0px rgba(0, 0, 0, 0.15)' },
+  md: { boxShadow: '3px 3px 0px 0px rgba(0, 0, 0, 0.15)' },
+  lg: { boxShadow: '4px 4px 0px 0px rgba(0, 0, 0, 0.18)' },
+  xl: { boxShadow: '5px 5px 0px 0px rgba(0, 0, 0, 0.2)' },
+  glow: { boxShadow: '3px 3px 0px 0px rgba(255, 77, 141, 0.3)' },
+  glowSoft: { boxShadow: '2px 2px 0px 0px rgba(255, 77, 141, 0.2)' },
+  cardRaised: { boxShadow: '4px 4px 0px 0px rgba(0, 0, 0, 0.2)' },
+  float: { boxShadow: '3px 3px 0px 0px rgba(0, 0, 0, 0.2)' },
+};
 
 // ── Style overrides ────────────────────────────────────────────────────
 
 const overrides: StyleOverrides = {
-  checkedOpacity: 0.85,
-  checkboxBorderWidth: 2,
-  dashedBorderWidth: 1.5,
-  dayCardBorderWidth: 1,
-  dayCardBorderWidthToday: 2,
-  segmentedControlGap: 8,
-  segmentedControlPadding: 4,
+  checkedOpacity: 0.82,
+  checkboxBorderWidth: 2.5,
+  dashedBorderWidth: 2,
+  dayCardBorderWidth: 2,
+  dayCardBorderWidthToday: 3,
+  segmentedControlGap: 6,
+  segmentedControlPadding: 3,
   segmentedControlActiveIndicator: 'shadow',
-  chipToggleGap: 8,
+  chipToggleGap: 6,
 };
 
 // ── Visibility ─────────────────────────────────────────────────────────
@@ -101,13 +123,13 @@ const buttonDisplay: ButtonDisplayConfig = {
 
 // ── Theme definition ───────────────────────────────────────────────────
 
-export const pastelTheme: ThemeDefinition = {
-  id: 'pastel',
-  name: 'Bubbly Pastel',
-  colors: pastelColors,
+export const bubblegumTheme: ThemeDefinition = {
+  id: 'bubblegum',
+  name: "'90s Bubblegum",
+  colors: bubblegumColors,
   fonts,
-  borderRadius: scaleRadii(borderRadius, 2),
-  shadows,
+  borderRadius: shrinkRadii(borderRadius, 0.1),
+  shadows: bubblegumShadows,
   buttonDisplay,
   overrides,
   visibility,

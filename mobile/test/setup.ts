@@ -263,7 +263,7 @@ vi.mock('@/lib/theme', () => {
       tint: 'rgba(93, 78, 64, 0.06)',
     },
     button: {
-      primary: '#7A6858', primaryPressed: '#6B5B4B', disabled: '#C5B8A8',
+      primary: '#7A6858', primaryPressed: '#6B5B4B', primaryText: '#FFFFFF', disabled: '#C5B8A8',
       primarySubtle: 'rgba(122, 104, 88, 0.08)',
       primarySurface: 'rgba(122, 104, 88, 0.1)',
       primaryActive: 'rgba(122, 104, 88, 0.12)',
@@ -524,9 +524,9 @@ vi.mock('@/lib/theme', () => {
     requiredFonts: {},
   };
 
-  const mockPastelTheme = {
-    id: 'pastel',
-    name: 'Bubbly Pastel',
+  const mockBubblegumTheme = {
+    id: 'bubblegum',
+    name: "'90s Bubblegum",
     colors: c,
     fonts: mockFonts,
     borderRadius: mockBorderRadius,
@@ -591,11 +591,11 @@ vi.mock('@/lib/theme', () => {
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
   lightTheme: mockLightTheme,
   terminalTheme: mockTerminalTheme,
-  pastelTheme: mockPastelTheme,
-  themes: { light: mockLightTheme, terminal: mockTerminalTheme, pastel: mockPastelTheme },
+  bubblegumTheme: mockBubblegumTheme,
+  themes: { light: mockLightTheme, terminal: mockTerminalTheme, bubblegum: mockBubblegumTheme },
   defaultThemeId: 'light',
   allRequiredFonts: {},
-  isThemeId: (value: string) => ['light', 'terminal', 'pastel'].includes(value),
+  isThemeId: (value: string) => ['light', 'terminal', 'bubblegum'].includes(value),
   };
 });
 

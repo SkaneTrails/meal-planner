@@ -42,10 +42,10 @@ export type {
 export { ThemeProvider, useTheme } from './theme/theme-context';
 export {
   allRequiredFonts,
+  bubblegumTheme,
   defaultThemeId,
   isThemeId,
   lightTheme,
-  pastelTheme,
   terminalTheme,
   themes,
 } from './theme/themes';

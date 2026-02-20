@@ -124,6 +124,7 @@ export const terminalColors: ColorTokens = {
   button: {
     primary: GREEN_DARK,
     primaryPressed: GREEN_DIM,
+    primaryText: GREEN,
     disabled: GREEN_SUBTLE,
     primarySubtle: g(0.06),
     primarySurface: g(0.08),
