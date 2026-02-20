@@ -166,7 +166,7 @@ const variantStyle = (
 ) => {
   if (bg) {
     // Custom bg overrides variant background but preserves variant border
-    const base = bg ? { backgroundColor: bg } : {};
+    const base = { backgroundColor: bg };
     switch (variant) {
       case 'filled':
       case 'display':
