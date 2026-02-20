@@ -602,6 +602,8 @@ const it: Translations = {
     titlePlaceholder: 'es. Pasta Carbonara',
     titleRequired: 'Inserisci un titolo per la ricetta',
     servingsInvalid: 'Le porzioni devono essere almeno 1',
+    prepTimeInvalid: 'Il tempo di preparazione deve essere 0 o più minuti',
+    cookTimeInvalid: 'Il tempo di cottura deve essere 0 o più minuti',
     ingredients: 'Ingredienti',
     ingredientsPlaceholder: 'Un ingrediente per riga\nes. 200g pasta\n4 uova',
     instructions: 'Istruzioni',

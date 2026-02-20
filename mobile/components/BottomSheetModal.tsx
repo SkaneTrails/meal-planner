@@ -162,7 +162,11 @@ export const BottomSheetModal = ({
           >
             <Pressable
               onPress={(e) => e.stopPropagation()}
-              style={{ width: '100%' }}
+              style={{
+                width: '100%',
+                maxWidth: layout.contentMaxWidth,
+                alignSelf: 'center',
+              }}
             >
               {backdropContent}
             </Pressable>

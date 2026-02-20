@@ -225,7 +225,7 @@ export default function RecipesScreen() {
           isLoading={isLoading}
           onRefresh={() => refetch()}
           onRecipePress={(id) => router.push(`/recipe/${id}`)}
-          onAddRecipe={() => router.push('/add-recipe')}
+          onAddRecipe={() => setShowImportModal(true)}
           searchQuery={searchQuery}
           dietFilter={dietFilter}
           mealFilters={mealFilters}

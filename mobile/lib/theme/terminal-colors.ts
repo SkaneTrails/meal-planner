@@ -13,7 +13,6 @@ const BLACK = '#0A0A0A';
 const BLACK_LIGHT = '#0D110D';
 const BLACK_MID = '#101A10';
 const BLACK_CARD = '#0F1A0F';
-const BLACK_ELEVATED = '#0D1A0D';
 
 const GREEN = '#33FF33'; // phosphor green — primary
 const GREEN_DIM = '#22CC22'; // medium brightness

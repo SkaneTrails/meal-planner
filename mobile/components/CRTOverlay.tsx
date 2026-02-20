@@ -51,6 +51,8 @@ export const CRTOverlay = () => {
   useEffect(() => {
     if (!crt || Platform.OS !== 'web') return;
 
+    if (document.querySelector('[data-crt-scrollbar]')) return;
+
     const style = document.createElement('style');
     style.setAttribute('data-crt-scrollbar', '');
     style.textContent = `

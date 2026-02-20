@@ -80,6 +80,24 @@ export const ManualRecipeModal = ({
       return;
     }
 
+    const parsedPrepTime = prepTime ? Number.parseInt(prepTime, 10) : null;
+    if (
+      parsedPrepTime !== null &&
+      (Number.isNaN(parsedPrepTime) || parsedPrepTime < 0)
+    ) {
+      showNotification(t('common.error'), t('addRecipe.prepTimeInvalid'));
+      return;
+    }
+
+    const parsedCookTime = cookTime ? Number.parseInt(cookTime, 10) : null;
+    if (
+      parsedCookTime !== null &&
+      (Number.isNaN(parsedCookTime) || parsedCookTime < 0)
+    ) {
+      showNotification(t('common.error'), t('addRecipe.cookTimeInvalid'));
+      return;
+    }
+
     try {
       const recipe = await createRecipe.mutateAsync({
         title: title.trim(),
@@ -94,8 +112,8 @@ export const ManualRecipeModal = ({
           .filter(Boolean),
         image_url: imageUrl.trim() || null,
         servings: parsedServings,
-        prep_time: prepTime ? Number.parseInt(prepTime, 10) : null,
-        cook_time: cookTime ? Number.parseInt(cookTime, 10) : null,
+        prep_time: parsedPrepTime,
+        cook_time: parsedCookTime,
         diet_label: null,
         meal_label: null,
       });

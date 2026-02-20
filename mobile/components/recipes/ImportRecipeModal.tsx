@@ -26,20 +26,13 @@ import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
+import { extractHostname, isValidUrl } from '@/lib/utils/urlHelpers';
 
 interface ImportRecipeModalProps {
   visible: boolean;
   onClose: () => void;
   onManualMode?: () => void;
 }
-
-const extractHostname = (url: string): string => {
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return url;
-  }
-};
 
 export const ImportRecipeModal = ({
   visible,
@@ -76,15 +69,6 @@ export const ImportRecipeModal = ({
   const navigateToRecipe = (recipeId: string) => {
     resetAndClose();
     router.push(`/recipe/${recipeId}`);
-  };
-
-  const isValidUrl = (text: string) => {
-    try {
-      const parsed = new URL(text);
-      return ['http:', 'https:'].includes(parsed.protocol);
-    } catch {
-      return false;
-    }
   };
 
   const handleImport = async () => {
