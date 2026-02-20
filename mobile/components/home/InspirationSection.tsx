@@ -111,7 +111,7 @@ const InspirationHeader = ({
         style={{
           fontSize: fontSize['2xl'],
           fontFamily: fonts.display,
-          color: colors.white,
+          color: colors.content.heading,
           letterSpacing: letterSpacing.normal,
         }}
       >
@@ -301,7 +301,7 @@ const GetStartedFallback = ({
         style={{
           fontSize: fontSize['4xl'],
           fontFamily: fonts.display,
-          color: colors.white,
+          color: colors.content.heading,
           marginBottom: spacing.sm,
           letterSpacing: letterSpacing.tight,
         }}

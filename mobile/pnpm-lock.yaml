@@ -8,15 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@expo-google-fonts/cormorant-garamond':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@expo-google-fonts/dm-sans':
         specifier: ^0.4.2
         version: 0.4.2
       '@expo-google-fonts/noto-emoji':
         specifier: ^0.4.6
         version: 0.4.6
-      '@expo-google-fonts/playfair-display':
-        specifier: ^0.4.2
-        version: 0.4.2
       '@expo/ngrok':
         specifier: ^4.1.0
         version: 4.1.3
@@ -980,14 +980,14 @@ packages:
       '@noble/hashes':
         optional: true
 
+  '@expo-google-fonts/cormorant-garamond@0.4.1':
+    resolution: {integrity: sha512-e8J4Cn13K1txygamg50n3odLUsYP7Ck28XOGobMi7uDsWvFmp/jgK0qcALqJTlmi9NczSWUNdERxcLauHCBa/Q==}
+
   '@expo-google-fonts/dm-sans@0.4.2':
     resolution: {integrity: sha512-e/fLH5aCJzkEenz7axvEn8N7IJAKhUwNjIxS75h9j+Ip1M9S7d22M19gJN3A7QW4egVkBJRyQh1hQFhngQn9yA==}
 
   '@expo-google-fonts/noto-emoji@0.4.6':
     resolution: {integrity: sha512-Nj3M51ztOpLyrGDswKRZSbaq8QZCwxDdoiTPQXIz9YyRVbY5SE63mcGTDs9xb16nEMiiKM/RrWQ1EVFpvSn+Hw==}
-
-  '@expo-google-fonts/playfair-display@0.4.2':
-    resolution: {integrity: sha512-mWhBV59RUjSS3aYpytUb7UyHHTnXcHh7epAn7gq+M4XAEh5PuMKUrP8eiUfkJLb6UwHZCi7EhQpUzxHu5OL96w==}
 
   '@expo/cli@54.0.23':
     resolution: {integrity: sha512-km0h72SFfQCmVycH/JtPFTVy69w6Lx1cHNDmfLfQqgKFYeeHTjx7LVDP4POHCtNxFP2UeRazrygJhlh4zz498g==}
@@ -5818,11 +5818,11 @@ snapshots:
 
   '@exodus/bytes@1.11.0': {}
 
+  '@expo-google-fonts/cormorant-garamond@0.4.1': {}
+
   '@expo-google-fonts/dm-sans@0.4.2': {}
 
   '@expo-google-fonts/noto-emoji@0.4.6': {}
-
-  '@expo-google-fonts/playfair-display@0.4.2': {}
 
   '@expo/cli@54.0.23(expo-router@6.0.23)(expo@54.0.33)(react-native@0.84.0(@babel/core@7.29.0)(@types/react@19.2.13)(react@19.2.4))':
     dependencies:

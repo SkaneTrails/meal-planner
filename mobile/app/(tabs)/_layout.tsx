@@ -19,7 +19,7 @@ export default function TabLayout() {
   });
 
   if (loading) {
-    return <FullScreenLoading background="muted" />;
+    return <FullScreenLoading />;
   }
 
   if (!user) {
@@ -27,7 +27,7 @@ export default function TabLayout() {
   }
 
   if (userLoading) {
-    return <FullScreenLoading background="muted" />;
+    return <FullScreenLoading />;
   }
 
   // If API returns error (likely 403 - user not in any household), redirect to no-access

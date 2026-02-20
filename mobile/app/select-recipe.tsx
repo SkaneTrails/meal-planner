@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import { GradientBackground } from '@/components';
+import { GradientBackground, ScreenHeaderBar } from '@/components';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { CopyMealTab } from '@/components/select-recipe/CopyMealTab';
 import { LibraryTab } from '@/components/select-recipe/LibraryTab';
@@ -56,34 +56,39 @@ export default function SelectRecipeScreen() {
       />
 
       <GradientBackground
-        structured
         style={{ flex: 1, paddingBottom: layout.tabBar.contentBottomPadding }}
       >
         <View style={[{ flex: 1 }, layout.contentContainer]}>
-          {/* Header - same style as other pages */}
-          <View
-            style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
-          >
-            <ScreenTitle title={headerTitle} subtitle={headerSubtitle} />
-          </View>
+          <ScreenHeaderBar>
+            {/* Header - same style as other pages */}
+            <View
+              style={{
+                paddingHorizontal: spacing.xl,
+                paddingTop: spacing.lg,
+                paddingBottom: spacing.sm,
+              }}
+            >
+              <ScreenTitle title={headerTitle} subtitle={headerSubtitle} />
+            </View>
 
-          {!mode && (
-            <TabBar
-              tabs={TAB_KEYS}
-              activeTab={activeTab}
-              onTabPress={(tab) => {
-                setActiveTab(tab);
-                if (tab === 'random') shuffleRandom();
-              }}
-              labels={{
-                library: t('selectRecipe.tabs.library'),
-                random: t('selectRecipe.tabs.random'),
-                quick: t('selectRecipe.tabs.quick'),
-                copy: t('selectRecipe.tabs.copy'),
-                extras: t('selectRecipe.tabs.extras'),
-              }}
-            />
-          )}
+            {!mode && (
+              <TabBar
+                tabs={TAB_KEYS}
+                activeTab={activeTab}
+                onTabPress={(tab) => {
+                  setActiveTab(tab);
+                  if (tab === 'random') shuffleRandom();
+                }}
+                labels={{
+                  library: t('selectRecipe.tabs.library'),
+                  random: t('selectRecipe.tabs.random'),
+                  quick: t('selectRecipe.tabs.quick'),
+                  copy: t('selectRecipe.tabs.copy'),
+                  extras: t('selectRecipe.tabs.extras'),
+                }}
+              />
+            )}
+          </ScreenHeaderBar>
 
           {renderActiveTab()}
         </View>
@@ -105,7 +110,9 @@ const TabBar = ({ tabs, activeTab, onTabPress, labels }: TabBarProps) => {
   const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
 
   return (
-    <View style={{ paddingHorizontal: 20, paddingVertical: spacing.sm }}>
+    <View
+      style={{ paddingHorizontal: spacing.xl, paddingVertical: spacing.sm }}
+    >
       <View
         style={{
           flexDirection: 'row',

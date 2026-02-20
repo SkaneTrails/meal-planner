@@ -15,26 +15,26 @@ export const lightColors = {
   primaryDark: '#1A1A1A',
   primaryLight: '#404040',
 
-  // Background gradients - warm peach/brown tones
-  bgBase: '#E8D8C8',
-  bgLight: '#FDF6F0',
-  bgMid: '#F5E1D0',
-  bgDark: '#E8CDB5',
-  bgWarm: '#FFEEE0',
+  // Background gradients - warm cream/linen tones
+  bgBase: '#EDE4DA',
+  bgLight: '#FAF5EF',
+  bgMid: '#F0E4D8',
+  bgDark: '#E5D5C5',
+  bgWarm: '#F8EDE2',
 
-  // Accent colors - Coral/Peach for luxury feel
-  accent: '#E8A87C',
-  accentDark: '#D4956A',
-  accentLight: '#FFD4B8',
-  coral: '#FF8A65',
-  coralSoft: '#FFAB91',
-  gold: '#C9A962',
+  // Accent colors - Warm terracotta/burnt orange
+  accent: '#D4845A',
+  accentDark: '#C07548',
+  accentLight: '#F0C4A8',
+  coral: '#E0855A',
+  coralSoft: '#F0A888',
+  gold: '#C4A060',
   goldLight: '#E8D5A3',
 
   // Category colors (luxurious pastels)
   category: {
     recipes: { bg: '#FFF0E5', text: '#8B5A3C' },
-    planned: { bg: '#E8F5E9', text: '#2E7D32' },
+    planned: { bg: '#F0EBE5', text: '#5C5248' },
     grocery: { bg: '#F3E5F5', text: '#7B1FA2' },
     add: { bg: '#FFF3E0', text: '#E65100' },
   },
@@ -65,21 +65,21 @@ export const lightColors = {
   white: '#FFFFFF',
   offWhite: '#FAFAFA',
   text: {
-    primary: '#FFFFFF',
-    secondary: 'rgba(255, 255, 255, 0.8)',
-    muted: 'rgba(255, 255, 255, 0.6)',
-    light: 'rgba(255, 255, 255, 0.4)',
+    primary: '#5D4E40',
+    secondary: 'rgba(93, 78, 64, 0.7)',
+    muted: 'rgba(93, 78, 64, 0.5)',
+    light: 'rgba(93, 78, 64, 0.35)',
     inverse: '#2D2D2D',
     dark: '#5D4E40',
   },
-  border: 'rgba(255, 255, 255, 0.2)',
-  borderLight: 'rgba(255, 255, 255, 0.1)',
-  borderFaint: 'rgba(255, 255, 255, 0.04)',
+  border: 'rgba(93, 78, 64, 0.18)',
+  borderLight: 'rgba(93, 78, 64, 0.1)',
+  borderFaint: 'rgba(93, 78, 64, 0.04)',
 
   // Content colors — dark text/icons on light backgrounds (warm brown family)
   content: {
-    heading: '#3D3D3D',
-    headingMuted: 'rgba(45, 45, 45, 0.75)',
+    heading: '#5D4E40',
+    headingMuted: 'rgba(93, 78, 64, 0.75)',
     headingWarm: '#4A3728',
     body: '#5D4E40',
     secondary: '#8B7355',
@@ -95,29 +95,29 @@ export const lightColors = {
   surface: {
     overlay: 'rgba(93, 78, 64, 0.85)',
     overlayMedium: 'rgba(93, 78, 64, 0.75)',
-    border: 'rgba(93, 78, 64, 0.3)',
-    borderLight: 'rgba(93, 78, 64, 0.25)',
-    divider: 'rgba(93, 78, 64, 0.2)',
-    dividerSolid: '#D4C5B5',
-    modal: '#F5EDE5',
-    pressed: 'rgba(93, 78, 64, 0.15)',
-    active: 'rgba(93, 78, 64, 0.12)',
-    subtle: 'rgba(93, 78, 64, 0.1)',
-    hover: 'rgba(93, 78, 64, 0.08)',
-    tint: 'rgba(93, 78, 64, 0.06)',
+    border: 'rgba(93, 78, 64, 0.18)',
+    borderLight: 'rgba(93, 78, 64, 0.12)',
+    divider: 'rgba(93, 78, 64, 0.12)',
+    dividerSolid: '#DDD0C2',
+    modal: '#F2EAE0',
+    pressed: 'rgba(93, 78, 64, 0.12)',
+    active: 'rgba(93, 78, 64, 0.08)',
+    subtle: 'rgba(93, 78, 64, 0.06)',
+    hover: 'rgba(93, 78, 64, 0.05)',
+    tint: 'rgba(93, 78, 64, 0.04)',
   },
 
-  // Button colors
+  // Button colors — warm vivid orange
   button: {
-    primary: '#7A6858',
-    primaryPressed: '#6B5B4B',
+    primary: '#D97A45',
+    primaryPressed: '#C06B38',
     primaryText: '#FFFFFF',
     disabled: '#C5B8A8',
-    primarySubtle: 'rgba(122, 104, 88, 0.08)',
-    primarySurface: 'rgba(122, 104, 88, 0.1)',
-    primaryActive: 'rgba(122, 104, 88, 0.12)',
-    primaryHover: 'rgba(122, 104, 88, 0.15)',
-    primaryDivider: 'rgba(122, 104, 88, 0.2)',
+    primarySubtle: 'rgba(217, 122, 69, 0.08)',
+    primarySurface: 'rgba(217, 122, 69, 0.1)',
+    primaryActive: 'rgba(217, 122, 69, 0.14)',
+    primaryHover: 'rgba(217, 122, 69, 0.18)',
+    primaryDivider: 'rgba(217, 122, 69, 0.22)',
   },
 
   // Refined gray scale
@@ -154,32 +154,32 @@ export const lightColors = {
 
   // Meal plan surfaces — warm beige at various opacities
   mealPlan: {
-    slotBg: 'rgba(240, 235, 228, 0.85)',
-    containerBg: 'rgba(245, 240, 235, 0.95)',
-    emptyBg: 'rgba(245, 242, 238, 0.7)',
-    emptyStateBg: 'rgba(240, 235, 228, 0.5)',
+    slotBg: 'rgba(245, 240, 234, 0.85)',
+    containerBg: 'rgba(248, 244, 238, 0.95)',
+    emptyBg: 'rgba(248, 244, 240, 0.7)',
+    emptyStateBg: 'rgba(245, 240, 234, 0.5)',
   },
 
   // Recipe rating — thumb up/down
   rating: {
-    positive: '#4A8B5C',
+    positive: '#6B8068',
     negative: '#B0645C',
-    positiveBg: 'rgba(76, 175, 80, 0.3)',
+    positiveBg: 'rgba(107, 128, 104, 0.25)',
     negativeBg: 'rgba(239, 83, 80, 0.3)',
   },
 
   // Instruction timeline — recipe detail
   timeline: {
-    badge: '#2D6A5A',
-    line: 'rgba(45, 106, 90, 0.15)',
-    completedText: '#166534',
+    badge: '#5C5248',
+    line: 'rgba(92, 82, 72, 0.15)',
+    completedText: '#4A4038',
   },
 
   // Chip/filter pill colors
   chip: {
-    bg: 'rgba(232, 222, 212, 0.7)',
-    border: 'rgba(139, 115, 85, 0.3)',
-    divider: 'rgba(139, 115, 85, 0.15)',
+    bg: 'rgba(240, 234, 226, 0.7)',
+    border: 'rgba(139, 115, 85, 0.2)',
+    divider: 'rgba(139, 115, 85, 0.1)',
     fishActive: '#2D7AB8',
     meatActive: '#B85C38',
     favoriteActive: '#C75050',
@@ -197,45 +197,53 @@ export const lightColors = {
 
   // Glass/Blur effects - near-solid surfaces for app-like feel
   glass: {
-    light: 'rgba(255, 255, 255, 0.88)',
+    light: 'rgba(255, 255, 255, 0.92)',
     medium: 'rgba(255, 255, 255, 0.78)',
     heavy: 'rgba(255, 255, 255, 0.95)',
-    solid: 'rgba(255, 255, 255, 0.92)',
-    bright: 'rgba(255, 255, 255, 0.9)',
+    solid: 'rgba(255, 255, 255, 0.95)',
+    bright: 'rgba(255, 255, 255, 0.92)',
     dark: 'rgba(255, 255, 255, 0.65)',
     subtle: 'rgba(255, 255, 255, 0.6)',
     faint: 'rgba(255, 255, 255, 0.5)',
-    card: 'rgba(255, 255, 255, 0.85)',
-    border: 'rgba(0, 0, 0, 0.04)',
+    card: 'rgba(255, 255, 255, 0.92)',
+    border: 'rgba(0, 0, 0, 0.03)',
     button: 'rgba(255, 255, 255, 0.3)',
     buttonPressed: 'rgba(255, 255, 255, 0.45)',
     buttonDefault: 'rgba(255, 255, 255, 0.35)',
     dim: 'rgba(255, 255, 255, 0.08)',
   },
 
-  // Tab bar — acrylic floating nav
-  tabBar: {
-    bg: 'rgba(235, 228, 219, 0.5)',
-    bgFallback: 'rgba(235, 228, 219, 0.85)',
-    bottomFill: '#EBE4DB',
-    border: 'rgba(93, 78, 64, 0.1)',
-    active: '#5D4E40',
-    inactive: '#8B7355',
-    focusBg: 'rgba(93, 78, 64, 0.12)',
+  // Fixed screen header — same as page background, slightly transparent
+  header: {
+    bg: 'rgba(237, 228, 218, 0.85)',
+    fadeEnd: 'rgba(237, 228, 218, 0)',
+    shadow: '0px 2px 12px rgba(93, 78, 64, 0.12)',
+    fadeWidth: 24,
   },
 
-  // AI enhancement theming — unified sage green palette
+  // Tab bar — acrylic floating nav
+  tabBar: {
+    bg: 'rgba(240, 234, 226, 0.5)',
+    bgFallback: 'rgba(240, 234, 226, 0.88)',
+    bottomFill: '#EDE6DD',
+    border: 'rgba(93, 78, 64, 0.08)',
+    active: '#5D4E40',
+    inactive: '#8B7355',
+    focusBg: 'rgba(93, 78, 64, 0.1)',
+  },
+
+  // AI enhancement theming — warm orange accent
   ai: {
-    primary: '#6B8E6B',
-    primaryDark: '#5A7A5A',
-    bg: 'rgba(107, 142, 107, 0.08)',
-    bgPressed: 'rgba(107, 142, 107, 0.18)',
-    muted: 'rgba(107, 142, 107, 0.5)',
-    iconBg: 'rgba(107, 142, 107, 0.12)',
-    light: 'rgba(107, 142, 107, 0.15)',
-    badge: 'rgba(107, 142, 107, 0.95)',
-    selectedBg: 'rgba(107, 142, 107, 0.1)',
-    border: 'rgba(107, 142, 107, 0.3)',
+    primary: '#D97A45',
+    primaryDark: '#C06B38',
+    bg: 'rgba(217, 122, 69, 0.08)',
+    bgPressed: 'rgba(217, 122, 69, 0.18)',
+    muted: 'rgba(217, 122, 69, 0.5)',
+    iconBg: 'rgba(217, 122, 69, 0.12)',
+    light: 'rgba(217, 122, 69, 0.15)',
+    badge: 'rgba(217, 122, 69, 0.95)',
+    selectedBg: 'rgba(217, 122, 69, 0.1)',
+    border: 'rgba(217, 122, 69, 0.3)',
   },
 
   // Destructive action — warm red for delete/clear actions
@@ -247,22 +255,24 @@ export const lightColors = {
 
   // Gradient decorative — animated background orbs and gradient stops
   gradient: {
-    orb1: '#E8D0C0',
-    orb2: '#D4A080',
-    orb3: '#E0B090',
-    orb4: '#C88060',
-    stop1: '#D8B8A0',
-    stop2: '#D0A080',
+    orb1: '#EEDACC',
+    orb2: '#E0C4AE',
+    orb3: '#D5C4B6',
+    orb4: '#7A726A',
+    orb5: '#EADAC8',
+    orb6: '#8A827A',
+    stop1: '#D8BCA6',
+    stop2: '#E6D0BC',
   },
 
   // Background overlays — used by GradientBackground to tint/cover the base image
   background: {
-    mutedOverlay: 'rgba(0, 0, 0, 0.15)',
-    defaultOverlay: 'rgba(255, 255, 255, 0.08)',
-    structuredWash: 'rgba(235, 228, 219, 0.96)',
-    structuredGradientStart: 'rgba(210, 200, 190, 0.15)',
+    mutedOverlay: 'rgba(0, 0, 0, 0.12)',
+    defaultOverlay: 'rgba(255, 255, 255, 0.06)',
+    structuredWash: 'rgba(240, 234, 226, 0.96)',
+    structuredGradientStart: 'rgba(220, 212, 202, 0.12)',
     structuredGradientEnd: 'transparent',
-    animatedOverlay: 'rgba(255, 255, 255, 0.08)',
+    animatedOverlay: 'rgba(255, 255, 255, 0.06)',
   },
 
   // Tag dot colors — muted palette for note/suggestion tags
@@ -282,17 +292,17 @@ export const lightColors = {
 
   // Card / container surfaces
   card: {
-    bg: 'rgba(255, 255, 255, 0.85)',
-    bgPressed: 'rgba(255, 255, 255, 0.78)',
+    bg: 'rgba(255, 255, 255, 0.92)',
+    bgPressed: 'rgba(255, 255, 255, 0.85)',
     textPrimary: '#2D2D2D',
     textSecondary: '#757575',
-    borderColor: 'rgba(0, 0, 0, 0.04)',
+    borderColor: 'rgba(0, 0, 0, 0.03)',
   },
 
   // Search bar (RecipeFilters)
   searchBar: {
-    bg: 'rgba(255, 255, 255, 0.88)',
-    border: 'rgba(0, 0, 0, 0.04)',
+    bg: 'rgba(255, 255, 255, 0.92)',
+    border: 'rgba(0, 0, 0, 0.03)',
     icon: '#8B7355',
     text: '#5D4E40',
     placeholder: '#8B7355',
@@ -302,8 +312,8 @@ export const lightColors = {
 
   // Text input fields
   input: {
-    bg: 'rgba(255, 255, 255, 0.88)',
-    bgSubtle: 'rgba(93, 78, 64, 0.06)',
+    bg: 'rgba(255, 255, 255, 0.92)',
+    bgSubtle: 'rgba(93, 78, 64, 0.04)',
     border: 'transparent',
     text: '#2D2D2D',
     placeholder: '#9E9E9E',
@@ -320,43 +330,43 @@ export const lightColors = {
 
   // Recipe detail meta chips (meal type, visibility)
   metaChip: {
-    mealBg: '#E8CDB5',
+    mealBg: '#E5D5C5',
     mealText: '#2D2D2D',
-    visibilityBg: 'rgba(255, 255, 255, 0.92)',
+    visibilityBg: 'rgba(255, 255, 255, 0.95)',
     visibilityText: '#2D2D2D',
   },
 
   // Checkbox (grocery list)
   checkbox: {
-    checkedBg: '#6B8E6B',
-    checkedBorder: '#6B8E6B',
+    checkedBg: '#5C5248',
+    checkedBorder: '#5C5248',
   },
 
   // List item rows (grocery)
   listItem: {
-    bg: 'rgba(255, 255, 255, 0.92)',
+    bg: 'rgba(255, 255, 255, 0.95)',
     bgActive: '#FFFFFF',
-    checkedText: 'rgba(93, 78, 64, 0.6)',
+    checkedText: 'rgba(93, 78, 64, 0.5)',
   },
 
   // Stats cards (home screen)
   statsCard: {
-    bg: 'rgba(255, 255, 255, 0.92)',
-    borderColor: 'rgba(0, 0, 0, 0.04)',
+    bg: 'rgba(255, 255, 255, 0.95)',
+    borderColor: 'rgba(0, 0, 0, 0.03)',
   },
 
   // Meal plan day card container
   dayCard: {
-    bg: 'rgba(255, 255, 255, 0.92)',
-    bgToday: 'rgba(255, 255, 255, 0.95)',
+    bg: 'rgba(255, 255, 255, 0.95)',
+    bgToday: 'rgba(92, 82, 72, 0.12)',
   },
 
   // Segmented tab control (select-recipe)
   segmentedControl: {
-    trackBg: 'rgba(93, 78, 64, 0.06)',
+    trackBg: 'rgba(93, 78, 64, 0.04)',
     activeBg: '#FFFFFF',
     activeText: '#3D3D3D',
-    inactiveText: 'rgba(93, 78, 64, 0.6)',
+    inactiveText: 'rgba(93, 78, 64, 0.5)',
   },
 } as const;
 

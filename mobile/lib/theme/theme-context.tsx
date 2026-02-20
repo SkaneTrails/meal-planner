@@ -8,7 +8,6 @@
 
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import type { ImageSourcePropType } from 'react-native';
 import type { ColorTokens } from './colors';
 import {
   type BorderRadiusTokens,
@@ -181,8 +180,8 @@ export interface ThemeDefinition {
   chrome: LayoutChrome;
   /** CRT visual overlay config (scanlines, flicker, glow). Omit for themes without the effect. */
   crt?: CRTConfig;
-  /** Static background image used by GradientBackground. Omit for solid-color backgrounds. */
-  backgroundImage?: ImageSourcePropType;
+  /** Whether this theme supports animated gradient backgrounds. Defaults to true when omitted. */
+  animatedBackground?: boolean;
   /**
    * Custom font assets this theme requires (name → asset source).
    * Collected at startup and passed to `useFonts`. Themes using only
@@ -208,8 +207,8 @@ export interface ThemeValue {
   chrome: LayoutChrome;
   /** CRT visual overlay config (scanlines, flicker, glow). Undefined = no overlay. */
   crt?: CRTConfig;
-  /** Static background image for screen backgrounds. Undefined = solid color. */
-  backgroundImage?: ImageSourcePropType;
+  /** Whether this theme supports animated gradient backgrounds. False = always plain bgBase. */
+  animatedBackground: boolean;
   /** Registry key of the active theme. */
   themeName: string;
   /** Switch to a different theme by registry key. */
@@ -256,7 +255,7 @@ export const ThemeProvider = ({
       tabBar,
       chrome,
       crt,
-      backgroundImage,
+      animatedBackground,
     } = theme;
     const themedCircleStyle: CircleStyleFn =
       chrome === 'flat'
@@ -277,7 +276,7 @@ export const ThemeProvider = ({
       tabBar,
       chrome,
       crt,
-      backgroundImage,
+      animatedBackground: animatedBackground !== false,
       themeName: id,
       setThemeName,
     };

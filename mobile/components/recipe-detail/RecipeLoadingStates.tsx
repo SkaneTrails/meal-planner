@@ -4,15 +4,10 @@ import { BouncingLoader, Button, GradientBackground } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
-interface RecipeLoadingProps {
-  structured?: boolean;
-}
-
-export const RecipeLoading = ({ structured = true }: RecipeLoadingProps) => {
+export const RecipeLoading = () => {
   const { colors, borderRadius, shadows } = useTheme();
   return (
     <GradientBackground
-      structured={structured}
       style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
     >
       <View
@@ -41,7 +36,6 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
   const { colors, fonts, borderRadius, shadows } = useTheme();
   return (
     <GradientBackground
-      structured
       style={{
         flex: 1,
         alignItems: 'center',

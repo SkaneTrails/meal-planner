@@ -130,5 +130,6 @@ export const terminalTheme: ThemeDefinition = {
   },
   chrome: 'flat',
   crt: terminalCRT,
+  animatedBackground: false,
   requiredFonts: {}, // uses system monospace — no custom fonts needed
 };

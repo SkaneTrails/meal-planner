@@ -92,6 +92,7 @@ vi.mock('@/components/FullScreenLoading', () => ({
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
+  ScreenHeaderBar: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
   BottomSheetModal: ({ visible, children, title, onClose }: any) => {
     if (!visible) return null;
@@ -341,6 +342,12 @@ vi.mock('@/lib/theme', () => {
       buttonPressed: 'rgba(255, 255, 255, 0.45)',
       buttonDefault: 'rgba(255, 255, 255, 0.35)',
       dim: 'rgba(255, 255, 255, 0.08)',
+    },
+    header: {
+      bg: 'rgba(237, 228, 218, 0.85)',
+      fadeEnd: 'rgba(237, 228, 218, 0)',
+      shadow: '0px 2px 12px rgba(93, 78, 64, 0.12)',
+      fadeWidth: 24,
     },
     tabBar: {
       bg: 'rgba(235, 228, 219, 0.5)',
@@ -598,7 +605,7 @@ vi.mock('@/lib/theme', () => {
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true, showCheckmarkIndicator: true },
     chrome: 'full' as const,
     crt: undefined,
-    backgroundImage: undefined,
+    animatedBackground: true,
     tabBar: { borderRadius: 16, borderWidth: 0.5, blur: true, blurIntensity: 40, blurTint: 'light' },
     themeName: 'light',
     setThemeName: vi.fn(),

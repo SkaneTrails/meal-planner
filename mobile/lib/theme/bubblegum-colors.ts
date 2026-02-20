@@ -238,6 +238,14 @@ export const bubblegumColors: ColorTokens = {
     dim: 'rgba(255, 255, 255, 0.15)',
   },
 
+  // Fixed screen header — matches page background, slightly transparent
+  header: {
+    bg: 'rgba(245, 160, 192, 0.85)',
+    fadeEnd: 'rgba(245, 160, 192, 0)',
+    shadow: '0px 1px 6px rgba(0, 0, 0, 0.06)',
+    fadeWidth: 24,
+  },
+
   // Tab bar — solid white with dark border
   tabBar: {
     bg: 'rgba(255, 255, 255, 0.95)',
@@ -276,6 +284,8 @@ export const bubblegumColors: ColorTokens = {
     orb2: ELECTRIC_BLUE_LIGHT,
     orb3: '#B8F0A0',
     orb4: '#FFE680',
+    orb5: '#F5A0C0',
+    orb6: '#A0D8F0',
     stop1: HOT_PINK_LIGHT,
     stop2: ELECTRIC_BLUE_LIGHT,
   },

@@ -13,7 +13,12 @@ import {
   UIManager,
   View,
 } from 'react-native';
-import { BottomSheetModal, Button, GradientBackground } from '@/components';
+import {
+  BottomSheetModal,
+  Button,
+  GradientBackground,
+  ScreenHeaderBar,
+} from '@/components';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
@@ -164,61 +169,65 @@ export default function RecipesScreen() {
   }, []);
 
   return (
-    <GradientBackground structured>
+    <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
-        {/* Header */}
-        <View
-          style={{
-            paddingHorizontal: spacing.xl,
-            paddingTop: spacing.lg,
-            paddingBottom: spacing.xs,
-          }}
-        >
-          <ScreenTitle
-            title={t('recipes.title')}
-            subtitle={
-              hasActiveFilters
-                ? t('recipes.filteredCount', { count: filteredRecipes.length })
-                : t('recipes.collectionCount', { count: totalCount })
-            }
-            style={{ marginBottom: spacing.sm }}
+        <ScreenHeaderBar>
+          {/* Header */}
+          <View
+            style={{
+              paddingHorizontal: spacing.xl,
+              paddingTop: spacing.lg,
+              paddingBottom: spacing.xs,
+            }}
+          >
+            <ScreenTitle
+              title={t('recipes.title')}
+              subtitle={
+                hasActiveFilters
+                  ? t('recipes.filteredCount', {
+                      count: filteredRecipes.length,
+                    })
+                  : t('recipes.collectionCount', { count: totalCount })
+              }
+              style={{ marginBottom: spacing.sm }}
+            />
+          </View>
+
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            isSearchFocused={isSearchFocused}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            onClear={handleSearchClear}
+            searchInputRef={searchInputRef}
+            t={t}
           />
-        </View>
 
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          isSearchFocused={isSearchFocused}
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-          onClear={handleSearchClear}
-          searchInputRef={searchInputRef}
-          t={t}
-        />
+          <View
+            style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.sm }}
+          >
+            <Button
+              variant="primary"
+              onPress={() => setShowImportModal(true)}
+              icon="add-circle-outline"
+              label={t('home.addRecipe.title')}
+            />
+          </View>
 
-        <View
-          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.sm }}
-        >
-          <Button
-            variant="primary"
-            onPress={() => setShowImportModal(true)}
-            icon="add-circle-outline"
-            label={t('home.addRecipe.title')}
+          <FilterChips
+            dietFilter={dietFilter}
+            showFavoritesOnly={showFavoritesOnly}
+            libraryScope={libraryScope}
+            sortBy={sortBy}
+            sortOptions={SORT_OPTIONS}
+            onDietChange={handleDietChange}
+            onFavoritesToggle={handleFavoritesToggle}
+            onLibraryScopeChange={setLibraryScope}
+            onSortPress={() => setShowSortPicker(true)}
+            t={t}
           />
-        </View>
-
-        <FilterChips
-          dietFilter={dietFilter}
-          showFavoritesOnly={showFavoritesOnly}
-          libraryScope={libraryScope}
-          sortBy={sortBy}
-          sortOptions={SORT_OPTIONS}
-          onDietChange={handleDietChange}
-          onFavoritesToggle={handleFavoritesToggle}
-          onLibraryScopeChange={setLibraryScope}
-          onSortPress={() => setShowSortPicker(true)}
-          t={t}
-        />
+        </ScreenHeaderBar>
 
         <RecipeGrid
           recipes={filteredRecipes}

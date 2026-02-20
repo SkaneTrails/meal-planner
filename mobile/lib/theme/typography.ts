@@ -24,16 +24,20 @@ export type FontFamilyTokens = {
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
 const isWeb = Platform.OS === 'web';
 
-/** Playfair Display for display headings, DM Sans for body text. */
+/** Cormorant Garamond for display headings, DM Sans for body text. */
 export const defaultFontFamily: FontFamilyTokens = {
-  display: isWeb ? '"Playfair Display", serif' : 'PlayfairDisplay_600SemiBold',
+  display: isWeb
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_600SemiBold',
   displayRegular: isWeb
-    ? '"Playfair Display", serif'
-    : 'PlayfairDisplay_400Regular',
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_400Regular',
   displayMedium: isWeb
-    ? '"Playfair Display", serif'
-    : 'PlayfairDisplay_500Medium',
-  displayBold: isWeb ? '"Playfair Display", serif' : 'PlayfairDisplay_700Bold',
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_500Medium',
+  displayBold: isWeb
+    ? '"Cormorant Garamond", serif'
+    : 'CormorantGaramond_700Bold',
   body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
   bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
   bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',

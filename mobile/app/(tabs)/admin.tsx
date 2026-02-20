@@ -8,7 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
-import { Button, FullScreenLoading, GradientBackground } from '@/components';
+import {
+  Button,
+  FullScreenLoading,
+  GradientBackground,
+  ScreenHeaderBar,
+} from '@/components';
 import {
   CreateHouseholdModal,
   HouseholdCard,
@@ -51,13 +56,12 @@ export default function AdminScreen() {
   const [newHouseholdName, setNewHouseholdName] = useState('');
 
   if (userLoading) {
-    return <FullScreenLoading background="muted" />;
+    return <FullScreenLoading />;
   }
 
   if (!currentUser || currentUser.role !== 'superuser') {
     return (
       <FullScreenLoading
-        background="muted"
         icon="lock-closed"
         title={t('admin.accessRequired')}
         subtitle={t('admin.accessRequiredMessage')}
@@ -79,7 +83,7 @@ export default function AdminScreen() {
   };
 
   return (
-    <GradientBackground muted>
+    <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         <AdminHeader onBack={() => router.back()} />
 
@@ -150,35 +154,37 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
   const { colors, circleStyle, shadows } = useTheme();
 
   return (
-    <View
-      style={{
-        paddingHorizontal: spacing['2xl'],
-        paddingTop: layout.screenPaddingTop,
-        paddingBottom: spacing.md,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
-    >
-      <Button
-        variant="icon"
-        onPress={onBack}
-        icon="chevron-back"
-        iconSize={22}
+    <ScreenHeaderBar>
+      <View
         style={{
-          ...circleStyle(iconContainer.md),
-          backgroundColor: colors.glass.button,
-          marginRight: spacing.md,
-          ...shadows.sm,
+          paddingHorizontal: spacing['2xl'],
+          paddingTop: layout.screenPaddingTop,
+          paddingBottom: spacing.md,
+          flexDirection: 'row',
+          alignItems: 'center',
         }}
-      />
-      <View style={{ flex: 1 }}>
-        <ScreenTitle
-          variant="large"
-          title={t('tabs.admin')}
-          subtitle={t('admin.subtitle')}
+      >
+        <Button
+          variant="icon"
+          onPress={onBack}
+          icon="chevron-back"
+          iconSize={22}
+          style={{
+            ...circleStyle(iconContainer.md),
+            backgroundColor: colors.glass.button,
+            marginRight: spacing.md,
+            ...shadows.sm,
+          }}
         />
+        <View style={{ flex: 1 }}>
+          <ScreenTitle
+            variant="large"
+            title={t('tabs.admin')}
+            subtitle={t('admin.subtitle')}
+          />
+        </View>
       </View>
-    </View>
+    </ScreenHeaderBar>
   );
 };
 
