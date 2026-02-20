@@ -15,9 +15,11 @@ import {
   StatsCard,
 } from '@/components/grocery';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
+import { useTranslation } from '@/lib/i18n';
 import { layout, spacing } from '@/lib/theme';
 
 export default function GroceryScreen() {
+  const { t } = useTranslation();
   const {
     isLoading,
     hasLoadedOnce,
@@ -44,7 +46,7 @@ export default function GroceryScreen() {
 
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground neutral>
+      <GradientBackground structured>
         <View style={[{ flex: 1 }, layout.contentContainer]}>
           <GroceryHeader />
           <GroceryListSkeleton />
@@ -54,11 +56,13 @@ export default function GroceryScreen() {
   }
 
   return (
-    <GradientBackground neutral>
+    <GradientBackground structured>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
         <GroceryHeader />
 
-        <View style={{ paddingHorizontal: 20, paddingBottom: spacing.md }}>
+        <View
+          style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.md }}
+        >
           <StatsCard
             itemsToBuy={itemsToBuy}
             checkedItemsToBuy={checkedItemsToBuy}
@@ -97,7 +101,10 @@ export default function GroceryScreen() {
             filterOutItems={filterOutItemsAtHome}
           />
         ) : (
-          <EmptyGroceryState />
+          <EmptyGroceryState
+            title={t('grocery.emptyList')}
+            subtitle={t('grocery.goToMealPlan')}
+          />
         )}
       </View>
     </GradientBackground>

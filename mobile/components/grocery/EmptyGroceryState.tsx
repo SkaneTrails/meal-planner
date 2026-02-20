@@ -1,10 +1,24 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { useTranslation } from '@/lib/i18n';
-import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  iconContainer,
+  layout,
+  lineHeight,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
-export const EmptyGroceryState = () => {
-  const { colors, fonts } = useTheme();
-  const { t } = useTranslation();
+interface EmptyGroceryStateProps {
+  title: string;
+  subtitle: string;
+}
+
+export const EmptyGroceryState = ({
+  title,
+  subtitle,
+}: EmptyGroceryStateProps) => {
+  const { colors, fonts, borderRadius, visibility } = useTheme();
 
   return (
     <View
@@ -13,8 +27,24 @@ export const EmptyGroceryState = () => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: spacing['3xl'],
+        paddingBottom: layout.tabBar.contentBottomPadding,
       }}
     >
+      {visibility.showEmptyStateIcon && (
+        <View
+          style={{
+            width: iconContainer['2xl'],
+            height: iconContainer['2xl'],
+            borderRadius: borderRadius.xl,
+            backgroundColor: colors.glass.faint,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: spacing.xl,
+          }}
+        >
+          <Ionicons name="cart-outline" size={40} color={colors.content.body} />
+        </View>
+      )}
       <Text
         style={{
           color: colors.content.body,
@@ -23,7 +53,7 @@ export const EmptyGroceryState = () => {
           textAlign: 'center',
         }}
       >
-        {t('grocery.emptyList')}
+        {title}
       </Text>
       <Text
         style={{
@@ -35,7 +65,7 @@ export const EmptyGroceryState = () => {
           maxWidth: 280,
         }}
       >
-        {t('grocery.goToMealPlan')}
+        {subtitle}
       </Text>
     </View>
   );

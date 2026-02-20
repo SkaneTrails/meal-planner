@@ -11,16 +11,10 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  layout,
-  lineHeight,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
+import { EmptyGroceryState } from './grocery/EmptyGroceryState';
 import { TerminalFrame } from './TerminalFrame';
 
 interface GroceryListViewProps {
@@ -36,7 +30,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors, fonts, borderRadius, visibility, chrome } = useTheme();
+  const { colors, fonts, borderRadius, chrome } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
@@ -121,58 +115,10 @@ export const GroceryListView = ({
 
   if (displayItems.length === 0) {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 32,
-        }}
-      >
-        {visibility.showEmptyStateIcon && (
-          <View
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 24,
-              backgroundColor: colors.glass.faint,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: spacing.xl,
-            }}
-          >
-            <Ionicons
-              name="cart-outline"
-              size={40}
-              color={colors.content.body}
-            />
-          </View>
-        )}
-        <Text
-          style={{
-            color: colors.content.body,
-            fontSize: fontSize['xl-2xl'],
-            fontFamily: fonts.bodySemibold,
-            fontWeight: fontWeight.semibold,
-            textAlign: 'center',
-          }}
-        >
-          {t('grocery.noItemsYet')}
-        </Text>
-        <Text
-          style={{
-            color: colors.content.tertiary,
-            fontSize: fontSize.xl,
-            fontFamily: fonts.body,
-            marginTop: spacing.sm,
-            textAlign: 'center',
-            lineHeight: lineHeight.lg,
-            maxWidth: 280,
-          }}
-        >
-          {t('grocery.emptyFromMealPlan')}
-        </Text>
-      </View>
+      <EmptyGroceryState
+        title={t('grocery.noItemsYet')}
+        subtitle={t('grocery.emptyFromMealPlan')}
+      />
     );
   }
 
