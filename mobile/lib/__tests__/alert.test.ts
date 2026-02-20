@@ -1,135 +1,113 @@
 /**
- * Tests for alert utilities — verifies cross-platform behavior.
+ * Tests for alert utilities — verifies the themed in-app alert system.
  *
  * Real logic tested:
- * - showAlert: web branch uses window.alert/confirm based on button count
- * - Button routing: cancel button → confirm(false), action button → confirm(true)
+ * - showAlert: enqueues alerts via module-level ref (set by AlertProvider)
  * - showNotification: delegates to showAlert with single OK button
- * - showConfirm: returns a Promise<boolean> resolving to confirm/cancel result
+ * - showConfirm: returns a Promise<boolean> via cancel/OK buttons
+ * - Fallback: window.alert when AlertProvider is not mounted
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock react-native Platform to 'web' for testing the web branch
-vi.mock('react-native', () => ({
-  Alert: { alert: vi.fn() },
-  Platform: { OS: 'web' },
-}));
-
-// Unmock @/lib/alert so we test the real implementation
-// (setup.ts has a global mock for it)
+// Unmock both so we test the real implementation
 vi.unmock('@/lib/alert');
+vi.unmock('@/lib/alert-context');
 
-import { showAlert, showNotification, showConfirm } from '@/lib/alert';
+import {
+  showAlert,
+  showNotification,
+  showConfirm,
+  setGlobalAlertRef,
+} from '@/lib/alert-context';
 
-describe('showAlert (web platform)', () => {
+describe('alert-context (no provider mounted)', () => {
   let alertSpy: ReturnType<typeof vi.spyOn>;
-  let confirmSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    setGlobalAlertRef(null);
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-    confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
   });
 
   afterEach(() => {
     alertSpy.mockRestore();
-    confirmSpy.mockRestore();
   });
 
-  it('shows window.alert with no buttons', () => {
+  it('falls back to window.alert when no provider is registered', () => {
     showAlert('Title', 'Message');
     expect(alertSpy).toHaveBeenCalledWith('Title\n\nMessage');
   });
 
-  it('shows window.alert with empty buttons array', () => {
-    showAlert('Title', 'Message', []);
-    expect(alertSpy).toHaveBeenCalledWith('Title\n\nMessage');
-  });
-
-  it('shows title-only when no message provided', () => {
+  it('falls back with title-only when no message provided', () => {
     showAlert('Title');
     expect(alertSpy).toHaveBeenCalledWith('Title');
   });
+});
 
-  it('shows window.alert for single button', () => {
+describe('alert-context (provider mounted)', () => {
+  const mockEnqueue = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    setGlobalAlertRef(mockEnqueue);
+  });
+
+  afterEach(() => {
+    setGlobalAlertRef(null);
+  });
+
+  it('enqueues alert via global ref', () => {
     showAlert('Title', 'Message', [{ text: 'OK' }]);
-    expect(alertSpy).toHaveBeenCalledWith('Title\n\nMessage');
-    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(mockEnqueue).toHaveBeenCalledWith('Title', 'Message', [
+      { text: 'OK' },
+    ]);
   });
 
-  it('uses window.confirm for two buttons', () => {
-    confirmSpy.mockReturnValue(true);
-    const onAction = vi.fn();
-    const onCancel = vi.fn();
-
-    showAlert('Delete?', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel', onPress: onCancel },
-      { text: 'Delete', style: 'destructive', onPress: onAction },
-    ]);
-
-    expect(confirmSpy).toHaveBeenCalledWith('Delete?\n\nAre you sure?');
-    expect(onAction).toHaveBeenCalled();
-    expect(onCancel).not.toHaveBeenCalled();
-  });
-
-  it('calls cancel button onPress when user cancels confirm', () => {
-    confirmSpy.mockReturnValue(false);
-    const onAction = vi.fn();
-    const onCancel = vi.fn();
-
-    showAlert('Delete?', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel', onPress: onCancel },
-      { text: 'Delete', onPress: onAction },
-    ]);
-
-    expect(onCancel).toHaveBeenCalled();
-    expect(onAction).not.toHaveBeenCalled();
-  });
-
-  it('falls back to first button if all are cancel-style', () => {
-    confirmSpy.mockReturnValue(true);
-    const onFirst = vi.fn();
-    const onSecond = vi.fn();
-
-    showAlert('Title', 'Msg', [
-      { text: 'A', style: 'cancel', onPress: onFirst },
-      { text: 'B', style: 'cancel', onPress: onSecond },
-    ]);
-
-    // When all buttons are cancel-style, the first one is used as the action button
-    expect(onFirst).toHaveBeenCalled();
+  it('enqueues alert without buttons', () => {
+    showAlert('Title', 'Msg');
+    expect(mockEnqueue).toHaveBeenCalledWith('Title', 'Msg', undefined);
   });
 });
 
 describe('showNotification', () => {
-  it('shows a simple alert', () => {
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+  const mockEnqueue = vi.fn();
+
+  beforeEach(() => {
+    setGlobalAlertRef(mockEnqueue);
+  });
+
+  afterEach(() => {
+    setGlobalAlertRef(null);
+  });
+
+  it('delegates to showAlert with single OK button', () => {
     showNotification('Done', 'Recipe saved');
-    expect(alertSpy).toHaveBeenCalledWith('Done\n\nRecipe saved');
-    alertSpy.mockRestore();
+    expect(mockEnqueue).toHaveBeenCalledWith('Done', 'Recipe saved', [
+      { text: 'OK' },
+    ]);
   });
 });
 
 describe('showConfirm', () => {
-  it('resolves to true when user confirms', async () => {
-    const confirmSpy = vi
-      .spyOn(window, 'confirm')
-      .mockReturnValue(true);
+  it('resolves to true when OK button is pressed', async () => {
+    setGlobalAlertRef((_title, _message, buttons) => {
+      const ok = buttons?.find((b) => b.text === 'OK');
+      ok?.onPress?.();
+    });
 
     const result = await showConfirm('Delete?', 'Are you sure?');
     expect(result).toBe(true);
-
-    confirmSpy.mockRestore();
+    setGlobalAlertRef(null);
   });
 
-  it('resolves to false when user cancels', async () => {
-    const confirmSpy = vi
-      .spyOn(window, 'confirm')
-      .mockReturnValue(false);
+  it('resolves to false when Cancel button is pressed', async () => {
+    setGlobalAlertRef((_title, _message, buttons) => {
+      const cancel = buttons?.find((b) => b.style === 'cancel');
+      cancel?.onPress?.();
+    });
 
     const result = await showConfirm('Delete?', 'Are you sure?');
     expect(result).toBe(false);
-
-    confirmSpy.mockRestore();
+    setGlobalAlertRef(null);
   });
 });

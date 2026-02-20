@@ -1,5 +1,4 @@
 import * as ImagePicker from 'expo-image-picker';
-import { Platform } from 'react-native';
 import { type AlertButton, showAlert, showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
 
@@ -64,24 +63,6 @@ const useImagePicker = (
   };
 
   const pickImage = () => {
-    // On web, window.confirm only supports 2 buttons so the multi-button
-    // alert drops options. Launch the file picker directly instead.
-    if (Platform.OS === 'web') {
-      if (options?.showUrlOption && options.onUrlOptionSelected) {
-        const useUrl = window.confirm(
-          `${t('recipe.changePhoto')}\n\n${t('recipe.chooseFromLibraryOrUrl')}`,
-        );
-        if (useUrl) {
-          options.onUrlOptionSelected();
-        } else {
-          launchLibrary();
-        }
-      } else {
-        launchLibrary();
-      }
-      return;
-    }
-
     const buttons: AlertButton[] = [
       { text: t('recipe.takePhoto'), onPress: launchCamera },
       { text: t('recipe.chooseFromLibrary'), onPress: launchLibrary },

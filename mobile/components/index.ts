@@ -58,4 +58,5 @@ export type { FabSlot } from './TerminalFabBar';
 export { TerminalFabBar } from './TerminalFabBar';
 export type { FrameSegment } from './TerminalFrame';
 export { TerminalFrame } from './TerminalFrame';
+export { ThemedAlert } from './ThemedAlert';
 export { ThemeToggle } from './ThemeToggle';

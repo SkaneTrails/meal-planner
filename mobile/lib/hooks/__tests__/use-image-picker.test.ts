@@ -220,26 +220,21 @@ describe('useImagePicker', () => {
       Platform.OS = 'web' as typeof Platform.OS;
     });
 
-    it('launches library directly without showing alert', async () => {
-      mockRequestLibrary.mockResolvedValue({ status: 'granted' } as never);
-      mockLaunchLibrary.mockResolvedValue({
-        canceled: false,
-        assets: [{ uri: 'blob:http://localhost/abc' }],
-      } as never);
-
+    it('shows the same alert on web as native (no platform branching)', () => {
       const onSelected = vi.fn();
       const { result } = renderHook(() => useImagePicker(onSelected));
 
-      await act(async () => result.current.pickImage());
+      act(() => result.current.pickImage());
 
-      expect(mockShowAlert).not.toHaveBeenCalled();
-      expect(mockRequestLibrary).toHaveBeenCalledOnce();
-      expect(mockLaunchLibrary).toHaveBeenCalledOnce();
-      expect(onSelected).toHaveBeenCalledWith('blob:http://localhost/abc');
+      expect(mockShowAlert).toHaveBeenCalledOnce();
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      expect(buttons).toHaveLength(3);
+      expect(buttons[0].text).toBe('recipe.takePhoto');
+      expect(buttons[1].text).toBe('recipe.chooseFromLibrary');
+      expect(buttons[2].text).toBe('common.cancel');
     });
 
-    it('shows confirm dialog when showUrlOption is true and user picks URL', async () => {
-      const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
+    it('includes URL option on web when showUrlOption is true', () => {
       const onSelected = vi.fn();
       const onUrl = vi.fn();
 
@@ -247,32 +242,11 @@ describe('useImagePicker', () => {
         useImagePicker(onSelected, { showUrlOption: true, onUrlOptionSelected: onUrl }),
       );
 
-      await act(async () => result.current.pickImage());
+      act(() => result.current.pickImage());
 
-      expect(confirmSpy).toHaveBeenCalledOnce();
-      expect(onUrl).toHaveBeenCalledOnce();
-      expect(mockLaunchLibrary).not.toHaveBeenCalled();
-      confirmSpy.mockRestore();
-    });
-
-    it('launches library when user declines URL in confirm dialog', async () => {
-      const confirmSpy = vi.spyOn(globalThis, 'confirm').mockReturnValue(false);
-      mockRequestLibrary.mockResolvedValue({ status: 'granted' } as never);
-      mockLaunchLibrary.mockResolvedValue({ canceled: true } as never);
-
-      const onSelected = vi.fn();
-      const onUrl = vi.fn();
-
-      const { result } = renderHook(() =>
-        useImagePicker(onSelected, { showUrlOption: true, onUrlOptionSelected: onUrl }),
-      );
-
-      await act(async () => result.current.pickImage());
-
-      expect(confirmSpy).toHaveBeenCalledOnce();
-      expect(onUrl).not.toHaveBeenCalled();
-      expect(mockRequestLibrary).toHaveBeenCalledOnce();
-      confirmSpy.mockRestore();
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      expect(buttons).toHaveLength(4);
+      expect(buttons[2].text).toBe('recipe.enterUrl');
     });
   });
 });

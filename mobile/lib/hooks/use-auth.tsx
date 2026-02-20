@@ -143,11 +143,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       const title = translateStandalone(lang, 'auth.sessionExpiredTitle');
       const message = translateStandalone(lang, 'auth.sessionExpiredMessage');
 
-      if (Platform.OS === 'web') {
-        window.alert(`${title}\n\n${message}`);
-      } else {
-        showNotification(title, message);
-      }
+      showNotification(title, message);
 
       setTimeout(() => {
         handlingUnauthorizedRef.current = false;
