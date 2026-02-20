@@ -2,9 +2,8 @@
  * Background component with multiple modes:
  * - Default: Theme background image (if provided) or solid bgBase color
  * - Muted: Desaturated overlay for settings screens
- * - Structured: Faint gradient for content-heavy screens (meal plan, etc.)
+ * - Structured: Faint gradient for content-heavy screens (meal plan, grocery, etc.)
  * - Animated: Floating color orbs with smooth curved movement (sign-in/no-access)
- * - Neutral: Solid warm surface for grocery list
  *
  * The background image is owned by the active theme. Themes that don't
  * provide a backgroundImage get a solid bgBase fill instead.
@@ -31,8 +30,7 @@ interface GradientBackgroundProps {
   style?: object;
   animated?: boolean;
   muted?: boolean; // Adds a desaturating overlay for a B&W-ish effect
-  structured?: boolean; // Faint gradient variant for structured content screens (meal plan, etc.)
-  neutral?: boolean; // Warm neutral surface - no visible gradient, just light beige/warm gray
+  structured?: boolean; // Faint gradient variant for structured content screens (meal plan, grocery, etc.)
 }
 
 const FloatingOrb = ({
@@ -171,29 +169,9 @@ export const GradientBackground = ({
   animated = false,
   muted = false,
   structured = false,
-  neutral = false,
 }: GradientBackgroundProps) => {
   const { colors, backgroundImage } = useTheme();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-
-  // Neutral variant: warm beige-grey solid surface for grocery list
-  if (neutral) {
-    return (
-      <View
-        style={[
-          styles.container,
-          style,
-          {
-            width: windowWidth,
-            height: windowHeight,
-            backgroundColor: colors.tabBar.bottomFill,
-          },
-        ]}
-      >
-        {children}
-      </View>
-    );
-  }
 
   // Muted variant for settings - background image with darker overlay, or solid bgBase
   if (muted) {
