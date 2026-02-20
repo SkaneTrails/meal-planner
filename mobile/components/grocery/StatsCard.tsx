@@ -8,7 +8,14 @@ import {
   ContentCard,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  fontWeight,
+  iconContainer,
+  iconSize,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
@@ -33,28 +40,28 @@ const ActionButtons = ({
         variant="icon"
         tone="ai"
         icon={showAddItem ? 'close' : 'add'}
-        iconSize={17}
+        iconSize={iconSize.md}
         onPress={onToggleAddItem}
         label={showAddItem ? 'Close' : 'Add'}
         color={colors.ai.primary}
         textColor={colors.white}
         hoverScale={1.08}
         pressScale={0.95}
-        style={{ width: 34, height: 34 }}
+        style={{ width: iconContainer.xs, height: iconContainer.xs }}
       />
       {totalItems > 0 && (
         <Button
           variant="icon"
           tone="subtle"
           icon={showClearMenu ? 'close' : 'create-outline'}
-          iconSize={17}
+          iconSize={iconSize.md}
           onPress={onToggleClearMenu}
           label={showClearMenu ? 'Close' : 'Edit'}
           color={showClearMenu ? colors.surface.pressed : colors.surface.hover}
           textColor={colors.content.icon}
           hoverScale={1.08}
           pressScale={0.95}
-          style={{ width: 34, height: 34 }}
+          style={{ width: iconContainer.xs, height: iconContainer.xs }}
         />
       )}
     </ButtonGroup>
@@ -74,7 +81,7 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
     <View style={{ marginTop: spacing['md-lg'] }}>
       <View
         style={{
-          height: 6,
+          height: spacing['xs-sm'],
           backgroundColor: colors.ai.light,
           borderRadius: borderRadius['3xs'],
           overflow: 'hidden',
@@ -124,7 +131,7 @@ const ItemsAtHomeIndicator = ({
     >
       <Ionicons
         name="home-outline"
-        size={14}
+        size={iconSize.xs}
         color={colors.content.secondary}
       />
       <Text
@@ -138,7 +145,11 @@ const ItemsAtHomeIndicator = ({
       >
         {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
       </Text>
-      <Ionicons name="chevron-forward" size={14} color={colors.content.body} />
+      <Ionicons
+        name="chevron-forward"
+        size={iconSize.xs}
+        color={colors.content.body}
+      />
     </AnimatedPressable>
   );
 };
