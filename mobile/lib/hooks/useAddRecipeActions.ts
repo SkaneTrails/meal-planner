@@ -10,14 +10,7 @@ import {
 } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
-
-const extractHostname = (url: string): string => {
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return url;
-  }
-};
+import { extractHostname, isValidUrl } from '@/lib/utils/urlHelpers';
 
 export const useAddRecipeActions = () => {
   const router = useRouter();
@@ -49,15 +42,6 @@ export const useAddRecipeActions = () => {
   const scrapeRecipe = useScrapeRecipe();
   const createRecipe = useCreateRecipe();
   const reviewEnhancement = useReviewEnhancement();
-
-  const isValidUrl = (text: string) => {
-    try {
-      const parsed = new URL(text);
-      return ['http:', 'https:'].includes(parsed.protocol);
-    } catch {
-      return false;
-    }
-  };
 
   const handleImport = async () => {
     if (!isValidUrl(url)) {

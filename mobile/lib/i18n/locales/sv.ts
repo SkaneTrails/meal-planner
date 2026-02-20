@@ -592,6 +592,8 @@ const sv: Translations = {
     titlePlaceholder: 't.ex. Pasta Carbonara',
     titleRequired: 'Ange en recepttitel',
     servingsInvalid: 'Portioner måste vara minst 1',
+    prepTimeInvalid: 'Förberedelsetid måste vara 0 eller fler minuter',
+    cookTimeInvalid: 'Tillagningstid måste vara 0 eller fler minuter',
     ingredients: 'Ingredienser',
     ingredientsPlaceholder: 'En ingrediens per rad\nt.ex. 200g pasta\n4 ägg',
     instructions: 'Instruktioner',

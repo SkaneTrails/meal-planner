@@ -10,7 +10,6 @@ import {
   TerminalFabBar,
   TerminalFrame,
 } from '@/components';
-import { AddRecipeModal } from '@/components/home/AddRecipeModal';
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { StatsCards } from '@/components/home/StatsCards';
 import { ScreenTitle } from '@/components/ScreenTitle';
@@ -38,10 +37,6 @@ export default function HomeScreen() {
     handleRefresh,
     greetingKey,
     t,
-    recipeUrl,
-    setRecipeUrl,
-    showAddModal,
-    setShowAddModal,
     groceryItemsCount,
     plannedMealsCount,
     plannedMealsPercentage,
@@ -49,7 +44,6 @@ export default function HomeScreen() {
     inspirationRecipes,
     inspirationRecipe,
     shuffleInspiration,
-    handleImportRecipe,
   } = data;
 
   if (isLoading && recipes.length === 0) {
@@ -62,75 +56,67 @@ export default function HomeScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={[
-          {
+      <View style={[{ flex: 1 }, layout.contentContainer]}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
             paddingBottom: layout.tabBar.contentBottomPadding,
-            paddingTop: 0,
-          },
-          layout.contentContainer,
-        ]}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={handleRefresh}
-            tintColor={colors.accent}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        <Header
-          greetingKey={greetingKey}
-          t={t}
-          onSettings={() => {
-            hapticLight();
-            router.push('/settings');
           }}
-        />
-
-        <StatsCards
-          recipesCount={totalCount}
-          plannedMealsCount={plannedMealsCount}
-          plannedMealsPercentage={plannedMealsPercentage}
-          groceryItemsCount={groceryItemsCount}
-          t={t}
-        />
-
-        <AddRecipeButton
-          t={t}
-          onPress={() => {
-            hapticLight();
-            router.push('/add-recipe');
-          }}
-        />
-
-        <NextMealCard
-          nextMeal={nextMeal}
-          t={t}
-          onPress={() =>
-            nextMeal?.recipeId
-              ? router.push(`/recipe/${nextMeal.recipeId}`)
-              : router.push('/meal-plan')
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={handleRefresh}
+              tintColor={colors.accent}
+            />
           }
-        />
+          showsVerticalScrollIndicator={false}
+        >
+          <Header
+            greetingKey={greetingKey}
+            t={t}
+            onSettings={() => {
+              hapticLight();
+              router.push('/settings');
+            }}
+          />
 
-        <InspirationSection
-          inspirationRecipes={inspirationRecipes}
-          inspirationRecipe={inspirationRecipe}
-          shuffleInspiration={shuffleInspiration}
-          t={t}
-        />
-      </ScrollView>
+          <StatsCards
+            recipesCount={totalCount}
+            plannedMealsCount={plannedMealsCount}
+            plannedMealsPercentage={plannedMealsPercentage}
+            groceryItemsCount={groceryItemsCount}
+            t={t}
+          />
 
-      <AddRecipeModal
-        visible={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        recipeUrl={recipeUrl}
-        setRecipeUrl={setRecipeUrl}
-        onImport={handleImportRecipe}
-        t={t}
-      />
+          <AddRecipeButton
+            t={t}
+            onPress={() => {
+              hapticLight();
+              router.push({
+                pathname: '/(tabs)/recipes',
+                params: { addRecipe: 'true' },
+              });
+            }}
+          />
+
+          <NextMealCard
+            nextMeal={nextMeal}
+            t={t}
+            onPress={() =>
+              nextMeal?.recipeId
+                ? router.push(`/recipe/${nextMeal.recipeId}`)
+                : router.push('/meal-plan')
+            }
+          />
+
+          <InspirationSection
+            inspirationRecipes={inspirationRecipes}
+            inspirationRecipe={inspirationRecipe}
+            shuffleInspiration={shuffleInspiration}
+            t={t}
+          />
+        </ScrollView>
+      </View>
     </GradientBackground>
   );
 }

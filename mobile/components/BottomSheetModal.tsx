@@ -3,7 +3,8 @@ import type { ReactNode } from 'react';
 import type { DimensionValue } from 'react-native';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { CRTOverlay } from '@/components/CRTOverlay';
+import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -49,6 +50,9 @@ export const BottomSheetModal = ({
         borderTopLeftRadius: borderRadius.xl,
         borderTopRightRadius: borderRadius.xl,
         maxHeight,
+        maxWidth: layout.contentMaxWidth,
+        width: '100%',
+        alignSelf: 'center',
         paddingBottom: footer ? 0 : 40,
       }}
       testID={testID}
@@ -116,7 +120,7 @@ export const BottomSheetModal = ({
 
       {scrollable ? (
         <ScrollView
-          style={{ flex: 1 }}
+          style={{ flexGrow: 0, flexShrink: 1 }}
           contentContainerStyle={{ paddingHorizontal: spacing.xl }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -143,27 +147,53 @@ export const BottomSheetModal = ({
           style={{
             flex: 1,
             backgroundColor: colors.overlay.backdropLight,
-            justifyContent: 'flex-end',
           }}
           onPress={onClose}
           testID="backdrop"
         >
-          <Pressable onPress={(e) => e.stopPropagation()}>
-            {backdropContent}
-          </Pressable>
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              alignItems: 'center',
+            }}
+          >
+            <Pressable
+              onPress={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: layout.contentMaxWidth,
+                alignSelf: 'center',
+              }}
+            >
+              {backdropContent}
+            </Pressable>
+          </View>
         </Pressable>
       ) : (
         <View
           style={{
             flex: 1,
             backgroundColor: colors.overlay.backdrop,
-            justifyContent: 'flex-end',
           }}
           testID="backdrop"
         >
-          {backdropContent}
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              alignItems: 'center',
+            }}
+          >
+            {backdropContent}
+          </View>
         </View>
       )}
+      <CRTOverlay />
     </Modal>
   );
 };

@@ -602,6 +602,8 @@ const en = {
     titlePlaceholder: 'e.g., Pasta Carbonara',
     titleRequired: 'Please enter a recipe title',
     servingsInvalid: 'Servings must be at least 1',
+    prepTimeInvalid: 'Prep time must be 0 or more minutes',
+    cookTimeInvalid: 'Cook time must be 0 or more minutes',
     ingredients: 'Ingredients',
     ingredientsPlaceholder: 'One ingredient per line\ne.g., 200g pasta\n4 eggs',
     instructions: 'Instructions',

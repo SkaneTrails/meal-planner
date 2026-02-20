@@ -10,10 +10,9 @@ import type { CRTConfig } from './theme-context';
 
 // ── Base palette ───────────────────────────────────────────────────────
 const BLACK = '#0A0A0A';
-const BLACK_LIGHT = '#111111';
-const BLACK_MID = '#161616';
-const BLACK_CARD = '#1A1A1A';
-const BLACK_ELEVATED = '#222222';
+const BLACK_LIGHT = '#0D110D';
+const BLACK_MID = '#101A10';
+const BLACK_CARD = '#0F1A0F';
 
 const GREEN = '#33FF33'; // phosphor green — primary
 const GREEN_DIM = '#22CC22'; // medium brightness
@@ -22,9 +21,9 @@ const GREEN_SUBTLE = '#115511'; // borders, faint accents
 
 // No cyan — terminal is monochrome green
 
-const RED = '#FF3333'; // errors, destructive
-const AMBER = '#CCAA00'; // warnings
-const BLUE = '#3399FF'; // info
+const RED = '#33FF33'; // monochrome — errors/destructive use bright green
+const AMBER = '#22CC22'; // monochrome — warnings use dim green
+const BLUE = '#33FF33'; // monochrome — info uses bright green
 
 // ── Helpers ────────────────────────────────────────────────────────────
 const g = (opacity: number) => `rgba(51, 255, 51, ${opacity})`; // green at opacity
@@ -47,8 +46,8 @@ export const terminalColors: ColorTokens = {
   accentLight: GREEN,
   coral: GREEN,
   coralSoft: GREEN_DIM,
-  gold: AMBER,
-  goldLight: '#998800',
+  gold: GREEN_DIM,
+  goldLight: GREEN_DARK,
 
   category: {
     recipes: { bg: g(0.1), text: GREEN },
@@ -72,9 +71,9 @@ export const terminalColors: ColorTokens = {
     },
     meat: {
       bg: 'rgba(17, 85, 17, 0.3)',
-      text: RED,
-      cardBg: 'rgba(255, 51, 51, 0.06)',
-      border: 'rgba(255, 51, 51, 0.4)',
+      text: GREEN,
+      cardBg: g(0.06),
+      border: g(0.4),
     },
   },
 
@@ -113,7 +112,7 @@ export const terminalColors: ColorTokens = {
     borderLight: g(0.15),
     divider: g(0.12),
     dividerSolid: GREEN_SUBTLE,
-    modal: BLACK_ELEVATED,
+    modal: BLACK_LIGHT,
     pressed: g(0.12),
     active: g(0.1),
     subtle: g(0.07),
@@ -134,26 +133,26 @@ export const terminalColors: ColorTokens = {
   },
 
   gray: {
-    50: '#1A1A1A',
-    100: '#1E1E1E',
-    200: '#222222',
-    300: '#2A2A2A',
-    400: '#333333',
-    500: '#444444',
-    600: '#555555',
-    700: '#666666',
-    800: '#888888',
-    900: '#AAAAAA',
+    50: '#0D1A0D',
+    100: '#112211',
+    200: '#142814',
+    300: '#183318',
+    400: '#1E3E1E',
+    500: '#265526',
+    600: '#2E6E2E',
+    700: '#338833',
+    800: '#44AA44',
+    900: '#66CC66',
   },
 
   success: '#33FF33',
   successBg: g(0.1),
   warning: AMBER,
-  warningBg: 'rgba(204, 170, 0, 0.1)',
+  warningBg: g(0.1),
   error: RED,
-  errorBg: 'rgba(255, 51, 51, 0.1)',
+  errorBg: g(0.1),
   info: BLUE,
-  infoBg: 'rgba(51, 153, 255, 0.1)',
+  infoBg: g(0.1),
   danger: RED,
 
   overlay: {
@@ -171,9 +170,9 @@ export const terminalColors: ColorTokens = {
 
   rating: {
     positive: GREEN,
-    negative: RED,
+    negative: GREEN_DIM,
     positiveBg: g(0.15),
-    negativeBg: 'rgba(255, 51, 51, 0.15)',
+    negativeBg: g(0.1),
   },
 
   timeline: {
@@ -187,8 +186,8 @@ export const terminalColors: ColorTokens = {
     border: g(0.25),
     divider: g(0.12),
     fishActive: GREEN_DIM,
-    meatActive: RED,
-    favoriteActive: '#FF5555',
+    meatActive: GREEN,
+    favoriteActive: GREEN,
     toggleActiveBg: GREEN,
     toggleInactiveBg: BLACK,
     toggleActiveBorder: GREEN,
@@ -241,9 +240,9 @@ export const terminalColors: ColorTokens = {
   },
 
   destructive: {
-    bg: 'rgba(255, 51, 51, 0.08)',
-    icon: 'rgba(255, 51, 51, 0.8)',
-    text: 'rgba(255, 51, 51, 0.9)',
+    bg: g(0.08),
+    icon: g(0.8),
+    text: g(0.9),
   },
 
   gradient: {
@@ -269,9 +268,9 @@ export const terminalColors: ColorTokens = {
     GREEN_DIM,
     GREEN_DARK,
     GREEN_SUBTLE,
-    AMBER,
-    RED,
-    BLUE,
+    GREEN_DIM,
+    GREEN,
+    GREEN_DARK,
     g(0.6),
   ],
 
