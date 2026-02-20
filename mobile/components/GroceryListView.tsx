@@ -1,17 +1,25 @@
 /**
  * Grocery list with checked sorting and drag-and-drop reordering.
+ * Drag reordering is only available on touch devices.
  */
 
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
   type RenderItemParams,
-  ScaleDecorator,
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useIsTouchDevice } from '@/lib/hooks/useIsTouchDevice';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  fontWeight,
+  iconSize,
+  layout,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
 import { GroceryItemRow } from './GroceryItemRow';
 import { EmptyGroceryState } from './grocery/EmptyGroceryState';
@@ -88,30 +96,20 @@ export const GroceryListView = ({
     setOrderedItems(data);
   }, []);
 
-  const handleMoveItem = useCallback((index: number, direction: -1 | 1) => {
-    setOrderedItems((prev) => {
-      const next = [...prev];
-      const targetIndex = index + direction;
-      if (targetIndex < 0 || targetIndex >= next.length) return prev;
-      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
-      return next;
-    });
-  }, []);
-
   const renderDraggableItem = useCallback(
     ({ item, drag, isActive }: RenderItemParams<GroceryItem>) => (
-      <ScaleDecorator>
-        <GroceryItemRow
-          item={{ ...item, checked: checkedItems.has(item.name) }}
-          onToggle={(checked) => handleItemToggle(item.name, checked)}
-          drag={drag}
-          isActive={isActive}
-          showReorder={true}
-        />
-      </ScaleDecorator>
+      <GroceryItemRow
+        item={{ ...item, checked: checkedItems.has(item.name) }}
+        onToggle={(checked) => handleItemToggle(item.name, checked)}
+        drag={drag}
+        isActive={isActive}
+        showReorder={true}
+      />
     ),
     [handleItemToggle, checkedItems],
   );
+
+  const isTouchDevice = useIsTouchDevice();
 
   if (displayItems.length === 0) {
     return (
@@ -144,111 +142,45 @@ export const GroceryListView = ({
             ? t('grocery.itemCountOne')
             : t('grocery.itemCount', { count: displayItems.length })
           ).toUpperCase()}
-          rightSegments={[sortSegment]}
+          rightSegments={isTouchDevice ? [sortSegment] : []}
           variant="single"
           style={{ flex: 1 }}
         >
-          {reorderMode ? (
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontSize: fontSize.base,
-                  fontFamily: fonts.body,
-                  color: colors.content.tertiary,
-                  marginBottom: spacing['sm-md'],
-                  fontStyle: 'italic',
-                }}
-              >
-                {t('grocery.reorderHintArrows')}
-              </Text>
-              <ScrollView
-                style={{ flex: 1 }}
-                showsVerticalScrollIndicator={false}
-              >
-                {orderedItems.map((item, index) => (
-                  <View
-                    key={`${item.name}-${index}`}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <View
-                      style={{
-                        marginRight: spacing.xs,
-                        gap: spacing['2xs'],
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Pressable
-                        onPress={() => handleMoveItem(index, -1)}
-                        disabled={index === 0}
-                        style={{
-                          opacity: index === 0 ? 0.25 : 1,
-                          padding: spacing['2xs'],
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontFamily: fonts.body,
-                            fontSize: fontSize.xl,
-                            color: colors.primary,
-                          }}
-                        >
-                          ▲
-                        </Text>
-                      </Pressable>
-                      <Pressable
-                        onPress={() => handleMoveItem(index, 1)}
-                        disabled={index === orderedItems.length - 1}
-                        style={{
-                          opacity: index === orderedItems.length - 1 ? 0.25 : 1,
-                          padding: spacing['2xs'],
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontFamily: fonts.body,
-                            fontSize: fontSize.xl,
-                            color: colors.primary,
-                          }}
-                        >
-                          ▼
-                        </Text>
-                      </Pressable>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <GroceryItemRow
-                        item={{
-                          ...item,
-                          checked: checkedItems.has(item.name),
-                        }}
-                        onToggle={(checked) =>
-                          handleItemToggle(item.name, checked)
-                        }
-                        showReorder={false}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-          ) : (
-            <ScrollView
-              style={{ flex: 1 }}
-              showsVerticalScrollIndicator={false}
-            >
-              {displayItems.map((item) => (
-                <GroceryItemRow
-                  key={item.name}
-                  item={{ ...item, checked: checkedItems.has(item.name) }}
-                  onToggle={(checked) => handleItemToggle(item.name, checked)}
-                  showReorder={false}
-                />
-              ))}
-            </ScrollView>
-          )}
+          <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            {displayItems.map((item) => (
+              <GroceryItemRow
+                key={item.name}
+                item={{ ...item, checked: checkedItems.has(item.name) }}
+                onToggle={(checked) => handleItemToggle(item.name, checked)}
+                showReorder={false}
+              />
+            ))}
+          </ScrollView>
         </TerminalFrame>
+      </View>
+    );
+  }
+
+  if (!isTouchDevice) {
+    return (
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            paddingHorizontal: spacing.xl,
+            paddingBottom: layout.tabBar.contentBottomPadding,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {displayItems.map((item) => (
+            <GroceryItemRow
+              key={item.name}
+              item={{ ...item, checked: checkedItems.has(item.name) }}
+              onToggle={(checked) => handleItemToggle(item.name, checked)}
+              showReorder={false}
+            />
+          ))}
+        </ScrollView>
       </View>
     );
   }
@@ -275,7 +207,7 @@ export const GroceryListView = ({
         >
           <Ionicons
             name={reorderMode ? 'checkmark' : 'swap-vertical'}
-            size={14}
+            size={iconSize.xs}
             color={colors.content.body}
           />
           <Text
@@ -302,9 +234,7 @@ export const GroceryListView = ({
               fontStyle: 'italic',
             }}
           >
-            {Platform.OS === 'web'
-              ? t('grocery.reorderHintWeb')
-              : t('grocery.reorderHintMobile')}
+            {t('grocery.reorderHintMobile')}
           </Text>
           <DraggableFlatList
             data={orderedItems}

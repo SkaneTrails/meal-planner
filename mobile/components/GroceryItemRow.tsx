@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
 import { hapticSelection } from '@/lib/haptics';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
@@ -85,8 +85,7 @@ export const GroceryItemRow = ({
     >
       {showReorder && (
         <Pressable
-          onLongPress={drag}
-          delayLongPress={50}
+          onPressIn={drag}
           style={({ pressed }) =>
             ({
               padding: spacing['md-lg'],
@@ -98,7 +97,7 @@ export const GroceryItemRow = ({
         >
           <Ionicons
             name="reorder-three"
-            size={24}
+            size={iconSize.xl}
             color={colors.content.subtitle}
           />
         </Pressable>
@@ -110,8 +109,8 @@ export const GroceryItemRow = ({
       >
         <View
           style={{
-            width: 22,
-            height: 22,
+            width: spacing['2xl'],
+            height: spacing['2xl'],
             borderRadius: borderRadius['xs-sm'],
             borderWidth: overrides.checkboxBorderWidth,
             alignItems: 'center',
@@ -126,7 +125,11 @@ export const GroceryItemRow = ({
           }}
         >
           {checked && (
-            <Ionicons name="checkmark" size={14} color={colors.white} />
+            <Ionicons
+              name="checkmark"
+              size={iconSize.xs}
+              color={colors.white}
+            />
           )}
         </View>
 
