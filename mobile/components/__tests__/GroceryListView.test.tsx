@@ -125,6 +125,29 @@ describe('GroceryItemRow', () => {
     fireEvent.click(screen.getByText('Milk'));
     expect(handleToggle).toHaveBeenCalledWith(true);
   });
+
+  it('syncs checked state when item.checked prop changes', () => {
+    const handleToggle = vi.fn();
+    const uncheckedItem = buildItem({ name: 'Butter', checked: false });
+    const { rerender } = render(
+      <GroceryItemRow item={uncheckedItem} onToggle={handleToggle} />,
+    );
+
+    // Click unchecked item → toggles to checked (true)
+    fireEvent.click(screen.getByText('Butter'));
+    expect(handleToggle).toHaveBeenLastCalledWith(true);
+    handleToggle.mockClear();
+
+    // Rerender with checked: true (e.g., Firestore refresh syncs checked state)
+    const checkedItem = buildItem({ name: 'Butter', checked: true });
+    rerender(<GroceryItemRow item={checkedItem} onToggle={handleToggle} />);
+
+    // Click checked item → should toggle to unchecked (false)
+    // Without the useEffect sync, this would still call onToggle(true)
+    // because local state was stuck on the initial false → toggled to true
+    fireEvent.click(screen.getByText('Butter'));
+    expect(handleToggle).toHaveBeenLastCalledWith(false);
+  });
 });
 
 describe('GroceryListView', () => {

@@ -53,7 +53,7 @@ export const GroceryListView = ({
     setCheckedItems(
       new Set(groceryList.items.filter((i) => i.checked).map((i) => i.name)),
     );
-  }, [groceryList]);
+  }, [groceryList.items]);
 
   const filteredItems = filterOutItems
     ? groceryList.items.filter((item) => !filterOutItems(item.name))
