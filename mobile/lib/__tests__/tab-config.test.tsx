@@ -4,39 +4,12 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { isTabActive } from '@/lib/tab-config';
+import { TABS, isTabActive } from '@/lib/tab-config';
 
-const homeTab = {
-  route: '/(tabs)',
-  matchPrefixes: ['/'],
-  icon: 'home-outline' as const,
-  iconFocused: 'home' as const,
-  labelKey: 'tabs.home',
-};
-
-const recipesTab = {
-  route: '/(tabs)/recipes',
-  matchPrefixes: ['/recipes', '/recipe/'],
-  icon: 'book-outline' as const,
-  iconFocused: 'book' as const,
-  labelKey: 'tabs.recipes',
-};
-
-const mealPlanTab = {
-  route: '/(tabs)/meal-plan',
-  matchPrefixes: ['/meal-plan', '/select-recipe'],
-  icon: 'calendar-outline' as const,
-  iconFocused: 'calendar' as const,
-  labelKey: 'tabs.mealPlan',
-};
-
-const groceryTab = {
-  route: '/(tabs)/grocery',
-  matchPrefixes: ['/grocery'],
-  icon: 'cart-outline' as const,
-  iconFocused: 'cart' as const,
-  labelKey: 'tabs.grocery',
-};
+const homeTab = TABS.find((tab) => tab.labelKey === 'tabs.home')!;
+const recipesTab = TABS.find((tab) => tab.labelKey === 'tabs.recipes')!;
+const mealPlanTab = TABS.find((tab) => tab.labelKey === 'tabs.mealPlan')!;
+const groceryTab = TABS.find((tab) => tab.labelKey === 'tabs.grocery')!;
 
 describe('isTabActive', () => {
   describe('home tab', () => {

@@ -1,13 +1,17 @@
 /**
  * Tab routing configuration and active-tab detection.
- * Pure logic — no Expo/RN imports so it can be unit-tested without mocks.
+ * Pure logic — no runtime Expo/RN imports so it can be unit-tested without mocks.
+ * Icon names use a type-only import for compile-time validation.
  */
+
+export type IoniconName =
+  keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
 
 export type TabDef = {
   route: string;
   matchPrefixes: string[];
-  icon: string;
-  iconFocused: string;
+  icon: IoniconName;
+  iconFocused: IoniconName;
   labelKey: string;
 };
 
@@ -45,7 +49,7 @@ export const TABS: TabDef[] = [
 export const HIDDEN_ON = ['/sign-in', '/no-access'];
 
 const normalizePathname = (pathname: string): string => {
-  const stripped = pathname.replace(/\/\(tabs\)/, '');
+  const stripped = pathname.replace(/^\/\(tabs\)/, '');
   return stripped || '/';
 };
 

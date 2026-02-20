@@ -135,11 +135,7 @@ export const FloatingTabBar = () => {
                   ]}
                 >
                   <Ionicons
-                    name={
-                      (active
-                        ? tab.iconFocused
-                        : tab.icon) as keyof typeof Ionicons.glyphMap
-                    }
+                    name={active ? tab.iconFocused : tab.icon}
                     size={20}
                     color={
                       active ? colors.tabBar.active : colors.tabBar.inactive
