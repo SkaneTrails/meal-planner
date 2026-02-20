@@ -216,6 +216,13 @@ export const terminalColors: ColorTokens = {
     dim: g(0.05),
   },
 
+  header: {
+    bg: 'rgba(0, 0, 0, 0.85)',
+    fadeEnd: 'rgba(0, 0, 0, 0)',
+    shadow: `0px 1px 4px ${g(0.15)}`,
+    fadeWidth: 24,
+  },
+
   tabBar: {
     bg: bk(1),
     bgFallback: bk(1),

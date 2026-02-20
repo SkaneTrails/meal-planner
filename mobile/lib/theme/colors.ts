@@ -213,6 +213,14 @@ export const lightColors = {
     dim: 'rgba(255, 255, 255, 0.08)',
   },
 
+  // Fixed screen header — same as page background, slightly transparent
+  header: {
+    bg: 'rgba(237, 228, 218, 0.85)',
+    fadeEnd: 'rgba(237, 228, 218, 0)',
+    shadow: '0px 2px 12px rgba(93, 78, 64, 0.12)',
+    fadeWidth: 24,
+  },
+
   // Tab bar — acrylic floating nav
   tabBar: {
     bg: 'rgba(240, 234, 226, 0.5)',

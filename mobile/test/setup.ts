@@ -92,6 +92,7 @@ vi.mock('@/components/FullScreenLoading', () => ({
 // Mock @/components (GradientBackground, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
+  ScreenHeaderBar: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
   BottomSheetModal: ({ visible, children, title, onClose }: any) => {
     if (!visible) return null;
@@ -341,6 +342,12 @@ vi.mock('@/lib/theme', () => {
       buttonPressed: 'rgba(255, 255, 255, 0.45)',
       buttonDefault: 'rgba(255, 255, 255, 0.35)',
       dim: 'rgba(255, 255, 255, 0.08)',
+    },
+    header: {
+      bg: 'rgba(237, 228, 218, 0.85)',
+      fadeEnd: 'rgba(237, 228, 218, 0)',
+      shadow: '0px 2px 12px rgba(93, 78, 64, 0.12)',
+      fadeWidth: 24,
     },
     tabBar: {
       bg: 'rgba(235, 228, 219, 0.5)',

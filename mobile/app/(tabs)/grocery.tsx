@@ -7,6 +7,7 @@ import {
   GradientBackground,
   GroceryListSkeleton,
   GroceryListView,
+  ScreenHeaderBar,
 } from '@/components';
 import {
   AddItemCard,
@@ -14,6 +15,7 @@ import {
   GroceryHeader,
   StatsCard,
 } from '@/components/grocery';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
 import { layout, spacing } from '@/lib/theme';
@@ -58,41 +60,54 @@ export default function GroceryScreen() {
   return (
     <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <GroceryHeader />
-
-        <View
-          style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.md }}
-        >
-          <StatsCard
-            itemsToBuy={itemsToBuy}
-            checkedItemsToBuy={checkedItemsToBuy}
-            totalItems={totalItems}
-            checkedCount={checkedCount}
-            hiddenAtHomeCount={hiddenAtHomeCount}
-            showAddItem={showAddItem}
-            showClearMenu={showClearMenu}
-            onToggleAddItem={() => {
-              setShowAddItem(!showAddItem);
-              setShowClearMenu(false);
+        <ScreenHeaderBar>
+          <View
+            style={{
+              paddingHorizontal: spacing.xl,
+              paddingTop: spacing.md,
+              paddingBottom: spacing.xs,
             }}
-            onToggleClearMenu={() => {
-              setShowClearMenu(!showClearMenu);
-              setShowAddItem(false);
-            }}
-            onClearChecked={handleClearChecked}
-            onClearMealPlanItems={handleClearMealPlanItems}
-            onClearManualItems={handleClearManualItems}
-            onClearAll={handleClearAll}
-          />
+          >
+            <ScreenTitle title={t('grocery.thisWeeksShopping')} />
+          </View>
 
-          {showAddItem && (
-            <AddItemCard
-              newItemText={newItemText}
-              onChangeText={setNewItemText}
-              onSubmit={handleAddItem}
+          <View
+            style={{
+              paddingHorizontal: spacing.xl,
+              paddingBottom: spacing.md,
+            }}
+          >
+            <StatsCard
+              itemsToBuy={itemsToBuy}
+              checkedItemsToBuy={checkedItemsToBuy}
+              totalItems={totalItems}
+              checkedCount={checkedCount}
+              hiddenAtHomeCount={hiddenAtHomeCount}
+              showAddItem={showAddItem}
+              showClearMenu={showClearMenu}
+              onToggleAddItem={() => {
+                setShowAddItem(!showAddItem);
+                setShowClearMenu(false);
+              }}
+              onToggleClearMenu={() => {
+                setShowClearMenu(!showClearMenu);
+                setShowAddItem(false);
+              }}
+              onClearChecked={handleClearChecked}
+              onClearMealPlanItems={handleClearMealPlanItems}
+              onClearManualItems={handleClearManualItems}
+              onClearAll={handleClearAll}
             />
-          )}
-        </View>
+
+            {showAddItem && (
+              <AddItemCard
+                newItemText={newItemText}
+                onChangeText={setNewItemText}
+                onSubmit={handleAddItem}
+              />
+            )}
+          </View>
+        </ScreenHeaderBar>
 
         {totalItems > 0 ? (
           <GroceryListView

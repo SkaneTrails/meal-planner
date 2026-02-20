@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {
   GradientBackground,
+  ScreenHeaderBar,
   TerminalDivider,
   TerminalFabBar,
   TerminalFrame,
@@ -91,29 +92,31 @@ export default function MealPlanScreen() {
   return (
     <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
-        {/* Header */}
-        <View
-          style={{
-            paddingHorizontal: spacing.xl,
-            paddingTop: spacing.lg,
-            paddingBottom: spacing.md,
-          }}
-        >
-          <ScreenTitle
-            title={t('mealPlan.title')}
-            subtitle={t('mealPlan.subtitle')}
-          />
-        </View>
+        <ScreenHeaderBar>
+          {/* Header */}
+          <View
+            style={{
+              paddingHorizontal: spacing.xl,
+              paddingTop: spacing.lg,
+              paddingBottom: spacing.md,
+            }}
+          >
+            <ScreenTitle
+              title={t('mealPlan.title')}
+              subtitle={t('mealPlan.subtitle')}
+            />
+          </View>
 
-        <WeekSelector
-          weekDates={weekDates}
-          weekOffset={weekOffset}
-          language={language}
-          t={t}
-          onPreviousWeek={() => setWeekOffset((prev) => prev - 1)}
-          onNextWeek={() => setWeekOffset((prev) => prev + 1)}
-          onJumpToToday={() => setWeekOffset(0)}
-        />
+          <WeekSelector
+            weekDates={weekDates}
+            weekOffset={weekOffset}
+            language={language}
+            t={t}
+            onPreviousWeek={() => setWeekOffset((prev) => prev - 1)}
+            onNextWeek={() => setWeekOffset((prev) => prev + 1)}
+            onJumpToToday={() => setWeekOffset(0)}
+          />
+        </ScreenHeaderBar>
 
         {/* Meal list with swipe gesture */}
         <View style={{ flex: 1 }} {...panResponder.panHandlers}>
