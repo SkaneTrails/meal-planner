@@ -62,3 +62,4 @@ export type { FrameSegment } from './TerminalFrame';
 export { TerminalFrame } from './TerminalFrame';
 export { ThemedAlert } from './ThemedAlert';
 export { ThemeToggle } from './ThemeToggle';
+export { Toggle } from './Toggle';

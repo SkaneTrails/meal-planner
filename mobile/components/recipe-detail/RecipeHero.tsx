@@ -70,7 +70,7 @@ export const RecipeHero = ({
       {visibility.showHeroOverlay && (
         <>
           <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.7)']}
+            colors={['transparent', colors.overlay.gradientHeavy]}
             style={{
               position: 'absolute',
               left: 0,

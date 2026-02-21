@@ -36,8 +36,8 @@ export const RadioGroup = <T extends string>({
               backgroundColor: isSelected
                 ? colors.glass.card
                 : pressed
-                  ? 'rgba(255, 255, 255, 0.15)'
-                  : 'rgba(255, 255, 255, 0.06)',
+                  ? colors.glass.pressed
+                  : colors.glass.dim,
               padding: spacing.md,
               borderRadius: borderRadius.md,
               borderWidth: 1.5,

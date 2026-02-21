@@ -105,6 +105,8 @@ export const lightColors = {
     subtle: 'rgba(93, 78, 64, 0.06)',
     hover: 'rgba(93, 78, 64, 0.05)',
     tint: 'rgba(93, 78, 64, 0.04)',
+    sheetOverlay: 'rgba(235, 232, 228, 0.94)',
+    iconBg: 'rgba(139, 115, 85, 0.1)',
   },
 
   // Button colors — warm vivid orange
@@ -150,6 +152,8 @@ export const lightColors = {
     backdrop: 'rgba(0, 0, 0, 0.5)',
     backdropLight: 'rgba(0, 0, 0, 0.4)',
     strong: 'rgba(0, 0, 0, 0.6)',
+    gradientHeavy: 'rgba(0, 0, 0, 0.7)',
+    gradientSubtle: 'rgba(0, 0, 0, 0.15)',
   },
 
   // Meal plan surfaces — warm beige at various opacities
@@ -211,6 +215,7 @@ export const lightColors = {
     buttonPressed: 'rgba(255, 255, 255, 0.45)',
     buttonDefault: 'rgba(255, 255, 255, 0.35)',
     dim: 'rgba(255, 255, 255, 0.08)',
+    pressed: 'rgba(255, 255, 255, 0.15)',
   },
 
   // Fixed screen header — same as page background, slightly transparent
@@ -326,6 +331,10 @@ export const lightColors = {
     activeText: '#5D4E40',
     inactiveText: 'rgba(93, 78, 64, 0.5)',
     borderColor: 'transparent',
+    switchTrackOff: 'rgba(93, 78, 64, 0.2)',
+    switchTrackOn: '#D97A45',
+    switchThumbOff: '#BDBDBD',
+    switchThumbOn: '#FFFFFF',
   },
 
   // Recipe detail meta chips (meal type, visibility)

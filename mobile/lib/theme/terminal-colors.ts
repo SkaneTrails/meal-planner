@@ -118,6 +118,8 @@ export const terminalColors: ColorTokens = {
     subtle: g(0.07),
     hover: g(0.05),
     tint: g(0.03),
+    sheetOverlay: bk(0.95),
+    iconBg: g(0.08),
   },
 
   button: {
@@ -159,6 +161,8 @@ export const terminalColors: ColorTokens = {
     backdrop: bk(0.7),
     backdropLight: bk(0.6),
     strong: bk(0.85),
+    gradientHeavy: bk(0.8),
+    gradientSubtle: bk(0.3),
   },
 
   mealPlan: {
@@ -214,6 +218,7 @@ export const terminalColors: ColorTokens = {
     buttonPressed: g(0.25),
     buttonDefault: g(0.2),
     dim: g(0.05),
+    pressed: g(0.12),
   },
 
   header: {
@@ -317,6 +322,10 @@ export const terminalColors: ColorTokens = {
     activeText: GREEN,
     inactiveText: GREEN_DARK,
     borderColor: g(0.25),
+    switchTrackOff: g(0.15),
+    switchTrackOn: GREEN_DARK,
+    switchThumbOff: GREEN_SUBTLE,
+    switchThumbOn: GREEN,
   },
 
   metaChip: {

@@ -159,7 +159,7 @@ const InspirationCard = ({
         transition={200}
       />
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.75)']}
+        colors={['transparent', colors.overlay.gradientHeavy]}
         style={{
           position: 'absolute',
           left: 0,
@@ -323,7 +323,7 @@ const GetStartedFallback = ({
           transition={200}
         />
         <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.6)']}
+          colors={['transparent', colors.overlay.strong]}
           style={{
             position: 'absolute',
             left: 0,
@@ -331,7 +331,7 @@ const GetStartedFallback = ({
             bottom: 0,
             height: 80,
             justifyContent: 'flex-end',
-            padding: 12,
+            padding: spacing.md,
           }}
         >
           <Text

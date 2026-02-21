@@ -1,10 +1,11 @@
 /**
- * Theme-aware toggle that renders a native Switch or an ASCII [X]/[ ] toggle
- * depending on the active theme's font family.
+ * Theme-aware toggle — thin wrapper around `<Toggle>` for backward compat.
+ *
+ * New code should use `<Toggle>` directly. This exists so existing
+ * `<ThemeToggle>` call sites (SettingToggleRow, etc.) keep working.
  */
 
-import { Pressable, Switch, Text } from 'react-native';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { Toggle } from './Toggle';
 
 interface ThemeToggleProps {
   value: boolean;
@@ -12,45 +13,4 @@ interface ThemeToggleProps {
   disabled?: boolean;
 }
 
-export const ThemeToggle = ({
-  value,
-  onValueChange,
-  disabled = false,
-}: ThemeToggleProps) => {
-  const { colors, fonts, chrome } = useTheme();
-
-  if (chrome !== 'flat') {
-    return (
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        disabled={disabled}
-        trackColor={{ false: colors.border, true: colors.primary }}
-      />
-    );
-  }
-
-  return (
-    <Pressable
-      onPress={() => onValueChange(!value)}
-      disabled={disabled}
-      accessibilityRole="switch"
-      accessibilityState={{ checked: value, disabled }}
-      style={{ padding: spacing.xs, opacity: disabled ? 0.5 : 1 }}
-    >
-      <Text
-        style={{
-          fontFamily: fonts.body,
-          fontSize: fontSize.lg,
-          color: disabled
-            ? colors.content.placeholder
-            : value
-              ? colors.primary
-              : colors.content.secondary,
-        }}
-      >
-        {value ? '[X]' : '[ ]'}
-      </Text>
-    </Pressable>
-  );
-};
+export const ThemeToggle = (props: ThemeToggleProps) => <Toggle {...props} />;

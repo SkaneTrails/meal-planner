@@ -130,6 +130,8 @@ export const bubblegumColors: ColorTokens = {
     subtle: 'rgba(0, 0, 0, 0.03)',
     hover: 'rgba(0, 0, 0, 0.02)',
     tint: 'rgba(0, 0, 0, 0.01)',
+    sheetOverlay: 'rgba(255, 255, 255, 0.94)',
+    iconBg: 'rgba(0, 0, 0, 0.06)',
   },
 
   // Button colors — warm yellow (matching Bubblegum Tumblr "Load more" button)
@@ -175,6 +177,8 @@ export const bubblegumColors: ColorTokens = {
     backdrop: 'rgba(0, 0, 0, 0.5)',
     backdropLight: 'rgba(0, 0, 0, 0.35)',
     strong: 'rgba(0, 0, 0, 0.6)',
+    gradientHeavy: 'rgba(0, 0, 0, 0.65)',
+    gradientSubtle: 'rgba(0, 0, 0, 0.12)',
   },
 
   // Meal plan — solid white with dark borders
@@ -236,6 +240,7 @@ export const bubblegumColors: ColorTokens = {
     buttonPressed: 'rgba(255, 255, 255, 0.7)',
     buttonDefault: 'rgba(255, 255, 255, 0.6)',
     dim: 'rgba(255, 255, 255, 0.15)',
+    pressed: 'rgba(255, 255, 255, 0.3)',
   },
 
   // Fixed screen header — matches page background, slightly transparent
@@ -346,6 +351,10 @@ export const bubblegumColors: ColorTokens = {
     activeText: BLACK,
     inactiveText: '#666666',
     borderColor: BLACK_BORDER,
+    switchTrackOff: 'rgba(0, 0, 0, 0.15)',
+    switchTrackOn: HOT_PINK,
+    switchThumbOff: '#CCCCCC',
+    switchThumbOn: '#FFFFFF',
   },
 
   metaChip: {

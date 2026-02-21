@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { BottomSheetModal, Button } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
 
 type Data = ReturnType<typeof useHomeScreenData>;
 
@@ -40,12 +40,12 @@ export const AddRecipeModal = ({
       onClose={onClose}
       title={t('home.addRecipe.title')}
     >
-      <View style={{ marginBottom: 12 }}>
+      <View style={{ marginBottom: spacing.md }}>
         <View
           style={{
             backgroundColor: colors.glass.subtle,
             borderRadius: borderRadius.md,
-            padding: 4,
+            padding: spacing.xs,
             flexDirection: 'row',
             alignItems: 'center',
           }}
@@ -54,13 +54,13 @@ export const AddRecipeModal = ({
             name="link-outline"
             size={18}
             color={colors.content.secondary}
-            style={{ marginLeft: 12 }}
+            style={{ marginLeft: spacing.md }}
           />
           <TextInput
             style={{
               flex: 1,
               paddingHorizontal: spacing['sm-md'],
-              paddingVertical: 12,
+              paddingVertical: spacing.md,
               fontSize: fontSize.md,
               color: colors.content.body,
             }}
@@ -88,7 +88,7 @@ export const AddRecipeModal = ({
               borderRadius: borderRadius.sm,
               paddingVertical: spacing['sm-md'],
               paddingHorizontal: spacing['md-lg'],
-              marginRight: 2,
+              marginRight: spacing['2xs'],
             }}
           />
         </View>
@@ -98,7 +98,7 @@ export const AddRecipeModal = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginVertical: 8,
+          marginVertical: spacing.sm,
         }}
       >
         <View
@@ -112,7 +112,7 @@ export const AddRecipeModal = ({
           style={{
             color: colors.content.secondary,
             fontSize: fontSize.sm,
-            marginHorizontal: 12,
+            marginHorizontal: spacing.md,
           }}
         >
           {t('common.or')}
@@ -134,16 +134,16 @@ export const AddRecipeModal = ({
         style={({ pressed }) => ({
           flexDirection: 'row',
           alignItems: 'center',
-          paddingVertical: 16,
+          paddingVertical: spacing.lg,
           backgroundColor: pressed ? colors.text.light : 'transparent',
         })}
       >
         <View
           style={{
-            width: 40,
-            height: 40,
+            width: iconContainer.md,
+            height: iconContainer.md,
             borderRadius: borderRadius.sm,
-            backgroundColor: 'rgba(139, 115, 85, 0.1)',
+            backgroundColor: colors.surface.iconBg,
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: spacing['md-lg'],
@@ -169,7 +169,7 @@ export const AddRecipeModal = ({
             style={{
               fontSize: fontSize.sm,
               color: colors.content.secondary,
-              marginTop: 2,
+              marginTop: spacing['2xs'],
             }}
           >
             {t('home.addRecipe.manualEntryDesc')}
