@@ -89,9 +89,10 @@ vi.mock('@/components/FullScreenLoading', () => ({
   FullScreenLoading: FullScreenLoadingMock,
 }));
 
-// Mock @/components (GradientBackground, etc.)
+// Mock @/components (GradientBackground, ScreenLayout, etc.)
 vi.mock('@/components', () => ({
   GradientBackground: ({ children }: any) => children,
+  ScreenLayout: ({ children }: any) => children,
   ScreenHeaderBar: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
   BottomSheetModal: ({ visible, children, title, onClose }: any) => {

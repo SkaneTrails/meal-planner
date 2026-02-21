@@ -207,6 +207,23 @@ See `copilot-instructions.md` for coverage thresholds and test file paths. Vites
 - **`vi.hoisted()`** is required for constants used inside `vi.mock()` factory functions — the factory is hoisted above variable declarations
 - **`__DEV__`** is defined as `true` in `vitest.config.ts` via `define: { __DEV__: true }`
 
+### Tests Must Test Logic, Not Mock Wiring
+
+Do NOT write tests that exist only to satisfy a coverage number. Every test must verify real behavior that could actually break.
+
+**Skip testing when the test would only prove mocks work:**
+
+- Animations (Animated.sequence/spring/timing calls) — visual behavior, not unit-testable
+- Platform-gated code paths (`Platform.OS === 'web'`) that require mocking the platform
+- Theme token passthrough where the only assertion is "function was called with value X"
+
+**Do test:**
+
+- Conditional rendering (does component show/hide based on props or state?)
+- Callbacks (does onPress fire? does disabled prevent it?)
+- Data transformations (parsing, aggregation, filtering)
+- Error states and edge cases
+
 ## When to Split Files
 
 1. File >300 lines → extract components, hooks, or utils

@@ -11,7 +11,7 @@ import {
   Button,
   ChipPicker,
   FullScreenLoading,
-  GradientBackground,
+  ScreenLayout,
 } from '@/components';
 import {
   getDietOptions,
@@ -85,7 +85,7 @@ export default function ReviewRecipeScreen() {
   };
 
   return (
-    <GradientBackground style={{ flex: 1 }}>
+    <ScreenLayout constrained={false}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -165,6 +165,6 @@ export default function ReviewRecipeScreen() {
           color={colors.primary}
         />
       </BottomActionBar>
-    </GradientBackground>
+    </ScreenLayout>
   );
 }

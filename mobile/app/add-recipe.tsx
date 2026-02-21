@@ -13,8 +13,8 @@ import {
   Button,
   EnhancingOverlay,
   FormField,
-  GradientBackground,
   IconCircle,
+  ScreenLayout,
   SurfaceCard,
 } from '@/components';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
@@ -77,7 +77,7 @@ export default function AddRecipeScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
-      <GradientBackground style={{ flex: 1 }}>
+      <ScreenLayout constrained={false}>
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={[
@@ -414,7 +414,7 @@ export default function AddRecipeScreen() {
           visible={isPending && enhanceWithAI}
           message={t('addRecipe.importingEnhancing')}
         />
-      </GradientBackground>
+      </ScreenLayout>
     </KeyboardAvoidingView>
   );
 }

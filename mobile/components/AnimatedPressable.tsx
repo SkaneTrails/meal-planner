@@ -102,11 +102,35 @@ export const AnimatedPressable = ({
     (event: RNMouseEvent) => {
       isHovered.current = true;
       if (!isPressed.current) {
-        animateTo(hoverScale);
+        if (buttonDisplay.hoverBounce && !effectivelyDisabled) {
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: pressScale,
+              duration: 80,
+              useNativeDriver: true,
+            }),
+            Animated.spring(scaleAnim, {
+              toValue: hoverScale,
+              useNativeDriver: true,
+              damping: 14,
+              stiffness: 300,
+            }),
+          ]).start();
+        } else {
+          animateTo(hoverScale);
+        }
       }
       onHoverIn?.(event);
     },
-    [animateTo, hoverScale, onHoverIn],
+    [
+      animateTo,
+      hoverScale,
+      pressScale,
+      onHoverIn,
+      buttonDisplay.hoverBounce,
+      effectivelyDisabled,
+      scaleAnim,
+    ],
   );
 
   const handleHoverOut = useCallback(
