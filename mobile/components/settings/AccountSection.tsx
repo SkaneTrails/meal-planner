@@ -101,54 +101,48 @@ export const HouseholdSettingsLink = ({
   const { t } = useTranslation();
 
   return (
-    <Section
-      icon="people"
-      title={t('settings.householdInfo')}
-      subtitle={t('settings.householdSettingsDesc')}
-      spacing={spacing['2xl']}
+    <AnimatedPressable
+      onPress={onPress}
+      disabled={isLoading || !householdId}
+      hoverScale={1.02}
+      pressScale={0.97}
+      disableAnimation={isLoading || !householdId}
+      style={{ marginBottom: spacing['2xl'] }}
     >
-      <AnimatedPressable
-        onPress={onPress}
-        disabled={isLoading || !householdId}
-        hoverScale={1.02}
-        pressScale={0.97}
-        disableAnimation={isLoading || !householdId}
+      <SurfaceCard
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          opacity: isLoading ? 0.6 : householdId ? 1 : 0.5,
+        }}
       >
-        <SurfaceCard
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            opacity: isLoading ? 0.6 : householdId ? 1 : 0.5,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={settingsTitleStyle}>
-              {t('settings.householdSettings')}
-            </Text>
-            <Text
-              style={{
-                ...settingsSubtitleStyle,
-                marginTop: 4,
-              }}
-            >
-              {isLoading
-                ? t('settings.loadingHousehold')
-                : householdId
-                  ? t('settings.householdSettingsDesc')
-                  : t('settings.noHousehold')}
-            </Text>
-          </View>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={colors.content.strong} />
-          ) : (
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={colors.content.strong}
-            />
-          )}
-        </SurfaceCard>
-      </AnimatedPressable>
-    </Section>
+        <View style={{ flex: 1 }}>
+          <Text style={settingsTitleStyle}>
+            {t('settings.householdSettings')}
+          </Text>
+          <Text
+            style={{
+              ...settingsSubtitleStyle,
+              marginTop: 4,
+            }}
+          >
+            {isLoading
+              ? t('settings.loadingHousehold')
+              : householdId
+                ? t('settings.householdSettingsDesc')
+                : t('settings.noHousehold')}
+          </Text>
+        </View>
+        {isLoading ? (
+          <ActivityIndicator size="small" color={colors.content.strong} />
+        ) : (
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={colors.content.strong}
+          />
+        )}
+      </SurfaceCard>
+    </AnimatedPressable>
   );
 };
