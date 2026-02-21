@@ -5,16 +5,16 @@
 
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface BouncingLoaderProps {
   color?: string;
   size?: number;
 }
 
-export const BouncingLoader = ({
-  color = '#C4A77D',
-  size = 12,
-}: BouncingLoaderProps) => {
+export const BouncingLoader = ({ color, size = 12 }: BouncingLoaderProps) => {
+  const { colors } = useTheme();
+  const dotColor = color ?? colors.accent;
   const bounce1 = useRef(new Animated.Value(0)).current;
   const bounce2 = useRef(new Animated.Value(0)).current;
   const bounce3 = useRef(new Animated.Value(0)).current;
@@ -60,8 +60,8 @@ export const BouncingLoader = ({
     width: size,
     height: size,
     borderRadius: size / 2,
-    backgroundColor: color,
-    marginHorizontal: 4,
+    backgroundColor: dotColor,
+    marginHorizontal: spacing.xs,
   };
 
   return (
@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 20,
+    paddingVertical: spacing.xl,
   },
 });

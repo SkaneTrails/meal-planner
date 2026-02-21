@@ -186,7 +186,7 @@ export default function SignInScreen() {
         >
           <Text
             style={{
-              color: 'rgba(255, 255, 255, 0.7)',
+              color: colors.glass.dark,
               fontSize: fontSize.sm,
               fontFamily: fonts.body,
               textDecorationLine: 'underline',

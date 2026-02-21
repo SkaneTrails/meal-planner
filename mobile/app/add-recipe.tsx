@@ -4,7 +4,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Switch,
   Text,
   TextInput,
   View,
@@ -16,6 +15,7 @@ import {
   IconCircle,
   ScreenLayout,
   SurfaceCard,
+  Toggle,
 } from '@/components';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
 import { ChipPicker } from '@/components/ChipPicker';
@@ -245,16 +245,11 @@ export default function AddRecipeScreen() {
                   </Text>
                 </View>
               </View>
-              <Switch
+              <Toggle
                 value={aiEnabled && enhanceWithAI}
                 onValueChange={setEnhanceWithAI}
-                trackColor={{ false: colors.gray[300], true: colors.ai.light }}
-                thumbColor={
-                  aiEnabled && enhanceWithAI
-                    ? colors.ai.primary
-                    : colors.gray[400]
-                }
                 disabled={isPending || !aiEnabled}
+                variant="ai"
               />
             </SurfaceCard>
           </Pressable>

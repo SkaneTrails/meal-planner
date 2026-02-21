@@ -57,6 +57,7 @@ export const borderRadius = {
   lg: 20,
   'lg-xl': 22,
   xl: 24,
+  '2xl': 32,
   full: 9999,
 } as const;
 

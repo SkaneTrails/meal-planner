@@ -275,6 +275,8 @@ vi.mock('@/lib/theme', () => {
       subtle: 'rgba(93, 78, 64, 0.1)',
       hover: 'rgba(93, 78, 64, 0.08)',
       tint: 'rgba(93, 78, 64, 0.06)',
+      sheetOverlay: 'rgba(235, 232, 228, 0.94)',
+      iconBg: 'rgba(139, 115, 85, 0.1)',
     },
     button: {
       primary: '#7A6858', primaryPressed: '#6B5B4B', primaryText: '#FFFFFF', disabled: '#C5B8A8',
@@ -300,6 +302,8 @@ vi.mock('@/lib/theme', () => {
     overlay: {
       backdrop: 'rgba(0, 0, 0, 0.5)', backdropLight: 'rgba(0, 0, 0, 0.4)',
       strong: 'rgba(0, 0, 0, 0.6)',
+      gradientHeavy: 'rgba(0, 0, 0, 0.7)',
+      gradientSubtle: 'rgba(0, 0, 0, 0.15)',
     },
     mealPlan: {
       slotBg: 'rgba(240, 235, 228, 0.85)',
@@ -343,6 +347,7 @@ vi.mock('@/lib/theme', () => {
       buttonPressed: 'rgba(255, 255, 255, 0.45)',
       buttonDefault: 'rgba(255, 255, 255, 0.35)',
       dim: 'rgba(255, 255, 255, 0.08)',
+      pressed: 'rgba(255, 255, 255, 0.15)',
     },
     header: {
       bg: 'rgba(237, 228, 218, 0.85)',
@@ -418,6 +423,10 @@ vi.mock('@/lib/theme', () => {
       activeText: '#5D4E40',
       inactiveText: 'rgba(93, 78, 64, 0.5)',
       borderColor: 'transparent',
+      switchTrackOff: 'rgba(93, 78, 64, 0.2)',
+      switchTrackOn: '#D97A45',
+      switchThumbOff: '#BDBDBD',
+      switchThumbOn: '#FFFFFF',
     },
     metaChip: {
       mealBg: '#E8CDB5',
@@ -476,7 +485,7 @@ vi.mock('@/lib/theme', () => {
     accent: 'DMSans_500Medium',
   };
 
-  const mockBorderRadius = { '3xs': 3, '2xs': 4, 'xs-sm': 6, xs: 8, 'sm-md': 10, sm: 12, 'md-lg': 14, md: 16, lg: 20, 'lg-xl': 22, xl: 24, full: 9999 };
+  const mockBorderRadius = { '3xs': 3, '2xs': 4, 'xs-sm': 6, xs: 8, 'sm-md': 10, sm: 12, 'md-lg': 14, md: 16, lg: 20, 'lg-xl': 22, xl: 24, '2xl': 32, full: 9999 };
 
   const mockShadows = {
     none: { boxShadow: '0px 0px 0px 0px transparent' },
@@ -542,7 +551,7 @@ vi.mock('@/lib/theme', () => {
     name: 'Terminal CRT',
     colors: {},
     fonts: {},
-    borderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, full: 0 },
+    borderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, '2xl': 0, full: 0 },
     shadows: {},
     buttonDisplay: { display: 'text', wrapper: 'segment', shape: 'none', interaction: 'highlight' },
     overrides: { checkedOpacity: 0.7, checkboxBorderWidth: 1, dashedBorderWidth: 0, dayCardBorderWidth: 0, dayCardBorderWidthToday: 0, segmentedControlGap: 0, segmentedControlPadding: 0, segmentedControlActiveIndicator: 'underline', chipToggleGap: 0 },

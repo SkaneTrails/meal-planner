@@ -578,7 +578,7 @@ export const RecipeCard = ({
 
           {/* Subtle bottom gradient for depth */}
           <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.15)']}
+            colors={['transparent', colors.overlay.gradientSubtle]}
             style={{
               position: 'absolute',
               bottom: 0,

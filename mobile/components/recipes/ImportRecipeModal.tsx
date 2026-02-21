@@ -10,8 +10,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Switch, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button, IconCircle } from '@/components';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { BottomSheetModal, Button, IconCircle, Toggle } from '@/components';
 import { ChipPicker } from '@/components/ChipPicker';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { EnhancingOverlay } from '@/components/EnhancingOverlay';
@@ -299,16 +299,11 @@ export const ImportRecipeModal = ({
                 </Text>
               </View>
             </View>
-            <Switch
+            <Toggle
               value={aiEnabled && enhanceWithAI}
               onValueChange={setEnhanceWithAI}
-              trackColor={{ false: colors.glass.light, true: colors.ai.light }}
-              thumbColor={
-                aiEnabled && enhanceWithAI
-                  ? colors.ai.primary
-                  : colors.content.secondary
-              }
               disabled={isPending || !aiEnabled}
+              variant="ai"
             />
           </View>
         </Pressable>

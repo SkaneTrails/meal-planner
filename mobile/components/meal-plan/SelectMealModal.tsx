@@ -448,7 +448,7 @@ const RandomContent = ({
   mealType: MealType;
   onClose: () => void;
 }) => {
-  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
+  const { colors, fonts, borderRadius, visibility } = useTheme();
   const { t } = useTranslation();
   const { recipes } = useAllRecipes();
   const setMeal = useSetMeal();

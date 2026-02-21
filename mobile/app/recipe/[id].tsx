@@ -31,7 +31,7 @@ import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export default function RecipeDetailScreen() {
-  const { colors, visibility, chrome } = useTheme();
+  const { colors, visibility, chrome, borderRadius: radii } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -263,22 +263,22 @@ export default function RecipeDetailScreen() {
             source={require('@/assets/images/background2.png')}
             tileCount={4}
             style={{
-              borderTopLeftRadius: 32,
-              borderTopRightRadius: 32,
+              borderTopLeftRadius: radii['2xl'],
+              borderTopRightRadius: radii['2xl'],
               flex: 1,
               width: '100%',
               minWidth: '100%',
-              marginTop: -32,
+              marginTop: -radii['2xl'],
             }}
-            borderTopLeftRadius={32}
-            borderTopRightRadius={32}
+            borderTopLeftRadius={radii['2xl']}
+            borderTopRightRadius={radii['2xl']}
           >
             <View
               style={{
                 ...StyleSheet.absoluteFillObject,
-                backgroundColor: 'rgba(235, 232, 228, 0.94)',
-                borderTopLeftRadius: 32,
-                borderTopRightRadius: 32,
+                backgroundColor: colors.surface.sheetOverlay,
+                borderTopLeftRadius: radii['2xl'],
+                borderTopRightRadius: radii['2xl'],
               }}
             />
             <View
