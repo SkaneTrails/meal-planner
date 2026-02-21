@@ -5,8 +5,8 @@ import {
   AnimatedPressable,
   Button,
   ContentCard,
-  GradientBackground,
   HomeScreenSkeleton,
+  ScreenLayout,
   TerminalFabBar,
   TerminalFrame,
 } from '@/components';
@@ -48,76 +48,74 @@ export default function HomeScreen() {
 
   if (isLoading && recipes.length === 0) {
     return (
-      <GradientBackground animated>
+      <ScreenLayout animated>
         <HomeScreenSkeleton />
-      </GradientBackground>
+      </ScreenLayout>
     );
   }
 
   return (
-    <GradientBackground animated>
-      <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{
-            paddingBottom: layout.tabBar.contentBottomPadding,
+    <ScreenLayout animated>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: layout.tabBar.contentBottomPadding,
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleRefresh}
+            tintColor={colors.accent}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        <Header
+          greetingKey={greetingKey}
+          t={t}
+          onSettings={() => {
+            hapticLight();
+            router.push('/settings');
           }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={handleRefresh}
-              tintColor={colors.accent}
-            />
+        />
+
+        <StatsCards
+          recipesCount={totalCount}
+          plannedMealsCount={plannedMealsCount}
+          plannedMealsPercentage={plannedMealsPercentage}
+          groceryItemsCount={groceryItemsCount}
+          t={t}
+        />
+
+        <AddRecipeButton
+          t={t}
+          onPress={() => {
+            hapticLight();
+            router.push({
+              pathname: '/(tabs)/recipes',
+              params: { addRecipe: 'true' },
+            });
+          }}
+        />
+
+        <NextMealCard
+          nextMeal={nextMeal}
+          t={t}
+          onPress={() =>
+            nextMeal?.recipeId
+              ? router.push(`/recipe/${nextMeal.recipeId}`)
+              : router.push('/meal-plan')
           }
-          showsVerticalScrollIndicator={false}
-        >
-          <Header
-            greetingKey={greetingKey}
-            t={t}
-            onSettings={() => {
-              hapticLight();
-              router.push('/settings');
-            }}
-          />
+        />
 
-          <StatsCards
-            recipesCount={totalCount}
-            plannedMealsCount={plannedMealsCount}
-            plannedMealsPercentage={plannedMealsPercentage}
-            groceryItemsCount={groceryItemsCount}
-            t={t}
-          />
-
-          <AddRecipeButton
-            t={t}
-            onPress={() => {
-              hapticLight();
-              router.push({
-                pathname: '/(tabs)/recipes',
-                params: { addRecipe: 'true' },
-              });
-            }}
-          />
-
-          <NextMealCard
-            nextMeal={nextMeal}
-            t={t}
-            onPress={() =>
-              nextMeal?.recipeId
-                ? router.push(`/recipe/${nextMeal.recipeId}`)
-                : router.push('/meal-plan')
-            }
-          />
-
-          <InspirationSection
-            inspirationRecipes={inspirationRecipes}
-            inspirationRecipe={inspirationRecipe}
-            shuffleInspiration={shuffleInspiration}
-            t={t}
-          />
-        </ScrollView>
-      </View>
-    </GradientBackground>
+        <InspirationSection
+          inspirationRecipes={inspirationRecipes}
+          inspirationRecipe={inspirationRecipe}
+          shuffleInspiration={shuffleInspiration}
+          t={t}
+        />
+      </ScrollView>
+    </ScreenLayout>
   );
 }
 

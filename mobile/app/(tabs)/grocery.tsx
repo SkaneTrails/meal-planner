@@ -4,10 +4,10 @@
 
 import { View } from 'react-native';
 import {
-  GradientBackground,
   GroceryListSkeleton,
   GroceryListView,
   ScreenHeaderBar,
+  ScreenLayout,
 } from '@/components';
 import {
   AddItemCard,
@@ -48,80 +48,76 @@ export default function GroceryScreen() {
 
   if (isLoading && !hasLoadedOnce) {
     return (
-      <GradientBackground>
-        <View style={[{ flex: 1 }, layout.contentContainer]}>
-          <GroceryHeader />
-          <GroceryListSkeleton />
-        </View>
-      </GradientBackground>
+      <ScreenLayout>
+        <GroceryHeader />
+        <GroceryListSkeleton />
+      </ScreenLayout>
     );
   }
 
   return (
-    <GradientBackground>
-      <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <ScreenHeaderBar>
-          <View
-            style={{
-              paddingHorizontal: spacing.xl,
-              paddingTop: spacing.md,
-              paddingBottom: spacing.xs,
-            }}
-          >
-            <ScreenTitle title={t('grocery.thisWeeksShopping')} />
-          </View>
+    <ScreenLayout>
+      <ScreenHeaderBar>
+        <View
+          style={{
+            paddingHorizontal: spacing.xl,
+            paddingTop: spacing.md,
+            paddingBottom: spacing.xs,
+          }}
+        >
+          <ScreenTitle title={t('grocery.thisWeeksShopping')} />
+        </View>
 
-          <View
-            style={{
-              paddingHorizontal: spacing.xl,
-              paddingBottom: spacing.md,
+        <View
+          style={{
+            paddingHorizontal: spacing.xl,
+            paddingBottom: spacing.md,
+          }}
+        >
+          <StatsCard
+            itemsToBuy={itemsToBuy}
+            checkedItemsToBuy={checkedItemsToBuy}
+            totalItems={totalItems}
+            checkedCount={checkedCount}
+            hiddenAtHomeCount={hiddenAtHomeCount}
+            showAddItem={showAddItem}
+            showClearMenu={showClearMenu}
+            onToggleAddItem={() => {
+              setShowAddItem(!showAddItem);
+              setShowClearMenu(false);
             }}
-          >
-            <StatsCard
-              itemsToBuy={itemsToBuy}
-              checkedItemsToBuy={checkedItemsToBuy}
-              totalItems={totalItems}
-              checkedCount={checkedCount}
-              hiddenAtHomeCount={hiddenAtHomeCount}
-              showAddItem={showAddItem}
-              showClearMenu={showClearMenu}
-              onToggleAddItem={() => {
-                setShowAddItem(!showAddItem);
-                setShowClearMenu(false);
-              }}
-              onToggleClearMenu={() => {
-                setShowClearMenu(!showClearMenu);
-                setShowAddItem(false);
-              }}
-              onClearChecked={handleClearChecked}
-              onClearMealPlanItems={handleClearMealPlanItems}
-              onClearManualItems={handleClearManualItems}
-              onClearAll={handleClearAll}
+            onToggleClearMenu={() => {
+              setShowClearMenu(!showClearMenu);
+              setShowAddItem(false);
+            }}
+            onClearChecked={handleClearChecked}
+            onClearMealPlanItems={handleClearMealPlanItems}
+            onClearManualItems={handleClearManualItems}
+            onClearAll={handleClearAll}
+          />
+
+          {showAddItem && (
+            <AddItemCard
+              newItemText={newItemText}
+              onChangeText={setNewItemText}
+              onSubmit={handleAddItem}
             />
+          )}
+        </View>
+      </ScreenHeaderBar>
 
-            {showAddItem && (
-              <AddItemCard
-                newItemText={newItemText}
-                onChangeText={setNewItemText}
-                onSubmit={handleAddItem}
-              />
-            )}
-          </View>
-        </ScreenHeaderBar>
-
-        {totalItems > 0 ? (
-          <GroceryListView
-            groceryList={groceryListWithChecked}
-            onItemToggle={handleItemToggle}
-            filterOutItems={filterOutItemsAtHome}
-          />
-        ) : (
-          <EmptyGroceryState
-            title={t('grocery.emptyList')}
-            subtitle={t('grocery.goToMealPlan')}
-          />
-        )}
-      </View>
-    </GradientBackground>
+      {totalItems > 0 ? (
+        <GroceryListView
+          groceryList={groceryListWithChecked}
+          onItemToggle={handleItemToggle}
+          filterOutItems={filterOutItemsAtHome}
+        />
+      ) : (
+        <EmptyGroceryState
+          title={t('grocery.emptyList')}
+          subtitle={t('grocery.goToMealPlan')}
+        />
+      )}
+    </ScreenLayout>
   );
 }

@@ -11,8 +11,8 @@ import { FlatList, RefreshControl, Text, View } from 'react-native';
 import {
   Button,
   FullScreenLoading,
-  GradientBackground,
   ScreenHeaderBar,
+  ScreenLayout,
 } from '@/components';
 import {
   CreateHouseholdModal,
@@ -83,51 +83,47 @@ export default function AdminScreen() {
   };
 
   return (
-    <GradientBackground>
-      <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <AdminHeader onBack={() => router.back()} />
+    <ScreenLayout>
+      <AdminHeader onBack={() => router.back()} />
 
-        <CurrentUserInfo email={currentUser.email} role={currentUser.role} />
+      <CurrentUserInfo email={currentUser.email} role={currentUser.role} />
 
-        <View style={{ flex: 1 }}>
-          <HouseholdsListHeader onCreateNew={() => setShowCreateModal(true)} />
+      <View style={{ flex: 1 }}>
+        <HouseholdsListHeader onCreateNew={() => setShowCreateModal(true)} />
 
-          <FlatList
-            data={households || []}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <HouseholdCard
-                household={item}
-                onPress={() => setSelectedHousehold(item)}
+        <FlatList
+          data={households || []}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <HouseholdCard
+              household={item}
+              onPress={() => setSelectedHousehold(item)}
+            />
+          )}
+          contentContainerStyle={{
+            paddingHorizontal: spacing.lg,
+            paddingBottom: 70,
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={householdsLoading}
+              onRefresh={() => refetchHouseholds()}
+              tintColor={colors.primary}
+            />
+          }
+          ListEmptyComponent={
+            <View style={{ alignItems: 'center', padding: spacing.xl }}>
+              <Ionicons
+                name="home-outline"
+                size={48}
+                color={colors.text.muted}
               />
-            )}
-            contentContainerStyle={{
-              paddingHorizontal: spacing.lg,
-              paddingBottom: 70,
-            }}
-            refreshControl={
-              <RefreshControl
-                refreshing={householdsLoading}
-                onRefresh={() => refetchHouseholds()}
-                tintColor={colors.primary}
-              />
-            }
-            ListEmptyComponent={
-              <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                <Ionicons
-                  name="home-outline"
-                  size={48}
-                  color={colors.text.muted}
-                />
-                <Text
-                  style={{ color: colors.text.muted, marginTop: spacing.md }}
-                >
-                  {t('admin.noHouseholds')}
-                </Text>
-              </View>
-            }
-          />
-        </View>
+              <Text style={{ color: colors.text.muted, marginTop: spacing.md }}>
+                {t('admin.noHouseholds')}
+              </Text>
+            </View>
+          }
+        />
       </View>
 
       <CreateHouseholdModal
@@ -145,7 +141,7 @@ export default function AdminScreen() {
           onClose={() => setSelectedHousehold(null)}
         />
       )}
-    </GradientBackground>
+    </ScreenLayout>
   );
 }
 

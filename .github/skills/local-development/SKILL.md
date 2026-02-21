@@ -15,7 +15,9 @@ Get the Meal Planner app running locally with minimal manual work.
 
 ## GCP Project ID
 
-Stored in `infra/environments/dev/terraform.tfvars` (gitignored). Ask the user if not available.
+Read from the root `.env` file: `GOOGLE_CLOUD_PROJECT=<project-id>`. This file is gitignored but present on all developer machines.
+
+**NEVER fabricate a project ID.** If `.env` is missing, ask the user.
 
 ---
 

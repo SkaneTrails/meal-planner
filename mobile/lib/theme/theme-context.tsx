@@ -57,6 +57,8 @@ export interface ButtonDisplayConfig {
   shape: 'circle' | 'rounded' | 'none';
   /** Interaction style: scale animation or background color highlight. */
   interaction: 'scale' | 'highlight';
+  /** Bouncy hover: briefly shrink before springing to hoverScale. */
+  hoverBounce?: boolean;
 }
 
 /**

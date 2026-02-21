@@ -5,7 +5,7 @@
 
 import { Redirect } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import { FullScreenLoading, GradientBackground } from '../components';
+import { FullScreenLoading, ScreenLayout } from '../components';
 import { GoogleLogo } from '../components/GoogleLogo';
 import { useAuth } from '../lib/hooks/use-auth';
 import { useTranslation } from '../lib/i18n';
@@ -59,7 +59,7 @@ export default function SignInScreen() {
   }
 
   return (
-    <GradientBackground animated style={{ flex: 1 }}>
+    <ScreenLayout animated constrained={false}>
       {/* Main content - centered */}
       <View
         style={{
@@ -196,6 +196,6 @@ export default function SignInScreen() {
           </Text>
         </Pressable>
       </View>
-    </GradientBackground>
+    </ScreenLayout>
   );
 }

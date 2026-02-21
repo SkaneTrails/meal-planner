@@ -16,8 +16,8 @@ import {
 import {
   BottomSheetModal,
   Button,
-  GradientBackground,
   ScreenHeaderBar,
+  ScreenLayout,
 } from '@/components';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
@@ -169,84 +169,82 @@ export default function RecipesScreen() {
   }, []);
 
   return (
-    <GradientBackground>
-      <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <ScreenHeaderBar>
-          {/* Header */}
-          <View
-            style={{
-              paddingHorizontal: spacing.xl,
-              paddingTop: spacing.lg,
-              paddingBottom: spacing.xs,
-            }}
-          >
-            <ScreenTitle
-              title={t('recipes.title')}
-              subtitle={
-                hasActiveFilters
-                  ? t('recipes.filteredCount', {
-                      count: filteredRecipes.length,
-                    })
-                  : t('recipes.collectionCount', { count: totalCount })
-              }
-              style={{ marginBottom: spacing.sm }}
-            />
-          </View>
-
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            isSearchFocused={isSearchFocused}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-            onClear={handleSearchClear}
-            searchInputRef={searchInputRef}
-            t={t}
-          />
-
-          <View
-            style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.sm }}
-          >
-            <Button
-              variant="primary"
-              onPress={() => setShowImportModal(true)}
-              icon="add-circle-outline"
-              label={t('home.addRecipe.title')}
-            />
-          </View>
-
-          <FilterChips
-            dietFilter={dietFilter}
-            showFavoritesOnly={showFavoritesOnly}
-            libraryScope={libraryScope}
-            sortBy={sortBy}
-            sortOptions={SORT_OPTIONS}
-            onDietChange={handleDietChange}
-            onFavoritesToggle={handleFavoritesToggle}
-            onLibraryScopeChange={setLibraryScope}
-            onSortPress={() => setShowSortPicker(true)}
-            t={t}
-          />
-        </ScreenHeaderBar>
-
-        <RecipeGrid
-          recipes={filteredRecipes}
-          isLoading={isLoading}
-          onRefresh={() => refetch()}
-          onRecipePress={(id) => router.push(`/recipe/${id}`)}
-          onAddRecipe={() => setShowImportModal(true)}
-          searchQuery={searchQuery}
-          dietFilter={dietFilter}
-          mealFilters={mealFilters}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
+    <ScreenLayout>
+      <ScreenHeaderBar>
+        {/* Header */}
+        <View
+          style={{
+            paddingHorizontal: spacing.xl,
+            paddingTop: spacing.lg,
+            paddingBottom: spacing.xs,
           }}
-          isFetchingNextPage={isFetchingNextPage}
+        >
+          <ScreenTitle
+            title={t('recipes.title')}
+            subtitle={
+              hasActiveFilters
+                ? t('recipes.filteredCount', {
+                    count: filteredRecipes.length,
+                  })
+                : t('recipes.collectionCount', { count: totalCount })
+            }
+            style={{ marginBottom: spacing.sm }}
+          />
+        </View>
+
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          isSearchFocused={isSearchFocused}
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
+          onClear={handleSearchClear}
+          searchInputRef={searchInputRef}
           t={t}
         />
-      </View>
+
+        <View
+          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.sm }}
+        >
+          <Button
+            variant="primary"
+            onPress={() => setShowImportModal(true)}
+            icon="add-circle-outline"
+            label={t('home.addRecipe.title')}
+          />
+        </View>
+
+        <FilterChips
+          dietFilter={dietFilter}
+          showFavoritesOnly={showFavoritesOnly}
+          libraryScope={libraryScope}
+          sortBy={sortBy}
+          sortOptions={SORT_OPTIONS}
+          onDietChange={handleDietChange}
+          onFavoritesToggle={handleFavoritesToggle}
+          onLibraryScopeChange={setLibraryScope}
+          onSortPress={() => setShowSortPicker(true)}
+          t={t}
+        />
+      </ScreenHeaderBar>
+
+      <RecipeGrid
+        recipes={filteredRecipes}
+        isLoading={isLoading}
+        onRefresh={() => refetch()}
+        onRecipePress={(id) => router.push(`/recipe/${id}`)}
+        onAddRecipe={() => setShowImportModal(true)}
+        searchQuery={searchQuery}
+        dietFilter={dietFilter}
+        mealFilters={mealFilters}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
+        isFetchingNextPage={isFetchingNextPage}
+        t={t}
+      />
 
       <ImportRecipeModal
         visible={showImportModal}
@@ -258,8 +256,6 @@ export default function RecipesScreen() {
         visible={showManualModal}
         onClose={() => setShowManualModal(false)}
       />
-
-      {/* Sort Picker Modal */}
       <BottomSheetModal
         visible={showSortPicker}
         onClose={() => setShowSortPicker(false)}
@@ -306,6 +302,6 @@ export default function RecipesScreen() {
           </Pressable>
         ))}
       </BottomSheetModal>
-    </GradientBackground>
+    </ScreenLayout>
   );
 }

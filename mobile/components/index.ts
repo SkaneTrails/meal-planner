@@ -38,6 +38,7 @@ export { DayColumn, MealCell } from './MealGrid';
 export { RadioGroup } from './RadioGroup';
 export { RecipeCard } from './RecipeCard';
 export { ScreenHeaderBar } from './ScreenHeaderBar';
+export { ScreenLayout } from './ScreenLayout';
 export { ScreenTitle } from './ScreenTitle';
 export type { SectionProps } from './Section';
 export { Section } from './Section';

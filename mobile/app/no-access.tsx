@@ -6,7 +6,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, FullScreenLoading, GradientBackground } from '@/components';
+import { Button, FullScreenLoading, ScreenLayout } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -44,7 +44,7 @@ export default function NoAccessScreen() {
   }
 
   return (
-    <GradientBackground animated style={{ flex: 1 }}>
+    <ScreenLayout animated constrained={false}>
       {/* Main content - centered */}
       <View
         style={{
@@ -147,6 +147,6 @@ export default function NoAccessScreen() {
           {t('noAccess.contactAdmin')}
         </Text>
       </View>
-    </GradientBackground>
+    </ScreenLayout>
   );
 }

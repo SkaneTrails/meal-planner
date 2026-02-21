@@ -119,6 +119,7 @@ const buttonDisplay: ButtonDisplayConfig = {
   wrapper: 'animated',
   shape: 'circle',
   interaction: 'scale',
+  hoverBounce: true,
 };
 
 // ── Theme definition ───────────────────────────────────────────────────
