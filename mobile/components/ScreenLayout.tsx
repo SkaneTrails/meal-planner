@@ -1,6 +1,6 @@
 /**
  * Unified screen wrapper providing the common shell for every screen:
- * GradientBackground + content container + bottom padding.
+ * GradientBackground + content container constraints.
  *
  * Screens only provide their content; ScreenLayout handles the chrome.
  *
@@ -62,9 +62,9 @@ export const ScreenLayout = ({
   }
 
   return (
-    <GradientBackground animated={animated} style={style}>
+    <GradientBackground animated={animated}>
       <View
-        style={[{ flex: 1 }, constrained && layout.contentContainer]}
+        style={[{ flex: 1 }, constrained && layout.contentContainer, style]}
         testID="screen-layout-container"
       >
         {children}

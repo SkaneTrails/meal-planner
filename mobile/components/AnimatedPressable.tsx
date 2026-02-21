@@ -105,7 +105,7 @@ export const AnimatedPressable = ({
         if (buttonDisplay.hoverBounce && !effectivelyDisabled) {
           Animated.sequence([
             Animated.timing(scaleAnim, {
-              toValue: 0.97,
+              toValue: pressScale,
               duration: 80,
               useNativeDriver: true,
             }),
@@ -125,6 +125,7 @@ export const AnimatedPressable = ({
     [
       animateTo,
       hoverScale,
+      pressScale,
       onHoverIn,
       buttonDisplay.hoverBounce,
       effectivelyDisabled,
