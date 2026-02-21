@@ -190,6 +190,16 @@ vi.mock('@/components', () => ({
       role: 'switch',
     }, value ? 'ON' : 'OFF');
   },
+  DropdownPicker: ({ options, value, onSelect, testID }: any) => {
+    const { createElement } = require('react');
+    return createElement('select', {
+      'data-testid': testID ?? 'dropdown-picker',
+      value,
+      onChange: (e: any) => onSelect(e.target.value),
+    }, options?.map((opt: any) =>
+      createElement('option', { key: opt.value, value: opt.value }, opt.label),
+    ));
+  },
 }));
 
 // Mock @/lib/alert-context — imperative alert functions used throughout the app
@@ -648,6 +658,8 @@ vi.mock('@/lib/settings-context', () => ({
       noteSuggestions: [],
       showHiddenRecipes: false,
     },
+    weekStart: 'monday',
+    setWeekStart: vi.fn(),
     setLanguage: vi.fn(),
     addItemAtHome: vi.fn(),
     removeItemAtHome: vi.fn(),

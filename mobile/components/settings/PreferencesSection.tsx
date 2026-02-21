@@ -1,86 +1,45 @@
-import { useMemo } from 'react';
-import { Section, SettingToggleRow, SurfaceCard } from '@/components';
-import { DropdownPicker } from '@/components/DropdownPicker';
+import { Text, View } from 'react-native';
+import { SettingToggleRow, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
-import { spacing } from '@/lib/theme';
-import { WEEK_DAYS, type WeekStart } from '@/lib/utils/dateFormatter';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { LanguagePicker } from './LanguagePicker';
+import { ThemePicker } from './ThemePicker';
 
-interface RecipeLibrarySectionProps {
+interface PersonalPreferencesSectionProps {
   showHiddenRecipes: boolean;
-  onToggle: () => void;
+  onToggleShowHidden: () => void;
 }
 
-export const RecipeLibrarySection = ({
+export const PersonalPreferencesSection = ({
   showHiddenRecipes,
-  onToggle,
-}: RecipeLibrarySectionProps) => {
+  onToggleShowHidden,
+}: PersonalPreferencesSectionProps) => {
+  const { colors, themeName, setThemeName } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <Section
-      icon="book"
-      title={t('settings.recipeLibrary')}
-      subtitle={t('settings.recipeLibraryDesc')}
-      spacing={spacing['2xl']}
-    >
-      <SurfaceCard>
-        <SettingToggleRow
-          label={t('settings.showHiddenRecipes')}
-          subtitle={t('settings.showHiddenRecipesDesc')}
-          value={showHiddenRecipes}
-          onValueChange={onToggle}
-        />
-      </SurfaceCard>
-    </Section>
-  );
-};
-
-const WEEKDAY_I18N_KEY: Record<WeekStart, string> = {
-  sunday: 'settings.weekStartSunday',
-  monday: 'settings.weekStartMonday',
-  tuesday: 'settings.weekStartTuesday',
-  wednesday: 'settings.weekStartWednesday',
-  thursday: 'settings.weekStartThursday',
-  friday: 'settings.weekStartFriday',
-  saturday: 'settings.weekStartSaturday',
-};
-
-interface WeekStartSectionProps {
-  weekStart: WeekStart;
-  onSetWeekStart: (day: WeekStart) => void;
-}
-
-export const WeekStartSection = ({
-  weekStart,
-  onSetWeekStart,
-}: WeekStartSectionProps) => {
-  const { t } = useTranslation();
-
-  const options = useMemo(
-    () =>
-      WEEK_DAYS.map((day) => ({
-        value: day,
-        label: t(WEEKDAY_I18N_KEY[day]),
-      })),
-    [t],
-  );
-
-  return (
-    <Section
-      icon="calendar"
-      title={t('settings.weekStart')}
-      subtitle={t('settings.weekStartDesc')}
-      spacing={spacing['2xl']}
-    >
-      <DropdownPicker
-        options={options}
-        value={weekStart}
-        onSelect={onSetWeekStart}
-        testID="week-start-picker"
+    <SurfaceCard style={{ marginBottom: spacing['2xl'] }}>
+      <SettingToggleRow
+        label={t('settings.showHiddenRecipes')}
+        subtitle={t('settings.showHiddenRecipesDesc')}
+        value={showHiddenRecipes}
+        onValueChange={onToggleShowHidden}
       />
-    </Section>
+
+      <View style={{ marginTop: spacing.lg }}>
+        <Text
+          style={{
+            fontSize: fontSize.sm,
+            color: colors.content.strong,
+            marginBottom: spacing.xs,
+          }}
+        >
+          {t('settings.appearance')}
+        </Text>
+        <ThemePicker currentTheme={themeName} onChangeTheme={setThemeName} />
+      </View>
+    </SurfaceCard>
   );
 };
 

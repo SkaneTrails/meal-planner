@@ -44,8 +44,14 @@ export default function HouseholdSettingsScreen() {
   const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const form = useHouseholdSettingsForm(paramId);
-  const { settings, addItemAtHome, removeItemAtHome, setLanguage } =
-    useSettings();
+  const {
+    settings,
+    weekStart,
+    setWeekStart,
+    addItemAtHome,
+    removeItemAtHome,
+    setLanguage,
+  } = useSettings();
   const [expandedSections, setExpandedSections] = useState<Set<SectionKey>>(
     () => new Set<SectionKey>(),
   );
@@ -130,6 +136,8 @@ export default function HouseholdSettingsScreen() {
                 isRenamePending={form.isRenamePending}
                 onUpdateServings={form.updateServings}
                 onUpdateIncludeBreakfast={form.updateIncludeBreakfast}
+                weekStart={weekStart}
+                onSetWeekStart={setWeekStart}
               />
             </Section>
 

@@ -11,10 +11,8 @@ import {
   AboutSection,
   AccountSection,
   AdminSection,
-  AppearanceSection,
   HouseholdSettingsLink,
-  RecipeLibrarySection,
-  WeekStartSection,
+  PersonalPreferencesSection,
 } from '@/components/settings';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
@@ -27,8 +25,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
-  const { settings, weekStart, setWeekStart, toggleShowHiddenRecipes } =
-    useSettings();
+  const { settings, toggleShowHiddenRecipes } = useSettings();
   const { t } = useTranslation();
 
   const handleSignOut = async () => {
@@ -62,6 +59,7 @@ export default function SettingsScreen() {
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
+            flexGrow: 1,
             padding: spacing.xl,
             paddingTop: spacing.sm,
             paddingBottom: layout.tabBar.contentBottomPadding,
@@ -69,10 +67,9 @@ export default function SettingsScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <AccountSection
-            userEmail={user?.email}
-            displayName={user?.displayName}
-            onSignOut={handleSignOut}
+          <PersonalPreferencesSection
+            showHiddenRecipes={settings.showHiddenRecipes}
+            onToggleShowHidden={toggleShowHiddenRecipes}
           />
 
           <HouseholdSettingsLink
@@ -87,21 +84,17 @@ export default function SettingsScreen() {
             }}
           />
 
-          <RecipeLibrarySection
-            showHiddenRecipes={settings.showHiddenRecipes}
-            onToggle={toggleShowHiddenRecipes}
-          />
-
-          <WeekStartSection
-            weekStart={weekStart}
-            onSetWeekStart={setWeekStart}
-          />
-
-          <AppearanceSection />
-
           {currentUser?.role === 'superuser' && (
             <AdminSection onNavigateToAdmin={() => router.push('/admin')} />
           )}
+
+          <AccountSection
+            userEmail={user?.email}
+            displayName={user?.displayName}
+            onSignOut={handleSignOut}
+          />
+
+          <View style={{ flex: 1 }} />
 
           <AboutSection />
         </ScrollView>

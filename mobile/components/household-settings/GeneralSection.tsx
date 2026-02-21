@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import {
   Button,
+  DropdownPicker,
   SettingToggleRow,
   StepperControl,
   SurfaceCard,
@@ -16,6 +18,17 @@ import {
   useTheme,
 } from '@/lib/theme';
 import type { HouseholdSettings } from '@/lib/types';
+import { WEEK_DAYS, type WeekStart } from '@/lib/utils/dateFormatter';
+
+const WEEKDAY_I18N_KEY: Record<WeekStart, string> = {
+  sunday: 'settings.weekStartSunday',
+  monday: 'settings.weekStartMonday',
+  tuesday: 'settings.weekStartTuesday',
+  wednesday: 'settings.weekStartWednesday',
+  thursday: 'settings.weekStartThursday',
+  friday: 'settings.weekStartFriday',
+  saturday: 'settings.weekStartSaturday',
+};
 
 interface GeneralSectionProps {
   settings: HouseholdSettings;
@@ -30,6 +43,8 @@ interface GeneralSectionProps {
   isRenamePending: boolean;
   onUpdateServings: (servings: number) => void;
   onUpdateIncludeBreakfast: (enabled: boolean) => void;
+  weekStart: WeekStart;
+  onSetWeekStart: (day: WeekStart) => void;
 }
 
 export const GeneralSection = ({
@@ -45,9 +60,20 @@ export const GeneralSection = ({
   isRenamePending,
   onUpdateServings,
   onUpdateIncludeBreakfast,
+  weekStart,
+  onSetWeekStart,
 }: GeneralSectionProps) => {
   const { colors, circleStyle } = useTheme();
   const { t } = useTranslation();
+
+  const weekStartOptions = useMemo(
+    () =>
+      WEEK_DAYS.map((day) => ({
+        value: day,
+        label: t(WEEKDAY_I18N_KEY[day]),
+      })),
+    [t],
+  );
 
   return (
     <SurfaceCard radius="lg">
@@ -163,6 +189,25 @@ export const GeneralSection = ({
           value={settings.include_breakfast ?? false}
           onValueChange={onUpdateIncludeBreakfast}
           disabled={!canEdit}
+        />
+      </View>
+
+      {/* Week Start Day */}
+      <View style={{ marginTop: spacing.lg }}>
+        <Text
+          style={{
+            fontSize: fontSize.sm,
+            color: colors.content.strong,
+            marginBottom: spacing.xs,
+          }}
+        >
+          {t('settings.weekStart')}
+        </Text>
+        <DropdownPicker
+          options={weekStartOptions}
+          value={weekStart}
+          onSelect={onSetWeekStart}
+          testID="week-start-picker"
         />
       </View>
     </SurfaceCard>
