@@ -57,8 +57,6 @@ interface ButtonProps {
   isPending?: boolean;
   /** Label to show during loading (when isPending is true). */
   loadingLabel?: string;
-  /** Show an outlined border instead of a filled background. */
-  outlined?: boolean;
   /** Background color override. */
   color?: string;
   /** Text/icon color override. */
@@ -107,7 +105,6 @@ export const Button = ({
   disabled = false,
   isPending = false,
   loadingLabel,
-  outlined = false,
   color: colorProp,
   textColor: textColorProp,
   iconSize: iconSizeProp,
@@ -140,11 +137,9 @@ export const Button = ({
   };
 
   const resolved = resolveColors();
-  // Outlined: transparent bg with a border in the foreground color
-  const bg = outlined ? 'transparent' : resolved.bg;
+  const bg = resolved.bg;
   const fg = resolved.fg;
-  const pressedBg = outlined ? colors.surface.pressed : resolved.pressedBg;
-  const outlineBorder = outlined ? fg : undefined;
+  const pressedBg = resolved.pressedBg;
   // Disabled = dimmer variant of normal (opacity applied at render time)
   const activeBg = bg;
   const activeFg = fg;
@@ -301,9 +296,6 @@ export const Button = ({
               : isDisabled
                 ? 0.5
                 : 1,
-          ...(outlineBorder
-            ? { borderWidth: 1, borderColor: outlineBorder }
-            : undefined),
         },
         style,
       ]}
