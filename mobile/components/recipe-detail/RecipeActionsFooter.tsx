@@ -15,7 +15,7 @@ export const RecipeActionsFooter = ({
   t,
   onShowPlanModal,
 }: RecipeActionsFooterProps) => {
-  const { colors, borderRadius, visibility } = useTheme();
+  const { visibility } = useTheme();
 
   const openUrl = () => {
     try {
@@ -37,16 +37,15 @@ export const RecipeActionsFooter = ({
       {url && (
         <Button
           variant="text"
+          tone="alt"
           onPress={openUrl}
           icon="link"
           iconSize={18}
           label={t('recipe.viewSource')}
-          color={'rgba(180, 175, 168, 0.4)'}
           style={{
             justifyContent: 'center',
             paddingVertical: spacing.lg,
             marginTop: spacing.sm,
-            borderRadius: borderRadius.md,
           }}
         />
       )}
@@ -63,7 +62,6 @@ export const RecipeActionsFooter = ({
             onPress={onShowPlanModal}
             icon="calendar"
             label={t('recipe.addToMealPlan')}
-            color={colors.ai.primary}
           />
         </View>
       )}

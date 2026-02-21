@@ -353,6 +353,14 @@ export const terminalColors: ColorTokens = {
     activeText: GREEN,
     inactiveText: g(0.25),
   },
+
+  tones: {
+    default: { bg: GREEN_DARK, fg: GREEN, pressed: GREEN_DIM },
+    alt: { bg: g(0.08), fg: GREEN, pressed: g(0.15) },
+    cancel: { bg: g(0.05), fg: GREEN_DIM, pressed: g(0.1) },
+    warning: { bg: g(0.08), fg: GREEN, pressed: g(0.15) },
+    ai: { bg: g(0.06), fg: GREEN_DIM, pressed: g(0.12) },
+  },
 };
 
 // ── CRT visual effects — scanlines, glow, flicker ─────────────────────

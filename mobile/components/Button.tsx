@@ -35,7 +35,7 @@ const cleanIconName = (name: string): string =>
 // ── Types ──────────────────────────────────────────────────────────────
 
 type ButtonVariant = 'text' | 'icon' | 'primary';
-type ButtonTone = 'default' | 'destructive' | 'ai' | 'subtle';
+type ButtonTone = 'default' | 'alt' | 'cancel' | 'warning' | 'ai';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -63,6 +63,10 @@ interface ButtonProps {
   textColor?: string;
   /** Custom icon size override. */
   iconSize?: number;
+  /** Hit slop for small touch targets. */
+  hitSlop?:
+    | number
+    | { top?: number; bottom?: number; left?: number; right?: number };
   /** Animation scale when pressed (default: varies by variant). */
   pressScale?: number;
   /** Animation scale when hovered (default: varies by variant). */
@@ -104,6 +108,7 @@ export const Button = ({
   color: colorProp,
   textColor: textColorProp,
   iconSize: iconSizeProp,
+  hitSlop,
   pressScale: pressScaleProp,
   hoverScale: hoverScaleProp,
   disableAnimation,
@@ -127,35 +132,17 @@ export const Button = ({
         fg: textColorProp ?? colors.content.body,
       };
     }
-    switch (tone) {
-      case 'destructive':
-        return variant === 'primary'
-          ? { bg: colors.danger, fg: colors.white }
-          : { bg: colors.destructive.bg, fg: colors.destructive.text };
-      case 'ai':
-        return { bg: colors.ai.bg, fg: colors.ai.primary };
-      case 'subtle':
-        return { bg: colors.surface.hover, fg: colors.content.icon };
-      default:
-        switch (variant) {
-          case 'primary':
-            return {
-              bg: colors.button.primary,
-              fg: colors.button.primaryText,
-              pressedBg: colors.button.primaryPressed,
-            };
-          case 'icon':
-            return { bg: colors.glass.solid, fg: colors.text.inverse };
-          default:
-            return { bg: 'transparent', fg: colors.content.body };
-        }
-    }
+    const t = colors.tones[tone];
+    return { bg: t.bg, fg: t.fg, pressedBg: t.pressed };
   };
 
-  const { bg, fg, pressedBg } = resolveColors();
-  const disabledBg = variant === 'primary' ? colors.button.disabled : undefined;
-  const activeBg = isDisabled && disabledBg ? disabledBg : bg;
-  const activeFg = isDisabled ? colors.content.placeholder : fg;
+  const resolved = resolveColors();
+  const bg = resolved.bg;
+  const fg = resolved.fg;
+  const pressedBg = resolved.pressedBg;
+  // Disabled = dimmer variant of normal (opacity applied at render time)
+  const activeBg = bg;
+  const activeFg = fg;
   const resolvedIconSize = iconSizeProp ?? sizeConfig.iconPx;
 
   // ── Display label ─────────────────────────────────────────────────
@@ -188,6 +175,7 @@ export const Button = ({
         onPress={onPress}
         disabled={isDisabled}
         testID={testID}
+        hitSlop={hitSlop}
         style={[{ opacity: isDisabled ? 0.4 : 1 }, segmentStyle]}
       >
         <Text
@@ -286,6 +274,7 @@ export const Button = ({
       hoverScale={resolvedHoverScale}
       disableAnimation={useHighlight || (disableAnimation ?? isDisabled)}
       testID={testID}
+      hitSlop={hitSlop}
       style={({ pressed, hovered }) => [
         variantStyle(),
         {

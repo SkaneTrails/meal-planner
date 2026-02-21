@@ -1,13 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { IconCircle } from '@/components';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, IconCircle } from '@/components';
 import {
   fontSize,
   fontWeight,
@@ -140,50 +133,24 @@ export const EnhancementReviewModal = ({
 
           {/* Buttons */}
           <View style={styles.buttonRow}>
-            <Pressable
+            <Button
+              variant="text"
+              tone="cancel"
+              label={rejectLabel}
               onPress={() => onReview('reject')}
               disabled={isReviewPending}
-              style={({ pressed }) => [
-                styles.rejectButton,
-                {
-                  backgroundColor: colors.glass.light,
-                  borderColor: colors.gray[300],
-                  borderRadius: borderRadius.md,
-                  opacity: pressed || isReviewPending ? 0.7 : 1,
-                },
-              ]}
-            >
-              <Text
-                style={[styles.rejectLabel, { color: colors.text.inverse }]}
-              >
-                {rejectLabel}
-              </Text>
-            </Pressable>
-            <Pressable
+              style={styles.rejectButton}
+            />
+            <Button
+              variant="text"
+              tone="ai"
+              icon="sparkles"
+              label={approveLabel}
               onPress={() => onReview('approve')}
               disabled={isReviewPending}
-              style={({ pressed }) => [
-                styles.approveButton,
-                {
-                  backgroundColor: colors.ai.primary,
-                  borderRadius: borderRadius.md,
-                  ...shadows.sm,
-                  opacity: pressed || isReviewPending ? 0.7 : 1,
-                },
-              ]}
-            >
-              <View style={styles.approveContent}>
-                <Ionicons
-                  name="sparkles"
-                  size={iconSize.sm}
-                  color={colors.white}
-                  style={styles.approveIcon}
-                />
-                <Text style={[styles.approveLabel, { color: colors.white }]}>
-                  {approveLabel}
-                </Text>
-              </View>
-            </Pressable>
+              isPending={isReviewPending}
+              style={styles.approveButton}
+            />
           </View>
         </View>
       </View>
@@ -255,28 +222,10 @@ const styles = StyleSheet.create({
   },
   rejectButton: {
     flex: 1,
-    paddingVertical: spacing.md,
     alignItems: 'center',
-    borderWidth: 1,
-  },
-  rejectLabel: {
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.semibold,
   },
   approveButton: {
     flex: 1,
-    paddingVertical: spacing.md,
     alignItems: 'center',
-  },
-  approveContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  approveIcon: {
-    marginRight: spacing['xs-sm'],
-  },
-  approveLabel: {
-    fontSize: fontSize.lg,
-    fontWeight: fontWeight.semibold,
   },
 });

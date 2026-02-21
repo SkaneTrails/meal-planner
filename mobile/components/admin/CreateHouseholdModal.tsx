@@ -55,10 +55,10 @@ export const CreateHouseholdModal = ({
           </Text>
           <Button
             variant="icon"
+            tone="cancel"
             onPress={onClose}
             icon="close"
             iconSize={28}
-            textColor={colors.content.secondary}
           />
         </View>
 
@@ -96,7 +96,6 @@ export const CreateHouseholdModal = ({
           disabled={!householdName.trim()}
           isPending={isPending}
           label={t('admin.createHousehold.button')}
-          color={colors.content.body}
           style={{
             marginTop: spacing.xl,
           }}

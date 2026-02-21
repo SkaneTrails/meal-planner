@@ -97,7 +97,7 @@ const MemberCard = ({
       {canEdit && !isSelf && (
         <Button
           variant="icon"
-          tone="destructive"
+          tone="warning"
           onPress={onRemove}
           icon="trash-outline"
           iconSize={18}

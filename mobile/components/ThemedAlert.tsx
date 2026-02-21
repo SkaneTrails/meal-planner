@@ -33,7 +33,7 @@ interface ThemedAlertProps {
 const ANIMATION_DURATION = 200;
 
 const buttonTone = (style?: AlertButton['style']) => {
-  if (style === 'destructive') return 'destructive' as const;
+  if (style === 'destructive') return 'warning' as const;
   return 'default' as const;
 };
 

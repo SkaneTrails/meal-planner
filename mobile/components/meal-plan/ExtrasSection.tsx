@@ -71,12 +71,12 @@ export const ExtrasSection = ({
           </View>
           <Button
             variant="text"
+            tone="alt"
             size="sm"
             onPress={onAddExtra}
             icon="add"
             iconSize={16}
             label={t('mealPlan.extras.add')}
-            color={colors.surface.subtle}
             style={{
               paddingHorizontal: spacing.sm,
               paddingVertical: 4,
@@ -89,14 +89,13 @@ export const ExtrasSection = ({
         {recipes.length === 0 && (
           <Button
             variant="text"
+            tone="alt"
             onPress={onAddExtra}
             icon="add-circle-outline"
             iconSize={20}
             label={t('mealPlan.extras.emptyState')}
-            textColor={colors.content.subtitle}
             style={{
               justifyContent: 'center',
-              backgroundColor: colors.mealPlan.emptyStateBg,
               borderRadius: borderRadius.sm,
               padding: spacing.lg,
               borderWidth: 1,
@@ -182,12 +181,12 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
 
       <Button
         variant="icon"
+        tone="cancel"
         onPress={onRemove}
         icon="close"
         iconSize={18}
         style={{
           ...circleStyle(28),
-          backgroundColor: colors.surface.border,
           marginLeft: spacing.sm,
         }}
       />

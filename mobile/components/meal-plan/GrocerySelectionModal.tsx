@@ -173,11 +173,10 @@ const GroceryWeekSelector = ({
     >
       <Button
         variant="icon"
+        tone="alt"
         onPress={onPreviousWeek}
         icon="chevron-back"
         iconSize={20}
-        textColor={colors.content.body}
-        color={colors.button.primarySubtle}
         style={circleStyle(iconContainer.xs)}
       />
       <View
@@ -201,11 +200,10 @@ const GroceryWeekSelector = ({
       </View>
       <Button
         variant="icon"
+        tone="alt"
         onPress={onNextWeek}
         icon="chevron-forward"
         iconSize={20}
-        textColor={colors.content.body}
-        color={colors.button.primarySubtle}
         style={circleStyle(iconContainer.xs)}
       />
     </View>
@@ -306,11 +304,10 @@ const GroceryMealItem = ({
         >
           <Button
             variant="icon"
+            tone="alt"
             onPress={() => onChangeServings(mealKey, -1)}
             icon="remove"
             iconSize={18}
-            textColor={colors.content.body}
-            color={colors.glass.medium}
             style={circleStyle(iconContainer.sm)}
           />
           <View
@@ -338,11 +335,10 @@ const GroceryMealItem = ({
           </View>
           <Button
             variant="icon"
+            tone="alt"
             onPress={() => onChangeServings(mealKey, 1)}
             icon="add"
             iconSize={18}
-            textColor={colors.content.body}
-            color={colors.glass.medium}
             style={circleStyle(iconContainer.sm)}
           />
         </View>

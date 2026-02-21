@@ -26,7 +26,7 @@ export const ClearMenu = ({
         {checkedCount > 0 && (
           <Button
             variant="text"
-            tone="subtle"
+            tone="warning"
             size="sm"
             icon="refresh"
             label={t('grocery.clearChecked')}
@@ -35,7 +35,7 @@ export const ClearMenu = ({
         )}
         <Button
           variant="text"
-          tone="subtle"
+          tone="warning"
           size="sm"
           icon="calendar-outline"
           label={t('grocery.clearMealPlanItems')}
@@ -43,7 +43,7 @@ export const ClearMenu = ({
         />
         <Button
           variant="text"
-          tone="subtle"
+          tone="warning"
           size="sm"
           icon="create-outline"
           label={t('grocery.clearManualItems')}
@@ -51,7 +51,7 @@ export const ClearMenu = ({
         />
         <Button
           variant="text"
-          tone="destructive"
+          tone="warning"
           size="sm"
           icon="trash-outline"
           label={t('grocery.clearEntireList')}

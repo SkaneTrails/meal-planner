@@ -4,12 +4,12 @@ import {
   Animated,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
-  Pressable,
   RefreshControl,
   ScrollView,
   View,
 } from 'react-native';
 import {
+  Button,
   ScreenHeaderBar,
   ScreenLayout,
   TerminalDivider,
@@ -336,19 +336,20 @@ export default function MealPlanScreen() {
               right: spacing.xl,
             }}
           >
-            <Pressable
-              onPress={openGroceryModal}
-              style={{
-                width: iconContainer.xl,
-                height: iconContainer.xl,
-                borderRadius: borderRadius.full,
-                backgroundColor: colors.surface.overlay,
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: shadows.float.boxShadow,
-              }}
-            >
-              <Ionicons name="cart" size={iconSize.xl} color={colors.white} />
+            <View style={{ position: 'relative' }}>
+              <Button
+                variant="icon"
+                color={colors.button.primary}
+                textColor={colors.button.primaryText}
+                icon="cart"
+                iconSize={iconSize.xl}
+                onPress={openGroceryModal}
+                style={{
+                  width: iconContainer.xl,
+                  height: iconContainer.xl,
+                  boxShadow: shadows.float.boxShadow,
+                }}
+              />
               <View
                 style={{
                   position: 'absolute',
@@ -364,7 +365,7 @@ export default function MealPlanScreen() {
               >
                 <Ionicons name="add" size={12} color={colors.white} />
               </View>
-            </Pressable>
+            </View>
           </View>
 
           {/* Floating Jump to Today */}
@@ -392,24 +393,19 @@ export default function MealPlanScreen() {
                 ],
               }}
             >
-              <Pressable
+              <Button
+                variant="icon"
+                color={colors.button.primary}
+                textColor={colors.button.primaryText}
+                icon="today"
+                iconSize={iconSize.md}
                 onPress={jumpToToday}
                 style={{
                   width: iconContainer.md,
                   height: iconContainer.md,
-                  borderRadius: borderRadius.full,
-                  backgroundColor: colors.surface.overlay,
-                  alignItems: 'center',
-                  justifyContent: 'center',
                   boxShadow: shadows.float.boxShadow,
                 }}
-              >
-                <Ionicons
-                  name="today"
-                  size={iconSize.md}
-                  color={colors.white}
-                />
-              </Pressable>
+              />
             </Animated.View>
           )}
         </>

@@ -57,12 +57,12 @@ export const PlanMealModal = ({
       >
         <Button
           variant="icon"
+          tone="alt"
           onPress={() => onSetWeekOffset(0)}
           disabled={weekOffset === 0}
           icon="chevron-back"
           iconSize={24}
-          textColor={colors.text.inverse}
-          style={{ padding: spacing.sm, opacity: weekOffset === 0 ? 0.3 : 1 }}
+          style={{ padding: spacing.sm }}
         />
         <Text
           style={{
@@ -75,12 +75,12 @@ export const PlanMealModal = ({
         </Text>
         <Button
           variant="icon"
+          tone="alt"
           onPress={() => onSetWeekOffset(1)}
           disabled={weekOffset === 1}
           icon="chevron-forward"
           iconSize={24}
-          textColor={colors.text.inverse}
-          style={{ padding: spacing.sm, opacity: weekOffset === 1 ? 0.3 : 1 }}
+          style={{ padding: spacing.sm }}
         />
       </View>
 

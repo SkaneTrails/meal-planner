@@ -7,10 +7,9 @@
  * detail page.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { Image, Text, TextInput, View } from 'react-native';
 import { BottomSheetModal, Button, FormField } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { api } from '@/lib/api';
@@ -258,7 +257,10 @@ export const ManualRecipeModal = ({
               }}
               resizeMode="cover"
             />
-            <Pressable
+            <Button
+              variant="icon"
+              tone="cancel"
+              icon="close"
               onPress={() => {
                 setSelectedImage(null);
                 setImageUrl('');
@@ -267,46 +269,22 @@ export const ManualRecipeModal = ({
                 position: 'absolute',
                 top: spacing.sm,
                 right: spacing.sm,
-                backgroundColor: colors.overlay.strong,
-                borderRadius: borderRadius.full,
-                padding: spacing.xs,
               }}
-            >
-              <Ionicons name="close" size={20} color={colors.white} />
-            </Pressable>
+            />
           </View>
         )}
 
-        <Pressable
+        <Button
+          variant="text"
+          icon="camera"
+          label={
+            selectedImage || imageUrl
+              ? t('recipeDetail.changeImage')
+              : t('addRecipe.addImage')
+          }
           onPress={handlePickImage}
           disabled={isPending}
-          style={({ pressed }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: colors.card.bg,
-            borderRadius: borderRadius.md,
-            borderWidth: 1,
-            borderColor: colors.card.borderColor,
-            paddingVertical: spacing.md,
-            paddingHorizontal: spacing.lg,
-            opacity: pressed ? 0.8 : 1,
-          })}
-        >
-          <Ionicons name="camera" size={20} color={colors.content.body} />
-          <Text
-            style={{
-              marginLeft: spacing.sm,
-              color: colors.content.body,
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodyMedium,
-            }}
-          >
-            {selectedImage || imageUrl
-              ? t('recipeDetail.changeImage')
-              : t('addRecipe.addImage')}
-          </Text>
-        </Pressable>
+        />
       </View>
 
       {/* Create button */}
@@ -319,7 +297,6 @@ export const ManualRecipeModal = ({
           icon="checkmark-circle-outline"
           label={t('addRecipe.createButton')}
           loadingLabel={t('addRecipe.creating')}
-          color={colors.content.body}
         />
       </View>
     </BottomSheetModal>

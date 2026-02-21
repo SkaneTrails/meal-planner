@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
+import { Button } from '@/components/Button';
 import { SurfaceCard } from '@/components/SurfaceCard';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -26,7 +26,7 @@ export const InlineAddInput = ({
   placeholder,
   placeholderTextColor: placeholderTextColorProp,
 }: InlineAddInputProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   const hasContent = !!value.trim();
   const resolvedPlaceholderColor =
     placeholderTextColorProp ?? colors.content.placeholderHex;
@@ -51,23 +51,14 @@ export const InlineAddInput = ({
         onSubmitEditing={onSubmit}
         returnKeyType="done"
       />
-      <Pressable
-        testID="inline-add-button"
+      <Button
+        variant="icon"
+        icon="add"
         onPress={onSubmit}
         disabled={!hasContent}
-        style={({ pressed }) => ({
-          backgroundColor: hasContent ? colors.primary : colors.bgDark,
-          borderRadius: borderRadius.sm,
-          padding: spacing.sm,
-          opacity: pressed ? 0.8 : 1,
-        })}
-      >
-        <Ionicons
-          name="add"
-          size={20}
-          color={hasContent ? colors.white : colors.button.disabled}
-        />
-      </Pressable>
+        testID="inline-add-button"
+        size="sm"
+      />
     </SurfaceCard>
   );
 };

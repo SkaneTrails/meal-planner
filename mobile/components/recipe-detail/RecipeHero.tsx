@@ -1,13 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  ActivityIndicator,
-  Animated,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Text, View } from 'react-native';
+import { Button } from '@/components';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import {
   PLACEHOLDER_BLURHASH,
@@ -40,7 +34,7 @@ export const RecipeHero = ({
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { colors, fonts, borderRadius, visibility } = useTheme();
+  const { colors, fonts, visibility } = useTheme();
   return (
     <Animated.View
       style={{
@@ -119,28 +113,22 @@ export const RecipeHero = ({
             </View>
           </LinearGradient>
 
-          <Pressable
+          <Button
+            variant="icon"
+            color={colors.glass.button}
+            textColor={colors.white}
+            icon="camera"
+            iconSize={20}
+            isPending={isUpdatingImage}
             onPress={onPickImage}
-            style={({ pressed }) => ({
+            style={{
               position: 'absolute',
               top: 60,
               right: spacing.lg,
-              backgroundColor: pressed
-                ? colors.glass.buttonPressed
-                : colors.glass.button,
-              borderRadius: borderRadius.xl,
               width: 44,
               height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-            })}
-          >
-            {isUpdatingImage ? (
-              <ActivityIndicator size="small" color={colors.white} />
-            ) : (
-              <Ionicons name="camera" size={20} color={colors.white} />
-            )}
-          </Pressable>
+            }}
+          />
         </>
       )}
     </Animated.View>

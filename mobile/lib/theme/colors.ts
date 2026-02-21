@@ -368,6 +368,31 @@ export const lightColors = {
     activeText: '#3D3D3D',
     inactiveText: 'rgba(93, 78, 64, 0.5)',
   },
+
+  // Button semantic tones — every button reads from here, no per-call-site overrides
+  tones: {
+    default: { bg: '#D97A45', fg: '#FFFFFF', pressed: '#C06B38' },
+    alt: {
+      bg: 'rgba(93, 78, 64, 0.08)',
+      fg: '#5D4E40',
+      pressed: 'rgba(93, 78, 64, 0.15)',
+    },
+    cancel: {
+      bg: 'rgba(93, 78, 64, 0.06)',
+      fg: 'rgba(93, 78, 64, 0.6)',
+      pressed: 'rgba(93, 78, 64, 0.12)',
+    },
+    warning: {
+      bg: 'rgba(180, 80, 70, 0.12)',
+      fg: '#B45046',
+      pressed: 'rgba(180, 80, 70, 0.22)',
+    },
+    ai: {
+      bg: 'rgba(217, 122, 69, 0.1)',
+      fg: '#D97A45',
+      pressed: 'rgba(217, 122, 69, 0.2)',
+    },
+  },
 } as const;
 
 /** Structural contract that every color palette must satisfy. */

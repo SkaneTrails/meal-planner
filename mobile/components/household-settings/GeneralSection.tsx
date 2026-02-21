@@ -1,12 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { SettingToggleRow, StepperControl, SurfaceCard } from '@/components';
+  Button,
+  SettingToggleRow,
+  StepperControl,
+  SurfaceCard,
+} from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -88,34 +87,20 @@ export const GeneralSection = ({
                 paddingVertical: spacing.sm,
               }}
             />
-            <Pressable
+            <Button
+              variant="icon"
+              icon="checkmark"
               onPress={onSaveName}
-              disabled={isRenamePending}
-              style={{
-                ...circleStyle(iconContainer.xs),
-                backgroundColor: colors.accent,
-                alignItems: 'center',
-                justifyContent: 'center',
-                opacity: isRenamePending ? 0.6 : 1,
-              }}
-            >
-              {isRenamePending ? (
-                <ActivityIndicator color={colors.white} size="small" />
-              ) : (
-                <Ionicons name="checkmark" size={20} color={colors.white} />
-              )}
-            </Pressable>
-            <Pressable
+              isPending={isRenamePending}
+              style={circleStyle(iconContainer.xs)}
+            />
+            <Button
+              variant="icon"
+              tone="cancel"
+              icon="close"
               onPress={onCancelEditName}
-              style={{
-                ...circleStyle(iconContainer.xs),
-                backgroundColor: colors.bgLight,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Ionicons name="close" size={20} color={colors.content.body} />
-            </Pressable>
+              style={circleStyle(iconContainer.xs)}
+            />
           </View>
         ) : (
           <Pressable

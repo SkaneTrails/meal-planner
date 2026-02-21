@@ -58,10 +58,10 @@ export const AddMemberForm = ({
         </Text>
         <Button
           variant="icon"
+          tone="cancel"
           onPress={onClose}
           icon="close"
           iconSize={24}
-          textColor={colors.content.secondary}
         />
       </View>
 
@@ -118,7 +118,6 @@ export const AddMemberForm = ({
         disabled={!newMemberEmail.trim()}
         isPending={isPending}
         label={t('admin.addMember.button')}
-        color={colors.content.heading}
       />
     </View>
   );

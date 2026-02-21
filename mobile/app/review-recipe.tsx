@@ -162,7 +162,6 @@ export default function ReviewRecipeScreen() {
           onPress={handleSave}
           isPending={createRecipe.isPending}
           label={t('reviewRecipe.saveRecipe')}
-          color={colors.primary}
         />
       </BottomActionBar>
     </ScreenLayout>

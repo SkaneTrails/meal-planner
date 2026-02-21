@@ -103,12 +103,12 @@ export const FilledMealSlot = ({
 
       <Button
         variant="icon"
+        tone="cancel"
         onPress={() => onRemove(date, mealType, title, label)}
         icon="close"
         iconSize={18}
         style={{
           ...circleStyle(28),
-          backgroundColor: colors.surface.border,
           marginLeft: spacing.sm,
         }}
       />

@@ -119,12 +119,11 @@ export default function NoAccessScreen() {
         {/* Sign Out Button - Glass style */}
         <Button
           variant="text"
+          tone="warning"
           onPress={handleSignOut}
           icon="log-out-outline"
           label={t('noAccess.signOutButton')}
-          textColor={colors.text.primary}
           style={{
-            backgroundColor: colors.glass.buttonDefault,
             borderRadius: borderRadius.lg,
             paddingHorizontal: spacing.xl,
             paddingVertical: spacing.lg,
