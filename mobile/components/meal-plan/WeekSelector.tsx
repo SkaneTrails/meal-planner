@@ -40,6 +40,7 @@ export const WeekSelector = ({
       >
         <Button
           variant="icon"
+          tone="alt"
           onPress={() => {
             hapticLight();
             onPreviousWeek();
@@ -47,8 +48,6 @@ export const WeekSelector = ({
           icon="chevron-back"
           label="\u25C4"
           iconSize={18}
-          textColor={colors.content.tertiary}
-          color={colors.glass.subtle}
           style={{
             padding: spacing.sm,
             borderRadius: borderRadius.full,
@@ -90,6 +89,7 @@ export const WeekSelector = ({
 
         <Button
           variant="icon"
+          tone="alt"
           onPress={() => {
             hapticLight();
             onNextWeek();
@@ -97,8 +97,6 @@ export const WeekSelector = ({
           icon="chevron-forward"
           label="\u25BA"
           iconSize={18}
-          textColor={colors.content.tertiary}
-          color={colors.glass.subtle}
           style={{
             padding: spacing.sm,
             borderRadius: borderRadius.full,

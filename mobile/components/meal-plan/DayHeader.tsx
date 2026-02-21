@@ -223,14 +223,14 @@ const NoteEditor = ({
         <ButtonGroup>
           <Button
             variant="text"
+            tone="alt"
             label={t('mealPlan.notesSave')}
             size="md"
             onPress={onSave}
-            textColor={colors.content.headingWarm}
           />
           <Button
             variant="text"
-            tone="subtle"
+            tone="cancel"
             label={t('mealPlan.notesCancel')}
             size="md"
             onPress={onCancel}

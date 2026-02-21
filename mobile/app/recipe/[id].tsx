@@ -2,11 +2,11 @@
  * Recipe detail screen.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import {
+  Button,
   EnhancingOverlay,
   GradientBackground,
   TerminalFabBar,
@@ -31,8 +31,7 @@ import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
 export default function RecipeDetailScreen() {
-  const { colors, circleStyle, visibility, chrome } = useTheme();
-  const HEADER_BUTTON_BG = colors.surface.overlayMedium;
+  const { colors, visibility, chrome } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -182,39 +181,37 @@ export default function RecipeDetailScreen() {
           headerTintColor: colors.white,
           headerBackTitle: '',
           headerLeft: () => (
-            <Pressable
+            <Button
+              variant="icon"
+              color={colors.glass.button}
+              textColor={colors.white}
+              icon="chevron-back"
+              iconSize={24}
               onPress={() => router.replace('/(tabs)/recipes')}
               style={{
-                ...circleStyle(iconContainer.md),
-                backgroundColor: HEADER_BUTTON_BG,
-                alignItems: 'center',
-                justifyContent: 'center',
+                width: iconContainer.md,
+                height: iconContainer.md,
                 marginLeft: spacing.sm,
               }}
-            >
-              <Ionicons name="chevron-back" size={24} color={colors.white} />
-            </Pressable>
+            />
           ),
           headerRight: () => (
-            <Pressable
+            <Button
+              variant="icon"
+              color={colors.glass.button}
+              icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
+              iconSize={22}
               onPress={() => {
                 hapticLight();
                 if (id) toggleFavorite(id);
               }}
+              textColor={isRecipeFavorite ? colors.coral : colors.white}
               style={{
-                ...circleStyle(iconContainer.md),
-                backgroundColor: HEADER_BUTTON_BG,
-                alignItems: 'center',
-                justifyContent: 'center',
+                width: iconContainer.md,
+                height: iconContainer.md,
                 marginRight: spacing.sm,
               }}
-            >
-              <Ionicons
-                name={isRecipeFavorite ? 'heart' : 'heart-outline'}
-                size={22}
-                color={isRecipeFavorite ? colors.coral : colors.white}
-              />
-            </Pressable>
+            />
           ),
         }}
       />

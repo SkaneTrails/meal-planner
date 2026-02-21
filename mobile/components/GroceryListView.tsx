@@ -3,24 +3,17 @@
  * Drag reordering is only available on touch devices.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import DraggableFlatList, {
   type RenderItemParams,
 } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useIsTouchDevice } from '@/lib/hooks/useIsTouchDevice';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  iconSize,
-  layout,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, layout, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem, GroceryList } from '@/lib/types';
+import { Button } from './Button';
 import { GroceryItemRow } from './GroceryItemRow';
 import { EmptyGroceryState } from './grocery/EmptyGroceryState';
 import { TerminalFrame } from './TerminalFrame';
@@ -38,7 +31,7 @@ export const GroceryListView = ({
   filterOutItems,
   onReorder,
 }: GroceryListViewProps) => {
-  const { colors, fonts, borderRadius, chrome } = useTheme();
+  const { colors, fonts, chrome } = useTheme();
   const { t } = useTranslation();
   const [reorderMode, setReorderMode] = useState(false);
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
@@ -198,37 +191,16 @@ export const GroceryListView = ({
       <View
         style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.sm }}
       >
-        <Pressable
+        <Button
+          variant="text"
+          tone="alt"
+          icon={reorderMode ? 'checkmark' : 'swap-vertical'}
+          label={
+            reorderMode ? t('grocery.doneSorting') : t('grocery.sortItems')
+          }
           onPress={handleToggleReorder}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            alignSelf: 'flex-start',
-            backgroundColor: reorderMode
-              ? colors.glass.heavy
-              : colors.glass.subtle,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing['xs-sm'],
-            borderRadius: borderRadius.xs,
-            gap: spacing.xs,
-          }}
-        >
-          <Ionicons
-            name={reorderMode ? 'checkmark' : 'swap-vertical'}
-            size={iconSize.xs}
-            color={colors.content.body}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.base,
-              fontFamily: fonts.bodySemibold,
-              fontWeight: fontWeight.semibold,
-              color: colors.content.body,
-            }}
-          >
-            {reorderMode ? t('grocery.doneSorting') : t('grocery.sortItems')}
-          </Text>
-        </Pressable>
+          color={reorderMode ? colors.glass.heavy : undefined}
+        />
       </View>
 
       {reorderMode ? (

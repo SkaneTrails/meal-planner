@@ -382,4 +382,28 @@ export const bubblegumColors: ColorTokens = {
     activeText: BLACK,
     inactiveText: '#666666',
   },
+
+  tones: {
+    default: { bg: SUNNY, fg: BLACK, pressed: '#E6C038' },
+    alt: {
+      bg: 'rgba(0, 0, 0, 0.06)',
+      fg: '#333333',
+      pressed: 'rgba(0, 0, 0, 0.12)',
+    },
+    cancel: {
+      bg: 'rgba(0, 0, 0, 0.04)',
+      fg: 'rgba(0, 0, 0, 0.5)',
+      pressed: 'rgba(0, 0, 0, 0.1)',
+    },
+    warning: {
+      bg: 'rgba(255, 59, 59, 0.12)',
+      fg: '#FF3B3B',
+      pressed: 'rgba(255, 59, 59, 0.22)',
+    },
+    ai: {
+      bg: 'rgba(0, 0, 0, 0.06)',
+      fg: BLACK_BORDER,
+      pressed: 'rgba(0, 0, 0, 0.12)',
+    },
+  },
 };

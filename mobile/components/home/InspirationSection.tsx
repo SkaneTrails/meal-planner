@@ -96,7 +96,7 @@ const InspirationHeader = ({
   t: Data['t'];
   onShuffle: () => void;
 }) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View
@@ -119,6 +119,7 @@ const InspirationHeader = ({
       </Text>
       <Button
         variant="text"
+        tone="alt"
         size="sm"
         onPress={() => {
           hapticLight();
@@ -127,13 +128,6 @@ const InspirationHeader = ({
         icon="shuffle"
         iconSize={12}
         label={t('home.inspiration.shuffle')}
-        textColor={colors.content.body}
-        color={'rgba(255, 255, 255, 0.25)'}
-        style={{
-          paddingHorizontal: spacing['sm-md'],
-          paddingVertical: spacing['xs-sm'],
-          borderRadius: borderRadius.full,
-        }}
       />
     </View>
   );

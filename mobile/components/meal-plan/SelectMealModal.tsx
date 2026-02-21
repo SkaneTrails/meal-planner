@@ -220,14 +220,12 @@ const QuickContent = ({
 
       <Button
         variant="text"
-        tone="destructive"
+        tone="warning"
         onPress={handleRemoveMeal}
         disabled={removeMeal.isPending}
         icon="trash-outline"
         iconSize={18}
         label={t('selectRecipe.clearMeal')}
-        textColor={colors.content.tertiary}
-        color={colors.surface.hover}
         style={{
           justifyContent: 'center',
           paddingVertical: spacing.md,
@@ -577,19 +575,17 @@ const RandomContent = ({
         </View>
         <Button
           variant="text"
+          tone="alt"
           onPress={shuffleRandom}
           disabled={setMeal.isPending}
           icon="shuffle"
           iconSize={20}
           label={t('selectRecipe.random.shuffle')}
-          textColor={colors.text.inverse}
-          color={colors.glass.card}
           style={{
             flex: 1,
             justifyContent: 'center',
             paddingVertical: spacing.md,
             borderRadius: borderRadius.sm,
-            ...shadows.sm,
           }}
         />
       </View>
@@ -1009,11 +1005,10 @@ const CopyContent = ({
       >
         <Button
           variant="icon"
+          tone="alt"
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
           icon="chevron-back"
           iconSize={20}
-          textColor={colors.card.textPrimary}
-          color={colors.card.bg}
           style={{ ...circleStyle(iconContainer.xs) }}
         />
         <View
@@ -1045,11 +1040,10 @@ const CopyContent = ({
         </View>
         <Button
           variant="icon"
+          tone="alt"
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
           icon="chevron-forward"
           iconSize={20}
-          textColor={colors.card.textPrimary}
-          color={colors.card.bg}
           style={{ ...circleStyle(iconContainer.xs) }}
         />
       </View>
@@ -1125,14 +1119,12 @@ const CopyContent = ({
       {/* Clear meal button */}
       <Button
         variant="text"
-        tone="destructive"
+        tone="warning"
         onPress={handleRemoveMeal}
         disabled={removeMeal.isPending}
         icon="trash-outline"
         iconSize={18}
         label={t('selectRecipe.clearMeal')}
-        textColor={colors.content.tertiary}
-        color={colors.surface.hover}
         style={{
           justifyContent: 'center',
           paddingVertical: spacing.md,

@@ -41,11 +41,11 @@ export const ScreenHeader = ({
         >
           <Button
             variant="text"
+            tone="alt"
             onPress={onBack}
             icon="chevron-back"
             iconSize={24}
             label={t('common.back')}
-            textColor={colors.text.primary}
             style={{
               padding: spacing.sm,
               marginLeft: -spacing.sm,
@@ -57,7 +57,6 @@ export const ScreenHeader = ({
               onPress={onSave}
               isPending={isSaving}
               label={t('common.save')}
-              color={colors.accent}
               style={{
                 boxShadow: `0px 2px 4px 0px ${colors.accent}4D`,
               }}

@@ -84,7 +84,6 @@ const EmptyState = ({
           variant="primary"
           label={action.label}
           onPress={action.onPress}
-          color={colors.primary}
           style={{
             marginTop: spacing['2xl'],
             paddingHorizontal: spacing['2xl'],

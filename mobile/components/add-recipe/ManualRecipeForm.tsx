@@ -3,7 +3,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   TextInput,
@@ -220,7 +219,10 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                   }}
                   resizeMode="cover"
                 />
-                <Pressable
+                <Button
+                  variant="icon"
+                  tone="cancel"
+                  icon="close"
                   onPress={() => {
                     setSelectedImage(null);
                     setImageUrl('');
@@ -229,45 +231,22 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                     position: 'absolute',
                     top: spacing.sm,
                     right: spacing.sm,
-                    backgroundColor: colors.overlay.strong,
-                    borderRadius: borderRadius.full,
-                    padding: spacing.xs,
                   }}
-                >
-                  <Ionicons name="close" size={20} color={colors.white} />
-                </Pressable>
+                />
               </View>
             )}
 
-            <Pressable
+            <Button
+              variant="text"
+              icon="camera"
+              label={
+                selectedImage || imageUrl
+                  ? t('recipeDetail.changeImage')
+                  : t('addRecipe.addImage')
+              }
               onPress={handlePickImage}
               disabled={isPending}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: colors.glass.card,
-                borderRadius: borderRadius.md,
-                paddingVertical: spacing.md,
-                paddingHorizontal: spacing.lg,
-                opacity: pressed ? 0.8 : 1,
-                ...shadows.sm,
-              })}
-            >
-              <Ionicons name="camera" size={20} color={colors.text.inverse} />
-              <Text
-                style={{
-                  marginLeft: spacing.sm,
-                  color: colors.text.inverse,
-                  fontSize: fontSize.md,
-                  fontWeight: fontWeight.medium,
-                }}
-              >
-                {selectedImage || imageUrl
-                  ? t('recipeDetail.changeImage')
-                  : t('addRecipe.addImage')}
-              </Text>
-            </Pressable>
+            />
           </View>
 
           {/* Create button */}
@@ -279,7 +258,6 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
             icon="checkmark-circle-outline"
             label={t('addRecipe.createButton')}
             loadingLabel={t('addRecipe.creating')}
-            color={colors.primary}
           />
         </ScrollView>
       </GradientBackground>

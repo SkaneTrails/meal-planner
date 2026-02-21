@@ -5,7 +5,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import type React from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { AnimatedPressable } from '@/components';
+import { AnimatedPressable, Button } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { dotSize, fontSize, spacing, useTheme } from '@/lib/theme';
@@ -68,29 +68,23 @@ export const SearchBar = ({
           onBlur={onBlur}
         />
         {searchQuery !== '' && (
-          <Pressable
+          <Button
+            variant="icon"
+            tone="cancel"
+            icon="close-circle"
+            size="sm"
             onPress={onClear ?? (() => onSearchChange(''))}
-            style={{ padding: spacing.xs }}
-          >
-            <Ionicons
-              name="close-circle"
-              size={18}
-              color={colors.searchBar.clearIcon}
-            />
-          </Pressable>
+          />
         )}
         {isSearchFocused && onClear && (
-          <Pressable onPress={onClear} style={{ marginLeft: spacing.sm }}>
-            <Text
-              style={{
-                fontSize: fontSize.xl,
-                color: colors.searchBar.cancelText,
-                fontFamily: fonts.bodyMedium,
-              }}
-            >
-              {t('common.cancel')}
-            </Text>
-          </Pressable>
+          <Button
+            variant="text"
+            tone="cancel"
+            label={t('common.cancel')}
+            size="lg"
+            onPress={onClear}
+            style={{ marginLeft: spacing.sm }}
+          />
         )}
       </View>
     </View>

@@ -62,7 +62,7 @@ export const EmptyMealSlot = ({
       >
         <Button
           variant="icon"
-          tone="subtle"
+          tone="alt"
           icon="book-outline"
           label="Book"
           iconSize={17}
@@ -71,7 +71,7 @@ export const EmptyMealSlot = ({
         />
         <Button
           variant="icon"
-          tone="subtle"
+          tone="alt"
           icon="dice-outline"
           label="Random"
           iconSize={17}
@@ -80,7 +80,7 @@ export const EmptyMealSlot = ({
         />
         <Button
           variant="icon"
-          tone="subtle"
+          tone="alt"
           icon="copy-outline"
           label="Copy"
           iconSize={17}
@@ -89,7 +89,7 @@ export const EmptyMealSlot = ({
         />
         <Button
           variant="icon"
-          tone="subtle"
+          tone="alt"
           icon="create-outline"
           label="Quick"
           iconSize={17}

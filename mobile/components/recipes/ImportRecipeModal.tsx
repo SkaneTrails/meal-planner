@@ -214,14 +214,14 @@ export const ImportRecipeModal = ({
               editable={!isPending}
             />
             {url !== '' && !isPending && (
-              <Pressable onPress={() => setUrl('')}>
-                <Ionicons
-                  name="close-circle"
-                  size={20}
-                  color={colors.content.secondary}
-                  style={{ marginRight: spacing.sm }}
-                />
-              </Pressable>
+              <Button
+                variant="icon"
+                tone="cancel"
+                icon="close-circle"
+                size="sm"
+                onPress={() => setUrl('')}
+                style={{ marginRight: spacing.sm }}
+              />
             )}
           </View>
         </View>
@@ -358,7 +358,6 @@ export const ImportRecipeModal = ({
                 ? t('addRecipe.importingEnhancing')
                 : t('addRecipe.importing')
             }
-            color={colors.content.body}
           />
         </View>
 

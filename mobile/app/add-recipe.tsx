@@ -165,13 +165,14 @@ export default function AddRecipeScreen() {
                 editable={!isPending}
               />
               {url !== '' && (
-                <Pressable onPress={() => setUrl('')} disabled={isPending}>
-                  <Ionicons
-                    name="close-circle"
-                    size={20}
-                    color={colors.gray[500]}
-                  />
-                </Pressable>
+                <Button
+                  variant="icon"
+                  tone="cancel"
+                  icon="close-circle"
+                  size="sm"
+                  onPress={() => setUrl('')}
+                  disabled={isPending}
+                />
               )}
             </SurfaceCard>
           </FormField>
@@ -289,7 +290,6 @@ export default function AddRecipeScreen() {
                 ? t('addRecipe.importingEnhancing')
                 : t('addRecipe.importing')
             }
-            color={colors.content.body}
           />
 
           {/* Or add manually link */}
@@ -328,6 +328,7 @@ export default function AddRecipeScreen() {
 
           <Button
             variant="text"
+            tone="alt"
             onPress={() =>
               actions.router.push({
                 pathname: '/add-recipe',
@@ -337,12 +338,10 @@ export default function AddRecipeScreen() {
             icon="create-outline"
             iconSize={20}
             label={t('home.addRecipe.manualEntry')}
-            textColor={colors.content.body}
             style={{
               paddingVertical: spacing.lg,
               paddingHorizontal: spacing.lg,
               borderRadius: borderRadius.md,
-              backgroundColor: colors.surface.hover,
               borderWidth: 2,
               borderColor: colors.surface.border,
             }}

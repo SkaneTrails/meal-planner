@@ -79,8 +79,6 @@ export const EnhancementReviewBanner = ({
           icon="checkmark-circle"
           iconSize={18}
           label={t('recipe.approveEnhancement')}
-          color={colors.ai.iconBg}
-          textColor={colors.ai.primary}
           style={{
             flex: 1,
             justifyContent: 'center',
@@ -91,12 +89,12 @@ export const EnhancementReviewBanner = ({
 
         <Button
           variant="text"
+          tone="cancel"
           onPress={onReject}
           disabled={isSubmitting}
           icon="close-circle"
           iconSize={18}
           label={t('recipe.rejectEnhancement')}
-          color={colors.surface.hover}
           style={{
             flex: 1,
             justifyContent: 'center',

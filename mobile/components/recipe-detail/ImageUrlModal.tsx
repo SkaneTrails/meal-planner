@@ -101,9 +101,9 @@ export const ImageUrlModal = ({
           >
             <Button
               variant="text"
+              tone="cancel"
               onPress={onClose}
               label={t('common.cancel')}
-              textColor={colors.gray[500]}
             />
             <Button
               variant="primary"
@@ -114,7 +114,6 @@ export const ImageUrlModal = ({
                 onClose();
               }}
               label={t('common.save')}
-              color={colors.primary}
             />
           </View>
         </View>

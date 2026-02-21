@@ -31,6 +31,13 @@ const lightTheme = () =>
       destructive: { bg: '#FEE', text: '#D00' },
       ai: { bg: '#F0F', primary: '#A0A' },
       surface: { hover: '#F5F5F5', pressed: '#EBEBEB' },
+      tones: {
+        default: { bg: '#D97A45', fg: '#FFFFFF', pressed: '#C06B38' },
+        alt: { bg: 'rgba(93, 78, 64, 0.08)', fg: '#5D4E40', pressed: 'rgba(93, 78, 64, 0.15)' },
+        cancel: { bg: 'rgba(93, 78, 64, 0.06)', fg: 'rgba(93, 78, 64, 0.6)', pressed: 'rgba(93, 78, 64, 0.12)' },
+        warning: { bg: 'rgba(180, 80, 70, 0.12)', fg: '#B45046', pressed: 'rgba(180, 80, 70, 0.22)' },
+        ai: { bg: 'rgba(217, 122, 69, 0.1)', fg: '#D97A45', pressed: 'rgba(217, 122, 69, 0.2)' },
+      },
     },
     fonts: {
       body: 'sans-serif',
@@ -254,8 +261,8 @@ describe('Button — tones', () => {
     useThemeSpy.mockReturnValue(lightTheme());
   });
 
-  it('renders destructive tone without crashing', () => {
-    render(<Button tone="destructive" label="Delete" onPress={() => {}} />);
+  it('renders warning tone without crashing', () => {
+    render(<Button tone="warning" label="Delete" onPress={() => {}} />);
     expect(screen.getByText('Delete')).toBeTruthy();
   });
 
@@ -264,8 +271,13 @@ describe('Button — tones', () => {
     expect(screen.getByText('Enhance')).toBeTruthy();
   });
 
-  it('renders subtle tone without crashing', () => {
-    render(<Button tone="subtle" label="More" onPress={() => {}} />);
+  it('renders cancel tone without crashing', () => {
+    render(<Button tone="cancel" label="Cancel" onPress={() => {}} />);
+    expect(screen.getByText('Cancel')).toBeTruthy();
+  });
+
+  it('renders alt tone without crashing', () => {
+    render(<Button tone="alt" label="More" onPress={() => {}} />);
     expect(screen.getByText('More')).toBeTruthy();
   });
 });

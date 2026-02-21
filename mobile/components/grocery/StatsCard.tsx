@@ -52,7 +52,7 @@ const ActionButtons = ({
       {totalItems > 0 && (
         <Button
           variant="icon"
-          tone="subtle"
+          tone="alt"
           icon={showClearMenu ? 'close' : 'create-outline'}
           iconSize={iconSize.md}
           onPress={onToggleClearMenu}

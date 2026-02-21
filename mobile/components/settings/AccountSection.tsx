@@ -73,7 +73,7 @@ export const AccountSection = ({
 
       <Button
         variant="text"
-        tone="destructive"
+        tone="warning"
         icon="log-out-outline"
         label={t('settings.signOut')}
         onPress={onSignOut}

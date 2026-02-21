@@ -1,13 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { BottomSheetModal, ChipPicker } from '@/components';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { BottomSheetModal, Button, ChipPicker } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type {
@@ -107,48 +101,20 @@ export const EditRecipeModal = ({
       title={t('recipe.editRecipe')}
       headerRight={
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-          <Pressable
+          <Button
+            variant="text"
+            tone="cancel"
+            label={t('common.cancel')}
             onPress={onClose}
-            style={{
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: fontSize.xl,
-                fontFamily: fonts.body,
-                color: colors.gray[500],
-              }}
-            >
-              {t('common.cancel')}
-            </Text>
-          </Pressable>
-          <Pressable
+            size="lg"
+          />
+          <Button
+            variant="primary"
+            label={t('common.save')}
             onPress={handleSave}
-            disabled={isSavingEdit}
-            style={({ pressed }) => ({
-              backgroundColor: pressed ? colors.primaryDark : colors.primary,
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm,
-              borderRadius: borderRadius.sm,
-              opacity: isSavingEdit ? 0.6 : 1,
-            })}
-          >
-            {isSavingEdit ? (
-              <ActivityIndicator size="small" color={colors.white} />
-            ) : (
-              <Text
-                style={{
-                  fontSize: fontSize.xl,
-                  fontFamily: fonts.bodySemibold,
-                  color: colors.white,
-                }}
-              >
-                {t('common.save')}
-              </Text>
-            )}
-          </Pressable>
+            isPending={isSavingEdit}
+            size="sm"
+          />
         </View>
       }
     >
@@ -403,35 +369,14 @@ export const EditRecipeModal = ({
           borderTopColor: colors.bgDark,
         }}
       >
-        <Pressable
+        <Button
+          variant="text"
+          tone="warning"
+          icon="trash-outline"
+          label={t('recipe.deleteRecipe')}
           onPress={onDelete}
-          style={({ pressed }) => ({
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: pressed ? colors.errorBg : 'transparent',
-            paddingVertical: spacing.md,
-            borderRadius: borderRadius.md,
-            borderWidth: 1,
-            borderColor: colors.error,
-          })}
-        >
-          <Ionicons
-            name="trash-outline"
-            size={20}
-            color={colors.error}
-            style={{ marginRight: spacing.sm }}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodySemibold,
-              color: colors.error,
-            }}
-          >
-            {t('recipe.deleteRecipe')}
-          </Text>
-        </Pressable>
+          style={{ paddingVertical: spacing.md, justifyContent: 'center' }}
+        />
       </View>
 
       <View style={{ height: spacing['4xl'] }} />

@@ -86,7 +86,6 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
         variant="primary"
         onPress={onGoBack}
         label={t('common.goBack')}
-        color={colors.button.primaryActive}
         style={{
           marginTop: spacing.xl,
         }}

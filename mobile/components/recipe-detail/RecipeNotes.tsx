@@ -3,16 +3,9 @@
  * Displays existing notes and lets authenticated users add/delete notes.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import { Section } from '@/components';
+import { ActivityIndicator, Text, TextInput, View } from 'react-native';
+import { Button, Section } from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
@@ -150,35 +143,15 @@ export const RecipeNotes = ({
             maxHeight: 100,
           }}
         />
-        <Pressable
+        <Button
+          variant="text"
+          tone="alt"
+          label={t('recipe.addNote')}
           onPress={handleAdd}
           disabled={isDisabled}
-          style={{
-            marginLeft: spacing.sm,
-            paddingHorizontal: spacing.md,
-            paddingVertical: spacing.sm,
-            borderWidth: 1,
-            borderColor: colors.primary,
-            borderRadius: borderRadius.md,
-            minHeight: 42,
-            justifyContent: 'center',
-            opacity: isDisabled ? 0.4 : 1,
-          }}
-        >
-          {createNote.isPending ? (
-            <ActivityIndicator size="small" color={colors.primary} />
-          ) : (
-            <Text
-              style={{
-                color: colors.primary,
-                fontFamily: fonts.bodySemibold,
-                fontSize: fontSize.lg,
-              }}
-            >
-              {t('recipe.addNote')}
-            </Text>
-          )}
-        </Pressable>
+          isPending={createNote.isPending}
+          style={{ marginLeft: spacing.sm, minHeight: 42 }}
+        />
       </View>
 
       {/* Notes list */}
@@ -240,17 +213,14 @@ export const RecipeNotes = ({
             >
               {formatDate(note.created_at)}
             </Text>
-            <Pressable
+            <Button
+              variant="icon"
+              tone="warning"
+              icon="trash-outline"
+              size="sm"
               onPress={() => handleDelete(note.id)}
               hitSlop={8}
-              style={{ padding: spacing.xs }}
-            >
-              <Ionicons
-                name="trash-outline"
-                size={16}
-                color={colors.content.placeholder}
-              />
-            </Pressable>
+            />
           </View>
         </View>
       ))}
