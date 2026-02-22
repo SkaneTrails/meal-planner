@@ -127,38 +127,46 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'chip-group' }, children);
   },
-  InlineAddInput: ({ value, onChangeText, onSubmit, placeholder }: any) => {
+  InlineAddInput: ({ value, onChangeText, onSubmit, placeholder, disabled }: any) => {
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'inline-add-input' },
-      createElement('input', { placeholder, value, onChange: (e: any) => onChangeText(e.target.value) }),
-      createElement('button', { onClick: onSubmit, disabled: !value?.trim() }, 'Add'),
+      createElement('input', { placeholder, value, disabled, onChange: (e: any) => onChangeText(e.target.value) }),
+      createElement('button', { onClick: onSubmit, disabled: disabled || !value?.trim() }, 'Add'),
     );
   },
   ItemChipList: ({ heading, items, onRemove, disabled }: any) => {
     const { createElement } = require('react');
+    const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
+    const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
     return createElement('div', { 'data-testid': 'item-chip-list' },
       heading && createElement('span', null, heading),
-      items?.map((item: string) =>
-        createElement('div', { key: item, 'data-testid': `item-chip-${item}` },
-          createElement('span', null, item),
-          !disabled && onRemove && createElement('button', { onClick: () => onRemove(item), 'data-testid': `remove-${item}` }, '×'),
-        ),
-      ),
+      items?.map((item: any) => {
+        const key = getKey(item);
+        const label = getLabel(item);
+        return createElement('div', { key, 'data-testid': `item-chip-${key}` },
+          createElement('span', null, label),
+          !disabled && onRemove && createElement('button', { onClick: () => onRemove(item), 'data-testid': `remove-${key}` }, '×'),
+        );
+      }),
     );
   },
   SuggestionChipList: ({ heading, items, groups, onAdd, disabled }: any) => {
     const { createElement } = require('react');
+    const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
+    const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
     const allItems = items ?? groups?.flatMap((g: any) => g.items) ?? [];
     return createElement('div', { 'data-testid': 'suggestion-chip-list' },
       heading && createElement('span', null, heading),
-      allItems.map((item: string) =>
-        createElement('button', {
-          key: item,
+      allItems.map((item: any) => {
+        const key = getKey(item);
+        const label = getLabel(item);
+        return createElement('button', {
+          key,
           onClick: () => !disabled && onAdd(item),
           disabled,
-          'data-testid': `suggestion-${item}`,
-        }, item),
-      ),
+          'data-testid': `suggestion-${key}`,
+        }, label);
+      }),
     );
   },
   FilterChip: ({ label, selected, onPress }: any) => {
