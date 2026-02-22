@@ -98,7 +98,6 @@ export default function RecipeDetailScreen() {
   }, [settings.includeBreakfast]);
 
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
-  const [showAiChanges, setShowAiChanges] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
 
   useEffect(() => {
@@ -142,7 +141,6 @@ export default function RecipeDetailScreen() {
     recipeId: id,
     totalTime,
     completedSteps,
-    showAiChanges,
     showOriginal,
     isOwned,
     canEdit,
@@ -155,7 +153,6 @@ export default function RecipeDetailScreen() {
     isReviewingEnhancement,
     t,
     onToggleStep: toggleStep,
-    onToggleAiChanges: () => setShowAiChanges(!showAiChanges),
     onToggleOriginal: () => {
       hapticSelection();
       setShowOriginal(!showOriginal);

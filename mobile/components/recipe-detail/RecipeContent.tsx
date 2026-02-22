@@ -22,7 +22,6 @@ interface RecipeContentProps {
   recipeId: string;
   totalTime: number | null;
   completedSteps: Set<number>;
-  showAiChanges: boolean;
   showOriginal: boolean;
   isOwned: boolean | undefined;
   canEdit: boolean;
@@ -35,7 +34,6 @@ interface RecipeContentProps {
   isReviewingEnhancement: boolean;
   t: TFunction;
   onToggleStep: (index: number) => void;
-  onToggleAiChanges: () => void;
   onToggleOriginal: () => void;
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
@@ -57,7 +55,6 @@ export const RecipeContent = ({
   recipeId,
   totalTime,
   completedSteps,
-  showAiChanges,
   showOriginal,
   isOwned,
   canEdit,
@@ -70,7 +67,6 @@ export const RecipeContent = ({
   isReviewingEnhancement,
   t,
   onToggleStep,
-  onToggleAiChanges,
   onToggleOriginal,
   onOpenEditModal,
   onShowPlanModal,
@@ -266,9 +262,7 @@ export const RecipeContent = ({
           <RecipeEnhancedInfo
             recipe={recipe}
             showOriginal={showOriginal}
-            showAiChanges={showAiChanges}
             t={t}
-            onToggleAiChanges={onToggleAiChanges}
             section="tips"
             collapsible
             expanded={expanded.tips}
@@ -290,9 +284,7 @@ export const RecipeContent = ({
           <RecipeEnhancedInfo
             recipe={recipe}
             showOriginal={showOriginal}
-            showAiChanges={showAiChanges}
             t={t}
-            onToggleAiChanges={onToggleAiChanges}
             section="changes"
             collapsible
             expanded={expanded.aiChanges}
