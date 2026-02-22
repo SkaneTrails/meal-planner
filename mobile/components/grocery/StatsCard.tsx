@@ -34,6 +34,7 @@ const ActionButtons = ({
         iconSize={iconSize.md}
         onPress={onToggleAddItem}
         label={showAddItem ? 'Close' : 'Add'}
+        tone="ai"
         hoverScale={1.08}
         pressScale={0.95}
       />

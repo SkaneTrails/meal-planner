@@ -323,8 +323,9 @@ export const ImportRecipeModal = ({
             }
           />
         </View>
-        {/* Divider */}\n <Divider label={t('common.or')} />
-        \n\n {/* Manual entry button */}
+        {/* Divider */}
+        <Divider label={t('common.or')} />
+        {/* Manual entry button */}
         <View style={{ marginBottom: spacing.lg }}>
           <Button
             variant="primary"
