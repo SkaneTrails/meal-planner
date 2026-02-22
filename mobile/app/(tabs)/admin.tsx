@@ -141,7 +141,7 @@ export default function AdminScreen() {
 
 const AdminHeader = ({ onBack }: { onBack: () => void }) => {
   const { t } = useTranslation();
-  const { colors, shadows } = useTheme();
+  const { shadows } = useTheme();
 
   return (
     <ScreenHeaderBar>

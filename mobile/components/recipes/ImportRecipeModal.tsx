@@ -10,8 +10,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button, IconCircle, Toggle } from '@/components';
+import { Pressable, Text, View } from 'react-native';
+import {
+  BottomSheetModal,
+  Button,
+  Divider,
+  IconCircle,
+  Toggle,
+  UrlInputBar,
+} from '@/components';
 import { ChipPicker } from '@/components/ChipPicker';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { EnhancingOverlay } from '@/components/EnhancingOverlay';
@@ -178,54 +185,17 @@ export const ImportRecipeModal = ({
       >
         {/* URL input */}
         <View style={{ marginBottom: spacing.lg }}>
-          <View
-            style={{
-              backgroundColor: colors.input.bg,
-              borderRadius: borderRadius.md,
-              padding: spacing.xs,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <Ionicons
-              name="link-outline"
-              size={18}
-              color={colors.content.secondary}
-              style={{ marginLeft: spacing.md }}
-            />
-            <TextInput
-              style={{
-                flex: 1,
-                paddingHorizontal: spacing['sm-md'],
-                paddingVertical: spacing.md,
-                fontSize: fontSize.md,
-                fontFamily: fonts.body,
-                color: colors.input.text,
-              }}
-              placeholder={t('home.addRecipe.placeholder')}
-              placeholderTextColor={colors.input.placeholder}
-              value={url}
-              onChangeText={setUrl}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="url"
-              onSubmitEditing={handleImport}
-              returnKeyType="go"
-              editable={!isPending}
-            />
-            {url !== '' && !isPending && (
-              <Button
-                variant="icon"
-                tone="cancel"
-                icon="close-circle"
-                size="sm"
-                onPress={() => setUrl('')}
-                style={{ marginRight: spacing.sm }}
-              />
-            )}
-          </View>
+          <UrlInputBar
+            value={url}
+            onChangeText={setUrl}
+            onSubmit={handleImport}
+            placeholder={t('home.addRecipe.placeholder')}
+            submitLabel={t('addRecipe.importButton')}
+            disabled={isPending}
+            showClear={url !== '' && !isPending}
+            onClear={() => setUrl('')}
+          />
         </View>
-
         {/* AI Enhancement toggle */}
         <Pressable
           onPress={
@@ -307,7 +277,6 @@ export const ImportRecipeModal = ({
             />
           </View>
         </Pressable>
-
         {/* Diet & Meal type pickers */}
         <View
           style={{
@@ -338,7 +307,6 @@ export const ImportRecipeModal = ({
             variant="solid"
           />
         </View>
-
         {/* Import button */}
         <View style={{ marginBottom: spacing.lg }}>
           <Button
@@ -355,42 +323,8 @@ export const ImportRecipeModal = ({
             }
           />
         </View>
-
-        {/* Divider */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: spacing.sm,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: colors.surface.dividerSolid,
-            }}
-          />
-          <Text
-            style={{
-              color: colors.content.secondary,
-              fontSize: fontSize.sm,
-              fontFamily: fonts.body,
-              marginHorizontal: spacing.md,
-            }}
-          >
-            {t('common.or')}
-          </Text>
-          <View
-            style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: colors.surface.dividerSolid,
-            }}
-          />
-        </View>
-
-        {/* Manual entry button */}
+        {/* Divider */}\n <Divider label={t('common.or')} />
+        \n\n {/* Manual entry button */}
         <View style={{ marginBottom: spacing.lg }}>
           <Button
             variant="primary"

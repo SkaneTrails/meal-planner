@@ -10,7 +10,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button, FormField } from '@/components';
+import {
+  BottomSheetModal,
+  Button,
+  FormField,
+  NumericField,
+} from '@/components';
 import { showNotification } from '@/lib/alert';
 import { api } from '@/lib/api';
 import { useCreateRecipe, useImagePicker } from '@/lib/hooks';
@@ -26,7 +31,7 @@ export const ManualRecipeModal = ({
   visible,
   onClose,
 }: ManualRecipeModalProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, styles } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -137,15 +142,10 @@ export const ManualRecipeModal = ({
   };
 
   const inputStyle = {
-    backgroundColor: colors.input.bg,
-    borderRadius: borderRadius.md,
+    ...styles.inputStyle,
     borderWidth: 1,
     borderColor: colors.input.border,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: fontSize.lg,
     fontFamily: fonts.body,
-    color: colors.input.text,
   };
 
   return (
@@ -300,47 +300,5 @@ export const ManualRecipeModal = ({
         />
       </View>
     </BottomSheetModal>
-  );
-};
-
-interface NumericFieldProps {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  disabled: boolean;
-}
-
-const NumericField = ({
-  label,
-  placeholder,
-  value,
-  onChangeText,
-  disabled,
-}: NumericFieldProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
-
-  return (
-    <FormField label={label} compact>
-      <TextInput
-        style={{
-          backgroundColor: colors.input.bg,
-          borderRadius: borderRadius.md,
-          borderWidth: 1,
-          borderColor: colors.input.border,
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          fontSize: fontSize.md,
-          fontFamily: fonts.body,
-          color: colors.input.text,
-        }}
-        placeholder={placeholder}
-        placeholderTextColor={colors.input.placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType="numeric"
-        editable={!disabled}
-      />
-    </FormField>
   );
 };

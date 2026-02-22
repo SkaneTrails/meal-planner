@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Button } from '@/components';
+import { Button, SectionLabel } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface TagEditorProps {
   editTags: string;
@@ -37,18 +37,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
 
   return (
     <View style={{ marginBottom: spacing.xl }}>
-      <Text
-        style={{
-          fontSize: fontSize.lg,
-          fontFamily: fonts.bodySemibold,
-          color: colors.gray[500],
-          marginBottom: spacing.sm,
-          textTransform: 'uppercase',
-          letterSpacing: letterSpacing.wide,
-        }}
-      >
-        {t('recipe.tags')}
-      </Text>
+      <SectionLabel text={t('recipe.tags')} size="lg" />
 
       <View
         style={{

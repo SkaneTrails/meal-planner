@@ -49,7 +49,7 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
 };
 
 export const AboutSection = () => {
-  const { colors, fonts, styles: themeStyles } = useTheme();
+  const { colors, styles: themeStyles } = useTheme();
   const { t } = useTranslation();
 
   return (

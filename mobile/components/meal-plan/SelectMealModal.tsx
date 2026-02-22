@@ -125,7 +125,13 @@ const QuickContent = ({
   initialText: string;
   onClose: () => void;
 }) => {
-  const { colors, fonts, borderRadius, visibility } = useTheme();
+  const {
+    colors,
+    fonts,
+    borderRadius,
+    visibility,
+    styles: themeStyles,
+  } = useTheme();
   const { t } = useTranslation();
   const setMeal = useSetMeal();
   const removeMeal = useRemoveMeal();
@@ -194,15 +200,11 @@ const QuickContent = ({
 
       <TextInput
         style={{
-          backgroundColor: colors.input.bg,
-          borderRadius: borderRadius.md,
+          ...themeStyles.inputStyle,
           borderWidth: 1,
           borderColor: colors.input.border,
-          paddingHorizontal: spacing.lg,
-          paddingVertical: spacing.lg,
-          fontSize: fontSize.lg,
           fontFamily: fonts.body,
-          color: colors.input.text,
+          paddingVertical: spacing.lg,
           marginBottom: spacing.lg,
         }}
         placeholder={t('selectRecipe.quickPlaceholder')}

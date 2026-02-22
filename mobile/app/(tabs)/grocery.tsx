@@ -18,7 +18,7 @@ import {
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
-import { layout, spacing } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
 
 export default function GroceryScreen() {
   const { t } = useTranslation();

@@ -8,7 +8,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Button, FormField, GradientBackground } from '@/components';
+import {
+  Button,
+  FormField,
+  GradientBackground,
+  NumericField,
+} from '@/components';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   fontSize,
@@ -27,7 +32,7 @@ interface ManualRecipeFormProps {
 }
 
 export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius, shadows, styles: themeStyles } = useTheme();
   const {
     t,
     isPending,
@@ -52,12 +57,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
   } = actions;
 
   const inputStyle = {
-    backgroundColor: colors.input.bg,
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: fontSize.lg,
-    color: colors.input.text,
+    ...themeStyles.inputStyle,
     ...shadows.sm,
   };
 
@@ -262,45 +262,5 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
         </ScrollView>
       </GradientBackground>
     </KeyboardAvoidingView>
-  );
-};
-
-interface NumericFieldProps {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  disabled: boolean;
-}
-
-const NumericField = ({
-  label,
-  placeholder,
-  value,
-  onChangeText,
-  disabled,
-}: NumericFieldProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
-
-  return (
-    <FormField label={label} compact>
-      <TextInput
-        style={{
-          backgroundColor: colors.input.bg,
-          borderRadius: borderRadius.md,
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          fontSize: fontSize.md,
-          color: colors.input.text,
-          ...shadows.sm,
-        }}
-        placeholder={placeholder}
-        placeholderTextColor={colors.input.placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType="numeric"
-        editable={!disabled}
-      />
-    </FormField>
   );
 };

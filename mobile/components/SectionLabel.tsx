@@ -1,29 +1,40 @@
 /**
  * Uppercase sub-section divider label.
  *
- * Used inside collapsible sections to separate groups (e.g., "MEAT DISHES",
- * "DAIRY", equipment categories). Renders as small, semibold, muted uppercase
- * text with bottom spacing.
+ * Two sizes:
+ * - `sm` (default) — small muted labels inside collapsible sections
+ * - `lg` — prominent group headers in edit modals (tags, time & servings, visibility)
  */
 
 import { Text } from 'react-native';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  fontWeight,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 interface SectionLabelProps {
   text: string;
+  size?: 'sm' | 'lg';
 }
 
-export const SectionLabel = ({ text }: SectionLabelProps) => {
-  const { colors } = useTheme();
+export const SectionLabel = ({ text, size = 'sm' }: SectionLabelProps) => {
+  const { colors, fonts } = useTheme();
+
+  const isLg = size === 'lg';
 
   return (
     <Text
       style={{
-        fontSize: fontSize.sm,
-        fontWeight: fontWeight.semibold,
-        color: colors.text.muted,
+        fontSize: isLg ? fontSize.lg : fontSize.sm,
+        fontFamily: isLg ? fonts.bodySemibold : undefined,
+        fontWeight: isLg ? undefined : fontWeight.semibold,
+        color: isLg ? colors.gray[500] : colors.text.muted,
         marginBottom: spacing.sm,
         textTransform: 'uppercase',
+        letterSpacing: isLg ? letterSpacing.wide : undefined,
       }}
     >
       {text}
