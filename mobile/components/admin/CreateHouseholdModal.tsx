@@ -1,7 +1,7 @@
-import { Modal, Text, TextInput, View } from 'react-native';
-import { Button } from '@/components';
+import { TextInput, View } from 'react-native';
+import { BottomSheetModal, Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface CreateHouseholdModalProps {
   visible: boolean;
@@ -20,87 +20,57 @@ export const CreateHouseholdModal = ({
   onClose,
   isPending,
 }: CreateHouseholdModalProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <Modal
+    <BottomSheetModal
       visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={onClose}
-    >
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colors.bgLight,
-          padding: spacing.lg,
-        }}
-      >
+      onClose={onClose}
+      title={t('admin.createHousehold.button')}
+      subtitle={t('admin.createHousehold.nameLabel')}
+      headerRight={
+        <Button
+          variant="text"
+          tone="cancel"
+          onPress={onClose}
+          label={t('common.cancel')}
+          size="lg"
+        />
+      }
+      footer={
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            paddingHorizontal: spacing.xl,
+            paddingBottom: spacing['4xl'],
           }}
         >
-          <Text
-            style={{
-              fontSize: fontSize['2xl'],
-              fontWeight: fontWeight.bold,
-              color: colors.content.heading,
-            }}
-          >
-            {t('admin.createHousehold.button')}
-          </Text>
           <Button
-            variant="icon"
-            tone="cancel"
-            onPress={onClose}
-            icon="close"
-            iconSize={28}
+            variant="primary"
+            onPress={onCreate}
+            disabled={!householdName.trim()}
+            isPending={isPending}
+            label={t('admin.createHousehold.button')}
           />
         </View>
-
-        <View style={{ marginTop: spacing.xl }}>
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontWeight: fontWeight.semibold,
-              color: colors.content.heading,
-              marginBottom: spacing.sm,
-            }}
-          >
-            {t('admin.createHousehold.nameLabel')}
-          </Text>
-          <TextInput
-            value={householdName}
-            onChangeText={onHouseholdNameChange}
-            placeholder={t('admin.createHousehold.namePlaceholder')}
-            placeholderTextColor={colors.input.placeholder}
-            style={{
-              backgroundColor: colors.input.bg,
-              borderRadius: borderRadius.lg,
-              padding: spacing.md,
-              fontSize: fontSize.lg,
-              color: colors.input.text,
-              ...shadows.sm,
-            }}
-            autoFocus
-          />
-        </View>
-
-        <Button
-          variant="primary"
-          onPress={onCreate}
-          disabled={!householdName.trim()}
-          isPending={isPending}
-          label={t('admin.createHousehold.button')}
-          style={{
-            marginTop: spacing.xl,
-          }}
-        />
-      </View>
-    </Modal>
+      }
+    >
+      <TextInput
+        value={householdName}
+        onChangeText={onHouseholdNameChange}
+        placeholder={t('admin.createHousehold.namePlaceholder')}
+        placeholderTextColor={colors.input.placeholder}
+        style={{
+          backgroundColor: colors.input.bg,
+          borderRadius: borderRadius.lg,
+          padding: spacing.md,
+          fontSize: fontSize.lg,
+          fontFamily: fonts.body,
+          color: colors.input.text,
+          ...shadows.sm,
+        }}
+        autoFocus
+      />
+    </BottomSheetModal>
   );
 };
