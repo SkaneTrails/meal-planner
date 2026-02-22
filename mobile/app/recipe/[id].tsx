@@ -229,11 +229,11 @@ export default function RecipeDetailScreen() {
         {chrome === 'flat' ? (
           <View
             style={{
+              ...layout.contentContainer,
               backgroundColor: colors.bgBase,
               flex: 1,
-              width: '100%',
-              minWidth: '100%',
-              padding: spacing.xl,
+              paddingHorizontal: spacing.xl,
+              paddingTop: spacing.xl,
               paddingBottom: layout.tabBar.contentBottomPadding,
             }}
           >
@@ -264,7 +264,9 @@ export default function RecipeDetailScreen() {
             />
             <View
               style={{
-                padding: spacing.xl,
+                ...layout.contentContainer,
+                paddingHorizontal: spacing.xl,
+                paddingTop: spacing.xl,
                 paddingBottom: layout.tabBar.contentBottomPadding,
               }}
             >

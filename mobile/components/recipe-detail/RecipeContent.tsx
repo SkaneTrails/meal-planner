@@ -3,13 +3,7 @@ import { Text, View } from 'react-native';
 import { ContentCard, Section } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
-import {
-  fontSize,
-  layout,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type { EnhancementReviewAction, Recipe } from '@/lib/types';
 import { EnhancementReviewBanner } from './EnhancementReviewBanner';
 import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
@@ -150,7 +144,7 @@ export const RecipeContent = ({
     recipe.changes_made.length > 0;
 
   return (
-    <View style={layout.contentContainer}>
+    <View>
       {/* Title (flat chrome only — full chrome shows title in hero) */}
       {chrome === 'flat' && (
         <Text
