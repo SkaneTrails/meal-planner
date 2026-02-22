@@ -70,9 +70,9 @@ export interface StyleOverrides {
   checkboxBorderWidth: number;
   /** Border width for dashed container outlines (extras section). 0 = no border. */
   dashedBorderWidth: number;
-  /** Day card border widths. */
-  dayCardBorderWidth: number;
-  dayCardBorderWidthToday: number;
+  /** Card border width (normal and highlighted/today). */
+  cardBorderWidth: number;
+  cardHighlightBorderWidth: number;
   /** Segmented control track gap. */
   segmentedControlGap: number;
   /** Segmented control track padding. */

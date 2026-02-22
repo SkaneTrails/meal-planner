@@ -88,7 +88,10 @@ export const EnhancementReviewModal = ({
           </View>
 
           {/* Changes list */}
-          <ScrollView style={styles.changesList}>
+          <ScrollView
+            style={styles.changesList}
+            showsVerticalScrollIndicator={false}
+          >
             {changesMade.length > 0 ? (
               <>
                 <Text

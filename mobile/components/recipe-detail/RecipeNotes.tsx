@@ -22,6 +22,8 @@ interface RecipeNotesProps {
   canCopy: boolean;
   t: TFunction;
   onCopy: () => void;
+  /** When true, renders content without Section wrapper (parent provides it). */
+  embedded?: boolean;
 }
 
 export const RecipeNotes = ({
@@ -30,6 +32,7 @@ export const RecipeNotes = ({
   canCopy,
   t,
   onCopy,
+  embedded = false,
 }: RecipeNotesProps) => {
   const { colors, fonts, borderRadius } = useTheme();
   const [text, setText] = useState('');
@@ -106,14 +109,8 @@ export const RecipeNotes = ({
 
   const isDisabled = !text.trim() || createNote.isPending;
 
-  return (
-    <Section
-      title={t('recipe.notes')}
-      icon="chatbubble-ellipses-outline"
-      size="sm"
-      spacing={0}
-      style={{ marginTop: spacing.xl }}
-    >
+  const content = (
+    <>
       {/* Input row */}
       <View
         style={{
@@ -224,6 +221,20 @@ export const RecipeNotes = ({
           </View>
         </View>
       ))}
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <Section
+      title={t('recipe.notes')}
+      icon="chatbubble-ellipses-outline"
+      size="sm"
+      spacing={0}
+      style={{ marginTop: spacing.xl }}
+    >
+      {content}
     </Section>
   );
 };

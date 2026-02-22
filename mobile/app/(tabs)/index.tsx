@@ -238,7 +238,8 @@ const NextMealCard = ({
   t: TFn;
   onPress: () => void;
 }) => {
-  const { colors, fonts, borderRadius, visibility } = useTheme();
+  const { colors, fonts, borderRadius, overrides, shadows, visibility } =
+    useTheme();
 
   const mealTimeLabel = nextMeal
     ? `${nextMeal.isTomorrow ? t('home.nextUp.tomorrow') : t('home.nextUp.today')} · ${t(`labels.mealTime.${nextMeal.mealType}`)}`
@@ -255,8 +256,9 @@ const NextMealCard = ({
         padding: spacing['md-lg'],
         flexDirection: 'row',
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: overrides.cardBorderWidth,
         borderColor: colors.card.borderColor,
+        ...shadows.card,
       }}
     >
       <Image

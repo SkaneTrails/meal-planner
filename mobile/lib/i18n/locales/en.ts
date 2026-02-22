@@ -173,6 +173,8 @@ const en = {
     stepsDone: '{{completed}}/{{total}} done',
     tips: 'Tips',
     aiImprovements: 'AI Improvements',
+    details: 'Details',
+    moreActions: 'More',
     viewSource: 'View source',
     showOriginal: 'Show original',
     showEnhanced: 'Show enhanced',

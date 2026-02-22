@@ -68,7 +68,6 @@ export default function RecipeDetailScreen() {
     handleClearMeal,
     handleThumbUp,
     handleThumbDown,
-    handleShare,
     handleDelete,
     handleCopyRecipe,
     handleSaveEdit,
@@ -99,7 +98,6 @@ export default function RecipeDetailScreen() {
   }, [settings.includeBreakfast]);
 
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
-  const [showAiChanges, setShowAiChanges] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
 
   useEffect(() => {
@@ -143,7 +141,6 @@ export default function RecipeDetailScreen() {
     recipeId: id,
     totalTime,
     completedSteps,
-    showAiChanges,
     showOriginal,
     isOwned,
     canEdit,
@@ -156,7 +153,6 @@ export default function RecipeDetailScreen() {
     isReviewingEnhancement,
     t,
     onToggleStep: toggleStep,
-    onToggleAiChanges: () => setShowAiChanges(!showAiChanges),
     onToggleOriginal: () => {
       hapticSelection();
       setShowOriginal(!showOriginal);
@@ -164,7 +160,6 @@ export default function RecipeDetailScreen() {
     },
     onOpenEditModal: () => setShowEditModal(true),
     onShowPlanModal: () => setShowPlanModal(true),
-    onShare: handleShare,
     onCopy: handleCopyRecipe,
     onEnhance: handleEnhanceRecipe,
     onReviewEnhancement: handleReviewEnhancement,
@@ -208,6 +203,7 @@ export default function RecipeDetailScreen() {
 
       <Animated.ScrollView
         style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true },
@@ -230,23 +226,15 @@ export default function RecipeDetailScreen() {
         {chrome === 'flat' ? (
           <View
             style={{
+              ...layout.contentContainer,
               backgroundColor: colors.bgBase,
               flex: 1,
-              width: '100%',
-              minWidth: '100%',
+              paddingHorizontal: spacing.xl,
+              paddingTop: spacing.xl,
+              paddingBottom: layout.tabBar.contentBottomPadding,
             }}
           >
-            <View
-              style={[
-                {
-                  padding: spacing.xl,
-                  paddingBottom: layout.tabBar.contentBottomPadding,
-                },
-                layout.contentContainer,
-              ]}
-            >
-              <RecipeContent {...recipeContentProps} />
-            </View>
+            <RecipeContent {...recipeContentProps} />
           </View>
         ) : (
           <MirroredBackground
@@ -266,19 +254,18 @@ export default function RecipeDetailScreen() {
             <View
               style={{
                 ...StyleSheet.absoluteFillObject,
-                backgroundColor: colors.surface.sheetOverlay,
+                backgroundColor: colors.bgBase,
                 borderTopLeftRadius: radii['2xl'],
                 borderTopRightRadius: radii['2xl'],
               }}
             />
             <View
-              style={[
-                {
-                  padding: spacing.xl,
-                  paddingBottom: layout.tabBar.contentBottomPadding,
-                },
-                layout.contentContainer,
-              ]}
+              style={{
+                ...layout.contentContainer,
+                paddingHorizontal: spacing.xl,
+                paddingTop: spacing.xl,
+                paddingBottom: layout.tabBar.contentBottomPadding,
+              }}
             >
               <RecipeContent {...recipeContentProps} />
             </View>
