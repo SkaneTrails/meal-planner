@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Button, IconCircle } from '@/components';
+import { StyleSheet, Text, View } from 'react-native';
+import { BottomSheetModal, Button, IconCircle } from '@/components';
 import {
   fontSize,
   fontWeight,
   iconSize,
-  letterSpacing,
   lineHeight,
   spacing,
   useTheme,
@@ -38,163 +37,83 @@ export const EnhancementReviewModal = ({
   onReview,
   onRequestClose,
 }: EnhancementReviewModalProps) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius } = useTheme();
   return (
-    <Modal
+    <BottomSheetModal
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onRequestClose}
+      onClose={onRequestClose ?? (() => {})}
+      title={headerLabel}
+      subtitle={title}
+      headerRight={
+        <IconCircle size="lg" bg={colors.ai.light}>
+          <Ionicons
+            name="sparkles"
+            size={iconSize.xl}
+            color={colors.ai.primary}
+          />
+        </IconCircle>
+      }
+      footer={
+        <View style={styles.buttonRow}>
+          <Button
+            variant="text"
+            tone="cancel"
+            label={rejectLabel}
+            onPress={() => onReview('reject')}
+            disabled={isReviewPending}
+            style={styles.footerButton}
+          />
+          <Button
+            variant="text"
+            tone="ai"
+            icon="sparkles"
+            label={approveLabel}
+            onPress={() => onReview('approve')}
+            disabled={isReviewPending}
+            isPending={isReviewPending}
+            style={styles.footerButton}
+          />
+        </View>
+      }
     >
-      <View
-        style={[styles.backdrop, { backgroundColor: colors.overlay.backdrop }]}
-      >
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.white,
-              borderRadius: borderRadius.lg,
-              ...shadows.xl,
-            },
-          ]}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <IconCircle
-              size="lg"
-              bg={colors.ai.light}
-              style={{ marginRight: spacing.md }}
+      {changesMade.length > 0 ? (
+        <>
+          <Text style={[styles.changesLabel, { color: colors.text.inverse }]}>
+            {changesLabel}
+          </Text>
+          {changesMade.map((change, index) => (
+            <View
+              key={index}
+              style={[
+                styles.changeItem,
+                {
+                  backgroundColor: colors.successBg,
+                  borderRadius: borderRadius.sm,
+                },
+              ]}
             >
               <Ionicons
-                name="sparkles"
-                size={iconSize.xl}
-                color={colors.ai.primary}
+                name="checkmark-circle"
+                size={iconSize.md}
+                color={colors.success}
+                style={styles.changeIcon}
               />
-            </IconCircle>
-            <View style={styles.headerText}>
-              <Text
-                style={[styles.headerLabel, { color: colors.text.inverse }]}
-              >
-                {headerLabel}
-              </Text>
-              <Text
-                style={[styles.title, { color: colors.gray[600] }]}
-                numberOfLines={1}
-              >
-                {title}
+              <Text style={[styles.changeText, { color: colors.text.inverse }]}>
+                {change}
               </Text>
             </View>
-          </View>
-
-          {/* Changes list */}
-          <ScrollView
-            style={styles.changesList}
-            showsVerticalScrollIndicator={false}
-          >
-            {changesMade.length > 0 ? (
-              <>
-                <Text
-                  style={[styles.changesLabel, { color: colors.text.inverse }]}
-                >
-                  {changesLabel}
-                </Text>
-                {changesMade.map((change, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.changeItem,
-                      {
-                        backgroundColor: colors.successBg,
-                        borderRadius: borderRadius.sm,
-                      },
-                    ]}
-                  >
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={iconSize.md}
-                      color={colors.success}
-                      style={styles.changeIcon}
-                    />
-                    <Text
-                      style={[
-                        styles.changeText,
-                        { color: colors.text.inverse },
-                      ]}
-                    >
-                      {change}
-                    </Text>
-                  </View>
-                ))}
-              </>
-            ) : (
-              <Text style={[styles.noChanges, { color: colors.gray[600] }]}>
-                {noChangesLabel}
-              </Text>
-            )}
-          </ScrollView>
-
-          {/* Buttons */}
-          <View style={styles.buttonRow}>
-            <Button
-              variant="text"
-              tone="cancel"
-              label={rejectLabel}
-              onPress={() => onReview('reject')}
-              disabled={isReviewPending}
-              style={styles.rejectButton}
-            />
-            <Button
-              variant="text"
-              tone="ai"
-              icon="sparkles"
-              label={approveLabel}
-              onPress={() => onReview('approve')}
-              disabled={isReviewPending}
-              isPending={isReviewPending}
-              style={styles.approveButton}
-            />
-          </View>
-        </View>
-      </View>
-    </Modal>
+          ))}
+        </>
+      ) : (
+        <Text style={[styles.noChanges, { color: colors.gray[600] }]}>
+          {noChangesLabel}
+        </Text>
+      )}
+    </BottomSheetModal>
   );
 };
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing['2xl'],
-  },
-  card: {
-    padding: spacing['2xl'],
-    width: '100%',
-    maxWidth: 400,
-    maxHeight: '80%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  headerText: {
-    flex: 1,
-  },
-  headerLabel: {
-    fontSize: fontSize['3xl'],
-    fontWeight: fontWeight.bold,
-    letterSpacing: letterSpacing.normal,
-  },
-  title: {
-    fontSize: fontSize.lg,
-    marginTop: spacing.xs,
-  },
-  changesList: {
-    maxHeight: 300,
-    marginBottom: spacing.xl,
-  },
   changesLabel: {
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
@@ -222,12 +141,10 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     gap: spacing.md,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
   },
-  rejectButton: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  approveButton: {
+  footerButton: {
     flex: 1,
     alignItems: 'center',
   },

@@ -28,10 +28,6 @@ export const AddMemberForm = ({
   return (
     <View
       style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
         backgroundColor: colors.bgLight,
         padding: spacing.lg,
         borderTopLeftRadius: borderRadius.xl,

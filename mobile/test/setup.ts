@@ -100,12 +100,15 @@ vi.mock('@/components', () => ({
   ScreenLayout: ({ children }: any) => children,
   ScreenHeaderBar: ({ children }: any) => children,
   FullScreenLoading: FullScreenLoadingMock,
-  BottomSheetModal: ({ visible, children, title, onClose }: any) => {
+  BottomSheetModal: ({ visible, children, title, subtitle, headerRight, footer, onClose }: any) => {
     if (!visible) return null;
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'bottom-sheet-modal' },
       title && createElement('span', null, title),
+      subtitle && createElement('span', { 'data-testid': 'bottom-sheet-subtitle' }, subtitle),
+      headerRight,
       children,
+      footer,
     );
   },
   Button: ({ label, onPress, icon, disabled, testID, ...props }: any) => {

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import {
+  BottomSheetModal,
   Button,
   Chip,
-  GradientBackground,
   IconButton,
   SurfaceCard,
 } from '@/components';
@@ -92,145 +92,52 @@ export const HouseholdDetailModal = ({
   };
 
   return (
-    <Modal
+    <BottomSheetModal
       visible={true}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={onClose}
+      onClose={onClose}
+      title={household.name}
+      subtitle={t('admin.createdBy', { email: household.created_by })}
+      headerRight={
+        <IconButton
+          onPress={() => setShowAddMember(true)}
+          icon="person-add"
+          iconSize={18}
+          size="md"
+          tone="glass"
+        />
+      }
+      footer={
+        showAddMember ? (
+          <AddMemberForm
+            newMemberEmail={newMemberEmail}
+            onEmailChange={setNewMemberEmail}
+            newMemberRole={newMemberRole}
+            onRoleChange={setNewMemberRole}
+            onSubmit={handleAddMember}
+            onClose={() => setShowAddMember(false)}
+            isPending={addMember.isPending}
+          />
+        ) : undefined
+      }
     >
-      <GradientBackground>
-        <View style={{ flex: 1 }}>
-          <ModalHeader household={household} onClose={onClose} />
-
-          <View style={{ flex: 1, padding: spacing.lg }}>
-            <MembersListHeader onAddMember={() => setShowAddMember(true)} />
-
-            {isLoading ? (
-              <ActivityIndicator size="large" color={colors.primary} />
-            ) : (
-              <FlatList
-                data={members || []}
-                keyExtractor={(item) => item.email}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <MemberCard
-                    member={item}
-                    onRemove={() => handleRemoveMember(item.email)}
-                  />
-                )}
-                ListEmptyComponent={
-                  <View style={{ alignItems: 'center', padding: spacing.xl }}>
-                    <Text style={{ color: colors.text.muted }}>
-                      {t('admin.noMembers')}
-                    </Text>
-                  </View>
-                }
-              />
-            )}
-          </View>
-
-          {showAddMember && (
-            <AddMemberForm
-              newMemberEmail={newMemberEmail}
-              onEmailChange={setNewMemberEmail}
-              newMemberRole={newMemberRole}
-              onRoleChange={setNewMemberRole}
-              onSubmit={handleAddMember}
-              onClose={() => setShowAddMember(false)}
-              isPending={addMember.isPending}
-            />
-          )}
+      {isLoading ? (
+        <ActivityIndicator size="large" color={colors.primary} />
+      ) : (members || []).length === 0 ? (
+        <View style={{ alignItems: 'center', padding: spacing.xl }}>
+          <Text style={{ color: colors.text.muted }}>
+            {t('admin.noMembers')}
+          </Text>
         </View>
-      </GradientBackground>
-    </Modal>
-  );
-};
-
-const ModalHeader = ({
-  household,
-  onClose,
-}: {
-  household: Household;
-  onClose: () => void;
-}) => {
-  const { colors, shadows } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: spacing.lg,
-        paddingTop: spacing.xl,
-        paddingBottom: spacing.md,
-      }}
-    >
-      <IconButton
-        onPress={onClose}
-        icon="chevron-back"
-        iconSize={22}
-        size="md"
-        tone="glass"
-        style={{
-          marginRight: spacing.md,
-          ...shadows.sm,
-        }}
-      />
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: fontSize['2xl'],
-            fontWeight: fontWeight.bold,
-            color: colors.text.primary,
-          }}
-        >
-          {household.name}
-        </Text>
-        <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary }}>
-          {t('admin.createdBy', { email: household.created_by })}
-        </Text>
-      </View>
-    </View>
-  );
-};
-
-const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
-  const { colors, borderRadius } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: spacing.md,
-      }}
-    >
-      <Text
-        style={{
-          fontSize: fontSize.xl,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.heading,
-        }}
-      >
-        {t('admin.members')}
-      </Text>
-      <Button
-        variant="text"
-        onPress={onAddMember}
-        icon="person-add"
-        iconSize={16}
-        label={t('admin.addMemberButton')}
-        tone="primary"
-        style={{
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius.lg,
-        }}
-      />
-    </View>
+      ) : (
+        (members || []).map((member) => (
+          <MemberCard
+            key={member.email}
+            member={member}
+            onRemove={() => handleRemoveMember(member.email)}
+          />
+        ))
+      )}
+    </BottomSheetModal>
   );
 };
 
