@@ -30,6 +30,7 @@ interface RecipeContentProps {
   canEnhance: boolean;
   isEnhancing: boolean;
   aiEnabled: boolean;
+  keepScreenOn: boolean;
   needsEnhancementReview: boolean;
   isReviewingEnhancement: boolean;
   t: TFunction;
@@ -39,6 +40,7 @@ interface RecipeContentProps {
   onShowPlanModal: () => void;
   onCopy: () => void;
   onEnhance: () => void;
+  onToggleKeepScreenOn: () => void;
   onReviewEnhancement: (action: EnhancementReviewAction) => void;
 }
 
@@ -63,6 +65,7 @@ export const RecipeContent = ({
   canEnhance,
   isEnhancing,
   aiEnabled,
+  keepScreenOn,
   needsEnhancementReview,
   isReviewingEnhancement,
   t,
@@ -72,6 +75,7 @@ export const RecipeContent = ({
   onShowPlanModal,
   onCopy,
   onEnhance,
+  onToggleKeepScreenOn,
   onReviewEnhancement,
 }: RecipeContentProps) => {
   const hasOriginal = Boolean(recipe.enhanced && recipe.original);
@@ -178,11 +182,13 @@ export const RecipeContent = ({
             isEnhancing={isEnhancing}
             isOwned={isOwned}
             aiEnabled={aiEnabled}
+            keepScreenOn={keepScreenOn}
             t={t}
             onOpenEditModal={onOpenEditModal}
             onShowPlanModal={onShowPlanModal}
             onCopy={onCopy}
             onEnhance={onEnhance}
+            onToggleKeepScreenOn={onToggleKeepScreenOn}
           />
 
           <RecipeMetaLabels recipe={recipe} t={t} />

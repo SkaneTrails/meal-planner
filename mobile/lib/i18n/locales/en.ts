@@ -174,6 +174,8 @@ const en = {
     tips: 'Tips',
     aiImprovements: 'AI Improvements',
     details: 'Details',
+    keepScreenOn: 'Screen on',
+    screenOnActive: 'Screen on',
     moreActions: 'More',
     viewSource: 'View source',
     showOriginal: 'Show original',

@@ -169,6 +169,8 @@ const sv: Translations = {
     tips: 'Tips',
     aiImprovements: 'AI-förbättringar',
     details: 'Detaljer',
+    keepScreenOn: 'Skärm på',
+    screenOnActive: 'Skärm på',
     moreActions: 'Mer',
     viewSource: 'Visa källa',
     showOriginal: 'Visa original',
