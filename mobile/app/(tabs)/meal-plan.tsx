@@ -9,13 +9,13 @@ import {
   View,
 } from 'react-native';
 import {
+  ContentCard,
   IconButton,
   IconCircle,
   ScreenHeader,
   ScreenLayout,
   TerminalDivider,
   TerminalFabBar,
-  TerminalFrame,
 } from '@/components';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
@@ -39,7 +39,7 @@ import {
 } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
-  const { colors, borderRadius, shadows, overrides, chrome } = useTheme();
+  const { colors, borderRadius, shadows, chrome } = useTheme();
   const router = useRouter();
   const {
     t,
@@ -192,89 +192,77 @@ export default function MealPlanScreen() {
                   : undefined;
 
               return (
-                <TerminalFrame
+                <ContentCard
                   key={date.toISOString()}
                   label={frameLabel}
                   rightSegments={rightSegments}
-                  variant={isToday ? 'double' : 'single'}
+                  frameVariant={isToday ? 'double' : 'single'}
                   collapsed={isCollapsed}
+                  highlighted={isToday}
+                  onLayout={
+                    isToday
+                      ? (e) => {
+                          todayY.current = e.nativeEvent.layout.y;
+                        }
+                      : undefined
+                  }
+                  cardStyle={{
+                    borderRadius: borderRadius.lg,
+                    padding: spacing['md-lg'],
+                  }}
                   style={{
                     marginBottom: isCollapsed ? spacing.sm : spacing.lg,
                     opacity: isPast ? 0.6 : 1,
                   }}
                 >
-                  <View
-                    onLayout={
-                      isToday
-                        ? (e) => {
-                            todayY.current = e.nativeEvent.layout.y;
-                          }
-                        : undefined
+                  <DayHeader
+                    date={date}
+                    isToday={isToday}
+                    language={language}
+                    t={t}
+                    note={note}
+                    isEditing={isEditing}
+                    noteText={noteText}
+                    noteSuggestions={NOTE_SUGGESTIONS}
+                    onNoteTextChange={setNoteText}
+                    onStartEdit={() => handleStartEditNote(date)}
+                    onSaveNote={handleSaveNote}
+                    onCancelEdit={handleCancelEditNote}
+                    onToggleTag={handleAddTag}
+                    onCollapse={
+                      isPast ? () => togglePastDay(dateStr) : undefined
                     }
-                    style={{
-                      backgroundColor: isToday
-                        ? colors.dayCard.bgToday
-                        : colors.dayCard.bg,
-                      borderRadius: borderRadius.lg,
-                      padding: spacing['md-lg'],
-                      borderWidth: isToday
-                        ? overrides.dayCardBorderWidthToday
-                        : overrides.dayCardBorderWidth,
-                      borderColor: isToday
-                        ? colors.ai.primary
-                        : colors.glass.border,
-                      boxShadow: shadows.cardRaised.boxShadow,
-                    }}
-                  >
-                    <DayHeader
-                      date={date}
-                      isToday={isToday}
-                      language={language}
-                      t={t}
-                      note={note}
-                      isEditing={isEditing}
-                      noteText={noteText}
-                      noteSuggestions={NOTE_SUGGESTIONS}
-                      onNoteTextChange={setNoteText}
-                      onStartEdit={() => handleStartEditNote(date)}
-                      onSaveNote={handleSaveNote}
-                      onCancelEdit={handleCancelEditNote}
-                      onToggleTag={handleAddTag}
-                      onCollapse={
-                        isPast ? () => togglePastDay(dateStr) : undefined
-                      }
-                    />
+                  />
 
-                    {MEAL_TYPES.map(({ type, label }) => {
-                      const meal = getMealForSlot(date, type);
-                      if (!meal) {
-                        return (
-                          <EmptyMealSlot
-                            key={`${date.toISOString()}-${type}`}
-                            date={date}
-                            mealType={type}
-                            label={label}
-                            onPress={handleMealPress}
-                          />
-                        );
-                      }
+                  {MEAL_TYPES.map(({ type, label }) => {
+                    const meal = getMealForSlot(date, type);
+                    if (!meal) {
                       return (
-                        <FilledMealSlot
+                        <EmptyMealSlot
                           key={`${date.toISOString()}-${type}`}
                           date={date}
                           mealType={type}
                           label={label}
-                          recipe={meal.recipe}
-                          customText={meal.customText}
-                          onRemove={handleRemoveMeal}
-                          onMealPress={handleMealPress}
-                          onEditCustomText={handleEditCustomText}
-                          onRecipePress={(id) => router.push(`/recipe/${id}`)}
+                          onPress={handleMealPress}
                         />
                       );
-                    })}
-                  </View>
-                </TerminalFrame>
+                    }
+                    return (
+                      <FilledMealSlot
+                        key={`${date.toISOString()}-${type}`}
+                        date={date}
+                        mealType={type}
+                        label={label}
+                        recipe={meal.recipe}
+                        customText={meal.customText}
+                        onRemove={handleRemoveMeal}
+                        onMealPress={handleMealPress}
+                        onEditCustomText={handleEditCustomText}
+                        onRecipePress={(id) => router.push(`/recipe/${id}`)}
+                      />
+                    );
+                  })}
+                </ContentCard>
               );
             })}
 

@@ -2,7 +2,8 @@
  * Theme-aware content container.
  *
  * - **Full chrome** (light/pastel): renders a card with background, rounded
- *   corners, and a subtle shadow. Override the defaults via `cardStyle`.
+ *   corners, border, and shadow — all from theme tokens. Use `highlighted`
+ *   for accent-border variants (e.g. today's meal-plan card).
  * - **Flat chrome** (terminal): renders inside a `TerminalFrame` with
  *   box-drawing borders and optional labels/segments.
  *
@@ -10,7 +11,12 @@
  */
 
 import type React from 'react';
-import { type StyleProp, View, type ViewStyle } from 'react-native';
+import {
+  type LayoutChangeEvent,
+  type StyleProp,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { spacing, useTheme } from '@/lib/theme';
 import type { FrameSegment } from './TerminalFrame';
 import { TerminalFrame } from './TerminalFrame';
@@ -25,10 +31,16 @@ interface ContentCardProps {
   frameVariant?: 'single' | 'double';
   /** Flat chrome: inner padding inside the frame. Default: spacing.md. */
   framePadding?: number;
+  /** Flat chrome: collapse to header-only row. */
+  collapsed?: boolean;
   /** Full chrome: override the default card styling (merged on top of defaults). */
   cardStyle?: StyleProp<ViewStyle>;
   /** When false, light mode renders a bare View (no card bg/shadow). Default: true. */
   card?: boolean;
+  /** Accent border + highlighted background (e.g. today's card). */
+  highlighted?: boolean;
+  /** Layout event forwarded to the outer View. */
+  onLayout?: (event: LayoutChangeEvent) => void;
   /** Outer wrapper style applied in both modes. */
   style?: StyleProp<ViewStyle>;
 }
@@ -39,11 +51,14 @@ export const ContentCard = ({
   rightSegments,
   frameVariant = 'single',
   framePadding,
+  collapsed,
   cardStyle,
   card = true,
+  highlighted = false,
+  onLayout,
   style,
 }: ContentCardProps) => {
-  const { colors, borderRadius, shadows, chrome } = useTheme();
+  const { colors, borderRadius, shadows, overrides, chrome } = useTheme();
 
   if (chrome === 'flat') {
     return (
@@ -52,6 +67,7 @@ export const ContentCard = ({
         rightSegments={rightSegments}
         variant={frameVariant}
         padding={framePadding}
+        collapsed={collapsed}
         style={style}
       >
         {children}
@@ -60,17 +76,30 @@ export const ContentCard = ({
   }
 
   if (!card) {
-    return <View style={style}>{children}</View>;
+    return (
+      <View style={style} onLayout={onLayout}>
+        {children}
+      </View>
+    );
   }
 
   return (
     <View
+      onLayout={onLayout}
       style={[
         {
-          backgroundColor: colors.card.bg,
+          backgroundColor: highlighted
+            ? colors.dayCard.bgToday
+            : colors.card.bg,
           borderRadius: borderRadius.md,
+          borderWidth: highlighted
+            ? overrides.cardHighlightBorderWidth
+            : overrides.cardBorderWidth,
+          borderColor: highlighted
+            ? colors.ai.primary
+            : colors.card.borderColor,
           padding: spacing.md,
-          ...shadows.sm,
+          ...shadows.card,
         },
         cardStyle,
         style,

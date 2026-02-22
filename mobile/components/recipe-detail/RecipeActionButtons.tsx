@@ -14,7 +14,6 @@ interface RecipeActionButtonsProps {
   t: TFunction;
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
-  onShare: () => void;
   onCopy: () => void;
   onEnhance: () => void;
 }
@@ -30,7 +29,6 @@ export const RecipeActionButtons = ({
   t,
   onOpenEditModal,
   onShowPlanModal,
-  onShare,
   onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => {
@@ -70,14 +68,6 @@ export const RecipeActionButtons = ({
         iconSize={20}
         onPress={onShowPlanModal}
         label={t('mealPlan.title')}
-        tone="glassSolid"
-        size="md"
-      />
-      <IconButton
-        icon="share"
-        iconSize={20}
-        onPress={onShare}
-        label={t('recipe.share')}
         tone="glassSolid"
         size="md"
       />

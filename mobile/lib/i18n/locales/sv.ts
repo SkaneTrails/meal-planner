@@ -168,6 +168,8 @@ const sv: Translations = {
     stepsDone: '{{completed}}/{{total}} klara',
     tips: 'Tips',
     aiImprovements: 'AI-förbättringar',
+    details: 'Detaljer',
+    moreActions: 'Mer',
     viewSource: 'Visa källa',
     showOriginal: 'Visa original',
     showEnhanced: 'Visa förbättrad',

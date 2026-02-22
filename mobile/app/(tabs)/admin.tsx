@@ -92,6 +92,7 @@ export default function AdminScreen() {
         <FlatList
           data={households || []}
           keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <HouseholdCard
               household={item}

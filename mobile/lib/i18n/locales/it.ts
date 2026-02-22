@@ -169,6 +169,8 @@ const it: Translations = {
     stepsDone: '{{completed}}/{{total}} completati',
     tips: 'Consigli',
     aiImprovements: 'Miglioramenti AI',
+    details: 'Dettagli',
+    moreActions: 'Altro',
     viewSource: 'Vedi fonte',
     showOriginal: 'Mostra originale',
     showEnhanced: 'Mostra migliorata',

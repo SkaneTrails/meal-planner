@@ -107,6 +107,7 @@ export default function HouseholdSettingsScreen() {
 
           <ScrollView
             style={{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               padding: spacing.lg,
               paddingTop: 0,

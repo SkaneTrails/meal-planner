@@ -55,7 +55,8 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
-  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
+  const { colors, fonts, borderRadius, shadows, overrides, chrome } =
+    useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
@@ -198,10 +199,12 @@ export const RecipeCard = ({
             flexDirection: 'row',
             alignItems: 'center',
             padding: spacing['md-lg'],
-            backgroundColor: colors.glass.heavy,
+            backgroundColor: colors.card.bg,
             borderRadius: borderRadius.lg,
+            borderWidth: overrides.cardBorderWidth,
+            borderColor: colors.card.borderColor,
             transform: [{ scale: scaleAnim }],
-            boxShadow: shadows.cardRaised.boxShadow,
+            ...shadows.card,
           }}
         >
           <Image

@@ -111,6 +111,7 @@ export const HouseholdDetailModal = ({
               <FlatList
                 data={members || []}
                 keyExtractor={(item) => item.email}
+                showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
                   <MemberCard
                     member={item}

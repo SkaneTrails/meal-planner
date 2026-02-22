@@ -1,46 +1,59 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { TerminalFrame } from '@/components';
+import { ContentCard, TerminalFrame } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
-interface TimeStatProps {
-  icon: 'timer' | 'flame' | 'time' | 'people';
+interface TimeStatCardProps {
+  icon: keyof typeof Ionicons.glyphMap;
   label: string;
   value: string;
-  showBorder: boolean;
 }
 
-const TimeStat = ({ icon, label, value, showBorder }: TimeStatProps) => {
-  const { colors, fonts } = useTheme();
+const TimeStatCard = ({ icon, label, value }: TimeStatCardProps) => {
+  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
   return (
     <View
       style={{
         flex: 1,
+        backgroundColor: colors.statsCard.bg,
+        borderRadius: borderRadius.md,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: colors.statsCard.borderColor,
         alignItems: 'center',
-        borderLeftWidth: showBorder ? 1 : 0,
-        borderLeftColor: colors.chip.divider,
+        ...shadows.sm,
       }}
     >
-      <Ionicons name={icon} size={18} color={colors.content.body} />
+      {visibility.showStatIcons && (
+        <Ionicons
+          name={icon}
+          size={18}
+          color={colors.content.secondary}
+          style={{ marginBottom: spacing.sm }}
+        />
+      )}
       <Text
         style={{
-          fontSize: fontSize.sm,
-          color: colors.content.secondary,
-          marginTop: spacing.xs,
-        }}
-      >
-        {label}
-      </Text>
-      <Text
-        style={{
-          fontSize: fontSize.lg,
-          fontFamily: fonts.bodyBold,
+          fontSize: fontSize['3xl'],
+          fontFamily: fonts.bodySemibold,
           color: colors.content.body,
+          letterSpacing: letterSpacing.tight,
         }}
       >
         {value}
+      </Text>
+      <Text
+        style={{
+          fontSize: fontSize.xs,
+          fontFamily: fonts.body,
+          color: colors.content.secondary,
+          letterSpacing: letterSpacing.wide,
+          textTransform: 'uppercase',
+        }}
+      >
+        {label}
       </Text>
     </View>
   );
@@ -69,19 +82,39 @@ export const RecipeTimeServings = ({
   visibilityLabel,
   t,
 }: RecipeTimeServingsProps) => {
-  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
+  const { colors, fonts, visibility, chrome } = useTheme();
   const hasAnyTime = prepTime || cookTime || totalTime;
   if (!hasAnyTime && !servings) return null;
 
-  const stats: { label: string; value: string }[] = [];
+  const stats: {
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+    value: string;
+  }[] = [];
   if (prepTime)
-    stats.push({ label: t('labels.time.prep'), value: `${prepTime}m` });
+    stats.push({
+      icon: 'timer',
+      label: t('labels.time.prep'),
+      value: `${prepTime}m`,
+    });
   if (cookTime)
-    stats.push({ label: t('labels.time.cook'), value: `${cookTime}m` });
+    stats.push({
+      icon: 'flame',
+      label: t('labels.time.cook'),
+      value: `${cookTime}m`,
+    });
   if (totalTime)
-    stats.push({ label: t('labels.time.total'), value: `${totalTime}m` });
+    stats.push({
+      icon: 'time',
+      label: t('labels.time.total'),
+      value: `${totalTime}m`,
+    });
   if (servings)
-    stats.push({ label: t('labels.time.serves'), value: String(servings) });
+    stats.push({
+      icon: 'people',
+      label: t('labels.time.serves'),
+      value: String(servings),
+    });
 
   if (chrome === 'flat') {
     const bottomLabel =
@@ -138,49 +171,32 @@ export const RecipeTimeServings = ({
   }
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginTop: spacing.lg,
-        backgroundColor: colors.glass.solid,
-        borderRadius: borderRadius.md,
-        paddingVertical: spacing.md,
-        paddingHorizontal: spacing.sm,
-        ...shadows.card,
-      }}
-    >
-      {prepTime ? (
-        <TimeStat
-          icon="timer"
-          label={t('labels.time.prep')}
-          value={`${prepTime}m`}
-          showBorder={false}
-        />
-      ) : null}
-      {cookTime ? (
-        <TimeStat
-          icon="flame"
-          label={t('labels.time.cook')}
-          value={`${cookTime}m`}
-          showBorder={Boolean(prepTime)}
-        />
-      ) : null}
-      {totalTime ? (
-        <TimeStat
-          icon="time"
-          label={t('labels.time.total')}
-          value={`${totalTime}m`}
-          showBorder={Boolean(prepTime || cookTime)}
-        />
-      ) : null}
-      {servings ? (
-        <TimeStat
-          icon="people"
-          label={t('labels.time.serves')}
-          value={String(servings)}
-          showBorder={Boolean(hasAnyTime)}
-        />
-      ) : null}
-    </View>
+    <ContentCard card={false} style={{ marginTop: spacing.lg }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: visibility.showStatDividers ? 0 : spacing.sm,
+        }}
+      >
+        {stats.map((stat, i) => (
+          <View key={stat.label} style={{ flex: 1, flexDirection: 'row' }}>
+            <TimeStatCard
+              icon={stat.icon}
+              label={stat.label}
+              value={stat.value}
+            />
+            {visibility.showStatDividers && i < stats.length - 1 && (
+              <View
+                style={{
+                  width: 1,
+                  backgroundColor: colors.primary,
+                  opacity: 0.3,
+                }}
+              />
+            )}
+          </View>
+        ))}
+      </View>
+    </ContentCard>
   );
 };

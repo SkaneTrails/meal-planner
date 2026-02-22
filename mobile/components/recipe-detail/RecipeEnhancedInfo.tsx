@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
-import { IconCircle, Section, TerminalFrame } from '@/components';
+import { Text, View } from 'react-native';
+import { Section } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -11,6 +11,11 @@ interface RecipeEnhancedInfoProps {
   showAiChanges: boolean;
   t: TFunction;
   onToggleAiChanges: () => void;
+  /** Which section to render. Parent decides visibility. */
+  section?: 'tips' | 'changes' | 'all';
+  collapsible?: boolean;
+  expanded?: boolean;
+  onToggle?: () => void;
 }
 
 export const RecipeEnhancedInfo = ({
@@ -19,102 +24,114 @@ export const RecipeEnhancedInfo = ({
   showAiChanges,
   t,
   onToggleAiChanges,
+  section = 'all',
+  collapsible = false,
+  expanded = true,
+  onToggle,
 }: RecipeEnhancedInfoProps) => {
-  const { colors, fonts, typography, borderRadius, shadows, chrome } =
-    useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
-  if (chrome === 'flat') {
+  const showTips =
+    (section === 'tips' || section === 'all') &&
+    recipe.enhanced &&
+    !showOriginal &&
+    recipe.tips;
+
+  const showChanges =
+    (section === 'changes' || section === 'all') &&
+    recipe.enhanced &&
+    !showOriginal &&
+    recipe.changes_made &&
+    recipe.changes_made.length > 0;
+
+  if (!showTips && !showChanges) return null;
+
+  if (section === 'tips' && showTips) {
     return (
-      <>
-        {recipe.enhanced && !showOriginal && recipe.tips && (
-          <View style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}>
-            <TerminalFrame
-              variant="single"
-              label={t('recipe.tips').toUpperCase()}
-            >
-              <View
-                style={{
-                  backgroundColor: colors.mealPlan.slotBg,
-                  padding: spacing.lg,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: fontSize.xl,
-                    fontFamily: fonts.body,
-                    color: colors.content.body,
-                    lineHeight: lineHeight.xl,
-                  }}
-                >
-                  {recipe.tips}
-                </Text>
-              </View>
-            </TerminalFrame>
-          </View>
-        )}
-
-        {recipe.enhanced &&
-          !showOriginal &&
-          recipe.changes_made &&
-          recipe.changes_made.length > 0 && (
-            <View style={{ marginBottom: spacing.xl }}>
-              <TerminalFrame
-                variant="single"
-                label={t('recipe.aiImprovements').toUpperCase()}
-              >
-                <View
-                  style={{
-                    backgroundColor: colors.mealPlan.slotBg,
-                    padding: spacing.lg,
-                  }}
-                >
-                  {recipe.changes_made.map((change, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'flex-start',
-                        marginBottom:
-                          index < (recipe.changes_made?.length ?? 0) - 1
-                            ? spacing.sm
-                            : 0,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: colors.primary,
-                          fontFamily: fonts.body,
-                          marginRight: spacing.sm,
-                          fontSize: fontSize.lg,
-                          lineHeight: lineHeight.md,
-                        }}
-                      >
-                        {'\u2713'}
-                      </Text>
-                      <Text
-                        style={{
-                          flex: 1,
-                          fontSize: fontSize.lg,
-                          fontFamily: fonts.body,
-                          color: colors.content.body,
-                          lineHeight: lineHeight.md,
-                        }}
-                      >
-                        {change}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </TerminalFrame>
-            </View>
-          )}
-      </>
+      <Section
+        title={t('recipe.tips')}
+        icon="bulb-outline"
+        iconColor={colors.ai.primary}
+        iconBg={colors.ai.iconBg}
+        size="sm"
+        spacing={0}
+        collapsible={collapsible}
+        expanded={expanded}
+        onToggle={onToggle}
+      >
+        <View
+          style={{
+            borderLeftWidth: 4,
+            borderLeftColor: colors.ai.primary,
+            borderRadius: borderRadius.sm,
+            paddingLeft: spacing.md,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: fontSize.xl,
+              fontFamily: fonts.body,
+              color: colors.content.body,
+              lineHeight: lineHeight.xl,
+            }}
+          >
+            {recipe.tips}
+          </Text>
+        </View>
+      </Section>
     );
   }
 
+  if (section === 'changes' && showChanges) {
+    return (
+      <Section
+        title={t('recipe.aiImprovements')}
+        icon="sparkles"
+        iconColor={colors.ai.primary}
+        iconBg={colors.ai.iconBg}
+        size="sm"
+        spacing={0}
+        collapsible={collapsible}
+        expanded={expanded}
+        onToggle={onToggle}
+      >
+        {recipe.changes_made?.map((change, index) => (
+          <View
+            key={index}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              marginBottom:
+                index < (recipe.changes_made?.length ?? 0) - 1 ? spacing.sm : 0,
+            }}
+          >
+            <Ionicons
+              name="checkmark-circle"
+              size={18}
+              color={colors.ai.primary}
+              style={{ marginRight: spacing.sm, marginTop: 2 }}
+            />
+            <Text
+              style={{
+                flex: 1,
+                fontSize: fontSize.lg,
+                fontFamily: fonts.body,
+                color: colors.content.body,
+                lineHeight: lineHeight.md,
+              }}
+            >
+              {change}
+            </Text>
+          </View>
+        ))}
+      </Section>
+    );
+  }
+
+  // section === 'all' — legacy rendering for both
   return (
     <>
-      {recipe.enhanced && !showOriginal && recipe.tips && (
+      {showTips && (
         <Section
           title={t('recipe.tips')}
           icon="bulb-outline"
@@ -122,23 +139,20 @@ export const RecipeEnhancedInfo = ({
           iconBg={colors.ai.iconBg}
           size="sm"
           spacing={0}
-          style={{ marginTop: spacing.sm, marginBottom: spacing.xl }}
         >
           <View
             style={{
-              backgroundColor: colors.glass.solid,
-              borderRadius: borderRadius.lg,
-              padding: spacing.lg,
               borderLeftWidth: 4,
               borderLeftColor: colors.ai.primary,
-              ...shadows.card,
+              borderRadius: borderRadius.sm,
+              paddingLeft: spacing.md,
             }}
           >
             <Text
               style={{
                 fontSize: fontSize.xl,
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.content.body,
                 lineHeight: lineHeight.xl,
               }}
             >
@@ -148,95 +162,51 @@ export const RecipeEnhancedInfo = ({
         </Section>
       )}
 
-      {recipe.enhanced &&
-        !showOriginal &&
-        recipe.changes_made &&
-        recipe.changes_made.length > 0 && (
-          <View
-            style={{
-              marginBottom: spacing.xl,
-              backgroundColor: colors.glass.solid,
-              borderRadius: borderRadius.lg,
-              overflow: 'hidden',
-              ...shadows.card,
-            }}
-          >
-            <Pressable
-              onPress={onToggleAiChanges}
-              style={({ pressed }) => ({
+      {showChanges && (
+        <Section
+          title={t('recipe.aiImprovements')}
+          icon="sparkles"
+          iconColor={colors.ai.primary}
+          iconBg={colors.ai.iconBg}
+          size="sm"
+          spacing={0}
+          collapsible
+          expanded={showAiChanges}
+          onToggle={onToggleAiChanges}
+        >
+          {recipe.changes_made?.map((change, index) => (
+            <View
+              key={index}
+              style={{
                 flexDirection: 'row',
-                alignItems: 'center',
-                padding: spacing.lg,
-                opacity: pressed ? 0.7 : 1,
-              })}
+                alignItems: 'flex-start',
+                marginBottom:
+                  index < (recipe.changes_made?.length ?? 0) - 1
+                    ? spacing.sm
+                    : 0,
+              }}
             >
-              <IconCircle
-                size="xs"
-                bg={colors.ai.iconBg}
-                style={{ marginRight: spacing.md }}
-              >
-                <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
-              </IconCircle>
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color={colors.ai.primary}
+                style={{ marginRight: spacing.sm, marginTop: 2 }}
+              />
               <Text
                 style={{
-                  ...typography.displaySmall,
-                  color: colors.content.body,
                   flex: 1,
+                  fontSize: fontSize.lg,
+                  fontFamily: fonts.body,
+                  color: colors.content.body,
+                  lineHeight: lineHeight.md,
                 }}
               >
-                {t('recipe.aiImprovements')}
+                {change}
               </Text>
-              <Ionicons
-                name={showAiChanges ? 'chevron-up' : 'chevron-down'}
-                size={20}
-                color={colors.content.body}
-              />
-            </Pressable>
-            {showAiChanges && (
-              <View
-                style={{
-                  paddingHorizontal: spacing.lg,
-                  paddingBottom: spacing.lg,
-                  borderTopWidth: 1,
-                  borderTopColor: colors.chip.divider,
-                  paddingTop: spacing.md,
-                }}
-              >
-                {recipe.changes_made.map((change, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'flex-start',
-                      marginBottom:
-                        index < (recipe.changes_made?.length ?? 0) - 1
-                          ? spacing.sm
-                          : 0,
-                    }}
-                  >
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={18}
-                      color={colors.ai.primary}
-                      style={{ marginRight: spacing.sm, marginTop: 2 }}
-                    />
-                    <Text
-                      style={{
-                        flex: 1,
-                        fontSize: fontSize.lg,
-                        fontFamily: fonts.body,
-                        color: colors.content.body,
-                        lineHeight: lineHeight.md,
-                      }}
-                    >
-                      {change}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </View>
-        )}
+            </View>
+          ))}
+        </Section>
+      )}
     </>
   );
 };

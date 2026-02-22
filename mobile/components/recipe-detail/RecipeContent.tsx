@@ -1,8 +1,15 @@
-import { useMemo } from 'react';
-import { Text } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Text, View } from 'react-native';
+import { ContentCard, Section } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  layout,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import type { EnhancementReviewAction, Recipe } from '@/lib/types';
 import { EnhancementReviewBanner } from './EnhancementReviewBanner';
 import { OriginalEnhancedToggle } from './OriginalEnhancedToggle';
@@ -38,11 +45,18 @@ interface RecipeContentProps {
   onToggleOriginal: () => void;
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
-  onShare: () => void;
   onCopy: () => void;
   onEnhance: () => void;
   onReviewEnhancement: (action: EnhancementReviewAction) => void;
 }
+
+type SectionKey =
+  | 'header'
+  | 'ingredients'
+  | 'instructions'
+  | 'tips'
+  | 'aiChanges'
+  | 'footer';
 
 export const RecipeContent = ({
   recipe,
@@ -66,7 +80,6 @@ export const RecipeContent = ({
   onToggleOriginal,
   onOpenEditModal,
   onShowPlanModal,
-  onShare,
   onCopy,
   onEnhance,
   onReviewEnhancement,
@@ -102,12 +115,23 @@ export const RecipeContent = ({
 
   const { colors, fonts, chrome } = useTheme();
 
+  const [expanded, setExpanded] = useState<Record<SectionKey, boolean>>({
+    header: true,
+    ingredients: true,
+    instructions: true,
+    tips: true,
+    aiChanges: false,
+    footer: true,
+  });
+
+  const toggle = (key: SectionKey) =>
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const actionSegments: FrameSegment[] | undefined =
     chrome === 'flat'
       ? [
           { label: '\u270e', onPress: onOpenEditModal },
           { label: '\u2261', onPress: onShowPlanModal },
-          { label: '\u2197', onPress: onShare },
         ]
       : undefined;
 
@@ -118,8 +142,16 @@ export const RecipeContent = ({
         ).toUpperCase()
       : undefined;
 
+  const hasTips = recipe.enhanced && !showOriginal && recipe.tips;
+  const hasAiChanges =
+    recipe.enhanced &&
+    !showOriginal &&
+    recipe.changes_made &&
+    recipe.changes_made.length > 0;
+
   return (
-    <>
+    <View style={layout.contentContainer}>
+      {/* Title (flat chrome only — full chrome shows title in hero) */}
       {chrome === 'flat' && (
         <Text
           style={{
@@ -134,84 +166,177 @@ export const RecipeContent = ({
         </Text>
       )}
 
-      <RecipeActionButtons
-        canEdit={canEdit}
-        canCopy={canCopy}
-        isCopying={isCopying}
-        canEnhance={canEnhance}
-        isEnhancing={isEnhancing}
-        isOwned={isOwned}
-        aiEnabled={aiEnabled}
-        t={t}
-        onOpenEditModal={onOpenEditModal}
-        onShowPlanModal={onShowPlanModal}
-        onShare={onShare}
-        onCopy={onCopy}
-        onEnhance={onEnhance}
-      />
+      {/* ── Card 1: Header (actions, time, tags, toggle) ── */}
+      <ContentCard
+        label={chrome === 'flat' ? 'INFO' : undefined}
+        style={{ marginBottom: spacing.md }}
+      >
+        <Section
+          title={t('recipe.details')}
+          icon="information-circle"
+          size="sm"
+          collapsible
+          expanded={expanded.header}
+          onToggle={() => toggle('header')}
+          spacing={0}
+        >
+          <RecipeActionButtons
+            canEdit={canEdit}
+            canCopy={canCopy}
+            isCopying={isCopying}
+            canEnhance={canEnhance}
+            isEnhancing={isEnhancing}
+            isOwned={isOwned}
+            aiEnabled={aiEnabled}
+            t={t}
+            onOpenEditModal={onOpenEditModal}
+            onShowPlanModal={onShowPlanModal}
+            onCopy={onCopy}
+            onEnhance={onEnhance}
+          />
 
-      <RecipeMetaLabels recipe={recipe} t={t} />
+          <RecipeMetaLabels recipe={recipe} t={t} />
 
-      <RecipeTimeServings
-        prepTime={recipe.prep_time}
-        cookTime={recipe.cook_time}
-        totalTime={totalTime}
-        servings={recipe.servings}
-        tags={recipe.tags}
-        actionSegments={actionSegments}
-        visibilityLabel={visibilityLabel}
-        t={t}
-      />
+          <RecipeTimeServings
+            prepTime={recipe.prep_time}
+            cookTime={recipe.cook_time}
+            totalTime={totalTime}
+            servings={recipe.servings}
+            tags={recipe.tags}
+            actionSegments={actionSegments}
+            visibilityLabel={visibilityLabel}
+            t={t}
+          />
 
-      <RecipeTags tags={recipe.tags} />
+          <RecipeTags tags={recipe.tags} />
 
-      {hasOriginal && (
-        <OriginalEnhancedToggle
-          showOriginal={showOriginal}
+          {hasOriginal && (
+            <OriginalEnhancedToggle
+              showOriginal={showOriginal}
+              t={t}
+              onToggle={onToggleOriginal}
+            />
+          )}
+
+          {needsEnhancementReview && (
+            <EnhancementReviewBanner
+              t={t}
+              isSubmitting={isReviewingEnhancement}
+              onApprove={() => onReviewEnhancement('approve')}
+              onReject={() => onReviewEnhancement('reject')}
+            />
+          )}
+        </Section>
+      </ContentCard>
+
+      {/* ── Card 2: Ingredients ── */}
+      <ContentCard
+        label={
+          chrome === 'flat' ? t('recipe.ingredients').toUpperCase() : undefined
+        }
+        style={{ marginBottom: spacing.md }}
+      >
+        <RecipeIngredientsList
+          ingredients={displayIngredients}
           t={t}
-          onToggle={onToggleOriginal}
+          collapsible
+          expanded={expanded.ingredients}
+          onToggle={() => toggle('ingredients')}
         />
+      </ContentCard>
+
+      {/* ── Card 3: Instructions ── */}
+      <ContentCard
+        label={
+          chrome === 'flat' ? t('recipe.instructions').toUpperCase() : undefined
+        }
+        style={{ marginBottom: spacing.md }}
+      >
+        <RecipeInstructions
+          recipe={displayRecipe}
+          completedSteps={completedSteps}
+          t={t}
+          onToggleStep={onToggleStep}
+          collapsible
+          expanded={expanded.instructions}
+          onToggle={() => toggle('instructions')}
+        />
+      </ContentCard>
+
+      {/* ── Card 4: Tips ── */}
+      {hasTips && (
+        <ContentCard
+          label={chrome === 'flat' ? t('recipe.tips').toUpperCase() : undefined}
+          style={{ marginBottom: spacing.md }}
+        >
+          <RecipeEnhancedInfo
+            recipe={recipe}
+            showOriginal={showOriginal}
+            showAiChanges={showAiChanges}
+            t={t}
+            onToggleAiChanges={onToggleAiChanges}
+            section="tips"
+            collapsible
+            expanded={expanded.tips}
+            onToggle={() => toggle('tips')}
+          />
+        </ContentCard>
       )}
 
-      {needsEnhancementReview && (
-        <EnhancementReviewBanner
-          t={t}
-          isSubmitting={isReviewingEnhancement}
-          onApprove={() => onReviewEnhancement('approve')}
-          onReject={() => onReviewEnhancement('reject')}
-        />
+      {/* ── Card 5: AI Enhancements ── */}
+      {hasAiChanges && (
+        <ContentCard
+          label={
+            chrome === 'flat'
+              ? t('recipe.aiImprovements').toUpperCase()
+              : undefined
+          }
+          style={{ marginBottom: spacing.md }}
+        >
+          <RecipeEnhancedInfo
+            recipe={recipe}
+            showOriginal={showOriginal}
+            showAiChanges={showAiChanges}
+            t={t}
+            onToggleAiChanges={onToggleAiChanges}
+            section="changes"
+            collapsible
+            expanded={expanded.aiChanges}
+            onToggle={() => toggle('aiChanges')}
+          />
+        </ContentCard>
       )}
 
-      <RecipeIngredientsList ingredients={displayIngredients} t={t} />
+      {/* ── Card 6: Notes + Source + Plan ── */}
+      <ContentCard
+        label={chrome === 'flat' ? t('recipe.notes').toUpperCase() : undefined}
+        style={{ marginBottom: spacing.md }}
+      >
+        <Section
+          title={t('recipe.moreActions')}
+          icon="ellipsis-horizontal-circle"
+          size="sm"
+          collapsible
+          expanded={expanded.footer}
+          onToggle={() => toggle('footer')}
+          spacing={0}
+        >
+          <RecipeNotes
+            recipeId={recipeId}
+            isOwned={isOwned}
+            canCopy={canCopy}
+            t={t}
+            onCopy={onCopy}
+            embedded
+          />
 
-      <RecipeInstructions
-        recipe={displayRecipe}
-        completedSteps={completedSteps}
-        t={t}
-        onToggleStep={onToggleStep}
-      />
-
-      <RecipeEnhancedInfo
-        recipe={recipe}
-        showOriginal={showOriginal}
-        showAiChanges={showAiChanges}
-        t={t}
-        onToggleAiChanges={onToggleAiChanges}
-      />
-
-      <RecipeNotes
-        recipeId={recipeId}
-        isOwned={isOwned}
-        canCopy={canCopy}
-        t={t}
-        onCopy={onCopy}
-      />
-
-      <RecipeActionsFooter
-        url={recipe.url}
-        t={t}
-        onShowPlanModal={onShowPlanModal}
-      />
-    </>
+          <RecipeActionsFooter
+            url={recipe.url}
+            t={t}
+            onShowPlanModal={onShowPlanModal}
+          />
+        </Section>
+      </ContentCard>
+    </View>
   );
 };

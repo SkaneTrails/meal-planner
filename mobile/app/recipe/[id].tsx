@@ -68,7 +68,6 @@ export default function RecipeDetailScreen() {
     handleClearMeal,
     handleThumbUp,
     handleThumbDown,
-    handleShare,
     handleDelete,
     handleCopyRecipe,
     handleSaveEdit,
@@ -164,7 +163,6 @@ export default function RecipeDetailScreen() {
     },
     onOpenEditModal: () => setShowEditModal(true),
     onShowPlanModal: () => setShowPlanModal(true),
-    onShare: handleShare,
     onCopy: handleCopyRecipe,
     onEnhance: handleEnhanceRecipe,
     onReviewEnhancement: handleReviewEnhancement,
@@ -208,6 +206,7 @@ export default function RecipeDetailScreen() {
 
       <Animated.ScrollView
         style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true },
@@ -234,19 +233,11 @@ export default function RecipeDetailScreen() {
               flex: 1,
               width: '100%',
               minWidth: '100%',
+              padding: spacing.xl,
+              paddingBottom: layout.tabBar.contentBottomPadding,
             }}
           >
-            <View
-              style={[
-                {
-                  padding: spacing.xl,
-                  paddingBottom: layout.tabBar.contentBottomPadding,
-                },
-                layout.contentContainer,
-              ]}
-            >
-              <RecipeContent {...recipeContentProps} />
-            </View>
+            <RecipeContent {...recipeContentProps} />
           </View>
         ) : (
           <MirroredBackground
@@ -266,19 +257,16 @@ export default function RecipeDetailScreen() {
             <View
               style={{
                 ...StyleSheet.absoluteFillObject,
-                backgroundColor: colors.surface.sheetOverlay,
+                backgroundColor: colors.bgBase,
                 borderTopLeftRadius: radii['2xl'],
                 borderTopRightRadius: radii['2xl'],
               }}
             />
             <View
-              style={[
-                {
-                  padding: spacing.xl,
-                  paddingBottom: layout.tabBar.contentBottomPadding,
-                },
-                layout.contentContainer,
-              ]}
+              style={{
+                padding: spacing.xl,
+                paddingBottom: layout.tabBar.contentBottomPadding,
+              }}
             >
               <RecipeContent {...recipeContentProps} />
             </View>
