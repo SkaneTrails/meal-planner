@@ -60,6 +60,11 @@ vi.mock('expo-haptics', () => ({
   ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
 }));
 
+vi.mock('expo-keep-awake', () => ({
+  activateKeepAwakeAsync: vi.fn(),
+  deactivateKeepAwake: vi.fn(),
+}));
+
 // Mock expo-font — native module, same as expo-haptics/expo-image above.
 // Theme files import @expo-google-fonts/* which re-export from expo-font.
 vi.mock('expo-font', () => ({

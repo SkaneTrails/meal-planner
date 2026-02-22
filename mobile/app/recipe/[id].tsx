@@ -23,7 +23,7 @@ import {
   RecipeNotFound,
 } from '@/components/recipe-detail/RecipeLoadingStates';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useMealPlan, useRecipe } from '@/lib/hooks';
+import { useKeepScreenOn, useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 import { layout, spacing, useTheme } from '@/lib/theme';
@@ -99,6 +99,9 @@ export default function RecipeDetailScreen() {
 
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [showOriginal, setShowOriginal] = useState(false);
+  const [keepScreenOn, setKeepScreenOn] = useState(false);
+
+  useKeepScreenOn(keepScreenOn);
 
   useEffect(() => {
     if (recipe?.enhanced !== true) return;
@@ -149,6 +152,7 @@ export default function RecipeDetailScreen() {
     canEnhance,
     isEnhancing,
     aiEnabled: settings.aiEnabled,
+    keepScreenOn,
     needsEnhancementReview,
     isReviewingEnhancement,
     t,
@@ -162,6 +166,10 @@ export default function RecipeDetailScreen() {
     onShowPlanModal: () => setShowPlanModal(true),
     onCopy: handleCopyRecipe,
     onEnhance: handleEnhanceRecipe,
+    onToggleKeepScreenOn: () => {
+      hapticSelection();
+      setKeepScreenOn((prev) => !prev);
+    },
     onReviewEnhancement: handleReviewEnhancement,
   };
 

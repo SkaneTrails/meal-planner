@@ -170,6 +170,8 @@ const it: Translations = {
     tips: 'Consigli',
     aiImprovements: 'Miglioramenti AI',
     details: 'Dettagli',
+    keepScreenOn: 'Schermo acceso',
+    screenOnActive: 'Schermo acceso',
     moreActions: 'Altro',
     viewSource: 'Vedi fonte',
     showOriginal: 'Mostra originale',

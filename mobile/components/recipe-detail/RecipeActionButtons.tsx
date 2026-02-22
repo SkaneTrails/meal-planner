@@ -11,11 +11,13 @@ interface RecipeActionButtonsProps {
   isEnhancing: boolean;
   isOwned: boolean | undefined;
   aiEnabled: boolean;
+  keepScreenOn: boolean;
   t: TFunction;
   onOpenEditModal: () => void;
   onShowPlanModal: () => void;
   onCopy: () => void;
   onEnhance: () => void;
+  onToggleKeepScreenOn: () => void;
 }
 
 export const RecipeActionButtons = ({
@@ -26,11 +28,13 @@ export const RecipeActionButtons = ({
   isEnhancing,
   isOwned,
   aiEnabled,
+  keepScreenOn,
   t,
   onOpenEditModal,
   onShowPlanModal,
   onCopy,
   onEnhance,
+  onToggleKeepScreenOn,
 }: RecipeActionButtonsProps) => {
   const { visibility } = useTheme();
   if (!visibility.showRecipeActionButtons) return null;
@@ -96,6 +100,16 @@ export const RecipeActionButtons = ({
           style={{ opacity: enhanceDisabled ? opacity.disabled : 1 }}
         />
       )}
+      <IconButton
+        icon={keepScreenOn ? 'sunny' : 'sunny-outline'}
+        iconSize={20}
+        onPress={onToggleKeepScreenOn}
+        label={t(
+          keepScreenOn ? 'recipe.screenOnActive' : 'recipe.keepScreenOn',
+        )}
+        tone={keepScreenOn ? 'glassSolid' : 'glassSolid'}
+        size="md"
+      />
     </ButtonGroup>
   );
 };
