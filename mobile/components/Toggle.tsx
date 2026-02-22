@@ -11,7 +11,7 @@
  */
 
 import { Pressable, Switch, Text } from 'react-native';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, opacity, spacing, useTheme } from '@/lib/theme';
 
 interface ToggleProps {
   value: boolean;
@@ -35,7 +35,10 @@ export const Toggle = ({
         disabled={disabled}
         accessibilityRole="switch"
         accessibilityState={{ checked: value, disabled }}
-        style={{ padding: spacing.xs, opacity: disabled ? 0.5 : 1 }}
+        style={{
+          padding: spacing.xs,
+          opacity: disabled ? opacity.disabled : 1,
+        }}
       >
         <Text
           style={{

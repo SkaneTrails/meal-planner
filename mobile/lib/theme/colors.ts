@@ -2,12 +2,350 @@
  * Color palette - luxurious design system with elegant warm tones.
  */
 
-/** Recursively widen color literal types to `string` for structural contracts. */
-type WidenColors<T> = T extends readonly string[]
-  ? readonly string[]
-  : T extends string
-    ? string
-    : { readonly [K in keyof T]: WidenColors<T[K]> };
+/** Reusable sub-type for button tone color sets. */
+interface ToneColors {
+  readonly bg: string;
+  readonly fg: string;
+  readonly pressed: string;
+}
+
+/** Structural contract that every color palette must satisfy. */
+export interface ColorTokens {
+  readonly primary: string;
+  readonly primaryDark: string;
+  readonly primaryLight: string;
+
+  readonly bgBase: string;
+  readonly bgLight: string;
+  readonly bgMid: string;
+  readonly bgDark: string;
+  readonly bgWarm: string;
+
+  readonly accent: string;
+  readonly accentDark: string;
+  readonly accentLight: string;
+  readonly coral: string;
+  readonly coralSoft: string;
+  readonly gold: string;
+  readonly goldLight: string;
+
+  readonly category: {
+    readonly recipes: { readonly bg: string; readonly text: string };
+    readonly planned: { readonly bg: string; readonly text: string };
+    readonly grocery: { readonly bg: string; readonly text: string };
+    readonly add: { readonly bg: string; readonly text: string };
+  };
+
+  readonly diet: {
+    readonly veggie: {
+      readonly bg: string;
+      readonly text: string;
+      readonly cardBg: string;
+      readonly border: string;
+    };
+    readonly fish: {
+      readonly bg: string;
+      readonly text: string;
+      readonly cardBg: string;
+      readonly border: string;
+    };
+    readonly meat: {
+      readonly bg: string;
+      readonly text: string;
+      readonly cardBg: string;
+      readonly border: string;
+    };
+  };
+
+  readonly white: string;
+  readonly offWhite: string;
+
+  readonly text: {
+    readonly primary: string;
+    readonly secondary: string;
+    readonly muted: string;
+    readonly light: string;
+    readonly inverse: string;
+    readonly dark: string;
+  };
+
+  readonly border: string;
+  readonly borderLight: string;
+  readonly borderFaint: string;
+
+  readonly content: {
+    readonly heading: string;
+    readonly headingMuted: string;
+    readonly headingWarm: string;
+    readonly body: string;
+    readonly secondary: string;
+    readonly strong: string;
+    readonly tertiary: string;
+    readonly subtitle: string;
+    readonly icon: string;
+    readonly placeholder: string;
+    readonly placeholderHex: string;
+  };
+
+  readonly surface: {
+    readonly overlay: string;
+    readonly overlayMedium: string;
+    readonly border: string;
+    readonly borderLight: string;
+    readonly divider: string;
+    readonly dividerSolid: string;
+    readonly modal: string;
+    readonly pressed: string;
+    readonly active: string;
+    readonly subtle: string;
+    readonly hover: string;
+    readonly tint: string;
+    readonly sheetOverlay: string;
+    readonly iconBg: string;
+  };
+
+  readonly button: {
+    readonly primary: string;
+    readonly primaryPressed: string;
+    readonly primaryText: string;
+    readonly disabled: string;
+    readonly primarySubtle: string;
+    readonly primarySurface: string;
+    readonly primaryActive: string;
+    readonly primaryHover: string;
+    readonly primaryDivider: string;
+  };
+
+  readonly gray: {
+    readonly 50: string;
+    readonly 100: string;
+    readonly 200: string;
+    readonly 300: string;
+    readonly 400: string;
+    readonly 500: string;
+    readonly 600: string;
+    readonly 700: string;
+    readonly 800: string;
+    readonly 900: string;
+  };
+
+  readonly success: string;
+  readonly successBg: string;
+  readonly warning: string;
+  readonly warningBg: string;
+  readonly error: string;
+  readonly errorBg: string;
+  readonly info: string;
+  readonly infoBg: string;
+  readonly danger: string;
+
+  readonly overlay: {
+    readonly backdrop: string;
+    readonly backdropLight: string;
+    readonly strong: string;
+    readonly gradientHeavy: string;
+    readonly gradientSubtle: string;
+  };
+
+  readonly mealPlan: {
+    readonly slotBg: string;
+    readonly containerBg: string;
+    readonly emptyBg: string;
+    readonly emptyStateBg: string;
+  };
+
+  readonly rating: {
+    readonly positive: string;
+    readonly negative: string;
+    readonly positiveBg: string;
+    readonly negativeBg: string;
+  };
+
+  readonly timeline: {
+    readonly badge: string;
+    readonly line: string;
+    readonly completedText: string;
+  };
+
+  readonly chip: {
+    readonly bg: string;
+    readonly border: string;
+    readonly divider: string;
+    readonly fishActive: string;
+    readonly meatActive: string;
+    readonly favoriteActive: string;
+    readonly toggleActiveBg: string;
+    readonly toggleInactiveBg: string;
+    readonly toggleActiveBorder: string;
+    readonly toggleActiveText: string;
+    readonly toggleInactiveText: string;
+  };
+
+  readonly shadow: {
+    readonly text: string;
+  };
+
+  readonly glass: {
+    readonly light: string;
+    readonly medium: string;
+    readonly heavy: string;
+    readonly solid: string;
+    readonly bright: string;
+    readonly dark: string;
+    readonly subtle: string;
+    readonly faint: string;
+    readonly card: string;
+    readonly border: string;
+    readonly button: string;
+    readonly buttonPressed: string;
+    readonly buttonDefault: string;
+    readonly dim: string;
+    readonly pressed: string;
+  };
+
+  readonly header: {
+    readonly bg: string;
+    readonly fadeEnd: string;
+    readonly shadow: string;
+    readonly fadeWidth: number;
+  };
+
+  readonly tabBar: {
+    readonly bg: string;
+    readonly bgFallback: string;
+    readonly bottomFill: string;
+    readonly border: string;
+    readonly active: string;
+    readonly inactive: string;
+    readonly focusBg: string;
+  };
+
+  readonly ai: {
+    readonly primary: string;
+    readonly primaryDark: string;
+    readonly bg: string;
+    readonly bgPressed: string;
+    readonly muted: string;
+    readonly iconBg: string;
+    readonly light: string;
+    readonly badge: string;
+    readonly selectedBg: string;
+    readonly border: string;
+  };
+
+  readonly destructive: {
+    readonly bg: string;
+    readonly icon: string;
+    readonly text: string;
+  };
+
+  readonly gradient: {
+    readonly orb1: string;
+    readonly orb2: string;
+    readonly orb3: string;
+    readonly orb4: string;
+    readonly orb5: string;
+    readonly orb6: string;
+    readonly stop1: string;
+    readonly stop2: string;
+  };
+
+  readonly background: {
+    readonly mutedOverlay: string;
+    readonly defaultOverlay: string;
+    readonly structuredWash: string;
+    readonly structuredGradientStart: string;
+    readonly structuredGradientEnd: string;
+    readonly animatedOverlay: string;
+  };
+
+  readonly tagDot: readonly string[];
+
+  readonly card: {
+    readonly bg: string;
+    readonly bgPressed: string;
+    readonly textPrimary: string;
+    readonly textSecondary: string;
+    readonly borderColor: string;
+  };
+
+  readonly searchBar: {
+    readonly bg: string;
+    readonly border: string;
+    readonly icon: string;
+    readonly text: string;
+    readonly placeholder: string;
+    readonly clearIcon: string;
+    readonly cancelText: string;
+  };
+
+  readonly input: {
+    readonly bg: string;
+    readonly bgSubtle: string;
+    readonly border: string;
+    readonly text: string;
+    readonly placeholder: string;
+  };
+
+  readonly toggle: {
+    readonly trackBg: string;
+    readonly activeBg: string;
+    readonly activeText: string;
+    readonly inactiveText: string;
+    readonly borderColor: string;
+    readonly switchTrackOff: string;
+    readonly switchTrackOn: string;
+    readonly switchThumbOff: string;
+    readonly switchThumbOn: string;
+  };
+
+  readonly metaChip: {
+    readonly mealBg: string;
+    readonly mealText: string;
+    readonly visibilityBg: string;
+    readonly visibilityText: string;
+  };
+
+  readonly checkbox: {
+    readonly checkedBg: string;
+    readonly checkedBorder: string;
+  };
+
+  readonly listItem: {
+    readonly bg: string;
+    readonly bgActive: string;
+    readonly checkedText: string;
+  };
+
+  readonly statsCard: {
+    readonly bg: string;
+    readonly borderColor: string;
+  };
+
+  readonly dayCard: {
+    readonly bg: string;
+    readonly bgToday: string;
+  };
+
+  readonly segmentedControl: {
+    readonly trackBg: string;
+    readonly activeBg: string;
+    readonly activeText: string;
+    readonly inactiveText: string;
+  };
+
+  readonly tones: {
+    readonly default: ToneColors;
+    readonly alt: ToneColors;
+    readonly cancel: ToneColors;
+    readonly warning: ToneColors;
+    readonly ai: ToneColors;
+    readonly glass: ToneColors;
+    readonly glassSolid: ToneColors;
+    readonly primary: ToneColors;
+    readonly danger: ToneColors;
+  };
+}
 
 export const lightColors = {
   // Primary - Elegant dark charcoal
@@ -416,11 +754,13 @@ export const lightColors = {
       fg: '#FFFFFF',
       pressed: '#1A1A1A',
     },
+    danger: {
+      bg: '#DC2626',
+      fg: '#FFFFFF',
+      pressed: '#B91C1C',
+    },
   },
-} as const;
-
-/** Structural contract that every color palette must satisfy. */
-export type ColorTokens = WidenColors<typeof lightColors>;
+} as const satisfies ColorTokens;
 
 // Export colors (light theme only)
 export const colors = lightColors;

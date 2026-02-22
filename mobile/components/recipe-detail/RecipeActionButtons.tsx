@@ -1,7 +1,7 @@
 import { ButtonGroup, IconButton } from '@/components';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { useTheme } from '@/lib/theme';
+import { opacity, useTheme } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -104,7 +104,7 @@ export const RecipeActionButtons = ({
           tone="glassSolid"
           textColor={enhanceDisabled ? colors.gray[400] : colors.ai.primary}
           size="md"
-          style={{ opacity: enhanceDisabled ? 0.5 : 1 }}
+          style={{ opacity: enhanceDisabled ? opacity.disabled : 1 }}
         />
       )}
     </ButtonGroup>

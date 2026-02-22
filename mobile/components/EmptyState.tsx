@@ -3,6 +3,7 @@ import type { ComponentProps } from 'react';
 import { Text, View, type ViewStyle } from 'react-native';
 import {
   fontSize,
+  fontWeight,
   letterSpacing,
   lineHeight,
   spacing,
@@ -10,6 +11,7 @@ import {
 } from '@/lib/theme';
 import { Button } from './Button';
 import { IconCircle } from './IconCircle';
+import { SurfaceCard } from './SurfaceCard';
 
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
@@ -23,6 +25,8 @@ interface EmptyStateProps {
   title: string;
   subtitle?: string;
   action?: EmptyStateAction;
+  /** Full-page layout (default) or card-wrapped compact layout for settings. */
+  variant?: 'default' | 'compact';
   style?: ViewStyle;
 }
 
@@ -31,9 +35,49 @@ const EmptyState = ({
   title,
   subtitle,
   action,
+  variant = 'default',
   style,
 }: EmptyStateProps) => {
   const { colors, fonts, borderRadius } = useTheme();
+
+  if (variant === 'compact') {
+    return (
+      <SurfaceCard style={{ alignItems: 'center' as const, ...style }}>
+        {icon && (
+          <IconCircle
+            size="lg"
+            bg={colors.bgDark}
+            style={{ marginBottom: spacing.sm }}
+          >
+            <Ionicons name={icon} size={24} color={colors.content.body} />
+          </IconCircle>
+        )}
+        <Text
+          style={{
+            fontSize: fontSize.md,
+            fontWeight: fontWeight.semibold,
+            color: colors.content.heading,
+            marginBottom: spacing['2xs'],
+            textAlign: 'center',
+          }}
+        >
+          {title}
+        </Text>
+        {subtitle && (
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              color: colors.content.icon,
+              textAlign: 'center',
+            }}
+          >
+            {subtitle}
+          </Text>
+        )}
+      </SurfaceCard>
+    );
+  }
+
   return (
     <View
       style={[

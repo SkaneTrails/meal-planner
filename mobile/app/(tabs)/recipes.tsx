@@ -16,14 +16,13 @@ import {
 import {
   BottomSheetModal,
   Button,
-  ScreenHeaderBar,
+  ScreenHeader,
   ScreenLayout,
 } from '@/components';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
-import { ScreenTitle } from '@/components/ScreenTitle';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -170,28 +169,16 @@ export default function RecipesScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeaderBar>
-        {/* Header */}
-        <View
-          style={{
-            paddingHorizontal: spacing.xl,
-            paddingTop: spacing.lg,
-            paddingBottom: spacing.xs,
-          }}
-        >
-          <ScreenTitle
-            title={t('recipes.title')}
-            subtitle={
-              hasActiveFilters
-                ? t('recipes.filteredCount', {
-                    count: filteredRecipes.length,
-                  })
-                : t('recipes.collectionCount', { count: totalCount })
-            }
-            style={{ marginBottom: spacing.sm }}
-          />
-        </View>
-
+      <ScreenHeader
+        title={t('recipes.title')}
+        subtitle={
+          hasActiveFilters
+            ? t('recipes.filteredCount', {
+                count: filteredRecipes.length,
+              })
+            : t('recipes.collectionCount', { count: totalCount })
+        }
+      >
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -226,7 +213,7 @@ export default function RecipesScreen() {
           onSortPress={() => setShowSortPicker(true)}
           t={t}
         />
-      </ScreenHeaderBar>
+      </ScreenHeader>
 
       <RecipeGrid
         recipes={filteredRecipes}

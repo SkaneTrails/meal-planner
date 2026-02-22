@@ -41,6 +41,7 @@ export { DayColumn, MealCell } from './MealGrid';
 export { NumericField } from './NumericField';
 export { RadioGroup } from './RadioGroup';
 export { RecipeCard } from './RecipeCard';
+export { ScreenHeader } from './ScreenHeader';
 export { ScreenHeaderBar } from './ScreenHeaderBar';
 export { ScreenLayout } from './ScreenLayout';
 export { ScreenTitle } from './ScreenTitle';

@@ -37,6 +37,7 @@ const lightTheme = () =>
         cancel: { bg: 'rgba(93, 78, 64, 0.06)', fg: 'rgba(93, 78, 64, 0.6)', pressed: 'rgba(93, 78, 64, 0.12)' },
         warning: { bg: 'rgba(180, 80, 70, 0.12)', fg: '#B45046', pressed: 'rgba(180, 80, 70, 0.22)' },
         ai: { bg: 'rgba(217, 122, 69, 0.1)', fg: '#D97A45', pressed: 'rgba(217, 122, 69, 0.2)' },
+        danger: { bg: '#DC2626', fg: '#FFFFFF', pressed: '#B91C1C' },
       },
     },
     fonts: {

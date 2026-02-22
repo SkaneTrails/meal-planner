@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import {
   GroceryListSkeleton,
   GroceryListView,
-  ScreenHeaderBar,
+  ScreenHeader,
   ScreenLayout,
 } from '@/components';
 import {
@@ -15,7 +15,6 @@ import {
   GroceryHeader,
   StatsCard,
 } from '@/components/grocery';
-import { ScreenTitle } from '@/components/ScreenTitle';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
 import { spacing } from '@/lib/theme';
@@ -57,17 +56,7 @@ export default function GroceryScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeaderBar>
-        <View
-          style={{
-            paddingHorizontal: spacing.xl,
-            paddingTop: spacing.md,
-            paddingBottom: spacing.xs,
-          }}
-        >
-          <ScreenTitle title={t('grocery.thisWeeksShopping')} />
-        </View>
-
+      <ScreenHeader title={t('grocery.thisWeeksShopping')}>
         <View
           style={{
             paddingHorizontal: spacing.xl,
@@ -104,7 +93,7 @@ export default function GroceryScreen() {
             />
           )}
         </View>
-      </ScreenHeaderBar>
+      </ScreenHeader>
 
       {totalItems > 0 ? (
         <GroceryListView

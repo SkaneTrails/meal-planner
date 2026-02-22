@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, fontWeight, opacity, spacing, useTheme } from '@/lib/theme';
 
 interface RadioOption<T extends string> {
   value: T;
@@ -42,7 +42,7 @@ export const RadioGroup = <T extends string>({
               borderRadius: borderRadius.md,
               borderWidth: 1.5,
               borderColor: isSelected ? colors.border : colors.glass.button,
-              opacity: disabled ? 0.5 : 1,
+              opacity: disabled ? opacity.disabled : 1,
             })}
           >
             <View

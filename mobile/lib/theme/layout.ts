@@ -62,9 +62,21 @@ export const borderRadius = {
 } as const;
 
 /** Structural contract for border radius scales. */
-export type BorderRadiusTokens = {
-  readonly [K in keyof typeof borderRadius]: number;
-};
+export interface BorderRadiusTokens {
+  readonly '3xs': number;
+  readonly '2xs': number;
+  readonly 'xs-sm': number;
+  readonly xs: number;
+  readonly 'sm-md': number;
+  readonly sm: number;
+  readonly 'md-lg': number;
+  readonly md: number;
+  readonly lg: number;
+  readonly 'lg-xl': number;
+  readonly xl: number;
+  readonly '2xl': number;
+  readonly full: number;
+}
 
 // Icon sizes - standardized
 export const iconSize = {
@@ -115,9 +127,25 @@ export const shadows = {
 } as const;
 
 /** Structural contract for shadow presets. */
-export type ShadowTokens = {
-  readonly [K in keyof typeof shadows]: { readonly boxShadow: string };
-};
+export interface ShadowTokens {
+  readonly none: { readonly boxShadow: string };
+  readonly xs: { readonly boxShadow: string };
+  readonly sm: { readonly boxShadow: string };
+  readonly card: { readonly boxShadow: string };
+  readonly md: { readonly boxShadow: string };
+  readonly lg: { readonly boxShadow: string };
+  readonly xl: { readonly boxShadow: string };
+  readonly glow: { readonly boxShadow: string };
+  readonly glowSoft: { readonly boxShadow: string };
+  readonly cardRaised: { readonly boxShadow: string };
+  readonly float: { readonly boxShadow: string };
+}
+
+// Opacity presets
+export const opacity = {
+  disabled: 0.5,
+  pressed: 0.9,
+} as const;
 
 // Animation durations - smooth, premium feel
 export const animation = {

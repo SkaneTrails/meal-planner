@@ -96,12 +96,12 @@ const MemberCard = ({
       </View>
       {canEdit && !isSelf && (
         <Button
-          variant="icon"
-          tone="warning"
+          variant="text"
+          textColor={colors.error}
           onPress={onRemove}
           icon="trash-outline"
           iconSize={18}
-          style={{ padding: spacing.sm }}
+          hitSlop={8}
         />
       )}
     </SurfaceCard>
@@ -194,10 +194,7 @@ const AddMemberForm = ({
           icon="person-add"
           iconSize={14}
           label={t('admin.addMemberButton')}
-          textColor={
-            newMemberEmail.trim() ? colors.white : colors.content.subtitle
-          }
-          color={newMemberEmail.trim() ? colors.primary : colors.bgDark}
+          tone="primary"
           style={{
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.xs,

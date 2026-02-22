@@ -52,6 +52,7 @@ You are collaborating with a human who may make changes between your edits:
 - **PowerShell backtick escaping** - NEVER include backtick characters in ANY `gh` CLI string argument — not just `--body`, but also `-f "body=..."`, `-f "query=..."`, commit messages, or any inline string. PowerShell interprets `` ` `` as escape characters, causing `Unicode escape sequence is not valid` errors. **Workarounds:** (1) Write content to a temp file, use `-F "body=@file.md"` or `--body-file`, then delete the file. (2) For short replies without markdown formatting, just omit backticks entirely (e.g., write `useSetMeal` not `` `useSetMeal` ``)
 - **PowerShell pipeline commands hang** - NEVER use `Get-ChildItem | ForEach-Object`, `Select-String` pipelines, or nested PowerShell commands for workspace scanning — they hang indefinitely on Windows. Use `grep_search`, `file_search`, `list_dir`, or `semantic_search` tools instead. For simple line counts or file checks, use `read_file` or single-file terminal commands.
 - **Never run inline Python in PowerShell** - NEVER use `python -c "..."` or `uv run python -c "..."` in the terminal. PowerShell mangles parentheses, quotes, and special characters inside string arguments, causing `SyntaxError: '(' was never closed` and similar parse errors. **Always** write the code to a temporary `.py` file (in `tmp/`) and execute it with `python tmp/script.py`. Delete the file afterward if it was single-use.
+- **Zero tolerance for errors** - There is no such thing as a "pre-existing" error. If you encounter a compile error, type error, lint violation, or any other issue — fix it immediately, regardless of when it was introduced. A merge to main must never contain known bugs. Never dismiss an error as "not related to my changes" or "pre-existing." If you see it, you own it.
 
 ## Keeping Documentation Current
 
@@ -246,6 +247,7 @@ See `pyproject.toml` for tool configurations. Style guides in `*.instructions.md
 
 ### Pre-Commit Checklist
 Before committing changes that add new functionality:
+- [ ] **Zero compile/type errors** across the codebase — not just in files you touched
 - [ ] Storage layer: Do mapping functions (`_doc_to_*`) include the new fields?
 - [ ] Are those mappings tested with explicit assertions?
 - [ ] Does API coverage pass? (`uv run pytest --cov=api` — threshold enforced by `pyproject.toml`)

@@ -1,9 +1,8 @@
 export { AiSection } from './AiSection';
 export { DEFAULT_SETTINGS, EQUIPMENT_CATEGORIES } from './constants';
 export { DietarySection } from './DietarySection';
-export { EquipmentSection } from './EquipmentSection';
 export { GeneralSection } from './GeneralSection';
 export { MembersSection } from './MembersSection';
 export { NoteSuggestionsSection } from './NoteSuggestionsSection';
-export { BottomSaveBar, ReadOnlyBanner } from './SaveControls';
+export { ReadOnlyBanner } from './SaveControls';
 export { ScreenHeader } from './ScreenHeader';

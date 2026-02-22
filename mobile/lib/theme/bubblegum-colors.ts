@@ -429,5 +429,10 @@ export const bubblegumColors: ColorTokens = {
       fg: '#FFFFFF',
       pressed: HOT_PINK_DARK,
     },
+    danger: {
+      bg: '#FF3B3B',
+      fg: '#FFFFFF',
+      pressed: '#E02020',
+    },
   },
 };

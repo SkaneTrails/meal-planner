@@ -372,6 +372,7 @@ export const terminalColors: ColorTokens = {
     glass: { bg: g(0.15), fg: GREEN, pressed: g(0.25) },
     glassSolid: { bg: g(0.15), fg: GREEN, pressed: g(0.25) },
     primary: { bg: GREEN_DARK, fg: GREEN, pressed: GREEN_DIM },
+    danger: { bg: g(0.08), fg: GREEN, pressed: g(0.15) },
   },
 };
 

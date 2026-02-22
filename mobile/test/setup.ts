@@ -200,6 +200,31 @@ vi.mock('@/components', () => ({
       createElement('option', { key: opt.value, value: opt.value }, opt.label),
     ));
   },
+  EmptyState: ({ icon, title, subtitle, action, variant, style }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'empty-state' },
+      title && createElement('span', null, title),
+      subtitle && createElement('span', null, subtitle),
+      action && createElement('button', { onClick: action.onPress }, action.label),
+    );
+  },
+  ScreenHeader: ({ title, subtitle, onBack, rightAction, children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'screen-header' },
+      title && createElement('span', null, title),
+      subtitle && createElement('span', null, subtitle),
+      rightAction,
+      children,
+    );
+  },
+  IconButton: ({ icon, onPress, disabled, testID }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', {
+      onClick: onPress,
+      disabled: disabled ?? false,
+      'data-testid': testID ?? `icon-button-${icon}`,
+    }, icon);
+  },
 }));
 
 // Mock @/lib/alert-context — imperative alert functions used throughout the app
@@ -476,6 +501,7 @@ vi.mock('@/lib/theme', () => {
       glass: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#FFFFFF', pressed: 'rgba(255, 255, 255, 0.45)' },
       glassSolid: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#5D4E40', pressed: 'rgba(255, 255, 255, 0.85)' },
       primary: { bg: '#2D2D2D', fg: '#FFFFFF', pressed: '#1A1A1A' },
+      danger: { bg: '#DC2626', fg: '#FFFFFF', pressed: '#B91C1C' },
     },
   };
 
@@ -615,6 +641,7 @@ vi.mock('@/lib/theme', () => {
   iconSize: { xs: 14, sm: 16, md: 18, lg: 20, xl: 24, '2xl': 32, '3xl': 40 },
   iconContainer: { xs: 36, sm: 32, md: 40, lg: 48, xl: 56, '2xl': 80 },
   terminal: { charHeight: 14, fabCharHeight: 16 },
+  opacity: { disabled: 0.5, pressed: 0.9 },
   animation: { fast: 150, normal: 250, slow: 350, spring: { damping: 15, stiffness: 100 } },
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },

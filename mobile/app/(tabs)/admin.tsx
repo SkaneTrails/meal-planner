@@ -11,16 +11,15 @@ import { FlatList, RefreshControl, Text, View } from 'react-native';
 import {
   Button,
   FullScreenLoading,
-  IconButton,
-  ScreenHeaderBar,
+  ScreenHeader,
   ScreenLayout,
+  SurfaceCard,
 } from '@/components';
 import {
   CreateHouseholdModal,
   HouseholdCard,
   HouseholdDetailModal,
 } from '@/components/admin';
-import { ScreenTitle } from '@/components/ScreenTitle';
 import { showNotification } from '@/lib/alert';
 import {
   useCreateHousehold,
@@ -28,7 +27,7 @@ import {
   useHouseholds,
 } from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
 export default function AdminScreen() {
@@ -78,7 +77,12 @@ export default function AdminScreen() {
 
   return (
     <ScreenLayout>
-      <AdminHeader onBack={() => router.back()} />
+      <ScreenHeader
+        variant="large"
+        title={t('tabs.admin')}
+        subtitle={t('admin.subtitle')}
+        onBack={() => router.back()}
+      />
 
       <CurrentUserInfo email={currentUser.email} role={currentUser.role} />
 
@@ -139,57 +143,17 @@ export default function AdminScreen() {
   );
 }
 
-const AdminHeader = ({ onBack }: { onBack: () => void }) => {
-  const { t } = useTranslation();
-  const { shadows } = useTheme();
-
-  return (
-    <ScreenHeaderBar>
-      <View
-        style={{
-          paddingHorizontal: spacing['2xl'],
-          paddingTop: layout.screenPaddingTop,
-          paddingBottom: spacing.md,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        <IconButton
-          onPress={onBack}
-          icon="chevron-back"
-          iconSize={22}
-          size="md"
-          tone="glass"
-          style={{
-            marginRight: spacing.md,
-            ...shadows.sm,
-          }}
-        />
-        <View style={{ flex: 1 }}>
-          <ScreenTitle
-            variant="large"
-            title={t('tabs.admin')}
-            subtitle={t('admin.subtitle')}
-          />
-        </View>
-      </View>
-    </ScreenHeaderBar>
-  );
-};
-
 const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
   const { t } = useTranslation();
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius } = useTheme();
 
   return (
-    <View
+    <SurfaceCard
+      radius="lg"
+      padding={spacing.md}
       style={{
         marginHorizontal: spacing.lg,
         marginBottom: spacing.md,
-        padding: spacing.md,
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.lg,
-        ...shadows.sm,
       }}
     >
       <Text
@@ -233,7 +197,7 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
           </Text>
         </View>
       </View>
-    </View>
+    </SurfaceCard>
   );
 };
 
