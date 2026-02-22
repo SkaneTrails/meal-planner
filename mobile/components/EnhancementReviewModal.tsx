@@ -42,6 +42,7 @@ export const EnhancementReviewModal = ({
     <BottomSheetModal
       visible={visible}
       onClose={onRequestClose ?? (() => {})}
+      dismissable={!!onRequestClose}
       title={headerLabel}
       subtitle={title}
       headerRight={
@@ -78,7 +79,7 @@ export const EnhancementReviewModal = ({
     >
       {changesMade.length > 0 ? (
         <>
-          <Text style={[styles.changesLabel, { color: colors.text.inverse }]}>
+          <Text style={[styles.changesLabel, { color: colors.content.strong }]}>
             {changesLabel}
           </Text>
           {changesMade.map((change, index) => (
@@ -98,14 +99,16 @@ export const EnhancementReviewModal = ({
                 color={colors.success}
                 style={styles.changeIcon}
               />
-              <Text style={[styles.changeText, { color: colors.text.inverse }]}>
+              <Text
+                style={[styles.changeText, { color: colors.content.strong }]}
+              >
                 {change}
               </Text>
             </View>
           ))}
         </>
       ) : (
-        <Text style={[styles.noChanges, { color: colors.gray[600] }]}>
+        <Text style={[styles.noChanges, { color: colors.text.muted }]}>
           {noChangesLabel}
         </Text>
       )}

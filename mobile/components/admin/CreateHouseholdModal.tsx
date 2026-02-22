@@ -39,7 +39,12 @@ export const CreateHouseholdModal = ({
         />
       }
       footer={
-        <View style={{ paddingHorizontal: spacing.xl, paddingBottom: 40 }}>
+        <View
+          style={{
+            paddingHorizontal: spacing.xl,
+            paddingBottom: spacing['4xl'],
+          }}
+        >
           <Button
             variant="primary"
             onPress={onCreate}
