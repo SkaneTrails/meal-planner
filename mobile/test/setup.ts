@@ -61,7 +61,7 @@ vi.mock('expo-haptics', () => ({
 }));
 
 vi.mock('expo-keep-awake', () => ({
-  activateKeepAwakeAsync: vi.fn(),
+  activateKeepAwakeAsync: vi.fn().mockResolvedValue(undefined),
   deactivateKeepAwake: vi.fn(),
 }));
 

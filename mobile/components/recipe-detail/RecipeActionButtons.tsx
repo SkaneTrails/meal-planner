@@ -107,7 +107,7 @@ export const RecipeActionButtons = ({
         label={t(
           keepScreenOn ? 'recipe.screenOnActive' : 'recipe.keepScreenOn',
         )}
-        tone={keepScreenOn ? 'glassSolid' : 'glassSolid'}
+        tone={keepScreenOn ? 'glassSolid' : 'glassSubtle'}
         size="md"
       />
     </ButtonGroup>

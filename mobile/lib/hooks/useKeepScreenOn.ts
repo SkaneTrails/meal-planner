@@ -8,7 +8,7 @@ export function useKeepScreenOn(isEnabled: boolean) {
 
   useEffect(() => {
     if (isEnabled) {
-      activateKeepAwakeAsync(TAG);
+      activateKeepAwakeAsync(TAG).catch(() => {});
       wasActivated.current = true;
     } else if (wasActivated.current) {
       deactivateKeepAwake(TAG);
