@@ -135,13 +135,14 @@ export const Button = ({
 
   // ── Resolve colors per tone ────────────────────────────────────────
   const resolveColors = (): { bg: string; fg: string; pressedBg?: string } => {
+    const t = colors.tones[tone];
     if (colorProp || textColorProp) {
       return {
-        bg: colorProp ?? 'transparent',
-        fg: textColorProp ?? colors.content.body,
+        bg: colorProp ?? t.bg,
+        fg: textColorProp ?? t.fg,
+        pressedBg: colorProp ? undefined : t.pressed,
       };
     }
-    const t = colors.tones[tone];
     return { bg: t.bg, fg: t.fg, pressedBg: t.pressed };
   };
 

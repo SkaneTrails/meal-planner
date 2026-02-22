@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { SettingToggleRow, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
-import { spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { LanguagePicker } from './LanguagePicker';
 import { ThemePicker } from './ThemePicker';
 
@@ -31,6 +31,7 @@ export const PersonalPreferencesSection = ({
         <Text
           style={{
             fontFamily: fonts.bodySemibold,
+            fontSize: fontSize.sm,
             color: colors.content.strong,
             marginBottom: spacing.xs,
           }}
