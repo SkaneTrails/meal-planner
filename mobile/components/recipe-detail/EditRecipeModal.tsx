@@ -280,16 +280,16 @@ export const EditRecipeModal = ({
               placeholderTextColor={colors.gray[300]}
               keyboardType="number-pad"
               style={{
-                backgroundColor: colors.gray[50],
+                backgroundColor: colors.input.bgSubtle,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.input.text,
                 textAlign: 'center',
                 borderWidth: 1,
-                borderColor: colors.bgDark,
+                borderColor: colors.input.border,
               }}
             />
           </View>
@@ -311,16 +311,16 @@ export const EditRecipeModal = ({
               placeholderTextColor={colors.gray[300]}
               keyboardType="number-pad"
               style={{
-                backgroundColor: colors.gray[50],
+                backgroundColor: colors.input.bgSubtle,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.input.text,
                 textAlign: 'center',
                 borderWidth: 1,
-                borderColor: colors.bgDark,
+                borderColor: colors.input.border,
               }}
             />
           </View>
@@ -342,16 +342,16 @@ export const EditRecipeModal = ({
               placeholderTextColor={colors.gray[300]}
               keyboardType="number-pad"
               style={{
-                backgroundColor: colors.gray[50],
+                backgroundColor: colors.input.bgSubtle,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.input.text,
                 textAlign: 'center',
                 borderWidth: 1,
-                borderColor: colors.bgDark,
+                borderColor: colors.input.border,
               }}
             />
           </View>

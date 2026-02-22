@@ -14,7 +14,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Pressable, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button, IconCircle, RecipeCard } from '@/components';
+import {
+  BottomSheetModal,
+  Button,
+  IconButton,
+  IconCircle,
+  RecipeCard,
+} from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import { SearchBar } from '@/components/recipes/RecipeFilters';
 import { showNotification } from '@/lib/alert';
@@ -31,7 +37,6 @@ import {
   dotSize,
   fontSize,
   fontWeight,
-  iconContainer,
   letterSpacing,
   lineHeight,
   spacing,
@@ -848,8 +853,7 @@ const CopyContent = ({
   mealType: string;
   onClose: () => void;
 }) => {
-  const { colors, fonts, borderRadius, shadows, circleStyle, visibility } =
-    useTheme();
+  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
   const { t, language } = useTranslation();
   const bcp47 = toBcp47(language);
   const { recipes } = useAllRecipes();
@@ -1003,13 +1007,10 @@ const CopyContent = ({
           gap: spacing.sm,
         }}
       >
-        <Button
-          variant="icon"
+        <IconButton
           tone="alt"
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
           icon="chevron-back"
-          iconSize={20}
-          style={{ ...circleStyle(iconContainer.xs) }}
         />
         <View
           style={{
@@ -1038,13 +1039,10 @@ const CopyContent = ({
             })}
           </Text>
         </View>
-        <Button
-          variant="icon"
+        <IconButton
           tone="alt"
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
           icon="chevron-forward"
-          iconSize={20}
-          style={{ ...circleStyle(iconContainer.xs) }}
         />
       </View>
 

@@ -9,7 +9,8 @@ import {
   View,
 } from 'react-native';
 import {
-  Button,
+  IconButton,
+  IconCircle,
   ScreenHeaderBar,
   ScreenLayout,
   TerminalDivider,
@@ -337,34 +338,24 @@ export default function MealPlanScreen() {
             }}
           >
             <View style={{ position: 'relative' }}>
-              <Button
-                variant="icon"
-                color={colors.button.primary}
-                textColor={colors.button.primaryText}
+              <IconButton
                 icon="cart"
+                size="xl"
                 iconSize={iconSize.xl}
                 onPress={openGroceryModal}
-                style={{
-                  width: iconContainer.xl,
-                  height: iconContainer.xl,
-                  boxShadow: shadows.float.boxShadow,
-                }}
+                style={{ boxShadow: shadows.float.boxShadow }}
               />
-              <View
+              <IconCircle
+                size={18}
+                bg={colors.accent}
                 style={{
                   position: 'absolute',
                   top: -2,
                   right: -2,
-                  width: 18,
-                  height: 18,
-                  borderRadius: borderRadius.full,
-                  backgroundColor: colors.accent,
-                  alignItems: 'center',
-                  justifyContent: 'center',
                 }}
               >
                 <Ionicons name="add" size={12} color={colors.white} />
-              </View>
+              </IconCircle>
             </View>
           </View>
 
@@ -393,18 +384,11 @@ export default function MealPlanScreen() {
                 ],
               }}
             >
-              <Button
-                variant="icon"
-                color={colors.button.primary}
-                textColor={colors.button.primaryText}
+              <IconButton
                 icon="today"
-                iconSize={iconSize.md}
+                size="md"
                 onPress={jumpToToday}
-                style={{
-                  width: iconContainer.md,
-                  height: iconContainer.md,
-                  boxShadow: shadows.float.boxShadow,
-                }}
+                style={{ boxShadow: shadows.float.boxShadow }}
               />
             </Animated.View>
           )}

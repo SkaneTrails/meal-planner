@@ -15,13 +15,13 @@ import {
   Text,
   View,
 } from 'react-native';
+import { IconButton } from '@/components/IconButton';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import {
   fontSize,
   fontWeight,
-  iconContainer,
   letterSpacing,
   lineHeight,
   spacing,
@@ -55,8 +55,7 @@ export const RecipeCard = ({
   cardSize,
   showFavorite = true,
 }: RecipeCardProps) => {
-  const { colors, fonts, borderRadius, shadows, circleStyle, chrome } =
-    useTheme();
+  const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
   const { isFavorite, toggleFavorite } = useSettings();
   const { t } = useTranslation();
   const isRecipeFavorite = isFavorite(recipe.id);
@@ -624,30 +623,23 @@ export const RecipeCard = ({
 
           {/* Favorite heart icon - top right, subtle */}
           {showFavorite && (
-            <Pressable
+            <IconButton
+              icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
               onPress={handleToggleFavorite}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              size="sm"
+              iconSize={16}
+              color={isRecipeFavorite ? colors.danger : colors.glass.bright}
+              textColor={
+                isRecipeFavorite ? colors.white : colors.content.secondary
+              }
               style={{
                 position: 'absolute',
                 top: spacing['sm-md'],
                 right: spacing['sm-md'],
-                backgroundColor: isRecipeFavorite
-                  ? colors.danger
-                  : colors.glass.bright,
-                ...circleStyle(iconContainer.sm),
-                alignItems: 'center',
-                justifyContent: 'center',
                 ...shadows.sm,
               }}
-            >
-              <Ionicons
-                name={isRecipeFavorite ? 'heart' : 'heart-outline'}
-                size={16}
-                color={
-                  isRecipeFavorite ? colors.white : colors.content.secondary
-                }
-              />
-            </Pressable>
+            />
           )}
         </View>
 

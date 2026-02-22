@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { SettingToggleRow, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 import { LanguagePicker } from './LanguagePicker';
 import { ThemePicker } from './ThemePicker';
 
@@ -15,7 +15,7 @@ export const PersonalPreferencesSection = ({
   showHiddenRecipes,
   onToggleShowHidden,
 }: PersonalPreferencesSectionProps) => {
-  const { colors, themeName, setThemeName } = useTheme();
+  const { colors, fonts, themeName, setThemeName } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -30,7 +30,7 @@ export const PersonalPreferencesSection = ({
       <View style={{ marginTop: spacing.lg }}>
         <Text
           style={{
-            fontSize: fontSize.sm,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.strong,
             marginBottom: spacing.xs,
           }}

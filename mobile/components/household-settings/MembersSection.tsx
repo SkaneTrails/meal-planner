@@ -149,12 +149,12 @@ const AddMemberForm = ({
           autoCapitalize="none"
           style={{
             flex: 1,
-            backgroundColor: colors.white,
+            backgroundColor: colors.input.bg,
             borderRadius: borderRadius.sm,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.md,
-            color: colors.content.body,
+            color: colors.input.text,
           }}
         />
       </View>

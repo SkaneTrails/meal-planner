@@ -142,5 +142,6 @@ export const bubblegumTheme: ThemeDefinition = {
     blurTint: 'light',
   },
   chrome: 'full',
+  iconContainerRadius: 0,
   requiredFonts: {}, // uses system rounded font — no custom fonts needed
 };

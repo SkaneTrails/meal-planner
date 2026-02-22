@@ -11,6 +11,7 @@ import { FlatList, RefreshControl, Text, View } from 'react-native';
 import {
   Button,
   FullScreenLoading,
+  IconButton,
   ScreenHeaderBar,
   ScreenLayout,
 } from '@/components';
@@ -27,14 +28,7 @@ import {
   useHouseholds,
 } from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  iconContainer,
-  layout,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
 export default function AdminScreen() {
@@ -147,7 +141,7 @@ export default function AdminScreen() {
 
 const AdminHeader = ({ onBack }: { onBack: () => void }) => {
   const { t } = useTranslation();
-  const { colors, circleStyle, shadows } = useTheme();
+  const { colors, shadows } = useTheme();
 
   return (
     <ScreenHeaderBar>
@@ -160,14 +154,13 @@ const AdminHeader = ({ onBack }: { onBack: () => void }) => {
           alignItems: 'center',
         }}
       >
-        <Button
-          variant="icon"
+        <IconButton
           onPress={onBack}
           icon="chevron-back"
           iconSize={22}
+          size="md"
+          tone="glass"
           style={{
-            ...circleStyle(iconContainer.md),
-            backgroundColor: colors.glass.button,
             marginRight: spacing.md,
             ...shadows.sm,
           }}
@@ -272,8 +265,7 @@ const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
         onPress={onCreateNew}
         icon="add"
         label={t('admin.newButton')}
-        textColor={colors.white}
-        color={colors.primary}
+        tone="primary"
         style={{
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,

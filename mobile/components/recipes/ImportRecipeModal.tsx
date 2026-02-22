@@ -180,7 +180,7 @@ export const ImportRecipeModal = ({
         <View style={{ marginBottom: spacing.lg }}>
           <View
             style={{
-              backgroundColor: colors.glass.subtle,
+              backgroundColor: colors.input.bg,
               borderRadius: borderRadius.md,
               padding: spacing.xs,
               flexDirection: 'row',
@@ -200,10 +200,10 @@ export const ImportRecipeModal = ({
                 paddingVertical: spacing.md,
                 fontSize: fontSize.md,
                 fontFamily: fonts.body,
-                color: colors.content.body,
+                color: colors.input.text,
               }}
               placeholder={t('home.addRecipe.placeholder')}
-              placeholderTextColor={colors.content.placeholder}
+              placeholderTextColor={colors.input.placeholder}
               value={url}
               onChangeText={setUrl}
               autoCapitalize="none"

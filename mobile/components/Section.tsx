@@ -66,7 +66,7 @@ export const Section = ({
   style,
   children,
 }: SectionProps) => {
-  const { colors, typography } = useTheme();
+  const { colors, fonts, typography } = useTheme();
   const rotateAnim = useRef(new Animated.Value(expanded ? 1 : 0)).current;
 
   const isCollapsible = collapsible && !!onToggle;
@@ -104,6 +104,7 @@ export const Section = ({
     size === 'sm'
       ? { ...typography.displaySmall, color: colors.content.heading }
       : {
+          fontFamily: fonts.bodySemibold,
           fontSize: fontSize.lg,
           fontWeight: fontWeight.bold,
           color: colors.content.heading,
@@ -134,6 +135,7 @@ export const Section = ({
         {subtitle && (
           <Text
             style={{
+              fontFamily: fonts.body,
               fontSize: fontSize.sm,
               color: colors.content.subtitle,
               marginTop: 2,

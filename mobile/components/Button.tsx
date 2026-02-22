@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import {
   ActivityIndicator,
+  type GestureResponderEvent,
   Pressable,
   StyleSheet,
   Text,
@@ -35,7 +36,15 @@ const cleanIconName = (name: string): string =>
 // ── Types ──────────────────────────────────────────────────────────────
 
 type ButtonVariant = 'text' | 'icon' | 'primary';
-type ButtonTone = 'default' | 'alt' | 'cancel' | 'warning' | 'ai';
+export type ButtonTone =
+  | 'default'
+  | 'alt'
+  | 'cancel'
+  | 'warning'
+  | 'ai'
+  | 'glass'
+  | 'glassSolid'
+  | 'primary';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -50,7 +59,7 @@ interface ButtonProps {
   /** Ionicons icon name. */
   icon?: IconName;
   /** Press handler. */
-  onPress: () => void;
+  onPress: (e: GestureResponderEvent) => void;
   /** Whether the button is disabled. */
   disabled?: boolean;
   /** Show loading state (all variants). Disables interaction and swaps to pending visuals. */
@@ -325,4 +334,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize };
+export type { ButtonProps, ButtonVariant, ButtonSize };

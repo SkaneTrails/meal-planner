@@ -43,7 +43,7 @@ export const AddRecipeModal = ({
       <View style={{ marginBottom: spacing.md }}>
         <View
           style={{
-            backgroundColor: colors.glass.subtle,
+            backgroundColor: colors.input.bg,
             borderRadius: borderRadius.md,
             padding: spacing.xs,
             flexDirection: 'row',
@@ -62,10 +62,10 @@ export const AddRecipeModal = ({
               paddingHorizontal: spacing['sm-md'],
               paddingVertical: spacing.md,
               fontSize: fontSize.md,
-              color: colors.content.body,
+              color: colors.input.text,
             }}
             placeholder={t('home.addRecipe.placeholder')}
-            placeholderTextColor={colors.content.placeholder}
+            placeholderTextColor={colors.input.placeholder}
             value={recipeUrl}
             onChangeText={setRecipeUrl}
             autoCapitalize="none"
@@ -79,10 +79,7 @@ export const AddRecipeModal = ({
             onPress={handleSubmit}
             disabled={!recipeUrl.trim()}
             label={t('home.addRecipe.importButton')}
-            color={recipeUrl.trim() ? colors.accent : colors.surface.pressed}
-            textColor={
-              recipeUrl.trim() ? colors.white : colors.content.secondary
-            }
+            tone="primary"
             size="sm"
             style={{
               borderRadius: borderRadius.sm,

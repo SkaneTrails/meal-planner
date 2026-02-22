@@ -77,13 +77,13 @@ export const CreateHouseholdModal = ({
             value={householdName}
             onChangeText={onHouseholdNameChange}
             placeholder={t('admin.createHousehold.namePlaceholder')}
-            placeholderTextColor={colors.content.placeholderHex}
+            placeholderTextColor={colors.input.placeholder}
             style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.input.bg,
               borderRadius: borderRadius.lg,
               padding: spacing.md,
               fontSize: fontSize.lg,
-              color: colors.content.heading,
+              color: colors.input.text,
               ...shadows.sm,
             }}
             autoFocus

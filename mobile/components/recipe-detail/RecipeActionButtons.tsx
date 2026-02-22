@@ -1,7 +1,7 @@
-import { Button, ButtonGroup } from '@/components';
+import { ButtonGroup, IconButton } from '@/components';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { iconContainer, useTheme } from '@/lib/theme';
+import { useTheme } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -34,15 +34,13 @@ export const RecipeActionButtons = ({
   onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => {
-  const { colors, circleStyle, visibility } = useTheme();
+  const { colors, visibility } = useTheme();
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
-  const iconBtnSize = iconContainer.md;
 
   return (
     <ButtonGroup gap={8}>
-      <Button
-        variant="icon"
+      <IconButton
         icon="create"
         iconSize={20}
         onPress={
@@ -63,64 +61,50 @@ export const RecipeActionButtons = ({
         label={t('recipe.edit')}
         disabled={!canEdit}
         disableAnimation={!canEdit}
-        color={colors.glass.solid}
-        textColor={colors.text.inverse}
-        style={{
-          ...circleStyle(iconBtnSize),
-          opacity: canEdit ? 1 : 0.5,
-        }}
+        tone="glassSolid"
+        size="md"
+        style={{ opacity: canEdit ? 1 : 0.5 }}
       />
-      <Button
-        variant="icon"
+      <IconButton
         icon="calendar"
         iconSize={20}
         onPress={onShowPlanModal}
         label={t('mealPlan.title')}
-        color={colors.glass.solid}
-        textColor={colors.text.inverse}
-        style={circleStyle(iconBtnSize)}
+        tone="glassSolid"
+        size="md"
       />
-      <Button
-        variant="icon"
+      <IconButton
         icon="share"
         iconSize={20}
         onPress={onShare}
         label={t('recipe.share')}
-        color={colors.glass.solid}
-        textColor={colors.text.inverse}
-        style={circleStyle(iconBtnSize)}
+        tone="glassSolid"
+        size="md"
       />
       {canCopy && (
-        <Button
-          variant="icon"
+        <IconButton
           icon="copy-outline"
           iconSize={20}
           onPress={onCopy}
           label={t('recipe.copy')}
           disabled={isCopying}
-          color={colors.glass.solid}
-          textColor={colors.text.inverse}
-          style={{
-            ...circleStyle(iconBtnSize),
-            opacity: isCopying ? 0.5 : 1,
-          }}
+          tone="glassSolid"
+          size="md"
+          style={{ opacity: isCopying ? 0.5 : 1 }}
         />
       )}
       {canEnhance && (
-        <Button
-          variant="icon"
+        <IconButton
           icon="sparkles"
           iconSize={20}
           onPress={onEnhance}
           label={t('recipe.enhance')}
           disabled={enhanceDisabled}
           disableAnimation={enhanceDisabled}
-          color={colors.glass.solid}
+          tone="glassSolid"
           textColor={enhanceDisabled ? colors.gray[400] : colors.ai.primary}
-          style={{
-            ...circleStyle(iconBtnSize),
-            opacity: enhanceDisabled ? 0.5 : 1,
-          }}
+          size="md"
+          style={{ opacity: enhanceDisabled ? 0.5 : 1 }}
         />
       )}
     </ButtonGroup>

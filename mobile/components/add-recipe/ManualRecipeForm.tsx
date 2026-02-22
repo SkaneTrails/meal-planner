@@ -52,12 +52,12 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
   } = actions;
 
   const inputStyle = {
-    backgroundColor: colors.glass.card,
+    backgroundColor: colors.input.bg,
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     fontSize: fontSize.lg,
-    color: colors.text.inverse,
+    color: colors.input.text,
     ...shadows.sm,
   };
 
@@ -122,7 +122,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
             <TextInput
               style={inputStyle}
               placeholder={t('addRecipe.titlePlaceholder')}
-              placeholderTextColor={colors.gray[500]}
+              placeholderTextColor={colors.input.placeholder}
               value={title}
               onChangeText={setTitle}
               editable={!isPending}
@@ -138,7 +138,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                 textAlignVertical: 'top',
               }}
               placeholder={t('addRecipe.ingredientsPlaceholder')}
-              placeholderTextColor={colors.gray[500]}
+              placeholderTextColor={colors.input.placeholder}
               value={ingredients}
               onChangeText={setIngredients}
               multiline
@@ -155,7 +155,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                 textAlignVertical: 'top',
               }}
               placeholder={t('addRecipe.instructionsPlaceholder')}
-              placeholderTextColor={colors.gray[500]}
+              placeholderTextColor={colors.input.placeholder}
               value={instructions}
               onChangeText={setInstructions}
               multiline
@@ -286,16 +286,16 @@ const NumericField = ({
     <FormField label={label} compact>
       <TextInput
         style={{
-          backgroundColor: colors.glass.card,
+          backgroundColor: colors.input.bg,
           borderRadius: borderRadius.md,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           fontSize: fontSize.md,
-          color: colors.text.inverse,
+          color: colors.input.text,
           ...shadows.sm,
         }}
         placeholder={placeholder}
-        placeholderTextColor={colors.gray[500]}
+        placeholderTextColor={colors.input.placeholder}
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"

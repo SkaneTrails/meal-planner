@@ -140,13 +140,13 @@ export const AiSection = ({
             editable={!disabledByAi}
             placeholder={t('householdSettings.dietary.chickenAltPlaceholder')}
             style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.input.bg,
               borderRadius: borderRadius.md,
               padding: spacing.md,
               fontSize: fontSize.md,
-              color: colors.content.body,
+              color: colors.input.text,
               borderWidth: 1,
-              borderColor: colors.border,
+              borderColor: colors.input.border,
             }}
           />
           <Text
@@ -167,13 +167,13 @@ export const AiSection = ({
             editable={!disabledByAi}
             placeholder={t('householdSettings.dietary.meatAltPlaceholder')}
             style={{
-              backgroundColor: colors.white,
+              backgroundColor: colors.input.bg,
               borderRadius: borderRadius.md,
               padding: spacing.md,
               fontSize: fontSize.md,
-              color: colors.content.body,
+              color: colors.input.text,
               borderWidth: 1,
-              borderColor: colors.border,
+              borderColor: colors.input.border,
             }}
           />
         </View>

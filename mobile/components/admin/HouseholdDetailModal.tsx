@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, Modal, Text, View } from 'react-native';
-import { Button, Chip, GradientBackground } from '@/components';
+import { Button, Chip, GradientBackground, IconButton } from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
@@ -9,13 +9,7 @@ import {
   useRemoveMember,
 } from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  iconContainer,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Household, HouseholdMember } from '@/lib/types';
 
 interface HouseholdDetailModalProps {
@@ -152,7 +146,7 @@ const ModalHeader = ({
   household: Household;
   onClose: () => void;
 }) => {
-  const { colors, circleStyle, shadows } = useTheme();
+  const { colors, shadows } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -165,14 +159,13 @@ const ModalHeader = ({
         paddingBottom: spacing.md,
       }}
     >
-      <Button
-        variant="icon"
+      <IconButton
         onPress={onClose}
         icon="chevron-back"
         iconSize={22}
+        size="md"
+        tone="glass"
         style={{
-          ...circleStyle(iconContainer.md),
-          backgroundColor: colors.glass.button,
           marginRight: spacing.md,
           ...shadows.sm,
         }}
@@ -223,8 +216,7 @@ const MembersListHeader = ({ onAddMember }: { onAddMember: () => void }) => {
         icon="person-add"
         iconSize={16}
         label={t('admin.addMemberButton')}
-        textColor={colors.white}
-        color={colors.primary}
+        tone="primary"
         style={{
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,

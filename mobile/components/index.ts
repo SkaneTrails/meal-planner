@@ -32,6 +32,7 @@ export { FullScreenLoading } from './FullScreenLoading';
 export { GradientBackground } from './GradientBackground';
 export { GroceryItemRow } from './GroceryItemRow';
 export { GroceryListView } from './GroceryListView';
+export { IconButton } from './IconButton';
 export { IconCircle } from './IconCircle';
 export { InlineAddInput } from './InlineAddInput';
 export { DayColumn, MealCell } from './MealGrid';

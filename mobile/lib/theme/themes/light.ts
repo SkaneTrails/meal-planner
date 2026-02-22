@@ -118,6 +118,7 @@ export const lightTheme: ThemeDefinition = {
     blurTint: 'light',
   },
   chrome: 'full',
+  iconContainerRadius: 0.5,
   requiredFonts: {
     DMSans_400Regular,
     DMSans_500Medium,

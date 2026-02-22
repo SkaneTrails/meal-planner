@@ -137,15 +137,15 @@ export const ManualRecipeModal = ({
   };
 
   const inputStyle = {
-    backgroundColor: colors.card.bg,
+    backgroundColor: colors.input.bg,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.card.borderColor,
+    borderColor: colors.input.border,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     fontSize: fontSize.lg,
     fontFamily: fonts.body,
-    color: colors.content.body,
+    color: colors.input.text,
   };
 
   return (
@@ -160,7 +160,7 @@ export const ManualRecipeModal = ({
         <TextInput
           style={inputStyle}
           placeholder={t('addRecipe.titlePlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={colors.input.placeholder}
           value={title}
           onChangeText={setTitle}
           editable={!isPending}
@@ -176,7 +176,7 @@ export const ManualRecipeModal = ({
             textAlignVertical: 'top',
           }}
           placeholder={t('addRecipe.ingredientsPlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={colors.input.placeholder}
           value={ingredients}
           onChangeText={setIngredients}
           multiline
@@ -193,7 +193,7 @@ export const ManualRecipeModal = ({
             textAlignVertical: 'top',
           }}
           placeholder={t('addRecipe.instructionsPlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={colors.input.placeholder}
           value={instructions}
           onChangeText={setInstructions}
           multiline
@@ -324,18 +324,18 @@ const NumericField = ({
     <FormField label={label} compact>
       <TextInput
         style={{
-          backgroundColor: colors.card.bg,
+          backgroundColor: colors.input.bg,
           borderRadius: borderRadius.md,
           borderWidth: 1,
-          borderColor: colors.card.borderColor,
+          borderColor: colors.input.border,
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           fontSize: fontSize.md,
           fontFamily: fonts.body,
-          color: colors.content.body,
+          color: colors.input.text,
         }}
         placeholder={placeholder}
-        placeholderTextColor={colors.gray[500]}
+        placeholderTextColor={colors.input.placeholder}
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"

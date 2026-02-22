@@ -6,6 +6,7 @@ import {
   Button,
   ContentCard,
   HomeScreenSkeleton,
+  IconButton,
   ScreenLayout,
   TerminalFabBar,
   TerminalFrame,
@@ -132,7 +133,7 @@ const Header = ({
   t: TFn;
   onSettings: () => void;
 }) => {
-  const { colors, borderRadius, shadows, chrome } = useTheme();
+  const { colors, shadows, chrome } = useTheme();
 
   return (
     <View
@@ -168,18 +169,13 @@ const Header = ({
             ]}
           />
         ) : (
-          <Button
-            variant="icon"
+          <IconButton
             onPress={onSettings}
             icon="settings-outline"
+            size={44}
             iconSize={24}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: borderRadius['lg-xl'],
-              backgroundColor: colors.border,
-              ...shadows.sm,
-            }}
+            color={colors.border}
+            style={shadows.sm}
           />
         )}
       </View>

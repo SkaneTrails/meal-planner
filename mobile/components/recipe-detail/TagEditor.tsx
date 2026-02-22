@@ -61,21 +61,21 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
           value={newTag}
           onChangeText={setNewTag}
           placeholder={t('recipe.addTag')}
-          placeholderTextColor={colors.gray[400]}
+          placeholderTextColor={colors.input.placeholder}
           autoCapitalize="none"
           onSubmitEditing={handleAddTag}
           returnKeyType="done"
           style={{
             flex: 1,
-            backgroundColor: colors.gray[50],
+            backgroundColor: colors.input.bgSubtle,
             borderRadius: borderRadius.md,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.md,
             fontSize: fontSize.xl,
             fontFamily: fonts.body,
-            color: colors.text.inverse,
+            color: colors.input.text,
             borderWidth: 1,
-            borderColor: colors.bgDark,
+            borderColor: colors.input.border,
           }}
         />
         <Button

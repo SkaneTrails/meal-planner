@@ -9,11 +9,7 @@
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import type { ColorTokens } from './colors';
-import {
-  type BorderRadiusTokens,
-  circleStyle as defaultCircleStyle,
-  type ShadowTokens,
-} from './layout';
+import type { BorderRadiusTokens, ShadowTokens } from './layout';
 import { createStyles, type ThemeStyles } from './styles';
 import type { FontFamilyTokens, TypographyTokens } from './typography';
 import { createTypography } from './typography';
@@ -180,6 +176,11 @@ export interface ThemeDefinition {
    * 'full' uses cards with rounded corners and shadows.
    */
   chrome: LayoutChrome;
+  /**
+   * Icon container border-radius as a fraction of the container size (0–0.5).
+   * 0 = square, 0.5 = circle, values in between = rounded square.
+   */
+  iconContainerRadius: number;
   /** CRT visual overlay config (scanlines, flicker, glow). Omit for themes without the effect. */
   crt?: CRTConfig;
   /** Whether this theme supports animated gradient backgrounds. Defaults to true when omitted. */
@@ -259,16 +260,19 @@ export const ThemeProvider = ({
       crt,
       animatedBackground,
     } = theme;
-    const themedCircleStyle: CircleStyleFn =
-      chrome === 'flat'
-        ? (size) => ({ width: size, height: size, borderRadius: 0 }) as const
-        : defaultCircleStyle;
+    const iconRadiusFraction = theme.iconContainerRadius ?? 0.5;
+    const themedCircleStyle: CircleStyleFn = (size) =>
+      ({
+        width: size,
+        height: size,
+        borderRadius: size * iconRadiusFraction,
+      }) as const;
 
     return {
       colors,
       fonts,
       typography: createTypography(fonts),
-      styles: createStyles(colors, radii),
+      styles: createStyles(colors, radii, fonts),
       borderRadius: radii,
       shadows: shadowTokens,
       circleStyle: themedCircleStyle,

@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import {
-  Button,
   DropdownPicker,
+  IconButton,
   SettingToggleRow,
   StepperControl,
   SurfaceCard,
@@ -13,7 +13,6 @@ import {
   borderRadius,
   fontSize,
   fontWeight,
-  iconContainer,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -63,7 +62,7 @@ export const GeneralSection = ({
   weekStart,
   onSetWeekStart,
 }: GeneralSectionProps) => {
-  const { colors, circleStyle } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   const weekStartOptions = useMemo(
@@ -106,27 +105,19 @@ export const GeneralSection = ({
                 flex: 1,
                 fontSize: fontSize.lg,
                 fontWeight: fontWeight.bold,
-                color: colors.content.body,
-                backgroundColor: colors.bgLight,
+                color: colors.input.text,
+                backgroundColor: colors.input.bg,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.sm,
               }}
             />
-            <Button
-              variant="icon"
+            <IconButton
               icon="checkmark"
               onPress={onSaveName}
               isPending={isRenamePending}
-              style={circleStyle(iconContainer.xs)}
             />
-            <Button
-              variant="icon"
-              tone="cancel"
-              icon="close"
-              onPress={onCancelEditName}
-              style={circleStyle(iconContainer.xs)}
-            />
+            <IconButton tone="cancel" icon="close" onPress={onCancelEditName} />
           </View>
         ) : (
           <Pressable

@@ -401,6 +401,21 @@ export const lightColors = {
       fg: '#D97A45',
       pressed: 'rgba(217, 122, 69, 0.2)',
     },
+    glass: {
+      bg: 'rgba(255, 255, 255, 0.3)',
+      fg: '#FFFFFF',
+      pressed: 'rgba(255, 255, 255, 0.45)',
+    },
+    glassSolid: {
+      bg: 'rgba(255, 255, 255, 0.95)',
+      fg: '#5D4E40',
+      pressed: 'rgba(255, 255, 255, 0.85)',
+    },
+    primary: {
+      bg: '#2D2D2D',
+      fg: '#FFFFFF',
+      pressed: '#1A1A1A',
+    },
   },
 } as const;
 

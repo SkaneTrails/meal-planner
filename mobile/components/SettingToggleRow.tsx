@@ -26,7 +26,7 @@ export const SettingToggleRow = ({
   onValueChange,
   disabled = false,
 }: SettingToggleRowProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <View
@@ -39,6 +39,7 @@ export const SettingToggleRow = ({
       <View style={{ flex: 1, marginRight: spacing.md }}>
         <Text
           style={{
+            fontFamily: fonts.bodyMedium,
             fontSize: fontSize.md,
             fontWeight: fontWeight.medium,
             color: colors.content.body,
@@ -49,6 +50,7 @@ export const SettingToggleRow = ({
         {subtitle && (
           <Text
             style={{
+              fontFamily: fonts.body,
               fontSize: fontSize.sm,
               color: colors.content.strong,
               marginTop: spacing['2xs'],

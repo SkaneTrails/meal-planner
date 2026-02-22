@@ -6,9 +6,9 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import {
-  Button,
   EnhancingOverlay,
   GradientBackground,
+  IconButton,
   TerminalFabBar,
 } from '@/components';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
@@ -26,7 +26,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useMealPlan, useRecipe } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
-import { iconContainer, layout, spacing, useTheme } from '@/lib/theme';
+import { layout, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 
@@ -181,36 +181,27 @@ export default function RecipeDetailScreen() {
           headerTintColor: colors.white,
           headerBackTitle: '',
           headerLeft: () => (
-            <Button
-              variant="icon"
-              color={colors.glass.button}
-              textColor={colors.white}
+            <IconButton
+              tone="glass"
               icon="chevron-back"
+              size="md"
               iconSize={24}
               onPress={() => router.replace('/(tabs)/recipes')}
-              style={{
-                width: iconContainer.md,
-                height: iconContainer.md,
-                marginLeft: spacing.sm,
-              }}
+              style={{ marginLeft: spacing.sm }}
             />
           ),
           headerRight: () => (
-            <Button
-              variant="icon"
-              color={colors.glass.button}
+            <IconButton
+              tone="glass"
               icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
+              size="md"
               iconSize={22}
               onPress={() => {
                 hapticLight();
                 if (id) toggleFavorite(id);
               }}
-              textColor={isRecipeFavorite ? colors.coral : colors.white}
-              style={{
-                width: iconContainer.md,
-                height: iconContainer.md,
-                marginRight: spacing.sm,
-              }}
+              textColor={isRecipeFavorite ? colors.coral : undefined}
+              style={{ marginRight: spacing.sm }}
             />
           ),
         }}
