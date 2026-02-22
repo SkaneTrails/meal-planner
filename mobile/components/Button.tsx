@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useButtonGroup } from '@/components/ButtonGroup';
-import { fontSize, spacing, terminal, useTheme } from '@/lib/theme';
+import { fontSize, opacity, spacing, terminal, useTheme } from '@/lib/theme';
 
 type IconName = ComponentProps<typeof IoniconsType>['name'];
 
@@ -44,7 +44,8 @@ export type ButtonTone =
   | 'ai'
   | 'glass'
   | 'glassSolid'
-  | 'primary';
+  | 'primary'
+  | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -186,7 +187,7 @@ export const Button = ({
         disabled={isDisabled}
         testID={testID}
         hitSlop={hitSlop}
-        style={[{ opacity: isDisabled ? 0.4 : 1 }, segmentStyle]}
+        style={[{ opacity: isDisabled ? opacity.disabled : 1 }, segmentStyle]}
       >
         <Text
           selectable={false}
@@ -299,12 +300,12 @@ export const Button = ({
               : activeBg,
           opacity: useHighlight
             ? isDisabled
-              ? 0.5
+              ? opacity.disabled
               : 1
             : pressed && !pressedBg
-              ? 0.9
+              ? opacity.pressed
               : isDisabled
-                ? 0.5
+                ? opacity.disabled
                 : 1,
         },
         style,

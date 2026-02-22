@@ -1,10 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Text } from 'react-native';
 import {
   Chip,
   ChipGroup,
-  IconCircle,
+  EmptyState,
   InlineAddInput,
   SurfaceCard,
 } from '@/components';
@@ -75,7 +74,15 @@ export const NoteSuggestionsSection = ({
         <PresetSuggestions items={presetsNotAdded} onAdd={onAdd} />
       )}
 
-      {suggestions.length === 0 && <EmptyState />}
+      {suggestions.length === 0 && (
+        <EmptyState
+          variant="compact"
+          icon="document-text-outline"
+          title={t('settings.noSuggestionsYet')}
+          subtitle={t('settings.addSuggestionsHint')}
+          style={{ marginTop: spacing.sm }}
+        />
+      )}
     </>
   );
 };
@@ -154,46 +161,6 @@ const PresetSuggestions = ({
           />
         ))}
       </ChipGroup>
-    </SurfaceCard>
-  );
-};
-
-const EmptyState = () => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <SurfaceCard style={{ alignItems: 'center', marginTop: spacing.sm }}>
-      <IconCircle
-        size={48}
-        bg={colors.bgDark}
-        style={{ marginBottom: spacing.sm }}
-      >
-        <Ionicons
-          name="document-text-outline"
-          size={24}
-          color={colors.content.body}
-        />
-      </IconCircle>
-      <Text
-        style={{
-          fontSize: fontSize.md,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.body,
-          marginBottom: spacing['2xs'],
-        }}
-      >
-        {t('settings.noSuggestionsYet')}
-      </Text>
-      <Text
-        style={{
-          fontSize: fontSize.sm,
-          color: colors.content.icon,
-          textAlign: 'center',
-        }}
-      >
-        {t('settings.addSuggestionsHint')}
-      </Text>
     </SurfaceCard>
   );
 };

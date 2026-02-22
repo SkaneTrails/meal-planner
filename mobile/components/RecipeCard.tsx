@@ -623,23 +623,26 @@ export const RecipeCard = ({
 
           {/* Favorite heart icon - top right, subtle */}
           {showFavorite && (
-            <IconButton
-              icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
-              onPress={handleToggleFavorite}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              size="sm"
-              iconSize={16}
-              color={isRecipeFavorite ? colors.danger : colors.glass.bright}
-              textColor={
-                isRecipeFavorite ? colors.white : colors.content.secondary
-              }
+            <View
               style={{
                 position: 'absolute',
                 top: spacing['sm-md'],
                 right: spacing['sm-md'],
                 ...shadows.sm,
               }}
-            />
+            >
+              <IconButton
+                icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
+                onPress={handleToggleFavorite}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                size="sm"
+                iconSize={16}
+                color={isRecipeFavorite ? colors.danger : colors.glass.bright}
+                textColor={
+                  isRecipeFavorite ? colors.white : colors.content.secondary
+                }
+              />
+            </View>
           )}
         </View>
 

@@ -214,8 +214,8 @@ export const RecipeNotes = ({
               {formatDate(note.created_at)}
             </Text>
             <Button
-              variant="icon"
-              tone="warning"
+              variant="text"
+              textColor={colors.error}
               icon="trash-outline"
               size="sm"
               onPress={() => handleDelete(note.id)}

@@ -5,8 +5,7 @@
 
 import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import { GradientBackground, ScreenHeaderBar } from '@/components';
-import { ScreenTitle } from '@/components/ScreenTitle';
+import { GradientBackground, ScreenHeader } from '@/components';
 import {
   AboutSection,
   AccountSection,
@@ -40,21 +39,11 @@ export default function SettingsScreen() {
   return (
     <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <ScreenHeaderBar>
-          <View
-            style={{
-              paddingHorizontal: spacing.xl,
-              paddingTop: layout.screenPaddingTop,
-              paddingBottom: spacing.md,
-            }}
-          >
-            <ScreenTitle
-              variant="large"
-              title={t('settings.title')}
-              subtitle={t('settings.subtitle')}
-            />
-          </View>
-        </ScreenHeaderBar>
+        <ScreenHeader
+          variant="large"
+          title={t('settings.title')}
+          subtitle={t('settings.subtitle')}
+        />
 
         <ScrollView
           style={{ flex: 1 }}

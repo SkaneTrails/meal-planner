@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, Modal, Text, View } from 'react-native';
-import { Button, Chip, GradientBackground, IconButton } from '@/components';
+import {
+  Button,
+  Chip,
+  GradientBackground,
+  IconButton,
+  SurfaceCard,
+} from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
@@ -234,22 +240,20 @@ const MemberCard = ({
   member: HouseholdMember;
   onRemove: () => void;
 }) => {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <View
+    <SurfaceCard
+      radius="lg"
+      padding={spacing.md}
       style={{
-        backgroundColor: colors.glass.card,
-        borderRadius: borderRadius.lg,
-        padding: spacing.md,
         marginBottom: spacing.sm,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        ...shadows.sm,
       }}
     >
       <View style={{ flex: 1 }}>
@@ -279,13 +283,13 @@ const MemberCard = ({
         </View>
       </View>
       <Button
-        variant="icon"
-        tone="warning"
+        variant="text"
+        textColor={colors.error}
         onPress={onRemove}
         icon="trash-outline"
         iconSize={20}
-        style={{ padding: spacing.sm }}
+        hitSlop={8}
       />
-    </View>
+    </SurfaceCard>
   );
 };

@@ -21,6 +21,7 @@ export {
   iconContainer,
   iconSize,
   layout,
+  opacity,
   spacing,
   terminal,
 } from './theme/layout';

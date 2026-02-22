@@ -73,8 +73,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
           disabled={!newTag.trim()}
           icon="add"
           iconSize={24}
-          color={newTag.trim() ? colors.primary : colors.gray[200]}
-          textColor={newTag.trim() ? colors.white : colors.gray[400]}
+          tone="primary"
           style={{
             paddingHorizontal: spacing.lg,
             borderRadius: borderRadius.md,

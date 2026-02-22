@@ -1,10 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Text } from 'react-native';
 import {
   Chip,
   ChipGroup,
-  IconCircle,
+  EmptyState,
   InlineAddInput,
   SurfaceCard,
 } from '@/components';
@@ -104,7 +103,15 @@ export const ItemsAtHomeSection = ({
       )}
 
       {/* Empty state */}
-      {itemsAtHome.length === 0 && <EmptyItemsState />}
+      {itemsAtHome.length === 0 && (
+        <EmptyState
+          variant="compact"
+          icon="basket-outline"
+          title={t('settings.noItemsYet')}
+          subtitle={t('settings.addItemsHint')}
+          style={{ marginTop: spacing.sm }}
+        />
+      )}
     </>
   );
 };
@@ -178,42 +185,6 @@ const SuggestedItems = ({
           />
         ))}
       </ChipGroup>
-    </SurfaceCard>
-  );
-};
-
-const EmptyItemsState = () => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <SurfaceCard style={{ alignItems: 'center', marginTop: spacing.sm }}>
-      <IconCircle
-        size="lg"
-        bg={colors.bgDark}
-        style={{ marginBottom: spacing.sm }}
-      >
-        <Ionicons name="basket-outline" size={24} color={colors.content.body} />
-      </IconCircle>
-      <Text
-        style={{
-          fontSize: fontSize.md,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.heading,
-          marginBottom: 2,
-        }}
-      >
-        {t('settings.noItemsYet')}
-      </Text>
-      <Text
-        style={{
-          fontSize: fontSize.sm,
-          color: colors.content.strong,
-          textAlign: 'center',
-        }}
-      >
-        {t('settings.addItemsHint')}
-      </Text>
     </SurfaceCard>
   );
 };

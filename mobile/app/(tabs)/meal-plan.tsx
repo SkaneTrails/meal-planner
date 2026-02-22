@@ -11,7 +11,7 @@ import {
 import {
   IconButton,
   IconCircle,
-  ScreenHeaderBar,
+  ScreenHeader,
   ScreenLayout,
   TerminalDivider,
   TerminalFabBar,
@@ -24,7 +24,6 @@ import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 import { SelectMealModal } from '@/components/meal-plan/SelectMealModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
-import { ScreenTitle } from '@/components/ScreenTitle';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 import {
   iconContainer,
@@ -101,21 +100,10 @@ export default function MealPlanScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeaderBar>
-        {/* Header */}
-        <View
-          style={{
-            paddingHorizontal: spacing.xl,
-            paddingTop: spacing.lg,
-            paddingBottom: spacing.md,
-          }}
-        >
-          <ScreenTitle
-            title={t('mealPlan.title')}
-            subtitle={t('mealPlan.subtitle')}
-          />
-        </View>
-
+      <ScreenHeader
+        title={t('mealPlan.title')}
+        subtitle={t('mealPlan.subtitle')}
+      >
         <WeekSelector
           weekDates={weekDates}
           weekOffset={weekOffset}
@@ -125,7 +113,7 @@ export default function MealPlanScreen() {
           onNextWeek={() => setWeekOffset((prev) => prev + 1)}
           onJumpToToday={() => setWeekOffset(0)}
         />
-      </ScreenHeaderBar>
+      </ScreenHeader>
 
       {/* Meal list with swipe gesture */}
       <View style={{ flex: 1 }} {...panResponder.panHandlers}>
