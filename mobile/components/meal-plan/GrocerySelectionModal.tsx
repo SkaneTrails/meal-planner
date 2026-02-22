@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import { BottomSheetModal, Button } from '@/components';
+import { BottomSheetModal, Button, IconButton } from '@/components';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import {
   formatDateLocal,
@@ -160,7 +160,7 @@ const GroceryWeekSelector = ({
   onPreviousWeek,
   onNextWeek,
 }: GroceryWeekSelectorProps) => {
-  const { colors, fonts, borderRadius, circleStyle } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={{
@@ -171,14 +171,7 @@ const GroceryWeekSelector = ({
         gap: spacing.sm,
       }}
     >
-      <Button
-        variant="icon"
-        tone="alt"
-        onPress={onPreviousWeek}
-        icon="chevron-back"
-        iconSize={20}
-        style={circleStyle(iconContainer.xs)}
-      />
+      <IconButton tone="alt" onPress={onPreviousWeek} icon="chevron-back" />
       <View
         style={{
           paddingHorizontal: spacing.xl,
@@ -198,14 +191,7 @@ const GroceryWeekSelector = ({
           {formatWeekRange(weekDates, language)}
         </Text>
       </View>
-      <Button
-        variant="icon"
-        tone="alt"
-        onPress={onNextWeek}
-        icon="chevron-forward"
-        iconSize={20}
-        style={circleStyle(iconContainer.xs)}
-      />
+      <IconButton tone="alt" onPress={onNextWeek} icon="chevron-forward" />
     </View>
   );
 };
@@ -229,7 +215,7 @@ const GroceryMealItem = ({
   onToggle,
   onChangeServings,
 }: GroceryMealItemProps) => {
-  const { colors, fonts, borderRadius, circleStyle } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   return (
     <View
       style={{
@@ -302,13 +288,11 @@ const GroceryMealItem = ({
             alignSelf: 'flex-start',
           }}
         >
-          <Button
-            variant="icon"
+          <IconButton
             tone="alt"
             onPress={() => onChangeServings(mealKey, -1)}
             icon="remove"
-            iconSize={18}
-            style={circleStyle(iconContainer.sm)}
+            size="sm"
           />
           <View
             style={{
@@ -333,13 +317,11 @@ const GroceryMealItem = ({
               {currentServings}
             </Text>
           </View>
-          <Button
-            variant="icon"
+          <IconButton
             tone="alt"
             onPress={() => onChangeServings(mealKey, 1)}
             icon="add"
-            iconSize={18}
-            style={circleStyle(iconContainer.sm)}
+            size="sm"
           />
         </View>
       )}

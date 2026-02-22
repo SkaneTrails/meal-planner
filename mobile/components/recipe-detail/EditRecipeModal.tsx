@@ -1,9 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button, ChipPicker } from '@/components';
+import {
+  BottomSheetModal,
+  Button,
+  ChipPicker,
+  SectionLabel,
+} from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type {
   DietLabel,
   Household,
@@ -141,18 +146,7 @@ export const EditRecipeModal = ({
       {/* Visibility — hidden for copies (always private) */}
       {!recipe.copied_from && (
         <View style={{ marginBottom: spacing.xl }}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodySemibold,
-              color: colors.gray[500],
-              marginBottom: spacing.sm,
-              textTransform: 'uppercase',
-              letterSpacing: letterSpacing.wide,
-            }}
-          >
-            {t('recipe.visibilityLabel')}
-          </Text>
+          <SectionLabel text={t('recipe.visibilityLabel')} size="lg" />
           <View style={{ flexDirection: 'row', gap: spacing.md }}>
             {VISIBILITY_OPTIONS.map(({ value, labelKey, icon, descKey }) => {
               const isSelected = editVisibility === value;
@@ -212,18 +206,7 @@ export const EditRecipeModal = ({
       {/* Info message for copies — visibility is locked */}
       {recipe.copied_from && (
         <View style={{ marginBottom: spacing.xl }}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodySemibold,
-              color: colors.gray[500],
-              marginBottom: spacing.sm,
-              textTransform: 'uppercase',
-              letterSpacing: letterSpacing.wide,
-            }}
-          >
-            {t('recipe.visibilityLabel')}
-          </Text>
+          <SectionLabel text={t('recipe.visibilityLabel')} size="lg" />
           <Text
             style={{
               fontSize: fontSize.base,
@@ -249,18 +232,7 @@ export const EditRecipeModal = ({
 
       {/* Time & Servings */}
       <View style={{ marginBottom: spacing.xl }}>
-        <Text
-          style={{
-            fontSize: fontSize.lg,
-            fontFamily: fonts.bodySemibold,
-            color: colors.gray[500],
-            marginBottom: spacing.sm,
-            textTransform: 'uppercase',
-            letterSpacing: letterSpacing.wide,
-          }}
-        >
-          {t('recipe.timeAndServings')}
-        </Text>
+        <SectionLabel text={t('recipe.timeAndServings')} size="lg" />
         <View style={{ flexDirection: 'row', gap: spacing.md }}>
           <View style={{ flex: 1 }}>
             <Text
@@ -280,16 +252,16 @@ export const EditRecipeModal = ({
               placeholderTextColor={colors.gray[300]}
               keyboardType="number-pad"
               style={{
-                backgroundColor: colors.gray[50],
+                backgroundColor: colors.input.bgSubtle,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.input.text,
                 textAlign: 'center',
                 borderWidth: 1,
-                borderColor: colors.bgDark,
+                borderColor: colors.input.border,
               }}
             />
           </View>
@@ -311,16 +283,16 @@ export const EditRecipeModal = ({
               placeholderTextColor={colors.gray[300]}
               keyboardType="number-pad"
               style={{
-                backgroundColor: colors.gray[50],
+                backgroundColor: colors.input.bgSubtle,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.input.text,
                 textAlign: 'center',
                 borderWidth: 1,
-                borderColor: colors.bgDark,
+                borderColor: colors.input.border,
               }}
             />
           </View>
@@ -342,16 +314,16 @@ export const EditRecipeModal = ({
               placeholderTextColor={colors.gray[300]}
               keyboardType="number-pad"
               style={{
-                backgroundColor: colors.gray[50],
+                backgroundColor: colors.input.bgSubtle,
                 borderRadius: borderRadius.md,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
                 fontSize: fontSize['2xl'],
                 fontFamily: fonts.body,
-                color: colors.text.inverse,
+                color: colors.input.text,
                 textAlign: 'center',
                 borderWidth: 1,
-                borderColor: colors.bgDark,
+                borderColor: colors.input.border,
               }}
             />
           </View>

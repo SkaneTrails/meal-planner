@@ -15,7 +15,7 @@ export const PersonalPreferencesSection = ({
   showHiddenRecipes,
   onToggleShowHidden,
 }: PersonalPreferencesSectionProps) => {
-  const { colors, themeName, setThemeName } = useTheme();
+  const { colors, fonts, themeName, setThemeName } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -30,6 +30,7 @@ export const PersonalPreferencesSection = ({
       <View style={{ marginTop: spacing.lg }}>
         <Text
           style={{
+            fontFamily: fonts.bodySemibold,
             fontSize: fontSize.sm,
             color: colors.content.strong,
             marginBottom: spacing.xs,

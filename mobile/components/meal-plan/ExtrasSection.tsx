@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Image, Pressable, Text, View } from 'react-native';
-import { Button, TerminalFrame } from '@/components';
+import { Button, IconButton, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -75,13 +75,7 @@ export const ExtrasSection = ({
             size="sm"
             onPress={onAddExtra}
             icon="add"
-            iconSize={16}
             label={t('mealPlan.extras.add')}
-            style={{
-              paddingHorizontal: spacing.sm,
-              paddingVertical: 4,
-              borderRadius: borderRadius.full,
-            }}
           />
         </View>
 
@@ -124,7 +118,7 @@ interface ExtraRecipeRowProps {
 }
 
 const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
-  const { colors, fonts, borderRadius, circleStyle } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const router = useRouter();
   const imageUrl =
     recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE;
@@ -179,16 +173,13 @@ const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
         </View>
       </Pressable>
 
-      <Button
-        variant="icon"
+      <IconButton
         tone="cancel"
         onPress={onRemove}
         icon="close"
+        size={28}
         iconSize={18}
-        style={{
-          ...circleStyle(28),
-          marginLeft: spacing.sm,
-        }}
+        style={{ marginLeft: spacing.sm }}
       />
     </View>
   );

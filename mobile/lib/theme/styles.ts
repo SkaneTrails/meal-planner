@@ -8,28 +8,32 @@
 import type { ColorTokens } from './colors';
 import { colors } from './colors';
 import { type BorderRadiusTokens, borderRadius, spacing } from './layout';
-import { fontSize, fontWeight } from './typography';
+import type { FontFamilyTokens } from './typography';
+import { defaultFontFamily, fontSize, fontWeight } from './typography';
 
 /** Build style presets for a given color palette. */
 export const createStyles = (
   c: ColorTokens,
   radii: BorderRadiusTokens = borderRadius,
+  fonts: FontFamilyTokens = defaultFontFamily,
 ) =>
   ({
     inputStyle: {
-      backgroundColor: c.white,
+      backgroundColor: c.input.bg,
       borderRadius: radii.md,
       paddingHorizontal: spacing.lg,
       paddingVertical: spacing.md,
       fontSize: fontSize.lg,
-      color: c.text.inverse,
+      color: c.input.text,
     },
     settingsTitleStyle: {
+      fontFamily: fonts.bodySemibold,
       fontSize: fontSize.lg,
       fontWeight: fontWeight.semibold,
       color: c.content.body,
     },
     settingsSubtitleStyle: {
+      fontFamily: fonts.body,
       fontSize: fontSize.md,
       color: c.content.subtitle,
     },

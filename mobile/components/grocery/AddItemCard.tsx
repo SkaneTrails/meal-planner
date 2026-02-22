@@ -42,13 +42,13 @@ export const AddItemCard = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing['sm-md'],
             fontSize: fontSize.lg,
-            color: colors.content.heading,
+            color: colors.input.text,
             fontFamily: fonts.body,
             borderWidth: 1,
             borderColor: colors.input.border,
           }}
           placeholder={t('grocery.addItemExamplePlaceholder')}
-          placeholderTextColor={colors.content.placeholder}
+          placeholderTextColor={colors.input.placeholder}
           value={newItemText}
           onChangeText={onChangeText}
           onSubmitEditing={onSubmit}
@@ -62,10 +62,7 @@ export const AddItemCard = ({
           disabled={!newItemText.trim()}
           disableAnimation={!newItemText.trim()}
           label={t('grocery.addButton')}
-          textColor={colors.white}
-          color={
-            newItemText.trim() ? colors.ai.primary : colors.surface.pressed
-          }
+          tone="primary"
           style={{
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing['sm-md'],

@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { Button } from '@/components';
+import { IconButton } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
@@ -24,7 +24,7 @@ export const WeekSelector = ({
   onNextWeek,
   onJumpToToday,
 }: WeekSelectorProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{ paddingHorizontal: spacing['2xl'], marginBottom: spacing.lg }}
@@ -38,8 +38,7 @@ export const WeekSelector = ({
           paddingVertical: spacing['sm-md'],
         }}
       >
-        <Button
-          variant="icon"
+        <IconButton
           tone="alt"
           onPress={() => {
             hapticLight();
@@ -47,11 +46,6 @@ export const WeekSelector = ({
           }}
           icon="chevron-back"
           label="\u25C4"
-          iconSize={18}
-          style={{
-            padding: spacing.sm,
-            borderRadius: borderRadius.full,
-          }}
         />
 
         <View style={{ alignItems: 'center' }}>
@@ -87,8 +81,7 @@ export const WeekSelector = ({
           )}
         </View>
 
-        <Button
-          variant="icon"
+        <IconButton
           tone="alt"
           onPress={() => {
             hapticLight();
@@ -96,11 +89,6 @@ export const WeekSelector = ({
           }}
           icon="chevron-forward"
           label="\u25BA"
-          iconSize={18}
-          style={{
-            padding: spacing.sm,
-            borderRadius: borderRadius.full,
-          }}
         />
       </View>
     </View>

@@ -262,18 +262,18 @@ export const bubblegumColors: ColorTokens = {
     focusBg: 'rgba(0, 0, 0, 0.04)',
   },
 
-  // AI — black border (matches overall card aesthetic)
+  // AI — lilac accent
   ai: {
-    primary: BLACK_BORDER,
-    primaryDark: BLACK,
-    bg: 'rgba(0, 0, 0, 0.04)',
-    bgPressed: 'rgba(0, 0, 0, 0.1)',
-    muted: 'rgba(0, 0, 0, 0.35)',
-    iconBg: 'rgba(0, 0, 0, 0.06)',
-    light: 'rgba(0, 0, 0, 0.08)',
-    badge: 'rgba(0, 0, 0, 0.85)',
-    selectedBg: 'rgba(0, 0, 0, 0.05)',
-    border: 'rgba(0, 0, 0, 0.2)',
+    primary: '#9B72CF',
+    primaryDark: '#7B52AF',
+    bg: 'rgba(155, 114, 207, 0.08)',
+    bgPressed: 'rgba(155, 114, 207, 0.18)',
+    muted: 'rgba(155, 114, 207, 0.5)',
+    iconBg: 'rgba(155, 114, 207, 0.12)',
+    light: 'rgba(155, 114, 207, 0.15)',
+    badge: 'rgba(155, 114, 207, 0.95)',
+    selectedBg: 'rgba(155, 114, 207, 0.1)',
+    border: 'rgba(155, 114, 207, 0.3)',
   },
 
   // Destructive — bold red
@@ -338,11 +338,11 @@ export const bubblegumColors: ColorTokens = {
   },
 
   input: {
-    bg: '#FFFFFF',
-    bgSubtle: 'rgba(0, 0, 0, 0.02)',
+    bg: ELECTRIC_BLUE_LIGHT,
+    bgSubtle: 'rgba(61, 184, 245, 0.08)',
     border: BLACK_BORDER,
     text: BLACK,
-    placeholder: '#999999',
+    placeholder: '#4080A0',
   },
 
   toggle: {
@@ -410,9 +410,24 @@ export const bubblegumColors: ColorTokens = {
       pressed: 'rgba(255, 59, 59, 0.22)',
     },
     ai: {
-      bg: 'rgba(0, 0, 0, 0.06)',
-      fg: BLACK_BORDER,
-      pressed: 'rgba(0, 0, 0, 0.12)',
+      bg: 'rgba(155, 114, 207, 0.1)',
+      fg: '#9B72CF',
+      pressed: 'rgba(155, 114, 207, 0.2)',
+    },
+    glass: {
+      bg: 'rgba(255, 255, 255, 0.5)',
+      fg: '#FFFFFF',
+      pressed: 'rgba(255, 255, 255, 0.7)',
+    },
+    glassSolid: {
+      bg: '#FFFFFF',
+      fg: BLACK,
+      pressed: 'rgba(255, 255, 255, 0.85)',
+    },
+    primary: {
+      bg: HOT_PINK,
+      fg: '#FFFFFF',
+      pressed: HOT_PINK_DARK,
     },
   },
 };

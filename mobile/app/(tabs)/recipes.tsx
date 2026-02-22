@@ -28,7 +28,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 import { type SortOption, sortRecipes } from '@/lib/utils/recipeSorter';
 

@@ -3,19 +3,12 @@ import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import {
   AnimatedPressable,
-  Button,
   ButtonGroup,
   ContentCard,
+  IconButton,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  iconContainer,
-  iconSize,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
@@ -36,23 +29,17 @@ const ActionButtons = ({
   const { colors } = useTheme();
   return (
     <ButtonGroup gap={spacing['xs-sm']}>
-      <Button
-        variant="icon"
-        tone="ai"
+      <IconButton
         icon={showAddItem ? 'close' : 'add'}
         iconSize={iconSize.md}
         onPress={onToggleAddItem}
         label={showAddItem ? 'Close' : 'Add'}
-        color={colors.ai.primary}
-        textColor={colors.white}
+        tone="ai"
         hoverScale={1.08}
         pressScale={0.95}
-        style={{ width: iconContainer.xs, height: iconContainer.xs }}
       />
       {totalItems > 0 && (
-        <Button
-          variant="icon"
-          tone="alt"
+        <IconButton
           icon={showClearMenu ? 'close' : 'create-outline'}
           iconSize={iconSize.md}
           onPress={onToggleClearMenu}
@@ -61,7 +48,6 @@ const ActionButtons = ({
           textColor={colors.content.icon}
           hoverScale={1.08}
           pressScale={0.95}
-          style={{ width: iconContainer.xs, height: iconContainer.xs }}
         />
       )}
     </ButtonGroup>

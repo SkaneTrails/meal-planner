@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Animated, Text, View } from 'react-native';
-import { Button } from '@/components';
+import { IconButton } from '@/components';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import {
   PLACEHOLDER_BLURHASH,
@@ -113,11 +113,10 @@ export const RecipeHero = ({
             </View>
           </LinearGradient>
 
-          <Button
-            variant="icon"
-            color={colors.glass.button}
-            textColor={colors.white}
+          <IconButton
+            tone="glass"
             icon="camera"
+            size={44}
             iconSize={20}
             isPending={isUpdatingImage}
             onPress={onPickImage}
@@ -125,8 +124,6 @@ export const RecipeHero = ({
               position: 'absolute',
               top: 60,
               right: spacing.lg,
-              width: 44,
-              height: 44,
             }}
           />
         </>

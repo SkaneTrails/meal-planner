@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import {
   ActivityIndicator,
+  type GestureResponderEvent,
   Pressable,
   StyleSheet,
   Text,
@@ -35,7 +36,15 @@ const cleanIconName = (name: string): string =>
 // ── Types ──────────────────────────────────────────────────────────────
 
 type ButtonVariant = 'text' | 'icon' | 'primary';
-type ButtonTone = 'default' | 'alt' | 'cancel' | 'warning' | 'ai';
+export type ButtonTone =
+  | 'default'
+  | 'alt'
+  | 'cancel'
+  | 'warning'
+  | 'ai'
+  | 'glass'
+  | 'glassSolid'
+  | 'primary';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -50,7 +59,7 @@ interface ButtonProps {
   /** Ionicons icon name. */
   icon?: IconName;
   /** Press handler. */
-  onPress: () => void;
+  onPress: (e: GestureResponderEvent) => void;
   /** Whether the button is disabled. */
   disabled?: boolean;
   /** Show loading state (all variants). Disables interaction and swaps to pending visuals. */
@@ -126,13 +135,14 @@ export const Button = ({
 
   // ── Resolve colors per tone ────────────────────────────────────────
   const resolveColors = (): { bg: string; fg: string; pressedBg?: string } => {
+    const t = colors.tones[tone];
     if (colorProp || textColorProp) {
       return {
-        bg: colorProp ?? 'transparent',
-        fg: textColorProp ?? colors.content.body,
+        bg: colorProp ?? t.bg,
+        fg: textColorProp ?? t.fg,
+        pressedBg: colorProp ? undefined : t.pressed,
       };
     }
-    const t = colors.tones[tone];
     return { bg: t.bg, fg: t.fg, pressedBg: t.pressed };
   };
 
@@ -325,4 +335,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize };
+export type { ButtonProps, ButtonVariant, ButtonSize };

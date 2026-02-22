@@ -10,7 +10,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button, FormField } from '@/components';
+import {
+  BottomSheetModal,
+  Button,
+  FormField,
+  NumericField,
+} from '@/components';
 import { showNotification } from '@/lib/alert';
 import { api } from '@/lib/api';
 import { useCreateRecipe, useImagePicker } from '@/lib/hooks';
@@ -26,7 +31,7 @@ export const ManualRecipeModal = ({
   visible,
   onClose,
 }: ManualRecipeModalProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, styles } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -137,15 +142,10 @@ export const ManualRecipeModal = ({
   };
 
   const inputStyle = {
-    backgroundColor: colors.card.bg,
-    borderRadius: borderRadius.md,
+    ...styles.inputStyle,
     borderWidth: 1,
-    borderColor: colors.card.borderColor,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontSize: fontSize.lg,
+    borderColor: colors.input.border,
     fontFamily: fonts.body,
-    color: colors.content.body,
   };
 
   return (
@@ -160,7 +160,7 @@ export const ManualRecipeModal = ({
         <TextInput
           style={inputStyle}
           placeholder={t('addRecipe.titlePlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={colors.input.placeholder}
           value={title}
           onChangeText={setTitle}
           editable={!isPending}
@@ -176,7 +176,7 @@ export const ManualRecipeModal = ({
             textAlignVertical: 'top',
           }}
           placeholder={t('addRecipe.ingredientsPlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={colors.input.placeholder}
           value={ingredients}
           onChangeText={setIngredients}
           multiline
@@ -193,7 +193,7 @@ export const ManualRecipeModal = ({
             textAlignVertical: 'top',
           }}
           placeholder={t('addRecipe.instructionsPlaceholder')}
-          placeholderTextColor={colors.gray[500]}
+          placeholderTextColor={colors.input.placeholder}
           value={instructions}
           onChangeText={setInstructions}
           multiline
@@ -300,47 +300,5 @@ export const ManualRecipeModal = ({
         />
       </View>
     </BottomSheetModal>
-  );
-};
-
-interface NumericFieldProps {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  disabled: boolean;
-}
-
-const NumericField = ({
-  label,
-  placeholder,
-  value,
-  onChangeText,
-  disabled,
-}: NumericFieldProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
-
-  return (
-    <FormField label={label} compact>
-      <TextInput
-        style={{
-          backgroundColor: colors.card.bg,
-          borderRadius: borderRadius.md,
-          borderWidth: 1,
-          borderColor: colors.card.borderColor,
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          fontSize: fontSize.md,
-          fontFamily: fonts.body,
-          color: colors.content.body,
-        }}
-        placeholder={placeholder}
-        placeholderTextColor={colors.gray[500]}
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType="numeric"
-        editable={!disabled}
-      />
-    </FormField>
   );
 };

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button } from '@/components';
+import { Pressable, Text, View } from 'react-native';
+import { BottomSheetModal, Divider, UrlInputBar } from '@/components';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
 
@@ -41,90 +41,16 @@ export const AddRecipeModal = ({
       title={t('home.addRecipe.title')}
     >
       <View style={{ marginBottom: spacing.md }}>
-        <View
-          style={{
-            backgroundColor: colors.glass.subtle,
-            borderRadius: borderRadius.md,
-            padding: spacing.xs,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Ionicons
-            name="link-outline"
-            size={18}
-            color={colors.content.secondary}
-            style={{ marginLeft: spacing.md }}
-          />
-          <TextInput
-            style={{
-              flex: 1,
-              paddingHorizontal: spacing['sm-md'],
-              paddingVertical: spacing.md,
-              fontSize: fontSize.md,
-              color: colors.content.body,
-            }}
-            placeholder={t('home.addRecipe.placeholder')}
-            placeholderTextColor={colors.content.placeholder}
-            value={recipeUrl}
-            onChangeText={setRecipeUrl}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="url"
-            onSubmitEditing={handleSubmit}
-            returnKeyType="go"
-          />
-          <Button
-            variant="primary"
-            onPress={handleSubmit}
-            disabled={!recipeUrl.trim()}
-            label={t('home.addRecipe.importButton')}
-            color={recipeUrl.trim() ? colors.accent : colors.surface.pressed}
-            textColor={
-              recipeUrl.trim() ? colors.white : colors.content.secondary
-            }
-            size="sm"
-            style={{
-              borderRadius: borderRadius.sm,
-              paddingVertical: spacing['sm-md'],
-              paddingHorizontal: spacing['md-lg'],
-              marginRight: spacing['2xs'],
-            }}
-          />
-        </View>
+        <UrlInputBar
+          value={recipeUrl}
+          onChangeText={setRecipeUrl}
+          onSubmit={handleSubmit}
+          placeholder={t('home.addRecipe.placeholder')}
+          submitLabel={t('home.addRecipe.importButton')}
+        />
       </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginVertical: spacing.sm,
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            height: 1,
-            backgroundColor: colors.surface.dividerSolid,
-          }}
-        />
-        <Text
-          style={{
-            color: colors.content.secondary,
-            fontSize: fontSize.sm,
-            marginHorizontal: spacing.md,
-          }}
-        >
-          {t('common.or')}
-        </Text>
-        <View
-          style={{
-            flex: 1,
-            height: 1,
-            backgroundColor: colors.surface.dividerSolid,
-          }}
-        />
-      </View>
+      <Divider label={t('common.or')} />
 
       <Pressable
         onPress={() => {

@@ -69,15 +69,15 @@ export const AddMemberForm = ({
         value={newMemberEmail}
         onChangeText={onEmailChange}
         placeholder={t('admin.addMember.emailPlaceholder')}
-        placeholderTextColor={colors.content.placeholderHex}
+        placeholderTextColor={colors.input.placeholder}
         keyboardType="email-address"
         autoCapitalize="none"
         style={{
-          backgroundColor: colors.white,
+          backgroundColor: colors.input.bg,
           borderRadius: borderRadius.md,
           padding: spacing.md,
           fontSize: fontSize.md,
-          color: colors.content.heading,
+          color: colors.input.text,
           marginBottom: spacing.sm,
         }}
       />

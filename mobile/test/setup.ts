@@ -473,13 +473,16 @@ vi.mock('@/lib/theme', () => {
       cancel: { bg: 'rgba(93, 78, 64, 0.06)', fg: 'rgba(93, 78, 64, 0.6)', pressed: 'rgba(93, 78, 64, 0.12)' },
       warning: { bg: 'rgba(180, 80, 70, 0.12)', fg: '#B45046', pressed: 'rgba(180, 80, 70, 0.22)' },
       ai: { bg: 'rgba(217, 122, 69, 0.1)', fg: '#D97A45', pressed: 'rgba(217, 122, 69, 0.2)' },
+      glass: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#FFFFFF', pressed: 'rgba(255, 255, 255, 0.45)' },
+      glassSolid: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#5D4E40', pressed: 'rgba(255, 255, 255, 0.85)' },
+      primary: { bg: '#2D2D2D', fg: '#FFFFFF', pressed: '#1A1A1A' },
     },
   };
 
   const mockStyles = {
     inputStyle: {},
-    settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
-    settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
+    settingsTitleStyle: { fontFamily: 'DMSans_600SemiBold', fontSize: 14, fontWeight: '600', color: '#5D4E40' },
+    settingsSubtitleStyle: { fontFamily: 'DMSans_400Regular', fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
     accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
   };
 
@@ -552,6 +555,7 @@ vi.mock('@/lib/theme', () => {
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true, showCheckmarkIndicator: true },
     chrome: 'full' as const,
+    iconContainerRadius: 0.5,
     tabBar: { borderRadius: 16, borderWidth: 0.5, blur: true, blurIntensity: 40, blurTint: 'light' },
     requiredFonts: {},
   };
@@ -567,6 +571,7 @@ vi.mock('@/lib/theme', () => {
     overrides: { checkedOpacity: 0.7, checkboxBorderWidth: 1, dashedBorderWidth: 0, dayCardBorderWidth: 0, dayCardBorderWidthToday: 0, segmentedControlGap: 0, segmentedControlPadding: 0, segmentedControlActiveIndicator: 'underline', chipToggleGap: 0 },
     visibility: { showStackHeader: false, showTodayDot: false, showTodayBadge: false, showDayNotes: false, showChevrons: false, showStatIcons: false, showProgressBar: false, showAddItemLabel: false, showEmptyStateIcon: false, showHeroOverlay: false, showRecipeActionButtons: false, showVisibilityChip: false, showRecipeTags: false, showFrameLabels: true, showChipToggleDot: false, showStatDividers: true, showSectionHeaderIcon: false, showCheckmarkIndicator: false },
     chrome: 'flat' as const,
+    iconContainerRadius: 0,
     crt: { scanlineOpacity: 0.08, flickerMin: 0.97, flickerMs: 4000, glowColor: 'rgba(51, 255, 51, 0.07)', glowSpread: 60, glowSize: 20 },
     tabBar: { borderRadius: 0, borderWidth: 1, blur: false, blurIntensity: 0, blurTint: 'dark' },
     requiredFonts: {},
@@ -583,6 +588,7 @@ vi.mock('@/lib/theme', () => {
     overrides: { checkedOpacity: 0.85, checkboxBorderWidth: 2, dashedBorderWidth: 1.5, dayCardBorderWidth: 1, dayCardBorderWidthToday: 2, segmentedControlGap: 8, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'shadow', chipToggleGap: 8 },
     visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: true, showCheckmarkIndicator: true },
     chrome: 'full' as const,
+    iconContainerRadius: 0,
     tabBar: { borderRadius: 0, borderWidth: 2, blur: true, blurIntensity: 30, blurTint: 'light' },
     requiredFonts: {},
   };
@@ -613,8 +619,8 @@ vi.mock('@/lib/theme', () => {
   fontSize: { xs: 10, sm: 11, base: 12, md: 13, lg: 14, xl: 15, 'lg-xl': 16, '2xl': 17, 'xl-2xl': 18, '3xl': 20, '4xl': 26, '3xl-4xl': 28, '5xl': 32, '6xl': 40 },
   fontWeight: { light: '300', normal: '400', medium: '500', semibold: '600', bold: '700' },
   letterSpacing: { tighter: -0.8, tight: -0.5, snug: -0.3, normal: -0.2, wide: 0.8, wider: 1.2 },
-  settingsTitleStyle: { fontSize: 14, fontWeight: '600', color: '#5D4E40' },
-  settingsSubtitleStyle: { fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
+  settingsTitleStyle: { fontFamily: 'DMSans_600SemiBold', fontSize: 14, fontWeight: '600', color: '#5D4E40' },
+  settingsSubtitleStyle: { fontFamily: 'DMSans_400Regular', fontSize: 13, color: 'rgba(93, 78, 64, 0.6)' },
   accentUnderlineStyle: { width: 40, height: 3, borderRadius: 2, backgroundColor: '#6B8E6B' },
   circleStyle: mockCircleStyle,
   dotSize: { md: 10 },

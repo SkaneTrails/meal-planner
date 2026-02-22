@@ -1,5 +1,5 @@
 import { Image, Pressable, Text, View } from 'react-native';
-import { Button } from '@/components';
+import { IconButton } from '@/components';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
@@ -40,7 +40,7 @@ export const FilledMealSlot = ({
   onEditCustomText,
   onRecipePress,
 }: FilledMealSlotProps) => {
-  const { colors, fonts, borderRadius, circleStyle } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const title = recipe?.title || customText || '';
   const imageUrl =
     recipe?.thumbnail_url || recipe?.image_url || PLACEHOLDER_IMAGE;
@@ -101,16 +101,13 @@ export const FilledMealSlot = ({
         </View>
       </Pressable>
 
-      <Button
-        variant="icon"
+      <IconButton
         tone="cancel"
         onPress={() => onRemove(date, mealType, title, label)}
         icon="close"
+        size={28}
         iconSize={18}
-        style={{
-          ...circleStyle(28),
-          marginLeft: spacing.sm,
-        }}
+        style={{ marginLeft: spacing.sm }}
       />
     </View>
   );

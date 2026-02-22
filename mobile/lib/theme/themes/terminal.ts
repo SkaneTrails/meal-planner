@@ -129,6 +129,7 @@ export const terminalTheme: ThemeDefinition = {
     blurTint: 'dark',
   },
   chrome: 'flat',
+  iconContainerRadius: 0,
   crt: terminalCRT,
   animatedBackground: false,
   requiredFonts: {}, // uses system monospace — no custom fonts needed

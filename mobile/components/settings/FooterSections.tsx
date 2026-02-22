@@ -2,21 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { AnimatedPressable, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  settingsSubtitleStyle,
-  settingsTitleStyle,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface AdminSectionProps {
   onNavigateToAdmin: () => void;
 }
 
 export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, styles: themeStyles } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -33,10 +26,12 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text style={settingsTitleStyle}>{t('settings.adminDashboard')}</Text>
+          <Text style={themeStyles.settingsTitleStyle}>
+            {t('settings.adminDashboard')}
+          </Text>
           <Text
             style={{
-              ...settingsSubtitleStyle,
+              ...themeStyles.settingsSubtitleStyle,
               marginTop: 4,
             }}
           >
@@ -54,15 +49,15 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
 };
 
 export const AboutSection = () => {
-  const { colors } = useTheme();
+  const { colors, styles: themeStyles } = useTheme();
   const { t } = useTranslation();
 
   return (
     <SurfaceCard style={{ marginBottom: spacing['2xl'] }}>
       <Text
         style={{
-          fontSize: fontSize.base,
-          fontWeight: fontWeight.bold,
+          ...themeStyles.settingsTitleStyle,
+          fontWeight: '700',
           color: colors.content.heading,
           marginBottom: spacing.md,
         }}
@@ -77,13 +72,18 @@ export const AboutSection = () => {
           marginBottom: spacing.md,
         }}
       >
-        <Text style={{ ...settingsTitleStyle, color: colors.content.strong }}>
+        <Text
+          style={{
+            ...themeStyles.settingsTitleStyle,
+            color: colors.content.strong,
+          }}
+        >
           {t('settings.version')}
         </Text>
         <Text
           style={{
-            ...settingsTitleStyle,
-            fontWeight: fontWeight.medium,
+            ...themeStyles.settingsTitleStyle,
+            fontWeight: '500',
           }}
         >
           1.0.0
@@ -96,10 +96,15 @@ export const AboutSection = () => {
           alignItems: 'center',
         }}
       >
-        <Text style={{ ...settingsTitleStyle, color: colors.content.strong }}>
+        <Text
+          style={{
+            ...themeStyles.settingsTitleStyle,
+            color: colors.content.strong,
+          }}
+        >
           {t('settings.madeWith')}
         </Text>
-        <Text style={settingsTitleStyle}>❤️</Text>
+        <Text style={themeStyles.settingsTitleStyle}>❤️</Text>
       </View>
     </SurfaceCard>
   );

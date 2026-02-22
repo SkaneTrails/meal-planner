@@ -1,12 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
-import {
-  fontSize,
-  fontWeight,
-  iconContainer,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { Text, View } from 'react-native';
+import { IconButton } from '@/components/IconButton';
+import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
 interface StepperControlProps {
   value: number;
@@ -25,7 +19,7 @@ export const StepperControl = ({
   incrementDisabled = false,
   subtitle,
 }: StepperControlProps) => {
-  const { colors, circleStyle } = useTheme();
+  const { colors } = useTheme();
   return (
     <View
       style={{
@@ -35,19 +29,13 @@ export const StepperControl = ({
         gap: spacing.lg,
       }}
     >
-      <Pressable
+      <IconButton
+        icon="remove"
         onPress={onDecrement}
         disabled={decrementDisabled}
-        style={({ pressed }) => ({
-          ...circleStyle(iconContainer.md),
-          backgroundColor: pressed ? colors.bgDark : colors.bgLight,
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: decrementDisabled ? 0.4 : 1,
-        })}
-      >
-        <Ionicons name="remove" size={20} color={colors.content.body} />
-      </Pressable>
+        tone="alt"
+        size="md"
+      />
       <View style={{ alignItems: 'center', minWidth: 60 }}>
         <Text
           style={{
@@ -70,19 +58,13 @@ export const StepperControl = ({
           </Text>
         )}
       </View>
-      <Pressable
+      <IconButton
+        icon="add"
         onPress={onIncrement}
         disabled={incrementDisabled}
-        style={({ pressed }) => ({
-          ...circleStyle(iconContainer.md),
-          backgroundColor: pressed ? colors.bgDark : colors.bgLight,
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: incrementDisabled ? 0.4 : 1,
-        })}
-      >
-        <Ionicons name="add" size={20} color={colors.content.body} />
-      </Pressable>
+        tone="alt"
+        size="md"
+      />
     </View>
   );
 };

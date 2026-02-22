@@ -8,14 +8,7 @@ import {
   SurfaceCard,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import {
-  fontSize,
-  fontWeight,
-  settingsSubtitleStyle,
-  settingsTitleStyle,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface AccountSectionProps {
   userEmail: string | null | undefined;
@@ -28,7 +21,7 @@ export const AccountSection = ({
   displayName,
   onSignOut,
 }: AccountSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, styles: themeStyles } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -47,21 +40,20 @@ export const AccountSection = ({
           >
             <Text
               style={{
-                fontSize: fontSize['3xl'],
-                fontWeight: fontWeight.semibold,
-                color: colors.content.body,
+                ...themeStyles.settingsTitleStyle,
+                fontSize: 20,
               }}
             >
               {userEmail?.[0]?.toUpperCase() || '?'}
             </Text>
           </IconCircle>
           <View style={{ flex: 1 }}>
-            <Text style={settingsTitleStyle}>
+            <Text style={themeStyles.settingsTitleStyle}>
               {displayName || userEmail?.split('@')[0] || 'User'}
             </Text>
             <Text
               style={{
-                ...settingsSubtitleStyle,
+                ...themeStyles.settingsSubtitleStyle,
                 marginTop: 2,
               }}
             >
@@ -97,7 +89,7 @@ export const HouseholdSettingsLink = ({
   isLoading,
   onPress,
 }: HouseholdSettingsLinkProps) => {
-  const { colors } = useTheme();
+  const { colors, styles: themeStyles } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -117,12 +109,12 @@ export const HouseholdSettingsLink = ({
         }}
       >
         <View style={{ flex: 1 }}>
-          <Text style={settingsTitleStyle}>
+          <Text style={themeStyles.settingsTitleStyle}>
             {t('settings.householdSettings')}
           </Text>
           <Text
             style={{
-              ...settingsSubtitleStyle,
+              ...themeStyles.settingsSubtitleStyle,
               marginTop: 4,
             }}
           >
