@@ -26,6 +26,8 @@ interface DropdownPickerProps<T extends string> {
   options: DropdownOption<T>[];
   value: T;
   onSelect: (value: T) => void;
+  /** Whether the picker is disabled (no interaction). */
+  disabled?: boolean;
   testID?: string;
 }
 
@@ -33,6 +35,7 @@ export const DropdownPicker = <T extends string>({
   options,
   value,
   onSelect,
+  disabled = false,
   testID,
 }: DropdownPickerProps<T>) => {
   const { colors, fonts, visibility } = useTheme();
@@ -49,13 +52,16 @@ export const DropdownPicker = <T extends string>({
     return (
       <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
         <Pressable
-          onPress={() => setExpanded(true)}
+          onPress={disabled ? undefined : () => setExpanded(true)}
+          disabled={disabled}
           testID={testID ? `${testID}-collapsed` : undefined}
           style={({ pressed }) => ({
             flexDirection: 'row',
             alignItems: 'center',
             padding: spacing.md,
-            backgroundColor: pressed ? colors.bgMid : 'transparent',
+            backgroundColor:
+              pressed && !disabled ? colors.bgMid : 'transparent',
+            opacity: disabled ? 0.5 : 1,
           })}
         >
           {selected?.adornment}

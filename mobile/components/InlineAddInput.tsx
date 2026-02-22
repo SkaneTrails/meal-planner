@@ -10,6 +10,8 @@ interface InlineAddInputProps {
   placeholder: string;
   /** Override the placeholder text color. Default: `colors.content.placeholderHex`. */
   placeholderTextColor?: string;
+  /** Whether the input is disabled (no typing or submission). */
+  disabled?: boolean;
 }
 
 /**
@@ -25,6 +27,7 @@ export const InlineAddInput = ({
   onSubmit,
   placeholder,
   placeholderTextColor: placeholderTextColorProp,
+  disabled = false,
 }: InlineAddInputProps) => {
   const { colors } = useTheme();
   const hasContent = !!value.trim();
@@ -43,19 +46,21 @@ export const InlineAddInput = ({
           paddingVertical: spacing.sm,
           fontSize: fontSize.md,
           color: colors.content.body,
+          opacity: disabled ? 0.5 : 1,
         }}
         placeholder={placeholder}
         placeholderTextColor={resolvedPlaceholderColor}
         value={value}
         onChangeText={onChangeText}
-        onSubmitEditing={onSubmit}
+        onSubmitEditing={disabled ? undefined : onSubmit}
+        editable={!disabled}
         returnKeyType="done"
       />
       <Button
         variant="icon"
         icon="add"
         onPress={onSubmit}
-        disabled={!hasContent}
+        disabled={disabled || !hasContent}
         testID="inline-add-button"
         size="sm"
       />

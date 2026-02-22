@@ -26,7 +26,6 @@ const ActionButtons = ({
   onToggleAddItem,
   onToggleClearMenu,
 }: ActionButtonsProps) => {
-  const { colors } = useTheme();
   return (
     <ButtonGroup gap={spacing['xs-sm']}>
       <IconButton
@@ -44,8 +43,7 @@ const ActionButtons = ({
           iconSize={iconSize.md}
           onPress={onToggleClearMenu}
           label={showClearMenu ? 'Close' : 'Edit'}
-          color={showClearMenu ? colors.surface.pressed : colors.surface.hover}
-          textColor={colors.content.icon}
+          tone="subtle"
           hoverScale={1.08}
           pressScale={0.95}
         />

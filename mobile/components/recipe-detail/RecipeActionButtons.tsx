@@ -34,7 +34,7 @@ export const RecipeActionButtons = ({
   onCopy,
   onEnhance,
 }: RecipeActionButtonsProps) => {
-  const { colors, visibility } = useTheme();
+  const { visibility } = useTheme();
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
@@ -101,8 +101,7 @@ export const RecipeActionButtons = ({
           label={t('recipe.enhance')}
           disabled={enhanceDisabled}
           disableAnimation={enhanceDisabled}
-          tone="glassSolid"
-          textColor={enhanceDisabled ? colors.gray[400] : colors.ai.primary}
+          tone="glassAi"
           size="md"
           style={{ opacity: enhanceDisabled ? opacity.disabled : 1 }}
         />

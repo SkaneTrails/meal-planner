@@ -284,7 +284,7 @@ const MemberCard = ({
       </View>
       <Button
         variant="text"
-        textColor={colors.error}
+        tone="warning"
         onPress={onRemove}
         icon="trash-outline"
         iconSize={20}

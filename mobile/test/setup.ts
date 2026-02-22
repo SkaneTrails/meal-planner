@@ -127,11 +127,46 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'chip-group' }, children);
   },
-  InlineAddInput: ({ value, onChangeText, onSubmit, placeholder }: any) => {
+  InlineAddInput: ({ value, onChangeText, onSubmit, placeholder, disabled }: any) => {
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'inline-add-input' },
-      createElement('input', { placeholder, value, onChange: (e: any) => onChangeText(e.target.value) }),
-      createElement('button', { onClick: onSubmit, disabled: !value?.trim() }, 'Add'),
+      createElement('input', { placeholder, value, disabled, onChange: (e: any) => onChangeText(e.target.value) }),
+      createElement('button', { onClick: onSubmit, disabled: disabled || !value?.trim() }, 'Add'),
+    );
+  },
+  ItemChipList: ({ heading, items, onRemove, disabled }: any) => {
+    const { createElement } = require('react');
+    const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
+    const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
+    return createElement('div', { 'data-testid': 'item-chip-list' },
+      heading && createElement('span', null, heading),
+      items?.map((item: any) => {
+        const key = getKey(item);
+        const label = getLabel(item);
+        return createElement('div', { key, 'data-testid': `item-chip-${key}` },
+          createElement('span', null, label),
+          !disabled && onRemove && createElement('button', { onClick: () => onRemove(item), 'data-testid': `remove-${key}` }, '×'),
+        );
+      }),
+    );
+  },
+  SuggestionChipList: ({ heading, items, groups, onAdd, disabled }: any) => {
+    const { createElement } = require('react');
+    const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
+    const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
+    const allItems = items ?? groups?.flatMap((g: any) => g.items) ?? [];
+    return createElement('div', { 'data-testid': 'suggestion-chip-list' },
+      heading && createElement('span', null, heading),
+      allItems.map((item: any) => {
+        const key = getKey(item);
+        const label = getLabel(item);
+        return createElement('button', {
+          key,
+          onClick: () => !disabled && onAdd(item),
+          disabled,
+          'data-testid': `suggestion-${key}`,
+        }, label);
+      }),
     );
   },
   FilterChip: ({ label, selected, onPress }: any) => {
@@ -500,7 +535,11 @@ vi.mock('@/lib/theme', () => {
       ai: { bg: 'rgba(217, 122, 69, 0.1)', fg: '#D97A45', pressed: 'rgba(217, 122, 69, 0.2)' },
       glass: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#FFFFFF', pressed: 'rgba(255, 255, 255, 0.45)' },
       glassSolid: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#5D4E40', pressed: 'rgba(255, 255, 255, 0.85)' },
+      glassAi: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#D97A45', pressed: 'rgba(255, 255, 255, 0.85)' },
+      glassSubtle: { bg: 'rgba(255, 255, 255, 0.92)', fg: '#8B7355', pressed: 'rgba(255, 255, 255, 0.15)' },
+      glassCoral: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#E0855A', pressed: 'rgba(255, 255, 255, 0.45)' },
       primary: { bg: '#2D2D2D', fg: '#FFFFFF', pressed: '#1A1A1A' },
+      subtle: { bg: 'rgba(93, 78, 64, 0.05)', fg: 'rgba(93, 78, 64, 0.5)', pressed: 'rgba(93, 78, 64, 0.12)' },
       danger: { bg: '#DC2626', fg: '#FFFFFF', pressed: '#B91C1C' },
     },
   };

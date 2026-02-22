@@ -1,15 +1,13 @@
 import { useMemo, useState } from 'react';
-import { Text } from 'react-native';
 import {
-  Chip,
-  ChipGroup,
   EmptyState,
   InlineAddInput,
-  SurfaceCard,
+  ItemChipList,
+  SuggestionChipList,
 } from '@/components';
 import { showNotification } from '@/lib/alert';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 const SUGGESTED_ITEM_KEYS = [
   'salt',
@@ -83,12 +81,14 @@ export const ItemsAtHomeSection = ({
 
   return (
     <>
-      {/* Current items */}
-      {itemsAtHome.length > 0 && (
-        <CurrentItems items={itemsAtHome} onRemove={handleRemoveItem} />
-      )}
+      <ItemChipList
+        heading={t('settings.yourItems', { count: itemsAtHome.length })}
+        items={itemsAtHome}
+        onRemove={handleRemoveItem}
+        capitalize
+        gap={spacing['xs-sm']}
+      />
 
-      {/* Add new item input */}
       <InlineAddInput
         value={newItem}
         onChangeText={setNewItem}
@@ -97,12 +97,15 @@ export const ItemsAtHomeSection = ({
         placeholderTextColor={colors.content.subtitle}
       />
 
-      {/* Suggested items */}
       {suggestedNotAdded.length > 0 && (
-        <SuggestedItems items={suggestedNotAdded} onAdd={handleAddSuggested} />
+        <SuggestionChipList
+          heading={t('settings.suggestions')}
+          items={suggestedNotAdded}
+          onAdd={handleAddSuggested}
+          gap={spacing['xs-sm']}
+        />
       )}
 
-      {/* Empty state */}
       {itemsAtHome.length === 0 && (
         <EmptyState
           variant="compact"
@@ -113,78 +116,5 @@ export const ItemsAtHomeSection = ({
         />
       )}
     </>
-  );
-};
-
-const CurrentItems = ({
-  items,
-  onRemove,
-}: {
-  items: string[];
-  onRemove: (item: string) => void;
-}) => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <SurfaceCard padding={spacing.md} style={{ marginBottom: spacing.md }}>
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.strong,
-          marginBottom: spacing.sm,
-        }}
-      >
-        {t('settings.yourItems', { count: items.length })}
-      </Text>
-      <ChipGroup gap={spacing['xs-sm']}>
-        {items.map((item) => (
-          <Chip
-            key={item}
-            label={item}
-            variant="filled"
-            capitalize
-            onPress={() => onRemove(item)}
-          />
-        ))}
-      </ChipGroup>
-    </SurfaceCard>
-  );
-};
-
-const SuggestedItems = ({
-  items,
-  onAdd,
-}: {
-  items: string[];
-  onAdd: (item: string) => void;
-}) => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <SurfaceCard padding={spacing.md}>
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.strong,
-          marginBottom: spacing.sm,
-        }}
-      >
-        {t('settings.suggestions')}
-      </Text>
-      <ChipGroup gap={spacing['xs-sm']}>
-        {items.map((item) => (
-          <Chip
-            key={item}
-            label={item}
-            variant="outline"
-            onPress={() => onAdd(item)}
-          />
-        ))}
-      </ChipGroup>
-    </SurfaceCard>
   );
 };

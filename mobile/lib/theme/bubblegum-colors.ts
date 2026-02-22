@@ -424,10 +424,30 @@ export const bubblegumColors: ColorTokens = {
       fg: BLACK,
       pressed: 'rgba(255, 255, 255, 0.85)',
     },
+    glassAi: {
+      bg: '#FFFFFF',
+      fg: '#9B72CF',
+      pressed: 'rgba(255, 255, 255, 0.85)',
+    },
+    glassSubtle: {
+      bg: '#FFFFFF',
+      fg: '#666666',
+      pressed: 'rgba(255, 255, 255, 0.3)',
+    },
+    glassCoral: {
+      bg: 'rgba(255, 255, 255, 0.5)',
+      fg: CORAL,
+      pressed: 'rgba(255, 255, 255, 0.7)',
+    },
     primary: {
       bg: HOT_PINK,
       fg: '#FFFFFF',
       pressed: HOT_PINK_DARK,
+    },
+    subtle: {
+      bg: 'rgba(0, 0, 0, 0.02)',
+      fg: 'rgba(0, 0, 0, 0.45)',
+      pressed: 'rgba(0, 0, 0, 0.06)',
     },
     danger: {
       bg: '#FF3B3B',

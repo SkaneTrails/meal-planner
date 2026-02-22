@@ -221,8 +221,6 @@ const QuickContent = ({
         onPress={handleSubmit}
         disabled={!customText.trim() || setMeal.isPending}
         label={t('selectRecipe.quick.addButton')}
-        color={customText.trim() ? colors.ai.primary : colors.gray[300]}
-        textColor={customText.trim() ? colors.white : colors.gray[500]}
       />
 
       <Button

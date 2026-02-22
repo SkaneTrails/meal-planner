@@ -342,7 +342,11 @@ export interface ColorTokens {
     readonly ai: ToneColors;
     readonly glass: ToneColors;
     readonly glassSolid: ToneColors;
+    readonly glassAi: ToneColors;
+    readonly glassSubtle: ToneColors;
+    readonly glassCoral: ToneColors;
     readonly primary: ToneColors;
+    readonly subtle: ToneColors;
     readonly danger: ToneColors;
   };
 }
@@ -749,10 +753,30 @@ export const lightColors = {
       fg: '#5D4E40',
       pressed: 'rgba(255, 255, 255, 0.85)',
     },
+    glassAi: {
+      bg: 'rgba(255, 255, 255, 0.95)',
+      fg: '#D97A45',
+      pressed: 'rgba(255, 255, 255, 0.85)',
+    },
+    glassSubtle: {
+      bg: 'rgba(255, 255, 255, 0.92)',
+      fg: '#8B7355',
+      pressed: 'rgba(255, 255, 255, 0.15)',
+    },
+    glassCoral: {
+      bg: 'rgba(255, 255, 255, 0.3)',
+      fg: '#E0855A',
+      pressed: 'rgba(255, 255, 255, 0.45)',
+    },
     primary: {
       bg: '#2D2D2D',
       fg: '#FFFFFF',
       pressed: '#1A1A1A',
+    },
+    subtle: {
+      bg: 'rgba(93, 78, 64, 0.05)',
+      fg: 'rgba(93, 78, 64, 0.5)',
+      pressed: 'rgba(93, 78, 64, 0.12)',
     },
     danger: {
       bg: '#DC2626',

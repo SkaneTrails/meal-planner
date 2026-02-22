@@ -1,14 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Text } from 'react-native';
 import {
-  Chip,
-  ChipGroup,
   EmptyState,
   InlineAddInput,
-  SurfaceCard,
+  ItemChipList,
+  SuggestionChipList,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 const DEFAULT_SUGGESTION_KEYS = [
   'office',
@@ -32,6 +30,7 @@ export const NoteSuggestionsSection = ({
   onAdd,
   onRemove,
 }: NoteSuggestionsSectionProps) => {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const [newSuggestion, setNewSuggestion] = useState('');
 
@@ -53,13 +52,13 @@ export const NoteSuggestionsSection = ({
 
   return (
     <>
-      {suggestions.length > 0 && (
-        <CurrentSuggestions
-          items={suggestions}
-          canEdit={canEdit}
-          onRemove={onRemove}
-        />
-      )}
+      <ItemChipList
+        heading={t('settings.yourSuggestions', { count: suggestions.length })}
+        items={suggestions}
+        onRemove={onRemove}
+        disabled={!canEdit}
+        dotColors={colors.tagDot}
+      />
 
       {canEdit && (
         <InlineAddInput
@@ -71,7 +70,12 @@ export const NoteSuggestionsSection = ({
       )}
 
       {canEdit && presetsNotAdded.length > 0 && (
-        <PresetSuggestions items={presetsNotAdded} onAdd={onAdd} />
+        <SuggestionChipList
+          heading={t('settings.suggestions')}
+          items={presetsNotAdded}
+          onAdd={onAdd}
+          dotColor={colors.surface.borderLight}
+        />
       )}
 
       {suggestions.length === 0 && (
@@ -84,83 +88,5 @@ export const NoteSuggestionsSection = ({
         />
       )}
     </>
-  );
-};
-
-const CurrentSuggestions = ({
-  items,
-  canEdit,
-  onRemove,
-}: {
-  items: string[];
-  canEdit: boolean;
-  onRemove: (item: string) => void;
-}) => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <SurfaceCard padding={spacing.md} style={{ marginBottom: spacing.md }}>
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.icon,
-          marginBottom: spacing.sm,
-        }}
-      >
-        {t('settings.yourSuggestions', { count: items.length })}
-      </Text>
-      <ChipGroup>
-        {items.map((item, index) => (
-          <Chip
-            key={item}
-            label={item}
-            variant="filled"
-            dot={colors.tagDot[index % colors.tagDot.length]}
-            disabled={!canEdit}
-            onPress={() => onRemove(item)}
-          />
-        ))}
-      </ChipGroup>
-    </SurfaceCard>
-  );
-};
-
-const PresetSuggestions = ({
-  items,
-  onAdd,
-}: {
-  items: string[];
-  onAdd: (item: string) => void;
-}) => {
-  const { colors } = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <SurfaceCard padding={spacing.md}>
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.icon,
-          marginBottom: spacing.sm,
-        }}
-      >
-        {t('settings.suggestions')}
-      </Text>
-      <ChipGroup>
-        {items.map((item) => (
-          <Chip
-            key={item}
-            label={item}
-            variant="outline"
-            showAdd={false}
-            dot={colors.surface.borderLight}
-            onPress={() => onAdd(item)}
-          />
-        ))}
-      </ChipGroup>
-    </SurfaceCard>
   );
 };
