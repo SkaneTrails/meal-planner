@@ -192,7 +192,7 @@ export default function RecipeDetailScreen() {
           ),
           headerRight: () => (
             <IconButton
-              tone="glass"
+              tone={isRecipeFavorite ? 'glassCoral' : 'glass'}
               icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
               size="md"
               iconSize={22}
@@ -200,7 +200,6 @@ export default function RecipeDetailScreen() {
                 hapticLight();
                 if (id) toggleFavorite(id);
               }}
-              textColor={isRecipeFavorite ? colors.coral : undefined}
               style={{ marginRight: spacing.sm }}
             />
           ),

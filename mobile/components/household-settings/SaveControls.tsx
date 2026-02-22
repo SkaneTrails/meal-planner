@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { BottomActionBar, Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -27,27 +26,5 @@ export const ReadOnlyBanner = () => {
         {t('householdSettings.readOnly')}
       </Text>
     </View>
-  );
-};
-
-export const BottomSaveBar = ({
-  isSaving,
-  onSave,
-}: {
-  isSaving: boolean;
-  onSave: () => void;
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <BottomActionBar>
-      <Button
-        variant="primary"
-        onPress={onSave}
-        isPending={isSaving}
-        label={t('householdSettings.saveChanges')}
-        icon="checkmark"
-      />
-    </BottomActionBar>
   );
 };

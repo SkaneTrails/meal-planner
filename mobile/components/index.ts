@@ -37,6 +37,8 @@ export { GroceryListView } from './GroceryListView';
 export { IconButton } from './IconButton';
 export { IconCircle } from './IconCircle';
 export { InlineAddInput } from './InlineAddInput';
+export type { ChipItem } from './ItemChipList';
+export { ItemChipList } from './ItemChipList';
 export { DayColumn, MealCell } from './MealGrid';
 export { NumericField } from './NumericField';
 export { RadioGroup } from './RadioGroup';
@@ -59,6 +61,8 @@ export {
   StatCardSkeleton,
 } from './Skeleton';
 export { StepperControl } from './StepperControl';
+export type { SuggestionGroup } from './SuggestionChipList';
+export { SuggestionChipList } from './SuggestionChipList';
 export { SurfaceCard } from './SurfaceCard';
 export { TerminalDivider } from './TerminalDivider';
 export type { FabSlot } from './TerminalFabBar';

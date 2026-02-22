@@ -134,6 +134,33 @@ vi.mock('@/components', () => ({
       createElement('button', { onClick: onSubmit, disabled: !value?.trim() }, 'Add'),
     );
   },
+  ItemChipList: ({ heading, items, onRemove, disabled }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'item-chip-list' },
+      heading && createElement('span', null, heading),
+      items?.map((item: string) =>
+        createElement('div', { key: item, 'data-testid': `item-chip-${item}` },
+          createElement('span', null, item),
+          !disabled && onRemove && createElement('button', { onClick: () => onRemove(item), 'data-testid': `remove-${item}` }, '×'),
+        ),
+      ),
+    );
+  },
+  SuggestionChipList: ({ heading, items, groups, onAdd, disabled }: any) => {
+    const { createElement } = require('react');
+    const allItems = items ?? groups?.flatMap((g: any) => g.items) ?? [];
+    return createElement('div', { 'data-testid': 'suggestion-chip-list' },
+      heading && createElement('span', null, heading),
+      allItems.map((item: string) =>
+        createElement('button', {
+          key: item,
+          onClick: () => !disabled && onAdd(item),
+          disabled,
+          'data-testid': `suggestion-${item}`,
+        }, item),
+      ),
+    );
+  },
   FilterChip: ({ label, selected, onPress }: any) => {
     const { createElement } = require('react');
     return createElement('button', {
@@ -500,7 +527,11 @@ vi.mock('@/lib/theme', () => {
       ai: { bg: 'rgba(217, 122, 69, 0.1)', fg: '#D97A45', pressed: 'rgba(217, 122, 69, 0.2)' },
       glass: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#FFFFFF', pressed: 'rgba(255, 255, 255, 0.45)' },
       glassSolid: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#5D4E40', pressed: 'rgba(255, 255, 255, 0.85)' },
+      glassAi: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#D97A45', pressed: 'rgba(255, 255, 255, 0.85)' },
+      glassSubtle: { bg: 'rgba(255, 255, 255, 0.92)', fg: '#8B7355', pressed: 'rgba(255, 255, 255, 0.15)' },
+      glassCoral: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#E0855A', pressed: 'rgba(255, 255, 255, 0.45)' },
       primary: { bg: '#2D2D2D', fg: '#FFFFFF', pressed: '#1A1A1A' },
+      subtle: { bg: 'rgba(93, 78, 64, 0.05)', fg: 'rgba(93, 78, 64, 0.5)', pressed: 'rgba(93, 78, 64, 0.12)' },
       danger: { bg: '#DC2626', fg: '#FFFFFF', pressed: '#B91C1C' },
     },
   };

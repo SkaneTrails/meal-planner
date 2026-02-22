@@ -215,7 +215,7 @@ export const RecipeNotes = ({
             </Text>
             <Button
               variant="text"
-              textColor={colors.error}
+              tone="warning"
               icon="trash-outline"
               size="sm"
               onPress={() => handleDelete(note.id)}

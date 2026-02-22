@@ -1,55 +1,38 @@
-import { Text, View } from 'react-native';
-import { Chip, ChipGroup, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
+import { ItemChipList } from '../ItemChipList';
+import type { SuggestionGroup } from '../SuggestionChipList';
+import { SuggestionChipList } from '../SuggestionChipList';
 import { EQUIPMENT_CATEGORIES } from './constants';
 
-interface EquipmentSectionProps {
+interface EquipmentProps {
   equipment: string[];
   canEdit: boolean;
-  onToggleEquipment: (key: string) => void;
+  onToggle: (key: string) => void;
 }
 
 export const SelectedEquipment = ({
   equipment,
   canEdit,
   onToggle,
-}: {
-  equipment: string[];
-  canEdit: boolean;
-  onToggle: (key: string) => void;
-}) => {
-  const { colors } = useTheme();
+}: EquipmentProps) => {
   const { t } = useTranslation();
 
-  if (equipment.length === 0) return null;
+  const items = equipment.map((key) => ({
+    key,
+    label: t(`householdSettings.equipment.items.${key}`),
+  }));
 
   return (
-    <SurfaceCard radius="lg" style={{ marginBottom: spacing.md }}>
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
-          color: colors.content.strong,
-          marginBottom: spacing.sm,
-        }}
-      >
-        {t('householdSettings.equipment.yourEquipment', {
-          count: equipment.length,
-        })}
-      </Text>
-      <ChipGroup gap={spacing['xs-sm']}>
-        {equipment.map((item) => (
-          <Chip
-            key={item}
-            label={t(`householdSettings.equipment.items.${item}`)}
-            variant="filled"
-            disabled={!canEdit}
-            onPress={() => onToggle(item)}
-          />
-        ))}
-      </ChipGroup>
-    </SurfaceCard>
+    <ItemChipList
+      heading={t('householdSettings.equipment.yourEquipment', {
+        count: equipment.length,
+      })}
+      items={items}
+      onRemove={onToggle}
+      disabled={!canEdit}
+      gap={spacing['xs-sm']}
+    />
   );
 };
 
@@ -57,67 +40,27 @@ export const AvailableEquipment = ({
   equipment,
   canEdit,
   onToggle,
-}: {
-  equipment: string[];
-  canEdit: boolean;
-  onToggle: (key: string) => void;
-}) => {
-  const { colors } = useTheme();
+}: EquipmentProps) => {
   const { t } = useTranslation();
 
-  return (
-    <SurfaceCard radius="lg">
-      {EQUIPMENT_CATEGORIES.map(({ key, items }) => {
-        const available = items.filter((item) => !equipment.includes(item));
-        if (available.length === 0) return null;
-        return (
-          <View key={key} style={{ marginBottom: spacing.lg }}>
-            <Text
-              style={{
-                fontSize: fontSize.xs,
-                fontWeight: fontWeight.semibold,
-                color: colors.content.strong,
-                marginBottom: spacing.sm,
-                textTransform: 'uppercase',
-              }}
-            >
-              {t(`householdSettings.equipment.categories.${key}`)}
-            </Text>
-            <ChipGroup gap={spacing['xs-sm']}>
-              {available.map((item) => (
-                <Chip
-                  key={item}
-                  label={t(`householdSettings.equipment.items.${item}`)}
-                  variant="outline"
-                  disabled={!canEdit}
-                  onPress={() => onToggle(item)}
-                />
-              ))}
-            </ChipGroup>
-          </View>
-        );
-      })}
-    </SurfaceCard>
+  const groups: SuggestionGroup[] = EQUIPMENT_CATEGORIES.map(
+    ({ key, items }) => ({
+      heading: t(`householdSettings.equipment.categories.${key}`),
+      items: items
+        .filter((item) => !equipment.includes(item))
+        .map((item) => ({
+          key: item,
+          label: t(`householdSettings.equipment.items.${item}`),
+        })),
+    }),
   );
-};
 
-export const EquipmentSection = ({
-  equipment,
-  canEdit,
-  onToggleEquipment,
-}: EquipmentSectionProps) => {
   return (
-    <>
-      <SelectedEquipment
-        equipment={equipment}
-        canEdit={canEdit}
-        onToggle={onToggleEquipment}
-      />
-      <AvailableEquipment
-        equipment={equipment}
-        canEdit={canEdit}
-        onToggle={onToggleEquipment}
-      />
-    </>
+    <SuggestionChipList
+      groups={groups}
+      onAdd={onToggle}
+      disabled={!canEdit}
+      gap={spacing['xs-sm']}
+    />
   );
 };

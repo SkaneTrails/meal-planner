@@ -44,7 +44,11 @@ export type ButtonTone =
   | 'ai'
   | 'glass'
   | 'glassSolid'
+  | 'glassAi'
+  | 'glassSubtle'
+  | 'glassCoral'
   | 'primary'
+  | 'subtle'
   | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 

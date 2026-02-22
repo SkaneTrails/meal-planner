@@ -637,10 +637,7 @@ export const RecipeCard = ({
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 size="sm"
                 iconSize={16}
-                color={isRecipeFavorite ? colors.danger : colors.glass.bright}
-                textColor={
-                  isRecipeFavorite ? colors.white : colors.content.secondary
-                }
+                tone={isRecipeFavorite ? 'danger' : 'glassSubtle'}
               />
             </View>
           )}
