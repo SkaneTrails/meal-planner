@@ -156,6 +156,7 @@ const SwitchToggle = ({
       role="switch"
       accessibilityRole="switch"
       accessibilityState={{ checked: value, disabled }}
+      hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
       style={{ opacity: disabled ? opacity.disabled : 1 }}
     >
       <Animated.View
@@ -204,7 +205,7 @@ const CheckboxToggle = ({
 }: CheckboxToggleProps) => {
   const fillColor =
     variant === 'ai' ? colors.ai.primary : colors.toggle.switchTrackOn;
-  const borderColor = value ? fillColor : colors.content.secondary;
+  const borderColor = value ? fillColor : colors.toggle.borderColor;
 
   return (
     <Pressable
@@ -212,6 +213,7 @@ const CheckboxToggle = ({
       disabled={disabled}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: value, disabled }}
+      hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
       style={{ opacity: disabled ? opacity.disabled : 1 }}
     >
       <View
