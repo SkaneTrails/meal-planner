@@ -25,12 +25,20 @@ const CACHE_KEY = 'meal-planner-query-cache';
 
 const PII_FIELDS = ['created_by'] as const;
 
-function stripPii(data: unknown): unknown {
+function stripPii(
+  data: unknown,
+  seen: WeakSet<object> = new WeakSet(),
+): unknown {
   if (data === null || data === undefined || typeof data !== 'object') {
     return data;
   }
+  const value = data as object;
+  if (seen.has(value)) {
+    return undefined;
+  }
+  seen.add(value);
   if (Array.isArray(data)) {
-    return data.map(stripPii);
+    return data.map((item) => stripPii(item, seen));
   }
   const obj = data as Record<string, unknown>;
   const result: Record<string, unknown> = {};
@@ -38,7 +46,7 @@ function stripPii(data: unknown): unknown {
     if ((PII_FIELDS as readonly string[]).includes(key)) {
       continue;
     }
-    result[key] = stripPii(obj[key]);
+    result[key] = stripPii(obj[key], seen);
   }
   return result;
 }

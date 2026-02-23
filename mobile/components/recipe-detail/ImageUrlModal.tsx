@@ -5,8 +5,19 @@ import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 const isValidImageUrl = (url: string): boolean => {
-  const lower = url.trim().toLowerCase();
-  return lower.startsWith('http://') || lower.startsWith('https://');
+  const trimmed = url.trim();
+  if (!trimmed) {
+    return false;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    return (
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+      !!parsed.hostname
+    );
+  } catch {
+    return false;
+  }
 };
 
 interface ImageUrlModalProps {

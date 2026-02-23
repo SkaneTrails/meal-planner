@@ -312,7 +312,7 @@ class RecipeUpdate(BaseModel):
     favorited: bool | None = Field(default=None, description="Mark as household favorite")
     visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
 
-    @field_validator("image_url")
+    @field_validator("image_url", "thumbnail_url")
     @classmethod
     def validate_image_url_scheme(cls, v: str | None) -> str | None:
         if v is not None and not v.lower().startswith(_ALLOWED_IMAGE_SCHEMES):

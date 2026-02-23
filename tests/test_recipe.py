@@ -91,7 +91,7 @@ class TestRecipe:
 
 
 class TestImageUrlSchemeValidation:
-    """Tests for image_url scheme validation on RecipeUpdate."""
+    """Tests for image_url and thumbnail_url scheme validation on RecipeUpdate."""
 
     def test_https_accepted(self) -> None:
         update = RecipeUpdate(image_url="https://example.com/image.jpg")
@@ -120,6 +120,18 @@ class TestImageUrlSchemeValidation:
     def test_ftp_rejected(self) -> None:
         with pytest.raises(ValidationError, match="http or https"):
             RecipeUpdate(image_url="ftp://example.com/image.jpg")
+
+    def test_thumbnail_https_accepted(self) -> None:
+        update = RecipeUpdate(thumbnail_url="https://example.com/thumb.jpg")
+        assert update.thumbnail_url == "https://example.com/thumb.jpg"
+
+    def test_thumbnail_javascript_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(thumbnail_url="javascript:alert(1)")
+
+    def test_thumbnail_data_uri_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(thumbnail_url="data:image/png;base64,abc")
 
 
 class TestRecipeUpdateRating:
