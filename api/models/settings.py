@@ -89,7 +89,7 @@ class DietarySettings(BaseModel):
             msg = f"Alternative name must be at most {MAX_ALTERNATIVE_LENGTH} characters"
             raise ValueError(msg)
         if not _ALTERNATIVE_RE.match(v):
-            msg = "Alternative name may only contain letters, numbers, spaces, and hyphens"
+            msg = "Alternative name may only contain letters, numbers, spaces, hyphens, and underscores"
             raise ValueError(msg)
         if len(v.split()) > MAX_ALTERNATIVE_WORDS:
             msg = f"Alternative name must be at most {MAX_ALTERNATIVE_WORDS} words"

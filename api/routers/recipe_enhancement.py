@@ -31,9 +31,12 @@ class HouseholdConfig:
         from api.services.dietary_prompt_builder import DietaryConfig
 
         raw_lang = settings.get("language", DEFAULT_LANGUAGE)
-        try:
-            self.language: str = Language(raw_lang).value
-        except ValueError:
+        if isinstance(raw_lang, str):
+            try:
+                self.language: str = Language(raw_lang).value
+            except ValueError:
+                self.language = DEFAULT_LANGUAGE
+        else:
             self.language = DEFAULT_LANGUAGE
         equipment_raw = settings.get("equipment", [])
         self.equipment: list[str] = equipment_raw if isinstance(equipment_raw, list) else []

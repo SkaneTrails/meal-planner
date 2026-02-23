@@ -111,8 +111,8 @@ class DietaryConfig:
             meat_strategy=meat_strategy,
             meat_eaters=meat_eaters,
             vegetarians=vegetarians,
-            chicken_alternative=_sanitize_alternative(dietary.get("chicken_alternative") or "quorn"),
-            meat_alternative=_sanitize_alternative(dietary.get("meat_alternative") or "oumph"),
+            chicken_alternative=_sanitize_alternative(str(dietary.get("chicken_alternative") or "quorn")),
+            meat_alternative=_sanitize_alternative(str(dietary.get("meat_alternative") or "oumph")),
             minced_meat=dietary.get("minced_meat") or "regular",
             dairy=dietary.get("dairy") or "regular",
             seafood_ok=raw_seafood if isinstance(raw_seafood := dietary.get("seafood_ok"), bool) else True,
@@ -177,7 +177,7 @@ def _format_substitution_pair(original: str, alternative: str) -> str:
 
 
 def render_substitution_block(dietary: DietaryConfig) -> str:
-    """Build a JSON-encapsulated, randomized substitution block for the prompt.
+    """Build a randomized substitution block for the prompt.
 
     Security layers against prompt injection via free-text alternative names:
     1. Values are sanitized (special chars stripped, length/word-count capped)
