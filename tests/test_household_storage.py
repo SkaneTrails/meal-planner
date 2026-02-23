@@ -146,6 +146,7 @@ class TestCreateHousehold:
 
         call_args = mock_doc_ref.set.call_args[0][0]
         assert call_args["name"] == "The Smiths"
+        assert call_args["normalized_name"] == "the smiths"
         assert call_args["created_by"] == "owner@example.com"
         assert "created_at" in call_args
 
@@ -294,7 +295,7 @@ class TestUpdateHousehold:
         result = update_household("household-123", "New Name")
 
         assert result is True
-        mock_doc_ref.update.assert_called_once_with({"name": "New Name"})
+        mock_doc_ref.update.assert_called_once_with({"name": "New Name", "normalized_name": "new name"})
 
 
 class TestDataclasses:
@@ -377,16 +378,17 @@ class TestHouseholdNameExists:
     def test_returns_true_when_name_taken(self, mock_db) -> None:
         mock_doc = MagicMock()
         mock_doc.id = "household-1"
-        mock_doc.to_dict.return_value = {
-            "name": "Smith Family",
-            "created_at": datetime.now(UTC),
-            "created_by": "a@b.com",
-        }
-        mock_db.collection.return_value.stream.return_value = [mock_doc]
+        mock_query = MagicMock()
+        mock_query.stream.return_value = [mock_doc]
+        mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
 
         assert household_name_exists("smith family") is True
 
     def test_returns_false_when_name_not_taken(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
         mock_db.collection.return_value.stream.return_value = []
 
         assert household_name_exists("New Name") is False
@@ -394,14 +396,50 @@ class TestHouseholdNameExists:
     def test_allows_same_household_to_keep_name(self, mock_db) -> None:
         mock_doc = MagicMock()
         mock_doc.id = "household-1"
-        mock_doc.to_dict.return_value = {
-            "name": "Smith Family",
-            "created_at": datetime.now(UTC),
-            "created_by": "a@b.com",
-        }
-        mock_db.collection.return_value.stream.return_value = [mock_doc]
+        mock_query = MagicMock()
+        mock_query.stream.return_value = [mock_doc]
+        mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
 
         assert household_name_exists("smith family", exclude_id="household-1") is False
+
+    def test_strips_and_lowercases_name(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
+
+        household_name_exists("  UPPER Case  ")
+
+        call_kwargs = mock_db.collection.return_value.where.call_args
+        field_filter = call_kwargs.kwargs["filter"]
+        assert field_filter.field_path == "normalized_name"
+        assert field_filter.op_string == "=="
+        assert field_filter.value == "upper case"
+
+    def test_legacy_fallback_finds_doc_without_normalized_name(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
+
+        legacy_doc = MagicMock()
+        legacy_doc.id = "legacy-1"
+        legacy_doc.to_dict.return_value = {"name": "Smith Family"}
+        mock_db.collection.return_value.stream.return_value = [legacy_doc]
+
+        assert household_name_exists("smith family") is True
+
+    def test_legacy_fallback_skips_docs_with_normalized_name(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
+
+        doc_with_field = MagicMock()
+        doc_with_field.id = "modern-1"
+        doc_with_field.to_dict.return_value = {"name": "Other", "normalized_name": "other"}
+        mock_db.collection.return_value.stream.return_value = [doc_with_field]
+
+        assert household_name_exists("other") is False
 
 
 class TestDeleteHousehold:

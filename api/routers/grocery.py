@@ -95,6 +95,12 @@ async def generate_grocery_list(
         if recipe is None:
             continue
 
+        # Skip recipes that belong to another household and aren't shared.
+        # Recipes with household_id=None are treated as legacy/global and allowed.
+        is_owned = recipe.household_id == household_id or recipe.household_id is None
+        if not is_owned and recipe.visibility != "shared":
+            continue
+
         for ingredient_str in recipe.ingredients:
             parsed = parse_ingredient(ingredient_str)
 

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from google.cloud import firestore
+from google.cloud.firestore_v1 import FieldFilter
 from google.cloud.firestore_v1.transaction import Transaction
 
 from api.storage.firestore_client import get_firestore_client
@@ -123,7 +124,7 @@ def create_household(name: str, created_by: str) -> str:
     now = datetime.now(UTC)
 
     doc_ref = db.collection(HOUSEHOLDS_COLLECTION).document()
-    doc_ref.set({"name": name, "created_at": now, "created_by": created_by})
+    doc_ref.set({"name": name, "normalized_name": name.strip().lower(), "created_at": now, "created_by": created_by})
 
     return doc_ref.id
 
@@ -215,18 +216,35 @@ def household_name_exists(name: str, exclude_id: str | None = None) -> bool:
     """
     Check if a household name is already in use.
 
+    Uses a Firestore query on the ``normalized_name`` field instead of
+    fetching every household document.
+
     Args:
         name: The name to check (case-insensitive).
         exclude_id: Optionally exclude a household ID (for rename checks).
 
     Returns True if the name is already taken by another household.
     """
+    db = _get_db()
     normalized = name.strip().lower()
-    for household in list_all_households():
-        if household.name.strip().lower() == normalized:
-            if exclude_id and household.id == exclude_id:
-                continue  # Same household, allow keeping its own name
+    query = db.collection(HOUSEHOLDS_COLLECTION).where(filter=FieldFilter("normalized_name", "==", normalized))
+
+    for doc in query.stream():
+        if exclude_id and doc.id == exclude_id:
+            continue
+        return True
+
+    # Fallback for legacy documents that don't yet have normalized_name.
+    for doc in db.collection(HOUSEHOLDS_COLLECTION).stream():
+        if exclude_id and doc.id == exclude_id:
+            continue
+        data = doc.to_dict()
+        if data is None or "normalized_name" in data:
+            continue
+        existing_name = data.get("name")
+        if isinstance(existing_name, str) and existing_name.strip().lower() == normalized:
             return True
+
     return False
 
 
@@ -242,7 +260,7 @@ def update_household(household_id: str, name: str) -> bool:
     if not doc_ref.get().exists:  # type: ignore[union-attr]
         return False
 
-    doc_ref.update({"name": name})
+    doc_ref.update({"name": name, "normalized_name": name.strip().lower()})
     return True
 
 
