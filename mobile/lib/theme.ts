@@ -39,6 +39,7 @@ export type {
   StyleOverrides,
   TabBarTokens,
   ThemeDefinition,
+  ToggleStyle,
   VisibilityTokens,
 } from './theme/theme-context';
 export { ThemeProvider, useTheme } from './theme/theme-context';

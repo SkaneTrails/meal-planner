@@ -130,6 +130,7 @@ export const terminalTheme: ThemeDefinition = {
     blurTint: 'dark',
   },
   chrome: 'flat',
+  toggleStyle: 'switch',
   iconContainerRadius: 0,
   crt: terminalCRT,
   animatedBackground: false,

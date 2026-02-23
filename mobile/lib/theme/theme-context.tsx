@@ -156,6 +156,13 @@ export interface TabBarTokens {
  */
 export type LayoutChrome = 'flat' | 'full';
 
+/**
+ * Toggle control style — determines how `<Toggle>` renders.
+ * - `'switch'` — sliding track + thumb (native-like toggle).
+ * - `'checkbox'` — square/rounded tick box.
+ */
+export type ToggleStyle = 'switch' | 'checkbox';
+
 /** A complete set of design tokens that fully describes one visual theme. */
 export interface ThemeDefinition {
   /** Unique registry key — used for storage and lookup. */
@@ -188,6 +195,8 @@ export interface ThemeDefinition {
    * 0 = square, 0.5 = circle, values in between = rounded square.
    */
   iconContainerRadius: number;
+  /** Toggle control rendering style. Defaults to 'switch' when omitted. */
+  toggleStyle?: ToggleStyle;
   /** CRT visual overlay config (scanlines, flicker, glow). Omit for themes without the effect. */
   crt?: CRTConfig;
   /** Whether this theme supports animated gradient backgrounds. Defaults to true when omitted. */
@@ -215,6 +224,8 @@ export interface ThemeValue {
   tabBar: TabBarTokens;
   /** Layout chrome: 'flat' (box-drawing frames) or 'full' (cards/shadows). */
   chrome: LayoutChrome;
+  /** Toggle control rendering style. */
+  toggleStyle: ToggleStyle;
   /** CRT visual overlay config (scanlines, flicker, glow). Undefined = no overlay. */
   crt?: CRTConfig;
   /** Border radius for buttons. Falls back to borderRadius.md when undefined. */
@@ -292,6 +303,7 @@ export const ThemeProvider = ({
       visibility,
       tabBar,
       chrome,
+      toggleStyle: theme.toggleStyle ?? 'switch',
       crt,
       animatedBackground: animatedBackground !== false,
       themeName: id,
