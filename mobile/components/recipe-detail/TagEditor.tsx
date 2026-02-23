@@ -73,7 +73,6 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
           disabled={!newTag.trim()}
           icon="add"
           iconSize={24}
-          tone="primary"
           style={{
             paddingHorizontal: spacing.lg,
             borderRadius: borderRadius.md,

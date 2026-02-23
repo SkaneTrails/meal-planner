@@ -546,7 +546,6 @@ vi.mock('@/lib/theme', () => {
       glassAi: { bg: 'rgba(255, 255, 255, 0.95)', fg: '#D97A45', pressed: 'rgba(255, 255, 255, 0.85)' },
       glassSubtle: { bg: 'rgba(255, 255, 255, 0.92)', fg: '#8B7355', pressed: 'rgba(255, 255, 255, 0.15)' },
       glassCoral: { bg: 'rgba(255, 255, 255, 0.3)', fg: '#E0855A', pressed: 'rgba(255, 255, 255, 0.45)' },
-      primary: { bg: '#2D2D2D', fg: '#FFFFFF', pressed: '#1A1A1A' },
       subtle: { bg: 'rgba(93, 78, 64, 0.05)', fg: 'rgba(93, 78, 64, 0.5)', pressed: 'rgba(93, 78, 64, 0.12)' },
       danger: { bg: '#DC2626', fg: '#FFFFFF', pressed: '#B91C1C' },
     },

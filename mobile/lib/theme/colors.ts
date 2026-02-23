@@ -345,7 +345,6 @@ export interface ColorTokens {
     readonly glassAi: ToneColors;
     readonly glassSubtle: ToneColors;
     readonly glassCoral: ToneColors;
-    readonly primary: ToneColors;
     readonly subtle: ToneColors;
     readonly danger: ToneColors;
   };
@@ -767,11 +766,6 @@ export const lightColors = {
       bg: 'rgba(255, 255, 255, 0.3)',
       fg: '#E0855A',
       pressed: 'rgba(255, 255, 255, 0.45)',
-    },
-    primary: {
-      bg: '#2D2D2D',
-      fg: '#FFFFFF',
-      pressed: '#1A1A1A',
     },
     subtle: {
       bg: 'rgba(93, 78, 64, 0.05)',

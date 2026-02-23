@@ -194,7 +194,6 @@ const AddMemberForm = ({
           icon="person-add"
           iconSize={14}
           label={t('admin.addMemberButton')}
-          tone="primary"
           style={{
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.xs,

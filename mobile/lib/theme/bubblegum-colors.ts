@@ -439,11 +439,6 @@ export const bubblegumColors: ColorTokens = {
       fg: CORAL,
       pressed: 'rgba(255, 255, 255, 0.7)',
     },
-    primary: {
-      bg: HOT_PINK,
-      fg: '#FFFFFF',
-      pressed: HOT_PINK_DARK,
-    },
     subtle: {
       bg: 'rgba(0, 0, 0, 0.02)',
       fg: 'rgba(0, 0, 0, 0.45)',

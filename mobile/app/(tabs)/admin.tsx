@@ -230,7 +230,6 @@ const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
         onPress={onCreateNew}
         icon="add"
         label={t('admin.newButton')}
-        tone="primary"
       />
     </View>
   );
