@@ -108,6 +108,13 @@ class TestDietaryConfigFromFirestore:
         assert cfg.meat_eaters == 1
         assert cfg.vegetarians == 3
 
+    def test_legacy_unknown_meat_value_zeros_out(self) -> None:
+        """An unexpected legacy meat value (not split/all/none) falls back to 0/0."""
+        cfg = DietaryConfig.from_firestore({"meat": "weird_value"}, household_size=4)
+        assert cfg.meat_strategy == "weird_value"
+        assert cfg.meat_eaters == 0
+        assert cfg.vegetarians == 0
+
 
 # ---------------------------------------------------------------------------
 # DietaryConfig.active_sections

@@ -17,7 +17,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from api.models.equipment import get_equipment_prompt
-from api.services.dietary_prompt_builder import DietaryConfig, render_dietary_template
+from api.services.dietary_prompt_builder import DietaryConfig, render_dietary_template, render_substitution_block
 
 # Map language codes to full names for the language template
 LANGUAGE_NAMES: dict[str, str] = {"sv": "Swedish", "en": "English", "it": "Italian"}
@@ -61,6 +61,9 @@ def load_user_prompts(language: str = DEFAULT_LANGUAGE, *, dietary: DietaryConfi
     The language directive is loaded from a static file.  Dietary preferences
     are loaded from ``user/dietary.md`` and rendered through the conditional
     template engine using the household's Firestore config.
+
+    Ingredient substitutions (chicken/meat alternatives) are rendered as a
+    separate randomised block to mitigate prompt injection.
     """
     prompts_dir = get_prompts_dir() / "user"
     language_name = LANGUAGE_NAMES.get(language, language.capitalize())
@@ -71,11 +74,17 @@ def load_user_prompts(language: str = DEFAULT_LANGUAGE, *, dietary: DietaryConfi
     if language_content:
         parts.append(language_content.replace("{language_name}", language_name))
 
+    resolved_dietary = dietary or DietaryConfig()
+
     dietary_template = load_prompt_file(prompts_dir / "dietary.md")
     if dietary_template:
-        dietary_section = render_dietary_template(dietary_template, dietary or DietaryConfig())
+        dietary_section = render_dietary_template(dietary_template, resolved_dietary)
         if dietary_section.strip():
             parts.append(dietary_section)
+
+    substitution_block = render_substitution_block(resolved_dietary)
+    if substitution_block:
+        parts.append(substitution_block)
 
     return "\n\n".join(parts)
 
