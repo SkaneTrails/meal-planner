@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
-import { BottomSheetModal, Button, IconCircle } from '@/components';
 import {
   fontSize,
   fontWeight,
@@ -9,6 +8,9 @@ import {
   spacing,
   useTheme,
 } from '@/lib/theme';
+import { BottomSheetModal } from './BottomSheetModal';
+import { Button } from './Button';
+import { IconCircle } from './IconCircle';
 
 interface EnhancementReviewModalProps {
   visible: boolean;

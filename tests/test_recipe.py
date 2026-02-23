@@ -90,6 +90,50 @@ class TestRecipe:
         assert recipe.meal_label is None
 
 
+class TestImageUrlSchemeValidation:
+    """Tests for image_url and thumbnail_url scheme validation on RecipeUpdate."""
+
+    def test_https_accepted(self) -> None:
+        update = RecipeUpdate(image_url="https://example.com/image.jpg")
+        assert update.image_url == "https://example.com/image.jpg"
+
+    def test_http_accepted(self) -> None:
+        update = RecipeUpdate(image_url="http://example.com/image.jpg")
+        assert update.image_url == "http://example.com/image.jpg"
+
+    def test_none_accepted(self) -> None:
+        update = RecipeUpdate(image_url=None)
+        assert update.image_url is None
+
+    def test_javascript_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="javascript:alert(1)")
+
+    def test_data_uri_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="data:image/png;base64,abc")
+
+    def test_file_uri_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="file:///etc/passwd")
+
+    def test_ftp_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="ftp://example.com/image.jpg")
+
+    def test_thumbnail_https_accepted(self) -> None:
+        update = RecipeUpdate(thumbnail_url="https://example.com/thumb.jpg")
+        assert update.thumbnail_url == "https://example.com/thumb.jpg"
+
+    def test_thumbnail_javascript_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(thumbnail_url="javascript:alert(1)")
+
+    def test_thumbnail_data_uri_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(thumbnail_url="data:image/png;base64,abc")
+
+
 class TestRecipeUpdateRating:
     """Tests for RecipeUpdate rating validation."""
 

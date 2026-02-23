@@ -191,6 +191,7 @@ export const Button = ({
         disabled={isDisabled}
         testID={testID}
         hitSlop={hitSlop}
+        accessibilityRole="button"
         style={[{ opacity: isDisabled ? opacity.disabled : 1 }, segmentStyle]}
       >
         <Text
@@ -290,6 +291,8 @@ export const Button = ({
       disableAnimation={useHighlight || (disableAnimation ?? isDisabled)}
       testID={testID}
       hitSlop={hitSlop}
+      accessibilityRole="button"
+      accessibilityLabel={showIcon && !showLabel ? displayLabel : undefined}
       style={({ pressed, hovered }) => [
         variantStyle(),
         {

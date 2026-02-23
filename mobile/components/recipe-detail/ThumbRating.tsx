@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
+import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 
 interface ThumbRatingProps {
@@ -18,6 +19,7 @@ export const ThumbRating = ({
   size = 28,
 }: ThumbRatingProps) => {
   const { colors, borderRadius } = useTheme();
+  const { t } = useTranslation();
   const isThumbUp = rating === 5;
   const isThumbDown = hidden;
 
@@ -25,6 +27,8 @@ export const ThumbRating = ({
     <View style={{ flexDirection: 'row', gap: spacing.md }}>
       <Pressable
         onPress={onThumbDown}
+        accessibilityLabel={t('recipe.rateDown')}
+        accessibilityRole="button"
         style={({ pressed }) => ({
           padding: spacing.sm,
           borderRadius: borderRadius.lg,
@@ -43,6 +47,8 @@ export const ThumbRating = ({
       </Pressable>
       <Pressable
         onPress={onThumbUp}
+        accessibilityLabel={t('recipe.rateUp')}
+        accessibilityRole="button"
         style={({ pressed }) => ({
           padding: spacing.sm,
           borderRadius: borderRadius.lg,

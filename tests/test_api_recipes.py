@@ -1038,6 +1038,16 @@ class TestUpdateRecipe:
         assert response.status_code == 200
         assert response.json()["title"] == "Updated Title"
 
+    def test_rejects_invalid_image_url_scheme(self, client: TestClient) -> None:
+        """PUT with javascript: image_url returns 422."""
+        response = client.put("/recipes/test123", json={"image_url": "javascript:alert(1)"})
+        assert response.status_code == 422
+
+    def test_rejects_invalid_thumbnail_url_scheme(self, client: TestClient) -> None:
+        """PUT with data: thumbnail_url returns 422."""
+        response = client.put("/recipes/test123", json={"thumbnail_url": "data:image/png;base64,abc"})
+        assert response.status_code == 422
+
     def test_returns_404_when_not_found(self, client: TestClient) -> None:
         """Should return 404 when recipe not found."""
         with patch("api.routers.recipes.recipe_storage.update_recipe", return_value=None):

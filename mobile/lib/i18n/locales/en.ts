@@ -25,6 +25,7 @@ const en = {
     next: 'Next',
     pageOf: '{{current}} / {{total}}',
     confirm: 'Confirm',
+    close: 'Close',
     aiDisabledHint: 'Enable AI in household settings to use this feature',
   },
 
@@ -220,6 +221,7 @@ const en = {
     transferring: 'Transferring...',
     imageUrl: 'Image URL',
     imageUrlPrompt: 'Enter the URL of the image',
+    imageUrlInvalidScheme: 'URL must start with http:// or https://',
     // Notifications
     saved: 'Saved',
     recipeUpdated: 'Recipe details updated',
@@ -254,6 +256,9 @@ const en = {
     cannotRate: 'Cannot Rate',
     cannotRateMessage: 'Copy this recipe to your household first to rate it.',
     failedToUpdateRating: 'Failed to update rating',
+    rateUp: 'Rate up',
+    rateDown: 'Rate down',
+    removeTag: 'Remove tag {{tag}}',
     deleteRecipe: 'Delete Recipe',
     deleteConfirm: 'Are you sure you want to delete "{{title}}"?',
     failedToDelete: 'Failed to delete recipe',

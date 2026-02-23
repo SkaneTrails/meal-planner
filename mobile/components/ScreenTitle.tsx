@@ -1,4 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 import {
   fontSize,
@@ -31,11 +31,11 @@ export const ScreenTitle = ({
           isCentered ? styles.centeredTitle : styles.largeTitle,
           isCentered
             ? { color: colors.content.heading, fontFamily: fonts.displayBold }
-            : {
+            : ({
                 color: colors.content.heading,
-                textShadowColor: colors.shadow.text,
+                textShadow: `1px 1px 2px ${colors.shadow.text}`,
                 fontFamily: fonts.display,
-              },
+              } as TextStyle),
         ]}
       >
         {title}
@@ -74,8 +74,6 @@ const styles = StyleSheet.create({
   largeTitle: {
     fontSize: fontSize['4xl'],
     letterSpacing: letterSpacing.tight,
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
   largeSubtitle: {
     fontSize: fontSize.lg,

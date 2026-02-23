@@ -24,6 +24,7 @@ const sv: Translations = {
     next: 'Nästa',
     pageOf: '{{current}} / {{total}}',
     confirm: 'Bekräfta',
+    close: 'Stäng',
     aiDisabledHint:
       'Aktivera AI i hushållsinställningar för att använda denna funktion',
   },
@@ -215,6 +216,7 @@ const sv: Translations = {
     transferring: 'Överför...',
     imageUrl: 'Bild-URL',
     imageUrlPrompt: 'Ange URL till bilden',
+    imageUrlInvalidScheme: 'URL måste börja med http:// eller https://',
     saved: 'Sparat',
     recipeUpdated: 'Receptdetaljer uppdaterade',
     failedToSave: 'Kunde inte spara ändringar',
@@ -249,6 +251,9 @@ const sv: Translations = {
     cannotRateMessage:
       'Kopiera receptet till ditt hushåll först för att betygsätta.',
     failedToUpdateRating: 'Kunde inte uppdatera betyg',
+    rateUp: 'Betygsätt upp',
+    rateDown: 'Betygsätt ner',
+    removeTag: 'Ta bort tagg {{tag}}',
     deleteRecipe: 'Ta bort recept',
     deleteConfirm: 'Är du säker på att du vill ta bort "{{title}}"?',
     failedToDelete: 'Kunde inte ta bort recept',

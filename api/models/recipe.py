@@ -30,6 +30,10 @@ def _sanitize_text(text: str, max_length: int) -> str:
     return cleaned[:max_length]
 
 
+_ALLOWED_IMAGE_SCHEMES = ("http://", "https://")
+_ERR_IMAGE_URL_SCHEME = "Image URL must use http or https scheme"
+
+
 def flatten_ingredient_dict(data: dict[str, Any]) -> str:
     """Flatten a structured ingredient dict into a single string.
 
@@ -307,6 +311,13 @@ class RecipeUpdate(BaseModel):
     hidden: bool | None = Field(default=None, description="Hide from recipe lists")
     favorited: bool | None = Field(default=None, description="Mark as household favorite")
     visibility: Literal["household", "shared"] | None = Field(default=None, description="'household' or 'shared'")
+
+    @field_validator("image_url", "thumbnail_url")
+    @classmethod
+    def validate_image_url_scheme(cls, v: str | None) -> str | None:
+        if v is not None and not v.lower().startswith(_ALLOWED_IMAGE_SCHEMES):
+            raise ValueError(_ERR_IMAGE_URL_SCHEME)
+        return v
 
     @field_validator("rating")
     @classmethod
