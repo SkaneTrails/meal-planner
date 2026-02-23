@@ -193,13 +193,12 @@ export const GroceryListView = ({
       >
         <Button
           variant="text"
-          tone="alt"
+          tone={reorderMode ? 'glassSolid' : 'alt'}
           icon={reorderMode ? 'checkmark' : 'swap-vertical'}
           label={
             reorderMode ? t('grocery.doneSorting') : t('grocery.sortItems')
           }
           onPress={handleToggleReorder}
-          color={reorderMode ? colors.glass.heavy : undefined}
         />
       </View>
 

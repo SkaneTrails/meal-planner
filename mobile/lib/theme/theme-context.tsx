@@ -177,6 +177,13 @@ export interface ThemeDefinition {
    */
   chrome: LayoutChrome;
   /**
+   * Border radius for buttons. When omitted, buttons fall back to
+   * `borderRadius.md` (the pre-existing default). Themes that zero-out
+   * structural radii (cards, containers) can set this to keep buttons
+   * rounded independently.
+   */
+  buttonRadius?: number;
+  /**
    * Icon container border-radius as a fraction of the container size (0–0.5).
    * 0 = square, 0.5 = circle, values in between = rounded square.
    */
@@ -210,6 +217,8 @@ export interface ThemeValue {
   chrome: LayoutChrome;
   /** CRT visual overlay config (scanlines, flicker, glow). Undefined = no overlay. */
   crt?: CRTConfig;
+  /** Border radius for buttons. Falls back to borderRadius.md when undefined. */
+  buttonRadius: number;
   /** Whether this theme supports animated gradient backgrounds. False = always plain bgBase. */
   animatedBackground: boolean;
   /** Registry key of the active theme. */
@@ -260,6 +269,7 @@ export const ThemeProvider = ({
       crt,
       animatedBackground,
     } = theme;
+    const resolvedButtonRadius = theme.buttonRadius ?? radii.md;
     const iconRadiusFraction = theme.iconContainerRadius ?? 0.5;
     const themedCircleStyle: CircleStyleFn = (size) =>
       ({
@@ -277,6 +287,7 @@ export const ThemeProvider = ({
       shadows: shadowTokens,
       circleStyle: themedCircleStyle,
       buttonDisplay,
+      buttonRadius: resolvedButtonRadius,
       overrides,
       visibility,
       tabBar,

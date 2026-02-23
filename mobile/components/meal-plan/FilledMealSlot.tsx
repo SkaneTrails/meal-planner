@@ -1,8 +1,5 @@
-import { Image, Pressable, Text, View } from 'react-native';
-import { IconButton } from '@/components';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
-import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
+import { RecipeRow } from './RecipeRow';
 
 interface FilledMealSlotProps {
   date: Date;
@@ -40,75 +37,26 @@ export const FilledMealSlot = ({
   onEditCustomText,
   onRecipePress,
 }: FilledMealSlotProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
   const title = recipe?.title || customText || '';
-  const imageUrl =
-    recipe?.thumbnail_url || recipe?.image_url || PLACEHOLDER_IMAGE;
+  const imageUrl = recipe?.thumbnail_url || recipe?.image_url;
+
+  const handlePress = () => {
+    if (recipe) {
+      onRecipePress(recipe.id);
+    } else if (customText) {
+      onEditCustomText(date, mealType, customText);
+    } else {
+      onMealPress(date, mealType, 'library');
+    }
+  };
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.mealPlan.slotBg,
-        borderRadius: borderRadius.sm,
-        padding: spacing.md,
-        marginBottom: spacing['xs-sm'],
-      }}
-    >
-      <Pressable
-        onPress={() => {
-          if (recipe) {
-            onRecipePress(recipe.id);
-          } else if (customText) {
-            onEditCustomText(date, mealType, customText);
-          } else {
-            onMealPress(date, mealType, 'library');
-          }
-        }}
-        style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
-      >
-        <Image
-          source={{ uri: imageUrl }}
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: borderRadius.sm,
-            backgroundColor: colors.border,
-          }}
-          resizeMode="cover"
-        />
-        <View style={{ flex: 1, marginLeft: spacing.md }}>
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: colors.primary,
-            }}
-          >
-            {title}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              fontFamily: fonts.body,
-              color: colors.content.tertiary,
-              marginTop: spacing['2xs'],
-            }}
-          >
-            {label}
-          </Text>
-        </View>
-      </Pressable>
-
-      <IconButton
-        tone="cancel"
-        onPress={() => onRemove(date, mealType, title, label)}
-        icon="close"
-        size={28}
-        iconSize={18}
-        style={{ marginLeft: spacing.sm }}
-      />
-    </View>
+    <RecipeRow
+      title={title}
+      imageUrl={imageUrl}
+      subtitle={label}
+      onPress={handlePress}
+      onRemove={() => onRemove(date, mealType, title, label)}
+    />
   );
 };

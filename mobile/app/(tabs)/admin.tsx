@@ -204,7 +204,7 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
 
 const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
   const { t } = useTranslation();
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -231,11 +231,6 @@ const HouseholdsListHeader = ({ onCreateNew }: { onCreateNew: () => void }) => {
         icon="add"
         label={t('admin.newButton')}
         tone="primary"
-        style={{
-          paddingHorizontal: spacing.md,
-          paddingVertical: spacing.sm,
-          borderRadius: borderRadius.lg,
-        }}
       />
     </View>
   );

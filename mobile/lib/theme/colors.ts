@@ -568,7 +568,7 @@ export const lightColors = {
     fadeWidth: 24,
   },
 
-  // Tab bar — acrylic floating nav
+  // Tab bar — floating nav
   tabBar: {
     bg: 'rgba(240, 234, 226, 0.5)',
     bgFallback: 'rgba(240, 234, 226, 0.88)',
