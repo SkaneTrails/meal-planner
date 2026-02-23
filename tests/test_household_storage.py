@@ -146,6 +146,7 @@ class TestCreateHousehold:
 
         call_args = mock_doc_ref.set.call_args[0][0]
         assert call_args["name"] == "The Smiths"
+        assert call_args["normalized_name"] == "the smiths"
         assert call_args["created_by"] == "owner@example.com"
         assert "created_at" in call_args
 
@@ -294,7 +295,7 @@ class TestUpdateHousehold:
         result = update_household("household-123", "New Name")
 
         assert result is True
-        mock_doc_ref.update.assert_called_once_with({"name": "New Name"})
+        mock_doc_ref.update.assert_called_once_with({"name": "New Name", "normalized_name": "new name"})
 
 
 class TestDataclasses:
@@ -377,31 +378,37 @@ class TestHouseholdNameExists:
     def test_returns_true_when_name_taken(self, mock_db) -> None:
         mock_doc = MagicMock()
         mock_doc.id = "household-1"
-        mock_doc.to_dict.return_value = {
-            "name": "Smith Family",
-            "created_at": datetime.now(UTC),
-            "created_by": "a@b.com",
-        }
-        mock_db.collection.return_value.stream.return_value = [mock_doc]
+        mock_query = MagicMock()
+        mock_query.stream.return_value = [mock_doc]
+        mock_db.collection.return_value.where.return_value = mock_query
 
         assert household_name_exists("smith family") is True
+        mock_db.collection.return_value.where.assert_called_once_with("normalized_name", "==", "smith family")
 
     def test_returns_false_when_name_not_taken(self, mock_db) -> None:
-        mock_db.collection.return_value.stream.return_value = []
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
 
         assert household_name_exists("New Name") is False
 
     def test_allows_same_household_to_keep_name(self, mock_db) -> None:
         mock_doc = MagicMock()
         mock_doc.id = "household-1"
-        mock_doc.to_dict.return_value = {
-            "name": "Smith Family",
-            "created_at": datetime.now(UTC),
-            "created_by": "a@b.com",
-        }
-        mock_db.collection.return_value.stream.return_value = [mock_doc]
+        mock_query = MagicMock()
+        mock_query.stream.return_value = [mock_doc]
+        mock_db.collection.return_value.where.return_value = mock_query
 
         assert household_name_exists("smith family", exclude_id="household-1") is False
+
+    def test_strips_and_lowercases_name(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
+
+        household_name_exists("  UPPER Case  ")
+
+        mock_db.collection.return_value.where.assert_called_once_with("normalized_name", "==", "upper case")
 
 
 class TestDeleteHousehold:

@@ -125,6 +125,11 @@ async def update_recipe(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Copies cannot be shared. Use 'publish as new' to share a modified recipe.",
             )
+        # Only the recipe creator or a superuser may share a recipe
+        if existing and user.role != "superuser" and existing.created_by != user.email:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Only the recipe creator can share this recipe."
+            )
 
     recipe = recipe_storage.update_recipe(recipe_id, updates, household_id=household_id)
     if recipe is None:

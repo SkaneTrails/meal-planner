@@ -105,31 +105,6 @@ def delete_meal(household_id: str, date_str: str, meal_type_str: str) -> None:  
     doc_ref.update({key: DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
 
 
-def load_day_notes(household_id: str) -> dict[str, str]:  # pragma: no cover
-    """
-    Load day notes from Firestore.
-
-    Args:
-        household_id: The household identifier.
-
-    Returns:
-        Dictionary with date_str keys and note text values.
-    """
-    db = get_firestore_client()
-    doc = cast(
-        "DocumentSnapshot", db.collection(MEAL_PLANS_COLLECTION).document(_get_meal_plan_doc_id(household_id)).get()
-    )
-
-    if not doc.exists:
-        return {}
-
-    data = doc.to_dict()
-    if data is None:
-        return {}
-
-    return data.get("notes", {})
-
-
 def update_day_note(household_id: str, date_str: str, note: str) -> None:  # pragma: no cover
     """
     Update or delete a single day's note in Firestore.

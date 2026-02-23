@@ -1062,21 +1062,72 @@ class TestUpdateRecipe:
         assert response.status_code == 400
         assert "copies cannot be shared" in response.json()["detail"].lower()
 
-    def test_allows_sharing_original_recipe(self, client: TestClient, sample_recipe: Recipe) -> None:
-        """Should allow sharing a recipe that is not a copy."""
+    def test_allows_sharing_original_recipe(self, client: TestClient) -> None:
+        """Should allow sharing a recipe created by the current user."""
+        existing = Recipe(
+            id="test123",
+            title="Test Carbonara",
+            url="https://example.com/carbonara",
+            household_id="test_household",
+            created_by="test@example.com",
+        )
         updated_recipe = Recipe(
             id="test123",
             title="Test Carbonara",
             url="https://example.com/carbonara",
             household_id="test_household",
             visibility="shared",
+            created_by="test@example.com",
         )
 
         with (
-            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=sample_recipe),
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=existing),
             patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated_recipe),
         ):
             response = client.put("/recipes/test123", json={"visibility": "shared"})
+
+        assert response.status_code == 200
+        assert response.json()["visibility"] == "shared"
+
+    def test_rejects_sharing_by_non_creator(self, client: TestClient) -> None:
+        """Should return 403 when non-creator tries to share a recipe."""
+        existing = Recipe(
+            id="test123",
+            title="Test Carbonara",
+            url="https://example.com/carbonara",
+            household_id="test_household",
+            created_by="other@example.com",
+        )
+
+        with patch("api.routers.recipes.recipe_storage.get_recipe", return_value=existing):
+            response = client.put("/recipes/test123", json={"visibility": "shared"})
+
+        assert response.status_code == 403
+        assert "creator" in response.json()["detail"].lower()
+
+    def test_superuser_can_share_any_recipe(self, superuser_client: TestClient) -> None:
+        """Should allow superuser to share any recipe regardless of creator."""
+        existing = Recipe(
+            id="test123",
+            title="Test Carbonara",
+            url="https://example.com/carbonara",
+            household_id="super_household",
+            created_by="other@example.com",
+        )
+        updated = Recipe(
+            id="test123",
+            title="Test Carbonara",
+            url="https://example.com/carbonara",
+            household_id="super_household",
+            visibility="shared",
+            created_by="other@example.com",
+        )
+
+        with (
+            patch("api.routers.recipes.recipe_storage.get_recipe", return_value=existing),
+            patch("api.routers.recipes.recipe_storage.update_recipe", return_value=updated),
+        ):
+            response = superuser_client.put("/recipes/test123", json={"visibility": "shared"})
 
         assert response.status_code == 200
         assert response.json()["visibility"] == "shared"

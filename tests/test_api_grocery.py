@@ -113,6 +113,7 @@ class TestGenerateGroceryList:
         """Should include ingredients from recipes."""
         meals = {"2025-01-15_dinner": "recipe123"}
         mock_recipe = MagicMock()
+        mock_recipe.household_id = "test_household"
         mock_recipe.ingredients = ["2 cups flour", "1 egg"]
         mock_recipe.title = "Test Recipe"
 
@@ -131,9 +132,11 @@ class TestGenerateGroceryList:
         """Should merge same ingredients from different recipes."""
         meals = {"2025-01-15_dinner": "recipe1", "2025-01-16_dinner": "recipe2"}
         mock_recipe1 = MagicMock()
+        mock_recipe1.household_id = "test_household"
         mock_recipe1.ingredients = ["2 eggs"]
         mock_recipe1.title = "Recipe 1"
         mock_recipe2 = MagicMock()
+        mock_recipe2.household_id = "test_household"
         mock_recipe2.ingredients = ["3 eggs"]
         mock_recipe2.title = "Recipe 2"
 
@@ -160,6 +163,7 @@ class TestGenerateGroceryList:
             "2025-01-20_dinner": "recipe2",  # Outside range
         }
         mock_recipe = MagicMock()
+        mock_recipe.household_id = "test_household"
         mock_recipe.ingredients = ["1 onion"]
         mock_recipe.title = "Test Recipe"
 
@@ -177,6 +181,7 @@ class TestGenerateGroceryList:
         """Should skip meal keys without underscore separator."""
         meals = {"badkey": "recipe1", "2025-01-15_dinner": "recipe2"}
         mock_recipe = MagicMock()
+        mock_recipe.household_id = "test_household"
         mock_recipe.ingredients = ["1 egg"]
         mock_recipe.title = "Good Recipe"
 
@@ -207,6 +212,7 @@ class TestGenerateGroceryList:
     def test_includes_extras(self, client: TestClient) -> None:
         """Should include extras recipes (Other section) regardless of date."""
         mock_recipe = MagicMock()
+        mock_recipe.household_id = "test_household"
         mock_recipe.ingredients = ["2 cups flour"]
         mock_recipe.title = "Extra Recipe"
 
@@ -232,6 +238,55 @@ class TestGenerateGroceryList:
 
         assert response.status_code == 200
         assert response.json()["items"] == []
+
+    def test_excludes_cross_household_recipes(self, client: TestClient) -> None:
+        """Should exclude recipes from other households that aren't shared."""
+        meals = {"2025-01-15_dinner": "owned", "2025-01-16_dinner": "foreign"}
+        owned_recipe = MagicMock()
+        owned_recipe.household_id = "test_household"
+        owned_recipe.visibility = "household"
+        owned_recipe.ingredients = ["1 egg"]
+        owned_recipe.title = "Owned"
+
+        foreign_recipe = MagicMock()
+        foreign_recipe.household_id = "other_household"
+        foreign_recipe.visibility = "household"
+        foreign_recipe.ingredients = ["1 onion"]
+        foreign_recipe.title = "Foreign"
+
+        with (
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch(
+                "api.routers.grocery.get_recipes_by_ids",
+                return_value={"owned": owned_recipe, "foreign": foreign_recipe},
+            ),
+            patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
+        ):
+            response = client.get("/grocery")
+
+        assert response.status_code == 200
+        items = response.json()["items"]
+        assert len(items) == 1
+        assert items[0]["recipe_sources"] == ["Owned"]
+
+    def test_includes_shared_cross_household_recipes(self, client: TestClient) -> None:
+        """Should include cross-household recipes when visibility is shared."""
+        meals = {"2025-01-15_dinner": "shared_recipe"}
+        shared_recipe = MagicMock()
+        shared_recipe.household_id = "other_household"
+        shared_recipe.visibility = "shared"
+        shared_recipe.ingredients = ["1 onion"]
+        shared_recipe.title = "Shared Recipe"
+
+        with (
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.get_recipes_by_ids", return_value={"shared_recipe": shared_recipe}),
+            patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
+        ):
+            response = client.get("/grocery")
+
+        assert response.status_code == 200
+        assert len(response.json()["items"]) == 1
 
 
 class TestDetectCategory:

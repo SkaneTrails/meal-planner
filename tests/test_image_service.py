@@ -19,11 +19,10 @@ from api.services.image_service import (
 
 def _make_image(width: int, height: int, mode: str = "RGB") -> bytes:
     """Create a minimal in-memory image with the given dimensions and mode."""
-    img = Image.new(
-        mode,
-        (width, height),
-        color=(100, 150, 200)[: len(Image.new(mode, (1, 1)).getpixel((0, 0))) if mode not in ("L", "1", "P") else 1],
-    )
+    pixel = Image.new(mode, (1, 1)).getpixel((0, 0))
+    channels = len(pixel) if isinstance(pixel, tuple) else 1
+    color: int | tuple[int, ...] = (100, 150, 200)[:channels] if channels > 1 else 1
+    img = Image.new(mode, (width, height), color=color)
     buf = io.BytesIO()
     fmt = "PNG" if mode in ("RGBA", "P", "LA") else "JPEG" if mode == "RGB" else "PNG"
     if mode == "P":

@@ -123,7 +123,7 @@ def create_household(name: str, created_by: str) -> str:
     now = datetime.now(UTC)
 
     doc_ref = db.collection(HOUSEHOLDS_COLLECTION).document()
-    doc_ref.set({"name": name, "created_at": now, "created_by": created_by})
+    doc_ref.set({"name": name, "normalized_name": name.strip().lower(), "created_at": now, "created_by": created_by})
 
     return doc_ref.id
 
@@ -215,18 +215,23 @@ def household_name_exists(name: str, exclude_id: str | None = None) -> bool:
     """
     Check if a household name is already in use.
 
+    Uses a Firestore query on the ``normalized_name`` field instead of
+    fetching every household document.
+
     Args:
         name: The name to check (case-insensitive).
         exclude_id: Optionally exclude a household ID (for rename checks).
 
     Returns True if the name is already taken by another household.
     """
+    db = _get_db()
     normalized = name.strip().lower()
-    for household in list_all_households():
-        if household.name.strip().lower() == normalized:
-            if exclude_id and household.id == exclude_id:
-                continue  # Same household, allow keeping its own name
-            return True
+    query = db.collection(HOUSEHOLDS_COLLECTION).where("normalized_name", "==", normalized)
+
+    for doc in query.stream():
+        if exclude_id and doc.id == exclude_id:
+            continue
+        return True
     return False
 
 
@@ -242,7 +247,7 @@ def update_household(household_id: str, name: str) -> bool:
     if not doc_ref.get().exists:  # type: ignore[union-attr]
         return False
 
-    doc_ref.update({"name": name})
+    doc_ref.update({"name": name, "normalized_name": name.strip().lower()})
     return True
 
 

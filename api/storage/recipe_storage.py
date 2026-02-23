@@ -532,6 +532,9 @@ def copy_recipe(recipe_id: str, *, to_household_id: str, copied_by: str, keep_en
     from api.models.recipe import RecipeCreate
 
     if use_original:
+        if source.original is None:  # pragma: no cover — narrowed by use_original guard
+            msg = "source.original is None despite use_original=True"
+            raise ValueError(msg)
         orig = source.original
         recipe_data = RecipeCreate(
             title=orig.title,

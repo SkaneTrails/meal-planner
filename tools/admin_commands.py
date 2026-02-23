@@ -11,9 +11,13 @@ exclusively through Terraform (infra/environments/dev/access/superusers.txt).
 
 import argparse
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING, cast
 
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
+
+if TYPE_CHECKING:
+    from google.cloud.firestore_v1.base_document import DocumentSnapshot
 
 DATABASE = "meal-planner"
 HOUSEHOLDS_COLLECTION = "households"
@@ -51,8 +55,8 @@ def user_get(email: str) -> None:
     db = _get_db()
     normalized = email.lower()
 
-    su_doc = db.collection(SUPERUSERS_COLLECTION).document(normalized).get()
-    member_doc = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized).get()
+    su_doc = cast("DocumentSnapshot", db.collection(SUPERUSERS_COLLECTION).document(normalized).get())
+    member_doc = cast("DocumentSnapshot", db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized).get())
 
     print(f"\n{'=' * 60}")
     print(f"  User: {normalized}")
@@ -71,7 +75,7 @@ def user_get(email: str) -> None:
 
     household_name = ""
     if household_id:
-        h_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+        h_doc = cast("DocumentSnapshot", db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get())
         if h_doc.exists:
             household_name = (h_doc.to_dict() or {}).get("name", "")
 
@@ -98,12 +102,12 @@ def user_add(email: str, household_id: str, *, role: str = "member") -> None:
         print(f"\u274c Invalid role: {role}. Must be one of {VALID_ROLES}")
         return
 
-    h_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    h_doc = cast("DocumentSnapshot", db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get())
     if not h_doc.exists:
         print(f"\u274c Household not found: {household_id}")
         return
 
-    existing = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized).get()
+    existing = cast("DocumentSnapshot", db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized).get())
     if existing.exists:
         existing_data = existing.to_dict() or {}
         existing_hid = existing_data.get("household_id")
@@ -126,7 +130,7 @@ def user_remove(email: str) -> None:
     normalized = email.lower()
 
     doc_ref = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized)
-    doc = doc_ref.get()
+    doc = cast("DocumentSnapshot", doc_ref.get())
 
     if not doc.exists:
         print(f"\u274c {normalized} is not a member of any household")
@@ -148,7 +152,7 @@ def user_set_role(email: str, role: str) -> None:
         return
 
     doc_ref = db.collection(HOUSEHOLD_MEMBERS_COLLECTION).document(normalized)
-    doc = doc_ref.get()
+    doc = cast("DocumentSnapshot", doc_ref.get())
 
     if not doc.exists:
         print(f"\u274c {normalized} is not a member of any household")
@@ -164,7 +168,7 @@ def user_list(*, household_id: str | None = None) -> None:
     db = _get_db()
 
     if household_id:
-        h_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+        h_doc = cast("DocumentSnapshot", db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get())
         if not h_doc.exists:
             print(f"\u274c Household not found: {household_id}")
             return
@@ -216,7 +220,7 @@ def household_get(household_id: str) -> None:
     """Show a household's details, members, and settings."""
     db = _get_db()
 
-    h_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    h_doc = cast("DocumentSnapshot", db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get())
     if not h_doc.exists:
         print(f"\u274c Household not found: {household_id}")
         return
@@ -237,8 +241,9 @@ def household_get(household_id: str) -> None:
         m_data = m.to_dict() or {}
         print(f"    {m.id} ({m_data.get('role', 'member')})")
 
-    settings_doc = (
-        db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config").get()
+    settings_doc = cast(
+        "DocumentSnapshot",
+        db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config").get(),
     )
     if settings_doc.exists:
         s = settings_doc.to_dict() or {}
@@ -280,7 +285,7 @@ def household_set(household_id: str, field: str, value: str) -> None:
     """Update a single household setting."""
     db = _get_db()
 
-    h_doc = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get()
+    h_doc = cast("DocumentSnapshot", db.collection(HOUSEHOLDS_COLLECTION).document(household_id).get())
     if not h_doc.exists:
         print(f"\u274c Household not found: {household_id}")
         return
