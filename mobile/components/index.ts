@@ -70,6 +70,7 @@ export { TerminalFabBar } from './TerminalFabBar';
 export type { FrameSegment } from './TerminalFrame';
 export { TerminalFrame } from './TerminalFrame';
 export { ThemedAlert } from './ThemedAlert';
+export { ThemedTextInput } from './ThemedTextInput';
 export { ThemeToggle } from './ThemeToggle';
 export { Toggle } from './Toggle';
 export { UrlInputBar } from './UrlInputBar';

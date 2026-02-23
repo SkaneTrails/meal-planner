@@ -102,7 +102,11 @@ export default function HouseholdSettingsScreen() {
             hasChanges={form.hasChanges}
             isSaving={form.isSaving}
             onSave={form.handleSave}
-            onBack={() => router.back()}
+            onBack={() =>
+              router.canGoBack()
+                ? router.back()
+                : router.replace('/(tabs)/settings')
+            }
           />
 
           <ScrollView

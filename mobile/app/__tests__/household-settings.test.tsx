@@ -37,10 +37,11 @@ const mockSettingsData = {
     seafood_ok: true,
     meat: 'none' as const,
     meat_portions: 0,
-    minced_meat: 'meat' as const,
     dairy: 'regular' as const,
-    chicken_alternative: 'tofu',
-    meat_alternative: 'tempeh',
+    ingredient_replacements: [
+      { original: 'chicken', replacement: 'tofu', meat_substitute: true },
+      { original: 'beef', replacement: 'tempeh', meat_substitute: true },
+    ],
   },
   equipment: ['air_fryer', 'convection_oven', 'grill_function'],
 };

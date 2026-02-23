@@ -260,6 +260,26 @@ vi.mock('@/components', () => ({
       children,
     );
   },
+  ThemedTextInput: ({ value, onChangeText, placeholder, disabled, testID }: any) => {
+    const { createElement } = require('react');
+    return createElement('input', {
+      value,
+      placeholder,
+      disabled: disabled ?? false,
+      onChange: (e: any) => onChangeText(e.target.value),
+      'data-testid': testID ?? 'themed-text-input',
+    });
+  },
+  Toggle: ({ value, onValueChange, disabled }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', {
+      onClick: () => onValueChange(!value),
+      disabled: disabled ?? false,
+      'aria-checked': value,
+      role: 'switch',
+      'data-testid': 'toggle',
+    }, value ? 'ON' : 'OFF');
+  },
   IconButton: ({ icon, onPress, disabled, testID }: any) => {
     const { createElement } = require('react');
     return createElement('button', {

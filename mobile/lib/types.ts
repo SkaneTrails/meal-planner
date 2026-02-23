@@ -306,18 +306,21 @@ export interface CurrentUser {
 
 // Household Settings types
 export type MeatPreference = 'all' | 'split' | 'none';
-export type MincedMeatPreference = 'meat' | 'soy' | 'split';
 export type DairyPreference = 'regular' | 'lactose_free' | 'dairy_free';
+
+export interface IngredientReplacement {
+  original: string;
+  replacement: string;
+  meat_substitute: boolean;
+}
 
 export interface DietarySettings {
   lactose_free: boolean;
   seafood_ok: boolean;
   meat: MeatPreference;
   meat_portions: number;
-  minced_meat: MincedMeatPreference;
   dairy: DairyPreference;
-  chicken_alternative?: string | null;
-  meat_alternative?: string | null;
+  ingredient_replacements: IngredientReplacement[];
 }
 
 import type { WeekStart } from '@/lib/utils/dateFormatter';

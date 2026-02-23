@@ -44,18 +44,32 @@
 
 **Scaling must be practical:** Round quantities to sensible amounts. You cannot have ⅓ of an egg or 37 g of butter — round to whole eggs (or omit for one variant) and practical weights (25 g, 50 g, etc.).
 
-### Chicken
+### Applying substitutions
 
-- **Split**: {meat_eaters}/{target_servings} chicken + {vegetarians}/{target_servings} vegetarian alternative (proportional portions — see rule above)
-- **Alternative product**: Use the chicken replacement specified in the Ingredient Substitutions section
-- **Match the form**: fillets, strips, or pieces — match the original protein shape
-- **Flavor-match the alternative**: The vegetarian version should taste equally good, not like an afterthought. If the meat has a marinade, glaze, or spice rub, create a comparable seasoning for the alternative using pantry spices. The goal: both versions are satisfying on their own
+For each protein/ingredient in the recipe, follow this decision order:
 
-### Other meat (beef, pork, lamb) — WHOLE CUTS ONLY
+#### Step 1 — Check "Full replacements (all portions)" first
 
-- **Split**: {meat_eaters}/{target_servings} original meat + {vegetarians}/{target_servings} vegetarian alternative (NEVER use the chicken replacement for these meats)
-- **Alternative product**: Use the meat replacement specified in the Ingredient Substitutions section, in the appropriate form (chunks, pulled, kebab) depending on the dish
-- **Applies to**: Steaks, roasts, strips, chunks, whole pieces — NOT mince
+If the ingredient (or its category — e.g. "blandfärs" is a type of "köttfärs") appears under "Full replacements":
+
+- **Replace 100 %** — every portion uses the replacement. Do NOT keep any of the original, do NOT split
+- **Adjust cooking technique** if needed (see locale cooking guide for product-specific tips)
+- **Mince/ground meat substitutes** need extra care: less fat → add 1-2 tbsp oil when frying; add soy sauce or bouillon for umami
+- **Done** — do not apply the protein split below for this ingredient
+
+#### Step 2 — Apply protein split for remaining meat
+
+For meat proteins NOT handled by Full replacements:
+
+1. **Look up** the protein under "Protein split (proportional)"
+2. **If listed**: split proportionally — {meat_eaters}/{target_servings} original + {vegetarians}/{target_servings} replacement
+3. **If not listed**: still split proportionally, but choose a suitable vegetarian alternative yourself (e.g. Oumph, halloumi, beans, tofu — whatever fits the dish)
+4. **Match the form**: fillets → fillets, strips → strips, chunks → chunks — the replacement should mirror the original protein shape
+5. **Flavor-match the alternative**: The vegetarian version must taste equally good:
+   - If the meat has a marinade, glaze, or spice rub → give the alternative equivalent seasoning (separate marinade step if needed)
+   - If the meat is seasoned with aromatic fats (sesame oil, herb butter) → apply the same fats to the alternative too
+   - Mince/ground-meat substitutes are always bland on their own → ALWAYS add soy sauce or bouillon for umami, plus extra oil for browning (see locale cooking guide)
+6. **Preserve texture**: Do not simmer or stew a product whose appeal is a crispy/seared surface (e.g. halloumi, pan-fried Quorn). Add it at the very end, or plate it alongside the sauce
 <!-- END:meat_split -->
 
 <!-- BEGIN:vegetarian -->
@@ -68,19 +82,6 @@
 - Use the replacement products specified in the Ingredient Substitutions section
 - See locale section for specific alternative products available in your region
 <!-- END:vegetarian -->
-
-<!-- BEGIN:soy_mince -->
-
-### Mince / ground meat (all types) — CRITICAL, OVERRIDES SPLIT
-
-**This rule takes priority over all other protein rules.**
-
-ALL mince/ground meat is ALWAYS replaced with **100% soy mince** for everyone. No split, no other alternatives.
-
-- **Rule**: 100% soy mince — NEVER split mince, NEVER use other alternatives for mince
-- **Adjustment**: Less fat → add 1-2 tbsp oil when frying
-- **Tip**: Add a splash of soy sauce or bouillon for umami
-<!-- END:soy_mince -->
 
 <!-- BEGIN:lactose_free -->
 

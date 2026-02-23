@@ -10,7 +10,41 @@ from api.models.equipment import validate_equipment_keys
 MAX_HOUSEHOLD_SIZE = 20
 MAX_ALTERNATIVE_LENGTH = 30
 MAX_ALTERNATIVE_WORDS = 3
+MAX_REPLACEMENTS = 10
 _ALTERNATIVE_RE = re.compile(r"^[\w -]+$", re.UNICODE)
+
+
+def _validate_ingredient_name(v: object) -> str:
+    """Validate a free-text ingredient name for prompt-injection safety.
+
+    Used by IngredientReplacement for both original and replacement fields.
+    Values end up in the Gemini system prompt, so strict validation is
+    a security boundary.
+
+    Raises:
+        ValueError: If value is empty, too long, has banned chars, or too many words.
+        TypeError: If value is not a string.
+    """
+    if v is None:
+        msg = "Ingredient name must not be empty"
+        raise ValueError(msg)
+    if not isinstance(v, str):
+        msg = "Ingredient name must be a string"
+        raise TypeError(msg)
+    v = v.strip()
+    if not v:
+        msg = "Ingredient name must not be empty"
+        raise ValueError(msg)
+    if len(v) > MAX_ALTERNATIVE_LENGTH:
+        msg = f"Ingredient name must be at most {MAX_ALTERNATIVE_LENGTH} characters"
+        raise ValueError(msg)
+    if not _ALTERNATIVE_RE.match(v):
+        msg = "Ingredient name may only contain letters, numbers, spaces, hyphens, and underscores"
+        raise ValueError(msg)
+    if len(v.split()) > MAX_ALTERNATIVE_WORDS:
+        msg = f"Ingredient name must be at most {MAX_ALTERNATIVE_WORDS} words"
+        raise ValueError(msg)
+    return v
 
 
 class Language(str, Enum):
@@ -29,20 +63,32 @@ class MeatPreference(str, Enum):
     NONE = "none"  # All vegetarian
 
 
-class MincedMeatPreference(str, Enum):
-    """How to handle minced meat."""
-
-    MEAT = "meat"  # Use regular minced meat
-    SOY = "soy"  # Always use soy-based mince
-    SPLIT = "split"  # Half and half
-
-
 class DairyPreference(str, Enum):
     """Dairy preferences."""
 
     REGULAR = "regular"  # No restrictions
     LACTOSE_FREE = "lactose_free"  # Prefer lactose-free alternatives
     DAIRY_FREE = "dairy_free"  # No dairy at all
+
+
+class IngredientReplacement(BaseModel):
+    """A single ingredient substitution rule.
+
+    Both field values are validated against prompt-injection rules
+    (max length, max words, safe characters only).
+    """
+
+    original: str = Field(..., max_length=MAX_ALTERNATIVE_LENGTH, description="Ingredient to replace")
+    replacement: str = Field(..., max_length=MAX_ALTERNATIVE_LENGTH, description="Replacement ingredient")
+    meat_substitute: bool = Field(
+        default=True,
+        description="When true, participates in proportional meat/veg split; when false, replaces 100% for all portions",
+    )
+
+    @field_validator("original", "replacement", mode="before")
+    @classmethod
+    def validate_ingredient_name(cls, v: object) -> str:
+        return _validate_ingredient_name(v)
 
 
 class DietarySettings(BaseModel):
@@ -56,44 +102,19 @@ class DietarySettings(BaseModel):
         le=MAX_HOUSEHOLD_SIZE,
         description="How many portions contain meat, relative to default_servings (0 = all vegetarian, max = all meat)",
     )
-    minced_meat: MincedMeatPreference = Field(
-        default=MincedMeatPreference.MEAT, description="How to handle minced meat"
-    )
     dairy: DairyPreference = Field(default=DairyPreference.REGULAR, description="Dairy preferences")
-
-    # Vegetarian alternatives
-    chicken_alternative: str | None = Field(
-        default=None, max_length=MAX_ALTERNATIVE_LENGTH, description="Alternative for chicken (e.g., Quorn)"
-    )
-    meat_alternative: str | None = Field(
-        default=None, max_length=MAX_ALTERNATIVE_LENGTH, description="Alternative for other meats (e.g., Oumph)"
+    ingredient_replacements: list[IngredientReplacement] = Field(
+        default_factory=list, max_length=MAX_REPLACEMENTS, description="Ingredient substitution rules (max 10)"
     )
 
-    @field_validator("chicken_alternative", "meat_alternative", mode="before")
+    @field_validator("ingredient_replacements", mode="before")
     @classmethod
-    def validate_alternative_name(cls, v: str | None) -> str | None:
-        """Sanitize free-text alternative names to prevent prompt injection.
-
-        Rejects values that are too long, contain special characters,
-        or have more than 3 words.  These fields end up in the Gemini
-        system prompt — strict validation is a security boundary.
-        """
+    def coerce_replacements(cls, v: object) -> list:
+        """Coerce None/non-list to empty list for Firestore compatibility."""
         if v is None:
-            return None
-        if not isinstance(v, str):
-            return None
-        v = v.strip()
-        if not v:
-            return None
-        if len(v) > MAX_ALTERNATIVE_LENGTH:
-            msg = f"Alternative name must be at most {MAX_ALTERNATIVE_LENGTH} characters"
-            raise ValueError(msg)
-        if not _ALTERNATIVE_RE.match(v):
-            msg = "Alternative name may only contain letters, numbers, spaces, hyphens, and underscores"
-            raise ValueError(msg)
-        if len(v.split()) > MAX_ALTERNATIVE_WORDS:
-            msg = f"Alternative name must be at most {MAX_ALTERNATIVE_WORDS} words"
-            raise ValueError(msg)
+            return []
+        if not isinstance(v, list):
+            return []
         return v
 
     @field_validator("meat_portions", mode="before")
@@ -175,16 +196,10 @@ class DietarySettingsUpdate(BaseModel):
     seafood_ok: bool | None = None
     meat: MeatPreference | None = None
     meat_portions: int | None = Field(default=None, ge=0, le=MAX_HOUSEHOLD_SIZE)
-    minced_meat: MincedMeatPreference | None = None
     dairy: DairyPreference | None = None
-    chicken_alternative: str | None = Field(default=None, max_length=MAX_ALTERNATIVE_LENGTH)
-    meat_alternative: str | None = Field(default=None, max_length=MAX_ALTERNATIVE_LENGTH)
-
-    @field_validator("chicken_alternative", "meat_alternative", mode="before")
-    @classmethod
-    def validate_alternative_name(cls, v: str | None) -> str | None:
-        """Reuse the same validation as DietarySettings."""
-        return DietarySettings.validate_alternative_name(v)
+    ingredient_replacements: list[IngredientReplacement] | None = Field(
+        default=None, max_length=MAX_REPLACEMENTS, description="Ingredient substitution rules (max 10)"
+    )
 
 
 class HouseholdSettingsUpdate(BaseModel):

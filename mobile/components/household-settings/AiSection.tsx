@@ -1,14 +1,18 @@
-import { Text, TextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
 import {
-  RadioGroup,
+  IconButton,
   SectionLabel,
+  SettingToggleRow,
   StepperControl,
   SurfaceCard,
+  ThemedTextInput,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
-import type { HouseholdSettings, MincedMeatPreference } from '@/lib/types';
+import type { HouseholdSettings, IngredientReplacement } from '@/lib/types';
 import { AvailableEquipment, SelectedEquipment } from './EquipmentSection';
+
+const MAX_REPLACEMENTS = 10;
 
 interface AiSectionProps {
   dietary: HouseholdSettings['dietary'];
@@ -30,7 +34,7 @@ export const AiSection = ({
   onUpdateDietary,
   onToggleEquipment,
 }: AiSectionProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
 
   const meatPortions = Math.min(
@@ -50,27 +54,34 @@ export const AiSection = ({
     }
   };
 
-  const mincedMeatOptions: {
-    value: MincedMeatPreference;
-    label: string;
-    description: string;
-  }[] = [
-    {
-      value: 'meat',
-      label: t('householdSettings.dietary.mincedRegular'),
-      description: t('householdSettings.dietary.mincedRegularDesc'),
-    },
-    {
-      value: 'soy',
-      label: t('householdSettings.dietary.mincedSoy'),
-      description: t('householdSettings.dietary.mincedSoyDesc'),
-    },
-    {
-      value: 'split',
-      label: t('householdSettings.dietary.mincedSplit'),
-      description: t('householdSettings.dietary.mincedSplitDesc'),
-    },
-  ];
+  const replacements = dietary.ingredient_replacements ?? [];
+
+  const updateReplacements = (updated: IngredientReplacement[]) => {
+    onUpdateDietary('ingredient_replacements', updated);
+  };
+
+  const handleUpdateRow = (
+    index: number,
+    field: keyof IngredientReplacement,
+    value: string | boolean,
+  ) => {
+    const updated = replacements.map((r, i) =>
+      i === index ? { ...r, [field]: value } : r,
+    );
+    updateReplacements(updated);
+  };
+
+  const handleRemoveRow = (index: number) => {
+    updateReplacements(replacements.filter((_, i) => i !== index));
+  };
+
+  const handleAddRow = () => {
+    if (replacements.length >= MAX_REPLACEMENTS) return;
+    updateReplacements([
+      ...replacements,
+      { original: '', replacement: '', meat_substitute: true },
+    ]);
+  };
 
   const disabledByAi = !canEdit;
 
@@ -113,82 +124,57 @@ export const AiSection = ({
         )}
       </SurfaceCard>
 
-      {/* Meat Alternatives (shown when not all meat) */}
-      {meatPortions < defaultServings && (
-        <View
+      {/* Ingredient Replacements */}
+      <SectionLabel text={t('householdSettings.dietary.replacements')} />
+      <SurfaceCard radius="lg" style={{ marginBottom: spacing.lg }}>
+        <Text
           style={{
-            backgroundColor: colors.bgLight,
-            borderRadius: borderRadius.md,
-            padding: spacing.md,
-            marginBottom: spacing.lg,
+            fontSize: fontSize.sm,
+            color: colors.content.subtitle,
+            marginBottom: spacing.md,
           }}
         >
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              color: colors.content.strong,
-              marginBottom: spacing.sm,
-            }}
-          >
-            {t('householdSettings.dietary.chickenAlt')}
-          </Text>
-          <TextInput
-            value={dietary.chicken_alternative ?? ''}
-            onChangeText={(value) =>
-              onUpdateDietary('chicken_alternative', value || null)
-            }
-            editable={!disabledByAi}
-            placeholder={t('householdSettings.dietary.chickenAltPlaceholder')}
-            style={{
-              backgroundColor: colors.input.bg,
-              borderRadius: borderRadius.md,
-              padding: spacing.md,
-              fontSize: fontSize.md,
-              color: colors.input.text,
-              borderWidth: 1,
-              borderColor: colors.input.border,
-            }}
-          />
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              color: colors.content.strong,
-              marginTop: spacing.md,
-              marginBottom: spacing.sm,
-            }}
-          >
-            {t('householdSettings.dietary.meatAlt')}
-          </Text>
-          <TextInput
-            value={dietary.meat_alternative ?? ''}
-            onChangeText={(value) =>
-              onUpdateDietary('meat_alternative', value || null)
-            }
-            editable={!disabledByAi}
-            placeholder={t('householdSettings.dietary.meatAltPlaceholder')}
-            style={{
-              backgroundColor: colors.input.bg,
-              borderRadius: borderRadius.md,
-              padding: spacing.md,
-              fontSize: fontSize.md,
-              color: colors.input.text,
-              borderWidth: 1,
-              borderColor: colors.input.border,
-            }}
-          />
-        </View>
-      )}
+          {t('householdSettings.dietary.replacementsDesc')}
+        </Text>
 
-      {/* Minced Meat Preference */}
-      <SectionLabel text={t('householdSettings.dietary.mincedMeat')} />
-      <View style={{ marginBottom: spacing.lg }}>
-        <RadioGroup
-          options={mincedMeatOptions}
-          value={dietary.minced_meat}
-          onChange={(value) => onUpdateDietary('minced_meat', value)}
-          disabled={disabledByAi}
-        />
-      </View>
+        {replacements.map((row, index) => (
+          <ReplacementRow
+            key={index}
+            row={row}
+            index={index}
+            disabled={disabledByAi}
+            onUpdate={handleUpdateRow}
+            onRemove={handleRemoveRow}
+          />
+        ))}
+
+        {replacements.length < MAX_REPLACEMENTS && (
+          <IconButton
+            icon="add"
+            onPress={handleAddRow}
+            disabled={disabledByAi}
+            tone="alt"
+            size={26}
+            iconSize={16}
+            label={t('householdSettings.dietary.addReplacement')}
+          />
+        )}
+
+        {replacements.length >= MAX_REPLACEMENTS && (
+          <Text
+            style={{
+              fontSize: fontSize.xs,
+              color: colors.content.subtitle,
+              fontStyle: 'italic',
+              textAlign: 'center',
+            }}
+          >
+            {t('householdSettings.dietary.maxReplacements', {
+              max: MAX_REPLACEMENTS,
+            })}
+          </Text>
+        )}
+      </SurfaceCard>
 
       {/* Equipment */}
       <SectionLabel text={t('householdSettings.equipment.title')} />
@@ -203,5 +189,94 @@ export const AiSection = ({
         onToggle={onToggleEquipment}
       />
     </>
+  );
+};
+
+/* ── Replacement row sub-component ──────────────────────────── */
+
+interface ReplacementRowProps {
+  row: IngredientReplacement;
+  index: number;
+  disabled: boolean;
+  onUpdate: (
+    index: number,
+    field: keyof IngredientReplacement,
+    value: string | boolean,
+  ) => void;
+  onRemove: (index: number) => void;
+}
+
+const ReplacementRow = ({
+  row,
+  index,
+  disabled,
+  onUpdate,
+  onRemove,
+}: ReplacementRowProps) => {
+  const { colors, fonts } = useTheme();
+  const { t } = useTranslation();
+
+  return (
+    <View
+      style={{
+        marginBottom: spacing.md,
+        paddingBottom: spacing.md,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+      }}
+    >
+      {/* Original → Replacement inputs */}
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: spacing.sm,
+          alignItems: 'center',
+          marginBottom: spacing.sm,
+        }}
+      >
+        <ThemedTextInput
+          value={row.original}
+          onChangeText={(v) => onUpdate(index, 'original', v)}
+          disabled={disabled}
+          placeholder={t('householdSettings.dietary.originalPlaceholder')}
+          maxLength={30}
+          testID={`replacement-original-${index}`}
+        />
+        <Text
+          style={{
+            color: colors.content.subtitle,
+            fontSize: fontSize.md,
+            fontFamily: fonts.body,
+          }}
+        >
+          →
+        </Text>
+        <ThemedTextInput
+          value={row.replacement}
+          onChangeText={(v) => onUpdate(index, 'replacement', v)}
+          disabled={disabled}
+          placeholder={t('householdSettings.dietary.replacementPlaceholder')}
+          maxLength={30}
+          testID={`replacement-replacement-${index}`}
+        />
+        <IconButton
+          icon="trash-outline"
+          onPress={() => onRemove(index)}
+          disabled={disabled}
+          tone="danger"
+          size="sm"
+          label={t('common.remove')}
+        />
+      </View>
+
+      {/* Meat substitute toggle */}
+      <SettingToggleRow
+        label={t('householdSettings.dietary.meatSubstitute')}
+        subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
+        value={row.meat_substitute}
+        onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
+        disabled={disabled}
+      />
+    </View>
   );
 };

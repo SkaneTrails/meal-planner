@@ -120,38 +120,53 @@ Replace "förpackning/burk/paket" with actual amounts: krossade tomater 400 g, p
 
 ## Swedish ingredient availability
 
-- **Vegetarian protein**: Quorn, Oumph, Hälsans Kök, sojafärs (NOT Beyond Meat, Impossible)
-- **Mince types** (all → sojafärs when dietary rules apply): blandfärs, nötfärs, fläskfärs, kycklingfärs, lammfärs
+- **Vegetarian protein**: Quorn, Oumph, Hälsans Kök, sojafärs, halloumi (NOT Beyond Meat, Impossible — poor availability in Sweden)
+- **Mince types**: blandfärs, nötfärs, fläskfärs, kycklingfärs, lammfärs
 - **Cooking oil**: Rapsolja (not canola, vegetable oil)
 - **Butter**: Smör for finishing; margarin for frying
 - **Broth**: Buljong (tärning eller fond)
 
-## Protein substitution — Swedish products
+## Vegetarian protein products — cooking guide
 
-### Chicken alternative: Quorn
+The household's **Ingredient Substitutions** table determines which product replaces which meat. This section provides cooking instructions for common Swedish vegetarian products so the result tastes great regardless of what the household has chosen.
 
-- Quorn filéer, Quorn bitar, or Quorn strimlor (match the form of the original meat!)
-- **Cooking**: Pan-fry with **smör** and rapsolja on high heat — Quorn is very lean and dries out in the airfryer. Best method: 1 msk smör + 1 msk rapsolja, quick high-heat sear. The butter adds flavor and richness that lean Quorn needs. If airfryer is absolutely necessary: brush with oil first, max 6-8 min at 180°C
-- **Sold plain**: Quorn filéer/bitar are NOT pre-marinated. If the original meat is marinated (e.g. BBQ-marinerad kyckling), list the Quorn as plain and add a note in the instructions to season or briefly marinate it separately
+### Quorn (filéer, bitar, strimlor)
 
-### Red meat alternative: Oumph!
+- **Very lean** — dries out easily. Best method: pan-fry with **1 msk smör + 1 msk rapsolja** on high heat for a quick sear
+- If airfryer is necessary: brush generously with oil first, max 6–8 min at 180 °C
+- **Sold plain** (NOT pre-marinated). If the original meat has a marinade, glaze, or spice rub: list the Quorn as plain and add instructions to season or briefly marinate it separately
+- **Match the form**: filéer, bitar, or strimlor — pick the shape that mirrors the original protein
 
-- **Oumph! The Chunk** for steaks, roasts, chunks
-- **Pulled Oumph!** for pulled/shredded dishes
-- **Oumph! Kebab** for kebab/döner-style dishes
-- NEVER use Quorn for beef, pork, or lamb substitution
-- **Examples**:
-  - 400 g nötkött (ryggbiff) → 200 g nötkött + 200 g Oumph! The Chunk ✅ (NOT Quorn ❌)
-  - 400 g fläskkotlett → 200 g fläskkotlett + 200 g Oumph! The Chunk ✅
-  - 400 g lammkotlett → 200 g lammkotlett + 200 g Oumph! The Chunk ✅
+### Oumph! (The Chunk, Pulled, Kebab)
 
-### Mince replacement
+- **The Chunk** — suits steaks, wok strips, chunks, grilled pieces
+- **Pulled Oumph!** — suits pulled/shredded dishes
+- **Oumph! Kebab** — suits kebab/döner-style dishes
+- Soy-based, holds marinade well. Pan-fry or wok on high heat with rapsolja. Deep-frying also works (like the biffwok oil-blanching technique)
+- If airfryer: 190 °C, 6–8 min, flip halfway
 
-- All mince types (blandfärs, nötfärs, fläskfärs, kycklingfärs, lammfärs) → **sojafärs**
-- **Examples**:
-  - 500 g blandfärs → 500 g sojafärs ✅ (NOT 250 g blandfärs + 250 g Oumph ❌)
-  - 400 g nötfärs → 400 g sojafärs ✅
-  - 300 g kycklingfärs → 300 g sojafärs ✅
+### Sojafärs
+
+- Less fat than meat mince → add **1–2 msk rapsolja** when frying
+- **ALWAYS add umami**: 1–2 msk japansk soja or ½ tärning buljong dissolved in 1 msk vatten. Sojafärs is bland without it
+- Crumbles easily — fry without stirring for 1–2 min to get some browning before breaking apart
+
+### Quornfärs
+
+- Behaves similarly to sojafärs but is moister. Needs less extra oil (1 msk is enough)
+- Fry on **medelhög värme** — it burns more easily than meat mince
+- **ALWAYS add umami**: 1–2 msk japansk soja or ½ tärning buljong dissolved in 1 msk vatten. Quornfärs is bland without it
+- Worcestershire sauce also works well for depth
+
+### Halloumi
+
+- Best pan-fried in **rapsolja or smör** on high heat until golden on each side (2–3 min per side)
+- Also excellent grilled or in airfryer (200 °C, 5–6 min, flip halfway)
+- **Do NOT marinate** — the salty crust is the feature. Season the dish around it instead
+- **Do NOT simmer in sauce** — the golden crust softens and becomes rubbery. Either plate alongside or add at the very last second
+- Cut to match the dish: slices for fillets, cubes for stews/curries, strips for stir-fry
+- If the original meat has a flavored fat (sesame oil, herb butter), drizzle the same on the halloumi after frying
+- Pairs well with acidic/fresh elements (lime, chili, herbs) to balance the richness
 
 ### Lactose-free — Swedish products
 
