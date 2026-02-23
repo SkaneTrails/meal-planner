@@ -8,6 +8,7 @@ import { layout, spacing, useTheme } from '@/lib/theme';
 interface ScreenHeaderProps {
   canEdit: boolean;
   hasChanges: boolean;
+  isFormValid?: boolean;
   isSaving: boolean;
   onSave: () => void;
   onBack: () => void;
@@ -16,6 +17,7 @@ interface ScreenHeaderProps {
 export const ScreenHeader = ({
   canEdit,
   hasChanges,
+  isFormValid = true,
   isSaving,
   onSave,
   onBack,
@@ -56,6 +58,7 @@ export const ScreenHeader = ({
               variant="primary"
               onPress={onSave}
               isPending={isSaving}
+              disabled={!isFormValid}
               label={t('common.save')}
               style={{
                 boxShadow: `0px 2px 4px 0px ${colors.accent}4D`,

@@ -100,6 +100,7 @@ export default function HouseholdSettingsScreen() {
           <ScreenHeader
             canEdit={form.canEdit}
             hasChanges={form.hasChanges}
+            isFormValid={form.isFormValid}
             isSaving={form.isSaving}
             onSave={form.handleSave}
             onBack={() =>

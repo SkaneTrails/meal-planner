@@ -13,6 +13,18 @@ import type { HouseholdSettings, IngredientReplacement } from '@/lib/types';
 import { AvailableEquipment, SelectedEquipment } from './EquipmentSection';
 
 const MAX_REPLACEMENTS = 10;
+const MAX_WORDS = 3;
+/** Strip characters not allowed by the API regex ([\w -] with Unicode). */
+const ALLOWED_RE = /[^\w\s-]/gu;
+
+/** Sanitize ingredient text: strip banned chars, cap at MAX_WORDS words. */
+const sanitizeIngredientInput = (raw: string): string => {
+  const cleaned = raw.replace(ALLOWED_RE, '');
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  if (words.length <= MAX_WORDS) return cleaned;
+  // Keep only the first MAX_WORDS words, preserve trailing space if user just typed it
+  return words.slice(0, MAX_WORDS).join(' ');
+};
 
 interface AiSectionProps {
   dietary: HouseholdSettings['dietary'];
@@ -65,8 +77,10 @@ export const AiSection = ({
     field: keyof IngredientReplacement,
     value: string | boolean,
   ) => {
+    const sanitized =
+      typeof value === 'string' ? sanitizeIngredientInput(value) : value;
     const updated = replacements.map((r, i) =>
-      i === index ? { ...r, [field]: value } : r,
+      i === index ? { ...r, [field]: sanitized } : r,
     );
     updateReplacements(updated);
   };
