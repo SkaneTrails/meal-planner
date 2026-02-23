@@ -27,9 +27,14 @@ class HouseholdConfig:
     """Household settings for recipe enhancement."""
 
     def __init__(self, settings: dict) -> None:
+        from api.models.settings import Language
         from api.services.dietary_prompt_builder import DietaryConfig
 
-        self.language: str = settings.get("language", DEFAULT_LANGUAGE)
+        raw_lang = settings.get("language", DEFAULT_LANGUAGE)
+        try:
+            self.language: str = Language(raw_lang).value
+        except ValueError:
+            self.language = DEFAULT_LANGUAGE
         equipment_raw = settings.get("equipment", [])
         self.equipment: list[str] = equipment_raw if isinstance(equipment_raw, list) else []
         self.target_servings: int = self._coerce_positive_int(settings.get("default_servings"), default=4, min_value=1)

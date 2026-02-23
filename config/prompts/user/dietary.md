@@ -46,15 +46,15 @@
 
 ### Chicken
 
-- **Split**: {meat_eaters}/{target_servings} chicken + {vegetarians}/{target_servings} chicken alternative (proportional portions — see rule above)
-- **Alternative**: Match the form — fillets, strips, or pieces
-- **Important**: Match the protein form — "Sliced chicken breast" → alternative fillet strips
+- **Split**: {meat_eaters}/{target_servings} chicken + {vegetarians}/{target_servings} vegetarian alternative (proportional portions — see rule above)
+- **Alternative product**: Use the chicken replacement specified in the Ingredient Substitutions section
+- **Match the form**: fillets, strips, or pieces — match the original protein shape
 - **Flavor-match the alternative**: The vegetarian version should taste equally good, not like an afterthought. If the meat has a marinade, glaze, or spice rub, create a comparable seasoning for the alternative using pantry spices. The goal: both versions are satisfying on their own
 
 ### Other meat (beef, pork, lamb) — WHOLE CUTS ONLY
 
-- **Split**: {meat_eaters}/{target_servings} original meat + {vegetarians}/{target_servings} meat alternative (NEVER use the chicken alternative for these meats)
-- **Alternative**: Use the meat alternative in the appropriate form (chunks, pulled, kebab) depending on the dish
+- **Split**: {meat_eaters}/{target_servings} original meat + {vegetarians}/{target_servings} vegetarian alternative (NEVER use the chicken replacement for these meats)
+- **Alternative product**: Use the meat replacement specified in the Ingredient Substitutions section, in the appropriate form (chunks, pulled, kebab) depending on the dish
 - **Applies to**: Steaks, roasts, strips, chunks, whole pieces — NOT mince
 <!-- END:meat_split -->
 
@@ -65,6 +65,7 @@
 **Replace ALL meat** with vegetarian alternatives. This is a fully vegetarian household.
 
 - If the recipe is already vegetarian, keep it as-is — do NOT add meat
+- Use the replacement products specified in the Ingredient Substitutions section
 - See locale section for specific alternative products available in your region
 <!-- END:vegetarian -->
 
@@ -93,7 +94,7 @@ Use lactose-free alternatives for:
 - Cream cheese
 - Kvarg
 
-### EXCEPTIONS — do NOT change to lactose-free:
+### EXCEPTIONS — do NOT change to lactose-free
 
 - **Butter** (very low lactose content)
 - **Parmesan, Grana Padano, aged cheese** (naturally low lactose)

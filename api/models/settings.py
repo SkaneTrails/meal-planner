@@ -1,5 +1,6 @@
 """Household settings models."""
 
+import re
 from enum import Enum
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -7,6 +8,17 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from api.models.equipment import validate_equipment_keys
 
 MAX_HOUSEHOLD_SIZE = 20
+MAX_ALTERNATIVE_LENGTH = 30
+MAX_ALTERNATIVE_WORDS = 3
+_ALTERNATIVE_RE = re.compile(r"^[\w -]+$", re.UNICODE)
+
+
+class Language(str, Enum):
+    """Supported recipe languages."""
+
+    SV = "sv"  # Swedish
+    EN = "en"  # English
+    IT = "it"  # Italian
 
 
 class MeatPreference(str, Enum):
@@ -50,8 +62,39 @@ class DietarySettings(BaseModel):
     dairy: DairyPreference = Field(default=DairyPreference.REGULAR, description="Dairy preferences")
 
     # Vegetarian alternatives
-    chicken_alternative: str | None = Field(default=None, description="Alternative for chicken (e.g., Quorn)")
-    meat_alternative: str | None = Field(default=None, description="Alternative for other meats (e.g., Oumph)")
+    chicken_alternative: str | None = Field(
+        default=None, max_length=MAX_ALTERNATIVE_LENGTH, description="Alternative for chicken (e.g., Quorn)"
+    )
+    meat_alternative: str | None = Field(
+        default=None, max_length=MAX_ALTERNATIVE_LENGTH, description="Alternative for other meats (e.g., Oumph)"
+    )
+
+    @field_validator("chicken_alternative", "meat_alternative", mode="before")
+    @classmethod
+    def validate_alternative_name(cls, v: str | None) -> str | None:
+        """Sanitize free-text alternative names to prevent prompt injection.
+
+        Rejects values that are too long, contain special characters,
+        or have more than 3 words.  These fields end up in the Gemini
+        system prompt — strict validation is a security boundary.
+        """
+        if v is None:
+            return None
+        if not isinstance(v, str):
+            return None
+        v = v.strip()
+        if not v:
+            return None
+        if len(v) > MAX_ALTERNATIVE_LENGTH:
+            msg = f"Alternative name must be at most {MAX_ALTERNATIVE_LENGTH} characters"
+            raise ValueError(msg)
+        if not _ALTERNATIVE_RE.match(v):
+            msg = "Alternative name may only contain letters, numbers, spaces, and hyphens"
+            raise ValueError(msg)
+        if len(v.split()) > MAX_ALTERNATIVE_WORDS:
+            msg = f"Alternative name must be at most {MAX_ALTERNATIVE_WORDS} words"
+            raise ValueError(msg)
+        return v
 
     @field_validator("meat_portions", mode="before")
     @classmethod
@@ -75,7 +118,7 @@ class HouseholdSettings(BaseModel):
 
     household_size: int = Field(default=2, ge=1, le=20, description="Number of people in household")
     default_servings: int = Field(default=2, ge=1, le=20, description="Default number of servings for recipes")
-    language: str = Field(default="sv", description="Preferred language for recipes (sv, en, it)")
+    language: Language = Field(default=Language.SV, description="Preferred language for recipes")
     week_start: str = Field(default="monday", description="Day the week starts on (monday or saturday)")
     ai_features_enabled: bool = Field(default=True, description="Show AI enhancement controls in UI")
     include_breakfast: bool = Field(default=False, description="Include breakfast slot in weekly planner")
@@ -99,6 +142,19 @@ class HouseholdSettings(BaseModel):
             values.pop("dietary", None)
         return values
 
+    @field_validator("language", mode="before")
+    @classmethod
+    def coerce_language(cls, v: object) -> Language:
+        """Coerce Firestore language strings to enum, falling back to SV."""
+        if isinstance(v, Language):
+            return v
+        if isinstance(v, str):
+            try:
+                return Language(v)
+            except ValueError:
+                return Language.SV
+        return Language.SV
+
     @field_validator("equipment", mode="before")
     @classmethod
     def validate_equipment(cls, v: object) -> list[str]:
@@ -121,8 +177,14 @@ class DietarySettingsUpdate(BaseModel):
     meat_portions: int | None = Field(default=None, ge=0, le=MAX_HOUSEHOLD_SIZE)
     minced_meat: MincedMeatPreference | None = None
     dairy: DairyPreference | None = None
-    chicken_alternative: str | None = None
-    meat_alternative: str | None = None
+    chicken_alternative: str | None = Field(default=None, max_length=MAX_ALTERNATIVE_LENGTH)
+    meat_alternative: str | None = Field(default=None, max_length=MAX_ALTERNATIVE_LENGTH)
+
+    @field_validator("chicken_alternative", "meat_alternative", mode="before")
+    @classmethod
+    def validate_alternative_name(cls, v: str | None) -> str | None:
+        """Reuse the same validation as DietarySettings."""
+        return DietarySettings.validate_alternative_name(v)
 
 
 class HouseholdSettingsUpdate(BaseModel):
@@ -134,7 +196,7 @@ class HouseholdSettingsUpdate(BaseModel):
 
     household_size: int | None = Field(default=None, ge=1, le=20)
     default_servings: int | None = Field(default=None, ge=1, le=20)
-    language: str | None = None
+    language: Language | None = None
     week_start: str | None = None
     ai_features_enabled: bool | None = Field(default=None, description="Show AI enhancement controls in UI")
     include_breakfast: bool | None = Field(default=None, description="Include breakfast slot in weekly planner")
