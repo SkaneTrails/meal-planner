@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from google.cloud import firestore
+from google.cloud.firestore_v1 import FieldFilter
 from google.cloud.firestore_v1.transaction import Transaction
 
 from api.storage.firestore_client import get_firestore_client
@@ -226,12 +227,24 @@ def household_name_exists(name: str, exclude_id: str | None = None) -> bool:
     """
     db = _get_db()
     normalized = name.strip().lower()
-    query = db.collection(HOUSEHOLDS_COLLECTION).where("normalized_name", "==", normalized)
+    query = db.collection(HOUSEHOLDS_COLLECTION).where(filter=FieldFilter("normalized_name", "==", normalized))
 
     for doc in query.stream():
         if exclude_id and doc.id == exclude_id:
             continue
         return True
+
+    # Fallback for legacy documents that don't yet have normalized_name.
+    for doc in db.collection(HOUSEHOLDS_COLLECTION).stream():
+        if exclude_id and doc.id == exclude_id:
+            continue
+        data = doc.to_dict()
+        if data is None or "normalized_name" in data:
+            continue
+        existing_name = data.get("name")
+        if isinstance(existing_name, str) and existing_name.strip().lower() == normalized:
+            return True
+
     return False
 
 

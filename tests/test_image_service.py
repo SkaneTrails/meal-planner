@@ -21,7 +21,8 @@ def _make_image(width: int, height: int, mode: str = "RGB") -> bytes:
     """Create a minimal in-memory image with the given dimensions and mode."""
     pixel = Image.new(mode, (1, 1)).getpixel((0, 0))
     channels = len(pixel) if isinstance(pixel, tuple) else 1
-    color: int | tuple[int, ...] = (100, 150, 200)[:channels] if channels > 1 else 1
+    base_color = (100, 150, 200, 255)
+    color: int | tuple[int, ...] = base_color[:channels] if channels > 1 else 1
     img = Image.new(mode, (width, height), color=color)
     buf = io.BytesIO()
     fmt = "PNG" if mode in ("RGBA", "P", "LA") else "JPEG" if mode == "RGB" else "PNG"

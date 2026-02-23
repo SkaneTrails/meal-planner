@@ -381,14 +381,15 @@ class TestHouseholdNameExists:
         mock_query = MagicMock()
         mock_query.stream.return_value = [mock_doc]
         mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
 
         assert household_name_exists("smith family") is True
-        mock_db.collection.return_value.where.assert_called_once_with("normalized_name", "==", "smith family")
 
     def test_returns_false_when_name_not_taken(self, mock_db) -> None:
         mock_query = MagicMock()
         mock_query.stream.return_value = []
         mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
 
         assert household_name_exists("New Name") is False
 
@@ -398,6 +399,7 @@ class TestHouseholdNameExists:
         mock_query = MagicMock()
         mock_query.stream.return_value = [mock_doc]
         mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
 
         assert household_name_exists("smith family", exclude_id="household-1") is False
 
@@ -405,10 +407,39 @@ class TestHouseholdNameExists:
         mock_query = MagicMock()
         mock_query.stream.return_value = []
         mock_db.collection.return_value.where.return_value = mock_query
+        mock_db.collection.return_value.stream.return_value = []
 
         household_name_exists("  UPPER Case  ")
 
-        mock_db.collection.return_value.where.assert_called_once_with("normalized_name", "==", "upper case")
+        call_kwargs = mock_db.collection.return_value.where.call_args
+        field_filter = call_kwargs.kwargs["filter"]
+        assert field_filter.field_path == "normalized_name"
+        assert field_filter.op_string == "=="
+        assert field_filter.value == "upper case"
+
+    def test_legacy_fallback_finds_doc_without_normalized_name(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
+
+        legacy_doc = MagicMock()
+        legacy_doc.id = "legacy-1"
+        legacy_doc.to_dict.return_value = {"name": "Smith Family"}
+        mock_db.collection.return_value.stream.return_value = [legacy_doc]
+
+        assert household_name_exists("smith family") is True
+
+    def test_legacy_fallback_skips_docs_with_normalized_name(self, mock_db) -> None:
+        mock_query = MagicMock()
+        mock_query.stream.return_value = []
+        mock_db.collection.return_value.where.return_value = mock_query
+
+        doc_with_field = MagicMock()
+        doc_with_field.id = "modern-1"
+        doc_with_field.to_dict.return_value = {"name": "Other", "normalized_name": "other"}
+        mock_db.collection.return_value.stream.return_value = [doc_with_field]
+
+        assert household_name_exists("other") is False
 
 
 class TestDeleteHousehold:
