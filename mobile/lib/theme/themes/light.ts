@@ -21,7 +21,7 @@ import {
 import { Platform } from 'react-native';
 
 import { lightColors } from '../colors';
-import { borderRadius, type ShadowTokens, shadows } from '../layout';
+import { borderRadius, type ShadowTokens } from '../layout';
 import type {
   ButtonDisplayConfig,
   StyleOverrides,
@@ -86,12 +86,20 @@ const fonts: FontFamilyTokens = {
 };
 
 /** Elegant uses no drop shadows — clean, flat design. */
-const flatShadows = Object.fromEntries(
-  Object.keys(shadows).map((k) => [
-    k,
-    { boxShadow: '0px 0px 0px 0px transparent' },
-  ]),
-) as unknown as ShadowTokens;
+const FLAT = { boxShadow: '0px 0px 0px 0px transparent' } as const;
+const flatShadows: ShadowTokens = {
+  none: FLAT,
+  xs: FLAT,
+  sm: FLAT,
+  card: FLAT,
+  md: FLAT,
+  lg: FLAT,
+  xl: FLAT,
+  glow: FLAT,
+  glowSoft: FLAT,
+  cardRaised: FLAT,
+  float: FLAT,
+};
 
 const buttonDisplay: ButtonDisplayConfig = {
   display: 'both',

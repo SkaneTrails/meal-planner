@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import {
-  BottomSheetModal,
-  Button,
-  Chip,
-  IconButton,
-  SurfaceCard,
-} from '@/components';
+import { BottomSheetModal, Chip, IconButton, SurfaceCard } from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
@@ -190,8 +184,7 @@ const MemberCard = ({
           />
         </View>
       </View>
-      <Button
-        variant="text"
+      <IconButton
         tone="warning"
         onPress={onRemove}
         icon="trash-outline"

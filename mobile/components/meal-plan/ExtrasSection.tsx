@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Image, Pressable, Text, View } from 'react-native';
-import { Button, IconButton, TerminalFrame } from '@/components';
+import { Text, View } from 'react-native';
+import { Button, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
-import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
+import { RecipeRow } from './RecipeRow';
 
 interface ExtrasSectionProps {
   recipes: Recipe[];
@@ -118,69 +118,16 @@ interface ExtraRecipeRowProps {
 }
 
 const ExtraRecipeRow = ({ recipe, onRemove }: ExtraRecipeRowProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
   const router = useRouter();
-  const imageUrl =
-    recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE;
+  const imageUrl = recipe.thumbnail_url || recipe.image_url;
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.mealPlan.slotBg,
-        borderRadius: borderRadius.sm,
-        padding: spacing.md,
-        marginBottom: spacing['xs-sm'],
-      }}
-    >
-      <Pressable
-        onPress={() => router.push(`/recipe/${recipe.id}`)}
-        style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
-      >
-        <Image
-          source={{ uri: imageUrl }}
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: borderRadius.sm,
-            backgroundColor: colors.border,
-          }}
-          resizeMode="cover"
-        />
-        <View style={{ flex: 1, marginLeft: spacing.md }}>
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              color: colors.primary,
-            }}
-          >
-            {recipe.title}
-          </Text>
-          {recipe.total_time && (
-            <Text
-              style={{
-                fontSize: fontSize.sm,
-                fontFamily: fonts.body,
-                color: colors.content.tertiary,
-                marginTop: spacing['2xs'],
-              }}
-            >
-              {recipe.total_time} min
-            </Text>
-          )}
-        </View>
-      </Pressable>
-
-      <IconButton
-        tone="cancel"
-        onPress={onRemove}
-        icon="close"
-        size={28}
-        iconSize={18}
-        style={{ marginLeft: spacing.sm }}
-      />
-    </View>
+    <RecipeRow
+      title={recipe.title}
+      imageUrl={imageUrl}
+      subtitle={recipe.total_time ? `${recipe.total_time} min` : undefined}
+      onPress={() => router.push(`/recipe/${recipe.id}`)}
+      onRemove={onRemove}
+    />
   );
 };

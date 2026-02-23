@@ -47,7 +47,6 @@ export type ButtonTone =
   | 'glassAi'
   | 'glassSubtle'
   | 'glassCoral'
-  | 'primary'
   | 'subtle'
   | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -130,7 +129,8 @@ export const Button = ({
   style,
   testID,
 }: ButtonProps) => {
-  const { colors, fonts, borderRadius, shadows, buttonDisplay } = useTheme();
+  const { colors, fonts, borderRadius, shadows, buttonDisplay, buttonRadius } =
+    useTheme();
   const inGroup = useButtonGroup();
   const isDisabled = disabled || isPending;
   const sizeConfig = SIZE_CONFIG[size];
@@ -236,7 +236,7 @@ export const Button = ({
           justifyContent: 'center',
           paddingVertical: spacing.lg,
           paddingHorizontal: spacing.xl,
-          borderRadius: borderRadius.md,
+          borderRadius: buttonRadius,
           ...shadows.md,
         };
       case 'icon':
@@ -254,7 +254,7 @@ export const Button = ({
           alignItems: 'center',
           paddingHorizontal: sizeConfig.padding,
           paddingVertical: Math.max(sizeConfig.padding - 4, 4),
-          borderRadius: borderRadius.md,
+          borderRadius: buttonRadius,
           gap: spacing.xs,
         };
     }

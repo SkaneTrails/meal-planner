@@ -374,7 +374,6 @@ export const terminalColors: ColorTokens = {
     glassAi: { bg: g(0.15), fg: GREEN_DIM, pressed: g(0.25) },
     glassSubtle: { bg: g(0.15), fg: GREEN_DIM, pressed: g(0.25) },
     glassCoral: { bg: g(0.15), fg: GREEN, pressed: g(0.25) },
-    primary: { bg: GREEN_DARK, fg: GREEN, pressed: GREEN_DIM },
     subtle: { bg: g(0.05), fg: GREEN_DIM, pressed: g(0.1) },
     danger: { bg: g(0.08), fg: GREEN, pressed: g(0.15) },
   },

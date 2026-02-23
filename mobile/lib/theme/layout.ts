@@ -112,19 +112,7 @@ export const circleStyle = (size: number) =>
 
 // Shadow presets — boxShadow shorthand (RN 0.76+)
 // Format: 'offsetX offsetY blurRadius spreadRadius color'
-export const shadows = {
-  none: { boxShadow: '0px 0px 0px 0px transparent' },
-  xs: { boxShadow: '1px 1px 2px 0px rgba(0, 0, 0, 0.03)' },
-  sm: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.04)' },
-  card: { boxShadow: '1px 2px 6px 0px rgba(0, 0, 0, 0.06)' },
-  md: { boxShadow: '2px 4px 12px 0px rgba(0, 0, 0, 0.06)' },
-  lg: { boxShadow: '2px 8px 20px 0px rgba(0, 0, 0, 0.08)' },
-  xl: { boxShadow: '3px 12px 28px 0px rgba(0, 0, 0, 0.12)' },
-  glow: { boxShadow: '1px 4px 16px 0px rgba(212, 132, 90, 0.25)' },
-  glowSoft: { boxShadow: '1px 2px 10px 0px rgba(212, 132, 90, 0.15)' },
-  cardRaised: { boxShadow: '2px 6px 16px 0px rgba(0, 0, 0, 0.1)' },
-  float: { boxShadow: '1px 2px 8px 0px rgba(0, 0, 0, 0.15)' },
-} as const;
+// NOTE: No shared concrete values. Each theme defines its own ShadowTokens.
 
 /** Structural contract for shadow presets. */
 export interface ShadowTokens {

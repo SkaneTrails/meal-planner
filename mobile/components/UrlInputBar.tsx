@@ -85,7 +85,6 @@ export const UrlInputBar = ({
           onPress={onSubmit}
           disabled={!value.trim()}
           label={submitLabel}
-          tone="primary"
           size="sm"
           style={{
             borderRadius: borderRadius.sm,

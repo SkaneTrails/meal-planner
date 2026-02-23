@@ -10,7 +10,6 @@ import {
   type BorderRadiusTokens,
   borderRadius,
   type ShadowTokens,
-  shadows,
 } from '../layout';
 import { terminalColors, terminalCRT } from '../terminal-colors';
 import type {
@@ -86,15 +85,20 @@ const deriveFlatRadii = (source: BorderRadiusTokens): BorderRadiusTokens =>
     Object.keys(source).map((k) => [k, 0]),
   ) as unknown as BorderRadiusTokens;
 
-const deriveFlatShadows = (
-  source: ShadowTokens,
-  glowOverrides: Partial<ShadowTokens>,
-): ShadowTokens => {
-  const NONE = { boxShadow: '0px 0px 0px 0px transparent' } as const;
-  const flat = Object.fromEntries(
-    Object.keys(source).map((k) => [k, NONE]),
-  ) as unknown as ShadowTokens;
-  return { ...flat, ...glowOverrides };
+/** Flat shadows with phosphor-green glow overrides. */
+const NONE = { boxShadow: '0px 0px 0px 0px transparent' } as const;
+const terminalShadows: ShadowTokens = {
+  none: NONE,
+  xs: NONE,
+  sm: NONE,
+  card: NONE,
+  md: NONE,
+  lg: NONE,
+  xl: NONE,
+  glow: { boxShadow: '0px 0px 8px 0px rgba(51, 255, 51, 0.3)' },
+  glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
+  cardRaised: NONE,
+  float: NONE,
 };
 
 // ── Button config ──────────────────────────────────────────────────────
@@ -114,10 +118,7 @@ export const terminalTheme: ThemeDefinition = {
   colors: terminalColors,
   fonts,
   borderRadius: deriveFlatRadii(borderRadius),
-  shadows: deriveFlatShadows(shadows, {
-    glow: { boxShadow: '0px 0px 8px 0px rgba(51, 255, 51, 0.3)' },
-    glowSoft: { boxShadow: '0px 0px 4px 0px rgba(51, 255, 51, 0.15)' },
-  }),
+  shadows: terminalShadows,
   buttonDisplay,
   overrides,
   visibility,

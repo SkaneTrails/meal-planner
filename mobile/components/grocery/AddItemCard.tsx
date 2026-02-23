@@ -62,7 +62,6 @@ export const AddItemCard = ({
           disabled={!newItemText.trim()}
           disableAnimation={!newItemText.trim()}
           label={t('grocery.addButton')}
-          tone="primary"
           style={{
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing['sm-md'],
