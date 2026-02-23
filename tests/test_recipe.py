@@ -90,6 +90,38 @@ class TestRecipe:
         assert recipe.meal_label is None
 
 
+class TestImageUrlSchemeValidation:
+    """Tests for image_url scheme validation on RecipeUpdate."""
+
+    def test_https_accepted(self) -> None:
+        update = RecipeUpdate(image_url="https://example.com/image.jpg")
+        assert update.image_url == "https://example.com/image.jpg"
+
+    def test_http_accepted(self) -> None:
+        update = RecipeUpdate(image_url="http://example.com/image.jpg")
+        assert update.image_url == "http://example.com/image.jpg"
+
+    def test_none_accepted(self) -> None:
+        update = RecipeUpdate(image_url=None)
+        assert update.image_url is None
+
+    def test_javascript_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="javascript:alert(1)")
+
+    def test_data_uri_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="data:image/png;base64,abc")
+
+    def test_file_uri_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="file:///etc/passwd")
+
+    def test_ftp_rejected(self) -> None:
+        with pytest.raises(ValidationError, match="http or https"):
+            RecipeUpdate(image_url="ftp://example.com/image.jpg")
+
+
 class TestRecipeUpdateRating:
     """Tests for RecipeUpdate rating validation."""
 

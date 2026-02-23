@@ -23,6 +23,26 @@ const queryClient = new QueryClient({
 
 const CACHE_KEY = 'meal-planner-query-cache';
 
+const PII_FIELDS = ['created_by'] as const;
+
+function stripPii(data: unknown): unknown {
+  if (data === null || data === undefined || typeof data !== 'object') {
+    return data;
+  }
+  if (Array.isArray(data)) {
+    return data.map(stripPii);
+  }
+  const obj = data as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+  for (const key of Object.keys(obj)) {
+    if ((PII_FIELDS as readonly string[]).includes(key)) {
+      continue;
+    }
+    result[key] = stripPii(obj[key]);
+  }
+  return result;
+}
+
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
   const data = cache
@@ -48,7 +68,7 @@ export async function persistQueryCache(): Promise<void> {
     })
     .map((query) => ({
       queryKey: query.queryKey,
-      data: query.state.data,
+      data: stripPii(query.state.data),
       dataUpdatedAt: query.state.dataUpdatedAt,
     }));
 

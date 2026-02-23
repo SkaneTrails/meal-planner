@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { BottomSheetModal, Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
+
+const isValidImageUrl = (url: string): boolean => {
+  const lower = url.trim().toLowerCase();
+  return lower.startsWith('http://') || lower.startsWith('https://');
+};
 
 interface ImageUrlModalProps {
   visible: boolean;
@@ -28,9 +33,13 @@ export const ImageUrlModal = ({
     }
   }, [visible, initialUrl]);
 
+  const trimmed = imageUrlInput.trim();
+  const hasInput = trimmed.length > 0;
+  const validScheme = !hasInput || isValidImageUrl(trimmed);
+
   const handleSave = () => {
-    if (imageUrlInput.trim()) {
-      onSave(imageUrlInput.trim());
+    if (hasInput && validScheme) {
+      onSave(trimmed);
     }
     onClose();
   };
@@ -55,6 +64,7 @@ export const ImageUrlModal = ({
             onPress={handleSave}
             label={t('common.save')}
             size="sm"
+            disabled={hasInput && !validScheme}
           />
         </View>
       }
@@ -69,16 +79,29 @@ export const ImageUrlModal = ({
         keyboardType="url"
         style={{
           borderWidth: 1,
-          borderColor: colors.input.border,
+          borderColor:
+            hasInput && !validScheme ? colors.error : colors.input.border,
           borderRadius: borderRadius.sm,
           padding: spacing.md,
           fontSize: fontSize.xl,
           fontFamily: fonts.body,
           color: colors.input.text,
           backgroundColor: colors.input.bgSubtle,
-          marginBottom: spacing.lg,
+          marginBottom: hasInput && !validScheme ? spacing.xs : spacing.lg,
         }}
       />
+      {hasInput && !validScheme && (
+        <Text
+          style={{
+            color: colors.error,
+            fontSize: fontSize.sm,
+            fontFamily: fonts.body,
+            marginBottom: spacing.lg,
+          }}
+        >
+          {t('recipe.imageUrlInvalidScheme')}
+        </Text>
+      )}
     </BottomSheetModal>
   );
 };

@@ -24,6 +24,7 @@ const it: Translations = {
     next: 'Successivo',
     pageOf: '{{current}} / {{total}}',
     confirm: 'Conferma',
+    close: 'Chiudi',
     aiDisabledHint:
       'Abilita AI nelle impostazioni del nucleo familiare per usare questa funzione',
   },
@@ -219,6 +220,7 @@ const it: Translations = {
     transferring: 'Trasferimento...',
     imageUrl: 'URL immagine',
     imageUrlPrompt: "Inserisci l'URL dell'immagine",
+    imageUrlInvalidScheme: "L'URL deve iniziare con http:// o https://",
     saved: 'Salvato',
     recipeUpdated: 'Dettagli ricetta aggiornati',
     failedToSave: 'Impossibile salvare le modifiche',
@@ -255,6 +257,9 @@ const it: Translations = {
     cannotRateMessage:
       'Copia prima questa ricetta nel tuo nucleo familiare per valutarla.',
     failedToUpdateRating: 'Impossibile aggiornare la valutazione',
+    rateUp: 'Vota positivo',
+    rateDown: 'Vota negativo',
+    removeTag: 'Rimuovi tag {{tag}}',
     deleteRecipe: 'Elimina ricetta',
     deleteConfirm: 'Sei sicuro di voler eliminare "{{title}}"?',
     failedToDelete: 'Impossibile eliminare la ricetta',

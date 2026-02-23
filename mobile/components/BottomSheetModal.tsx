@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { CRTOverlay } from '@/components/CRTOverlay';
+import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 
 interface BottomSheetModalProps {
@@ -34,6 +35,7 @@ export const BottomSheetModal = ({
   testID,
 }: BottomSheetModalProps) => {
   const { colors, fonts, borderRadius } = useTheme();
+  const { t } = useTranslation();
   const dismissable = dismissableProp ?? !blocking;
   const showCloseButton = !blocking && !headerRight;
 
@@ -76,7 +78,12 @@ export const BottomSheetModal = ({
         </Text>
         {headerRight}
         {showCloseButton && (
-          <Pressable onPress={onClose} testID="close-button">
+          <Pressable
+            onPress={onClose}
+            testID="close-button"
+            accessibilityLabel={t('common.close')}
+            accessibilityRole="button"
+          >
             <Ionicons
               name="close"
               size={24}

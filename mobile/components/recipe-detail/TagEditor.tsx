@@ -112,6 +112,10 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                 </Text>
                 <Pressable
                   onPress={() => handleRemoveTag(trimmedTag)}
+                  accessibilityLabel={t('recipe.removeTag', {
+                    tag: trimmedTag,
+                  })}
+                  accessibilityRole="button"
                   style={({ pressed }) => ({
                     width: 20,
                     height: 20,
