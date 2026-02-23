@@ -1,6 +1,8 @@
 import { Text } from 'react-native';
-import { Chip, ChipGroup, SurfaceCard } from '@/components';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { Chip } from './Chip';
+import { ChipGroup } from './ChipGroup';
+import { SurfaceCard } from './SurfaceCard';
 
 export type ChipItem = string | { key: string; label: string };
 

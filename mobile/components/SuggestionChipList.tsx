@@ -1,7 +1,9 @@
 import { Text, View } from 'react-native';
-import { Chip, ChipGroup, SurfaceCard } from '@/components';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { Chip } from './Chip';
+import { ChipGroup } from './ChipGroup';
 import type { ChipItem } from './ItemChipList';
+import { SurfaceCard } from './SurfaceCard';
 
 const getKey = (item: ChipItem): string =>
   typeof item === 'string' ? item : item.key;

@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Animated, Text, View } from 'react-native';
+import { Animated, Text, type TextStyle, View } from 'react-native';
 import { IconButton } from '@/components';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import {
@@ -89,17 +89,17 @@ export const RecipeHero = ({
               }}
             >
               <Text
-                style={{
-                  fontSize: fontSize['4xl'],
-                  fontFamily: fonts.display,
-                  color: colors.white,
-                  letterSpacing: letterSpacing.tight,
-                  flex: 1,
-                  marginRight: spacing.md,
-                  textShadowColor: colors.overlay.backdrop,
-                  textShadowOffset: { width: 1, height: 2 },
-                  textShadowRadius: 4,
-                }}
+                style={
+                  {
+                    fontSize: fontSize['4xl'],
+                    fontFamily: fonts.display,
+                    color: colors.white,
+                    letterSpacing: letterSpacing.tight,
+                    flex: 1,
+                    marginRight: spacing.md,
+                    textShadow: `1px 2px 4px ${colors.overlay.backdrop}`,
+                  } as TextStyle
+                }
               >
                 {title}
               </Text>
