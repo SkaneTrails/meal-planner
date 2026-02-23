@@ -19,7 +19,7 @@ class TestDietaryConfigFromFirestore:
     def test_empty_dict_returns_defaults(self) -> None:
         cfg = DietaryConfig.from_firestore({})
         assert cfg.meat_strategy == "none"
-        assert cfg.minced_meat == "regular"
+        assert cfg.ingredient_replacements == ()
 
     def test_non_dict_returns_defaults(self) -> None:
         cfg = DietaryConfig.from_firestore("bad")  # type: ignore[arg-type]
@@ -29,26 +29,32 @@ class TestDietaryConfigFromFirestore:
         cfg = DietaryConfig.from_firestore(
             {
                 "meat": "split",
-                "chicken_alternative": "quorn",
-                "meat_alternative": "oumph",
-                "minced_meat": "soy",
+                "ingredient_replacements": [
+                    {"original": "chicken", "replacement": "quorn", "meat_substitute": True},
+                    {"original": "beef", "replacement": "oumph", "meat_substitute": True},
+                ],
                 "dairy": "lactose_free",
                 "seafood_ok": True,
             }
         )
         assert cfg.meat_strategy == "split"
-        assert cfg.chicken_alternative == "quorn"
-        assert cfg.meat_alternative == "oumph"
-        assert cfg.minced_meat == "soy"
+        assert len(cfg.ingredient_replacements) == 2
+        assert cfg.ingredient_replacements[0] == ("chicken", "quorn", True)
+        assert cfg.ingredient_replacements[1] == ("beef", "oumph", True)
         assert cfg.dairy == "lactose_free"
         assert cfg.seafood_ok is True
 
     def test_null_fields_use_defaults(self) -> None:
         """Firestore may store null for unset optional fields."""
-        cfg = DietaryConfig.from_firestore({"meat": None, "chicken_alternative": None, "seafood_ok": False})
+        cfg = DietaryConfig.from_firestore({"meat": None, "ingredient_replacements": None, "seafood_ok": False})
         assert cfg.meat_strategy == "none"
-        assert cfg.chicken_alternative == "quorn"
+        assert cfg.ingredient_replacements == ()
         assert cfg.seafood_ok is False
+
+    def test_missing_replacements_defaults_to_empty(self) -> None:
+        """Missing ingredient_replacements key returns empty tuple."""
+        cfg = DietaryConfig.from_firestore({"dairy": "lactose_free"})
+        assert cfg.ingredient_replacements == ()
 
     def test_seafood_ok_none_defaults_to_true(self) -> None:
         """None/missing seafood_ok should default to True, not False."""
@@ -142,23 +148,6 @@ class TestActiveSections:
         assert "meat_split" not in tags
         assert "vegetarian" not in tags
 
-    def test_soy_mince_with_split(self) -> None:
-        cfg = DietaryConfig(meat_strategy="split", minced_meat="soy")
-        assert "soy_mince" in cfg.active_sections()
-
-    def test_soy_mince_with_vegetarian(self) -> None:
-        cfg = DietaryConfig(meat_strategy="vegetarian", minced_meat="soy")
-        assert "soy_mince" in cfg.active_sections()
-
-    def test_soy_mince_without_meat_strategy_not_active(self) -> None:
-        """Soy mince only applies when household has vegetarians."""
-        cfg = DietaryConfig(meat_strategy="none", minced_meat="soy")
-        assert "soy_mince" not in cfg.active_sections()
-
-    def test_regular_mince_no_tag(self) -> None:
-        cfg = DietaryConfig(minced_meat="regular")
-        assert "soy_mince" not in cfg.active_sections()
-
     def test_lactose_free(self) -> None:
         cfg = DietaryConfig(dairy="lactose_free")
         assert "lactose_free" in cfg.active_sections()
@@ -180,10 +169,10 @@ class TestActiveSections:
         assert "seafood_ok" not in tags
 
     def test_full_config_all_tags(self) -> None:
-        """Split + soy mince + lactose-free + seafood OK → 4 tags."""
-        cfg = DietaryConfig(meat_strategy="split", minced_meat="soy", dairy="lactose_free", seafood_ok=True)
+        """Split + lactose-free + seafood OK → 3 tags."""
+        cfg = DietaryConfig(meat_strategy="split", dairy="lactose_free", seafood_ok=True)
         tags = cfg.active_sections()
-        assert tags == {"meat_split", "soy_mince", "lactose_free", "seafood_ok"}
+        assert tags == {"meat_split", "lactose_free", "seafood_ok"}
 
 
 # ---------------------------------------------------------------------------
@@ -277,25 +266,6 @@ class TestRenderDietaryTemplate:
         rendered = render_dietary_template(template, cfg)
         assert "{people_count}" in rendered
 
-    def test_soy_mince_section(self) -> None:
-        template = "<!-- BEGIN:soy_mince -->\nUse soy mince.\n<!-- END:soy_mince -->\n"
-        cfg = DietaryConfig(meat_strategy="split", minced_meat="soy")
-        rendered = render_dietary_template(template, cfg)
-        assert "Use soy mince." in rendered
-
-    def test_regular_mince_strips_soy_section(self) -> None:
-        template = "<!-- BEGIN:soy_mince -->\nUse soy mince.\n<!-- END:soy_mince -->\n"
-        cfg = DietaryConfig(meat_strategy="split", minced_meat="regular")
-        rendered = render_dietary_template(template, cfg)
-        assert "Use soy mince." not in rendered
-
-    def test_soy_mince_without_vegetarian_context_strips(self) -> None:
-        """Soy mince set but no vegetarian context — section should be stripped."""
-        template = "<!-- BEGIN:soy_mince -->\nUse soy mince.\n<!-- END:soy_mince -->\n"
-        cfg = DietaryConfig(meat_strategy="none", minced_meat="soy")
-        rendered = render_dietary_template(template, cfg)
-        assert "Use soy mince." not in rendered
-
     def test_empty_template(self) -> None:
         cfg = DietaryConfig()
         rendered = render_dietary_template("", cfg)
@@ -317,17 +287,17 @@ class TestRenderDietaryTemplate:
         cfg = DietaryConfig.from_firestore(
             {
                 "meat": "split",
-                "minced_meat": "soy",
                 "dairy": "lactose_free",
                 "seafood_ok": True,
-                "chicken_alternative": None,
-                "meat_alternative": None,
+                "ingredient_replacements": [
+                    {"original": "chicken", "replacement": "quorn", "meat_substitute": True},
+                    {"original": "köttfärs", "replacement": "sojafärs", "meat_substitute": True},
+                ],
             }
         )
         rendered = render_dietary_template(template, cfg)
 
         assert "Protein substitution" in rendered
-        assert "soy mince" in rendered
         assert "lactose-free" in rendered
         assert "Both eat fish" in rendered
         assert "No fish or seafood" not in rendered

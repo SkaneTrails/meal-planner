@@ -144,7 +144,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=["air_fryer", "wok"],
         )
         assert settings.equipment == ["air_fryer", "wok"]
@@ -154,7 +154,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=[],
         )
         assert settings.equipment == []
@@ -165,7 +165,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment={"airfryer": True, "convection_oven": True},  # ty: ignore[invalid-argument-type]
         )
         assert settings.equipment == []
@@ -196,7 +196,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=42,  # ty: ignore[invalid-argument-type]
         )
         assert settings.equipment == []
@@ -207,7 +207,7 @@ class TestSettingsEquipmentField:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=["air_fryer", "magic_wand"],
         )
         assert "air_fryer" in settings.equipment
@@ -222,7 +222,7 @@ class TestNoteSuggestionsOnSettings:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
         )
         assert settings.note_suggestions == []
 
@@ -232,7 +232,7 @@ class TestNoteSuggestionsOnSettings:
             household_size=2,
             default_servings=2,
             language="en",
-            dietary={"seafood_ok": True, "meat": "all", "minced_meat": "meat", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
+            dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             note_suggestions=suggestions,
         )
         assert settings.note_suggestions == suggestions

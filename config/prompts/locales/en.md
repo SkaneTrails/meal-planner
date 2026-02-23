@@ -151,8 +151,8 @@ Standard UK package sizes:
 
 When suggesting alternatives or substitutions, use ingredients commonly found in UK supermarkets (Tesco, Sainsbury's, Asda, Morrisons, Waitrose, Co-op):
 
-- **Vegetarian protein**: Quorn, Oumph, tofu, tempeh, pulses, soy mince — widely available
-- **Mince types** (all → soy mince when dietary rules apply): mixed mince, beef mince, pork mince, chicken mince, lamb mince
+- **Vegetarian protein**: Quorn, Oumph, tofu, tempeh, halloumi, pulses, soy mince — widely available
+- **Mince types**: mixed mince, beef mince, pork mince, chicken mince, lamb mince
 - **Cheese**: Cheddar, Red Leicester, Stilton, plus European imports (Parmesan, mozzarella, etc.)
 - **Fresh herbs**: Parsley, coriander, basil, thyme, rosemary — fresh herbs sold in small pots or packets
 - **Asian ingredients**: Available in larger supermarkets or Asian grocers
@@ -185,28 +185,40 @@ Use UK spelling throughout:
 - Honour (not honor)
 - Analyse (not analyze)
 
-## Protein substitution — UK products
+## Vegetarian protein products — cooking guide
 
-### Chicken alternative: Quorn
+The household's **Ingredient Substitutions** table determines which product replaces which meat. This section provides cooking instructions for common UK vegetarian products so the result tastes great regardless of what the household has chosen.
 
-- Quorn fillets, Quorn pieces, or Quorn strips (match the form of the original meat!)
-- **Cooking**: Pan-fry with **butter** and rapeseed oil on high heat — Quorn is very lean and dries out in the air fryer. Best method: 1 tbsp butter + 1 tbsp rapeseed oil, quick high-heat sear. The butter adds flavour and richness that lean Quorn needs. If air fryer is absolutely necessary: brush with oil first, max 6-8 min at 180°C
-- **Sold plain**: Quorn fillets/pieces are NOT pre-marinated. If the original meat is marinated (e.g. BBQ chicken), list the Quorn as plain and add a note in the instructions to season or briefly marinate it separately
+### Quorn (fillets, pieces, strips)
 
-### Red meat alternative: Oumph!
+- **Very lean** — dries out easily. Best method: pan-fry with **1 tbsp butter + 1 tbsp rapeseed oil** on high heat for a quick sear
+- If air fryer is necessary: brush generously with oil first, max 6–8 min at 180°C
+- **Sold plain** (NOT pre-marinated). If the original meat has a marinade, glaze, or spice rub: list the Quorn as plain and add instructions to season or briefly marinate it separately
+- **Match the form**: fillets, pieces, or strips — pick the shape that mirrors the original protein
 
-- **Oumph! The Chunk** for steaks, roasts, chunks
-- **Pulled Oumph!** for pulled/shredded dishes
-- **Oumph! Kebab** for kebab/döner-style dishes
-- NEVER use Quorn for beef, pork, or lamb substitution
+### Oumph! (The Chunk, Pulled, Kebab)
 
-### Mince replacement
+- **The Chunk** — suits steaks, wok strips, chunks, grilled pieces
+- **Pulled Oumph!** — suits pulled/shredded dishes
+- **Oumph! Kebab** — suits kebab/döner-style dishes
+- Soy-based, holds marinade well. Pan-fry or wok on high heat with rapeseed oil. Deep-frying also works
+- If air fryer: 190°C, 6–8 min, flip halfway
 
-- All mince types (mixed mince, beef mince, pork mince, chicken mince, lamb mince) → **soy mince**
-- **Examples**:
-  - 500 g mixed mince → 500 g soy mince ✅ (NOT 250 g mixed mince + 250 g Oumph ❌)
-  - 400 g beef mince → 400 g soy mince ✅
-  - 300 g chicken mince → 300 g soy mince ✅
+### Soy mince
+
+- Less fat than meat mince → add **1–2 tbsp rapeseed oil** when frying
+- **ALWAYS add umami**: 1–2 tbsp soy sauce or ½ stock cube dissolved in 1 tbsp water. Soy mince is bland without it
+- Crumbles easily — fry without stirring for 1–2 min to get browning before breaking apart
+
+### Halloumi
+
+- Best pan-fried in **rapeseed oil or butter** on high heat until golden on each side (2–3 min per side)
+- Also excellent grilled or in air fryer (200°C, 5–6 min, flip halfway)
+- **Do NOT marinate** — the salty crust is the feature. Season the dish around it instead
+- **Do NOT simmer in sauce** — the golden crust softens and becomes rubbery. Either plate alongside or add at the very last second
+- Cut to match the dish: slices for fillets, cubes for stews/curries, strips for stir-fry
+- If the original meat has a flavoured fat (sesame oil, herb butter), drizzle the same on the halloumi after frying
+- Pairs well with acidic/fresh elements (lime, chilli, herbs) to balance the richness
 
 ### Lactose-free — UK products
 

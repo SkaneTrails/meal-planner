@@ -45,10 +45,8 @@ export const DEFAULT_SETTINGS: HouseholdSettings = {
     seafood_ok: true,
     meat: 'all',
     meat_portions: 2,
-    minced_meat: 'meat',
     dairy: 'regular',
-    chicken_alternative: null,
-    meat_alternative: null,
+    ingredient_replacements: [],
   },
   equipment: [],
 };

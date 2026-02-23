@@ -219,6 +219,11 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     );
   };
 
+  const hasEmptyReplacements = (
+    settings.dietary.ingredient_replacements ?? []
+  ).some((r) => !r.original.trim() || !r.replacement.trim());
+  const isFormValid = !hasEmptyReplacements;
+
   return {
     householdId,
     userLoading,
@@ -226,6 +231,7 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     canEdit,
     settings,
     hasChanges,
+    isFormValid,
     isSaving: updateSettings.isPending,
     handleSave,
     updateDietary,
