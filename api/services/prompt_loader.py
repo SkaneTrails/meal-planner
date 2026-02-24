@@ -105,7 +105,6 @@ def load_system_prompt(
     *,
     equipment: list[str] | None = None,
     target_servings: int = 4,
-    people_count: int = 2,
     dietary: DietaryConfig | None = None,
 ) -> str:
     """
@@ -115,7 +114,6 @@ def load_system_prompt(
         language: Language code (e.g., "sv", "en", "it") for locale-specific rules.
         equipment: List of equipment keys from the household's settings.
         target_servings: Number of servings to scale recipes to (from household settings).
-        people_count: Number of people in the household (from household settings).
         dietary: Dietary preferences from household Firestore settings.
 
     Returns:
@@ -136,13 +134,8 @@ def load_system_prompt(
     prompt = "\n\n---\n\n".join(parts)
 
     safe_servings = max(target_servings, 1)
-    safe_people = max(people_count, 1)
-    per_person = safe_servings / safe_people
-    servings_per_person = int(per_person) if per_person == int(per_person) else round(per_person, 1)
 
     prompt = prompt.replace("{target_servings}", str(safe_servings))
-    prompt = prompt.replace("{people_count}", str(safe_people))
-    prompt = prompt.replace("{servings_per_person}", str(servings_per_person))
 
     resolved_dietary = dietary or DietaryConfig()
     prompt = prompt.replace("{meat_eaters}", str(resolved_dietary.meat_eaters))

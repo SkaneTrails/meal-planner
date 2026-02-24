@@ -73,50 +73,50 @@ class TestDietaryConfigFromFirestore:
         assert cfg.seafood_ok is True
 
     def test_meat_portions_all_meat(self) -> None:
-        """meat_portions == household_size means everyone eats meat."""
-        cfg = DietaryConfig.from_firestore({"meat_portions": 4}, household_size=4)
+        """meat_portions == servings means everyone eats meat."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 4}, default_servings=4)
         assert cfg.meat_strategy == "all"
         assert cfg.meat_eaters == 4
         assert cfg.vegetarians == 0
 
     def test_meat_portions_none(self) -> None:
         """meat_portions=0 means fully vegetarian."""
-        cfg = DietaryConfig.from_firestore({"meat_portions": 0}, household_size=4)
+        cfg = DietaryConfig.from_firestore({"meat_portions": 0}, default_servings=4)
         assert cfg.meat_strategy == "vegetarian"
         assert cfg.meat_eaters == 0
         assert cfg.vegetarians == 4
 
     def test_meat_portions_split(self) -> None:
         """meat_portions < household_size means split strategy with exact counts."""
-        cfg = DietaryConfig.from_firestore({"meat_portions": 2}, household_size=4)
+        cfg = DietaryConfig.from_firestore({"meat_portions": 2}, default_servings=4)
         assert cfg.meat_strategy == "split"
         assert cfg.meat_eaters == 2
         assert cfg.vegetarians == 2
 
     def test_meat_portions_split_asymmetric(self) -> None:
         """Asymmetric split: 3 meat eaters out of 5."""
-        cfg = DietaryConfig.from_firestore({"meat_portions": 3}, household_size=5)
+        cfg = DietaryConfig.from_firestore({"meat_portions": 3}, default_servings=5)
         assert cfg.meat_strategy == "split"
         assert cfg.meat_eaters == 3
         assert cfg.vegetarians == 2
 
     def test_meat_portions_overrides_legacy_meat(self) -> None:
         """When both meat and meat_portions are present, meat_portions wins."""
-        cfg = DietaryConfig.from_firestore({"meat": "all", "meat_portions": 3}, household_size=4)
+        cfg = DietaryConfig.from_firestore({"meat": "all", "meat_portions": 3}, default_servings=4)
         assert cfg.meat_strategy == "split"
         assert cfg.meat_eaters == 3
         assert cfg.vegetarians == 1
 
     def test_meat_portions_uses_default_servings_as_portion_base(self) -> None:
-        """default_servings overrides household_size for portion split math."""
-        cfg = DietaryConfig.from_firestore({"meat_portions": 1}, household_size=2, default_servings=4)
+        """default_servings is the denominator for portion split math."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 1}, default_servings=4)
         assert cfg.meat_strategy == "split"
         assert cfg.meat_eaters == 1
         assert cfg.vegetarians == 3
 
     def test_legacy_unknown_meat_value_zeros_out(self) -> None:
         """An unexpected legacy meat value (not split/all/none) falls back to 0/0."""
-        cfg = DietaryConfig.from_firestore({"meat": "weird_value"}, household_size=4)
+        cfg = DietaryConfig.from_firestore({"meat": "weird_value"}, default_servings=4)
         assert cfg.meat_strategy == "weird_value"
         assert cfg.meat_eaters == 0
         assert cfg.vegetarians == 0
@@ -260,11 +260,11 @@ class TestRenderDietaryTemplate:
         assert "\n\n\n" not in rendered
 
     def test_preserves_template_variables(self) -> None:
-        """Variables like {people_count} are left for prompt_loader to fill."""
-        template = "People: {people_count}\n"
+        """Variables like {target_servings} are left for prompt_loader to fill."""
+        template = "Servings: {target_servings}\n"
         cfg = DietaryConfig()
         rendered = render_dietary_template(template, cfg)
-        assert "{people_count}" in rendered
+        assert "{target_servings}" in rendered
 
     def test_empty_template(self) -> None:
         cfg = DietaryConfig()

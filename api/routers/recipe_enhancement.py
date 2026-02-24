@@ -41,9 +41,8 @@ class HouseholdConfig:
         equipment_raw = settings.get("equipment", [])
         self.equipment: list[str] = equipment_raw if isinstance(equipment_raw, list) else []
         self.target_servings: int = self._coerce_positive_int(settings.get("default_servings"), default=4, min_value=1)
-        self.people_count: int = self._coerce_positive_int(settings.get("household_size"), default=2, min_value=1)
         self.dietary: DietaryConfig = DietaryConfig.from_firestore(
-            settings.get("dietary"), household_size=self.people_count, default_servings=self.target_servings
+            settings.get("dietary"), default_servings=self.target_servings
         )
 
     @staticmethod
@@ -63,7 +62,7 @@ def _get_household_config(household_id: str) -> HouseholdConfig:  # pragma: no c
 
     Returns:
         HouseholdConfig with language, equipment, target_servings,
-        people_count, and dietary preferences.
+        and dietary preferences.
     """
     from api.storage.household_storage import get_household_settings
 
@@ -83,7 +82,6 @@ def _try_enhance(
             language=config.language,
             equipment=config.equipment,
             target_servings=config.target_servings,
-            people_count=config.people_count,
             dietary=config.dietary,
         )
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, saved_recipe)
@@ -113,18 +111,12 @@ def _try_enhance_preview(
     language = config.language if config else DEFAULT_LANGUAGE
     equipment = config.equipment if config else []
     target_servings = config.target_servings if config else 4
-    people_count = config.people_count if config else 2
     dietary = config.dietary if config else DietaryConfig()
 
     try:
         recipe_dict = recipe_create.model_dump()
         enhanced_data = do_enhance(
-            recipe_dict,
-            language=language,
-            equipment=equipment,
-            target_servings=target_servings,
-            people_count=people_count,
-            dietary=dietary,
+            recipe_dict, language=language, equipment=equipment, target_servings=target_servings, dietary=dietary
         )
         enhanced_create = build_recipe_create_from_enhanced(enhanced_data, recipe_create)
         return {"recipe": enhanced_create, "changes_made": enhanced_data.get("changes_made", [])}
@@ -194,7 +186,6 @@ async def enhance_recipe(user: Annotated[AuthenticatedUser, Depends(require_auth
             language=config.language,
             equipment=config.equipment,
             target_servings=config.target_servings,
-            people_count=config.people_count,
             dietary=config.dietary,
         )
         enhanced_recipe = build_recipe_create_from_enhanced(enhanced_data, target_recipe)

@@ -23,7 +23,37 @@ NEVER write "protein" or "proteins" anywhere in the output, including compound w
 
 ## Preserve original quantities — CRITICAL
 
-Without portion markers, keep original amounts. You may clarify vague terms ("en skvätt" → "1 msk") but NEVER change a specific amount. When scaling for portion markers, scale ALL quantities proportionally.
+NEVER change a specific amount from the original recipe unless scaling for servings. You may clarify vague terms ("en skvätt" → "1 msk") but a quantity like "0.75 dl" stays "0.75 dl" — do not round up or adjust based on your preference.
+
+When scaling for portion markers, scale ALL quantities proportionally.
+
+**Self-check:** Compare every ingredient quantity in your output against the original. If any specific amount changed (and servings didn't change), revert it.
+
+## Preserve all original ingredients — CRITICAL
+
+NEVER remove an ingredient from the original recipe. Every ingredient in the original MUST appear in the output. You may:
+
+- Clarify vague ingredients ("kryddor" → specific spices)
+- Add new ingredients (acid, garnish, seasoning for substitutions)
+- Split an ingredient for the protein split (e.g., "300g mince" → "150g beef mince" + "150g soy mince")
+
+You may NOT:
+
+- Drop an ingredient because you think it's unnecessary
+- Move an ingredient from the recipe body to a tip
+- Replace an ingredient with a different one (unless dietary rules require it)
+- Strip an alternative from an ingredient (see below)
+
+### Ingredient alternatives stay in the ingredient list
+
+Ingredient alternatives ("X eller Y") are part of the ingredient — they tell the cook what to buy. NEVER simplify an ingredient by removing its alternative and moving it to a 💡 ALTERNATIVE instruction tip.
+
+- ✅ "2 msk Ättiksprit 12% eller vitvinsvinäger" — cook sees both options while shopping
+- ❌ Ingredient: "2 msk Ättiksprit 12%" + Tip: "💡 ALTERNATIVE: Byt ut mot vitvinsvinäger" — alternative hidden from shopping list
+
+**Self-check:** Count ingredients in original vs output. If output has fewer (excluding protein splits which increase count), you dropped something — find it and restore it.
+
+Also check the original instructions: if the original says to use an ingredient in a specific way (e.g., "massage with olive oil"), that ingredient MUST appear in the same role in the output. Do not silently reassign an ingredient from one use to another.
 
 ## Preserve ingredient descriptors
 
@@ -43,9 +73,9 @@ ALWAYS replace proprietary blends (HelloFresh, Gousto, etc.) with individual spi
 
 ## Airfryer and equipment capacity
 
-The airfryer cooks ONE component at a time (~4 L basket). Use it for the component that benefits most (usually meat for crispy exterior). Cook the rest on **stovetop simultaneously**.
+If the equipment list includes an airfryer, consider using it for components that benefit from dry, high heat (meat for crispy exterior, root vegetables for caramelization). Cook other components on stovetop simultaneously for parallel cooking.
 
-If food doesn't fit in one batch, prefer oven or large pan — first batch goes cold while second cooks.
+The airfryer cooks ONE component at a time (~4 L basket). If food doesn't fit in one batch, prefer oven or large pan — first batch goes cold while second cooks.
 
 - ❌ Veggies in airfryer → then chicken in airfryer (sequential, veggies go cold)
 - ❌ Veggies in oven while chicken in airfryer (oven overkill for quick-cooking items)

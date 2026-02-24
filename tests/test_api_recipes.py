@@ -646,7 +646,7 @@ class TestScrapeRecipe:
             patch("api.routers.recipe_scraping.recipe_storage.save_recipe") as mock_save,
             patch(
                 "api.routers.recipe_scraping._get_household_config",
-                return_value=MagicMock(language="sv", equipment=[], target_servings=4, people_count=2),
+                return_value=MagicMock(language="sv", equipment=[], target_servings=4),
             ),
             patch("api.services.recipe_enhancer.get_genai_client") as mock_genai,
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="prompt"),
@@ -698,7 +698,7 @@ class TestScrapeRecipe:
             patch("api.routers.recipe_scraping.recipe_storage.save_recipe", return_value=sample_recipe),
             patch(
                 "api.routers.recipe_scraping._get_household_config",
-                return_value=MagicMock(language="sv", equipment=[], target_servings=4, people_count=2),
+                return_value=MagicMock(language="sv", equipment=[], target_servings=4),
             ),
             patch("api.services.recipe_enhancer.enhance_recipe", side_effect=EnhancementError("API error")),
         ):
@@ -1573,53 +1573,43 @@ class TestHouseholdConfig:
         assert config.language == "sv"
         assert config.equipment == []
         assert config.target_servings == 4
-        assert config.people_count == 2
 
     def test_reads_valid_settings(self) -> None:
         """Should use provided values when valid."""
-        config = HouseholdConfig(
-            {"language": "en", "equipment": ["air_fryer"], "default_servings": 6, "household_size": 3}
-        )
+        config = HouseholdConfig({"language": "en", "equipment": ["air_fryer"], "default_servings": 6})
         assert config.language == "en"
         assert config.equipment == ["air_fryer"]
         assert config.target_servings == 6
-        assert config.people_count == 3
 
     def test_coerces_string_to_int(self) -> None:
         """Should coerce string numbers from Firestore."""
-        config = HouseholdConfig({"default_servings": "6", "household_size": "3"})
+        config = HouseholdConfig({"default_servings": "6"})
         assert config.target_servings == 6
-        assert config.people_count == 3
 
     def test_coerces_float_to_int(self) -> None:
         """Should coerce float values from Firestore."""
-        config = HouseholdConfig({"default_servings": 4.0, "household_size": 2.5})
+        config = HouseholdConfig({"default_servings": 4.0})
         assert config.target_servings == 4
-        assert config.people_count == 2
 
     def test_null_falls_back_to_default(self) -> None:
         """Should fall back to defaults for None values."""
-        config = HouseholdConfig({"default_servings": None, "household_size": None})
+        config = HouseholdConfig({"default_servings": None})
         assert config.target_servings == 4
-        assert config.people_count == 2
 
     def test_boolean_falls_back_to_default(self) -> None:
         """Should treat boolean values as invalid and use defaults."""
-        config = HouseholdConfig({"default_servings": True, "household_size": False})
+        config = HouseholdConfig({"default_servings": True})
         assert config.target_servings == 4
-        assert config.people_count == 2
 
     def test_invalid_string_falls_back_to_default(self) -> None:
         """Should fall back for non-numeric strings."""
-        config = HouseholdConfig({"default_servings": "many", "household_size": "few"})
+        config = HouseholdConfig({"default_servings": "many"})
         assert config.target_servings == 4
-        assert config.people_count == 2
 
     def test_enforces_minimum_of_one(self) -> None:
         """Should enforce minimum value of 1."""
-        config = HouseholdConfig({"default_servings": 0, "household_size": -1})
+        config = HouseholdConfig({"default_servings": 0})
         assert config.target_servings == 1
-        assert config.people_count == 1
 
     def test_equipment_null_becomes_empty_list(self) -> None:
         """Should handle null equipment gracefully."""

@@ -437,16 +437,13 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     equipment = equipment_raw if isinstance(equipment_raw, list) else []
     language = config.get("language", "sv") or "sv"
     target_servings = max(int(config.get("default_servings", 4) or 4), 1)
-    people_count = max(int(config.get("household_size", 2) or 2), 1)
-    dietary = DietaryConfig.from_firestore(
-        config.get("dietary"), household_size=people_count, default_servings=target_servings
-    )
+    dietary = DietaryConfig.from_firestore(config.get("dietary"), default_servings=target_servings)
 
     print(f"\n\U0001f504 Re-enhancing: {original.get('title', recipe_id)}")
     print(f"   Household: {household_id}")
     print(f"   Language: {language}")
     print(f"   Equipment: {len(equipment)} items")
-    print(f"   Servings: {target_servings} ({people_count} people)")
+    print(f"   Servings: {target_servings}")
     print(f"   Dietary: meat={dietary.meat_strategy}, dairy={dietary.dairy}")
     print(f"   Mode: {'APPLY' if apply else 'DRY RUN'}")
 
@@ -498,12 +495,7 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
         load_dotenv(Path(__file__).parent.parent / ".env")
 
         enhanced = enhance_recipe(
-            original,
-            language=language,
-            equipment=equipment,
-            target_servings=target_servings,
-            people_count=people_count,
-            dietary=dietary,
+            original, language=language, equipment=equipment, target_servings=target_servings, dietary=dietary
         )
 
         _print_recipe_section("RE-ENHANCED", enhanced)
