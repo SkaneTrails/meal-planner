@@ -14,10 +14,8 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import { type StyleProp, Text, type TextStyle } from 'react-native';
+import type { IoniconName } from '@/lib/tab-config';
 import { useTheme } from '@/lib/theme';
-
-export type IoniconName =
-  keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
 
 interface ThemeIconProps {
   name: IoniconName;
@@ -166,7 +164,7 @@ export const ThemeIcon = ({
           fontSize: size,
           lineHeight: size * 1.2,
           color,
-          fontFamily: glyph.emoji ? fonts.emoji : fonts.body,
+          fontFamily: glyph.emoji ? (fonts.emoji ?? fonts.body) : fonts.body,
           textAlign: 'center',
         },
         style,
@@ -179,3 +177,4 @@ export const ThemeIcon = ({
 };
 
 export { TERMINAL_ICONS };
+export type { IoniconName };
