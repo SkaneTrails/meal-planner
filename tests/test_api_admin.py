@@ -234,9 +234,17 @@ class TestGetHousehold:
 
         assert response.status_code == 403
 
-    def test_member_forbidden(self, member_client: TestClient) -> None:
-        """Member should not be able to get household details."""
-        response = member_client.get("/admin/households/test_household")
+    def test_member_can_get_own(self, member_client: TestClient, sample_household: Household) -> None:
+        """Member should be able to get their own household."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=sample_household):
+            response = member_client.get("/admin/households/test_household")
+
+        assert response.status_code == 200
+        assert response.json()["name"] == "Test Family"
+
+    def test_member_forbidden_other(self, member_client: TestClient) -> None:
+        """Member should not be able to get other households."""
+        response = member_client.get("/admin/households/other_household")
 
         assert response.status_code == 403
 

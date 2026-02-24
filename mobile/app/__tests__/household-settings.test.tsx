@@ -108,6 +108,11 @@ describe('Household Settings screen', () => {
       ).toBeTruthy();
     });
 
+    it('hides members section', async () => {
+      await renderScreen();
+      expect(screen.queryByText('Members')).toBeNull();
+    });
+
     it('does not show Save button in header', async () => {
       await renderScreen();
       const headerRight = screen.queryByTestId('header-right');
@@ -188,6 +193,11 @@ describe('Household Settings screen', () => {
       for (const input of inputs) {
         expect((input as HTMLInputElement).disabled).toBe(false);
       }
+    });
+
+    it('shows members section', async () => {
+      await renderScreen();
+      expect(screen.getByText('Members')).toBeTruthy();
     });
   });
 
