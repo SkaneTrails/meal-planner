@@ -88,8 +88,8 @@ async def create_household(
 async def get_household(
     user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str
 ) -> HouseholdResponse:
-    """Get a household by ID. Superuser or household admin."""
-    _require_admin_or_superuser(user, household_id)
+    """Get a household by ID. Superuser or any household member."""
+    _require_member_or_superuser(user, household_id)
 
     household = household_storage.get_household(household_id)
     if household is None:

@@ -57,7 +57,7 @@ export const useHouseholds = (options?: { enabled?: boolean }) => {
 
 /**
  * Get a specific household by ID.
- * Requires admin or superuser role — pass enabled: false for members.
+ * Any household member can read their own household.
  */
 export const useHousehold = (id: string, options?: { enabled?: boolean }) => {
   return useQuery<Household>({

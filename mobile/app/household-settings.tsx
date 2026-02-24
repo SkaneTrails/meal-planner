@@ -175,33 +175,34 @@ export default function HouseholdSettingsScreen() {
               </Section>
             )}
 
-            {(!focusedSection || focusedSection === 'members') && (
-              <Section
-                icon="people"
-                title={t('settings.membersSection')}
-                subtitle={t('settings.membersSectionDesc')}
-                collapsible={!focusedSection}
-                expanded={
-                  focusedSection === 'members' ||
-                  expandedSections.has('members')
-                }
-                onToggle={() => toggleSection('members')}
-              >
-                <MembersSection
-                  members={form.members}
-                  membersLoading={form.membersLoading}
-                  canEdit={form.canEdit}
-                  currentUserEmail={form.currentUserEmail}
-                  newMemberEmail={form.newMemberEmail}
-                  onNewMemberEmailChange={form.setNewMemberEmail}
-                  newMemberRole={form.newMemberRole}
-                  onNewMemberRoleChange={form.setNewMemberRole}
-                  onAddMember={form.handleAddMember}
-                  onRemoveMember={form.handleRemoveMember}
-                  isAddPending={form.isAddPending}
-                />
-              </Section>
-            )}
+            {(!focusedSection || focusedSection === 'members') &&
+              form.canEdit && (
+                <Section
+                  icon="people"
+                  title={t('settings.membersSection')}
+                  subtitle={t('settings.membersSectionDesc')}
+                  collapsible={!focusedSection}
+                  expanded={
+                    focusedSection === 'members' ||
+                    expandedSections.has('members')
+                  }
+                  onToggle={() => toggleSection('members')}
+                >
+                  <MembersSection
+                    members={form.members}
+                    membersLoading={form.membersLoading}
+                    canEdit={form.canEdit}
+                    currentUserEmail={form.currentUserEmail}
+                    newMemberEmail={form.newMemberEmail}
+                    onNewMemberEmailChange={form.setNewMemberEmail}
+                    newMemberRole={form.newMemberRole}
+                    onNewMemberRoleChange={form.setNewMemberRole}
+                    onAddMember={form.handleAddMember}
+                    onRemoveMember={form.handleRemoveMember}
+                    isAddPending={form.isAddPending}
+                  />
+                </Section>
+              )}
 
             {(!focusedSection || focusedSection === 'language') && (
               <Section
