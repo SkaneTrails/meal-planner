@@ -2130,7 +2130,9 @@ class TestRemoveEnhancement:
         assert call_args["show_enhanced"] is DELETE_FIELD
         assert call_args["enhancement_reviewed"] is DELETE_FIELD
         assert call_args["tips"] is DELETE_FIELD
+        assert call_args["thumbnail_url"] is DELETE_FIELD
         assert call_args["title"] == "Original Title"
+        assert call_args["title_lower"] == "original title"
 
     def test_returns_none_if_not_found(self) -> None:
         """Should return None if recipe doesn't exist."""

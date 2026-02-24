@@ -447,6 +447,8 @@ def remove_enhancement(recipe_id: str, *, household_id: str) -> Recipe | None:
         "cook_time": original.get("cook_time"),
         "total_time": original.get("total_time"),
         "image_url": original.get("image_url"),
+        "thumbnail_url": DELETE_FIELD,
+        "title_lower": original.get("title", data.get("title", "")).lower(),
         "enhanced": False,
         "enhanced_at": DELETE_FIELD,
         "changes_made": DELETE_FIELD,
@@ -462,7 +464,16 @@ def remove_enhancement(recipe_id: str, *, household_id: str) -> Recipe | None:
     restored_data = {
         k: v
         for k, v in data.items()
-        if k not in ("enhanced_at", "changes_made", "original", "show_enhanced", "enhancement_reviewed", "tips")
+        if k
+        not in (
+            "enhanced_at",
+            "changes_made",
+            "original",
+            "show_enhanced",
+            "enhancement_reviewed",
+            "tips",
+            "thumbnail_url",
+        )
     }
     restored_data.update(
         {
@@ -474,6 +485,7 @@ def remove_enhancement(recipe_id: str, *, household_id: str) -> Recipe | None:
             "cook_time": update_data["cook_time"],
             "total_time": update_data["total_time"],
             "image_url": update_data["image_url"],
+            "title_lower": update_data["title_lower"],
             "enhanced": False,
             "updated_at": now,
         }
