@@ -7,18 +7,17 @@
  *   <FullScreenLoading icon="lock-closed" ... />   — message with icon
  */
 
-import type { Ionicons as IoniconsType } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps, ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { GradientBackground } from '@/components/GradientBackground';
+import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface FullScreenLoadingProps {
   /** GradientBackground visual mode (default: 'default') */
   background?: 'default' | 'animated';
   /** Ionicons name — shows icon instead of spinner */
-  icon?: ComponentProps<typeof IoniconsType>['name'];
+  icon?: IoniconName;
   /** Primary message text */
   title?: string;
   /** Secondary message text */
@@ -45,7 +44,9 @@ export const FullScreenLoading = ({
     <GradientBackground {...bgVariant(background)} style={styles.container}>
       {isMessage ? (
         <View style={styles.content}>
-          {icon && <Ionicons name={icon} size={64} color={colors.text.muted} />}
+          {icon && (
+            <ThemeIcon name={icon} size={64} color={colors.text.muted} />
+          )}
           {title && (
             <Text
               style={[

@@ -11,7 +11,6 @@
  * hooks, keeping query overhead proportional to what the user actually sees.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Pressable, Text, TextInput, View } from 'react-native';
 import {
@@ -23,6 +22,7 @@ import {
 } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import { SearchBar } from '@/components/recipes/RecipeFilters';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import {
   useAllRecipes,
@@ -185,7 +185,7 @@ const QuickContent = ({
             bg={colors.ai.light}
             style={{ marginBottom: spacing.md }}
           >
-            <Ionicons
+            <ThemeIcon
               name="create-outline"
               size={28}
               color={colors.ai.primary}
@@ -556,7 +556,7 @@ const RandomContent = ({
               bg={colors.ai.light}
               style={{ marginBottom: spacing.md }}
             >
-              <Ionicons name="dice" size={32} color={colors.ai.primary} />
+              <ThemeIcon name="dice" size={32} color={colors.ai.primary} />
             </IconCircle>
             <View style={{ ...accentUnderlineStyle, marginTop: spacing.sm }} />
           </>
@@ -703,7 +703,7 @@ const RandomExtrasContent = ({
               bg={colors.ai.light}
               style={{ marginBottom: spacing.md }}
             >
-              <Ionicons name="dice" size={32} color={colors.ai.primary} />
+              <ThemeIcon name="dice" size={32} color={colors.ai.primary} />
             </IconCircle>
             <View style={{ ...accentUnderlineStyle, marginTop: spacing.sm }} />
           </>
@@ -900,7 +900,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
                 gap: spacing.xs,
               }}
             >
-              <Ionicons
+              <ThemeIcon
                 name="time-outline"
                 size={16}
                 color={colors.gray[500]}
@@ -918,7 +918,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
                 gap: spacing.xs,
               }}
             >
-              <Ionicons
+              <ThemeIcon
                 name="people-outline"
                 size={16}
                 color={colors.gray[500]}
@@ -1144,7 +1144,7 @@ const CopyContent = ({
               bg={colors.ai.light}
               style={{ marginBottom: spacing.sm }}
             >
-              <Ionicons name="copy" size={24} color={colors.ai.primary} />
+              <ThemeIcon name="copy" size={24} color={colors.ai.primary} />
             </IconCircle>
             <View style={{ ...accentUnderlineStyle, marginTop: spacing.sm }} />
           </>
@@ -1259,7 +1259,7 @@ const CopyContent = ({
             </View>
             {visibility.showSectionHeaderIcon ? (
               <IconCircle size="md" bg={colors.glass.light}>
-                <Ionicons
+                <ThemeIcon
                   name="copy-outline"
                   size={18}
                   color={colors.text.inverse}

@@ -1,12 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { ContentCard, TerminalFrame } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
+import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 interface TimeStatCardProps {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IoniconName;
   label: string;
   value: string;
 }
@@ -27,7 +27,7 @@ const TimeStatCard = ({ icon, label, value }: TimeStatCardProps) => {
       }}
     >
       {visibility.showStatIcons && (
-        <Ionicons
+        <ThemeIcon
           name={icon}
           size={18}
           color={colors.content.secondary}
@@ -87,7 +87,7 @@ export const RecipeTimeServings = ({
   if (!hasAnyTime && !servings) return null;
 
   const stats: {
-    icon: keyof typeof Ionicons.glyphMap;
+    icon: IoniconName;
     label: string;
     value: string;
   }[] = [];

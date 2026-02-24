@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { Section } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -98,7 +98,7 @@ export const RecipeEnhancedInfo = ({
                 index < (recipe.changes_made?.length ?? 0) - 1 ? spacing.sm : 0,
             }}
           >
-            <Ionicons
+            <ThemeIcon
               name="checkmark-circle"
               size={18}
               color={colors.ai.primary}

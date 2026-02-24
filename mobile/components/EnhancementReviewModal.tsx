@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import {
   fontSize,
   fontWeight,
@@ -49,7 +49,7 @@ export const EnhancementReviewModal = ({
       subtitle={title}
       headerRight={
         <IconCircle size="lg" bg={colors.ai.light}>
-          <Ionicons
+          <ThemeIcon
             name="sparkles"
             size={iconSize.xl}
             color={colors.ai.primary}
@@ -95,7 +95,7 @@ export const EnhancementReviewModal = ({
                 },
               ]}
             >
-              <Ionicons
+              <ThemeIcon
                 name="checkmark-circle"
                 size={iconSize.md}
                 color={colors.success}

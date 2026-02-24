@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import {
   fontSize,
@@ -189,7 +189,7 @@ export const CollapsedDayRow = ({
         >
           {summary}
         </Text>
-        <Ionicons
+        <ThemeIcon
           name="chevron-down"
           size={iconSize.sm}
           color={colors.content.subtitle}

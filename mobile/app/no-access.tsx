@@ -3,10 +3,10 @@
  * Provides logout option and explains the situation.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { Redirect, useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import { Button, FullScreenLoading, ScreenLayout } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -66,7 +66,7 @@ export default function NoAccessScreen() {
             marginBottom: spacing.lg,
           }}
         >
-          <Ionicons name="lock-closed" size={48} color={colors.text.primary} />
+          <ThemeIcon name="lock-closed" size={48} color={colors.text.primary} />
         </View>
 
         {/* Title */}

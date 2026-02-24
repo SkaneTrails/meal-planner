@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import type { ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { CRTOverlay } from '@/components/CRTOverlay';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
 
@@ -84,7 +84,7 @@ export const BottomSheetModal = ({
             accessibilityLabel={t('common.close')}
             accessibilityRole="button"
           >
-            <Ionicons
+            <ThemeIcon
               name="close"
               size={24}
               color={colors.content.headingWarm}

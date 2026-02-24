@@ -5,10 +5,10 @@
  * Shape, border, and blur are controlled by TabBarTokens from the active theme.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import { HIDDEN_ON, isTabActive, TABS } from '@/lib/tab-config';
@@ -134,7 +134,7 @@ export const FloatingTabBar = () => {
                     },
                   ]}
                 >
-                  <Ionicons
+                  <ThemeIcon
                     name={active ? tab.iconFocused : tab.icon}
                     size={20}
                     color={

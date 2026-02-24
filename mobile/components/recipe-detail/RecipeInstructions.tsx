@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { IconCircle, Section } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
@@ -130,7 +130,7 @@ export const RecipeInstructions = ({
                 }}
               >
                 {isCompleted ? (
-                  <Ionicons name="checkmark" size={18} color={colors.white} />
+                  <ThemeIcon name="checkmark" size={18} color={colors.white} />
                 ) : (
                   <Text
                     style={{

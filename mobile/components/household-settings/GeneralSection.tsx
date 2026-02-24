@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import {
@@ -8,6 +7,7 @@ import {
   StepperControl,
   SurfaceCard,
 } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
@@ -139,7 +139,7 @@ export const GeneralSection = ({
               {householdName ?? '—'}
             </Text>
             {canEdit && (
-              <Ionicons
+              <ThemeIcon
                 name="create-outline"
                 size={18}
                 color={colors.content.subtitle}

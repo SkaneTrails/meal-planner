@@ -8,8 +8,6 @@
  * config decides what to show. No `crt` checks in consumer code.
  */
 
-import type { Ionicons as IoniconsType } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import {
   ActivityIndicator,
@@ -22,9 +20,10 @@ import {
 } from 'react-native';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { useButtonGroup } from '@/components/ButtonGroup';
+import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, opacity, spacing, terminal, useTheme } from '@/lib/theme';
 
-type IconName = ComponentProps<typeof IoniconsType>['name'];
+type IconName = IoniconName;
 
 // ── Box-drawing chars for terminal segments ────────────────────────────
 const SEG = { l: '\u2561', r: '\u255E' } as const; // ╡ ╞
@@ -325,8 +324,8 @@ export const Button = ({
           style={styles.iconGap}
         />
       ) : showIcon ? (
-        <Ionicons
-          name={displayIcon as ComponentProps<typeof Ionicons>['name']}
+        <ThemeIcon
+          name={displayIcon as IoniconName}
           size={resolvedIconSize}
           color={activeFg}
           style={showLabel ? styles.iconGap : undefined}

@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -19,7 +19,7 @@ export const ReadOnlyBanner = () => {
         gap: spacing.sm,
       }}
     >
-      <Ionicons name="lock-closed" size={16} color={colors.text.secondary} />
+      <ThemeIcon name="lock-closed" size={16} color={colors.text.secondary} />
       <Text
         style={{ color: colors.text.secondary, fontSize: fontSize.sm, flex: 1 }}
       >

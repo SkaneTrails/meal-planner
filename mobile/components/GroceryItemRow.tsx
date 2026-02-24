@@ -2,9 +2,9 @@
  * Individual grocery item row with checkbox, quantity display, and drag handle.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSelection } from '@/lib/haptics';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
@@ -101,7 +101,7 @@ export const GroceryItemRow = ({
             }) as ViewStyle
           }
         >
-          <Ionicons
+          <ThemeIcon
             name="reorder-three"
             size={iconSize.xl}
             color={colors.content.subtitle}
@@ -131,7 +131,7 @@ export const GroceryItemRow = ({
           }}
         >
           {checked && (
-            <Ionicons
+            <ThemeIcon
               name="checkmark"
               size={iconSize.xs}
               color={colors.white}

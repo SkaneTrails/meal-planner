@@ -5,9 +5,9 @@
  * Optionally shows a clear button when the input has text.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { TextInput, View } from 'react-native';
 import { Button } from '@/components/Button';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface UrlInputBarProps {
@@ -43,7 +43,7 @@ export const UrlInputBar = ({
         alignItems: 'center',
       }}
     >
-      <Ionicons
+      <ThemeIcon
         name="link-outline"
         size={18}
         color={colors.content.secondary}

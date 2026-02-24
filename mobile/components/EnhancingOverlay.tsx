@@ -3,8 +3,8 @@
  * Blocks all user interaction until the operation completes.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Modal, StyleSheet, Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface EnhancingOverlayProps {
@@ -38,7 +38,7 @@ export const EnhancingOverlay = ({
             },
           ]}
         >
-          <Ionicons name="sparkles" size={32} color={colors.ai.primary} />
+          <ThemeIcon name="sparkles" size={32} color={colors.ai.primary} />
           <ActivityIndicator
             size="large"
             color={colors.ai.primary}

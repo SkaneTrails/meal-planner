@@ -3,8 +3,8 @@
  * Layout matches Streamlit app design.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
@@ -19,7 +19,7 @@ interface MealCellProps {
   onLongPress?: () => void;
 }
 
-const MEAL_TYPE_ICONS: Record<MealType, keyof typeof Ionicons.glyphMap> = {
+const MEAL_TYPE_ICONS: Record<MealType, IoniconName> = {
   breakfast: 'sunny-outline',
   lunch: 'restaurant-outline',
   dinner: 'moon-outline',
@@ -64,7 +64,7 @@ export const MealCell = ({
           marginBottom: spacing.xs,
         }}
       >
-        <Ionicons
+        <ThemeIcon
           name={MEAL_TYPE_ICONS[mealType]}
           size={fontSize.lg}
           color={hasContent ? colors.white : colors.glass.faint}
@@ -97,7 +97,7 @@ export const MealCell = ({
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <Ionicons name="add" size={20} color={colors.glass.faint} />
+          <ThemeIcon name="add" size={20} color={colors.glass.faint} />
         </View>
       )}
     </Pressable>

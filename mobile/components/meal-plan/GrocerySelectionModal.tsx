@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { BottomSheetModal, Button, IconButton } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -249,7 +249,7 @@ const GroceryMealItem = ({
           }}
         >
           {isSelected && (
-            <Ionicons name="checkmark" size={16} color={colors.white} />
+            <ThemeIcon name="checkmark" size={16} color={colors.white} />
           )}
         </View>
         <View style={{ flex: 1 }}>
@@ -302,7 +302,7 @@ const GroceryMealItem = ({
               gap: spacing.xs,
             }}
           >
-            <Ionicons
+            <ThemeIcon
               name="restaurant-outline"
               size={fontSize.xl}
               color={colors.content.body}

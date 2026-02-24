@@ -2,7 +2,6 @@
  * Recipes screen - Recipe Library with search and filters.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -24,6 +23,7 @@ import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { MealTypePicker } from '@/components/recipes/MealTypePicker';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useDebouncedValue, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -317,7 +317,7 @@ export default function RecipesScreen() {
               {option.label}
             </Text>
             {sortBy === option.value && (
-              <Ionicons
+              <ThemeIcon
                 name="checkmark"
                 size={20}
                 color={colors.button.primary}

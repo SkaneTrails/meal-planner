@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button, SectionLabel } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -127,7 +127,7 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
                     justifyContent: 'center',
                   })}
                 >
-                  <Ionicons name="close" size={14} color={colors.white} />
+                  <ThemeIcon name="close" size={14} color={colors.white} />
                 </Pressable>
               </View>
             );

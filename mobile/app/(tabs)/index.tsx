@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import {
@@ -14,6 +13,7 @@ import {
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { StatsCards } from '@/components/home/StatsCards';
 import { ScreenTitle } from '@/components/ScreenTitle';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
@@ -321,7 +321,7 @@ const NextMealCard = ({
         </Text>
       </View>
       {visibility.showChevrons && (
-        <Ionicons
+        <ThemeIcon
           name="chevron-forward"
           size={20}
           color={colors.content.secondary}

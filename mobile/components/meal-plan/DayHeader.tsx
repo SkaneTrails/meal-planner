@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button, ButtonGroup, Chip, ChipGroup } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
@@ -149,7 +149,7 @@ export const DayHeader = ({
             </Pressable>
           )}
           {onCollapse && visibility.showChevrons && (
-            <Ionicons
+            <ThemeIcon
               name="chevron-up"
               size={iconSize.sm}
               color={colors.content.subtitle}

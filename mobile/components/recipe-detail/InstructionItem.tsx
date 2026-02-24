@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { IconCircle } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import {
   fontSize,
   letterSpacing,
@@ -45,7 +45,7 @@ export const InstructionItem = ({
           ...shadows.card,
         }}
       >
-        <Ionicons
+        <ThemeIcon
           name="bulb-outline"
           size={15}
           color={colors.ai.primary}
@@ -138,7 +138,7 @@ export const InstructionItem = ({
         }}
       >
         {isCompleted ? (
-          <Ionicons name="checkmark" size={18} color={colors.white} />
+          <ThemeIcon name="checkmark" size={18} color={colors.white} />
         ) : (
           <Text
             style={{
@@ -165,7 +165,7 @@ export const InstructionItem = ({
               marginBottom: spacing.xs,
             }}
           >
-            <Ionicons name="time-outline" size={11} color={colors.white} />
+            <ThemeIcon name="time-outline" size={11} color={colors.white} />
             <Text
               style={{
                 fontSize: fontSize.sm,

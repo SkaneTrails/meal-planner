@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import {
@@ -7,6 +6,7 @@ import {
   ChipPicker,
   SectionLabel,
 } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type {
@@ -173,7 +173,7 @@ export const EditRecipeModal = ({
                     borderColor: isSelected ? colors.primary : colors.bgDark,
                   })}
                 >
-                  <Ionicons
+                  <ThemeIcon
                     name={icon}
                     size={28}
                     color={isSelected ? colors.white : colors.content.icon}
