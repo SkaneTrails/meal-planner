@@ -9,6 +9,7 @@ const mockSetMealMutateAsync = vi.fn();
 const mockTransferMutateAsync = vi.fn();
 const mockReviewMutateAsync = vi.fn();
 const mockEnhanceMutateAsync = vi.fn();
+const mockRemoveEnhancementMutateAsync = vi.fn();
 const mockCopyMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
@@ -21,6 +22,7 @@ vi.mock('@/lib/hooks', () => ({
   useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
   useReviewEnhancement: vi.fn(() => ({ mutateAsync: mockReviewMutateAsync, isPending: false })),
   useEnhanceRecipe: vi.fn(() => ({ mutateAsync: mockEnhanceMutateAsync, isPending: false })),
+  useRemoveEnhancement: vi.fn(() => ({ mutateAsync: mockRemoveEnhancementMutateAsync, isPending: false })),
   useCopyRecipe: vi.fn(() => ({ mutateAsync: mockCopyMutateAsync, isPending: false })),
 }));
 

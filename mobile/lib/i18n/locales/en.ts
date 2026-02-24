@@ -202,6 +202,12 @@ const en = {
     enhanceSuccessMessage: 'The recipe has been improved by AI',
     enhanceFailed: 'Could not enhance recipe',
     enhancing: 'Enhancing recipe with AI...',
+    removeEnhancement: 'Remove Enhancement',
+    removeEnhancementConfirm:
+      'This will restore the original recipe and discard all AI improvements. This cannot be undone.',
+    removeEnhancementSuccess: 'Enhancement removed',
+    removeEnhancementSuccessMessage: 'The original recipe has been restored',
+    removeEnhancementFailed: 'Could not remove enhancement',
     addToMealPlan: 'Add to Meal Plan',
     thisWeek: 'This Week',
     nextWeek: 'Next Week',

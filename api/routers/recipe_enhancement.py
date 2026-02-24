@@ -247,3 +247,26 @@ async def review_enhancement(
         )
 
     return result
+
+
+@router.delete("/{recipe_id}/enhancement", status_code=status.HTTP_200_OK)
+async def remove_enhancement(user: Annotated[AuthenticatedUser, Depends(require_auth)], recipe_id: str) -> Recipe:
+    """Remove AI enhancement from a recipe, restoring original data.
+
+    Copies the original snapshot back to top-level fields and clears all
+    enhancement metadata. The recipe can be re-enhanced afterwards.
+
+    Only works for enhanced recipes with an original snapshot that belong
+    to the user's household.
+    """
+    household_id = require_household(user)
+
+    result = recipe_storage.remove_enhancement(recipe_id, household_id=household_id)
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Recipe not found, not enhanced, or not owned by your household",
+        )
+
+    return result

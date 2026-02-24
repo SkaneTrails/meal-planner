@@ -226,6 +226,21 @@ export const useReviewEnhancement = () => {
 };
 
 /**
+ * Hook to remove AI enhancement, restoring original recipe data.
+ */
+export const useRemoveEnhancement = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => api.removeEnhancement(id),
+    onSuccess: (data) => {
+      queryClient.setQueryData(recipeKeys.detail(data.id), data);
+      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+    },
+  });
+};
+
+/**
  * Hook to trigger AI enhancement on an existing recipe.
  */
 export const useEnhanceRecipe = () => {

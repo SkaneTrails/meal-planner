@@ -74,6 +74,7 @@ export default function RecipeDetailScreen() {
     handleTransferRecipe,
     handleReviewEnhancement,
     handleEnhanceRecipe,
+    handleRemoveEnhancement,
     showEnhancementReviewModal,
     closeEnhancementReviewModal,
   } = useRecipeActions(id, recipe);
@@ -352,6 +353,9 @@ export default function RecipeDetailScreen() {
           onClose={() => setShowEditModal(false)}
           onSave={handleSaveEdit}
           onTransferRecipe={handleTransferRecipe}
+          onRemoveEnhancement={
+            recipe.enhanced ? handleRemoveEnhancement : undefined
+          }
           onDelete={handleDelete}
         />
       )}

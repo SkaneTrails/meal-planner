@@ -160,6 +160,12 @@ export const recipeApi = {
     });
   },
 
+  removeEnhancement: (id: string): Promise<Recipe> => {
+    return apiRequest<Recipe>(`/recipes/${id}/enhancement`, {
+      method: 'DELETE',
+    });
+  },
+
   copyRecipe: (
     id: string,
     options?: { keepEnhanced?: boolean },
