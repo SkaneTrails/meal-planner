@@ -291,13 +291,15 @@ export default function MealPlanScreen() {
           slots={[
             {
               key: 'today',
-              label: `\u25C8 ${t('mealPlan.today').toUpperCase()}`,
+              icon: 'today-outline',
+              label: t('mealPlan.today').toUpperCase(),
               active: showJumpButton || weekOffset !== 0,
               onPress: jumpToToday,
             },
             {
               key: 'grocery',
-              label: `\u2637 ${t('tabs.grocery').toUpperCase()}`,
+              icon: 'cart',
+              label: t('tabs.grocery').toUpperCase(),
               active: true,
               onPress: openGroceryModal,
             },

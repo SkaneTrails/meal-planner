@@ -83,6 +83,8 @@ const TERMINAL_ICONS: Partial<Record<IoniconName, TerminalGlyph>> = {
   'lock-closed-outline': { char: '\u{1F512}', emoji: true },
   'globe-outline': { char: '\u{1F310}', emoji: true }, // 🌐
   'person-circle': { char: '\u{1F464}', emoji: true }, // 👤
+  'settings-outline': { char: '\u2699', emoji: true }, // ⚙
+  settings: { char: '\u2699', emoji: true },
 
   // ── Favorites & rating ─────────────────────────────────────────────
   heart: { char: '\u2665' }, // ♥
@@ -98,6 +100,7 @@ const TERMINAL_ICONS: Partial<Record<IoniconName, TerminalGlyph>> = {
   'bulb-outline': { char: '\u{1F4A1}', emoji: true }, // 💡
 
   // ── Meal types ─────────────────────────────────────────────────────
+  sunny: { char: '\u2600', emoji: true }, // ☀
   'sunny-outline': { char: '\u2600', emoji: true }, // ☀
   'restaurant-outline': { char: '\u{1F37D}', emoji: true }, // 🍽
   'moon-outline': { char: '\u{1F319}', emoji: true }, // 🌙
@@ -122,6 +125,8 @@ const TERMINAL_ICONS: Partial<Record<IoniconName, TerminalGlyph>> = {
   'pricetag-outline': { char: '\u{1F3F7}', emoji: true },
   'funnel-outline': { char: '\u25BD' }, // ▽
   'bookmark-outline': { char: '\u{1F516}', emoji: true }, // 🔖
+  'nutrition-outline': { char: '\u{1F34E}', emoji: true }, // 🍎
+  'today-outline': { char: '\u{1F4C6}', emoji: true }, // 📆
 
   // ── Misc / decoration ──────────────────────────────────────────────
   dice: { char: '\u{1F3B2}', emoji: true }, // 🎲

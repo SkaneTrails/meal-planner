@@ -7,7 +7,7 @@
  *   <FullScreenLoading icon="lock-closed" ... />   — message with icon
  */
 
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { GradientBackground } from '@/components/GradientBackground';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';

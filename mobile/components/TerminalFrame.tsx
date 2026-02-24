@@ -22,7 +22,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { fontSize, iconSize, spacing, terminal, useTheme } from '@/lib/theme';
-import { ThemeIcon } from './ThemeIcon';
+import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 // ── Box-drawing characters (Unicode block 0x2500) ──────────────────────
 const BOX = {
@@ -37,7 +37,10 @@ const BOX = {
 } as const;
 
 export interface FrameSegment {
+  /** Text label for the segment. */
   label: string;
+  /** Optional icon rendered via ThemeIcon before the label. */
+  icon?: IoniconName;
   onPress?: () => void;
 }
 
@@ -173,26 +176,40 @@ export const TerminalFrame = ({
   const rightFragment =
     rightSegments && rightSegments.length > 0
       ? rightSegments.map((seg, i) => {
+          const segKey = seg.icon || seg.label || String(i);
           const inner = (
             <View
-              key={seg.label}
+              key={segKey}
               style={{ flexDirection: 'row', alignItems: 'center' }}
             >
               <Text style={charStyle} selectable={false}>
                 {B.labelL}
               </Text>
-              <Text
+              <View
                 style={{
-                  color: labelColor,
-                  fontFamily: fonts.bodySemibold,
-                  fontSize: fontSize.base,
-                  letterSpacing: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   paddingHorizontal: spacing.xs,
+                  gap: seg.icon && seg.label ? 3 : 0,
                 }}
-                selectable={false}
               >
-                {seg.label}
-              </Text>
+                {seg.icon && (
+                  <ThemeIcon name={seg.icon} size={12} color={labelColor} />
+                )}
+                {seg.label ? (
+                  <Text
+                    style={{
+                      color: labelColor,
+                      fontFamily: fonts.bodySemibold,
+                      fontSize: fontSize.base,
+                      letterSpacing: 1,
+                    }}
+                    selectable={false}
+                  >
+                    {seg.label}
+                  </Text>
+                ) : null}
+              </View>
               {i === rightSegments.length - 1 && (
                 <Text style={charStyle} selectable={false}>
                   {B.labelR}
@@ -201,7 +218,12 @@ export const TerminalFrame = ({
             </View>
           );
           return seg.onPress ? (
-            <Pressable key={seg.label} onPress={seg.onPress}>
+            <Pressable
+              key={segKey}
+              onPress={seg.onPress}
+              accessibilityRole="button"
+              accessibilityLabel={seg.label || seg.icon || undefined}
+            >
               {inner}
             </Pressable>
           ) : (

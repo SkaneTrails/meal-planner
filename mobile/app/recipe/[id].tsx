@@ -287,37 +287,64 @@ export default function RecipeDetailScreen() {
           slots={[
             {
               key: 'back',
-              label: '◀',
+              icon: 'chevron-back',
+              label: '',
               active: true,
               onPress: () => router.replace('/(tabs)/recipes'),
             },
             {
               key: 'camera',
-              label: '◉',
+              icon: 'camera',
+              label: '',
               active: true,
               onPress: handlePickImage,
             },
             {
               key: 'thumbDown',
-              label: recipe.rating === -1 ? '▼' : '▽',
+              icon:
+                recipe.rating === -1 ? 'thumbs-down' : 'thumbs-down-outline',
+              label: '',
               active: true,
               onPress: handleThumbDown,
             },
             {
               key: 'thumbUp',
-              label: recipe.rating === 1 ? '▲' : '△',
+              icon: recipe.rating === 1 ? 'thumbs-up' : 'thumbs-up-outline',
+              label: '',
               active: true,
               onPress: handleThumbUp,
             },
             {
               key: 'favorite',
-              label: isRecipeFavorite ? '♥' : '♡',
+              icon: isRecipeFavorite ? 'heart' : 'heart-outline',
+              label: '',
               active: true,
               onPress: () => {
                 hapticLight();
                 if (id) toggleFavorite(id);
               },
             },
+            {
+              key: 'screenOn',
+              icon: keepScreenOn ? 'sunny' : 'sunny-outline',
+              label: '',
+              active: true,
+              onPress: () => {
+                hapticSelection();
+                setKeepScreenOn((prev) => !prev);
+              },
+            },
+            ...(canEnhance && settings.aiEnabled && isOwned && !isEnhancing
+              ? [
+                  {
+                    key: 'enhance',
+                    icon: 'sparkles' as const,
+                    label: '',
+                    active: true,
+                    onPress: handleEnhanceRecipe,
+                  },
+                ]
+              : []),
           ]}
           style={{
             position: 'absolute',

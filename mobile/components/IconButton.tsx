@@ -1,4 +1,3 @@
-import type { ComponentProps } from 'react';
 import type { GestureResponderEvent, ViewStyle } from 'react-native';
 import type { ButtonTone } from '@/components/Button';
 import { Button } from '@/components/Button';

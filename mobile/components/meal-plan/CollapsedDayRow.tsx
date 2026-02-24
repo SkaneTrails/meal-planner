@@ -127,9 +127,9 @@ export const CollapsedDayRow = ({
         <Text style={charStyle} selectable={false}>
           {B.labelL}
         </Text>
-        <Text style={labelStyle} selectable={false}>
-          {'\u25BC'}
-        </Text>
+        <View style={{ paddingHorizontal: spacing.xs }}>
+          <ThemeIcon name="chevron-down" size={12} color={colors.primary} />
+        </View>
         <Text style={charStyle} selectable={false}>
           {B.labelR}
         </Text>

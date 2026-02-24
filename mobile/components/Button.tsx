@@ -8,7 +8,6 @@
  * config decides what to show. No `crt` checks in consumer code.
  */
 
-import type { ComponentProps } from 'react';
 import {
   ActivityIndicator,
   type GestureResponderEvent,

@@ -162,7 +162,8 @@ const Header = ({
             slots={[
               {
                 key: 'settings',
-                label: '\u2699',
+                icon: 'settings-outline',
+                label: '',
                 active: true,
                 onPress: onSettings,
               },

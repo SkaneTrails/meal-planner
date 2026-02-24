@@ -148,15 +148,7 @@ export const RecipeCard = ({
                 }}
               >
                 {recipe.enhanced && (
-                  <Text
-                    style={{
-                      fontSize: fontSize.sm,
-                      fontFamily: fonts.bodySemibold,
-                      color: colors.border,
-                    }}
-                  >
-                    {'\u2726'}
-                  </Text>
+                  <ThemeIcon name="sparkles" size={14} color={colors.border} />
                 )}
                 {totalTime && (
                   <Text
@@ -170,15 +162,28 @@ export const RecipeCard = ({
                   </Text>
                 )}
                 {recipe.servings && (
-                  <Text
+                  <View
                     style={{
-                      fontSize: fontSize.sm,
-                      fontFamily: fonts.body,
-                      color: colors.content.tertiary,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: spacing['2xs'],
                     }}
                   >
-                    {'\u263B'} {recipe.servings}
-                  </Text>
+                    <ThemeIcon
+                      name="people"
+                      size={14}
+                      color={colors.content.tertiary}
+                    />
+                    <Text
+                      style={{
+                        fontSize: fontSize.sm,
+                        fontFamily: fonts.body,
+                        color: colors.content.tertiary,
+                      }}
+                    >
+                      {recipe.servings}
+                    </Text>
+                  </View>
                 )}
               </View>
             </View>
@@ -349,16 +354,10 @@ export const RecipeCard = ({
   const cardHeight = imageHeight + CARD_CONTENT_HEIGHT;
 
   if (chrome === 'flat') {
-    const aiLabel = recipe.enhanced ? '\u2726' : undefined;
-    const favLabel = showFavorite
-      ? isRecipeFavorite
-        ? '\u2665'
-        : '\u2661'
-      : undefined;
+    const showAi = recipe.enhanced;
+    const showFav = showFavorite;
+    const favActive = isRecipeFavorite;
     const favDimmed = showFavorite && !isRecipeFavorite;
-    const servingsLabel = recipe.servings
-      ? `\u263B ${recipe.servings}`
-      : undefined;
     const timeLabel = totalTime ? `${totalTime} MIN` : undefined;
 
     const borderColor = colors.border;
@@ -376,7 +375,6 @@ export const RecipeCard = ({
       letterSpacing: 1.5,
       paddingHorizontal: spacing.xs,
     };
-    const bLabelDim = { ...bLabel, color: borderColor };
 
     // View-based vertical bar that stretches to fill parent height
     const vBar = { width: 1, backgroundColor: borderColor } as const;
@@ -397,20 +395,20 @@ export const RecipeCard = ({
             transform: [{ scale: scaleAnim }],
           }}
         >
-          {/* ── Top border: ┌─┤✦├────┤♡├─┐ */}
+          {/* ── Top border: ┌─┤✨├────┤♡├─┐ */}
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={bChar} selectable={false}>
               {'\u250C'}
-              {aiLabel ? '\u2500' : ''}
+              {showAi ? '\u2500' : ''}
             </Text>
-            {aiLabel && (
+            {showAi && (
               <>
                 <Text style={bChar} selectable={false}>
                   {'\u2524'}
                 </Text>
-                <Text style={bLabel} selectable={false}>
-                  {aiLabel}
-                </Text>
+                <View style={{ paddingHorizontal: spacing.xs }}>
+                  <ThemeIcon name="sparkles" size={12} color={labelColor} />
+                </View>
                 <Text style={bChar} selectable={false}>
                   {'\u251C'}
                 </Text>
@@ -421,14 +419,18 @@ export const RecipeCard = ({
                 {'\u2500'.repeat(200)}
               </Text>
             </View>
-            {favLabel && (
+            {showFav && (
               <>
                 <Text style={bChar} selectable={false}>
                   {'\u2524'}
                 </Text>
-                <Text style={favDimmed ? bLabelDim : bLabel} selectable={false}>
-                  {favLabel}
-                </Text>
+                <View style={{ paddingHorizontal: spacing.xs }}>
+                  <ThemeIcon
+                    name={favActive ? 'heart' : 'heart-outline'}
+                    size={12}
+                    color={favDimmed ? borderColor : labelColor}
+                  />
+                </View>
                 <Text style={bChar} selectable={false}>
                   {'\u251C'}
                 </Text>
@@ -502,20 +504,30 @@ export const RecipeCard = ({
             <View style={vBar} />
           </View>
 
-          {/* ── Bottom border: └─┤☻ 4├────┤30 MIN├─┘ */}
+          {/* ── Bottom border: └─┤👥 4├────┤30 MIN├─┘ */}
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={bChar} selectable={false}>
               {'\u2514'}
-              {servingsLabel ? '\u2500' : ''}
+              {recipe.servings ? '\u2500' : ''}
             </Text>
-            {servingsLabel && (
+            {recipe.servings && (
               <>
                 <Text style={bChar} selectable={false}>
                   {'\u2524'}
                 </Text>
-                <Text style={bLabel} selectable={false}>
-                  {servingsLabel}
-                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: spacing.xs,
+                    gap: 3,
+                  }}
+                >
+                  <ThemeIcon name="people" size={12} color={labelColor} />
+                  <Text style={bLabel} selectable={false}>
+                    {recipe.servings}
+                  </Text>
+                </View>
                 <Text style={bChar} selectable={false}>
                   {'\u251C'}
                 </Text>

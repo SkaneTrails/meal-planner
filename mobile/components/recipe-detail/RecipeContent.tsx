@@ -124,8 +124,8 @@ export const RecipeContent = ({
   const actionSegments: FrameSegment[] | undefined =
     chrome === 'flat'
       ? [
-          { label: '\u270e', onPress: onOpenEditModal },
-          { label: '\u2261', onPress: onShowPlanModal },
+          { label: '', icon: 'create', onPress: onOpenEditModal },
+          { label: '', icon: 'reorder-three', onPress: onShowPlanModal },
         ]
       : undefined;
 

@@ -819,16 +819,30 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
               </Text>
             )}
             {recipe.servings && (
-              <Text
+              <View
                 style={{
-                  fontSize: fontSize.md,
-                  fontFamily: fonts.body,
-                  color: colors.content.tertiary,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: spacing.xs,
                 }}
               >
-                {'\u263B'}{' '}
-                {t('selectRecipe.random.servings', { count: recipe.servings })}
-              </Text>
+                <ThemeIcon
+                  name="people"
+                  size={14}
+                  color={colors.content.tertiary}
+                />
+                <Text
+                  style={{
+                    fontSize: fontSize.md,
+                    fontFamily: fonts.body,
+                    color: colors.content.tertiary,
+                  }}
+                >
+                  {t('selectRecipe.random.servings', {
+                    count: recipe.servings,
+                  })}
+                </Text>
+              </View>
             )}
           </View>
           {recipe.ingredients && recipe.ingredients.length > 0 && (
