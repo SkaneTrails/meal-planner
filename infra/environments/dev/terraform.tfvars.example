@@ -26,3 +26,7 @@ tfstate_bucket_name = "your-tfstate-bucket-name"
 # Default "latest" works for local dev. CI overrides with git SHA via:
 #   terraform apply -var image_tag=$SHA
 # image_tag = "latest"
+
+# Firestore backup configuration
+# GCS bucket for backups (must be globally unique)
+backup_bucket_name = "your-project-firestore-backups"

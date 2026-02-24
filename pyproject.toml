@@ -131,7 +131,7 @@ lint.isort.split-on-trailing-comma = false
 known_first_party = [ "meal-planner" ]
 pep621_dev_dependency_groups = [ "dev" ]
 ignore = [ "DEP002" ]
-extend_exclude = [ ".venv/", "functions/", "scripts/", "tools/" ]
+extend_exclude = [ ".venv/", "functions/", "infra/", "scripts/", "tools/" ]
 
 [tool.pytest.ini_options]
 testpaths = [ "tests" ]

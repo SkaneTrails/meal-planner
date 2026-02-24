@@ -82,6 +82,14 @@ resource "google_project_service" "iamcredentials" {
   disable_on_destroy = false
 }
 
+# Cloud Scheduler API for scheduled tasks (e.g., Firestore backups)
+resource "google_project_service" "cloudscheduler" {
+  project = var.project
+  service = "cloudscheduler.googleapis.com"
+
+  disable_on_destroy = false
+}
+
 # Cloud Storage API for recipe images
 resource "google_project_service" "storage" {
   project = var.project

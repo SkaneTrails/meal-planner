@@ -48,6 +48,11 @@ output "iamcredentials_service" {
   value       = google_project_service.iamcredentials
 }
 
+output "cloudscheduler_service" {
+  description = "Cloud Scheduler API service resource"
+  value       = google_project_service.cloudscheduler
+}
+
 output "storage_service" {
   description = "Cloud Storage API service resource"
   value       = google_project_service.storage
