@@ -11,13 +11,13 @@ import {
   Text,
   type TextInput,
   UIManager,
-  View,
 } from 'react-native';
 import {
   BottomSheetModal,
   Button,
   ScreenHeader,
   ScreenLayout,
+  SurfaceCard,
 } from '@/components';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
@@ -28,7 +28,7 @@ import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useDebouncedValue, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 import { type SortOption, sortRecipes } from '@/lib/utils/recipeSorter';
 
@@ -40,7 +40,7 @@ if (
 }
 
 export default function RecipesScreen() {
-  const { colors, borderRadius } = useTheme();
+  const { colors, borderRadius, fonts } = useTheme();
   const router = useRouter();
   const { addRecipe } = useLocalSearchParams<{ addRecipe?: string }>();
   const { t } = useTranslation();
@@ -181,6 +181,40 @@ export default function RecipesScreen() {
             : t('recipes.collectionCount', { count: totalCount })
         }
       >
+        <SurfaceCard
+          padding={spacing.md}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginHorizontal: spacing.xl,
+            marginBottom: spacing.sm,
+            backgroundColor: colors.dayCard.bgToday,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: fonts.bodyBold,
+              fontSize: fontSize.xl,
+              color: colors.content.subtitle,
+              flex: 1,
+            }}
+          >
+            {t('recipes.callToAction')}
+          </Text>
+          <Button
+            variant="primary"
+            size="sm"
+            onPress={() => setShowImportModal(true)}
+            icon="add"
+            label={t('recipes.addRecipe')}
+            style={{
+              paddingHorizontal: spacing.md,
+              paddingVertical: spacing.xs,
+            }}
+          />
+        </SurfaceCard>
+
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -191,17 +225,6 @@ export default function RecipesScreen() {
           searchInputRef={searchInputRef}
           t={t}
         />
-
-        <View
-          style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.sm }}
-        >
-          <Button
-            variant="primary"
-            onPress={() => setShowImportModal(true)}
-            icon="add-circle-outline"
-            label={t('home.addRecipe.title')}
-          />
-        </View>
 
         <FilterChips
           dietFilter={dietFilter}
@@ -285,12 +308,10 @@ export default function RecipesScreen() {
           >
             <Text
               style={{
+                fontFamily:
+                  sortBy === option.value ? fonts.bodySemibold : fonts.body,
                 fontSize: fontSize['lg-xl'],
                 color: colors.content.body,
-                fontWeight:
-                  sortBy === option.value
-                    ? fontWeight.semibold
-                    : fontWeight.normal,
               }}
             >
               {option.label}

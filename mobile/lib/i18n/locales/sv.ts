@@ -156,6 +156,8 @@ const sv: Translations = {
     startBuilding:
       'Börja bygga din samling genom att lägga till dina favoritrecept',
     addFirstRecipe: 'Lägg till ditt första recept',
+    callToAction: 'Lägg till dina favoritrecept!',
+    addRecipe: 'Lägg till',
   },
 
   recipe: {

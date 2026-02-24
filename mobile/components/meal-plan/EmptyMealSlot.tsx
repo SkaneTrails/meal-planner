@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
-import { ButtonGroup, IconButton, IconCircle } from '@/components';
+import { ButtonGroup, IconButton } from '@/components';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 
@@ -37,13 +36,6 @@ export const EmptyMealSlot = ({
       <View
         style={{ flexDirection: 'row', alignItems: 'center', minWidth: 80 }}
       >
-        <IconCircle
-          size={26}
-          bg={colors.surface.active}
-          style={{ marginRight: spacing.sm }}
-        >
-          <Ionicons name="add" size={16} color={colors.content.subtitle} />
-        </IconCircle>
         <Text
           style={{
             fontSize: fontSize.md,
