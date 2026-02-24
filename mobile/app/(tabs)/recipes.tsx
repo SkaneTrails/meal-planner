@@ -24,7 +24,7 @@ import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useCurrentUser, useRecipes } from '@/lib/hooks';
+import { useCurrentUser, useDebouncedValue, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
@@ -86,6 +86,10 @@ export default function RecipesScreen() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
 
+  const debouncedSearch = useDebouncedValue(searchQuery);
+  const apiSearch =
+    searchQuery.trim() === '' ? undefined : debouncedSearch.trim() || undefined;
+
   const {
     data,
     isLoading,
@@ -93,7 +97,7 @@ export default function RecipesScreen() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useRecipes();
+  } = useRecipes(apiSearch);
 
   const recipes = useMemo(
     () => data?.pages.flatMap((page) => page.items) ?? [],
@@ -110,15 +114,8 @@ export default function RecipesScreen() {
     libraryScope !== 'all';
 
   const filteredRecipes = useMemo(() => {
+    // Search is handled server-side via apiSearch — only apply local filters here
     const result = recipes.filter((recipe) => {
-      const query = searchQuery.toLowerCase();
-      const matchesSearch =
-        searchQuery === '' ||
-        recipe.title.toLowerCase().includes(query) ||
-        recipe.tags.some((tag) => tag.toLowerCase().includes(query)) ||
-        recipe.ingredients.some((ingredient) =>
-          ingredient.toLowerCase().includes(query),
-        );
       const matchesDiet = !dietFilter || recipe.diet_label === dietFilter;
       const matchesMeal =
         mealFilters.length === 0 ||
@@ -127,19 +124,12 @@ export default function RecipesScreen() {
       const matchesScope =
         libraryScope === 'all' ||
         recipe.household_id === currentUser?.household_id;
-      return (
-        matchesSearch &&
-        matchesDiet &&
-        matchesMeal &&
-        matchesFavorites &&
-        matchesScope
-      );
+      return matchesDiet && matchesMeal && matchesFavorites && matchesScope;
     });
 
     return sortRecipes(result, sortBy);
   }, [
     recipes,
-    searchQuery,
     dietFilter,
     mealFilters,
     sortBy,
