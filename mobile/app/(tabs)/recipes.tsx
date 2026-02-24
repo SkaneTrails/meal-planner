@@ -21,6 +21,7 @@ import {
 } from '@/components';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
+import { MealTypePicker } from '@/components/recipes/MealTypePicker';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
@@ -83,6 +84,7 @@ export default function RecipesScreen() {
   ];
 
   const [showSortPicker, setShowSortPicker] = useState(false);
+  const [showMealTypePicker, setShowMealTypePicker] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
 
@@ -151,6 +153,16 @@ export default function RecipesScreen() {
     });
   }, []);
 
+  const handleMealTypeToggle = useCallback((meal: MealLabel) => {
+    setMealFilters((prev) =>
+      prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal],
+    );
+  }, []);
+
+  const handleMealTypeClear = useCallback(() => {
+    setMealFilters([]);
+  }, []);
+
   const handleSearchClear = useCallback(() => {
     hapticLight();
     searchInputRef.current?.blur();
@@ -193,11 +205,13 @@ export default function RecipesScreen() {
 
         <FilterChips
           dietFilter={dietFilter}
+          mealFilters={mealFilters}
           showFavoritesOnly={showFavoritesOnly}
           libraryScope={libraryScope}
           sortBy={sortBy}
           sortOptions={SORT_OPTIONS}
           onDietChange={handleDietChange}
+          onMealTypePress={() => setShowMealTypePicker(true)}
           onFavoritesToggle={handleFavoritesToggle}
           onLibraryScopeChange={setLibraryScope}
           onSortPress={() => setShowSortPicker(true)}
@@ -233,6 +247,18 @@ export default function RecipesScreen() {
         visible={showManualModal}
         onClose={() => setShowManualModal(false)}
       />
+      <BottomSheetModal
+        visible={showMealTypePicker}
+        onClose={() => setShowMealTypePicker(false)}
+        title={t('recipes.filterByMealType')}
+      >
+        <MealTypePicker
+          selected={mealFilters}
+          onToggle={handleMealTypeToggle}
+          onClear={handleMealTypeClear}
+          t={t}
+        />
+      </BottomSheetModal>
       <BottomSheetModal
         visible={showSortPicker}
         onClose={() => setShowSortPicker(false)}
