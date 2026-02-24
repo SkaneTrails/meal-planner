@@ -65,6 +65,8 @@ const MONO = isWeb
       default: 'monospace',
     }) ?? 'monospace');
 
+const EMOJI = 'NotoEmoji_400Regular';
+
 const fonts: FontFamilyTokens = {
   display: MONO,
   displayRegular: MONO,
@@ -75,6 +77,7 @@ const fonts: FontFamilyTokens = {
   bodySemibold: MONO,
   bodyBold: MONO,
   accent: MONO,
+  emoji: EMOJI,
 };
 
 // ── Derived overrides ──────────────────────────────────────────────────
@@ -134,5 +137,5 @@ export const terminalTheme: ThemeDefinition = {
   iconContainerRadius: 0,
   crt: terminalCRT,
   animatedBackground: false,
-  requiredFonts: {}, // uses system monospace — no custom fonts needed
+  requiredFonts: {}, // monospace is system; NotoEmoji loaded globally in _layout.tsx
 };

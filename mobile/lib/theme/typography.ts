@@ -19,6 +19,7 @@ export type FontFamilyTokens = {
   readonly bodySemibold: string;
   readonly bodyBold: string;
   readonly accent: string;
+  readonly emoji?: string;
 };
 
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
