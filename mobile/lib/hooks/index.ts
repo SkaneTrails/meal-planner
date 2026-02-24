@@ -9,5 +9,6 @@ export * from './use-grocery-state';
 export * from './use-meal-plan';
 export * from './use-recipe-notes';
 export * from './use-recipes';
+export * from './useDebouncedValue';
 export * from './useImagePicker';
 export * from './useKeepScreenOn';

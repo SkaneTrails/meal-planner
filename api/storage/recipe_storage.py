@@ -194,6 +194,7 @@ def save_recipe(
     created_at = existing_created_at if existing_created_at else now
     data = {
         "title": recipe.title,
+        "title_lower": recipe.title.lower(),
         "url": recipe.url,
         "normalized_url": normalize_url(recipe.url),
         "ingredients": recipe.ingredients,
@@ -298,6 +299,11 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
         url_value = update_data["url"]
         update_data["normalized_url"] = normalize_url(str(url_value)) if url_value else ""
 
+    # Keep title_lower in sync when title changes
+    if "title" in update_data:
+        title_value = update_data["title"]
+        update_data["title_lower"] = title_value.lower() if title_value else ""
+
     doc_ref.update(update_data)
 
     # Return the updated recipe
@@ -399,10 +405,11 @@ def review_enhancement(recipe_id: str, *, approve: bool, household_id: str) -> R
 
 def search_recipes(query: str, *, household_id: str | None = None, show_hidden: bool = False) -> list[Recipe]:
     """
-    Search recipes by title (case-sensitive prefix match).
+    Search recipes by title, tags, and ingredients (case-insensitive substring match).
 
-    Note: Firestore range queries are case-sensitive. For case-insensitive
-    search, consider storing a normalized title field.
+    Fetches all visible recipes and filters in Python to support
+    case-insensitive substring matching — Firestore range queries only
+    support case-sensitive prefix matching.
 
     Args:
         query: The search query.
@@ -411,36 +418,20 @@ def search_recipes(query: str, *, household_id: str | None = None, show_hidden: 
         show_hidden: If False (default), exclude hidden recipes.
 
     Returns:
-        List of matching recipes.
+        List of matching recipes, newest first.
     """
-    db = get_firestore_client()
-    base_query = (
-        db.collection(RECIPES_COLLECTION)
-        .where(filter=FieldFilter("title", ">=", query))
-        .where(filter=FieldFilter("title", "<=", query + "\uf8ff"))
-    )
-    if not show_hidden:
-        base_query = base_query.where(filter=FieldFilter("hidden", "==", False))  # noqa: FBT003
-    docs = base_query.stream()
+    from api.storage.recipe_queries import get_all_recipes
 
-    recipes = []
-    for doc in docs:
-        data = doc.to_dict()
-        recipe = _doc_to_recipe(doc.id, data)
+    all_recipes = get_all_recipes(household_id=household_id, show_hidden=show_hidden)
+    query_lower = query.lower()
 
-        # Apply household filtering if specified
-        if household_id is not None:
-            is_owned = recipe.household_id == household_id
-            is_shared = recipe.visibility == "shared"
-
-            if not (is_owned or is_shared):
-                continue
-
-        recipes.append(recipe)
-
-    from api.storage.recipe_queries import _exclude_copied_originals
-
-    return _exclude_copied_originals(recipes, household_id)
+    return [
+        r
+        for r in all_recipes
+        if query_lower in r.title.lower()
+        or any(query_lower in tag.lower() for tag in r.tags)
+        or any(query_lower in ing.lower() for ing in r.ingredients)
+    ]
 
 
 def _resolve_root_id(source: Recipe, recipe_id: str) -> str:

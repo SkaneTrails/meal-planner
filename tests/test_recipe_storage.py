@@ -289,6 +289,21 @@ class TestSaveRecipe:
         assert call_args["url"] == "https://Example.COM/Recipe/"
         assert call_args["normalized_url"] == "https://example.com/recipe"
 
+    def test_stores_title_lower(self) -> None:
+        """Should store title_lower alongside the title for case-insensitive search."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc_ref.id = "doc_id"
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        recipe = RecipeCreate(title="Lasagne Broccoli", url="https://example.com", ingredients=[], instructions=[])
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            save_recipe(recipe)
+
+        call_args = mock_doc_ref.set.call_args[0][0]
+        assert call_args["title_lower"] == "lasagne broccoli"
+
     def test_saves_with_custom_id(self) -> None:
         """Should use custom recipe_id when provided."""
         mock_db = MagicMock()
@@ -681,6 +696,7 @@ class TestUpdateRecipe:
         mock_doc_ref.update.assert_called_once()
         update_data = mock_doc_ref.update.call_args[0][0]
         assert update_data["title"] == "Updated"
+        assert update_data["title_lower"] == "updated"
         assert "updated_at" in update_data
 
     def test_returns_none_when_not_owned_by_household(self) -> None:
@@ -1023,143 +1039,73 @@ class TestFindRecipeByUrl:
 class TestSearchRecipes:
     """Tests for search_recipes function."""
 
-    def test_returns_matching_recipes(self) -> None:
-        """Should return recipes matching search query."""
-        mock_db = MagicMock()
-        mock_doc = MagicMock()
-        mock_doc.id = "doc123"
-        mock_doc.to_dict.return_value = {"title": "Pasta Carbonara", "url": "https://example.com"}
+    @staticmethod
+    def _make_recipe(**kwargs: object) -> Recipe:
+        defaults = {"id": "r1", "title": "", "url": "", "ingredients": [], "instructions": [], "tags": []}
+        defaults.update(kwargs)
+        return Recipe(**defaults)  # type: ignore[arg-type]
 
-        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
-            mock_doc
+    def test_matches_title_case_insensitive(self) -> None:
+        """Should match recipes by title regardless of case."""
+        recipes = [
+            self._make_recipe(id="r1", title="Pasta Carbonara"),
+            self._make_recipe(id="r2", title="Chicken Soup"),
         ]
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            result = search_recipes("Pasta")
-
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=recipes):
+            result = search_recipes("pasta")
         assert len(result) == 1
-        assert result[0].title == "Pasta Carbonara"
+        assert result[0].id == "r1"
 
-    def test_excludes_hidden_by_default(self) -> None:
-        """Should add hidden==False filter when show_hidden is False."""
-        mock_db = MagicMock()
-        mock_query = MagicMock()
-        mock_query.where.return_value = mock_query
-        mock_query.stream.return_value = iter([])
-        mock_db.collection.return_value.where.return_value.where.return_value = mock_query
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            search_recipes("Pasta", show_hidden=False)
-
-        mock_query.where.assert_called_once()
-        actual_filter = mock_query.where.call_args.kwargs["filter"]
-        assert actual_filter.field_path == "hidden"
-        assert actual_filter.value is False
-
-    def test_show_hidden_skips_filter(self) -> None:
-        """Should not add hidden filter when show_hidden=True."""
-        mock_db = MagicMock()
-        mock_doc = MagicMock()
-        mock_doc.id = "doc123"
-        mock_doc.to_dict.return_value = {"title": "Pasta Hidden", "url": "https://example.com", "hidden": True}
-
-        mock_db.collection.return_value.where.return_value.where.return_value.stream.return_value = [mock_doc]
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            result = search_recipes("Pasta", show_hidden=True)
-
-        assert len(result) == 1
-        assert result[0].title == "Pasta Hidden"
-
-    def test_keeps_owned_recipes_for_household(self) -> None:
-        """Should include recipes owned by the specified household."""
-        mock_db = MagicMock()
-        mock_doc = MagicMock()
-        mock_doc.id = "owned1"
-        mock_doc.to_dict.return_value = {
-            "title": "My Recipe",
-            "url": "https://example.com",
-            "household_id": "hh1",
-            "visibility": "household",
-        }
-
-        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
-            mock_doc
+    def test_matches_title_substring(self) -> None:
+        """Should find recipes by substring, not just prefix."""
+        recipes = [
+            self._make_recipe(id="r1", title="Lasagne broccoli e salsiccia"),
+            self._make_recipe(id="r2", title="Open lasagne med svamp"),
         ]
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            result = search_recipes("My", household_id="hh1")
-
-        assert len(result) == 1
-        assert result[0].id == "owned1"
-
-    def test_keeps_shared_recipes_for_household(self) -> None:
-        """Should include shared recipes even from other households."""
-        mock_db = MagicMock()
-        mock_doc = MagicMock()
-        mock_doc.id = "shared1"
-        mock_doc.to_dict.return_value = {
-            "title": "Shared Recipe",
-            "url": "https://example.com",
-            "household_id": "other_hh",
-            "visibility": "shared",
-        }
-
-        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
-            mock_doc
-        ]
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            result = search_recipes("Shared", household_id="hh1")
-
-        assert len(result) == 1
-        assert result[0].id == "shared1"
-
-    def test_excludes_private_recipes_from_other_households(self) -> None:
-        """Should filter out private recipes belonging to other households."""
-        mock_db = MagicMock()
-
-        owned_doc = MagicMock()
-        owned_doc.id = "owned1"
-        owned_doc.to_dict.return_value = {
-            "title": "My Recipe",
-            "url": "https://example.com/mine",
-            "household_id": "hh1",
-            "visibility": "household",
-        }
-
-        private_doc = MagicMock()
-        private_doc.id = "private1"
-        private_doc.to_dict.return_value = {
-            "title": "Private Recipe",
-            "url": "https://example.com/private",
-            "household_id": "other_hh",
-            "visibility": "household",
-        }
-
-        shared_doc = MagicMock()
-        shared_doc.id = "shared1"
-        shared_doc.to_dict.return_value = {
-            "title": "Shared Recipe",
-            "url": "https://example.com/shared",
-            "household_id": "other_hh",
-            "visibility": "shared",
-        }
-
-        mock_db.collection.return_value.where.return_value.where.return_value.where.return_value.stream.return_value = [
-            owned_doc,
-            private_doc,
-            shared_doc,
-        ]
-
-        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
-            result = search_recipes("Recipe", household_id="hh1")
-
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=recipes):
+            result = search_recipes("lasa")
         assert len(result) == 2
-        result_ids = [r.id for r in result]
-        assert "owned1" in result_ids
-        assert "shared1" in result_ids
-        assert "private1" not in result_ids
+
+    def test_matches_tags(self) -> None:
+        """Should match recipes by tag content."""
+        recipes = [
+            self._make_recipe(id="r1", title="Something", tags=["vegetarian", "quick"]),
+            self._make_recipe(id="r2", title="Other", tags=["meat"]),
+        ]
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=recipes):
+            result = search_recipes("vegetarian")
+        assert len(result) == 1
+        assert result[0].id == "r1"
+
+    def test_matches_ingredients(self) -> None:
+        """Should match recipes by ingredient content."""
+        recipes = [
+            self._make_recipe(id="r1", title="Soup", ingredients=["2 tomater", "1 lök"]),
+            self._make_recipe(id="r2", title="Salad", ingredients=["gurka", "sallad"]),
+        ]
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=recipes):
+            result = search_recipes("tomat")
+        assert len(result) == 1
+        assert result[0].id == "r1"
+
+    def test_passes_household_id(self) -> None:
+        """Should forward household_id to get_all_recipes."""
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=[]) as mock_get:
+            search_recipes("test", household_id="hh1")
+        mock_get.assert_called_once_with(household_id="hh1", show_hidden=False)
+
+    def test_passes_show_hidden(self) -> None:
+        """Should forward show_hidden to get_all_recipes."""
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=[]) as mock_get:
+            search_recipes("test", show_hidden=True)
+        mock_get.assert_called_once_with(household_id=None, show_hidden=True)
+
+    def test_returns_empty_for_no_match(self) -> None:
+        """Should return empty list when nothing matches."""
+        recipes = [self._make_recipe(id="r1", title="Chicken")]
+        with patch("api.storage.recipe_queries.get_all_recipes", return_value=recipes):
+            result = search_recipes("xyz")
+        assert result == []
 
 
 class TestResolveRootId:
