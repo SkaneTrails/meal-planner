@@ -390,8 +390,8 @@ class TestEnhanceRecipe:
             assert result["url"] == "https://example.com"
             assert result["image_url"] == "https://example.com/img.jpg"
 
-    def test_raises_on_invalid_json_response(self) -> None:
-        """Should raise EnhancementError on invalid JSON response."""
+    def test_raises_on_invalid_json_response_after_retries(self) -> None:
+        """Should retry MAX_RETRIES times then raise EnhancementError on persistent invalid JSON."""
         mock_client = MagicMock()
         mock_response = MagicMock()
         mock_response.text = "Not valid JSON"
@@ -401,9 +401,33 @@ class TestEnhanceRecipe:
             patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
             patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
             patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
-            pytest.raises(EnhancementError, match="Failed to parse"),
+            pytest.raises(EnhancementError, match=r"Failed to parse.*3 attempts"),
         ):
             enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
+
+        assert mock_client.models.generate_content.call_count == 3
+
+    def test_retries_on_json_error_then_succeeds(self) -> None:
+        """Should succeed when a later retry returns valid JSON."""
+        mock_client = MagicMock()
+
+        bad_response = MagicMock()
+        bad_response.text = "Not valid JSON"
+
+        good_response = MagicMock()
+        good_response.text = json.dumps({"title": "OK", "ingredients": ["a"], "instructions": ["b"]})
+
+        mock_client.models.generate_content.side_effect = [bad_response, good_response]
+
+        with (
+            patch.dict(os.environ, {"GOOGLE_API_KEY": "test"}),
+            patch("api.services.recipe_enhancer.get_genai_client", return_value=mock_client),
+            patch("api.services.recipe_enhancer.load_system_prompt", return_value="System prompt"),
+        ):
+            result = enhance_recipe({"title": "Test", "ingredients": [], "instructions": []})
+
+        assert result["title"] == "OK"
+        assert mock_client.models.generate_content.call_count == 2
 
     def test_normalizes_string_ingredients_to_list(self) -> None:
         """Should split newline-separated ingredient string into a list."""

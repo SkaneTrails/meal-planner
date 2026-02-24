@@ -177,13 +177,13 @@ export interface MealPlan {
   household_id: string;
   meals: Record<string, string>; // date_mealtype -> recipe_id or custom:text
   notes: Record<string, string>; // date -> note text
-  extras: string[]; // recipe IDs for "Other" section
+  extras: Record<string, string[]>; // week start date -> recipe IDs for "Other" section
 }
 
 export interface MealPlanUpdate {
   meals?: Record<string, string | null>; // null to delete
   notes?: Record<string, string | null>; // null to delete
-  extras?: string[];
+  extras?: Record<string, string[]>;
 }
 
 export interface MealUpdateRequest {
@@ -198,6 +198,7 @@ export interface NoteUpdateRequest {
 }
 
 export interface ExtrasUpdateRequest {
+  week: string;
   extras: string[];
 }
 

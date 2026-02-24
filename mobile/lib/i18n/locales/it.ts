@@ -156,6 +156,8 @@ const it: Translations = {
     startBuilding:
       'Inizia a costruire la tua collezione aggiungendo le tue ricette preferite',
     addFirstRecipe: 'Aggiungi la tua prima ricetta',
+    callToAction: 'Aggiungi le tue ricette preferite!',
+    addRecipe: 'Aggiungi',
   },
 
   recipe: {

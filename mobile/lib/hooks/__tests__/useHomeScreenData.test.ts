@@ -43,7 +43,7 @@ const dessertRecipe = mockRecipe({
 
 const allRecipes: Recipe[] = [dinnerRecipe, breakfastRecipe, dessertRecipe];
 
-let mockMealPlan: { meals?: Record<string, string>; extras?: string[] } | undefined = {
+let mockMealPlan: { meals?: Record<string, string>; extras?: Record<string, string[]> } | undefined = {
   meals: {},
 };
 
