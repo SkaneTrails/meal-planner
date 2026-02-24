@@ -1,6 +1,6 @@
 """Cloud Function to export Firestore database to Cloud Storage.
 
-This function is triggered by Cloud Scheduler to perform weekly backups.
+This function is triggered by Cloud Scheduler to perform nightly backups.
 It uses the Firestore Admin REST API to export all collections to a Cloud Storage bucket.
 Supports backing up multiple databases in a single invocation.
 """

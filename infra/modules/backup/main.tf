@@ -12,9 +12,16 @@ resource "google_storage_bucket" "firestore_backups" {
   location = var.backup_bucket_location
 
   # Use standard storage class (free tier eligible)
-  storage_class = "STANDARD"
+  storage_class               = "STANDARD"
   uniform_bucket_level_access = true
-  public_access_prevention = "enforced"
+  public_access_prevention    = "enforced"
+
+  # Versioning disabled intentionally: backup bucket stores Firestore exports
+  # that are already timestamped. Versioning would create duplicate data and
+  # risk exceeding the 5 GB Cloud Storage free tier limit.
+  versioning {
+    enabled = false
+  }
 
   # Auto-delete old backups to stay within 5 GB free tier
   lifecycle_rule {

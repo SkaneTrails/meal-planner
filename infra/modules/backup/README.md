@@ -16,7 +16,7 @@ This module is designed to stay within GCP free tier limits:
 ## Architecture
 
 ```
-Cloud Scheduler (weekly cron)
+Cloud Scheduler (nightly cron)
         │
         ▼
 Cloud Functions (Python 3.12)
@@ -40,7 +40,7 @@ Cloud Storage Bucket (backups)
 - `google_storage_bucket.firestore_backups` - Backup storage bucket
 - `google_service_account.backup_function` - Service account for the function
 - `google_cloudfunctions2_function.firestore_backup` - Gen2 Cloud Function
-- `google_cloud_scheduler_job.weekly_backup` - Weekly trigger
+- `google_cloud_scheduler_job.nightly_backup` - Nightly trigger
 - IAM bindings for export permissions
 
 ## Backup Format
@@ -76,10 +76,10 @@ To trigger a backup manually:
 
 ```bash
 # Using gcloud
-gcloud functions call firestore-backup --region=europe-west1
+gcloud functions call meal-planner-firestore-backup --region=europe-west1
 
 # Or trigger the scheduler job immediately
-gcloud scheduler jobs run firestore-weekly-backup --location=europe-west1
+gcloud scheduler jobs run firestore-nightly-backup --location=europe-west1
 ```
 
 ## Variables
