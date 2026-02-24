@@ -481,35 +481,48 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     else:
         print("\n(No previous enhancement — current equals original)")
 
-    from dotenv import load_dotenv
+    dest = Path(output_path) if output_path else Path(f"data/reenhanced_{recipe_id[:8]}.json")
 
-    load_dotenv(Path(__file__).parent.parent / ".env")
+    if apply and dest.exists():
+        print(f"\n\U0001f4c2 Loading saved result from {dest}")
+        try:
+            enhanced = json.loads(dest.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            print(f"\u274c Invalid JSON in {dest}: {e}")
+            return
+        _print_recipe_section("RE-ENHANCED (from file)", enhanced)
+    else:
+        from dotenv import load_dotenv
 
-    enhanced = enhance_recipe(
-        original,
-        language=language,
-        equipment=equipment,
-        target_servings=target_servings,
-        people_count=people_count,
-        dietary=dietary,
-    )
+        load_dotenv(Path(__file__).parent.parent / ".env")
 
-    _print_recipe_section("RE-ENHANCED", enhanced)
+        enhanced = enhance_recipe(
+            original,
+            language=language,
+            equipment=equipment,
+            target_servings=target_servings,
+            people_count=people_count,
+            dietary=dietary,
+        )
+
+        _print_recipe_section("RE-ENHANCED", enhanced)
 
     if enhanced.get("changes_made"):
         print(f"\n--- CHANGES ({len(enhanced['changes_made'])}) ---")
         for change in enhanced["changes_made"]:
             print(f"  \u2022 {change}")
 
-    dest = Path(output_path) if output_path else Path(f"data/reenhanced_{recipe_id[:8]}.json")
-    dest.parent.mkdir(parents=True, exist_ok=True)
+    loaded_from_file = apply and dest.exists()
 
-    for key, value in enhanced.items():
-        if hasattr(value, "isoformat"):
-            enhanced[key] = value.isoformat()
+    if not loaded_from_file:
+        dest.parent.mkdir(parents=True, exist_ok=True)
 
-    dest.write_text(json.dumps(enhanced, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"\n\U0001f4be Saved to {dest}")
+        for key, value in enhanced.items():
+            if hasattr(value, "isoformat"):
+                enhanced[key] = value.isoformat()
+
+        dest.write_text(json.dumps(enhanced, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"\n\U0001f4be Saved to {dest}")
 
     if apply:
         for legacy in ("improved", "original_id", "enhanced_from"):

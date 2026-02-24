@@ -8,6 +8,7 @@ It uses the modular prompt system from prompt_loader.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import warnings
@@ -40,6 +41,11 @@ except ImportError:  # pragma: no cover
 
 # Default Gemini model
 DEFAULT_MODEL = "gemini-2.5-flash"
+
+# Retry settings for transient Gemini failures
+MAX_RETRIES = 3
+
+logger = logging.getLogger(__name__)
 
 
 class EnhancementError(Exception):
@@ -150,6 +156,34 @@ def _flatten_metadata(enhanced: dict[str, Any]) -> None:
                 enhanced[key] = metadata[key]
 
 
+def _call_gemini_with_retry(client: Any, model: str, recipe_text: str, system_prompt: str) -> dict[str, Any]:
+    """Call Gemini and parse JSON response, retrying on parse errors."""
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=recipe_text,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt, temperature=0.2, response_mime_type="application/json"
+                ),
+            )
+            response_text = _validate_response(response)
+            return json.loads(response_text)
+        except json.JSONDecodeError as e:
+            if attempt < MAX_RETRIES:
+                logger.warning("JSON parse error on attempt %d/%d: %s — retrying", attempt, MAX_RETRIES, e)
+                continue
+            msg = f"Failed to parse Gemini response after {MAX_RETRIES} attempts: {e}"
+            raise EnhancementError(msg) from e
+        except EnhancementError:
+            raise
+        except Exception as e:  # pragma: no cover
+            msg = f"Enhancement failed: {e}"
+            raise EnhancementError(msg) from e
+    msg = "unreachable"  # pragma: no cover
+    raise AssertionError(msg)  # pragma: no cover
+
+
 def enhance_recipe(
     recipe: dict[str, Any],
     *,
@@ -185,18 +219,9 @@ def enhance_recipe(
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
 
+    enhanced = _call_gemini_with_retry(client, model, recipe_text, system_prompt)
+
     try:
-        response = client.models.generate_content(
-            model=model,
-            contents=recipe_text,
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt, temperature=0.2, response_mime_type="application/json"
-            ),
-        )
-
-        response_text = _validate_response(response)
-        enhanced = json.loads(response_text)
-
         # Ensure instructions is a list
         if isinstance(enhanced.get("instructions"), str):
             enhanced["instructions"] = _parse_instructions(enhanced["instructions"])
@@ -220,9 +245,6 @@ def enhance_recipe(
 
         return enhanced
 
-    except json.JSONDecodeError as e:
-        msg = f"Failed to parse Gemini response: {e}"
-        raise EnhancementError(msg) from e
     except EnhancementError:
         raise
     except Exception as e:  # pragma: no cover
