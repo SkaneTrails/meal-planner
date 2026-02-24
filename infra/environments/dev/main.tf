@@ -180,6 +180,28 @@ module "storage" {
   storage_api_service = module.apis.storage_service
 }
 
+# Firestore backup - Scheduled exports to Cloud Storage
+# Free tier: Cloud Scheduler (3 jobs), Cloud Storage (5 GB), Cloud Functions (2M invocations)
+module "backup" {
+  source = "../../modules/backup"
+
+  project                  = var.project
+  backup_bucket_name       = var.backup_bucket_name
+  backup_bucket_location   = var.backup_bucket_location
+  backup_retention_days    = var.backup_retention_days
+  backup_schedule          = var.backup_schedule
+  firestore_database_names = module.firestore.database_names
+  function_region          = var.region
+  scheduler_region         = var.region
+
+  # API dependencies
+  storage_api_service        = module.apis.storage_service
+  cloudfunctions_api_service = module.apis.cloudfunctions_service
+  cloudbuild_api_service     = module.apis.cloudbuild_service
+  cloudscheduler_api_service = module.apis.cloudscheduler_service
+  run_api_service            = module.apis.run_service
+}
+
 # Cloud Function - Recipe scraping
 module "cloud_function" {
   source = "../../modules/cloud_function"

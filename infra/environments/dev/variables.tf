@@ -61,3 +61,27 @@ variable "image_tag" {
   type        = string
   default     = "latest"
 }
+
+# Backup configuration
+variable "backup_bucket_name" {
+  description = "Name for the Cloud Storage bucket to store Firestore backups (must be globally unique)"
+  type        = string
+}
+
+variable "backup_bucket_location" {
+  description = "Location for the backup bucket (e.g., EU for multi-region Europe)"
+  type        = string
+  default     = "EU"
+}
+
+variable "backup_retention_days" {
+  description = "Number of days to retain backups before auto-deletion (keep under 5GB for free tier)"
+  type        = number
+  default     = 30
+}
+
+variable "backup_schedule" {
+  description = "Cron schedule for Firestore backups (default: nightly at 3 AM UTC)"
+  type        = string
+  default     = "0 3 * * *"
+}
