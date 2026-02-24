@@ -1,16 +1,15 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, TerminalFrame } from '@/components';
+import { ButtonGroup, IconButton, TerminalFrame } from '@/components';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';
 import { RecipeRow } from './RecipeRow';
 
 interface ExtrasSectionProps {
   recipes: Recipe[];
   t: TFunction;
-  onAddExtra: () => void;
+  onAddExtra: (mode: 'library' | 'random') => void;
   onRemoveExtra: (recipeId: string, title: string) => void;
 }
 
@@ -41,63 +40,57 @@ export const ExtrasSection = ({
           borderStyle: 'dashed',
         }}
       >
-        {/* Header */}
+        {/* Header row — label left, action buttons right (matches EmptyMealSlot) */}
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: spacing['sm-md'],
+            backgroundColor: colors.mealPlan.emptyBg,
+            borderRadius: borderRadius.sm,
+            padding: spacing.md,
+            marginBottom: recipes.length > 0 ? spacing.xs : 0,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons
-              name="bookmark-outline"
-              size={18}
-              color={colors.content.secondary}
-              style={{ marginRight: spacing['xs-sm'] }}
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              minWidth: 80,
+            }}
+          >
             <Text
               style={{
-                fontSize: fontSize.lg,
-                fontFamily: fonts.displayBold,
-                fontWeight: fontWeight.semibold,
-                color: colors.content.body,
-                fontStyle: 'italic',
+                fontSize: fontSize.md,
+                fontFamily: fonts.bodySemibold,
+                color: colors.content.strong,
               }}
             >
               {t('mealPlan.extras.headerTitle')}
             </Text>
           </View>
-          <Button
-            variant="text"
-            tone="alt"
-            size="sm"
-            onPress={onAddExtra}
-            icon="add"
-            label={t('mealPlan.extras.add')}
-          />
-        </View>
 
-        {/* Empty state */}
-        {recipes.length === 0 && (
-          <Button
-            variant="text"
-            tone="alt"
-            onPress={onAddExtra}
-            icon="add-circle-outline"
-            iconSize={20}
-            label={t('mealPlan.extras.emptyState')}
-            style={{
-              justifyContent: 'center',
-              borderRadius: borderRadius.sm,
-              padding: spacing.lg,
-              borderWidth: 1,
-              borderColor: colors.surface.subtle,
-              borderStyle: 'dashed',
-            }}
-          />
-        )}
+          <ButtonGroup
+            gap={spacing['xs-sm']}
+            style={{ flex: 1, justifyContent: 'flex-end' }}
+          >
+            <IconButton
+              tone="alt"
+              icon="book-outline"
+              label="Library"
+              size={34}
+              iconSize={17}
+              onPress={() => onAddExtra('library')}
+            />
+            <IconButton
+              tone="alt"
+              icon="dice-outline"
+              label="Random"
+              size={34}
+              iconSize={17}
+              onPress={() => onAddExtra('random')}
+            />
+          </ButtonGroup>
+        </View>
 
         {/* Recipe list */}
         {recipes.map((recipe) => (

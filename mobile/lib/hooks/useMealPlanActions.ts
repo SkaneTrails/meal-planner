@@ -70,7 +70,7 @@ export const useMealPlanActions = () => {
 
   // Modal state for select-recipe modals
   const [activeModal, setActiveModal] = useState<
-    'library' | 'random' | 'quick' | 'copy' | 'extras' | null
+    'library' | 'random' | 'random-extras' | 'quick' | 'copy' | 'extras' | null
   >(null);
   const [modalDate, setModalDate] = useState('');
   const [modalMealType, setModalMealType] = useState<MealType>('dinner');
@@ -422,17 +422,25 @@ export const useMealPlanActions = () => {
     setShowGroceryModal(true);
   }, [weekOffset]);
 
+  const weekKey = useMemo(() => formatDateLocal(weekDates[0]), [weekDates]);
+
   const getExtrasRecipes = useCallback((): Recipe[] => {
-    if (!mealPlan?.extras || mealPlan.extras.length === 0) return [];
-    return mealPlan.extras
+    if (!mealPlan?.extras) return [];
+    const weekExtras = mealPlan.extras[weekKey];
+    if (!weekExtras || weekExtras.length === 0) return [];
+    return weekExtras
       .map((id) => recipeMap[id])
       .filter((r): r is Recipe => r !== undefined);
-  }, [mealPlan, recipeMap]);
+  }, [mealPlan, recipeMap, weekKey]);
 
-  const handleAddExtra = useCallback(() => {
-    hapticLight();
-    setActiveModal('extras');
-  }, []);
+  const handleAddExtra = useCallback(
+    (mode: 'library' | 'random') => {
+      hapticLight();
+      setModalDate(weekKey);
+      setActiveModal(mode === 'random' ? 'random-extras' : 'extras');
+    },
+    [weekKey],
+  );
 
   const handleRemoveExtra = useCallback(
     (recipeId: string, title: string) => {
@@ -441,15 +449,15 @@ export const useMealPlanActions = () => {
         t('mealPlan.extras.removeMessage', { title }),
         () => {
           hapticLight();
-          const currentExtras = mealPlan?.extras || [];
+          const currentExtras = mealPlan?.extras?.[weekKey] || [];
           const newExtras = currentExtras.filter((id) => id !== recipeId);
-          updateExtras.mutate({ extras: newExtras });
+          updateExtras.mutate({ week: weekKey, extras: newExtras });
         },
         t('common.cancel'),
         t('mealPlan.removeMealConfirm'),
       );
     },
-    [mealPlan, updateExtras, t],
+    [mealPlan, updateExtras, t, weekKey],
   );
 
   return {

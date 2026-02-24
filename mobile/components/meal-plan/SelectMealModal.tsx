@@ -45,7 +45,13 @@ import {
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
 
-export type SelectMealMode = 'library' | 'extras' | 'random' | 'quick' | 'copy';
+export type SelectMealMode =
+  | 'library'
+  | 'extras'
+  | 'random'
+  | 'random-extras'
+  | 'quick'
+  | 'copy';
 
 interface SelectMealModalProps {
   visible: boolean;
@@ -71,6 +77,7 @@ export const SelectMealModal = ({
     library: t('selectRecipe.tabs.library').replace(/^\S+\s*/, ''),
     extras: t('mealPlan.extras.selectTitle'),
     random: t('selectRecipe.random.howAbout'),
+    'random-extras': t('selectRecipe.random.howAbout'),
     copy: t('selectRecipe.tabs.copy').replace(/^\S+\s*/, ''),
   };
 
@@ -102,6 +109,9 @@ export const SelectMealModal = ({
               mealType={mealType as MealType}
               onClose={onClose}
             />
+          )}
+          {mode === 'random-extras' && (
+            <RandomExtrasContent date={date} onClose={onClose} />
           )}
           {mode === 'copy' && (
             <CopyContent date={date} mealType={mealType} onClose={onClose} />
@@ -266,11 +276,15 @@ const LibraryContent = ({
   const PAGE_SIZE = 10;
 
   const filteredRecipes = useMemo(() => {
-    if (searchQuery === '') return recipes;
-    return recipes.filter((recipe) =>
+    let base = recipes;
+    if (mode === 'extras') {
+      base = base.filter((r) => isExtrasEligible(r));
+    }
+    if (searchQuery === '') return base;
+    return base.filter((recipe) =>
       recipe.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [recipes, searchQuery]);
+  }, [recipes, searchQuery, mode]);
 
   const totalPages = Math.max(1, Math.ceil(filteredRecipes.length / PAGE_SIZE));
   const pagedRecipes = filteredRecipes.slice(
@@ -296,15 +310,18 @@ const LibraryContent = ({
 
   const handleAddToExtras = async (recipeId: string) => {
     try {
-      const currentExtras = mealPlan?.extras || [];
-      if (currentExtras.includes(recipeId)) {
+      const weekExtras = mealPlan?.extras?.[date] || [];
+      if (weekExtras.includes(recipeId)) {
         showNotification(
           t('mealPlan.extras.alreadyAdded'),
           t('mealPlan.extras.alreadyAddedMessage'),
         );
         return;
       }
-      await updateExtras.mutateAsync({ extras: [...currentExtras, recipeId] });
+      await updateExtras.mutateAsync({
+        week: date,
+        extras: [...weekExtras, recipeId],
+      });
       setSearchQuery('');
       onClose();
     } catch {
@@ -443,6 +460,9 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
   dinner: ['meal', 'grill'],
   snack: ['dessert', 'drink'],
 };
+
+/** Extras/others accepts everything that is not a main meal. */
+const isExtrasEligible = (r: Recipe) => r.meal_label !== 'meal';
 
 const RandomContent = ({
   date,
@@ -583,6 +603,152 @@ const RandomContent = ({
           tone="alt"
           onPress={shuffleRandom}
           disabled={setMeal.isPending}
+          icon="shuffle"
+          iconSize={20}
+          label={t('selectRecipe.random.shuffle')}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            paddingVertical: spacing.md,
+            borderRadius: borderRadius.sm,
+          }}
+        />
+      </View>
+    </>
+  );
+};
+
+/* ── Random Extras (random recipe → add to extras) ──────────────────── */
+
+const RandomExtrasContent = ({
+  date,
+  onClose,
+}: {
+  date: string;
+  onClose: () => void;
+}) => {
+  const { colors, fonts, borderRadius, visibility } = useTheme();
+  const { t } = useTranslation();
+  const { recipes } = useAllRecipes();
+  const updateExtras = useUpdateExtras();
+  const { data: mealPlan } = useMealPlan();
+
+  const extrasRecipes = useMemo(
+    () => recipes.filter(isExtrasEligible),
+    [recipes],
+  );
+
+  const randomIdRef = useRef<string | null>(null);
+  const [shuffleCount, setShuffleCount] = useState(0);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: shuffleCount triggers re-pick intentionally
+  const randomRecipe = useMemo(() => {
+    if (extrasRecipes.length === 0) return null;
+    const existing = extrasRecipes.find((r) => r.id === randomIdRef.current);
+    if (existing) return existing;
+    const picked =
+      extrasRecipes[Math.floor(Math.random() * extrasRecipes.length)];
+    randomIdRef.current = picked.id;
+    return picked;
+  }, [extrasRecipes, shuffleCount]);
+
+  const shuffleRandom = useCallback(() => {
+    if (extrasRecipes.length <= 1) return;
+    let picked: Recipe;
+    do {
+      picked = extrasRecipes[Math.floor(Math.random() * extrasRecipes.length)];
+    } while (picked.id === randomIdRef.current && extrasRecipes.length > 1);
+    randomIdRef.current = picked.id;
+    setShuffleCount((c) => c + 1);
+  }, [extrasRecipes]);
+
+  const handleSelectRecipe = async (recipeId: string) => {
+    try {
+      const weekExtras = mealPlan?.extras?.[date] || [];
+      if (weekExtras.includes(recipeId)) {
+        showNotification(
+          t('mealPlan.extras.alreadyAdded'),
+          t('mealPlan.extras.alreadyAddedMessage'),
+        );
+        return;
+      }
+      await updateExtras.mutateAsync({
+        week: date,
+        extras: [...weekExtras, recipeId],
+      });
+      onClose();
+    } catch {
+      showNotification(t('common.error'), t('selectRecipe.failedToSetMeal'));
+    }
+  };
+
+  if (!randomRecipe) {
+    return (
+      <EmptyState
+        icon="dice-outline"
+        title={t('selectRecipe.random.noRecipes', { mealType: '' })}
+        subtitle={t('selectRecipe.random.addRecipesHint', { mealType: '' })}
+        style={{ paddingVertical: spacing['4xl'] }}
+      />
+    );
+  }
+
+  return (
+    <>
+      <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+        {visibility.showSectionHeaderIcon && (
+          <>
+            <IconCircle
+              size="xl"
+              bg={colors.ai.light}
+              style={{ marginBottom: spacing.md }}
+            >
+              <Ionicons name="dice" size={32} color={colors.ai.primary} />
+            </IconCircle>
+            <View style={{ ...accentUnderlineStyle, marginTop: spacing.sm }} />
+          </>
+        )}
+        <Text
+          style={{
+            fontSize: fontSize[visibility.showSectionHeaderIcon ? 'lg' : 'md'],
+            fontFamily: fonts.body,
+            color: colors.content.tertiary,
+            marginTop: spacing.xs,
+          }}
+        >
+          {t('selectRecipe.random.matchCount', {
+            count: extrasRecipes.length,
+          })}
+        </Text>
+      </View>
+
+      <RandomRecipeCard
+        recipe={randomRecipe}
+        onSelect={handleSelectRecipe}
+        t={t}
+      />
+
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: spacing.md,
+          marginTop: spacing.xl,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Button
+            variant="primary"
+            onPress={() => handleSelectRecipe(randomRecipe.id)}
+            disabled={updateExtras.isPending}
+            icon="checkmark-circle"
+            label={t('selectRecipe.random.addToPlan')}
+          />
+        </View>
+        <Button
+          variant="text"
+          tone="alt"
+          onPress={shuffleRandom}
+          disabled={updateExtras.isPending}
           icon="shuffle"
           iconSize={20}
           label={t('selectRecipe.random.shuffle')}

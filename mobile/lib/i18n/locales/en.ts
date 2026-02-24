@@ -160,6 +160,8 @@ const en = {
     startBuilding:
       'Start building your collection by adding your favorite recipes',
     addFirstRecipe: 'Add Your First Recipe',
+    callToAction: 'Add your fav recipes!',
+    addRecipe: 'Add',
   },
 
   // ── Recipe detail screen ──────────────────────────────────────────

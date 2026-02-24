@@ -33,9 +33,10 @@ class NoteUpdateRequest(BaseModel):
 
 
 class ExtrasUpdateRequest(BaseModel):
-    """Request to update the extras (Other section)."""
+    """Request to update the extras (Other section) for a specific week."""
 
-    extras: list[str] = Field(..., description="List of recipe IDs for the Other section")
+    week: str = Field(..., description="Week start date (ISO format, e.g. '2026-02-23')")
+    extras: list[str] = Field(..., description="List of recipe IDs for the Other section of that week")
 
 
 def _resolve_household(user: AuthenticatedUser, household_id_override: str | None = None) -> str:
@@ -120,7 +121,8 @@ async def update_meal_plan(
 
     # Process extras updates
     if updates.extras is not None:
-        meal_plan_storage.update_extras(resolved_id, updates.extras)
+        for week, week_extras in updates.extras.items():
+            meal_plan_storage.update_extras(resolved_id, week, week_extras)
 
     # Return updated meal plan
     meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
@@ -176,7 +178,7 @@ async def clear_meal_plan(
     Superusers can specify household_id to clear any household.
     """
     resolved_id = _resolve_household(user, household_id)
-    meal_plan_storage.save_meal_plan(resolved_id, {}, {}, [])
+    meal_plan_storage.save_meal_plan(resolved_id, {}, {}, {})
 
 
 @router.post("/extras")
@@ -191,7 +193,7 @@ async def update_extras(
     Superusers can specify household_id to update any household.
     """
     resolved_id = _resolve_household(user, household_id)
-    meal_plan_storage.update_extras(resolved_id, request.extras)
+    meal_plan_storage.update_extras(resolved_id, request.week, request.extras)
 
     meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
     return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
