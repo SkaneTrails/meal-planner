@@ -15,14 +15,19 @@ interface DietarySectionProps {
     key: K,
     value: HouseholdSettings['dietary'][K],
   ) => void;
+  /** Render only specific sub-sections. When omitted, all are shown. */
+  sections?: ('dairy' | 'seafood')[];
 }
 
 export const DietarySection = ({
   dietary,
   canEdit,
   onUpdateDietary,
+  sections,
 }: DietarySectionProps) => {
   const { t } = useTranslation();
+  const showDairy = !sections || sections.includes('dairy');
+  const showSeafood = !sections || sections.includes('seafood');
 
   const dairyOptions: {
     value: DairyPreference;
@@ -49,24 +54,30 @@ export const DietarySection = ({
   return (
     <>
       {/* Seafood Toggle */}
-      <SurfaceCard radius="lg" style={{ marginBottom: spacing.md }}>
-        <SettingToggleRow
-          label={t('householdSettings.dietary.seafood')}
-          subtitle={t('householdSettings.dietary.seafoodDesc')}
-          value={dietary.seafood_ok}
-          onValueChange={(value) => onUpdateDietary('seafood_ok', value)}
-          disabled={!canEdit}
-        />
-      </SurfaceCard>
+      {showSeafood && (
+        <SurfaceCard radius="lg" style={{ marginBottom: spacing.md }}>
+          <SettingToggleRow
+            label={t('householdSettings.dietary.seafood')}
+            subtitle={t('householdSettings.dietary.seafoodDesc')}
+            value={dietary.seafood_ok}
+            onValueChange={(value) => onUpdateDietary('seafood_ok', value)}
+            disabled={!canEdit}
+          />
+        </SurfaceCard>
+      )}
 
       {/* Dairy Preference */}
-      <SectionLabel text={t('householdSettings.dietary.dairy')} />
-      <RadioGroup
-        options={dairyOptions}
-        value={dietary.dairy}
-        onChange={(value) => onUpdateDietary('dairy', value)}
-        disabled={!canEdit}
-      />
+      {showDairy && (
+        <>
+          <SectionLabel text={t('householdSettings.dietary.dairy')} />
+          <RadioGroup
+            options={dairyOptions}
+            value={dietary.dairy}
+            onChange={(value) => onUpdateDietary('dairy', value)}
+            disabled={!canEdit}
+          />
+        </>
+      )}
     </>
   );
 };

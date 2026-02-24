@@ -12,6 +12,8 @@ interface ScreenHeaderProps {
   isSaving: boolean;
   onSave: () => void;
   onBack: () => void;
+  title?: string;
+  subtitle?: string;
 }
 
 export const ScreenHeader = ({
@@ -21,6 +23,8 @@ export const ScreenHeader = ({
   isSaving,
   onSave,
   onBack,
+  title: titleProp,
+  subtitle: subtitleProp,
 }: ScreenHeaderProps) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -68,8 +72,8 @@ export const ScreenHeader = ({
         </View>
         <ScreenTitle
           variant="large"
-          title={t('householdSettings.title')}
-          subtitle={t('householdSettings.subtitle')}
+          title={titleProp ?? t('householdSettings.title')}
+          subtitle={subtitleProp ?? t('householdSettings.subtitle')}
           style={{ marginTop: spacing.md }}
         />
       </View>
