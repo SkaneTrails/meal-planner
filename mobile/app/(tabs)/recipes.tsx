@@ -87,7 +87,8 @@ export default function RecipesScreen() {
   const searchInputRef = useRef<TextInput>(null);
 
   const debouncedSearch = useDebouncedValue(searchQuery);
-  const apiSearch = debouncedSearch.trim() || undefined;
+  const apiSearch =
+    searchQuery.trim() === '' ? undefined : debouncedSearch.trim() || undefined;
 
   const {
     data,

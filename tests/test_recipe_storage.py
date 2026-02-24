@@ -1107,6 +1107,13 @@ class TestSearchRecipes:
             result = search_recipes("xyz")
         assert result == []
 
+    def test_returns_empty_for_whitespace_only_query(self) -> None:
+        """Should short-circuit on whitespace-only query without fetching recipes."""
+        with patch("api.storage.recipe_queries.get_all_recipes") as mock_get:
+            result = search_recipes("   ")
+        assert result == []
+        mock_get.assert_not_called()
+
 
 class TestResolveRootId:
     """Tests for _resolve_root_id helper."""

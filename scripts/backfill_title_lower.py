@@ -25,7 +25,7 @@ def backfill(project: str, *, dry_run: bool = False) -> None:
 
     for doc in docs:
         data = doc.to_dict()
-        title = data.get("title", "")
+        title = str(data.get("title") or "")
         existing_lower = data.get("title_lower")
 
         if existing_lower == title.lower():

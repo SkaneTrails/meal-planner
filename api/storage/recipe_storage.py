@@ -422,15 +422,18 @@ def search_recipes(query: str, *, household_id: str | None = None, show_hidden: 
     """
     from api.storage.recipe_queries import get_all_recipes
 
+    query_normalized = query.strip().lower()
+    if not query_normalized:
+        return []
+
     all_recipes = get_all_recipes(household_id=household_id, show_hidden=show_hidden)
-    query_lower = query.lower()
 
     return [
         r
         for r in all_recipes
-        if query_lower in r.title.lower()
-        or any(query_lower in tag.lower() for tag in r.tags)
-        or any(query_lower in ing.lower() for ing in r.ingredients)
+        if query_normalized in r.title.lower()
+        or any(query_normalized in tag.lower() for tag in r.tags)
+        or any(query_normalized in ing.lower() for ing in r.ingredients)
     ]
 
 
