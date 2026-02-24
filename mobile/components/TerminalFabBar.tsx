@@ -20,11 +20,14 @@
 
 import { Pressable, Text, View, type ViewStyle } from 'react-native';
 import { fontSize, spacing, terminal, useTheme } from '@/lib/theme';
+import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 export interface FabSlot {
   /** Stable key for React list rendering. */
   key: string;
-  /** Label shown when active (e.g. "◈ IDAG"). */
+  /** Optional icon rendered before the label text via ThemeIcon. */
+  icon?: IoniconName;
+  /** Label shown when active (e.g. "IDAG"). */
   label: string;
   /** Whether this slot is currently visible / pressable. */
   active: boolean;
@@ -107,27 +110,57 @@ export const TerminalFabBar = ({ slots, style }: TerminalFabBarProps) => {
             </View>
 
             {/* ── Content row ── */}
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={charStyle} selectable={false}>
                 {B.v}
               </Text>
               {slot.active ? (
                 <Pressable
                   onPress={slot.onPress}
-                  style={{ paddingHorizontal: spacing.sm }}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: spacing.sm,
+                    gap: spacing.xs,
+                  }}
                 >
-                  <Text style={labelStyle} selectable={false}>
-                    {slot.label}
-                  </Text>
+                  {slot.icon && (
+                    <ThemeIcon
+                      name={slot.icon}
+                      size={14}
+                      color={colors.primary}
+                    />
+                  )}
+                  {slot.label ? (
+                    <Text style={labelStyle} selectable={false}>
+                      {slot.label}
+                    </Text>
+                  ) : null}
                 </Pressable>
               ) : (
-                <View style={{ paddingHorizontal: spacing.sm }}>
-                  <Text
-                    style={[labelStyle, { color: colors.bgBase }]}
-                    selectable={false}
-                  >
-                    {slot.label}
-                  </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: spacing.sm,
+                    gap: spacing.xs,
+                  }}
+                >
+                  {slot.icon && (
+                    <ThemeIcon
+                      name={slot.icon}
+                      size={14}
+                      color={colors.bgBase}
+                    />
+                  )}
+                  {slot.label ? (
+                    <Text
+                      style={[labelStyle, { color: colors.bgBase }]}
+                      selectable={false}
+                    >
+                      {slot.label}
+                    </Text>
+                  ) : null}
                 </View>
               )}
               {isLast && (
