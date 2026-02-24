@@ -218,7 +218,12 @@ export const TerminalFrame = ({
             </View>
           );
           return seg.onPress ? (
-            <Pressable key={segKey} onPress={seg.onPress}>
+            <Pressable
+              key={segKey}
+              onPress={seg.onPress}
+              accessibilityRole="button"
+              accessibilityLabel={seg.label || seg.icon || undefined}
+            >
               {inner}
             </Pressable>
           ) : (

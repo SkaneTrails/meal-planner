@@ -29,6 +29,8 @@ export interface FabSlot {
   icon?: IoniconName;
   /** Label shown when active (e.g. "IDAG"). */
   label: string;
+  /** Accessible name for screen readers (required when label is empty). */
+  accessibilityLabel?: string;
   /** Whether this slot is currently visible / pressable. */
   active: boolean;
   /** Handler for the press event. */
@@ -117,6 +119,10 @@ export const TerminalFabBar = ({ slots, style }: TerminalFabBarProps) => {
               {slot.active ? (
                 <Pressable
                   onPress={slot.onPress}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    slot.accessibilityLabel || slot.label || slot.icon
+                  }
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
