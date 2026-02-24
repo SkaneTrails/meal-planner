@@ -8,8 +8,8 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { AnimatedPressable, Button } from '@/components';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
-import { dotSize, fontSize, spacing, useTheme } from '@/lib/theme';
-import type { DietLabel, LibraryScope } from '@/lib/types';
+import { dotSize, fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
+import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
 
 interface SearchBarProps {
   searchQuery: string;
@@ -93,11 +93,13 @@ export const SearchBar = ({
 
 interface FilterChipsProps {
   dietFilter: DietLabel | null;
+  mealFilters: MealLabel[];
   showFavoritesOnly: boolean;
   libraryScope: LibraryScope;
   sortBy: string;
   sortOptions: { value: string; label: string }[];
   onDietChange: (diet: DietLabel | null) => void;
+  onMealTypePress: () => void;
   onFavoritesToggle: () => void;
   onLibraryScopeChange: (scope: LibraryScope) => void;
   onSortPress: () => void;
@@ -106,11 +108,13 @@ interface FilterChipsProps {
 
 export const FilterChips = ({
   dietFilter,
+  mealFilters,
   showFavoritesOnly,
   libraryScope,
   sortBy,
   sortOptions,
   onDietChange,
+  onMealTypePress,
   onFavoritesToggle,
   onLibraryScopeChange,
   onSortPress,
@@ -325,6 +329,50 @@ export const FilterChips = ({
             }}
           >
             {t('recipes.favorites')}
+          </Text>
+        </AnimatedPressable>
+
+        {/* Meal type chip */}
+        <AnimatedPressable
+          onPress={() => {
+            hapticLight();
+            onMealTypePress();
+          }}
+          hoverScale={1.05}
+          pressScale={0.95}
+          style={{
+            paddingHorizontal: spacing.md,
+            paddingVertical: spacing.xs,
+            borderRadius: borderRadius.sm,
+            backgroundColor:
+              mealFilters.length > 0
+                ? colors.chip.mealTypeActive
+                : colors.chip.bg,
+            borderWidth: mealFilters.length > 0 ? 0 : 1,
+            borderColor: colors.chip.border,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.xs,
+          }}
+        >
+          <Ionicons
+            name={mealFilters.length > 0 ? 'pricetag' : 'pricetag-outline'}
+            size={iconSize.xs}
+            color={
+              mealFilters.length > 0 ? colors.white : colors.chip.mealTypeActive
+            }
+          />
+          <Text
+            style={{
+              fontSize: fontSize.md,
+              fontFamily: fonts.bodySemibold,
+              color:
+                mealFilters.length > 0 ? colors.white : colors.content.body,
+            }}
+          >
+            {mealFilters.length > 0
+              ? t('recipes.mealTypeCount', { count: mealFilters.length })
+              : t('recipes.mealType')}
           </Text>
         </AnimatedPressable>
 

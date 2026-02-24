@@ -212,6 +212,7 @@ export const bubblegumColors: ColorTokens = {
     fishActive: ELECTRIC_BLUE,
     meatActive: CORAL,
     favoriteActive: HOT_PINK,
+    mealTypeActive: '#6B5B8D',
     toggleActiveBg: SUNNY,
     toggleInactiveBg: SUNNY_LIGHT,
     toggleActiveBorder: BLACK,

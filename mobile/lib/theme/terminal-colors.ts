@@ -192,6 +192,7 @@ export const terminalColors: ColorTokens = {
     fishActive: GREEN_DIM,
     meatActive: GREEN,
     favoriteActive: GREEN,
+    mealTypeActive: GREEN_DIM,
     toggleActiveBg: GREEN,
     toggleInactiveBg: BLACK,
     toggleActiveBorder: GREEN,
