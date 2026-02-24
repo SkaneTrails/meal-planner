@@ -4,7 +4,7 @@ import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from api.auth.firebase import require_auth
 from api.auth.models import AuthenticatedUser
@@ -37,6 +37,13 @@ class ExtrasUpdateRequest(BaseModel):
 
     week: str = Field(..., description="Week start date (ISO format, e.g. '2026-02-23')")
     extras: list[str] = Field(..., description="List of recipe IDs for the Other section of that week")
+
+    @field_validator("week")
+    @classmethod
+    def validate_week(cls, v: str) -> str:
+        """Ensure week is a valid ISO date string."""
+        datetime.date.fromisoformat(v)
+        return v
 
 
 def _resolve_household(user: AuthenticatedUser, household_id_override: str | None = None) -> str:

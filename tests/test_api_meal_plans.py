@@ -279,3 +279,9 @@ class TestUpdateExtras:
 
         assert response.status_code == 200
         mock_update.assert_called_once_with("test_household", week, [])
+
+    def test_update_extras_invalid_week_format(self, client: TestClient) -> None:
+        """Should reject malformed week date."""
+        response = client.post("/meal-plans/extras", json={"week": "not-a-date", "extras": []})
+
+        assert response.status_code == 422
