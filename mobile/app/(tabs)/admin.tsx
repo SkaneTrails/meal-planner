@@ -81,7 +81,11 @@ export default function AdminScreen() {
         variant="large"
         title={t('tabs.admin')}
         subtitle={t('admin.subtitle')}
-        onBack={() => router.back()}
+        onBack={() =>
+          router.canGoBack()
+            ? router.back()
+            : router.replace('/(tabs)/settings')
+        }
       />
 
       <CurrentUserInfo email={currentUser.email} role={currentUser.role} />

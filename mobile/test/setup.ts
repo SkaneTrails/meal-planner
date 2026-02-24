@@ -224,6 +224,10 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'surface-card' }, children);
   },
+  ContentCard: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'content-card' }, children);
+  },
   ThemeToggle: ({ value, onValueChange, disabled }: any) => {
     const { createElement } = require('react');
     return createElement('button', {
