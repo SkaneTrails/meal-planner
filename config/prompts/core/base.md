@@ -38,7 +38,7 @@ ALWAYS return a valid JSON object with this structure:
   "metadata": {
     "cuisine": "Swedish/Italian/Indian/Asian/etc",
     "category": "Main/Appetizer/Dessert/Sauce/Drink/etc",
-    "tags": ["#cuisine", "#dish-format", "#main-ingredient", "#dietary", "#season", "#vibe", "..."]
+    "tags": ["italian", "pasta", "chicken", "quick", "weeknight", "comfort-food", "one-pot", "autumn"]
   },
   "changes_made": ["Concrete list of all changes made"]
 }
@@ -54,7 +54,7 @@ ALWAYS return a valid JSON object with this structure:
   - **Self-check:** Compare EVERY output quantity against the original. If original servings = {target_servings}, your quantities MUST match the original exactly (except for protein split adjustments where a single protein is split into two halves).
 - `ingredients` — array of strings
 - `instructions` — array of strings (each step separate, NEVER one big string)
-- `tags` — array of lowercase `#hashtag` strings (see Tagging Guidelines section). Aim for 8–15 tags per recipe
+- `tags` — array of lowercase strings without `#` prefix (see Tagging Guidelines below). Aim for 8–15 tags per recipe
 - `changes_made` — array of strings, in household language
 - `metadata.category`, `metadata.cuisine` — in household language
 
