@@ -1534,6 +1534,36 @@ class TestReviewEnhancementEndpoint:
         assert response.status_code == 422
 
 
+class TestRemoveEnhancementEndpoint:
+    """Tests for DELETE /recipes/{recipe_id}/enhancement endpoint."""
+
+    def test_removes_enhancement_and_returns_restored_recipe(self, client: TestClient) -> None:
+        """Should remove enhancement and return the restored recipe."""
+        restored_recipe = Recipe(
+            id="recipe123",
+            title="Original Title",
+            url="https://example.com/recipe",
+            household_id="test_household",
+            enhanced=False,
+        )
+
+        with patch("api.routers.recipe_enhancement.recipe_storage.remove_enhancement", return_value=restored_recipe):
+            response = client.delete("/recipes/recipe123/enhancement")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["title"] == "Original Title"
+        assert data["enhanced"] is False
+
+    def test_returns_404_when_not_found(self, client: TestClient) -> None:
+        """Should return 404 when recipe not found or not enhanced."""
+        with patch("api.routers.recipe_enhancement.recipe_storage.remove_enhancement", return_value=None):
+            response = client.delete("/recipes/nonexistent/enhancement")
+
+        assert response.status_code == 404
+        assert "not found" in response.json()["detail"].lower()
+
+
 class TestHouseholdConfig:
     """Tests for HouseholdConfig coercion and defaults."""
 

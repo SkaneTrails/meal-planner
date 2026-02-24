@@ -41,6 +41,7 @@ interface EditRecipeModalProps {
     visibility: RecipeVisibility;
   }) => Promise<void>;
   onTransferRecipe: (targetHouseholdId: string) => Promise<void>;
+  onRemoveEnhancement?: () => void;
   onDelete: () => void;
 }
 
@@ -53,6 +54,7 @@ export const EditRecipeModal = ({
   onClose,
   onSave,
   onTransferRecipe,
+  onRemoveEnhancement,
   onDelete,
 }: EditRecipeModalProps) => {
   const { colors, fonts, borderRadius } = useTheme();
@@ -332,7 +334,7 @@ export const EditRecipeModal = ({
 
       <TagEditor editTags={editTags} setEditTags={setEditTags} t={t} />
 
-      {/* Delete Recipe */}
+      {/* Danger Zone */}
       <View
         style={{
           marginTop: spacing.xl,
@@ -341,6 +343,20 @@ export const EditRecipeModal = ({
           borderTopColor: colors.bgDark,
         }}
       >
+        {recipe.enhanced && onRemoveEnhancement && (
+          <Button
+            variant="text"
+            tone="warning"
+            icon="sparkles-outline"
+            label={t('recipe.removeEnhancement')}
+            onPress={onRemoveEnhancement}
+            style={{
+              paddingVertical: spacing.md,
+              justifyContent: 'center',
+              marginBottom: spacing.sm,
+            }}
+          />
+        )}
         <Button
           variant="text"
           tone="warning"

@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from typing import cast
 from urllib.parse import urlparse
 
-from google.cloud.firestore_v1 import DocumentSnapshot, FieldFilter
+from google.cloud.firestore_v1 import DELETE_FIELD, DocumentSnapshot, FieldFilter
 
 from api.models.recipe import DietLabel, MealLabel, OriginalRecipe, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
@@ -401,6 +401,97 @@ def review_enhancement(recipe_id: str, *, approve: bool, household_id: str) -> R
     data.update(update_data)
 
     return _doc_to_recipe(recipe_id, data)
+
+
+def remove_enhancement(recipe_id: str, *, household_id: str) -> Recipe | None:
+    """Remove AI enhancement from a recipe, restoring original data.
+
+    Copies fields from the ``original`` snapshot back to top-level and deletes
+    all enhancement metadata so the recipe can be re-enhanced later.
+
+    Args:
+        recipe_id: The Firestore document ID.
+        household_id: Verify the recipe belongs to this household.
+
+    Returns:
+        The restored recipe, or None if not found/not authorized/not enhanced.
+    """
+    db = get_firestore_client()
+    doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
+
+    doc = cast("DocumentSnapshot", doc_ref.get())
+    if not doc.exists:
+        return None
+
+    data = doc.to_dict()
+    if not data:
+        return None  # pragma: no cover
+
+    if data.get("household_id") != household_id:
+        return None
+
+    if not data.get("enhanced", False):
+        return None
+
+    original = data.get("original")
+    if not original or not isinstance(original, dict):
+        return None
+
+    now = datetime.now(tz=UTC)
+    update_data: dict = {
+        "title": original.get("title", data.get("title", "")),
+        "ingredients": original.get("ingredients", []),
+        "instructions": original.get("instructions", []),
+        "servings": original.get("servings"),
+        "prep_time": original.get("prep_time"),
+        "cook_time": original.get("cook_time"),
+        "total_time": original.get("total_time"),
+        "image_url": original.get("image_url"),
+        "thumbnail_url": DELETE_FIELD,
+        "title_lower": original.get("title", data.get("title", "")).lower(),
+        "enhanced": False,
+        "enhanced_at": DELETE_FIELD,
+        "changes_made": DELETE_FIELD,
+        "original": DELETE_FIELD,
+        "show_enhanced": DELETE_FIELD,
+        "enhancement_reviewed": DELETE_FIELD,
+        "tips": DELETE_FIELD,
+        "updated_at": now,
+    }
+
+    doc_ref.update(update_data)
+
+    restored_data = {
+        k: v
+        for k, v in data.items()
+        if k
+        not in (
+            "enhanced_at",
+            "changes_made",
+            "original",
+            "show_enhanced",
+            "enhancement_reviewed",
+            "tips",
+            "thumbnail_url",
+        )
+    }
+    restored_data.update(
+        {
+            "title": update_data["title"],
+            "ingredients": update_data["ingredients"],
+            "instructions": update_data["instructions"],
+            "servings": update_data["servings"],
+            "prep_time": update_data["prep_time"],
+            "cook_time": update_data["cook_time"],
+            "total_time": update_data["total_time"],
+            "image_url": update_data["image_url"],
+            "title_lower": update_data["title_lower"],
+            "enhanced": False,
+            "updated_at": now,
+        }
+    )
+
+    return _doc_to_recipe(recipe_id, restored_data)
 
 
 def search_recipes(query: str, *, household_id: str | None = None, show_hidden: bool = False) -> list[Recipe]:

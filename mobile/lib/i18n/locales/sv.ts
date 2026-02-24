@@ -197,6 +197,12 @@ const sv: Translations = {
     enhanceSuccessMessage: 'Receptet har förbättrats av AI',
     enhanceFailed: 'Kunde inte förbättra receptet',
     enhancing: 'Förbättrar receptet med AI...',
+    removeEnhancement: 'Ta bort förbättring',
+    removeEnhancementConfirm:
+      'Detta återställer originalreceptet och tar bort alla AI-förbättringar. Det går inte att ångra.',
+    removeEnhancementSuccess: 'Förbättring borttagen',
+    removeEnhancementSuccessMessage: 'Originalreceptet har återställts',
+    removeEnhancementFailed: 'Kunde inte ta bort förbättringen',
     addToMealPlan: 'Lägg till i matsedel',
     thisWeek: 'Denna vecka',
     nextWeek: 'Nästa vecka',

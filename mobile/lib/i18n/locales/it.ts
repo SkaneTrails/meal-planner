@@ -199,6 +199,13 @@ const it: Translations = {
     enhanceSuccessMessage: "La ricetta è stata migliorata dall'AI",
     enhanceFailed: 'Impossibile migliorare la ricetta',
     enhancing: 'Miglioramento della ricetta con AI...',
+    removeEnhancement: 'Rimuovi miglioramento',
+    removeEnhancementConfirm:
+      "Questo ripristinerà la ricetta originale e scarta tutti i miglioramenti AI. Non è possibile annullare l'operazione.",
+    removeEnhancementSuccess: 'Miglioramento rimosso',
+    removeEnhancementSuccessMessage:
+      'La ricetta originale è stata ripristinata',
+    removeEnhancementFailed: 'Impossibile rimuovere il miglioramento',
     addToMealPlan: 'Aggiungi al menu',
     thisWeek: 'Questa settimana',
     nextWeek: 'Prossima settimana',

@@ -23,6 +23,7 @@ from api.storage.recipe_storage import (
     find_recipe_by_url,
     get_recipe,
     normalize_url,
+    remove_enhancement,
     review_enhancement,
     save_recipe,
     search_recipes,
@@ -2038,6 +2039,160 @@ class TestReviewEnhancement:
 
         with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
             result = review_enhancement("recipe1", approve=True, household_id="hh1")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+
+class TestRemoveEnhancement:
+    """Tests for remove_enhancement function."""
+
+    def _make_enhanced_doc_data(self) -> dict:
+        return {
+            "title": "Enhanced Title",
+            "url": "https://example.com",
+            "ingredients": ["enhanced ingredient 1"],
+            "instructions": ["enhanced step 1"],
+            "servings": 6,
+            "prep_time": 20,
+            "cook_time": 40,
+            "total_time": 60,
+            "image_url": "https://example.com/enhanced.jpg",
+            "enhanced": True,
+            "enhanced_at": "2026-01-01T00:00:00",
+            "changes_made": ["improved instructions"],
+            "tips": "A useful tip",
+            "show_enhanced": True,
+            "enhancement_reviewed": True,
+            "household_id": "hh1",
+            "original": {
+                "title": "Original Title",
+                "ingredients": ["original ingredient 1"],
+                "instructions": ["original step 1"],
+                "servings": 4,
+                "prep_time": 15,
+                "cook_time": 30,
+                "total_time": 45,
+                "image_url": "https://example.com/original.jpg",
+            },
+        }
+
+    def test_restores_original_data(self) -> None:
+        """Should copy original fields to top-level and clear enhancement metadata."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = self._make_enhanced_doc_data()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = remove_enhancement("recipe1", household_id="hh1")
+
+        assert result is not None
+        assert result.title == "Original Title"
+        assert result.ingredients == ["original ingredient 1"]
+        assert result.instructions == ["original step 1"]
+        assert result.servings == 4
+        assert result.prep_time == 15
+        assert result.cook_time == 30
+        assert result.total_time == 45
+        assert result.image_url == "https://example.com/original.jpg"
+        assert result.enhanced is False
+        assert result.original is None
+        assert result.show_enhanced is False
+        assert result.enhancement_reviewed is False
+        assert result.tips is None
+        assert result.changes_made is None
+
+    def test_uses_delete_field_for_metadata(self) -> None:
+        """Should use DELETE_FIELD sentinel for enhancement-only fields."""
+        from google.cloud.firestore_v1 import DELETE_FIELD
+
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = self._make_enhanced_doc_data()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            remove_enhancement("recipe1", household_id="hh1")
+
+        mock_doc_ref.update.assert_called_once()
+        call_args = mock_doc_ref.update.call_args[0][0]
+        assert call_args["enhanced"] is False
+        assert call_args["enhanced_at"] is DELETE_FIELD
+        assert call_args["changes_made"] is DELETE_FIELD
+        assert call_args["original"] is DELETE_FIELD
+        assert call_args["show_enhanced"] is DELETE_FIELD
+        assert call_args["enhancement_reviewed"] is DELETE_FIELD
+        assert call_args["tips"] is DELETE_FIELD
+        assert call_args["thumbnail_url"] is DELETE_FIELD
+        assert call_args["title"] == "Original Title"
+        assert call_args["title_lower"] == "original title"
+
+    def test_returns_none_if_not_found(self) -> None:
+        """Should return None if recipe doesn't exist."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = False
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = remove_enhancement("recipe1", household_id="hh1")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_returns_none_if_wrong_household(self) -> None:
+        """Should return None if recipe belongs to different household."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = self._make_enhanced_doc_data()
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = remove_enhancement("recipe1", household_id="other_hh")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_returns_none_if_not_enhanced(self) -> None:
+        """Should return None if recipe is not enhanced."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"title": "Recipe", "enhanced": False, "household_id": "hh1"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = remove_enhancement("recipe1", household_id="hh1")
+
+        assert result is None
+        mock_doc_ref.update.assert_not_called()
+
+    def test_returns_none_if_no_original_snapshot(self) -> None:
+        """Should return None if enhanced but original data is missing."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"title": "Recipe", "enhanced": True, "household_id": "hh1", "original": None}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            result = remove_enhancement("recipe1", household_id="hh1")
 
         assert result is None
         mock_doc_ref.update.assert_not_called()

@@ -9,6 +9,7 @@ import {
   useDeleteRecipe,
   useEnhanceRecipe,
   useImagePicker,
+  useRemoveEnhancement,
   useReviewEnhancement,
   useSetMeal,
   useUpdateRecipe,
@@ -51,6 +52,7 @@ export const useRecipeActions = (
   const setMeal = useSetMeal();
   const reviewEnhancement = useReviewEnhancement();
   const enhanceRecipe = useEnhanceRecipe();
+  const removeEnhancement = useRemoveEnhancement();
   const copyRecipe = useCopyRecipe();
 
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
@@ -449,6 +451,38 @@ export const useRecipeActions = (
     ]);
   };
 
+  const handleRemoveEnhancement = async () => {
+    if (!id || !recipe?.enhanced) return;
+
+    showAlert(
+      t('recipe.removeEnhancement'),
+      t('recipe.removeEnhancementConfirm'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('recipe.removeEnhancement'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeEnhancement.mutateAsync(id);
+              hapticSuccess();
+              showNotification(
+                t('recipe.removeEnhancementSuccess'),
+                t('recipe.removeEnhancementSuccessMessage'),
+              );
+            } catch {
+              hapticWarning();
+              showNotification(
+                t('common.error'),
+                t('recipe.removeEnhancementFailed'),
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
   return {
     currentUser,
     isSuperuser,
@@ -463,6 +497,7 @@ export const useRecipeActions = (
     needsEnhancementReview,
     canEnhance,
     isEnhancing: enhanceRecipe.isPending,
+    isRemovingEnhancement: removeEnhancement.isPending,
     t,
     showPlanModal,
     setShowPlanModal,
@@ -483,6 +518,7 @@ export const useRecipeActions = (
     handleTransferRecipe,
     handleReviewEnhancement,
     handleEnhanceRecipe,
+    handleRemoveEnhancement,
     showEnhancementReviewModal,
     closeEnhancementReviewModal: () => setShowEnhancementReviewModal(false),
   };

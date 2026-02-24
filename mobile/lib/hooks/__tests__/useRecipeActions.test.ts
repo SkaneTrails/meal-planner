@@ -9,6 +9,7 @@ const mockSetMealMutateAsync = vi.fn();
 const mockTransferMutateAsync = vi.fn();
 const mockReviewMutateAsync = vi.fn();
 const mockEnhanceMutateAsync = vi.fn();
+const mockRemoveEnhancementMutateAsync = vi.fn();
 const mockCopyMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
@@ -21,6 +22,7 @@ vi.mock('@/lib/hooks', () => ({
   useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
   useReviewEnhancement: vi.fn(() => ({ mutateAsync: mockReviewMutateAsync, isPending: false })),
   useEnhanceRecipe: vi.fn(() => ({ mutateAsync: mockEnhanceMutateAsync, isPending: false })),
+  useRemoveEnhancement: vi.fn(() => ({ mutateAsync: mockRemoveEnhancementMutateAsync, isPending: false })),
   useCopyRecipe: vi.fn(() => ({ mutateAsync: mockCopyMutateAsync, isPending: false })),
 }));
 
@@ -733,6 +735,68 @@ describe('useRecipeActions', () => {
       const recipe = makeRecipe();
       const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
       expect(result.current.isOwned).toBeUndefined();
+    });
+  });
+
+  describe('handleRemoveEnhancement', () => {
+    it('does nothing when id is undefined', async () => {
+      const recipe = makeRecipe({ enhanced: true });
+      const { result } = renderHook(() => useRecipeActions(undefined, recipe), { wrapper });
+      await act(async () => result.current.handleRemoveEnhancement());
+      expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when recipe is not enhanced', async () => {
+      const recipe = makeRecipe({ enhanced: false });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleRemoveEnhancement());
+      expect(mockShowAlert).not.toHaveBeenCalled();
+    });
+
+    it('shows confirmation dialog for enhanced recipe', async () => {
+      const recipe = makeRecipe({ enhanced: true });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleRemoveEnhancement());
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.removeEnhancement',
+        'recipe.removeEnhancementConfirm',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel', style: 'cancel' }),
+          expect.objectContaining({ text: 'recipe.removeEnhancement', style: 'destructive' }),
+        ]),
+      );
+    });
+
+    it('calls mutateAsync and shows success notification when confirmed', async () => {
+      const recipe = makeRecipe({ enhanced: true });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleRemoveEnhancement());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const removeButton = buttons.find((b: any) => b.style === 'destructive')!;
+      await act(async () => removeButton.onPress!());
+
+      expect(mockRemoveEnhancementMutateAsync).toHaveBeenCalledWith('recipe-1');
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'recipe.removeEnhancementSuccess',
+        'recipe.removeEnhancementSuccessMessage',
+      );
+    });
+
+    it('shows error notification on failure', async () => {
+      mockRemoveEnhancementMutateAsync.mockRejectedValue(new Error('fail'));
+      const recipe = makeRecipe({ enhanced: true });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleRemoveEnhancement());
+
+      const buttons = mockShowAlert.mock.calls[0][2]!;
+      const removeButton = buttons.find((b: any) => b.style === 'destructive')!;
+      await act(async () => removeButton.onPress!());
+
+      expect(mockShowNotification).toHaveBeenCalledWith(
+        'common.error',
+        'recipe.removeEnhancementFailed',
+      );
     });
   });
 });
