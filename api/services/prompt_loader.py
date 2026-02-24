@@ -44,7 +44,7 @@ def load_core_prompts() -> str:
     prompts_dir = get_prompts_dir() / "core"
 
     # Load in specific order for logical flow
-    files = ["base.md", "formatting.md", "rules.md"]
+    files = ["base.md", "formatting.md", "rules.md", "tagging.md"]
 
     parts = []
     for filename in files:
@@ -162,6 +162,7 @@ def validate_prompts() -> dict[str, bool]:
         "core/base.md",
         "core/formatting.md",
         "core/rules.md",
+        "core/tagging.md",
         "locales/sv.md",
         "user/language.md",
         "user/dietary.md",
