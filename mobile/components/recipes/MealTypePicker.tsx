@@ -3,14 +3,14 @@
  * Renders a wrap-grid of meal types with Ionicons and multi-select support.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 import type { MealLabel } from '@/lib/types';
 
-const MEAL_TYPE_ICONS: Record<MealLabel, keyof typeof Ionicons.glyphMap> = {
+const MEAL_TYPE_ICONS: Record<MealLabel, IoniconName> = {
   breakfast: 'cafe-outline',
   starter: 'flame-outline',
   salad: 'leaf-outline',
@@ -82,7 +82,7 @@ export const MealTypePicker = ({
                 borderColor: colors.chip.border,
               }}
             >
-              <Ionicons
+              <ThemeIcon
                 name={MEAL_TYPE_ICONS[meal]}
                 size={iconSize.md}
                 color={isSelected ? colors.white : colors.content.body}
@@ -97,7 +97,7 @@ export const MealTypePicker = ({
                 {t(`labels.meal.${meal}`)}
               </Text>
               {isSelected && (
-                <Ionicons
+                <ThemeIcon
                   name="checkmark"
                   size={iconSize.sm}
                   color={colors.white}

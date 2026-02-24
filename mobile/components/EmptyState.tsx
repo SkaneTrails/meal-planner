@@ -1,5 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
 import { Text, View, type ViewStyle } from 'react-native';
 import {
   fontSize,
@@ -12,8 +10,7 @@ import {
 import { Button } from './Button';
 import { IconCircle } from './IconCircle';
 import { SurfaceCard } from './SurfaceCard';
-
-type IoniconsName = ComponentProps<typeof Ionicons>['name'];
+import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 interface EmptyStateAction {
   label: string;
@@ -21,7 +18,7 @@ interface EmptyStateAction {
 }
 
 interface EmptyStateProps {
-  icon?: IoniconsName;
+  icon?: IoniconName;
   title: string;
   subtitle?: string;
   action?: EmptyStateAction;
@@ -49,7 +46,7 @@ const EmptyState = ({
             bg={colors.bgDark}
             style={{ marginBottom: spacing.sm }}
           >
-            <Ionicons name={icon} size={24} color={colors.content.body} />
+            <ThemeIcon name={icon} size={24} color={colors.content.body} />
           </IconCircle>
         )}
         <Text
@@ -95,7 +92,7 @@ const EmptyState = ({
           bg={colors.glass.card}
           style={{ marginBottom: spacing.xl }}
         >
-          <Ionicons name={icon} size={36} color={colors.text.inverse} />
+          <ThemeIcon name={icon} size={36} color={colors.text.inverse} />
         </IconCircle>
       )}
       <Text

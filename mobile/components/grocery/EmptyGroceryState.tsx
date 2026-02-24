@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import {
   fontSize,
   iconContainer,
@@ -42,7 +42,11 @@ export const EmptyGroceryState = ({
             marginBottom: spacing.xl,
           }}
         >
-          <Ionicons name="cart-outline" size={40} color={colors.content.body} />
+          <ThemeIcon
+            name="cart-outline"
+            size={40}
+            color={colors.content.body}
+          />
         </View>
       )}
       <Text

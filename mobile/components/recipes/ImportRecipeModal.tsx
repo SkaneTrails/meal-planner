@@ -7,7 +7,6 @@
  * detail page.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -26,6 +25,7 @@ import {
   getDietOptions,
   MEAL_OPTIONS,
 } from '@/components/recipe-detail/recipe-detail-constants';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { showAlert, showNotification } from '@/lib/alert';
 import { ApiClientError } from '@/lib/api';
 import { useReviewEnhancement, useScrapeRecipe } from '@/lib/hooks';
@@ -232,7 +232,7 @@ export const ImportRecipeModal = ({
                 }
                 style={{ marginRight: spacing.md }}
               >
-                <Ionicons
+                <ThemeIcon
                   name="sparkles"
                   size={18}
                   color={

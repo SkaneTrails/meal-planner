@@ -1,11 +1,11 @@
-import type { Ionicons as IoniconsType } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import type { GestureResponderEvent, ViewStyle } from 'react-native';
 import type { ButtonTone } from '@/components/Button';
 import { Button } from '@/components/Button';
+import type { IoniconName } from '@/components/ThemeIcon';
 import { type IconContainerSize, iconContainer, useTheme } from '@/lib/theme';
 
-type IconName = ComponentProps<typeof IoniconsType>['name'];
+type IconName = IoniconName;
 
 interface IconButtonProps {
   icon: IconName;

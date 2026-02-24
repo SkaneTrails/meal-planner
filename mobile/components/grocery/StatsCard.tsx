@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import {
@@ -7,6 +6,7 @@ import {
   ContentCard,
   IconButton,
 } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
@@ -113,7 +113,7 @@ const ItemsAtHomeIndicator = ({
         gap: spacing['xs-sm'],
       }}
     >
-      <Ionicons
+      <ThemeIcon
         name="home-outline"
         size={iconSize.xs}
         color={colors.content.secondary}
@@ -129,7 +129,7 @@ const ItemsAtHomeIndicator = ({
       >
         {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
       </Text>
-      <Ionicons
+      <ThemeIcon
         name="chevron-forward"
         size={iconSize.xs}
         color={colors.content.body}

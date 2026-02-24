@@ -3,9 +3,9 @@
  * Lets users approve (keep enhanced) or reject (revert to original).
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { Button } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -41,7 +41,7 @@ export const EnhancementReviewBanner = ({
           marginBottom: spacing.sm,
         }}
       >
-        <Ionicons
+        <ThemeIcon
           name="sparkles"
           size={20}
           color={colors.ai.primary}

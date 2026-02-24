@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { dotSize, fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 type ChipVariant = 'filled' | 'outline' | 'toggle' | 'display';
 type ChipSize = 'sm' | 'md';
@@ -30,7 +29,7 @@ export interface ChipProps {
   /** Custom text/icon color override. */
   color?: string;
   /** Leading Ionicons icon name (e.g., `"lock-closed-outline"`). */
-  icon?: ComponentProps<typeof Ionicons>['name'];
+  icon?: IoniconName;
   /** Text prefix prepended to label (e.g., `"#"` for hashtags). */
   prefix?: string;
   /** Apply uppercase text transform (e.g., role badges). */
@@ -100,11 +99,11 @@ export const Chip = ({
     >
       {/* Leading add icon (outline variant) */}
       {resolvedShowAdd && variant === 'outline' && (
-        <Ionicons name="add" size={iconSize} color={colors.content.strong} />
+        <ThemeIcon name="add" size={iconSize} color={colors.content.strong} />
       )}
 
       {/* Leading icon (custom) */}
-      {icon && <Ionicons name={icon} size={iconSize} color={resolvedColor} />}
+      {icon && <ThemeIcon name={icon} size={iconSize} color={resolvedColor} />}
 
       {/* Colored dot */}
       {dot && (variant !== 'toggle' || visibility.showChipToggleDot) && (
@@ -133,7 +132,7 @@ export const Chip = ({
 
       {/* Trailing remove icon (filled variant) */}
       {resolvedShowRemove && variant === 'filled' && !disabled && (
-        <Ionicons
+        <ThemeIcon
           name="close-circle"
           size={iconSize}
           color={colors.content.subtitle}

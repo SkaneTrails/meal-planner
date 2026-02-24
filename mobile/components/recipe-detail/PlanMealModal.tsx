@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { BottomSheetModal, Button } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
@@ -193,7 +193,7 @@ export const PlanMealModal = ({
                           }}
                         >
                           {isTaken && (
-                            <Ionicons
+                            <ThemeIcon
                               name="checkmark-circle"
                               size={16}
                               color={colors.text.inverse}
@@ -229,7 +229,7 @@ export const PlanMealModal = ({
                           })}
                         >
                           {({ pressed }) => (
-                            <Ionicons
+                            <ThemeIcon
                               name="trash-outline"
                               size={16}
                               color={pressed ? colors.white : colors.error}

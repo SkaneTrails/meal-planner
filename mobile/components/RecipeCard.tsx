@@ -4,7 +4,6 @@
  * Uses expo-image for progressive loading and caching.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -16,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { IconButton } from '@/components/IconButton';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
@@ -283,7 +283,7 @@ export const RecipeCard = ({
                     alignItems: 'center',
                   }}
                 >
-                  <Ionicons
+                  <ThemeIcon
                     name="sparkles"
                     size={11}
                     color={colors.ai.primary}
@@ -302,7 +302,7 @@ export const RecipeCard = ({
               )}
               {recipe.rating && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons
+                  <ThemeIcon
                     name={recipe.rating >= 3 ? 'thumbs-up' : 'thumbs-down'}
                     size={fontSize.md}
                     color={
@@ -315,7 +315,7 @@ export const RecipeCard = ({
               )}
               {totalTime && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Ionicons
+                  <ThemeIcon
                     name="time-outline"
                     size={fontSize.md}
                     color={colors.content.icon}
@@ -333,7 +333,7 @@ export const RecipeCard = ({
               )}
             </View>
           </View>
-          <Ionicons
+          <ThemeIcon
             name="chevron-forward"
             size={18}
             color={colors.surface.border}
@@ -606,7 +606,7 @@ export const RecipeCard = ({
                 ...shadows.sm,
               }}
             >
-              <Ionicons
+              <ThemeIcon
                 name="sparkles"
                 size={fontSize.base}
                 color={colors.white}
@@ -679,7 +679,7 @@ export const RecipeCard = ({
           >
             {totalTime && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons
+                <ThemeIcon
                   name="time-outline"
                   size={fontSize.md}
                   color={colors.content.secondary}
@@ -697,7 +697,7 @@ export const RecipeCard = ({
             )}
             {recipe.servings && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons
+                <ThemeIcon
                   name="people-outline"
                   size={fontSize.md}
                   color={colors.content.secondary}

@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { BottomSheetModal, Divider, UrlInputBar } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
 
@@ -75,7 +75,7 @@ export const AddRecipeModal = ({
             marginRight: spacing['md-lg'],
           }}
         >
-          <Ionicons
+          <ThemeIcon
             name="create-outline"
             size={20}
             color={colors.content.body}
@@ -101,7 +101,7 @@ export const AddRecipeModal = ({
             {t('home.addRecipe.manualEntryDesc')}
           </Text>
         </View>
-        <Ionicons
+        <ThemeIcon
           name="chevron-forward"
           size={18}
           color={colors.content.secondary}

@@ -13,7 +13,6 @@
  * Flat chrome shows the top border line only. Full chrome shows a compact card row.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import type React from 'react';
 import {
   Pressable,
@@ -23,6 +22,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { fontSize, iconSize, spacing, terminal, useTheme } from '@/lib/theme';
+import { ThemeIcon } from './ThemeIcon';
 
 // ── Box-drawing characters (Unicode block 0x2500) ──────────────────────
 const BOX = {
@@ -146,7 +146,7 @@ export const TerminalFrame = ({
                   {seg.label}
                 </Text>
               ))}
-            <Ionicons
+            <ThemeIcon
               name="chevron-down"
               size={iconSize.sm}
               color={colors.content.subtitle}

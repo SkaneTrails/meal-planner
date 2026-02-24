@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import type { Household } from '@/lib/types';
 
@@ -48,7 +48,7 @@ export const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
             ID: {household.id}
           </Text>
         </View>
-        <Ionicons
+        <ThemeIcon
           name="chevron-forward"
           size={20}
           color={colors.text.inverse + '80'}

@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
   Animated,
@@ -24,6 +23,7 @@ import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 import { SelectMealModal } from '@/components/meal-plan/SelectMealModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 import {
   iconContainer,
@@ -330,7 +330,7 @@ export default function MealPlanScreen() {
                   right: -2,
                 }}
               >
-                <Ionicons name="add" size={12} color={colors.white} />
+                <ThemeIcon name="add" size={12} color={colors.white} />
               </IconCircle>
             </View>
           </View>

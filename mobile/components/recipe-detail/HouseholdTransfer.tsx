@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 import type { Household } from '@/lib/types';
@@ -71,7 +71,7 @@ export const HouseholdTransfer = ({
               })}
             >
               {isCurrentHousehold && (
-                <Ionicons
+                <ThemeIcon
                   name="checkmark-circle"
                   size={16}
                   color={colors.white}
@@ -105,7 +105,7 @@ export const HouseholdTransfer = ({
               borderColor: colors.gray[300],
             }}
           >
-            <Ionicons
+            <ThemeIcon
               name="help-circle-outline"
               size={16}
               color={colors.gray[500]}

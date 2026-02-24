@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { BouncingLoader, Button, GradientBackground } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -55,7 +55,7 @@ export const RecipeNotFound = ({ t, onGoBack }: RecipeNotFoundProps) => {
           ...shadows.lg,
         }}
       >
-        <Ionicons
+        <ThemeIcon
           name="alert-circle-outline"
           size={40}
           color={colors.content.subtitle}

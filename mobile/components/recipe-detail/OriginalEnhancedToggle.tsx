@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -45,7 +45,7 @@ export const OriginalEnhancedToggle = ({
           backgroundColor: showOriginal ? activeBg : 'transparent',
         }}
       >
-        <Ionicons
+        <ThemeIcon
           name="document-text-outline"
           size={16}
           color={showOriginal ? activeColor : inactiveColor}
@@ -73,7 +73,7 @@ export const OriginalEnhancedToggle = ({
           backgroundColor: showOriginal ? 'transparent' : activeBg,
         }}
       >
-        <Ionicons
+        <ThemeIcon
           name="sparkles"
           size={16}
           color={showOriginal ? colors.ai.muted : colors.ai.primary}

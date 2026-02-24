@@ -2,10 +2,10 @@
  * Search bar and filter chips for the recipes screen.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import type React from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { AnimatedPressable, Button } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { dotSize, fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
@@ -50,7 +50,7 @@ export const SearchBar = ({
           borderColor: colors.searchBar.border,
         }}
       >
-        <Ionicons name="search" size={18} color={colors.searchBar.icon} />
+        <ThemeIcon name="search" size={18} color={colors.searchBar.icon} />
         <TextInput
           ref={searchInputRef}
           style={{
@@ -314,7 +314,7 @@ export const FilterChips = ({
             gap: spacing.xs,
           }}
         >
-          <Ionicons
+          <ThemeIcon
             name={showFavoritesOnly ? 'heart' : 'heart-outline'}
             size={15}
             color={
@@ -355,7 +355,7 @@ export const FilterChips = ({
             gap: spacing.xs,
           }}
         >
-          <Ionicons
+          <ThemeIcon
             name={mealFilters.length > 0 ? 'pricetag' : 'pricetag-outline'}
             size={iconSize.xs}
             color={
@@ -396,7 +396,7 @@ export const FilterChips = ({
             gap: spacing.xs,
           }}
         >
-          <Ionicons
+          <ThemeIcon
             name="funnel-outline"
             size={13}
             color={colors.content.body}

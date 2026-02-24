@@ -4,7 +4,6 @@
  * Only visible to users with 'superuser' role.
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
@@ -20,6 +19,7 @@ import {
   HouseholdCard,
   HouseholdDetailModal,
 } from '@/components/admin';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import {
   useCreateHousehold,
@@ -112,7 +112,7 @@ export default function AdminScreen() {
           }
           ListEmptyComponent={
             <View style={{ alignItems: 'center', padding: spacing.xl }}>
-              <Ionicons
+              <ThemeIcon
                 name="home-outline"
                 size={48}
                 color={colors.text.muted}

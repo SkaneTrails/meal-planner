@@ -9,11 +9,11 @@
  *   - false → [X] / [ ] text indicator (terminal)
  */
 
-import { Ionicons } from '@expo/vector-icons';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { Pressable, Text } from 'react-native';
 import { SurfaceCard } from '@/components/SurfaceCard';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 export interface DropdownOption<T extends string> {
@@ -76,7 +76,7 @@ export const DropdownPicker = <T extends string>({
             {selected?.label}
           </Text>
           {visibility.showCheckmarkIndicator ? (
-            <Ionicons
+            <ThemeIcon
               name="chevron-down"
               size={18}
               color={colors.content.secondary}
@@ -154,7 +154,7 @@ const SelectionIndicator = ({
 }: SelectionIndicatorProps) => {
   if (showCheckmark) {
     return selected ? (
-      <Ionicons name="checkmark-circle" size={20} color={colors.ai.primary} />
+      <ThemeIcon name="checkmark-circle" size={20} color={colors.ai.primary} />
     ) : null;
   }
 

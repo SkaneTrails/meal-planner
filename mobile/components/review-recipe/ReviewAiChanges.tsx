@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { SurfaceCard } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 
@@ -22,7 +22,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
           marginBottom: spacing.md,
         }}
       >
-        <Ionicons name="sparkles" size={18} color={colors.ai.primary} />
+        <ThemeIcon name="sparkles" size={18} color={colors.ai.primary} />
         <Text
           style={{
             marginLeft: spacing.sm,
@@ -43,7 +43,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
             marginBottom: spacing.sm,
           }}
         >
-          <Ionicons
+          <ThemeIcon
             name="checkmark-circle"
             size={16}
             color={colors.success}

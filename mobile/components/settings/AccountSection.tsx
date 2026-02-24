@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Text, View } from 'react-native';
 import {
   AnimatedPressable,
@@ -7,6 +6,7 @@ import {
   Section,
   SurfaceCard,
 } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 
@@ -128,7 +128,7 @@ export const HouseholdSettingsLink = ({
         {isLoading ? (
           <ActivityIndicator size="small" color={colors.content.strong} />
         ) : (
-          <Ionicons
+          <ThemeIcon
             name="chevron-forward"
             size={20}
             color={colors.content.strong}

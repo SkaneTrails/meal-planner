@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -24,6 +23,7 @@ import {
   getDietOptions,
   MEAL_OPTIONS,
 } from '@/components/recipe-detail/recipe-detail-constants';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import { useSettings } from '@/lib/settings-context';
@@ -107,7 +107,7 @@ export default function AddRecipeScreen() {
                 marginBottom: spacing.sm,
               }}
             >
-              <Ionicons
+              <ThemeIcon
                 name="information-circle"
                 size={22}
                 color={colors.white}
@@ -145,7 +145,7 @@ export default function AddRecipeScreen() {
                 paddingHorizontal: spacing.lg,
               }}
             >
-              <Ionicons name="link" size={20} color={colors.text.inverse} />
+              <ThemeIcon name="link" size={20} color={colors.text.inverse} />
               <TextInput
                 style={{
                   flex: 1,
@@ -211,7 +211,7 @@ export default function AddRecipeScreen() {
                   }
                   style={{ marginRight: spacing.md }}
                 >
-                  <Ionicons
+                  <ThemeIcon
                     name="sparkles"
                     size={18}
                     color={

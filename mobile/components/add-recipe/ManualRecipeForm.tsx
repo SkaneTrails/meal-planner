@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import {
   Image,
   KeyboardAvoidingView,
@@ -14,6 +13,7 @@ import {
   GradientBackground,
   NumericField,
 } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {
   fontSize,
@@ -93,7 +93,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                 marginBottom: spacing.sm,
               }}
             >
-              <Ionicons name="create" size={22} color={colors.white} />
+              <ThemeIcon name="create" size={22} color={colors.white} />
               <Text
                 style={{
                   marginLeft: spacing.sm,

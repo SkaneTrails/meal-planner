@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { SurfaceCard } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
@@ -69,7 +69,7 @@ export const ReviewVersionToggle = ({
             gap: spacing.xs,
           }}
         >
-          <Ionicons
+          <ThemeIcon
             name="sparkles"
             size={16}
             color={

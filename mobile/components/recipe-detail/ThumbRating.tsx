@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 
@@ -39,7 +39,7 @@ export const ThumbRating = ({
               : 'transparent',
         })}
       >
-        <Ionicons
+        <ThemeIcon
           name={isThumbDown ? 'thumbs-down' : 'thumbs-down-outline'}
           size={size}
           color={colors.white}
@@ -59,7 +59,7 @@ export const ThumbRating = ({
               : 'transparent',
         })}
       >
-        <Ionicons
+        <ThemeIcon
           name={isThumbUp ? 'thumbs-up' : 'thumbs-up-outline'}
           size={size}
           color={colors.white}

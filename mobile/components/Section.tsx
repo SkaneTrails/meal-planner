@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { type ReactNode, useRef } from 'react';
 import {
   Animated,
@@ -11,6 +10,7 @@ import {
 } from 'react-native';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 import { IconCircle } from './IconCircle';
+import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 type SectionSize = 'sm' | 'md';
 
@@ -19,7 +19,7 @@ export interface SectionProps {
   /** Optional subtitle below title. Typically used with `size="md"`. */
   subtitle?: string;
   /** Optional Ionicon name. When omitted, no icon circle renders. */
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: IoniconName;
   /** Override icon color. Default: theme-derived per size. */
   iconColor?: string;
   /** Override icon background. Default: theme-derived per size. */
@@ -127,7 +127,7 @@ export const Section = ({
           bg={resolvedIconBg}
           style={{ marginRight: spacing.md }}
         >
-          <Ionicons name={icon} size={iconPixels} color={resolvedIconColor} />
+          <ThemeIcon name={icon} size={iconPixels} color={resolvedIconColor} />
         </IconCircle>
       )}
       <View style={{ flex: 1 }}>
@@ -214,7 +214,7 @@ const ChevronWithAccessory = ({
       >
         {!disabled && (
           <Animated.View style={{ transform: [{ rotate: chevronRotation }] }}>
-            <Ionicons
+            <ThemeIcon
               name="chevron-down"
               size={16}
               color={colors.content.placeholder}
@@ -228,7 +228,11 @@ const ChevronWithAccessory = ({
 
   return (
     <Animated.View style={{ transform: [{ rotate: chevronRotation }] }}>
-      <Ionicons name="chevron-down" size={20} color={colors.content.subtitle} />
+      <ThemeIcon
+        name="chevron-down"
+        size={20}
+        color={colors.content.subtitle}
+      />
     </Animated.View>
   );
 };

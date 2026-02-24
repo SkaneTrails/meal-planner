@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 import { AnimatedPressable, SurfaceCard } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 
@@ -38,7 +38,7 @@ export const AdminSection = ({ onNavigateToAdmin }: AdminSectionProps) => {
             {t('settings.adminDashboardDesc')}
           </Text>
         </View>
-        <Ionicons
+        <ThemeIcon
           name="chevron-forward"
           size={20}
           color={colors.content.strong}
