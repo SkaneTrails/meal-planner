@@ -44,9 +44,7 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     'member',
   );
 
-  const { data: household } = useHousehold(householdId ?? '', {
-    enabled: canEdit,
-  });
+  const { data: household } = useHousehold(householdId ?? '', {});
   const renameHousehold = useRenameHousehold();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');

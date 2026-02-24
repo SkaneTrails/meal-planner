@@ -123,18 +123,23 @@ describe('useHouseholdSettingsForm', () => {
       expect(result.current.canEdit).toBe(false);
     });
 
-    it('passes enabled: false to admin-only hooks for member role', () => {
+    it('passes enabled: false to useHouseholdMembers for member role', () => {
       mockCurrentUser = { role: 'member', household_id: 'h1' };
       render('h1');
       expect(mockUseHouseholdMembers).toHaveBeenCalledWith('h1', { enabled: false });
-      expect(mockUseHousehold).toHaveBeenCalledWith('h1', { enabled: false });
     });
 
-    it('passes enabled: true to admin-only hooks for admin role', () => {
+    it('always fetches household regardless of role', () => {
+      mockCurrentUser = { role: 'member', household_id: 'h1' };
+      render('h1');
+      expect(mockUseHousehold).toHaveBeenCalledWith('h1', {});
+    });
+
+    it('passes enabled: true to useHouseholdMembers for admin role', () => {
       mockCurrentUser = { role: 'admin', household_id: 'h1' };
       render('h1');
       expect(mockUseHouseholdMembers).toHaveBeenCalledWith('h1', { enabled: true });
-      expect(mockUseHousehold).toHaveBeenCalledWith('h1', { enabled: true });
+      expect(mockUseHousehold).toHaveBeenCalledWith('h1', {});
     });
   });
 
