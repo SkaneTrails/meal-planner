@@ -423,6 +423,7 @@ vi.mock('@/lib/theme', () => {
       fishActive: '#2D7AB8',
       meatActive: '#B85C38',
       favoriteActive: '#C75050',
+      mealTypeActive: '#7B6B5D',
       toggleActiveBg: 'rgba(93, 78, 64, 0.12)',
       toggleInactiveBg: '#FFFFFF',
       toggleActiveBorder: '#4A3728',
