@@ -1,8 +1,9 @@
-import { Text, View } from 'react-native';
-import { ContentCard, TerminalFrame } from '@/components';
+import { Pressable, Text, View } from 'react-native';
+import { ContentCard, IconButton, TerminalFrame } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
+import { useTranslation } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 interface TimeStatCardProps {
@@ -59,6 +60,135 @@ const TimeStatCard = ({ icon, label, value }: TimeStatCardProps) => {
   );
 };
 
+interface ServingsInteractiveProps {
+  value: string;
+  isScaled: boolean;
+  originalPortions: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  onReset: () => void;
+  decrementDisabled: boolean;
+}
+
+const ServingsInteractive = ({
+  value,
+  isScaled,
+  originalPortions,
+  onIncrement,
+  onDecrement,
+  onReset,
+  decrementDisabled,
+}: ServingsInteractiveProps) => {
+  const { colors, fonts } = useTheme();
+  const { t } = useTranslation();
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.xs,
+        }}
+      >
+        <IconButton
+          icon="remove"
+          onPress={onDecrement}
+          disabled={decrementDisabled}
+          tone="alt"
+          size="sm"
+          label={t('recipe.decreasePortions')}
+        />
+        <Pressable
+          onPress={isScaled ? onReset : undefined}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isScaled
+              ? t('recipe.resetPortions', { count: originalPortions })
+              : undefined
+          }
+        >
+          <Text
+            style={{
+              fontSize: fontSize['3xl'],
+              fontFamily: fonts.bodySemibold,
+              color: isScaled ? colors.primary : colors.content.body,
+              letterSpacing: letterSpacing.tight,
+              minWidth: 28,
+              textAlign: 'center',
+            }}
+          >
+            {value}
+          </Text>
+        </Pressable>
+        <IconButton
+          icon="add"
+          onPress={onIncrement}
+          tone="alt"
+          size="sm"
+          label={t('recipe.increasePortions')}
+        />
+      </View>
+    </View>
+  );
+};
+
+const InteractiveStatCard = ({
+  icon,
+  label,
+  value,
+  isScaled,
+  originalPortions,
+  onIncrement,
+  onDecrement,
+  onReset,
+  decrementDisabled,
+}: TimeStatCardProps & ServingsInteractiveProps) => {
+  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.statsCard.bg,
+        borderRadius: borderRadius.md,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: isScaled ? colors.primary : colors.statsCard.borderColor,
+        alignItems: 'center',
+        ...shadows.sm,
+      }}
+    >
+      {visibility.showStatIcons && (
+        <ThemeIcon
+          name={icon}
+          size={18}
+          color={colors.content.secondary}
+          style={{ marginBottom: spacing.sm }}
+        />
+      )}
+      <ServingsInteractive
+        value={value}
+        isScaled={isScaled}
+        originalPortions={originalPortions}
+        onIncrement={onIncrement}
+        onDecrement={onDecrement}
+        onReset={onReset}
+        decrementDisabled={decrementDisabled}
+      />
+      <Text
+        style={{
+          fontSize: fontSize.xs,
+          fontFamily: fonts.body,
+          color: colors.content.secondary,
+          letterSpacing: letterSpacing.wide,
+          textTransform: 'uppercase',
+        }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+};
+
 interface RecipeTimeServingsProps {
   prepTime: number | null | undefined;
   cookTime: number | null | undefined;
@@ -70,6 +200,14 @@ interface RecipeTimeServingsProps {
   /** Visibility label rendered in the top border right (CRT only). */
   visibilityLabel?: string;
   t: TFunction;
+  portionScaling?: {
+    currentPortions: number;
+    originalPortions: number;
+    isScaled: boolean;
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+  };
 }
 
 export const RecipeTimeServings = ({
@@ -81,6 +219,7 @@ export const RecipeTimeServings = ({
   actionSegments,
   visibilityLabel,
   t,
+  portionScaling,
 }: RecipeTimeServingsProps) => {
   const { colors, fonts, visibility, chrome } = useTheme();
   const hasAnyTime = prepTime || cookTime || totalTime;
@@ -90,6 +229,7 @@ export const RecipeTimeServings = ({
     icon: IoniconName;
     label: string;
     value: string;
+    interactive?: boolean;
   }[] = [];
   if (prepTime)
     stats.push({
@@ -113,7 +253,12 @@ export const RecipeTimeServings = ({
     stats.push({
       icon: 'people',
       label: t('labels.time.serves'),
-      value: String(servings),
+      value: portionScaling
+        ? String(portionScaling.currentPortions)
+        : String(servings),
+      interactive: Boolean(
+        portionScaling && portionScaling.originalPortions > 0,
+      ),
     });
 
   if (chrome === 'flat') {
@@ -131,16 +276,28 @@ export const RecipeTimeServings = ({
             {stats.map((stat, i) => (
               <View key={stat.label} style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 1, alignItems: 'center', padding: 12 }}>
-                  <Text
-                    style={{
-                      fontSize: fontSize['3xl'],
-                      fontFamily: fonts.bodySemibold,
-                      color: colors.content.body,
-                      letterSpacing: letterSpacing.tight,
-                    }}
-                  >
-                    {stat.value}
-                  </Text>
+                  {stat.interactive && portionScaling ? (
+                    <ServingsInteractive
+                      value={stat.value}
+                      isScaled={portionScaling.isScaled}
+                      originalPortions={portionScaling.originalPortions}
+                      onIncrement={portionScaling.increment}
+                      onDecrement={portionScaling.decrement}
+                      onReset={portionScaling.reset}
+                      decrementDisabled={portionScaling.currentPortions <= 1}
+                    />
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: fontSize['3xl'],
+                        fontFamily: fonts.bodySemibold,
+                        color: colors.content.body,
+                        letterSpacing: letterSpacing.tight,
+                      }}
+                    >
+                      {stat.value}
+                    </Text>
+                  )}
                   <Text
                     style={{
                       fontSize: fontSize.xs,
@@ -180,11 +337,25 @@ export const RecipeTimeServings = ({
       >
         {stats.map((stat, i) => (
           <View key={stat.label} style={{ flex: 1, flexDirection: 'row' }}>
-            <TimeStatCard
-              icon={stat.icon}
-              label={stat.label}
-              value={stat.value}
-            />
+            {stat.interactive && portionScaling ? (
+              <InteractiveStatCard
+                icon={stat.icon}
+                label={stat.label}
+                value={stat.value}
+                isScaled={portionScaling.isScaled}
+                originalPortions={portionScaling.originalPortions}
+                onIncrement={portionScaling.increment}
+                onDecrement={portionScaling.decrement}
+                onReset={portionScaling.reset}
+                decrementDisabled={portionScaling.currentPortions <= 1}
+              />
+            ) : (
+              <TimeStatCard
+                icon={stat.icon}
+                label={stat.label}
+                value={stat.value}
+              />
+            )}
             {visibility.showStatDividers && i < stats.length - 1 && (
               <View
                 style={{

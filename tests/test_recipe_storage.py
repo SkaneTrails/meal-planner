@@ -920,6 +920,25 @@ class TestCountRecipes:
 
         assert result == 15
 
+    def test_owned_only_excludes_shared(self) -> None:
+        """owned_only=True should count only owned recipes, not shared."""
+        mock_db = MagicMock()
+        mock_owned_result = MagicMock()
+        mock_owned_result.value = 10
+
+        mock_owned_query = MagicMock()
+        mock_owned_query.where.return_value = mock_owned_query
+        mock_owned_query.count.return_value.get.return_value = [[mock_owned_result]]
+
+        mock_collection = MagicMock()
+        mock_collection.where.return_value = mock_owned_query
+        mock_db.collection.return_value = mock_collection
+
+        with patch("api.storage.recipe_queries.get_firestore_client", return_value=mock_db):
+            result = count_recipes(household_id="household-1", owned_only=True)
+
+        assert result == 10
+
     def test_applies_hidden_filter_by_default(self) -> None:
         """Should filter hidden recipes when show_hidden=False."""
         mock_db = MagicMock()

@@ -24,6 +24,8 @@ const adminKeys = {
     [...adminKeys.all, 'members', householdId] as const,
   settings: (householdId: string) =>
     [...adminKeys.all, 'settings', householdId] as const,
+  recipeCount: (householdId: string) =>
+    [...adminKeys.all, 'recipeCount', householdId] as const,
   itemsAtHome: (householdId: string) =>
     [...adminKeys.all, 'itemsAtHome', householdId] as const,
   favorites: (householdId: string) =>
@@ -158,6 +160,18 @@ export const useHouseholdSettings = (householdId: string | null) => {
     queryKey: adminKeys.settings(householdId ?? ''),
     queryFn: () => api.getHouseholdSettings(householdId ?? ''),
     enabled: !!householdId,
+  });
+};
+
+/**
+ * Get recipe count for a household. Superuser only.
+ */
+export const useHouseholdRecipeCount = (householdId: string | null) => {
+  return useQuery<{ recipe_count: number }>({
+    queryKey: adminKeys.recipeCount(householdId ?? ''),
+    queryFn: () => api.getHouseholdRecipeCount(householdId ?? ''),
+    enabled: !!householdId,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

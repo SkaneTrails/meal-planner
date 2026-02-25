@@ -12,3 +12,4 @@ export * from './use-recipes';
 export * from './useDebouncedValue';
 export * from './useImagePicker';
 export * from './useKeepScreenOn';
+export * from './usePortionScaling';

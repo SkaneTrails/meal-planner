@@ -47,7 +47,7 @@ const mockApi = vi.mocked(api);
 describe('useHouseholds', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.getHouseholds.mockResolvedValue([{ id: 'h1', name: 'Test', created_by: 'test@example.com' }]);
+    mockApi.getHouseholds.mockResolvedValue([{ id: 'h1', name: 'Test', created_by: 'test@example.com', created_at: '2024-01-01T00:00:00Z' }]);
   });
 
   it('fetches households when enabled is true', async () => {
@@ -134,7 +134,7 @@ describe('useCurrentUser', () => {
 describe('useHousehold', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.getHousehold.mockResolvedValue({ id: 'h1', name: 'Test House', created_by: 'test@example.com' });
+    mockApi.getHousehold.mockResolvedValue({ id: 'h1', name: 'Test House', created_by: 'test@example.com', created_at: '2024-01-01T00:00:00Z' });
   });
 
   it('fetches a household by ID', async () => {
@@ -235,7 +235,7 @@ describe('useHouseholdSettings', () => {
 describe('useCreateHousehold', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.createHousehold.mockResolvedValue({ id: 'new-h', name: 'New House', created_by: 'test@example.com' });
+    mockApi.createHousehold.mockResolvedValue({ id: 'new-h', name: 'New House', created_by: 'test@example.com', created_at: '2024-01-01T00:00:00Z' });
   });
 
   it('creates a household', async () => {
@@ -255,7 +255,7 @@ describe('useCreateHousehold', () => {
 describe('useRenameHousehold', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockApi.renameHousehold.mockResolvedValue({ id: 'h1', name: 'Renamed House', created_by: 'test@example.com' });
+    mockApi.renameHousehold.mockResolvedValue({ id: 'h1', name: 'Renamed House', created_by: 'test@example.com', created_at: '2024-01-01T00:00:00Z' });
   });
 
   it('renames a household', async () => {
