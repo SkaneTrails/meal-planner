@@ -14,9 +14,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Pressable, Text, TextInput, View } from 'react-native';
 import {
+  ActionButton,
   BottomSheetModal,
   Button,
-  IconButton,
   IconCircle,
   RecipeCard,
 } from '@/components';
@@ -233,12 +233,9 @@ const QuickContent = ({
         label={t('selectRecipe.quick.addButton')}
       />
 
-      <Button
-        variant="text"
-        tone="warning"
+      <ActionButton.Delete
         onPress={handleRemoveMeal}
         disabled={removeMeal.isPending}
-        icon="trash-outline"
         iconSize={18}
         label={t('selectRecipe.clearMeal')}
         style={{
@@ -410,11 +407,9 @@ const PaginationControls = ({
         gap: spacing.md,
       }}
     >
-      <Button
-        variant="text"
+      <ActionButton.Back
         onPress={onPrevious}
         disabled={page === 0}
-        icon="chevron-back"
         label={t('common.previous')}
         style={{ flex: 1 }}
       />
@@ -440,11 +435,9 @@ const PaginationControls = ({
           })}
         </Text>
       </View>
-      <Button
-        variant="text"
+      <ActionButton.Forward
         onPress={onNext}
         disabled={page >= totalPages - 1}
-        icon="chevron-forward"
         label={t('common.next')}
         style={{ flex: 1 }}
       />
@@ -1187,10 +1180,8 @@ const CopyContent = ({
           gap: spacing.sm,
         }}
       >
-        <IconButton
-          tone="alt"
+        <ActionButton.Back
           onPress={() => setCopyWeekOffset((prev) => prev - 1)}
-          icon="chevron-back"
         />
         <View
           style={{
@@ -1219,10 +1210,8 @@ const CopyContent = ({
             })}
           </Text>
         </View>
-        <IconButton
-          tone="alt"
+        <ActionButton.Forward
           onPress={() => setCopyWeekOffset((prev) => prev + 1)}
-          icon="chevron-forward"
         />
       </View>
 
@@ -1295,12 +1284,9 @@ const CopyContent = ({
       )}
 
       {/* Clear meal button */}
-      <Button
-        variant="text"
-        tone="warning"
+      <ActionButton.Delete
         onPress={handleRemoveMeal}
         disabled={removeMeal.isPending}
-        icon="trash-outline"
         iconSize={18}
         label={t('selectRecipe.clearMeal')}
         style={{

@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import {
+  ActionButton,
   Button,
   FormField,
   GradientBackground,
@@ -219,10 +220,7 @@ export const ManualRecipeForm = ({ actions }: ManualRecipeFormProps) => {
                   }}
                   resizeMode="cover"
                 />
-                <Button
-                  variant="icon"
-                  tone="cancel"
-                  icon="close"
+                <ActionButton.Dismiss
                   onPress={() => {
                     setSelectedImage(null);
                     setImageUrl('');

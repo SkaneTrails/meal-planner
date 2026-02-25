@@ -2,7 +2,7 @@
  * Labelled toggle row for settings screens.
  *
  * Renders a title + optional subtitle on the left and a ThemeToggle on the right.
- * Used inside SurfaceCard or Section children for preference switches.
+ * Used inside ContentCard or Section children for preference switches.
  */
 
 import { Text, View } from 'react-native';

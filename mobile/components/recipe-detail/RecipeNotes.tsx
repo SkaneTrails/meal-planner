@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, View } from 'react-native';
-import { Button, Section } from '@/components';
+import { ActionButton, Button, Section } from '@/components';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
@@ -210,10 +210,7 @@ export const RecipeNotes = ({
             >
               {formatDate(note.created_at)}
             </Text>
-            <Button
-              variant="text"
-              tone="warning"
-              icon="trash-outline"
+            <ActionButton.Delete
               size="sm"
               onPress={() => handleDelete(note.id)}
               hitSlop={8}

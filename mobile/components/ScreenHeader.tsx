@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { View, type ViewStyle } from 'react-native';
-import { IconButton } from '@/components/IconButton';
+import { ActionButton } from '@/components/ActionButton';
 import { ScreenHeaderBar } from '@/components/ScreenHeaderBar';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { layout, spacing, useTheme } from '@/lib/theme';
@@ -47,11 +47,10 @@ export const ScreenHeader = ({
             }}
           >
             {onBack ? (
-              <IconButton
+              <ActionButton.Back
                 onPress={onBack}
-                icon="chevron-back"
-                size="md"
                 tone="glass"
+                size="md"
                 style={shadows.sm}
               />
             ) : (

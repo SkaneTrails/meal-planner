@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { SurfaceCard } from '@/components';
+import { ContentCard } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
@@ -32,7 +32,7 @@ export const ReviewVersionToggle = ({
       >
         {t('reviewRecipe.version')}
       </Text>
-      <SurfaceCard padding={spacing.xs} style={{ flexDirection: 'row' }}>
+      <ContentCard padding={spacing.xs} cardStyle={{ flexDirection: 'row' }}>
         <Pressable
           onPress={() => onSelectTab('original')}
           style={{
@@ -87,7 +87,7 @@ export const ReviewVersionToggle = ({
             {t('reviewRecipe.enhanced')}
           </Text>
         </Pressable>
-      </SurfaceCard>
+      </ContentCard>
     </View>
   );
 };

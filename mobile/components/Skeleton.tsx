@@ -11,7 +11,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { borderRadius, spacing, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -23,10 +23,11 @@ interface SkeletonProps {
 export const Skeleton = ({
   width = '100%',
   height = 16,
-  borderRadius: radius = borderRadius.sm,
+  borderRadius: radius,
   style,
 }: SkeletonProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius: themeRadius } = useTheme();
+  const resolvedRadius = radius ?? themeRadius.sm;
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export const Skeleton = ({
         {
           width,
           height,
-          borderRadius: radius,
+          borderRadius: resolvedRadius,
           backgroundColor: colors.bgDark,
           opacity,
         },
@@ -71,14 +72,19 @@ interface RecipeCardSkeletonProps {
 export const RecipeCardSkeleton = ({
   cardSize = 170,
 }: RecipeCardSkeletonProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const imageHeight = cardSize * 0.72;
 
   return (
     <View
       style={[
         styles.cardContainer,
-        { width: cardSize, height: cardSize, backgroundColor: colors.white },
+        {
+          width: cardSize,
+          height: cardSize,
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.md,
+        },
       ]}
     >
       <Skeleton width="100%" height={imageHeight} borderRadius={0} />
@@ -113,19 +119,19 @@ export const RecipeListSkeleton = ({
 };
 
 export const StatCardSkeleton = () => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
 
   return (
-    <View style={[styles.statCard, { backgroundColor: colors.white }]}>
+    <View
+      style={[
+        styles.statCard,
+        { backgroundColor: colors.white, borderRadius: borderRadius.md },
+      ]}
+    >
       <Skeleton width={32} height={32} borderRadius={10} />
       <Skeleton width={40} height={10} style={{ marginTop: 8 }} />
       <Skeleton width={30} height={24} style={{ marginTop: 4 }} />
-      <Skeleton
-        width="100%"
-        height={32}
-        style={{ marginTop: 8 }}
-        borderRadius={borderRadius.sm}
-      />
+      <Skeleton width="100%" height={32} style={{ marginTop: 8 }} />
     </View>
   );
 };
@@ -149,7 +155,7 @@ export const HomeScreenSkeleton = () => {
           <Skeleton width={28} height={28} borderRadius={8} />
           <Skeleton width={100} height={16} style={{ marginLeft: 8 }} />
         </View>
-        <Skeleton width="100%" height={52} borderRadius={borderRadius.md} />
+        <Skeleton width="100%" height={52} />
       </View>
 
       {/* Next up section */}
@@ -158,17 +164,22 @@ export const HomeScreenSkeleton = () => {
           <Skeleton width={28} height={28} borderRadius={8} />
           <Skeleton width={60} height={16} style={{ marginLeft: 8 }} />
         </View>
-        <Skeleton width="100%" height={64} borderRadius={borderRadius.md} />
+        <Skeleton width="100%" height={64} />
       </View>
     </View>
   );
 };
 
 export const GroceryItemSkeleton = () => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
 
   return (
-    <View style={[styles.groceryItem, { backgroundColor: colors.white }]}>
+    <View
+      style={[
+        styles.groceryItem,
+        { backgroundColor: colors.white, borderRadius: borderRadius.md },
+      ]}
+    >
       <Skeleton width={24} height={24} borderRadius={6} />
       <View style={styles.groceryItemContent}>
         <Skeleton width="70%" height={14} />
@@ -185,18 +196,23 @@ interface GroceryListSkeletonProps {
 export const GroceryListSkeleton = ({
   count = 8,
 }: GroceryListSkeletonProps) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   return (
     <View style={styles.groceryContainer}>
       {/* Stats card skeleton */}
-      <View style={[styles.groceryStats, { backgroundColor: colors.white }]}>
+      <View
+        style={[
+          styles.groceryStats,
+          { backgroundColor: colors.white, borderRadius: borderRadius.md },
+        ]}
+      >
         <View style={{ flex: 1 }}>
           <Skeleton width={120} height={13} />
           <Skeleton width={150} height={20} style={{ marginTop: 4 }} />
         </View>
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          <Skeleton width={44} height={38} borderRadius={borderRadius.sm} />
-          <Skeleton width={44} height={38} borderRadius={borderRadius.sm} />
+          <Skeleton width={44} height={38} />
+          <Skeleton width={44} height={38} />
         </View>
       </View>
       <Skeleton
@@ -218,7 +234,6 @@ export const GroceryListSkeleton = ({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    borderRadius: borderRadius.md,
     overflow: 'hidden',
   },
   cardContent: {
@@ -238,7 +253,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    borderRadius: borderRadius.md,
     padding: spacing.md,
   },
   homeContainer: {
@@ -263,7 +277,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   groceryStats: {
-    borderRadius: borderRadius.md,
     padding: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
@@ -272,7 +285,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing['md-lg'],
-    borderRadius: borderRadius.md,
     marginBottom: spacing.sm,
   },
   groceryItemContent: {

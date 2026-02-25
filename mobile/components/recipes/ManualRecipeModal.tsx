@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
 import {
+  ActionButton,
   BottomSheetModal,
   Button,
   FormField,
@@ -257,10 +258,7 @@ export const ManualRecipeModal = ({
               }}
               resizeMode="cover"
             />
-            <Button
-              variant="icon"
-              tone="cancel"
-              icon="close"
+            <ActionButton.Dismiss
               onPress={() => {
                 setSelectedImage(null);
                 setImageUrl('');

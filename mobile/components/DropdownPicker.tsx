@@ -8,15 +8,13 @@
  *   - true  → Ionicons checkmark-circle (light / pastel)
  *   - false → [X] / [ ] text indicator (terminal)
  *
- * Use `embedded` when the picker lives inside a parent card (e.g. ContentCard)
- * to avoid the double-card effect — renders with a subtle surface tint instead
- * of the full glass SurfaceCard.
+ * Uses `ContentCard variant="surface"` for theme-aware inner-grouping styling.
  */
 
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { SurfaceCard } from '@/components/SurfaceCard';
+import { Pressable, Text } from 'react-native';
+import { ContentCard } from '@/components/ContentCard';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -32,8 +30,6 @@ interface DropdownPickerProps<T extends string> {
   onSelect: (value: T) => void;
   /** Whether the picker is disabled (no interaction). */
   disabled?: boolean;
-  /** Use subtle surface tint instead of SurfaceCard (for nesting inside ContentCard). */
-  embedded?: boolean;
   testID?: string;
 }
 
@@ -42,10 +38,9 @@ export const DropdownPicker = <T extends string>({
   value,
   onSelect,
   disabled = false,
-  embedded = false,
   testID,
 }: DropdownPickerProps<T>) => {
-  const { colors, fonts, visibility, borderRadius } = useTheme();
+  const { colors, fonts, visibility } = useTheme();
   const [expanded, setExpanded] = useState(false);
 
   const selected = options.find((o) => o.value === value);
@@ -55,11 +50,9 @@ export const DropdownPicker = <T extends string>({
     setExpanded(false);
   };
 
-  const Wrapper = embedded ? EmbeddedWrapper : SurfaceCardWrapper;
-
   if (!expanded) {
     return (
-      <Wrapper colors={colors} borderRadius={borderRadius}>
+      <ContentCard variant="surface" padding={0} style={{ overflow: 'hidden' }}>
         <Pressable
           onPress={disabled ? undefined : () => setExpanded(true)}
           disabled={disabled}
@@ -102,12 +95,12 @@ export const DropdownPicker = <T extends string>({
             </Text>
           )}
         </Pressable>
-      </Wrapper>
+      </ContentCard>
     );
   }
 
   return (
-    <Wrapper colors={colors} borderRadius={borderRadius}>
+    <ContentCard variant="surface" padding={0} style={{ overflow: 'hidden' }}>
       {options.map((option, index) => {
         const isSelected = value === option.value;
         return (
@@ -144,37 +137,9 @@ export const DropdownPicker = <T extends string>({
           </Pressable>
         );
       })}
-    </Wrapper>
+    </ContentCard>
   );
 };
-
-/* ------------------------------------------------------------------ */
-/*  Wrapper variants                                                    */
-/* ------------------------------------------------------------------ */
-
-interface WrapperProps {
-  children: React.ReactNode;
-  colors: ReturnType<typeof useTheme>['colors'];
-  borderRadius: ReturnType<typeof useTheme>['borderRadius'];
-}
-
-const SurfaceCardWrapper = ({ children }: WrapperProps) => (
-  <SurfaceCard style={{ overflow: 'hidden' }} padding={0}>
-    {children}
-  </SurfaceCard>
-);
-
-const EmbeddedWrapper = ({ children, colors, borderRadius }: WrapperProps) => (
-  <View
-    style={{
-      backgroundColor: colors.surface.subtle,
-      borderRadius: borderRadius.md,
-      overflow: 'hidden',
-    }}
-  >
-    {children}
-  </View>
-);
 
 /* ------------------------------------------------------------------ */
 /*  Selection indicator                                                */

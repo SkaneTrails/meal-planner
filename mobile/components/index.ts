@@ -2,6 +2,7 @@
  * Export all components.
  */
 
+export { ActionButton } from './ActionButton';
 export { AnimatedPressable } from './AnimatedPressable';
 export { BottomActionBar } from './BottomActionBar';
 export { BottomSheetModal } from './BottomSheetModal';
@@ -63,7 +64,6 @@ export {
 export { StepperControl } from './StepperControl';
 export type { SuggestionGroup } from './SuggestionChipList';
 export { SuggestionChipList } from './SuggestionChipList';
-export { SurfaceCard } from './SurfaceCard';
 export { TerminalDivider } from './TerminalDivider';
 export type { FabSlot } from './TerminalFabBar';
 export { TerminalFabBar } from './TerminalFabBar';

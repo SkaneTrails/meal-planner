@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import {
+  ActionButton,
+  ContentCard,
   DropdownPicker,
   IconButton,
   SettingToggleRow,
@@ -9,7 +11,6 @@ import {
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import {
-  borderRadius,
   fontSize,
   iconSize,
   letterSpacing,
@@ -62,7 +63,7 @@ export const GeneralSection = ({
   weekStart,
   onSetWeekStart,
 }: GeneralSectionProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   const weekStartOptions = useMemo(
@@ -81,13 +82,7 @@ export const GeneralSection = ({
   };
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.surface.subtle,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-      }}
-    >
+    <ContentCard variant="surface">
       {/* Household Name */}
       <View>
         <Text
@@ -132,7 +127,7 @@ export const GeneralSection = ({
               onPress={onSaveName}
               isPending={isRenamePending}
             />
-            <IconButton tone="cancel" icon="close" onPress={onCancelEditName} />
+            <ActionButton.Dismiss onPress={onCancelEditName} />
           </View>
         ) : (
           <Pressable
@@ -226,6 +221,6 @@ export const GeneralSection = ({
           testID="week-start-picker"
         />
       </View>
-    </View>
+    </ContentCard>
   );
 };

@@ -9,10 +9,10 @@ import { useState } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 import {
   Button,
+  ContentCard,
   FullScreenLoading,
   ScreenHeader,
   ScreenLayout,
-  SurfaceCard,
 } from '@/components';
 import {
   CreateHouseholdModal,
@@ -153,10 +153,8 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
   const { colors, borderRadius } = useTheme();
 
   return (
-    <SurfaceCard
-      radius="lg"
-      padding={spacing.md}
-      style={{
+    <ContentCard
+      cardStyle={{
         marginHorizontal: spacing.lg,
         marginBottom: spacing.md,
       }}
@@ -202,7 +200,7 @@ const CurrentUserInfo = ({ email, role }: { email: string; role: string }) => {
           </Text>
         </View>
       </View>
-    </SurfaceCard>
+    </ContentCard>
   );
 };
 

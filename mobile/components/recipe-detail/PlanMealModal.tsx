@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { BottomSheetModal, Button } from '@/components';
+import { ActionButton, BottomSheetModal } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -55,13 +55,9 @@ export const PlanMealModal = ({
           gap: spacing.xl,
         }}
       >
-        <Button
-          variant="icon"
-          tone="alt"
+        <ActionButton.Back
           onPress={() => onSetWeekOffset(0)}
           disabled={weekOffset === 0}
-          icon="chevron-back"
-          iconSize={24}
           style={{ padding: spacing.sm }}
         />
         <Text
@@ -73,13 +69,9 @@ export const PlanMealModal = ({
         >
           {weekOffset === 0 ? t('recipe.thisWeek') : t('recipe.nextWeek')}
         </Text>
-        <Button
-          variant="icon"
-          tone="alt"
+        <ActionButton.Forward
           onPress={() => onSetWeekOffset(1)}
           disabled={weekOffset === 1}
-          icon="chevron-forward"
-          iconSize={24}
           style={{ padding: spacing.sm }}
         />
       </View>

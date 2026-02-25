@@ -115,6 +115,40 @@ vi.mock('@/components', () => ({
     const { createElement } = require('react');
     return createElement('button', { onClick: onPress, disabled, 'data-testid': testID }, label ?? icon ?? '');
   },
+  ActionButton: {
+    Delete: ({ label, onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-delete' }, label ?? 'trash-outline');
+    },
+    Dismiss: ({ onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-dismiss' }, 'close');
+    },
+    ClearInput: ({ onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-clear-input' }, 'close-circle');
+    },
+    Cancel: ({ label, onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-cancel' }, label);
+    },
+    SignOut: ({ label, onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-sign-out' }, label);
+    },
+    Add: ({ onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-add' }, 'add');
+    },
+    Back: ({ label, onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-back' }, label ?? 'chevron-back');
+    },
+    Forward: ({ label, onPress, disabled, testID, ...rest }: any) => {
+      const { createElement } = require('react');
+      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-forward' }, label ?? 'chevron-forward');
+    },
+  },
   ButtonGroup: ({ children }: any) => {
     const { createElement } = require('react');
     return createElement('div', { 'data-testid': 'button-group' }, children);
@@ -219,10 +253,6 @@ vi.mock('@/components', () => ({
       createElement('button', { onClick: onIncrement, disabled: incrementDisabled, 'aria-label': 'Increase' }, '+'),
       subtitle ? createElement('span', null, subtitle) : null,
     );
-  },
-  SurfaceCard: ({ children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'surface-card' }, children);
   },
   ContentCard: ({ children }: any) => {
     const { createElement } = require('react');

@@ -1,5 +1,6 @@
-import { TextInput, View } from 'react-native';
-import { Button } from '@/components/Button';
+import { TextInput } from 'react-native';
+import { ActionButton } from '@/components';
+import { ContentCard } from '@/components/ContentCard';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface InlineAddInputProps {
@@ -17,7 +18,7 @@ interface InlineAddInputProps {
  * Compact text input with an add button, used in settings screens
  * for adding note suggestions or pantry items.
  *
- * Wraps in a SurfaceCard with minimal padding and a submit button
+ * Wraps in a ContentCard surface variant with minimal padding and a submit button
  * that enables/disables based on whether the input has content.
  */
 export const InlineAddInput = ({
@@ -28,17 +29,16 @@ export const InlineAddInput = ({
   placeholderTextColor: placeholderTextColorProp,
   disabled = false,
 }: InlineAddInputProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
   const hasContent = !!value.trim();
   const resolvedPlaceholderColor =
     placeholderTextColorProp ?? colors.content.placeholderHex;
 
   return (
-    <View
+    <ContentCard
+      variant="surface"
+      padding={spacing.sm}
       style={{
-        backgroundColor: colors.surface.subtle,
-        borderRadius: borderRadius.md,
-        padding: spacing.sm,
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: spacing.md,
@@ -62,14 +62,12 @@ export const InlineAddInput = ({
         editable={!disabled}
         returnKeyType="done"
       />
-      <Button
-        variant="icon"
-        icon="add"
+      <ActionButton.Add
         onPress={onSubmit}
         disabled={disabled || !hasContent}
         testID="inline-add-button"
         size="md"
       />
-    </View>
+    </ContentCard>
   );
 };

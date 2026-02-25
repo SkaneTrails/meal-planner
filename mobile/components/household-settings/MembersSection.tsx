@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Button, Chip } from '@/components';
+import { ActionButton, Button, Chip, ContentCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
@@ -35,17 +35,15 @@ const MemberCard = ({
   canEdit: boolean;
   onRemove: () => void;
 }) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <View
+    <ContentCard
+      variant="surface"
       style={{
-        backgroundColor: colors.surface.subtle,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -103,16 +101,9 @@ const MemberCard = ({
         </View>
       </View>
       {canEdit && !isSelf && (
-        <Button
-          variant="text"
-          tone="warning"
-          onPress={onRemove}
-          icon="trash-outline"
-          iconSize={18}
-          hitSlop={8}
-        />
+        <ActionButton.Delete onPress={onRemove} iconSize={18} hitSlop={8} />
       )}
-    </View>
+    </ContentCard>
   );
 };
 
@@ -136,14 +127,7 @@ const AddMemberForm = ({
   const { t } = useTranslation();
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.surface.subtle,
-        borderRadius: borderRadius.md,
-        padding: spacing.md,
-        marginTop: spacing.sm,
-      }}
-    >
+    <ContentCard variant="surface" style={{ marginTop: spacing.sm }}>
       <View
         style={{
           flexDirection: 'row',
@@ -213,7 +197,7 @@ const AddMemberForm = ({
           }}
         />
       </View>
-    </View>
+    </ContentCard>
   );
 };
 
@@ -230,7 +214,7 @@ export const MembersSection = ({
   onRemoveMember,
   isAddPending,
 }: MembersSectionProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -254,14 +238,7 @@ export const MembersSection = ({
           ))}
         </View>
       ) : (
-        <View
-          style={{
-            backgroundColor: colors.surface.subtle,
-            borderRadius: borderRadius.md,
-            padding: spacing.md,
-            alignItems: 'center',
-          }}
-        >
+        <ContentCard variant="surface" style={{ alignItems: 'center' }}>
           <Text
             style={{
               color: colors.content.strong,
@@ -271,7 +248,7 @@ export const MembersSection = ({
           >
             {t('admin.noMembers')}
           </Text>
-        </View>
+        </ContentCard>
       )}
 
       {canEdit && (

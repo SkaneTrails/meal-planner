@@ -14,9 +14,9 @@ import {
 import {
   BottomSheetModal,
   Button,
+  ContentCard,
   ScreenHeader,
   ScreenLayout,
-  SurfaceCard,
 } from '@/components';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
@@ -181,15 +181,15 @@ export default function RecipesScreen() {
             : t('recipes.collectionCount', { count: totalCount })
         }
       >
-        <SurfaceCard
+        <ContentCard
+          highlighted
           padding={spacing.md}
-          style={{
+          cardStyle={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
             marginHorizontal: spacing.xl,
             marginBottom: spacing.sm,
-            backgroundColor: colors.dayCard.bgToday,
           }}
         >
           <Text
@@ -213,7 +213,7 @@ export default function RecipesScreen() {
               paddingVertical: spacing.xs,
             }}
           />
-        </SurfaceCard>
+        </ContentCard>
 
         <SearchBar
           searchQuery={searchQuery}

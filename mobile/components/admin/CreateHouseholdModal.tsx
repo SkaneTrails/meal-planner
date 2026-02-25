@@ -1,5 +1,5 @@
 import { TextInput, View } from 'react-native';
-import { BottomSheetModal, Button } from '@/components';
+import { ActionButton, BottomSheetModal, Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -30,13 +30,7 @@ export const CreateHouseholdModal = ({
       title={t('admin.createHousehold.button')}
       subtitle={t('admin.createHousehold.nameLabel')}
       headerRight={
-        <Button
-          variant="text"
-          tone="cancel"
-          onPress={onClose}
-          label={t('common.cancel')}
-          size="lg"
-        />
+        <ActionButton.Cancel onPress={onClose} label={t('common.cancel')} />
       }
       footer={
         <View

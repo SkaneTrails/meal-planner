@@ -8,6 +8,7 @@ import {
   spacing,
   useTheme,
 } from '@/lib/theme';
+import { ActionButton } from './ActionButton';
 import { BottomSheetModal } from './BottomSheetModal';
 import { Button } from './Button';
 import { IconCircle } from './IconCircle';
@@ -58,10 +59,9 @@ export const EnhancementReviewModal = ({
       }
       footer={
         <View style={styles.buttonRow}>
-          <Button
-            variant="text"
-            tone="cancel"
+          <ActionButton.Cancel
             label={rejectLabel}
+            size="md"
             onPress={() => onReview('reject')}
             disabled={isReviewPending}
             style={styles.footerButton}

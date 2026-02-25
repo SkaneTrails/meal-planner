@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { BottomSheetModal, Chip, IconButton, SurfaceCard } from '@/components';
+import {
+  ActionButton,
+  BottomSheetModal,
+  Chip,
+  ContentCard,
+  IconButton,
+} from '@/components';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
@@ -263,16 +269,16 @@ const MemberCard = ({
   member: HouseholdMember;
   onRemove: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <SurfaceCard
-      radius="lg"
+    <ContentCard
       padding={spacing.md}
-      style={{
+      cardStyle={{
+        borderRadius: borderRadius.lg,
         marginBottom: spacing.sm,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -305,14 +311,8 @@ const MemberCard = ({
           />
         </View>
       </View>
-      <IconButton
-        tone="warning"
-        onPress={onRemove}
-        icon="trash-outline"
-        iconSize={20}
-        hitSlop={8}
-      />
-    </SurfaceCard>
+      <ActionButton.Delete onPress={onRemove} iconSize={20} hitSlop={8} />
+    </ContentCard>
   );
 };
 
@@ -325,7 +325,7 @@ const HouseholdInfoSection = ({
   recipeCount: number | undefined;
   isLoading: boolean;
 }) => {
-  const { colors } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -348,7 +348,10 @@ const HouseholdInfoSection = ({
       : t('admin.info.monday');
 
   return (
-    <SurfaceCard radius="lg" padding={spacing.md}>
+    <ContentCard
+      padding={spacing.md}
+      cardStyle={{ borderRadius: borderRadius.lg }}
+    >
       <InfoRow
         label={t('admin.info.language')}
         value={settings.language || '—'}
@@ -371,7 +374,7 @@ const HouseholdInfoSection = ({
         value={recipeCount != null ? String(recipeCount) : '—'}
         isLast
       />
-    </SurfaceCard>
+    </ContentCard>
   );
 };
 

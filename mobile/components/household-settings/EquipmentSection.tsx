@@ -9,15 +9,12 @@ interface EquipmentProps {
   equipment: string[];
   canEdit: boolean;
   onToggle: (key: string) => void;
-  /** Use subtle surface tint instead of SurfaceCard (for nesting inside ContentCard). */
-  embedded?: boolean;
 }
 
 export const SelectedEquipment = ({
   equipment,
   canEdit,
   onToggle,
-  embedded = false,
 }: EquipmentProps) => {
   const { t } = useTranslation();
 
@@ -35,7 +32,6 @@ export const SelectedEquipment = ({
       onRemove={onToggle}
       disabled={!canEdit}
       gap={spacing['xs-sm']}
-      embedded={embedded}
     />
   );
 };
@@ -44,7 +40,6 @@ export const AvailableEquipment = ({
   equipment,
   canEdit,
   onToggle,
-  embedded = false,
 }: EquipmentProps) => {
   const { t } = useTranslation();
 
@@ -66,7 +61,6 @@ export const AvailableEquipment = ({
       onAdd={onToggle}
       disabled={!canEdit}
       gap={spacing['xs-sm']}
-      embedded={embedded}
     />
   );
 };

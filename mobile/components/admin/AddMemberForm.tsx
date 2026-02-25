@@ -1,5 +1,5 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Button } from '@/components';
+import { ActionButton, Button } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 
@@ -52,13 +52,7 @@ export const AddMemberForm = ({
         >
           {t('admin.addMember.title')}
         </Text>
-        <Button
-          variant="icon"
-          tone="cancel"
-          onPress={onClose}
-          icon="close"
-          iconSize={24}
-        />
+        <ActionButton.Dismiss onPress={onClose} iconSize={24} />
       </View>
 
       <TextInput
