@@ -110,15 +110,25 @@ class DietaryConfig:
 
     @staticmethod
     def _resolve_meat(dietary: dict, diet_type: str, portion_base: int) -> tuple[str, int, int]:
-        """Determine meat strategy and eater counts from diet settings."""
-        if diet_type in ("pescatarian", "vegetarian", "vegan"):
+        """Determine meat strategy and eater counts from diet settings.
+
+        - ``no_restrictions``: everyone eats meat.  Legacy data without
+          ``diet_type`` also falls here and honours ``meat`` / ``meat_portions``.
+        - ``pescatarian`` / ``vegetarian``: mixed household supported
+          via ``meat_portions``.  Defaults to no-meat when unset.
+        - ``vegan``: no meat at all.
+        """
+        if diet_type == "vegan":
             return "vegetarian", 0, portion_base
 
         meat_portions = dietary.get("meat_portions")
         if meat_portions is not None:
             return _resolve_meat_portions(int(meat_portions), portion_base)
 
-        return _resolve_legacy_meat(dietary.get("meat") or "none", portion_base)
+        # Legacy fallback — no_restrictions defaults to all-meat,
+        # pescatarian/vegetarian default to no-meat.
+        legacy_default = "all" if diet_type == "no_restrictions" else "none"
+        return _resolve_legacy_meat(dietary.get("meat") or legacy_default, portion_base)
 
     @staticmethod
     def _resolve_seafood_dairy(dietary: dict, diet_type: str) -> tuple[bool, str]:

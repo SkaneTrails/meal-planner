@@ -11,7 +11,14 @@ const mockRefetchMembers = vi.fn();
 
 const { DEFAULT_SETTINGS } = vi.hoisted(() => ({
   DEFAULT_SETTINGS: {
-    dietary: { dairy: 'regular', vegetarian_percentage: 0 },
+    dietary: {
+      diet_type: 'no_restrictions',
+      seafood_ok: true,
+      meat: 'all',
+      meat_portions: 2,
+      dairy: 'regular',
+      ingredient_replacements: [],
+    },
     default_servings: 4,
     equipment: [],
   },

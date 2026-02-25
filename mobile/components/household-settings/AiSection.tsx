@@ -126,9 +126,10 @@ export const AiSection = ({
     },
   ];
 
-  const isVegan = (dietary.diet_type ?? 'no_restrictions') === 'vegan';
+  const dietType = dietary.diet_type ?? 'no_restrictions';
+  const isVegan = dietType === 'vegan';
   const isMixedEligible =
-    dietary.diet_type === 'vegetarian' || dietary.diet_type === 'pescatarian';
+    dietType === 'vegetarian' || dietType === 'pescatarian';
 
   const dairyOptions: DropdownOption<DairyPreference>[] = [
     {
@@ -176,7 +177,7 @@ export const AiSection = ({
           embedded
         />
 
-        {/* Mixed Household — only for vegetarian/pescatarian */}
+        {/* Mixed Household — only for no_restrictions */}
         {isMixedEligible && (
           <>
             <SectionLabel
