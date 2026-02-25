@@ -138,7 +138,7 @@ const it: Translations = {
   },
 
   recipes: {
-    title: 'Libreria ricette',
+    title: 'Ricettario',
     collectionCount: '{{count}} ricette nella tua collezione',
     filteredCount: '{{count}} ricette',
     searchPlaceholder: 'Cerca ricette...',
@@ -544,7 +544,7 @@ const it: Translations = {
     failedToAddItem: 'Impossibile aggiungere articolo',
     failedToRemoveItem: 'Impossibile rimuovere articolo',
     failedToChangeLanguage: 'Impossibile cambiare lingua',
-    recipeLibrary: 'Libreria Ricette',
+    recipeLibrary: 'Ricettario',
     recipeLibraryDesc: 'Gestisci la tua collezione di ricette',
     showHiddenRecipes: 'Mostra Ricette Nascoste',
     showHiddenRecipesDesc:

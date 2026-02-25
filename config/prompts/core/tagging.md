@@ -4,7 +4,7 @@
 
 Tags enable filtering, searching, and categorizing recipes in the app. Apply tags generously — a recipe should typically have **8–15 tags** covering multiple dimensions. Use **lowercase plain text** without `#` prefix (e.g., `soup`, `italian`, `quick`). The app adds `#` for display.
 
-**Write tags in the household language** (matching the recipe text), except for universally understood English terms that work across languages.
+**ALL tags MUST be in English**, regardless of the recipe language. Even if the recipe text is in Italian or Swedish, tags are always English: `chicken`, `quick`, `dairy-free`, `vegan`, `italian`, `comfort-food`, `weeknight`.
 
 ## Tag Categories
 
@@ -89,8 +89,9 @@ Apply when clearly relevant to the recipe's nutritional profile:
 1. **Always lowercase, no `#` prefix** — `italian`, not `Italian` or `#italian` (the app adds `#` for display)
 2. **Use hyphens** for multi-word tags — `one-pot`, not `one pot` or `onePot`
 3. **Be specific over generic** — prefer `thai` over `asian`, `salmon` over `fish` (but include `fish` too if relevant for broader filtering)
-4. **Don't guess dietary tags** — only tag `vegan` if truly vegan, `gluten-free` if truly gluten-free
+4. **Don't guess dietary tags** — only tag `vegan` if truly vegan, `gluten-free` if truly gluten-free. For dairy-free recipes, use `dairy-free` NOT `lactose-free` — they mean different things
 5. **Minimum 8 tags** per recipe — most recipes should have 10–15 spanning multiple categories
 6. **Cuisine from content, not assumption** — base cuisine tags on actual ingredients and techniques, not just the recipe title
 7. **Seasonal tags from ingredients and serving style** — a gazpacho is `summer` even if not stated; a beef stew is `winter`
 8. **Speed tags from total time** — if total_time ≤ 30 min, add `quick`; if ≤ 15 min, add both `quick` and `under-15-min`
+9. **ALL tags in English** — regardless of recipe language. Tags are always English for consistency

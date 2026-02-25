@@ -223,9 +223,10 @@ class TestActiveSections:
         assert "dairy_free" in tags
         assert "lactose_free" not in tags
 
-    def test_regular_dairy_no_tag(self) -> None:
+    def test_regular_dairy_tag(self) -> None:
         cfg = DietaryConfig(dairy="regular")
         tags = cfg.active_sections()
+        assert "regular_dairy" in tags
         assert "lactose_free" not in tags
         assert "dairy_free" not in tags
 
@@ -246,6 +247,12 @@ class TestActiveSections:
         cfg = DietaryConfig(meat_strategy="split", dairy="lactose_free", seafood_ok=True)
         tags = cfg.active_sections()
         assert tags == {"meat_split", "lactose_free", "seafood_ok"}
+
+    def test_full_config_regular_dairy_tags(self) -> None:
+        """Split + regular dairy + seafood OK → includes regular_dairy."""
+        cfg = DietaryConfig(meat_strategy="split", dairy="regular", seafood_ok=True)
+        tags = cfg.active_sections()
+        assert tags == {"meat_split", "regular_dairy", "seafood_ok"}
 
     def test_full_config_dairy_free_tags(self) -> None:
         """All-meat + dairy-free + no seafood → 3 tags (no lactose_free)."""
@@ -399,7 +406,7 @@ class TestRenderDietaryTemplate:
 
         assert "Protein substitution" in rendered
         assert "lactose-free" in rendered
-        assert "Both eat fish" in rendered
+        assert "household eats fish" in rendered
         assert "No fish or seafood" not in rendered
         assert "Fully vegetarian" not in rendered
         assert "<!-- BEGIN" not in rendered

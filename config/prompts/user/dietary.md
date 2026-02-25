@@ -15,7 +15,7 @@
 
 ## Fish and seafood
 
-- Both eat fish and seafood
+- The household eats fish and seafood
 - No changes needed for fish/seafood recipes
 - Keep seafood-derived condiments (oyster sauce, fish sauce, shrimp paste) as-is
   <!-- END:seafood_ok -->
@@ -109,6 +109,8 @@ Use lactose-free alternatives for:
 
 **This household is completely dairy-free.** Replace ALL dairy products with plant-based alternatives. There are NO exceptions — butter, parmesan, mozzarella, ricotta ALL get replaced.
 
+**Tagging:** Use `dairy-free`, NOT `lactose-free` — they mean different things.
+
 ### Substitution rules
 
 | Dairy product             | Plant-based replacement                                        |
@@ -138,10 +140,27 @@ Use lactose-free alternatives for:
 
 **ALWAYS REVIEW** which oil/fat is used and whether it matches the cooking method.
 
+<!-- BEGIN:dairy_free -->
+
+All butter is already replaced above (plant-based margarine or oil). The rules below apply to oil selection only.
+
+<!-- END:dairy_free -->
+
+<!-- BEGIN:regular_dairy -->
+
 ### Butter
 
 - **Butter → margarine** for regular frying where butter flavor doesn't matter
 - **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing
+<!-- END:regular_dairy -->
+
+<!-- BEGIN:lactose_free -->
+
+### Butter
+
+- **Butter → margarine** for regular frying where butter flavor doesn't matter
+- **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing (butter is very low in lactose)
+<!-- END:lactose_free -->
 
 ### Oil
 
