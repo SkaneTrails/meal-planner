@@ -100,4 +100,24 @@ describe('usePortionScaling', () => {
     const scaled = result.current.scaleIngredients(['4 cups rice']);
     expect(scaled[0]).toBe('3 cups rice');
   });
+
+  it('resets currentPortions when originalServings prop changes', () => {
+    let servings = 4;
+    const { result, rerender } = renderHook(() =>
+      usePortionScaling(servings),
+    );
+
+    act(() => {
+      result.current.increment();
+      result.current.increment();
+    });
+    expect(result.current.currentPortions).toBe(6);
+
+    servings = 2;
+    rerender();
+
+    expect(result.current.currentPortions).toBe(2);
+    expect(result.current.originalPortions).toBe(2);
+    expect(result.current.isScaled).toBe(false);
+  });
 });

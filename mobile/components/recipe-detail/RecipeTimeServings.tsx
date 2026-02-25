@@ -3,6 +3,7 @@ import { ContentCard, IconButton, TerminalFrame } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
+import { useTranslation } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 interface TimeStatCardProps {
@@ -62,6 +63,7 @@ const TimeStatCard = ({ icon, label, value }: TimeStatCardProps) => {
 interface ServingsInteractiveProps {
   value: string;
   isScaled: boolean;
+  originalPortions: number;
   onIncrement: () => void;
   onDecrement: () => void;
   onReset: () => void;
@@ -71,12 +73,14 @@ interface ServingsInteractiveProps {
 const ServingsInteractive = ({
   value,
   isScaled,
+  originalPortions,
   onIncrement,
   onDecrement,
   onReset,
   decrementDisabled,
 }: ServingsInteractiveProps) => {
   const { colors, fonts } = useTheme();
+  const { t } = useTranslation();
   return (
     <View style={{ alignItems: 'center' }}>
       <View
@@ -92,8 +96,17 @@ const ServingsInteractive = ({
           disabled={decrementDisabled}
           tone="alt"
           size="sm"
+          label={t('recipe.decreasePortions')}
         />
-        <Pressable onPress={isScaled ? onReset : undefined}>
+        <Pressable
+          onPress={isScaled ? onReset : undefined}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isScaled
+              ? t('recipe.resetPortions', { count: originalPortions })
+              : undefined
+          }
+        >
           <Text
             style={{
               fontSize: fontSize['3xl'],
@@ -107,7 +120,13 @@ const ServingsInteractive = ({
             {value}
           </Text>
         </Pressable>
-        <IconButton icon="add" onPress={onIncrement} tone="alt" size="sm" />
+        <IconButton
+          icon="add"
+          onPress={onIncrement}
+          tone="alt"
+          size="sm"
+          label={t('recipe.increasePortions')}
+        />
       </View>
     </View>
   );
@@ -118,6 +137,7 @@ const InteractiveStatCard = ({
   label,
   value,
   isScaled,
+  originalPortions,
   onIncrement,
   onDecrement,
   onReset,
@@ -148,6 +168,7 @@ const InteractiveStatCard = ({
       <ServingsInteractive
         value={value}
         isScaled={isScaled}
+        originalPortions={originalPortions}
         onIncrement={onIncrement}
         onDecrement={onDecrement}
         onReset={onReset}
@@ -259,6 +280,7 @@ export const RecipeTimeServings = ({
                     <ServingsInteractive
                       value={stat.value}
                       isScaled={portionScaling.isScaled}
+                      originalPortions={portionScaling.originalPortions}
                       onIncrement={portionScaling.increment}
                       onDecrement={portionScaling.decrement}
                       onReset={portionScaling.reset}
@@ -321,6 +343,7 @@ export const RecipeTimeServings = ({
                 label={stat.label}
                 value={stat.value}
                 isScaled={portionScaling.isScaled}
+                originalPortions={portionScaling.originalPortions}
                 onIncrement={portionScaling.increment}
                 onDecrement={portionScaling.decrement}
                 onReset={portionScaling.reset}

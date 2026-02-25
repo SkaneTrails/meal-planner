@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { scaleIngredient } from '@/lib/utils/ingredientParser';
 
 const MIN_PORTIONS = 1;
@@ -22,6 +22,10 @@ export const usePortionScaling = (
     originalServings && originalServings > 0 ? originalServings : 0;
 
   const [currentPortions, setCurrentPortions] = useState(originalPortions);
+
+  useEffect(() => {
+    setCurrentPortions(originalPortions);
+  }, [originalPortions]);
 
   const scaleFactor =
     originalPortions > 0 && currentPortions > 0

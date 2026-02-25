@@ -203,6 +203,8 @@ const TabButton = ({
     >
       <Text
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityState={{ selected: active }}
         style={{
           textAlign: 'center',
           paddingVertical: spacing.sm,
