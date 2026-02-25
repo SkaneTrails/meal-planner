@@ -226,13 +226,9 @@ describe('GroceryListView', () => {
         onDeleteItem={handleDelete}
       />,
     );
-    const deleteButtons = screen.getAllByRole('button');
-    const trashButton = deleteButtons.find((b) =>
-      b.textContent?.includes('') || b.querySelector('[data-testid]'),
-    );
-    if (trashButton) {
-      fireEvent.click(trashButton);
-    }
+    const deleteButton = screen.getByTestId('delete-Butter');
+    fireEvent.click(deleteButton);
+    expect(handleDelete).toHaveBeenCalledWith('Butter');
   });
 
   it('shows both cards when there are unchecked and picked items', () => {

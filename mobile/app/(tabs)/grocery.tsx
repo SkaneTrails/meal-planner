@@ -40,6 +40,7 @@ export default function GroceryScreen() {
     handleItemToggle,
     handleAddItem,
     handleDeleteItem,
+    handleToggleAddItem,
     handleToggleDeleteMode,
     handleToggleReorderMode,
     handleReorder,
@@ -77,7 +78,7 @@ export default function GroceryScreen() {
             showAddItem={showAddItem}
             deleteMode={deleteMode}
             reorderMode={reorderMode}
-            onToggleAddItem={() => setShowAddItem(!showAddItem)}
+            onToggleAddItem={handleToggleAddItem}
             onToggleDeleteMode={handleToggleDeleteMode}
             onToggleReorderMode={handleToggleReorderMode}
             onClearChecked={handleClearChecked}

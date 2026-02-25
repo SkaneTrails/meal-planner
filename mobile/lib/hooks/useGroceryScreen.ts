@@ -180,6 +180,12 @@ export const useGroceryScreen = () => {
     [contextCustomItems, setContextCustomItems, checkedItems, setCheckedItems],
   );
 
+  const handleToggleAddItem = useCallback(() => {
+    setShowAddItem((prev) => !prev);
+    setDeleteMode(false);
+    setReorderMode(false);
+  }, []);
+
   const handleToggleDeleteMode = useCallback(() => {
     setDeleteMode((prev) => !prev);
     setReorderMode(false);
@@ -206,7 +212,9 @@ export const useGroceryScreen = () => {
       try {
         await clearAll();
         setGeneratedItems([]);
+        setRemovedGeneratedItems(new Set());
         setDeleteMode(false);
+        setReorderMode(false);
       } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
@@ -231,7 +239,9 @@ export const useGroceryScreen = () => {
         );
         await saveSelections([], {});
         setGeneratedItems([]);
+        setRemovedGeneratedItems(new Set());
         setDeleteMode(false);
+        setReorderMode(false);
       } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
@@ -256,6 +266,7 @@ export const useGroceryScreen = () => {
         );
         setContextCustomItems([]);
         setDeleteMode(false);
+        setReorderMode(false);
       } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
@@ -317,6 +328,7 @@ export const useGroceryScreen = () => {
     handleItemToggle,
     handleAddItem,
     handleDeleteItem,
+    handleToggleAddItem,
     handleToggleDeleteMode,
     handleToggleReorderMode,
     handleReorder,

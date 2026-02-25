@@ -178,6 +178,7 @@ export const GroceryItemRow = ({
           size="sm"
           iconSize={iconSize.md}
           style={{ marginLeft: spacing.sm }}
+          testID={`delete-${item.name}`}
         />
       )}
 

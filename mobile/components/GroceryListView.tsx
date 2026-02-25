@@ -145,13 +145,15 @@ export const GroceryListView = ({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = orderedItems.findIndex((i) => i.name === active.id);
-      const newIndex = orderedItems.findIndex((i) => i.name === over.id);
-      const reordered = arrayMove(orderedItems, oldIndex, newIndex);
-      setOrderedItems(reordered);
-      orderedItemsRef.current = reordered;
-    }
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = orderedItems.findIndex((i) => i.name === active.id);
+    const newIndex = orderedItems.findIndex((i) => i.name === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reordered = arrayMove(orderedItems, oldIndex, newIndex);
+    setOrderedItems(reordered);
+    orderedItemsRef.current = reordered;
   };
 
   if (filteredUnchecked.length === 0 && filteredPicked.length === 0) {

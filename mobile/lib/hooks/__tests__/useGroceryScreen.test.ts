@@ -342,6 +342,43 @@ describe('useGroceryScreen', () => {
     });
   });
 
+  describe('handleToggleAddItem', () => {
+    it('toggles showAddItem on and off', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.showAddItem).toBe(false);
+
+      act(() => {
+        result.current.handleToggleAddItem();
+      });
+
+      expect(result.current.showAddItem).toBe(true);
+
+      act(() => {
+        result.current.handleToggleAddItem();
+      });
+
+      expect(result.current.showAddItem).toBe(false);
+    });
+
+    it('closes delete mode and reorder mode when opening add item', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+      expect(result.current.deleteMode).toBe(true);
+
+      act(() => {
+        result.current.handleToggleAddItem();
+      });
+
+      expect(result.current.showAddItem).toBe(true);
+      expect(result.current.deleteMode).toBe(false);
+      expect(result.current.reorderMode).toBe(false);
+    });
+  });
+
   describe('handleToggleDeleteMode', () => {
     it('toggles deleteMode on and off', () => {
       const { result } = renderHook(() => useGroceryScreen());
