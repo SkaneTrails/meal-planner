@@ -11,7 +11,7 @@ const mockRefetchMembers = vi.fn();
 
 const { DEFAULT_SETTINGS } = vi.hoisted(() => ({
   DEFAULT_SETTINGS: {
-    dietary: { lactose_free: false, vegetarian_percentage: 0 },
+    dietary: { dairy: 'regular', vegetarian_percentage: 0 },
     default_servings: 4,
     equipment: [],
   },
@@ -152,12 +152,12 @@ describe('useHouseholdSettingsForm', () => {
 
     it('merges remote settings with defaults', () => {
       mockRemoteSettings = {
-        dietary: { lactose_free: true },
+        dietary: { dairy: 'lactose_free' },
         default_servings: 6,
         equipment: ['airfryer'],
       };
       const { result } = render('h1');
-      expect(result.current.settings.dietary.lactose_free).toBe(true);
+      expect(result.current.settings.dietary.dairy).toBe('lactose_free');
       expect(result.current.settings.default_servings).toBe(6);
       expect(result.current.settings.equipment).toEqual(['airfryer']);
     });
@@ -172,8 +172,8 @@ describe('useHouseholdSettingsForm', () => {
   describe('updateDietary', () => {
     it('updates a dietary setting and marks changes', () => {
       const { result } = render('h1');
-      act(() => result.current.updateDietary('lactose_free', true));
-      expect(result.current.settings.dietary.lactose_free).toBe(true);
+      act(() => result.current.updateDietary('dairy', 'lactose_free'));
+      expect(result.current.settings.dietary.dairy).toBe('lactose_free');
       expect(result.current.hasChanges).toBe(true);
     });
   });

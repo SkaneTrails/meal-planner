@@ -35,6 +35,7 @@ const mockSettingsData = {
   language: 'sv',
   dietary: {
     seafood_ok: true,
+    diet_type: 'no_restrictions' as const,
     meat: 'none' as const,
     meat_portions: 0,
     dairy: 'regular' as const,

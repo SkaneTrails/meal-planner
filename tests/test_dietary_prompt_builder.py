@@ -121,6 +121,44 @@ class TestDietaryConfigFromFirestore:
         assert cfg.meat_eaters == 0
         assert cfg.vegetarians == 0
 
+    def test_diet_type_no_restrictions_uses_meat_portions(self) -> None:
+        """diet_type=no_restrictions falls through to meat_portions logic."""
+        cfg = DietaryConfig.from_firestore({"diet_type": "no_restrictions", "meat_portions": 2}, default_servings=4)
+        assert cfg.meat_strategy == "split"
+        assert cfg.meat_eaters == 2
+        assert cfg.vegetarians == 2
+
+    def test_diet_type_pescatarian(self) -> None:
+        """Pescatarian: no meat, seafood preserved from settings."""
+        cfg = DietaryConfig.from_firestore(
+            {"diet_type": "pescatarian", "meat_portions": 4, "seafood_ok": True}, default_servings=4
+        )
+        assert cfg.meat_strategy == "vegetarian"
+        assert cfg.meat_eaters == 0
+        assert cfg.vegetarians == 4
+        assert cfg.seafood_ok is True
+
+    def test_diet_type_vegetarian(self) -> None:
+        """Vegetarian: no meat, no seafood (forced)."""
+        cfg = DietaryConfig.from_firestore({"diet_type": "vegetarian", "seafood_ok": True}, default_servings=4)
+        assert cfg.meat_strategy == "vegetarian"
+        assert cfg.seafood_ok is False
+
+    def test_diet_type_vegan(self) -> None:
+        """Vegan: no meat, no seafood, dairy forced to dairy_free."""
+        cfg = DietaryConfig.from_firestore(
+            {"diet_type": "vegan", "dairy": "regular", "seafood_ok": True}, default_servings=4
+        )
+        assert cfg.meat_strategy == "vegetarian"
+        assert cfg.seafood_ok is False
+        assert cfg.dairy == "dairy_free"
+
+    def test_diet_type_missing_uses_no_restrictions(self) -> None:
+        """Missing diet_type falls back to no_restrictions (legacy compat)."""
+        cfg = DietaryConfig.from_firestore({"meat_portions": 4}, default_servings=4)
+        assert cfg.meat_strategy == "all"
+        assert cfg.meat_eaters == 4
+
 
 # ---------------------------------------------------------------------------
 # DietaryConfig.active_sections
@@ -173,6 +211,12 @@ class TestActiveSections:
         cfg = DietaryConfig(meat_strategy="split", dairy="lactose_free", seafood_ok=True)
         tags = cfg.active_sections()
         assert tags == {"meat_split", "lactose_free", "seafood_ok"}
+
+    def test_dairy_free_enables_dairy_free_tag(self) -> None:
+        cfg = DietaryConfig(dairy="dairy_free")
+        tags = cfg.active_sections()
+        assert "dairy_free" in tags
+        assert "lactose_free" not in tags
 
 
 # ---------------------------------------------------------------------------

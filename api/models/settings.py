@@ -55,6 +55,15 @@ class Language(str, Enum):
     IT = "it"  # Italian
 
 
+class DietType(str, Enum):
+    """High-level diet type for the household."""
+
+    NO_RESTRICTIONS = "no_restrictions"  # Eats everything
+    PESCATARIAN = "pescatarian"  # No meat, but fish/seafood ok
+    VEGETARIAN = "vegetarian"  # No meat or fish
+    VEGAN = "vegan"  # No animal products
+
+
 class MeatPreference(str, Enum):
     """How to handle meat in recipes."""
 
@@ -94,6 +103,7 @@ class IngredientReplacement(BaseModel):
 class DietarySettings(BaseModel):
     """Dietary preferences for the household."""
 
+    diet_type: DietType = Field(default=DietType.NO_RESTRICTIONS, description="High-level diet type")
     seafood_ok: bool = Field(default=True, description="Household eats seafood")
     meat: MeatPreference = Field(default=MeatPreference.ALL, description="How to handle meat dishes")
     meat_portions: int = Field(

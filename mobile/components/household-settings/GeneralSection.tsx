@@ -12,7 +12,6 @@ import { useTranslation } from '@/lib/i18n';
 import {
   borderRadius,
   fontSize,
-  fontWeight,
   iconSize,
   letterSpacing,
   spacing,
@@ -64,7 +63,7 @@ export const GeneralSection = ({
   weekStart,
   onSetWeekStart,
 }: GeneralSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
 
   const weekStartOptions = useMemo(
@@ -89,7 +88,7 @@ export const GeneralSection = ({
         <Text
           style={{
             fontSize: fontSize.xs,
-            fontWeight: fontWeight.semibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.subtitle,
             textTransform: 'uppercase' as const,
             letterSpacing: letterSpacing.wide,
@@ -115,7 +114,7 @@ export const GeneralSection = ({
               style={{
                 flex: 1,
                 fontSize: fontSize['2xl'],
-                fontWeight: fontWeight.bold,
+                fontFamily: fonts.bodyBold,
                 color: colors.input.text,
                 backgroundColor: colors.input.bg,
                 borderRadius: borderRadius.md,
@@ -142,7 +141,7 @@ export const GeneralSection = ({
             <Text
               style={{
                 fontSize: fontSize['2xl'],
-                fontWeight: fontWeight.bold,
+                fontFamily: fonts.bodyBold,
                 color: colors.content.heading,
                 flex: 1,
               }}
@@ -167,7 +166,7 @@ export const GeneralSection = ({
         <Text
           style={{
             fontSize: fontSize.xs,
-            fontWeight: fontWeight.semibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.subtitle,
             textTransform: 'uppercase' as const,
             letterSpacing: letterSpacing.wide,
@@ -206,7 +205,7 @@ export const GeneralSection = ({
         <Text
           style={{
             fontSize: fontSize.xs,
-            fontWeight: fontWeight.semibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.subtitle,
             textTransform: 'uppercase' as const,
             letterSpacing: letterSpacing.wide,

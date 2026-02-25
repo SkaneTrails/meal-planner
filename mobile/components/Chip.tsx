@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { dotSize, fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { dotSize, fontSize, spacing, useTheme } from '@/lib/theme';
 import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 type ChipVariant = 'filled' | 'outline' | 'toggle' | 'display';
@@ -65,7 +65,7 @@ export const Chip = ({
   onPress,
   testID,
 }: ChipProps) => {
-  const { colors, borderRadius, overrides, visibility } = useTheme();
+  const { colors, fonts, borderRadius, overrides, visibility } = useTheme();
 
   const resolvedShowRemove = showRemove ?? variant === 'filled';
   const resolvedShowAdd = showAdd ?? variant === 'outline';
@@ -121,7 +121,7 @@ export const Chip = ({
       <Text
         style={{
           fontSize: chipFontSize(variant, isSmall),
-          fontWeight: isSmall ? fontWeight.medium : undefined,
+          fontFamily: isSmall ? fonts.bodyMedium : undefined,
           color: resolvedColor,
           ...(capitalize && { textTransform: 'capitalize' as const }),
           ...(uppercase && { textTransform: 'uppercase' as const }),

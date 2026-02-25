@@ -6,10 +6,9 @@
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { FullScreenLoading, GradientBackground, Section } from '@/components';
+import { FullScreenLoading, GradientBackground } from '@/components';
 import {
   AiSection,
-  DietarySection,
   ReadOnlyBanner,
   ScreenHeader,
 } from '@/components/household-settings';
@@ -73,22 +72,7 @@ export default function AiSettingsScreen() {
           >
             {!form.canEdit && <ReadOnlyBanner />}
 
-            <Section
-              icon="sparkles"
-              title={t('settings.aiSettings')}
-              subtitle={t('settings.aiSettingsDesc')}
-              spacing={0}
-            />
-
-            {/* Dairy preferences */}
-            <DietarySection
-              dietary={form.settings.dietary}
-              canEdit={form.canEdit}
-              onUpdateDietary={form.updateDietary}
-              sections={['dairy']}
-            />
-
-            {/* Meat dishes, Ingredient replacements, Equipment */}
+            {/* Diet type, dairy, meat dishes, ingredient replacements, equipment */}
             <AiSection
               dietary={form.settings.dietary}
               defaultServings={form.settings.default_servings}
@@ -96,14 +80,6 @@ export default function AiSettingsScreen() {
               canEdit={form.canEdit}
               onUpdateDietary={form.updateDietary}
               onToggleEquipment={form.toggleEquipment}
-            />
-
-            {/* Seafood toggle */}
-            <DietarySection
-              dietary={form.settings.dietary}
-              canEdit={form.canEdit}
-              onUpdateDietary={form.updateDietary}
-              sections={['seafood']}
             />
           </ScrollView>
         </View>

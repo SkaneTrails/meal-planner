@@ -102,7 +102,20 @@ Use lactose-free alternatives for:
 - **Parmesan, Grana Padano, aged cheese** (naturally low lactose)
 - **Ricotta, mozzarella**
 - **Coconut milk, coconut cream** (already dairy-free!)
-<!-- END:lactose_free -->
+  <!-- END:lactose_free -->
+  <!-- BEGIN:dairy_free -->
+
+## Dairy
+
+**No dairy products at all.** Replace all dairy with plant-based alternatives:
+
+- Milk → oat milk, soy milk, or other plant milk
+- Cream → oat cream, coconut cream
+- Butter → plant-based margarine or oil
+- Cheese → omit or use plant-based cheese
+- Crème fraîche → plant-based crème fraîche or cashew cream
+- Yoghurt/Kvarg → plant-based yoghurt
+<!-- END:dairy_free -->
 
 ## Fats
 

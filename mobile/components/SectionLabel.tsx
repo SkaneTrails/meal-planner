@@ -7,13 +7,7 @@
  */
 
 import { Text } from 'react-native';
-import {
-  fontSize,
-  fontWeight,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 interface SectionLabelProps {
   text: string;
@@ -29,8 +23,7 @@ export const SectionLabel = ({ text, size = 'sm' }: SectionLabelProps) => {
     <Text
       style={{
         fontSize: isLg ? fontSize.lg : fontSize.sm,
-        fontFamily: isLg ? fonts.bodySemibold : undefined,
-        fontWeight: isLg ? undefined : fontWeight.semibold,
+        fontFamily: fonts.bodySemibold,
         color: isLg ? colors.gray[500] : colors.text.muted,
         marginBottom: spacing.sm,
         textTransform: 'uppercase',

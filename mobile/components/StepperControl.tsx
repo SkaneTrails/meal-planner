@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { IconButton } from '@/components/IconButton';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface StepperControlProps {
   value: number;
@@ -19,7 +19,7 @@ export const StepperControl = ({
   incrementDisabled = false,
   subtitle,
 }: StepperControlProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View
       style={{
@@ -40,7 +40,7 @@ export const StepperControl = ({
         <Text
           style={{
             fontSize: fontSize['2xl'],
-            fontWeight: fontWeight.bold,
+            fontFamily: fonts.bodyBold,
             color: colors.content.heading,
             textAlign: 'center',
           }}
