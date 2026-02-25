@@ -203,6 +203,7 @@ class HouseholdSettings(BaseModel):
 class DietarySettingsUpdate(BaseModel):
     """Partial update for dietary settings (all fields optional)."""
 
+    diet_type: DietType | None = None
     seafood_ok: bool | None = None
     meat: MeatPreference | None = None
     meat_portions: int | None = Field(default=None, ge=0, le=MAX_HOUSEHOLD_SIZE)
