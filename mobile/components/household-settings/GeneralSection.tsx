@@ -5,7 +5,6 @@ import {
   IconButton,
   SettingToggleRow,
   StepperControl,
-  SurfaceCard,
 } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
@@ -82,7 +81,13 @@ export const GeneralSection = ({
   };
 
   return (
-    <SurfaceCard radius="lg">
+    <View
+      style={{
+        backgroundColor: colors.surface.subtle,
+        borderRadius: borderRadius.md,
+        padding: spacing.md,
+      }}
+    >
       {/* Household Name */}
       <View>
         <Text
@@ -221,6 +226,6 @@ export const GeneralSection = ({
           testID="week-start-picker"
         />
       </View>
-    </SurfaceCard>
+    </View>
   );
 };

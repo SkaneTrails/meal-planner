@@ -11,7 +11,12 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { FullScreenLoading, GradientBackground, Section } from '@/components';
+import {
+  ContentCard,
+  FullScreenLoading,
+  GradientBackground,
+  Section,
+} from '@/components';
 import {
   GeneralSection,
   MembersSection,
@@ -47,7 +52,7 @@ const sectionSubtitles: Record<SectionKey, (t: TranslationFn) => string> = {
 };
 
 export default function HouseholdSettingsScreen() {
-  const { colors } = useTheme();
+  const { borderRadius, colors, fonts } = useTheme();
   const router = useRouter();
   const { id: paramId, section: sectionParam } = useLocalSearchParams<{
     id: string;
@@ -145,131 +150,236 @@ export default function HouseholdSettingsScreen() {
             {!form.canEdit && <ReadOnlyBanner />}
 
             {(!focusedSection || focusedSection === 'general') && (
-              <Section
-                icon="home"
-                title={t('householdSettings.general.title')}
-                subtitle={t('householdSettings.general.subtitle')}
-                collapsible={!focusedSection}
-                expanded={
-                  focusedSection === 'general' ||
-                  expandedSections.has('general')
-                }
-                onToggle={() => toggleSection('general')}
+              <ContentCard
+                label={t('householdSettings.general.title')}
+                cardStyle={{
+                  borderRadius: borderRadius.lg,
+                  padding: spacing['md-lg'],
+                }}
+                style={{ marginBottom: spacing.lg }}
               >
-                <GeneralSection
-                  settings={form.settings}
-                  canEdit={form.canEdit}
-                  householdName={form.household?.name}
-                  isEditingName={form.isEditingName}
-                  editedName={form.editedName}
-                  onEditedNameChange={form.setEditedName}
-                  onStartEditName={form.handleStartEditName}
-                  onSaveName={form.handleSaveName}
-                  onCancelEditName={form.cancelEditName}
-                  isRenamePending={form.isRenamePending}
-                  onUpdateServings={form.updateServings}
-                  onUpdateIncludeBreakfast={form.updateIncludeBreakfast}
-                  weekStart={weekStart}
-                  onSetWeekStart={setWeekStart}
-                />
-              </Section>
+                {focusedSection ? (
+                  <GeneralSection
+                    settings={form.settings}
+                    canEdit={form.canEdit}
+                    householdName={form.household?.name}
+                    isEditingName={form.isEditingName}
+                    editedName={form.editedName}
+                    onEditedNameChange={form.setEditedName}
+                    onStartEditName={form.handleStartEditName}
+                    onSaveName={form.handleSaveName}
+                    onCancelEditName={form.cancelEditName}
+                    isRenamePending={form.isRenamePending}
+                    onUpdateServings={form.updateServings}
+                    onUpdateIncludeBreakfast={form.updateIncludeBreakfast}
+                    weekStart={weekStart}
+                    onSetWeekStart={setWeekStart}
+                  />
+                ) : (
+                  <Section
+                    icon="home"
+                    title={t('householdSettings.general.title')}
+                    subtitle={t('householdSettings.general.subtitle')}
+                    collapsible
+                    expanded={expandedSections.has('general')}
+                    onToggle={() => toggleSection('general')}
+                  >
+                    <GeneralSection
+                      settings={form.settings}
+                      canEdit={form.canEdit}
+                      householdName={form.household?.name}
+                      isEditingName={form.isEditingName}
+                      editedName={form.editedName}
+                      onEditedNameChange={form.setEditedName}
+                      onStartEditName={form.handleStartEditName}
+                      onSaveName={form.handleSaveName}
+                      onCancelEditName={form.cancelEditName}
+                      isRenamePending={form.isRenamePending}
+                      onUpdateServings={form.updateServings}
+                      onUpdateIncludeBreakfast={form.updateIncludeBreakfast}
+                      weekStart={weekStart}
+                      onSetWeekStart={setWeekStart}
+                    />
+                  </Section>
+                )}
+              </ContentCard>
             )}
 
             {(!focusedSection || focusedSection === 'members') &&
               form.canEdit && (
-                <Section
-                  icon="people"
-                  title={t('settings.membersSection')}
-                  subtitle={t('settings.membersSectionDesc')}
-                  collapsible={!focusedSection}
-                  expanded={
-                    focusedSection === 'members' ||
-                    expandedSections.has('members')
-                  }
-                  onToggle={() => toggleSection('members')}
+                <ContentCard
+                  label={t('settings.membersSection')}
+                  cardStyle={{
+                    borderRadius: borderRadius.lg,
+                    padding: spacing['md-lg'],
+                  }}
+                  style={{ marginBottom: spacing.lg }}
                 >
-                  <MembersSection
-                    members={form.members}
-                    membersLoading={form.membersLoading}
-                    canEdit={form.canEdit}
-                    currentUserEmail={form.currentUserEmail}
-                    newMemberEmail={form.newMemberEmail}
-                    onNewMemberEmailChange={form.setNewMemberEmail}
-                    newMemberRole={form.newMemberRole}
-                    onNewMemberRoleChange={form.setNewMemberRole}
-                    onAddMember={form.handleAddMember}
-                    onRemoveMember={form.handleRemoveMember}
-                    isAddPending={form.isAddPending}
-                  />
-                </Section>
+                  {focusedSection ? (
+                    <MembersSection
+                      members={form.members}
+                      membersLoading={form.membersLoading}
+                      canEdit={form.canEdit}
+                      currentUserEmail={form.currentUserEmail}
+                      newMemberEmail={form.newMemberEmail}
+                      onNewMemberEmailChange={form.setNewMemberEmail}
+                      newMemberRole={form.newMemberRole}
+                      onNewMemberRoleChange={form.setNewMemberRole}
+                      onAddMember={form.handleAddMember}
+                      onRemoveMember={form.handleRemoveMember}
+                      isAddPending={form.isAddPending}
+                    />
+                  ) : (
+                    <Section
+                      icon="people"
+                      title={t('settings.membersSection')}
+                      subtitle={t('settings.membersSectionDesc')}
+                      collapsible
+                      expanded={expandedSections.has('members')}
+                      onToggle={() => toggleSection('members')}
+                    >
+                      <MembersSection
+                        members={form.members}
+                        membersLoading={form.membersLoading}
+                        canEdit={form.canEdit}
+                        currentUserEmail={form.currentUserEmail}
+                        newMemberEmail={form.newMemberEmail}
+                        onNewMemberEmailChange={form.setNewMemberEmail}
+                        newMemberRole={form.newMemberRole}
+                        onNewMemberRoleChange={form.setNewMemberRole}
+                        onAddMember={form.handleAddMember}
+                        onRemoveMember={form.handleRemoveMember}
+                        isAddPending={form.isAddPending}
+                      />
+                    </Section>
+                  )}
+                </ContentCard>
               )}
 
             {(!focusedSection || focusedSection === 'language') && (
-              <Section
-                icon="language"
-                title={t('settings.language')}
-                subtitle={t('settings.languageDesc')}
-                collapsible={!focusedSection}
-                expanded={
-                  focusedSection === 'language' ||
-                  expandedSections.has('language')
-                }
-                onToggle={() => toggleSection('language')}
+              <ContentCard
+                label={t('settings.language')}
+                cardStyle={{
+                  borderRadius: borderRadius.lg,
+                  padding: spacing['md-lg'],
+                }}
+                style={{ marginBottom: spacing.lg }}
               >
-                <Text
-                  style={{
-                    fontSize: fontSize.sm,
-                    color: colors.content.subtitle,
-                    fontStyle: 'italic',
-                    marginBottom: spacing.md,
-                  }}
-                >
-                  {t('settings.languageAiNote')}
-                </Text>
-                <LanguageSection
-                  currentLanguage={settings.language}
-                  onChangeLanguage={handleLanguageChange}
-                />
-              </Section>
+                {focusedSection ? (
+                  <>
+                    <Text
+                      style={{
+                        fontSize: fontSize.sm,
+                        fontFamily: fonts.body,
+                        color: colors.content.subtitle,
+                        fontStyle: 'italic',
+                        marginBottom: spacing.md,
+                      }}
+                    >
+                      {t('settings.languageAiNote')}
+                    </Text>
+                    <LanguageSection
+                      currentLanguage={settings.language}
+                      onChangeLanguage={handleLanguageChange}
+                    />
+                  </>
+                ) : (
+                  <Section
+                    icon="language"
+                    title={t('settings.language')}
+                    subtitle={t('settings.languageDesc')}
+                    collapsible
+                    expanded={expandedSections.has('language')}
+                    onToggle={() => toggleSection('language')}
+                  >
+                    <Text
+                      style={{
+                        fontSize: fontSize.sm,
+                        fontFamily: fonts.body,
+                        color: colors.content.subtitle,
+                        fontStyle: 'italic',
+                        marginBottom: spacing.md,
+                      }}
+                    >
+                      {t('settings.languageAiNote')}
+                    </Text>
+                    <LanguageSection
+                      currentLanguage={settings.language}
+                      onChangeLanguage={handleLanguageChange}
+                    />
+                  </Section>
+                )}
+              </ContentCard>
             )}
 
             {(!focusedSection || focusedSection === 'pantry') && (
-              <Section
-                icon="cart"
-                title={t('settings.itemsAtHome')}
-                subtitle={t('settings.itemsAtHomeDesc')}
-                collapsible={!focusedSection}
-                expanded={
-                  focusedSection === 'pantry' || expandedSections.has('pantry')
-                }
-                onToggle={() => toggleSection('pantry')}
+              <ContentCard
+                label={t('settings.itemsAtHome')}
+                cardStyle={{
+                  borderRadius: borderRadius.lg,
+                  padding: spacing['md-lg'],
+                }}
+                style={{ marginBottom: spacing.lg }}
               >
-                <ItemsAtHomeSection
-                  itemsAtHome={settings.itemsAtHome}
-                  onAddItem={addItemAtHome}
-                  onRemoveItem={removeItemAtHome}
-                />
-              </Section>
+                {focusedSection ? (
+                  <ItemsAtHomeSection
+                    itemsAtHome={settings.itemsAtHome}
+                    onAddItem={addItemAtHome}
+                    onRemoveItem={removeItemAtHome}
+                  />
+                ) : (
+                  <Section
+                    icon="cart"
+                    title={t('settings.itemsAtHome')}
+                    subtitle={t('settings.itemsAtHomeDesc')}
+                    collapsible
+                    expanded={expandedSections.has('pantry')}
+                    onToggle={() => toggleSection('pantry')}
+                  >
+                    <ItemsAtHomeSection
+                      itemsAtHome={settings.itemsAtHome}
+                      onAddItem={addItemAtHome}
+                      onRemoveItem={removeItemAtHome}
+                    />
+                  </Section>
+                )}
+              </ContentCard>
             )}
 
             {(!focusedSection || focusedSection === 'notes') && (
-              <Section
-                icon="document-text-outline"
-                title={t('settings.noteSuggestions')}
-                subtitle={t('settings.noteSuggestionsDesc')}
-                collapsible={!focusedSection}
-                expanded={
-                  focusedSection === 'notes' || expandedSections.has('notes')
-                }
-                onToggle={() => toggleSection('notes')}
+              <ContentCard
+                label={t('settings.noteSuggestions')}
+                cardStyle={{
+                  borderRadius: borderRadius.lg,
+                  padding: spacing['md-lg'],
+                }}
+                style={{ marginBottom: spacing.lg }}
               >
-                <NoteSuggestionsSection
-                  suggestions={form.settings.note_suggestions ?? []}
-                  canEdit={form.canEdit}
-                  onAdd={form.addNoteSuggestion}
-                  onRemove={form.removeNoteSuggestion}
-                />
-              </Section>
+                {focusedSection ? (
+                  <NoteSuggestionsSection
+                    suggestions={form.settings.note_suggestions ?? []}
+                    canEdit={form.canEdit}
+                    onAdd={form.addNoteSuggestion}
+                    onRemove={form.removeNoteSuggestion}
+                  />
+                ) : (
+                  <Section
+                    icon="document-text-outline"
+                    title={t('settings.noteSuggestions')}
+                    subtitle={t('settings.noteSuggestionsDesc')}
+                    collapsible
+                    expanded={expandedSections.has('notes')}
+                    onToggle={() => toggleSection('notes')}
+                  >
+                    <NoteSuggestionsSection
+                      suggestions={form.settings.note_suggestions ?? []}
+                      canEdit={form.canEdit}
+                      onAdd={form.addNoteSuggestion}
+                      onRemove={form.removeNoteSuggestion}
+                    />
+                  </Section>
+                )}
+              </ContentCard>
             )}
           </ScrollView>
         </View>

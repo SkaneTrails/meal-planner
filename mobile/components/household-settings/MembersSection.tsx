@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Button, Chip, SurfaceCard } from '@/components';
+import { Button, Chip } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
@@ -35,16 +35,17 @@ const MemberCard = ({
   canEdit: boolean;
   onRemove: () => void;
 }) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <SurfaceCard
-      radius="lg"
-      padding={spacing.md}
+    <View
       style={{
+        backgroundColor: colors.surface.subtle,
+        borderRadius: borderRadius.md,
+        padding: spacing.md,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -71,6 +72,7 @@ const MemberCard = ({
             <Text
               style={{
                 fontSize: fontSize.xs,
+                fontFamily: fonts.body,
                 color: colors.content.subtitle,
               }}
             >
@@ -79,7 +81,13 @@ const MemberCard = ({
           )}
         </View>
         {member.display_name && (
-          <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              fontFamily: fonts.body,
+              color: colors.content.strong,
+            }}
+          >
             {member.email}
           </Text>
         )}
@@ -104,7 +112,7 @@ const MemberCard = ({
           hitSlop={8}
         />
       )}
-    </SurfaceCard>
+    </View>
   );
 };
 
@@ -128,10 +136,13 @@ const AddMemberForm = ({
   const { t } = useTranslation();
 
   return (
-    <SurfaceCard
-      radius="lg"
-      padding={spacing.md}
-      style={{ marginTop: spacing.sm }}
+    <View
+      style={{
+        backgroundColor: colors.surface.subtle,
+        borderRadius: borderRadius.md,
+        padding: spacing.md,
+        marginTop: spacing.sm,
+      }}
     >
       <View
         style={{
@@ -154,6 +165,7 @@ const AddMemberForm = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.md,
+            fontFamily: fonts.body,
             color: colors.input.text,
           }}
         />
@@ -201,7 +213,7 @@ const AddMemberForm = ({
           }}
         />
       </View>
-    </SurfaceCard>
+    </View>
   );
 };
 
@@ -218,7 +230,7 @@ export const MembersSection = ({
   onRemoveMember,
   isAddPending,
 }: MembersSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -242,11 +254,24 @@ export const MembersSection = ({
           ))}
         </View>
       ) : (
-        <SurfaceCard radius="lg" style={{ alignItems: 'center' }}>
-          <Text style={{ color: colors.content.strong, fontSize: fontSize.sm }}>
+        <View
+          style={{
+            backgroundColor: colors.surface.subtle,
+            borderRadius: borderRadius.md,
+            padding: spacing.md,
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{
+              color: colors.content.strong,
+              fontSize: fontSize.sm,
+              fontFamily: fonts.body,
+            }}
+          >
             {t('admin.noMembers')}
           </Text>
-        </SurfaceCard>
+        </View>
       )}
 
       {canEdit && (

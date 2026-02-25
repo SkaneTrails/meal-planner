@@ -63,6 +63,7 @@ const EmptyState = ({
           <Text
             style={{
               fontSize: fontSize.sm,
+              fontFamily: fonts.body,
               color: colors.content.icon,
               textAlign: 'center',
             }}

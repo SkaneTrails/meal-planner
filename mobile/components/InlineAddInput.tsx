@@ -1,6 +1,5 @@
-import { TextInput } from 'react-native';
+import { TextInput, View } from 'react-native';
 import { Button } from '@/components/Button';
-import { SurfaceCard } from '@/components/SurfaceCard';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
 interface InlineAddInputProps {
@@ -29,15 +28,17 @@ export const InlineAddInput = ({
   placeholderTextColor: placeholderTextColorProp,
   disabled = false,
 }: InlineAddInputProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const hasContent = !!value.trim();
   const resolvedPlaceholderColor =
     placeholderTextColorProp ?? colors.content.placeholderHex;
 
   return (
-    <SurfaceCard
-      padding={spacing.sm}
+    <View
       style={{
+        backgroundColor: colors.surface.subtle,
+        borderRadius: borderRadius.md,
+        padding: spacing.sm,
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: spacing.md,
@@ -49,6 +50,7 @@ export const InlineAddInput = ({
           paddingHorizontal: spacing.md,
           paddingVertical: spacing.sm,
           fontSize: fontSize.md,
+          fontFamily: fonts.body,
           color: colors.content.body,
           opacity: disabled ? 0.5 : 1,
         }}
@@ -68,6 +70,6 @@ export const InlineAddInput = ({
         testID="inline-add-button"
         size="md"
       />
-    </SurfaceCard>
+    </View>
   );
 };
