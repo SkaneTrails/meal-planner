@@ -1,9 +1,10 @@
 /**
- * Individual grocery item row with checkbox, quantity display, and drag handle.
+ * Individual grocery item row with checkbox, quantity display, and optional drag handle.
  */
 
 import { useEffect, useState } from 'react';
-import { Platform, Pressable, Text, View, type ViewStyle } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { ActionButton } from '@/components/ActionButton';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSelection } from '@/lib/haptics';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
@@ -12,9 +13,11 @@ import type { GroceryItem } from '@/lib/types';
 interface GroceryItemRowProps {
   item: GroceryItem;
   onToggle?: (checked: boolean) => void;
-  drag?: () => void;
-  isActive?: boolean;
+  onDelete?: () => void;
+  deleteMode?: boolean;
   showReorder?: boolean;
+  dragListeners?: Record<string, unknown>;
+  dragAttributes?: Record<string, unknown>;
 }
 
 const formatQuantity = (item: GroceryItem): string => {
@@ -52,9 +55,11 @@ const formatQuantity = (item: GroceryItem): string => {
 export const GroceryItemRow = ({
   item,
   onToggle,
-  drag,
-  isActive,
+  onDelete,
+  deleteMode = false,
   showReorder,
+  dragListeners,
+  dragAttributes,
 }: GroceryItemRowProps) => {
   const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
   const [checked, setChecked] = useState(item.checked);
@@ -80,9 +85,7 @@ export const GroceryItemRow = ({
         alignItems: 'center',
         padding: spacing['sm-md'],
         paddingVertical: spacing.md,
-        backgroundColor: isActive
-          ? colors.listItem.bgActive
-          : colors.listItem.bg,
+        backgroundColor: colors.listItem.bg,
         borderRadius: borderRadius['sm-md'],
         marginBottom: spacing.sm,
         opacity: checked ? overrides.checkedOpacity : 1,
@@ -90,23 +93,22 @@ export const GroceryItemRow = ({
       }}
     >
       {showReorder && (
-        <Pressable
-          onPressIn={drag}
-          style={({ pressed }) =>
-            ({
-              padding: spacing['md-lg'],
-              marginRight: spacing['2xs'],
-              opacity: pressed ? 0.5 : 1,
-              ...(Platform.OS === 'web' && { cursor: 'grab' }),
-            }) as ViewStyle
-          }
+        <div
+          {...dragListeners}
+          {...dragAttributes}
+          style={{
+            padding: spacing['md-lg'],
+            marginRight: spacing['2xs'],
+            cursor: 'grab',
+            touchAction: 'none',
+          }}
         >
           <ThemeIcon
             name="reorder-three"
             size={iconSize.xl}
             color={colors.content.subtitle}
           />
-        </Pressable>
+        </div>
       )}
 
       <Pressable
@@ -169,6 +171,28 @@ export const GroceryItemRow = ({
           )}
         </View>
       </Pressable>
+
+      {deleteMode && onDelete && (
+        <ActionButton.Delete
+          onPress={onDelete}
+          size="sm"
+          iconSize={iconSize.md}
+          style={{ marginLeft: spacing.sm }}
+        />
+      )}
+
+      {!deleteMode && !showReorder && (
+        <ThemeIcon
+          name={
+            item.recipe_sources.length > 0
+              ? 'calendar-outline'
+              : 'create-outline'
+          }
+          size={iconSize.sm}
+          color={colors.content.tertiary}
+          style={{ marginLeft: spacing.sm }}
+        />
+      )}
     </View>
   );
 };

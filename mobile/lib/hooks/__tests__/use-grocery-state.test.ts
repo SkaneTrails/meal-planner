@@ -35,6 +35,7 @@ const mockState: GroceryListState = {
   meal_servings: { mon_lunch: 4 },
   checked_items: ['salt'],
   custom_items: [{ name: 'bread', category: 'other' }],
+  item_order: [],
   updated_at: '2024-01-01T00:00:00Z',
   created_by: 'user@test.com',
 };

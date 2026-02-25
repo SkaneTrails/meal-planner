@@ -120,6 +120,17 @@ describe('TERMINAL_ICONS map', () => {
     }
   });
 
+  it('maps grocery screen icons', () => {
+    const groceryIcons = [
+      'swap-vertical', 'reorder-three', 'trash-outline',
+      'create-outline', 'calendar-outline', 'checkmark',
+    ] as const;
+
+    for (const name of groceryIcons) {
+      expect(TERMINAL_ICONS[name], `${name} missing from map`).toBeDefined();
+    }
+  });
+
   it('has non-empty char for every entry', () => {
     for (const [name, glyph] of Object.entries(TERMINAL_ICONS)) {
       expect(glyph.char.length, `${name} has empty char`).toBeGreaterThan(0);

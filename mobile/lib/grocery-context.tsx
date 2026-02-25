@@ -23,6 +23,7 @@ import type { CustomGroceryItem, GroceryListState } from './types';
 interface GroceryContextValue {
   checkedItems: Set<string>;
   customItems: CustomGroceryItem[];
+  itemOrder: string[];
   selectedMealKeys: string[];
   mealServings: Record<string, number>;
   isLoading: boolean;
@@ -31,6 +32,7 @@ interface GroceryContextValue {
   clearChecked: () => void;
   addCustomItem: (item: CustomGroceryItem) => void;
   setCustomItems: (items: CustomGroceryItem[]) => void;
+  setItemOrder: (order: string[]) => void;
   saveSelections: (
     meals: string[],
     servings: Record<string, number>,
@@ -46,6 +48,7 @@ const DEBOUNCE_MS = 500;
 const cacheToAsyncStorage = async (state: {
   checkedItems: string[];
   customItems: CustomGroceryItem[];
+  itemOrder: string[];
   selectedMealKeys: string[];
   mealServings: Record<string, number>;
 }) => {
@@ -66,6 +69,7 @@ const cacheToAsyncStorage = async (state: {
       'grocery_meal_servings',
       JSON.stringify(state.mealServings),
     ),
+    AsyncStorage.setItem('grocery_item_order', JSON.stringify(state.itemOrder)),
   ]).catch(() => {});
 };
 
@@ -77,12 +81,14 @@ const normalizeCustomItems = (raw: unknown[]): CustomGroceryItem[] =>
   );
 
 const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
-  const [checkedData, customData, mealsData, servingsData] = await Promise.all([
-    AsyncStorage.getItem('grocery_checked_items'),
-    AsyncStorage.getItem('grocery_custom_items'),
-    AsyncStorage.getItem('grocery_selected_meals'),
-    AsyncStorage.getItem('grocery_meal_servings'),
-  ]);
+  const [checkedData, customData, mealsData, servingsData, orderData] =
+    await Promise.all([
+      AsyncStorage.getItem('grocery_checked_items'),
+      AsyncStorage.getItem('grocery_custom_items'),
+      AsyncStorage.getItem('grocery_selected_meals'),
+      AsyncStorage.getItem('grocery_meal_servings'),
+      AsyncStorage.getItem('grocery_item_order'),
+    ]);
 
   const rawCustom = customData ? JSON.parse(customData) : [];
 
@@ -93,12 +99,14 @@ const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
       : [],
     selected_meals: mealsData ? JSON.parse(mealsData) : [],
     meal_servings: servingsData ? JSON.parse(servingsData) : {},
+    item_order: orderData ? JSON.parse(orderData) : [],
   };
 };
 
 export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const [checkedItems, setCheckedItemsState] = useState<Set<string>>(new Set());
   const [customItems, setCustomItemsState] = useState<CustomGroceryItem[]>([]);
+  const [itemOrder, setItemOrderState] = useState<string[]>([]);
   const [selectedMealKeys, setSelectedMealKeys] = useState<string[]>([]);
   const [mealServings, setMealServings] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -107,6 +115,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const pendingPatchRef = useRef<Record<string, unknown>>({});
   const checkedRef = useRef<Set<string>>(checkedItems);
   const customItemsRef = useRef<CustomGroceryItem[]>(customItems);
+  const itemOrderRef = useRef<string[]>(itemOrder);
 
   const flushPatch = useCallback(() => {
     const patch = { ...pendingPatchRef.current };
@@ -136,6 +145,9 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     const items = state.custom_items || [];
     setCustomItemsState(items);
     customItemsRef.current = items;
+    const order = state.item_order || [];
+    setItemOrderState(order);
+    itemOrderRef.current = order;
     setSelectedMealKeys(state.selected_meals || []);
     setMealServings(state.meal_servings || {});
   }, []);
@@ -147,6 +159,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       cacheToAsyncStorage({
         checkedItems: state.checked_items,
         customItems: state.custom_items || [],
+        itemOrder: state.item_order || [],
         selectedMealKeys: state.selected_meals || [],
         mealServings: state.meal_servings || {},
       });
@@ -158,6 +171,9 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       const items = cached.custom_items || [];
       setCustomItemsState(items);
       customItemsRef.current = items;
+      const order = cached.item_order || [];
+      setItemOrderState(order);
+      itemOrderRef.current = order;
       setSelectedMealKeys(cached.selected_meals || []);
       setMealServings(cached.meal_servings || {});
     } finally {
@@ -250,6 +266,18 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     [enqueuePatch],
   );
 
+  const setItemOrder = useCallback(
+    (order: string[]) => {
+      setItemOrderState(order);
+      itemOrderRef.current = order;
+      AsyncStorage.setItem('grocery_item_order', JSON.stringify(order)).catch(
+        () => {},
+      );
+      enqueuePatch({ item_order: order });
+    },
+    [enqueuePatch],
+  );
+
   const saveSelections = useCallback(
     async (meals: string[], servings: Record<string, number>) => {
       setSelectedMealKeys(meals);
@@ -275,6 +303,8 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     checkedRef.current = new Set();
     setCustomItemsState([]);
     customItemsRef.current = [];
+    setItemOrderState([]);
+    itemOrderRef.current = [];
     setSelectedMealKeys([]);
     setMealServings({});
     await Promise.all([
@@ -282,6 +312,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       AsyncStorage.removeItem('grocery_custom_items'),
       AsyncStorage.removeItem('grocery_checked_items'),
       AsyncStorage.removeItem('grocery_meal_servings'),
+      AsyncStorage.removeItem('grocery_item_order'),
     ]).catch(() => {});
     api.clearGroceryState().catch(() => {});
   }, []);
@@ -296,6 +327,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       value={{
         checkedItems,
         customItems,
+        itemOrder,
         selectedMealKeys,
         mealServings,
         isLoading,
@@ -304,6 +336,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         clearChecked,
         addCustomItem,
         setCustomItems,
+        setItemOrder,
         saveSelections,
         clearAll,
         refreshFromApi,

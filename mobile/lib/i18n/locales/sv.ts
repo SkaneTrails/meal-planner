@@ -467,6 +467,7 @@ const sv: Translations = {
     itemCountOne: '1 vara',
     addItemLabel: 'Lägg till vara',
     addItemExamplePlaceholder: 't.ex. Mjölk, 2 liter',
+    pickedSection: 'Plockade',
     goToMealPlan:
       'Gå till Veckomeny och tryck "Skapa lista" för att generera din inköpslista från planerade måltider.',
   },

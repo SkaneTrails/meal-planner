@@ -29,9 +29,10 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 import type { FrameSegment } from './TerminalFrame';
 import { TerminalFrame } from './TerminalFrame';
+import { ThemeIcon } from './ThemeIcon';
 
 interface ContentCardProps {
   children: React.ReactNode;
@@ -171,20 +172,35 @@ export const ContentCard = ({
             {label}
           </Text>
         )}
-        {summarySegment && (
-          <Text
-            style={{
-              fontFamily: fonts.body,
-              fontSize: fontSize.sm,
-              color: colors.content.subtitle,
-            }}
-          >
-            {summarySegment.label}
-          </Text>
-        )}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.xs,
+          }}
+        >
+          {summarySegment && (
+            <Text
+              style={{
+                fontFamily: fonts.body,
+                fontSize: fontSize.sm,
+                color: colors.content.subtitle,
+              }}
+            >
+              {summarySegment.label}
+            </Text>
+          )}
+          <ThemeIcon
+            name={expandSegment?.icon ?? 'chevron-down'}
+            size={iconSize.sm}
+            color={colors.content.subtitle}
+          />
+        </View>
       </Pressable>
     );
   }
+
+  const hasHeader = !!label || (rightSegments && rightSegments.length > 0);
 
   return (
     <View
@@ -208,6 +224,77 @@ export const ContentCard = ({
         style,
       ]}
     >
+      {hasHeader && (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: spacing.sm,
+          }}
+        >
+          {label && (
+            <Text
+              style={{
+                fontFamily: fonts.bodySemibold,
+                fontSize: fontSize.sm,
+                color: colors.content.heading,
+              }}
+            >
+              {label}
+            </Text>
+          )}
+          {rightSegments && rightSegments.length > 0 && (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.xs,
+              }}
+            >
+              {rightSegments.map((seg, idx) => {
+                const key = seg.icon ?? seg.label ?? String(idx);
+                const segStyle = {
+                  flexDirection: 'row' as const,
+                  alignItems: 'center' as const,
+                  gap: spacing.xs,
+                };
+                const icon = seg.icon ? (
+                  <ThemeIcon
+                    key={`${key}-icon`}
+                    name={seg.icon}
+                    size={iconSize.sm}
+                    color={colors.content.subtitle}
+                  />
+                ) : null;
+                const text = seg.label ? (
+                  <Text
+                    key={`${key}-text`}
+                    style={{
+                      fontFamily: fonts.body,
+                      fontSize: fontSize.sm,
+                      color: colors.content.subtitle,
+                    }}
+                  >
+                    {seg.label}
+                  </Text>
+                ) : null;
+                return seg.onPress ? (
+                  <Pressable key={key} onPress={seg.onPress} style={segStyle}>
+                    {icon}
+                    {text}
+                  </Pressable>
+                ) : (
+                  <View key={key} style={segStyle}>
+                    {icon}
+                    {text}
+                  </View>
+                );
+              })}
+            </View>
+          )}
+        </View>
+      )}
       {children}
     </View>
   );

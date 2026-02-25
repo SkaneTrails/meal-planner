@@ -475,6 +475,7 @@ const en = {
     itemCountOne: '1 item',
     addItemLabel: 'Add Item',
     addItemExamplePlaceholder: 'e.g. Milk, 2 liters',
+    pickedSection: 'Picked',
     goToMealPlan:
       'Go to Weekly Menu and tap "Create List" to generate your shopping list from planned meals.',
   },
