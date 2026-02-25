@@ -92,6 +92,7 @@ For 2+ blends with shared spices: combine identical spices into one line with to
 | **Ginger Ninja**     | 1 tsk ingefära (malen) + ½ tsk vitlökspulver + ¼ tsk gurkmeja + 1 krm koriander (malen) + 1 krm svartpeppar                          |
 | **Moo Shu**          | 1 ingefära (malen), 1 vitlökspulver                                                                                                  |
 | **Milda Mahal**      | 2 garam masala, 1 spiskummin, 1 koriander (malen), ½ gurkmeja                                                                        |
+| **Goan Xacuti**      | 2 garam masala, 2 koriander (malen), 1 spiskummin, 1 gurkmeja, 1 chilipulver, ½ kanel                                                |
 | **Thai Seven Spice** | 2½ tsk vita sesamfrön, 1 tsk chiliflingor, 1 tsk koriander (malen), 1 tsk lökpulver, ½ tsk vitlökspulver, ¼ tsk kanel, ⅛ tsk cayenne |
 | **Indian**           | Malen koriander, malen spiskummin, garam masala, gurkmeja, malen senap, salt, peppar (lika delar)                                    |
 
@@ -132,10 +133,12 @@ The household's **Ingredient Substitutions** table determines which product repl
 
 ### Quorn (filéer, bitar, strimlor)
 
-- **Very lean** — dries out easily. Best method: pan-fry with **1 msk smör + 1 msk rapsolja** on high heat for a quick sear
+- **Pre-cooked** — Quorn is already cooked. It only needs heating and browning, NEVER extended simmering. If the meat version slow-cooks for 1+ hours, the Quorn version needs **max 20–30 minutes** in sauce — just enough to absorb flavor. Longer ruins the texture. NEVER write a single instruction that cooks both meat and Quorn for the same duration — they MUST have separate timing
+- **Very lean** — dries out easily. ALWAYS pan-fry with **1 msk smör + 1 msk rapsolja** on high heat for a quick sear. Never use only oil — the butter adds flavor Quorn lacks on its own
 - If airfryer is necessary: brush generously with oil first, max 6–8 min at 180 °C
 - **Sold plain** (NOT pre-marinated). If the original meat has a marinade, glaze, or spice rub: list the Quorn as plain and add instructions to season or briefly marinate it separately
-- **Match the form**: filéer, bitar, or strimlor — pick the shape that mirrors the original protein
+- **Match the form**: filéer, bitar, or strimlor — pick the shape that mirrors the original protein. When replacing multiple distinct meats, you may use different Quorn products to match each texture (e.g. bitar for chunks + filéer for fillets). NEVER change to an unrelated form (e.g. bitar → färs)
+- **Self-check:** If Quorn is pan-fried in your output, verify both smör AND rapsolja appear in the ingredients and instructions
 
 ### Oumph! (The Chunk, Pulled, Kebab)
 

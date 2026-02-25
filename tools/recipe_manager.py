@@ -211,17 +211,18 @@ def export_recipe(recipe_id: str, output_path: str | None = None) -> None:
 
 
 def get_next_recipe() -> None:
-    """Get the next unprocessed recipe and display it."""
+    """Get the next unprocessed enhanced recipe and display it."""
     db = get_db(_project)
     progress = load_progress()
     processed_ids = set(progress.get("processed", []) + progress.get("skipped", []))
 
     for doc in db.collection(RECIPES_COLLECTION).order_by("title").stream():
-        if doc.id not in processed_ids:
-            display_recipe(doc.id, doc.to_dict())
+        data = doc.to_dict()
+        if data and data.get("enhanced") and doc.id not in processed_ids:
+            display_recipe(doc.id, data)
             return
 
-    print("\U0001f389 All recipes have been processed!")
+    print("\U0001f389 All enhanced recipes have been reviewed!")
 
 
 def get_recipe(recipe_id: str) -> None:
@@ -436,16 +437,13 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
     equipment = equipment_raw if isinstance(equipment_raw, list) else []
     language = config.get("language", "sv") or "sv"
     target_servings = max(int(config.get("default_servings", 4) or 4), 1)
-    people_count = max(int(config.get("household_size", 2) or 2), 1)
-    dietary = DietaryConfig.from_firestore(
-        config.get("dietary"), household_size=people_count, default_servings=target_servings
-    )
+    dietary = DietaryConfig.from_firestore(config.get("dietary"), default_servings=target_servings)
 
     print(f"\n\U0001f504 Re-enhancing: {original.get('title', recipe_id)}")
     print(f"   Household: {household_id}")
     print(f"   Language: {language}")
     print(f"   Equipment: {len(equipment)} items")
-    print(f"   Servings: {target_servings} ({people_count} people)")
+    print(f"   Servings: {target_servings}")
     print(f"   Dietary: meat={dietary.meat_strategy}, dairy={dietary.dairy}")
     print(f"   Mode: {'APPLY' if apply else 'DRY RUN'}")
 
@@ -497,12 +495,7 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
         load_dotenv(Path(__file__).parent.parent / ".env")
 
         enhanced = enhance_recipe(
-            original,
-            language=language,
-            equipment=equipment,
-            target_servings=target_servings,
-            people_count=people_count,
-            dietary=dietary,
+            original, language=language, equipment=equipment, target_servings=target_servings, dietary=dietary
         )
 
         _print_recipe_section("RE-ENHANCED", enhanced)
@@ -564,22 +557,30 @@ def upload_from_file(recipe_id: str, file_path: str) -> None:
 
 
 def show_status() -> None:
-    """Show review progress."""
+    """Show review progress for enhanced recipes."""
     db = get_db(_project)
     progress = load_progress()
 
-    total = sum(1 for _ in db.collection(RECIPES_COLLECTION).stream())
+    total_recipes = 0
+    enhanced = 0
+    for doc in db.collection(RECIPES_COLLECTION).stream():
+        total_recipes += 1
+        data = doc.to_dict()
+        if data and data.get("enhanced"):
+            enhanced += 1
+
     processed = len(progress.get("processed", []))
     skipped = len(progress.get("skipped", []))
-    remaining = total - processed - skipped
+    remaining = enhanced - processed - skipped
 
     print("\n\U0001f4ca Recipe Review Progress")
     print(f"   Database: {DATABASE}")
-    print(f"   Total recipes:       {total}")
+    print(f"   Total recipes:       {total_recipes}")
+    print(f"   Enhanced:            {enhanced}")
     print(f"   \u2705 Processed:        {processed}")
     print(f"   \u23ed\ufe0f Skipped:          {skipped}")
-    print(f"   \U0001f4dd Remaining:        {remaining}")
-    pct = ((processed + skipped) / total * 100) if total else 0.0
+    print(f"   \U0001f4dd Remaining:        {max(remaining, 0)}")
+    pct = ((processed + skipped) / enhanced * 100) if enhanced else 0.0
     print(f"   Progress:            {pct:.1f}%\n")
 
 

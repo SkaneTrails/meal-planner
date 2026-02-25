@@ -191,7 +191,6 @@ def enhance_recipe(
     language: str = DEFAULT_LANGUAGE,
     equipment: list[str] | None = None,
     target_servings: int = 4,
-    people_count: int = 2,
     dietary: DietaryConfig | None = None,
 ) -> dict[str, Any]:
     """
@@ -203,7 +202,6 @@ def enhance_recipe(
         language: Language code for locale-specific rules (default: sv)
         equipment: List of equipment keys from household settings
         target_servings: Number of servings to scale recipes to (from household settings)
-        people_count: Number of people in the household (from household settings)
         dietary: Dietary preferences from household Firestore settings
 
     Returns:
@@ -213,9 +211,7 @@ def enhance_recipe(
         EnhancementError: If enhancement fails
     """
     client = get_genai_client()
-    system_prompt = load_system_prompt(
-        language, equipment=equipment, target_servings=target_servings, people_count=people_count, dietary=dietary
-    )
+    system_prompt = load_system_prompt(language, equipment=equipment, target_servings=target_servings, dietary=dietary)
     sanitized = sanitize_recipe_for_enhancement(recipe)
     recipe_text = _format_recipe_text(sanitized)
 

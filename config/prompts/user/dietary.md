@@ -2,7 +2,6 @@
 
 ## Household
 
-- **People**: {people_count}
 - **Servings per meal**: {target_servings}
 <!-- BEGIN:meat_split -->
 - **Setup**: {meat_eaters} of {target_servings} portions contain meat, {vegetarians} are vegetarian
@@ -38,6 +37,8 @@
 
 **How splitting works:** {target_servings} portions total — {meat_eaters} meat portions, {vegetarians} vegetarian portions. After scaling the recipe to {target_servings} servings, split the total protein proportionally — {meat_eaters}/{target_servings} of the protein is the meat variant, {vegetarians}/{target_servings} is the alternative.
 
+**Broth/stock for split recipes:** When the recipe uses meat broth/stock and you create a vegetarian version alongside, the vegetarian portion MUST use vegetable broth — not meat broth. List both broths separately in the ingredient list with purpose labels (e.g. "köttbuljong (till kött-ragun)" + "grönsaksbuljong (till vegetarisk ragu)").
+
 - Example: 4 portions, 1 meat, 3 vegetarian. Original has 400 g chicken for 4P. Split → **100 g chicken (1/4) + 300 g chicken alternative (3/4)** ✅
 - Counter-example: 400 g chicken + 400 g alternative ❌ (doubles the total protein)
 - Counter-example: Original has 400 g tofu → keep 400 g tofu ✅ (do NOT add chicken ❌)
@@ -64,7 +65,7 @@ For meat proteins NOT handled by Full replacements:
 1. **Look up** the protein under "Protein split (proportional)"
 2. **If listed**: split proportionally — {meat_eaters}/{target_servings} original + {vegetarians}/{target_servings} replacement
 3. **If not listed**: still split proportionally, but choose a suitable vegetarian alternative yourself (e.g. Oumph, halloumi, beans, tofu — whatever fits the dish)
-4. **Match the form**: fillets → fillets, strips → strips, chunks → chunks — the replacement should mirror the original protein shape
+4. **Match the form**: fillets → fillets, strips → strips, chunks → chunks, pieces → pieces — the replacement should mirror the original protein shape. NEVER split one product into two different forms (e.g. "Quorn bitar" → "Quornfärs + Quornfilé")
 5. **Flavor-match the alternative**: The vegetarian version must taste equally good:
    - If the meat has a marinade, glaze, or spice rub → give the alternative equivalent seasoning (separate marinade step if needed)
    - If the meat is seasoned with aromatic fats (sesame oil, herb butter) → apply the same fats to the alternative too

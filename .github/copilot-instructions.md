@@ -35,6 +35,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Verify suggestions** - when given review comments or suggestions, verify they are correct against actual code before applying
 - **Compare alternatives** - when the user suggests a different approach, analyze both options and explain the tradeoffs
 - **Troubleshoot step-by-step** - when debugging, suggest one fix at a time and wait for results
+- **Answer "why" questions FIRST** - when the user asks WHY you did something (or challenges a decision), answer the question directly before taking any action. Never deflect into fixing or doing — acknowledge the question, give an honest answer, THEN proceed
 - **Assess test coverage for bugs** - when a bug is reported, assess whether a test should be added to catch it. Explain why existing tests missed it (e.g., mocking strategy, missing coverage) and propose a targeted test if appropriate
 - **Track iterations** - when a command/approach fails, IMMEDIATELY log to Failure Tracking table in `.copilot-tasks.md` BEFORE retrying with a different approach
 - **Plan before large changes** - for complex changes (3+ files), propose a high-level plan first
@@ -193,6 +194,7 @@ Skills in `.github/skills/` provide domain-specific instructions:
 | `pr-review-workflow/`      | PR creation, review comments, CI status, GitHub API patterns    |
 | `working-context/`         | Track tasks and discovered issues across conversations          |
 | `copilot-self-improvement/`| Meta-skill for maintaining Copilot config, skills, instructions |
+| `enhancement-evaluator/`   | Evaluate Gemini-enhanced recipes against quality bar, decide action |
 | `security/`                | OWASP top 10, secrets handling, preventing sensitive data leaks |
 
 ## Development Workflows

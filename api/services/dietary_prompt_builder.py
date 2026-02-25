@@ -59,9 +59,7 @@ class DietaryConfig:
     seafood_ok: bool = True
 
     @classmethod
-    def from_firestore(
-        cls, dietary: dict | None, household_size: int = 2, default_servings: int | None = None
-    ) -> DietaryConfig:
+    def from_firestore(cls, dietary: dict | None, default_servings: int = 4) -> DietaryConfig:
         """Create from a Firestore ``dietary`` settings dict.
 
         Handles None values and missing keys gracefully, falling back
@@ -69,13 +67,12 @@ class DietaryConfig:
         the legacy ``meat`` enum for determining ``meat_strategy``.
 
         ``default_servings`` is the denominator for proportional meat
-        splits (meat_portions is relative to servings, not people).
-        Falls back to ``household_size`` when not provided.
+        splits (meat_portions is relative to servings).
         """
         if not dietary or not isinstance(dietary, dict):
             return cls()
 
-        portion_base = default_servings if default_servings is not None else household_size
+        portion_base = default_servings
 
         meat_portions = dietary.get("meat_portions")
         if meat_portions is not None:
