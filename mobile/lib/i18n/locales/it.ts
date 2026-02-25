@@ -25,6 +25,8 @@ const it: Translations = {
     pageOf: '{{current}} / {{total}}',
     confirm: 'Conferma',
     close: 'Chiudi',
+    yes: 'Sì',
+    no: 'No',
     aiDisabledHint:
       'Abilita AI nelle impostazioni del nucleo familiare per usare questa funzione',
   },
@@ -581,7 +583,7 @@ const it: Translations = {
       namePlaceholder: 'es. Famiglia Rossi',
       button: 'Crea nucleo familiare',
     },
-    createdBy: 'Creato da {{email}}',
+    createdBy: 'Creato da {{email}} il {{date}}',
     members: 'Membri',
     addMemberButton: 'Aggiungi',
     noMembers: 'Nessun membro ancora',
@@ -595,6 +597,18 @@ const it: Translations = {
     failedToCreateHousehold: 'Impossibile creare il nucleo familiare',
     failedToAddMember: 'Impossibile aggiungere membro',
     failedToRemoveMember: 'Impossibile rimuovere membro',
+    householdInfo: 'Info nucleo familiare',
+    noSettings: 'Nessuna impostazione disponibile',
+    info: {
+      language: 'Lingua',
+      portions: 'Porzioni',
+      weekStart: 'Inizio settimana',
+      breakfast: 'Colazione',
+      aiEnabled: 'AI abilitato',
+      recipeCount: 'Ricette',
+      monday: 'Lunedì',
+      sunday: 'Domenica',
+    },
   },
 
   addRecipe: {

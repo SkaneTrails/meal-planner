@@ -26,6 +26,8 @@ const en = {
     pageOf: '{{current}} / {{total}}',
     confirm: 'Confirm',
     close: 'Close',
+    yes: 'Yes',
+    no: 'No',
     aiDisabledHint: 'Enable AI in household settings to use this feature',
   },
 
@@ -580,7 +582,7 @@ const en = {
       namePlaceholder: 'e.g., The Smiths',
       button: 'Create Household',
     },
-    createdBy: 'Created by {{email}}',
+    createdBy: 'Created by {{email}} on {{date}}',
     members: 'Members',
     addMemberButton: 'Add',
     noMembers: 'No members yet',
@@ -594,6 +596,18 @@ const en = {
     failedToCreateHousehold: 'Failed to create household',
     failedToAddMember: 'Failed to add member',
     failedToRemoveMember: 'Failed to remove member',
+    householdInfo: 'Household Info',
+    noSettings: 'No settings available',
+    info: {
+      language: 'Language',
+      portions: 'Portions',
+      weekStart: 'Week Start',
+      breakfast: 'Breakfast',
+      aiEnabled: 'AI Enabled',
+      recipeCount: 'Recipes',
+      monday: 'Monday',
+      sunday: 'Sunday',
+    },
   },
 
   // ── Add recipe screen ─────────────────────────────────────────────

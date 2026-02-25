@@ -94,6 +94,8 @@ class TestListHouseholds:
         assert len(data) == 1
         assert data[0]["id"] == "test_household"
         assert data[0]["name"] == "Test Family"
+        assert "created_at" in data[0]
+        assert data[0]["created_by"] == "creator@example.com"
 
     def test_admin_forbidden(self, admin_client: TestClient) -> None:
         """Admin should not be able to list all households."""
@@ -616,6 +618,46 @@ class TestUpdateHouseholdSettings:
             response = superuser_client.put("/admin/households/nonexistent/settings", json={"foo": "bar"})
 
         assert response.status_code == 404
+
+
+class TestGetHouseholdRecipeCount:
+    """Tests for GET /admin/households/{id}/recipe-count endpoint."""
+
+    def test_superuser_can_get_recipe_count(self, superuser_client: TestClient) -> None:
+        """Superuser can get owned recipe count for any household."""
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "h1", "name": "Test"}),
+            patch("api.routers.admin.count_recipes", return_value=42) as mock_count,
+        ):
+            response = superuser_client.get("/admin/households/h1/recipe-count")
+
+        assert response.status_code == 200
+        assert response.json() == {"recipe_count": 42}
+        mock_count.assert_called_once_with(household_id="h1", owned_only=True)
+
+    def test_non_superuser_cannot_get_recipe_count(self, member_client: TestClient) -> None:
+        """Non-superuser is denied access."""
+        response = member_client.get("/admin/households/test_household/recipe-count")
+
+        assert response.status_code == 403
+
+    def test_household_not_found(self, superuser_client: TestClient) -> None:
+        """Should return 404 if household doesn't exist."""
+        with patch("api.routers.admin.household_storage.get_household", return_value=None):
+            response = superuser_client.get("/admin/households/nonexistent/recipe-count")
+
+        assert response.status_code == 404
+
+    def test_zero_recipes(self, superuser_client: TestClient) -> None:
+        """Should return 0 when household has no recipes."""
+        with (
+            patch("api.routers.admin.household_storage.get_household", return_value={"id": "h1", "name": "Empty"}),
+            patch("api.routers.admin.count_recipes", return_value=0),
+        ):
+            response = superuser_client.get("/admin/households/h1/recipe-count")
+
+        assert response.status_code == 200
+        assert response.json() == {"recipe_count": 0}
 
 
 class TestTransferRecipe:

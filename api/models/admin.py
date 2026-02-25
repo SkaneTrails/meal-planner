@@ -1,6 +1,7 @@
 """Admin Pydantic models for household management."""
 
 import re
+from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -62,6 +63,7 @@ class HouseholdResponse(BaseModel):
     id: str
     name: str
     created_by: str
+    created_at: datetime
 
 
 class MemberAdd(BaseModel):
@@ -137,3 +139,9 @@ class FavoriteRecipeResponse(BaseModel):
     """Response containing the updated favorite recipes list."""
 
     favorite_recipes: list[str]
+
+
+class RecipeCountResponse(BaseModel):
+    """Response containing the recipe count for a household."""
+
+    recipe_count: int

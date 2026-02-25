@@ -136,6 +136,15 @@ export const adminApi = {
     );
   },
 
+  // Recipe count
+  getHouseholdRecipeCount: (
+    householdId: string,
+  ): Promise<{ recipe_count: number }> => {
+    return apiRequest<{ recipe_count: number }>(
+      `/admin/households/${householdId}/recipe-count`,
+    );
+  },
+
   // Favorite recipes
   getFavoriteRecipes: (
     householdId: string,

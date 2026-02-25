@@ -25,6 +25,8 @@ const sv: Translations = {
     pageOf: '{{current}} / {{total}}',
     confirm: 'Bekräfta',
     close: 'Stäng',
+    yes: 'Ja',
+    no: 'Nej',
     aiDisabledHint:
       'Aktivera AI i hushållsinställningar för att använda denna funktion',
   },
@@ -569,7 +571,7 @@ const sv: Translations = {
       namePlaceholder: 't.ex. Familjen Svensson',
       button: 'Skapa hushåll',
     },
-    createdBy: 'Skapad av {{email}}',
+    createdBy: 'Skapad av {{email}} den {{date}}',
     members: 'Medlemmar',
     addMemberButton: 'Lägg till',
     noMembers: 'Inga medlemmar ännu',
@@ -583,6 +585,18 @@ const sv: Translations = {
     failedToCreateHousehold: 'Kunde inte skapa hushåll',
     failedToAddMember: 'Kunde inte lägga till medlem',
     failedToRemoveMember: 'Kunde inte ta bort medlem',
+    householdInfo: 'Hushållsinfo',
+    noSettings: 'Inga inställningar tillgängliga',
+    info: {
+      language: 'Språk',
+      portions: 'Portioner',
+      weekStart: 'Veckostart',
+      breakfast: 'Frukost',
+      aiEnabled: 'AI aktiverat',
+      recipeCount: 'Recept',
+      monday: 'Måndag',
+      sunday: 'Söndag',
+    },
   },
 
   addRecipe: {
