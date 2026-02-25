@@ -36,8 +36,12 @@ export const InlineAddInput = ({
 
   return (
     <SurfaceCard
-      padding={spacing.xs}
-      style={{ flexDirection: 'row', marginBottom: spacing.md }}
+      padding={spacing.sm}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: spacing.md,
+      }}
     >
       <TextInput
         style={{
@@ -62,7 +66,7 @@ export const InlineAddInput = ({
         onPress={onSubmit}
         disabled={disabled || !hasContent}
         testID="inline-add-button"
-        size="sm"
+        size="md"
       />
     </SurfaceCard>
   );

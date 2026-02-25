@@ -13,6 +13,8 @@ import {
   borderRadius,
   fontSize,
   fontWeight,
+  iconSize,
+  letterSpacing,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -74,14 +76,23 @@ export const GeneralSection = ({
     [t],
   );
 
+  const dividerStyle = {
+    height: 1,
+    backgroundColor: colors.surface.divider,
+    marginVertical: spacing.lg,
+  };
+
   return (
     <SurfaceCard radius="lg">
       {/* Household Name */}
-      <View style={{ marginBottom: spacing.lg }}>
+      <View>
         <Text
           style={{
-            fontSize: fontSize.sm,
-            color: colors.content.strong,
+            fontSize: fontSize.xs,
+            fontWeight: fontWeight.semibold,
+            color: colors.content.subtitle,
+            textTransform: 'uppercase' as const,
+            letterSpacing: letterSpacing.wide,
             marginBottom: spacing.xs,
           }}
         >
@@ -103,7 +114,7 @@ export const GeneralSection = ({
               onSubmitEditing={onSaveName}
               style={{
                 flex: 1,
-                fontSize: fontSize.lg,
+                fontSize: fontSize['2xl'],
                 fontWeight: fontWeight.bold,
                 color: colors.input.text,
                 backgroundColor: colors.input.bg,
@@ -130,7 +141,7 @@ export const GeneralSection = ({
           >
             <Text
               style={{
-                fontSize: fontSize.lg,
+                fontSize: fontSize['2xl'],
                 fontWeight: fontWeight.bold,
                 color: colors.content.heading,
                 flex: 1,
@@ -141,7 +152,7 @@ export const GeneralSection = ({
             {canEdit && (
               <ThemeIcon
                 name="create-outline"
-                size={18}
+                size={iconSize.md}
                 color={colors.content.subtitle}
               />
             )}
@@ -149,12 +160,17 @@ export const GeneralSection = ({
         )}
       </View>
 
+      <View style={dividerStyle} />
+
       {/* Default Servings */}
       <View>
         <Text
           style={{
-            fontSize: fontSize.sm,
-            color: colors.content.strong,
+            fontSize: fontSize.xs,
+            fontWeight: fontWeight.semibold,
+            color: colors.content.subtitle,
+            textTransform: 'uppercase' as const,
+            letterSpacing: letterSpacing.wide,
             marginBottom: spacing.xs,
           }}
         >
@@ -172,23 +188,28 @@ export const GeneralSection = ({
         />
       </View>
 
+      <View style={dividerStyle} />
+
       {/* Include Breakfast */}
-      <View style={{ marginTop: spacing.lg }}>
-        <SettingToggleRow
-          label={t('householdSettings.general.includeBreakfast')}
-          subtitle={t('householdSettings.general.includeBreakfastDesc')}
-          value={settings.include_breakfast ?? false}
-          onValueChange={onUpdateIncludeBreakfast}
-          disabled={!canEdit}
-        />
-      </View>
+      <SettingToggleRow
+        label={t('householdSettings.general.includeBreakfast')}
+        subtitle={t('householdSettings.general.includeBreakfastDesc')}
+        value={settings.include_breakfast ?? false}
+        onValueChange={onUpdateIncludeBreakfast}
+        disabled={!canEdit}
+      />
+
+      <View style={dividerStyle} />
 
       {/* Week Start Day */}
-      <View style={{ marginTop: spacing.lg }}>
+      <View>
         <Text
           style={{
-            fontSize: fontSize.sm,
-            color: colors.content.strong,
+            fontSize: fontSize.xs,
+            fontWeight: fontWeight.semibold,
+            color: colors.content.subtitle,
+            textTransform: 'uppercase' as const,
+            letterSpacing: letterSpacing.wide,
             marginBottom: spacing.xs,
           }}
         >

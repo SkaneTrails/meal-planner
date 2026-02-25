@@ -75,8 +75,8 @@ async function renderScreen() {
 
   // Expand all collapsed sections so tests can find inputs/switches inside them
   const sectionTitles = [
-    'General', 'Members', 'Dietary Preferences',
-    'AI Improvements', 'Items at Home', 'Language',
+    'General', 'Members', 'Language',
+    'Items at Home', 'Note Suggestions',
   ];
   for (const title of sectionTitles) {
     const header = screen.queryByText(title);
@@ -130,26 +130,21 @@ describe('Household Settings screen', () => {
       }
     });
 
-    it('disables all settings text inputs', async () => {
+    it('only shows interactive inputs for pantry and notes', async () => {
       await renderScreen();
       const inputs = screen.queryAllByRole('textbox');
-      expect(inputs.length).toBeGreaterThan(0);
-      // Items-at-home input remains interactive for all household members
-      const settingsInputs = inputs.filter(
-        (el) => !(el as HTMLInputElement).placeholder?.includes('salt'),
-      );
-      expect(settingsInputs.length).toBeGreaterThan(0);
-      for (const input of settingsInputs) {
-        expect((input as HTMLInputElement).disabled).toBe(true);
+      // Items-at-home and note suggestion inputs remain interactive for all members
+      for (const input of inputs) {
+        expect((input as HTMLInputElement).disabled).toBe(false);
       }
     });
 
-    it('disables +/- buttons for household size and servings', async () => {
+    it('disables +/- buttons for servings', async () => {
       await renderScreen();
       const allButtons = screen.getAllByRole('button');
       const disabledButtons = allButtons.filter((btn) => (btn as HTMLButtonElement).disabled);
-      // At least 4 disabled buttons: 2 for household_size, 2 for default_servings
-      expect(disabledButtons.length).toBeGreaterThanOrEqual(4);
+      // At least 2 disabled buttons for default_servings stepper
+      expect(disabledButtons.length).toBeGreaterThanOrEqual(2);
     });
   });
 

@@ -1,14 +1,8 @@
 import { ActivityIndicator, Text, View } from 'react-native';
-import {
-  AnimatedPressable,
-  Button,
-  IconCircle,
-  Section,
-  SurfaceCard,
-} from '@/components';
-import { ThemeIcon } from '@/components/ThemeIcon';
+import { AnimatedPressable, Button, IconCircle, Section } from '@/components';
+import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
-import { spacing, useTheme } from '@/lib/theme';
+import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
 
 interface AccountSectionProps {
   userEmail: string | null | undefined;
@@ -21,18 +15,26 @@ export const AccountSection = ({
   displayName,
   onSignOut,
 }: AccountSectionProps) => {
-  const { colors, styles: themeStyles } = useTheme();
+  const { colors, styles: themeStyles, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
-    <Section
-      icon="person-circle"
-      title={t('settings.account')}
-      subtitle={userEmail || 'Email unavailable'}
-      spacing={spacing['2xl']}
-    >
-      <SurfaceCard style={{ marginBottom: spacing.md }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <Section icon="person-circle" title={t('settings.account')} spacing={0}>
+      <View
+        style={{
+          backgroundColor: colors.surface.subtle,
+          borderRadius: borderRadius.md,
+          padding: spacing.md,
+          marginTop: spacing.sm,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: spacing.md,
+          }}
+        >
           <IconCircle
             size="lg"
             bg={colors.bgDark}
@@ -41,7 +43,7 @@ export const AccountSection = ({
             <Text
               style={{
                 ...themeStyles.settingsTitleStyle,
-                fontSize: 20,
+                fontSize: fontSize['3xl'],
               }}
             >
               {userEmail?.[0]?.toUpperCase() || '?'}
@@ -61,80 +63,99 @@ export const AccountSection = ({
             </Text>
           </View>
         </View>
-      </SurfaceCard>
-
-      <Button
-        variant="text"
-        tone="warning"
-        icon="log-out-outline"
-        label={t('settings.signOut')}
-        onPress={onSignOut}
-        iconSize={20}
-        style={{
-          justifyContent: 'center',
-        }}
-      />
+        <View
+          style={{
+            height: 1,
+            backgroundColor: colors.surface.divider,
+            marginBottom: spacing.md,
+          }}
+        />
+        <Button
+          variant="text"
+          tone="warning"
+          icon="log-out-outline"
+          label={t('settings.signOut')}
+          onPress={onSignOut}
+          iconSize={iconSize.lg}
+          style={{
+            justifyContent: 'center',
+          }}
+        />
+      </View>
     </Section>
   );
 };
 
-interface HouseholdSettingsLinkProps {
-  householdId: string | null | undefined;
-  isLoading: boolean;
+interface SettingsNavLinkProps {
+  icon: IoniconName;
+  title: string;
+  subtitle?: string;
+  disabled?: boolean;
+  isLoading?: boolean;
   onPress: () => void;
 }
 
-export const HouseholdSettingsLink = ({
-  householdId,
-  isLoading,
+export const SettingsNavLink = ({
+  icon,
+  title,
+  subtitle,
+  disabled = false,
+  isLoading = false,
   onPress,
-}: HouseholdSettingsLinkProps) => {
+}: SettingsNavLinkProps) => {
   const { colors, styles: themeStyles } = useTheme();
-  const { t } = useTranslation();
 
   return (
     <AnimatedPressable
       onPress={onPress}
-      disabled={isLoading || !householdId}
-      hoverScale={1.02}
-      pressScale={0.97}
-      disableAnimation={isLoading || !householdId}
-      style={{ marginBottom: spacing['2xl'] }}
+      disabled={isLoading || disabled}
+      hoverScale={1.01}
+      pressScale={0.98}
+      disableAnimation={isLoading || disabled}
+      accessibilityRole="button"
     >
-      <SurfaceCard
+      <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          opacity: isLoading ? 0.6 : householdId ? 1 : 0.5,
+          paddingVertical: spacing.md,
+          opacity: isLoading ? 0.6 : disabled ? 0.5 : 1,
         }}
       >
+        <IconCircle
+          size="sm"
+          bg={colors.glass.faint}
+          style={{ marginRight: spacing.md }}
+        >
+          <ThemeIcon
+            name={icon}
+            size={iconSize.sm}
+            color={colors.content.body}
+          />
+        </IconCircle>
         <View style={{ flex: 1 }}>
-          <Text style={themeStyles.settingsTitleStyle}>
-            {t('settings.householdSettings')}
-          </Text>
-          <Text
-            style={{
-              ...themeStyles.settingsSubtitleStyle,
-              marginTop: 4,
-            }}
-          >
-            {isLoading
-              ? t('settings.loadingHousehold')
-              : householdId
-                ? t('settings.householdSettingsDesc')
-                : t('settings.noHousehold')}
-          </Text>
+          <Text style={themeStyles.settingsTitleStyle}>{title}</Text>
+          {subtitle && (
+            <Text
+              style={{
+                ...themeStyles.settingsSubtitleStyle,
+                marginTop: 2,
+              }}
+            >
+              {subtitle}
+            </Text>
+          )}
         </View>
         {isLoading ? (
           <ActivityIndicator size="small" color={colors.content.strong} />
         ) : (
           <ThemeIcon
             name="chevron-forward"
-            size={20}
-            color={colors.content.strong}
+            size={iconSize.md}
+            color={colors.content.subtitle}
           />
         )}
-      </SurfaceCard>
+      </View>
     </AnimatedPressable>
   );
 };

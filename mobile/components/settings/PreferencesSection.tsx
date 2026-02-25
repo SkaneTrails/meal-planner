@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { SettingToggleRow, SurfaceCard } from '@/components';
+import { SettingToggleRow } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -19,7 +19,7 @@ export const PersonalPreferencesSection = ({
   const { t } = useTranslation();
 
   return (
-    <SurfaceCard style={{ marginBottom: spacing['2xl'] }}>
+    <View>
       <SettingToggleRow
         label={t('settings.showHiddenRecipes')}
         subtitle={t('settings.showHiddenRecipesDesc')}
@@ -40,7 +40,7 @@ export const PersonalPreferencesSection = ({
         </Text>
         <ThemePicker currentTheme={themeName} onChangeTheme={setThemeName} />
       </View>
-    </SurfaceCard>
+    </View>
   );
 };
 

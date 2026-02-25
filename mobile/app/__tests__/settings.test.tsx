@@ -1,5 +1,5 @@
 /**
- * Tests for Settings screen — verifies household settings navigation.
+ * Tests for Settings screen — verifies navigation to household/AI detail screens.
  *
  * Bug caught: The settings page originally navigated to `/household-settings`
  * without passing `?id=` query parameter, causing "Invalid household ID" error.
@@ -35,7 +35,7 @@ describe('Settings screen', () => {
   });
 
   describe('household settings navigation', () => {
-    it('navigates with household_id in URL when user has a household', async () => {
+    it('navigates to Members section with household_id when user has a household', async () => {
       mockCurrentUserData = {
         uid: 'user-1',
         email: 'test@example.com',
@@ -44,7 +44,6 @@ describe('Settings screen', () => {
         household_name: 'Test House',
       };
 
-      // Dynamic import after mocks are set up
       const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
       const Wrapper = createQueryWrapper();
 
@@ -54,17 +53,14 @@ describe('Settings screen', () => {
         ),
       );
 
-      // Find and press the household settings button
-      const householdButton = screen.getByText('Household Settings');
-      fireEvent.click(householdButton);
+      fireEvent.click(screen.getByText('Members'));
 
-      // The critical assertion: router.push must include ?id= with the household ID
       expect(mockPush).toHaveBeenCalledWith(
-        '/household-settings?id=household-abc',
+        '/household-settings?id=household-abc&section=members',
       );
     });
 
-    it('includes the correct household_id, not a hardcoded value', async () => {
+    it('includes the correct household_id for each household nav item', async () => {
       mockCurrentUserData = {
         uid: 'user-2',
         email: 'other@example.com',
@@ -82,10 +78,9 @@ describe('Settings screen', () => {
         ),
       );
 
-      fireEvent.click(screen.getByText('Household Settings'));
-
+      fireEvent.click(screen.getByText('Members'));
       expect(mockPush).toHaveBeenCalledWith(
-        '/household-settings?id=different-household-xyz',
+        '/household-settings?id=different-household-xyz&section=members',
       );
     });
 
@@ -107,11 +102,36 @@ describe('Settings screen', () => {
         ),
       );
 
-      // Button should be disabled — pressing it should not call router.push
-      const householdButton = screen.getByText('Household Settings');
-      fireEvent.click(householdButton);
+      fireEvent.click(screen.getByText('Members'));
 
       expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('AI settings navigation', () => {
+    it('navigates to ai settings with household_id', async () => {
+      mockCurrentUserData = {
+        uid: 'user-1',
+        email: 'test@example.com',
+        role: 'member',
+        household_id: 'household-abc',
+        household_name: 'Test House',
+      };
+
+      const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
+      const Wrapper = createQueryWrapper();
+
+      render(
+        React.createElement(Wrapper, null,
+          React.createElement(SettingsScreen)
+        ),
+      );
+
+      fireEvent.click(screen.getByText('Configure how AI enhances your recipes'));
+
+      expect(mockPush).toHaveBeenCalledWith(
+        '/ai-settings?id=household-abc',
+      );
     });
   });
 });
