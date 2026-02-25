@@ -23,7 +23,12 @@ import {
   RecipeNotFound,
 } from '@/components/recipe-detail/RecipeLoadingStates';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useKeepScreenOn, useMealPlan, useRecipe } from '@/lib/hooks';
+import {
+  useKeepScreenOn,
+  useMealPlan,
+  usePortionScaling,
+  useRecipe,
+} from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 import { layout, spacing, useTheme } from '@/lib/theme';
@@ -78,6 +83,8 @@ export default function RecipeDetailScreen() {
     showEnhancementReviewModal,
     closeEnhancementReviewModal,
   } = useRecipeActions(id, recipe);
+
+  const portionScaling = usePortionScaling(recipe?.servings);
 
   const [weekOffset, setWeekOffset] = useState(0);
   const weekDates = useMemo(
@@ -172,6 +179,7 @@ export default function RecipeDetailScreen() {
       setKeepScreenOn((prev) => !prev);
     },
     onReviewEnhancement: handleReviewEnhancement,
+    portionScaling,
   };
 
   return (
