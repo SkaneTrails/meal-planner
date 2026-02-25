@@ -15,7 +15,7 @@
 
 ## Fish and seafood
 
-- Both eat fish and seafood
+- The household eats fish and seafood
 - No changes needed for fish/seafood recipes
 - Keep seafood-derived condiments (oyster sauce, fish sauce, shrimp paste) as-is
   <!-- END:seafood_ok -->
@@ -107,24 +107,60 @@ Use lactose-free alternatives for:
 
 ## Dairy
 
-**No dairy products at all.** Replace all dairy with plant-based alternatives:
+**This household is completely dairy-free.** Replace ALL dairy products with plant-based alternatives. There are NO exceptions — butter, parmesan, mozzarella, ricotta ALL get replaced.
 
-- Milk → oat milk, soy milk, or other plant milk
-- Cream → oat cream, coconut cream
-- Butter → plant-based margarine or oil
-- Cheese → omit or use plant-based cheese
-- Crème fraîche → plant-based crème fraîche or cashew cream
-- Yoghurt/Kvarg → plant-based yoghurt
+**Tagging:** Use `dairy-free`, NOT `lactose-free` — they mean different things.
+
+### Substitution rules
+
+| Dairy product             | Plant-based replacement                                        |
+| ------------------------- | -------------------------------------------------------------- |
+| Milk                      | Oat milk (or other plant milk)                                 |
+| Cream (cooking)           | Oat cream or coconut cream                                     |
+| Cream (whipping)          | Coconut cream (chilled)                                        |
+| Butter (frying)           | Neutral oil or plant-based margarine                           |
+| Butter (finishing/baking) | Plant-based butter (e.g. Naturli)                              |
+| Crème fraîche             | Plant-based crème fraîche or cashew cream                      |
+| Yogurt                    | Plant-based yogurt (soy or oat)                                |
+| Cream cheese              | Plant-based cream cheese                                       |
+| Mozzarella                | Skip or use plant-based mozzarella                             |
+| Parmesan / Grana Padano   | Nutritional yeast + toasted pine nuts, or plant-based parmesan |
+| Ricotta                   | Blended silken tofu or cashew ricotta                          |
+| Feta                      | Marinated tofu or plant-based feta                             |
+
+### Cooking adjustments
+
+- **Sauces**: Plant-based creams may be thinner — reduce slightly or add a small starch slurry (1 tsp cornstarch in cold water) to reach the right consistency
+- **Gratins/browning**: Plant-based cheese melts differently — add breadcrumbs or nutritional yeast for a golden crust
+- **Richness**: Without butter/cream, compensate with quality olive oil, avocado, tahini, or coconut fat for richness
+- **Umami**: Parmesan substitutes lack depth — add miso paste, nutritional yeast, or soy sauce to boost savory flavor
 <!-- END:dairy_free -->
 
 ## Fats
 
 **ALWAYS REVIEW** which oil/fat is used and whether it matches the cooking method.
 
+<!-- BEGIN:dairy_free -->
+
+All butter is already replaced above (plant-based margarine or oil). The rules below apply to oil selection only.
+
+<!-- END:dairy_free -->
+
+<!-- BEGIN:regular_dairy -->
+
 ### Butter
 
 - **Butter → margarine** for regular frying where butter flavor doesn't matter
 - **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing
+<!-- END:regular_dairy -->
+
+<!-- BEGIN:lactose_free -->
+
+### Butter
+
+- **Butter → margarine** for regular frying where butter flavor doesn't matter
+- **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing (butter is very low in lactose)
+<!-- END:lactose_free -->
 
 ### Oil
 

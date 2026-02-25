@@ -223,3 +223,25 @@ The household's **Ingredient Substitutions** table determines which product repl
 ### Lactose-free — UK products
 
 Use "lactose-free" prefix for dairy that needs substituting: lactose-free double cream, lactose-free milk, lactose-free crème fraîche.
+
+### Dairy-free — UK products
+
+When the household is dairy-free, use UK-market plant-based products:
+
+| Dairy product             | UK plant-based replacement                                     |
+| ------------------------- | -------------------------------------------------------------- |
+| Milk                      | Oat milk (Oatly), soya milk, almond milk                       |
+| Double/single cream       | Oat cream or coconut cream                                     |
+| Whipping cream            | Coconut cream (chilled)                                        |
+| Butter (frying)           | Rapeseed oil or plant-based margarine                          |
+| Butter (finishing/baking) | Plant-based butter (e.g. Flora Plant, Naturli)                 |
+| Crème fraîche             | Plant-based crème fraîche or cashew cream                      |
+| Yoghurt                   | Plant-based yoghurt (soya or oat)                              |
+| Cream cheese              | Plant-based cream cheese                                       |
+| Mozzarella                | Skip or use plant-based mozzarella                             |
+| Cheddar/hard cheese       | Nutritional yeast + toasted pine nuts, or plant-based cheese   |
+| Parmesan                  | Nutritional yeast + toasted pine nuts, or plant-based parmesan |
+| Ricotta                   | Blended silken tofu or cashew ricotta                          |
+| Feta                      | Marinated tofu or plant-based feta                             |
+
+**Brands widely available in UK supermarkets:** Oatly, Alpro, Violife, Naturli, Flora Plant, Koko.

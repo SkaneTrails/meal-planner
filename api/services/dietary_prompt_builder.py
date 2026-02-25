@@ -173,6 +173,8 @@ class DietaryConfig:
             tags.add("lactose_free")
         elif self.dairy == "dairy_free":
             tags.add("dairy_free")
+        else:
+            tags.add("regular_dairy")
 
         if self.seafood_ok:
             tags.add("seafood_ok")
