@@ -206,6 +206,12 @@ class TestActiveSections:
         assert "vegetarian" in tags
         assert "meat_split" not in tags
 
+    def test_all_strategy_enables_neither(self) -> None:
+        cfg = DietaryConfig(meat_strategy="all")
+        tags = cfg.active_sections()
+        assert "meat_split" not in tags
+        assert "vegetarian" not in tags
+
     def test_no_strategy_enables_neither(self) -> None:
         cfg = DietaryConfig(meat_strategy="none")
         tags = cfg.active_sections()
