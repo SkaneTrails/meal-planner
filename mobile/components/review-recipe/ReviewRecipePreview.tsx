@@ -18,7 +18,7 @@ export const ReviewRecipePreview = ({
   const instructions = recipe.instructions ?? [];
 
   return (
-    <ContentCard style={{ marginBottom: spacing.xl }}>
+    <ContentCard variant="surface" style={{ marginBottom: spacing.xl }}>
       <Text
         style={{
           fontSize: fontSize.lg,

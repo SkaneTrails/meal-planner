@@ -32,7 +32,11 @@ export const ReviewVersionToggle = ({
       >
         {t('reviewRecipe.version')}
       </Text>
-      <ContentCard padding={spacing.xs} cardStyle={{ flexDirection: 'row' }}>
+      <ContentCard
+        variant="surface"
+        padding={spacing.xs}
+        cardStyle={{ flexDirection: 'row' }}
+      >
         <Pressable
           onPress={() => onSelectTab('original')}
           style={{

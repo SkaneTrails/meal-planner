@@ -14,7 +14,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
   if (changes.length === 0) return null;
 
   return (
-    <ContentCard style={{ marginBottom: spacing.xl }}>
+    <ContentCard variant="surface" style={{ marginBottom: spacing.xl }}>
       <View
         style={{
           flexDirection: 'row',
