@@ -22,8 +22,8 @@ import { AvailableEquipment, SelectedEquipment } from './EquipmentSection';
 
 const MAX_REPLACEMENTS = 10;
 const MAX_WORDS = 3;
-/** Strip characters not allowed by the API regex ([\w -] with Unicode). */
-const ALLOWED_RE = /[^\w\s-]/gu;
+/** Strip characters so only Unicode letters, numbers, whitespace, underscores, and hyphens remain (roughly matching the API's allowed set). */
+const ALLOWED_RE = /[^\p{L}\p{N}\s_-]/gu;
 
 /** Sanitize ingredient text: strip banned chars, cap at MAX_WORDS words. */
 const sanitizeIngredientInput = (raw: string): string => {

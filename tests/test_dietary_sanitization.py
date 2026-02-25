@@ -15,6 +15,7 @@ from api.models.settings import (
     MAX_HOUSEHOLD_SIZE,
     DietarySettings,
     DietarySettingsUpdate,
+    DietType,
     HouseholdSettings,
     HouseholdSettingsUpdate,
     IngredientReplacement,
@@ -471,3 +472,26 @@ class TestLanguageEnum:
         assert Language.SV == "sv"
         assert Language.EN == "en"
         assert Language.IT == "it"
+
+
+class TestDietarySettingsUpdateDietType:
+    """Tests that DietarySettingsUpdate accepts and preserves diet_type."""
+
+    def test_diet_type_none_by_default(self) -> None:
+        update = DietarySettingsUpdate()
+        assert update.diet_type is None
+
+    def test_accepts_valid_diet_type(self) -> None:
+        update = DietarySettingsUpdate(diet_type=DietType.VEGETARIAN)
+        assert update.diet_type == DietType.VEGETARIAN
+
+    def test_diet_type_included_in_dump_when_set(self) -> None:
+        update = DietarySettingsUpdate(diet_type=DietType.PESCATARIAN)
+        dumped = update.model_dump(exclude_unset=True)
+        assert "diet_type" in dumped
+        assert dumped["diet_type"] == DietType.PESCATARIAN
+
+    def test_diet_type_excluded_from_dump_when_unset(self) -> None:
+        update = DietarySettingsUpdate(meat=MeatPreference.ALL)
+        dumped = update.model_dump(exclude_unset=True)
+        assert "diet_type" not in dumped
