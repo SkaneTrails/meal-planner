@@ -1,7 +1,6 @@
 import { Text, View, type ViewStyle } from 'react-native';
 import {
   fontSize,
-  fontWeight,
   letterSpacing,
   lineHeight,
   spacing,
@@ -52,7 +51,7 @@ const EmptyState = ({
         <Text
           style={{
             fontSize: fontSize.md,
-            fontWeight: fontWeight.semibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.heading,
             marginBottom: spacing['2xs'],
             textAlign: 'center',

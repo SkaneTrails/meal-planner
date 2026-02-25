@@ -1,15 +1,23 @@
 import { Text, View } from 'react-native';
+import type { DropdownOption } from '@/components';
 import {
+  ContentCard,
+  DropdownPicker,
   IconButton,
+  Section,
   SectionLabel,
   SettingToggleRow,
   StepperControl,
-  SurfaceCard,
   ThemedTextInput,
 } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
-import type { HouseholdSettings, IngredientReplacement } from '@/lib/types';
+import type {
+  DairyPreference,
+  DietType,
+  HouseholdSettings,
+  IngredientReplacement,
+} from '@/lib/types';
 import { AvailableEquipment, SelectedEquipment } from './EquipmentSection';
 
 const MAX_REPLACEMENTS = 10;
@@ -46,7 +54,7 @@ export const AiSection = ({
   onUpdateDietary,
   onToggleEquipment,
 }: AiSectionProps) => {
-  const { colors } = useTheme();
+  const { borderRadius, colors } = useTheme();
   const { t } = useTranslation();
 
   const meatPortions = Math.min(
@@ -99,57 +107,139 @@ export const AiSection = ({
 
   const disabledByAi = !canEdit;
 
+  const dietTypeOptions: DropdownOption<DietType>[] = [
+    {
+      value: 'no_restrictions',
+      label: t('householdSettings.dietary.dietNoRestrictions'),
+    },
+    {
+      value: 'pescatarian',
+      label: t('householdSettings.dietary.dietPescatarian'),
+    },
+    {
+      value: 'vegetarian',
+      label: t('householdSettings.dietary.dietVegetarian'),
+    },
+    {
+      value: 'vegan',
+      label: t('householdSettings.dietary.dietVegan'),
+    },
+  ];
+
+  const dietType = dietary.diet_type ?? 'no_restrictions';
+  const isVegan = dietType === 'vegan';
+  const isMixedEligible =
+    dietType === 'vegetarian' || dietType === 'pescatarian';
+
+  const dairyOptions: DropdownOption<DairyPreference>[] = [
+    {
+      value: 'regular',
+      label: t('householdSettings.dietary.dairyRegular'),
+    },
+    {
+      value: 'lactose_free',
+      label: t('householdSettings.dietary.dairyLactoseFree'),
+    },
+    {
+      value: 'dairy_free',
+      label: t('householdSettings.dietary.dairyFree'),
+    },
+  ];
+
   return (
     <>
-      {/* Meat Portions Stepper */}
-      <SectionLabel text={t('householdSettings.dietary.meatDishes')} />
-      <SurfaceCard radius="lg" style={{ marginBottom: spacing.md }}>
-        <Text
-          style={{
-            fontSize: fontSize.sm,
-            color: colors.content.strong,
-            marginBottom: spacing.md,
-          }}
-        >
-          {t('householdSettings.dietary.meatPortionsDesc')}
-        </Text>
-        <StepperControl
-          value={meatPortions}
-          onDecrement={() => handleMeatPortionsChange(-1)}
-          onIncrement={() => handleMeatPortionsChange(1)}
-          decrementDisabled={disabledByAi || meatPortions <= 0}
-          incrementDisabled={disabledByAi || meatPortions >= defaultServings}
-          subtitle={t('householdSettings.dietary.portionsOf', {
-            total: defaultServings,
-          })}
+      {/* Diet Type & Dairy */}
+      <ContentCard
+        label={t('householdSettings.dietary.title')}
+        cardStyle={{ borderRadius: borderRadius.lg, padding: spacing['md-lg'] }}
+        style={{ marginBottom: spacing.lg }}
+      >
+        <Section
+          icon="nutrition"
+          title={t('householdSettings.dietary.title')}
+          spacing={0}
         />
-        {meatPortions === 0 && (
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              color: colors.content.subtitle,
-              textAlign: 'center',
-              marginTop: spacing.sm,
-              fontStyle: 'italic',
-            }}
-          >
-            {t('householdSettings.dietary.meatNoneHint')}
-          </Text>
+        <SectionLabel text={t('householdSettings.dietary.dietType')} />
+        <DropdownPicker
+          options={dietTypeOptions}
+          value={dietary.diet_type ?? 'no_restrictions'}
+          onSelect={(value) => onUpdateDietary('diet_type', value)}
+          disabled={disabledByAi}
+          embedded
+        />
+
+        <SectionLabel text={t('householdSettings.dietary.dairy')} />
+        <DropdownPicker
+          options={dairyOptions}
+          value={isVegan ? 'dairy_free' : dietary.dairy}
+          onSelect={(value) => onUpdateDietary('dairy', value)}
+          disabled={disabledByAi || isVegan}
+          embedded
+        />
+
+        {/* Mixed Household — only for no_restrictions */}
+        {isMixedEligible && (
+          <>
+            <SectionLabel
+              text={t('householdSettings.dietary.mixedHousehold')}
+            />
+            <View
+              style={{
+                backgroundColor: colors.surface.subtle,
+                borderRadius: borderRadius.md,
+                padding: spacing.md,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: fontSize.sm,
+                  color: colors.content.strong,
+                  marginBottom: spacing.md,
+                }}
+              >
+                {t('householdSettings.dietary.meatPortionsDesc')}
+              </Text>
+              <StepperControl
+                value={meatPortions}
+                onDecrement={() => handleMeatPortionsChange(-1)}
+                onIncrement={() => handleMeatPortionsChange(1)}
+                decrementDisabled={disabledByAi || meatPortions <= 0}
+                incrementDisabled={
+                  disabledByAi || meatPortions >= defaultServings
+                }
+                subtitle={t('householdSettings.dietary.portionsOf', {
+                  total: defaultServings,
+                })}
+              />
+              {meatPortions === 0 && (
+                <Text
+                  style={{
+                    fontSize: fontSize.sm,
+                    color: colors.content.subtitle,
+                    textAlign: 'center',
+                    marginTop: spacing.sm,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {t('householdSettings.dietary.meatNoneHint')}
+                </Text>
+              )}
+            </View>
+          </>
         )}
-      </SurfaceCard>
+      </ContentCard>
 
       {/* Ingredient Replacements */}
-      <SectionLabel text={t('householdSettings.dietary.replacements')} />
-      <SurfaceCard radius="lg" style={{ marginBottom: spacing.lg }}>
-        <Text
-          style={{
-            fontSize: fontSize.sm,
-            color: colors.content.subtitle,
-            marginBottom: spacing.md,
-          }}
-        >
-          {t('householdSettings.dietary.replacementsDesc')}
-        </Text>
+      <ContentCard
+        label={t('householdSettings.dietary.replacements')}
+        cardStyle={{ borderRadius: borderRadius.lg, padding: spacing['md-lg'] }}
+        style={{ marginBottom: spacing.lg }}
+      >
+        <Section
+          icon="swap-horizontal"
+          title={t('householdSettings.dietary.replacements')}
+          spacing={0}
+        />
 
         {replacements.map((row, index) => (
           <ReplacementRow
@@ -157,6 +247,11 @@ export const AiSection = ({
             row={row}
             index={index}
             disabled={disabledByAi}
+            showMeatSubstitute={
+              isMixedEligible &&
+              meatPortions > 0 &&
+              meatPortions < defaultServings
+            }
             onUpdate={handleUpdateRow}
             onRemove={handleRemoveRow}
           />
@@ -188,20 +283,32 @@ export const AiSection = ({
             })}
           </Text>
         )}
-      </SurfaceCard>
+      </ContentCard>
 
       {/* Equipment */}
-      <SectionLabel text={t('householdSettings.equipment.title')} />
-      <SelectedEquipment
-        equipment={equipment}
-        canEdit={!disabledByAi}
-        onToggle={onToggleEquipment}
-      />
-      <AvailableEquipment
-        equipment={equipment}
-        canEdit={!disabledByAi}
-        onToggle={onToggleEquipment}
-      />
+      <ContentCard
+        label={t('householdSettings.equipment.title')}
+        cardStyle={{ borderRadius: borderRadius.lg, padding: spacing['md-lg'] }}
+        style={{ marginBottom: spacing.lg }}
+      >
+        <Section
+          icon="construct"
+          title={t('householdSettings.equipment.title')}
+          spacing={0}
+        />
+        <SelectedEquipment
+          equipment={equipment}
+          canEdit={!disabledByAi}
+          onToggle={onToggleEquipment}
+          embedded
+        />
+        <AvailableEquipment
+          equipment={equipment}
+          canEdit={!disabledByAi}
+          onToggle={onToggleEquipment}
+          embedded
+        />
+      </ContentCard>
     </>
   );
 };
@@ -212,6 +319,7 @@ interface ReplacementRowProps {
   row: IngredientReplacement;
   index: number;
   disabled: boolean;
+  showMeatSubstitute: boolean;
   onUpdate: (
     index: number,
     field: keyof IngredientReplacement,
@@ -224,19 +332,20 @@ const ReplacementRow = ({
   row,
   index,
   disabled,
+  showMeatSubstitute,
   onUpdate,
   onRemove,
 }: ReplacementRowProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
     <View
       style={{
-        marginBottom: spacing.md,
-        paddingBottom: spacing.md,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
+        backgroundColor: colors.surface.subtle,
+        borderRadius: borderRadius.md,
+        padding: spacing.md,
+        marginBottom: spacing.sm,
       }}
     >
       {/* Original → Replacement inputs */}
@@ -283,14 +392,16 @@ const ReplacementRow = ({
         />
       </View>
 
-      {/* Meat substitute toggle */}
-      <SettingToggleRow
-        label={t('householdSettings.dietary.meatSubstitute')}
-        subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
-        value={row.meat_substitute}
-        onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
-        disabled={disabled}
-      />
+      {/* Meat substitute toggle — only when household has a split meat config */}
+      {showMeatSubstitute && (
+        <SettingToggleRow
+          label={t('householdSettings.dietary.meatSubstitute')}
+          subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
+          value={row.meat_substitute}
+          onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
+          disabled={disabled}
+        />
+      )}
     </View>
   );
 };

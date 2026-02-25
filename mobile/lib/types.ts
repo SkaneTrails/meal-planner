@@ -307,6 +307,11 @@ export interface CurrentUser {
 }
 
 // Household Settings types
+export type DietType =
+  | 'no_restrictions'
+  | 'pescatarian'
+  | 'vegetarian'
+  | 'vegan';
 export type MeatPreference = 'all' | 'split' | 'none';
 export type DairyPreference = 'regular' | 'lactose_free' | 'dairy_free';
 
@@ -317,7 +322,7 @@ export interface IngredientReplacement {
 }
 
 export interface DietarySettings {
-  lactose_free: boolean;
+  diet_type: DietType;
   seafood_ok: boolean;
   meat: MeatPreference;
   meat_portions: number;

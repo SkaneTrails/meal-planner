@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { Button, Chip, SurfaceCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
 
 interface MembersSectionProps {
@@ -35,7 +35,7 @@ const MemberCard = ({
   canEdit: boolean;
   onRemove: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
   const roleColor =
     member.role === 'admin' ? colors.warning : colors.text.muted;
@@ -61,7 +61,7 @@ const MemberCard = ({
           <Text
             style={{
               fontSize: fontSize.md,
-              fontWeight: fontWeight.medium,
+              fontFamily: fonts.bodyMedium,
               color: colors.content.heading,
             }}
           >
@@ -124,7 +124,7 @@ const AddMemberForm = ({
   | 'onAddMember'
   | 'isAddPending'
 >) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -177,7 +177,7 @@ const AddMemberForm = ({
               style={{
                 color:
                   newMemberRole === role ? colors.white : colors.content.body,
-                fontWeight: fontWeight.medium,
+                fontFamily: fonts.bodyMedium,
                 fontSize: fontSize.sm,
               }}
             >

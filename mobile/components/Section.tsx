@@ -8,7 +8,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { IconCircle } from './IconCircle';
 import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
@@ -104,9 +104,8 @@ export const Section = ({
     size === 'sm'
       ? { ...typography.displaySmall, color: colors.content.heading }
       : {
-          fontFamily: fonts.bodySemibold,
+          fontFamily: fonts.bodyBold,
           fontSize: fontSize.lg,
-          fontWeight: fontWeight.bold,
           color: colors.content.heading,
         };
 
