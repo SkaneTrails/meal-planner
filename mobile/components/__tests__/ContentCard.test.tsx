@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { Text } from 'react-native';
 import { ContentCard } from '../ContentCard';
@@ -134,5 +134,91 @@ describe('ContentCard — card variant (flat chrome)', () => {
       </ContentCard>,
     );
     expect(screen.getByText('Terminal card')).toBeDefined();
+  });
+});
+
+describe('ContentCard — full chrome expanded with header', () => {
+  beforeEach(() => {
+    useThemeSpy.mockReturnValue(fullTheme());
+  });
+
+  it('renders label in expanded header', () => {
+    render(
+      <ContentCard label="TO BUY" rightSegments={[{ label: 'count' }]}>
+        <Text>Item list</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByText('TO BUY')).toBeDefined();
+    expect(screen.getByText('count')).toBeDefined();
+    expect(screen.getByText('Item list')).toBeDefined();
+  });
+
+  it('renders label-only header when no rightSegments', () => {
+    render(
+      <ContentCard label="SECTION">
+        <Text>Content</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByText('SECTION')).toBeDefined();
+    expect(screen.getByText('Content')).toBeDefined();
+  });
+
+  it('renders children without header when no label or segments', () => {
+    render(
+      <ContentCard>
+        <Text>Plain card</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByText('Plain card')).toBeDefined();
+    expect(screen.queryByText('SECTION')).toBeNull();
+  });
+
+  it('renders pressable segments in header', () => {
+    const handlePress = vi.fn();
+    render(
+      <ContentCard
+        label="ITEMS"
+        rightSegments={[{ label: 'toggle', onPress: handlePress }]}
+      >
+        <Text>Body</Text>
+      </ContentCard>,
+    );
+    fireEvent.click(screen.getByText('toggle'));
+    expect(handlePress).toHaveBeenCalled();
+  });
+});
+
+describe('ContentCard — full chrome collapsed', () => {
+  beforeEach(() => {
+    useThemeSpy.mockReturnValue(fullTheme());
+  });
+
+  it('shows label and hides children when collapsed', () => {
+    render(
+      <ContentCard
+        label="TO BUY"
+        rightSegments={[{ label: '', icon: 'chevron-down', onPress: vi.fn() }]}
+        collapsed={true}
+      >
+        <Text>Hidden content</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByText('TO BUY')).toBeDefined();
+    expect(screen.queryByText('Hidden content')).toBeNull();
+  });
+
+  it('calls expand handler when collapsed row is pressed', () => {
+    const handleExpand = vi.fn();
+    render(
+      <ContentCard
+        label="PICKED"
+        rightSegments={[{ label: '', icon: 'chevron-down', onPress: handleExpand }]}
+        collapsed={true}
+      >
+        <Text>Content</Text>
+      </ContentCard>,
+    );
+    fireEvent.click(screen.getByText('PICKED'));
+    expect(handleExpand).toHaveBeenCalled();
   });
 });

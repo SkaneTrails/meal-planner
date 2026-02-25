@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import {
+  ActionButton,
   AnimatedPressable,
   ButtonGroup,
   ContentCard,
@@ -13,37 +14,56 @@ import { ClearMenu } from './ClearMenu';
 
 interface ActionButtonsProps {
   showAddItem: boolean;
-  showClearMenu: boolean;
+  deleteMode: boolean;
+  reorderMode: boolean;
   totalItems: number;
   onToggleAddItem: () => void;
-  onToggleClearMenu: () => void;
+  onToggleDeleteMode: () => void;
+  onToggleReorderMode: () => void;
 }
 
 const ActionButtons = ({
   showAddItem,
-  showClearMenu,
+  deleteMode,
+  reorderMode,
   totalItems,
   onToggleAddItem,
-  onToggleClearMenu,
+  onToggleDeleteMode,
+  onToggleReorderMode,
 }: ActionButtonsProps) => {
   return (
     <ButtonGroup gap={spacing['xs-sm']}>
-      <IconButton
-        icon={showAddItem ? 'close' : 'add'}
-        iconSize={iconSize.md}
-        onPress={onToggleAddItem}
-        label={showAddItem ? 'Close' : 'Add'}
-        tone="ai"
-        hoverScale={1.08}
-        pressScale={0.95}
-      />
+      {showAddItem ? (
+        <IconButton
+          icon="close"
+          iconSize={iconSize.md}
+          onPress={onToggleAddItem}
+          label="Close"
+          tone="ai"
+          hoverScale={1.08}
+          pressScale={0.95}
+        />
+      ) : (
+        <ActionButton.Add onPress={onToggleAddItem} iconSize={iconSize.md} />
+      )}
+      {totalItems > 1 && (
+        <IconButton
+          icon={reorderMode ? 'checkmark' : 'swap-vertical'}
+          iconSize={iconSize.md}
+          onPress={onToggleReorderMode}
+          label={reorderMode ? 'Done' : 'Sort'}
+          tone={reorderMode ? 'ai' : 'subtle'}
+          hoverScale={1.08}
+          pressScale={0.95}
+        />
+      )}
       {totalItems > 0 && (
         <IconButton
-          icon={showClearMenu ? 'close' : 'create-outline'}
+          icon={deleteMode ? 'close' : 'trash-outline'}
           iconSize={iconSize.md}
-          onPress={onToggleClearMenu}
-          label={showClearMenu ? 'Close' : 'Edit'}
-          tone="subtle"
+          onPress={onToggleDeleteMode}
+          label={deleteMode ? 'Done' : 'Delete'}
+          tone={deleteMode ? 'ai' : 'subtle'}
           hoverScale={1.08}
           pressScale={0.95}
         />
@@ -145,9 +165,11 @@ interface StatsCardProps {
   checkedCount: number;
   hiddenAtHomeCount: number;
   showAddItem: boolean;
-  showClearMenu: boolean;
+  deleteMode: boolean;
+  reorderMode: boolean;
   onToggleAddItem: () => void;
-  onToggleClearMenu: () => void;
+  onToggleDeleteMode: () => void;
+  onToggleReorderMode: () => void;
   onClearChecked: () => void;
   onClearMealPlanItems: () => void;
   onClearManualItems: () => void;
@@ -161,9 +183,11 @@ export const StatsCard = ({
   checkedCount,
   hiddenAtHomeCount,
   showAddItem,
-  showClearMenu,
+  deleteMode,
+  reorderMode,
   onToggleAddItem,
-  onToggleClearMenu,
+  onToggleDeleteMode,
+  onToggleReorderMode,
   onClearChecked,
   onClearMealPlanItems,
   onClearManualItems,
@@ -220,14 +244,16 @@ export const StatsCard = ({
 
         <ActionButtons
           showAddItem={showAddItem}
-          showClearMenu={showClearMenu}
+          deleteMode={deleteMode}
+          reorderMode={reorderMode}
           totalItems={totalItems}
           onToggleAddItem={onToggleAddItem}
-          onToggleClearMenu={onToggleClearMenu}
+          onToggleDeleteMode={onToggleDeleteMode}
+          onToggleReorderMode={onToggleReorderMode}
         />
       </View>
 
-      {showClearMenu && (
+      {deleteMode && (
         <ClearMenu
           checkedCount={checkedCount}
           onClearChecked={onClearChecked}

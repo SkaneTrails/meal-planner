@@ -26,10 +26,12 @@ export const useGroceryScreen = () => {
     setCheckedItems,
     clearChecked,
     customItems: contextCustomItems,
+    itemOrder,
     selectedMealKeys,
     mealServings,
     addCustomItem,
     setCustomItems: setContextCustomItems,
+    setItemOrder,
     saveSelections,
     clearAll,
     refreshFromApi,
@@ -38,7 +40,11 @@ export const useGroceryScreen = () => {
 
   const [newItemText, setNewItemText] = useState('');
   const [showAddItem, setShowAddItem] = useState(false);
-  const [showClearMenu, setShowClearMenu] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
+  const [removedGeneratedItems, setRemovedGeneratedItems] = useState<
+    Set<string>
+  >(new Set());
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
@@ -114,15 +120,38 @@ export const useGroceryScreen = () => {
     selectedMealKeys,
   ]);
 
+  const visibleGeneratedItems = useMemo(
+    () => generatedItems.filter((i) => !removedGeneratedItems.has(i.name)),
+    [generatedItems, removedGeneratedItems],
+  );
+
   const groceryListWithChecked = useMemo(() => {
-    const allItems = [...generatedItems, ...customItems];
+    const allItems = [...visibleGeneratedItems, ...customItems];
     return {
       items: allItems.map((item) => ({
         ...item,
         checked: checkedItems.has(item.name),
       })),
     };
-  }, [generatedItems, customItems, checkedItems]);
+  }, [visibleGeneratedItems, customItems, checkedItems]);
+
+  const uncheckedItems = useMemo(() => {
+    const unordered = groceryListWithChecked.items.filter(
+      (item) => !item.checked,
+    );
+    if (itemOrder.length === 0) return unordered;
+    const orderIndex = new Map(itemOrder.map((name, i) => [name, i]));
+    return [...unordered].sort((a, b) => {
+      const ai = orderIndex.get(a.name) ?? Number.MAX_SAFE_INTEGER;
+      const bi = orderIndex.get(b.name) ?? Number.MAX_SAFE_INTEGER;
+      return ai - bi;
+    });
+  }, [groceryListWithChecked.items, itemOrder]);
+
+  const pickedItems = useMemo(
+    () => groceryListWithChecked.items.filter((item) => item.checked),
+    [groceryListWithChecked.items],
+  );
 
   const handleItemToggle = (itemName: string, checked: boolean) => {
     const newSet = new Set(checkedItems);
@@ -134,6 +163,48 @@ export const useGroceryScreen = () => {
     setCheckedItems(newSet);
   };
 
+  const handleDeleteItem = useCallback(
+    (itemName: string) => {
+      const isCustom = contextCustomItems.some((ci) => ci.name === itemName);
+      if (isCustom) {
+        setContextCustomItems(
+          contextCustomItems.filter((ci) => ci.name !== itemName),
+        );
+      } else {
+        setRemovedGeneratedItems((prev) => new Set([...prev, itemName]));
+      }
+      const newChecked = new Set(checkedItems);
+      newChecked.delete(itemName);
+      setCheckedItems(newChecked);
+    },
+    [contextCustomItems, setContextCustomItems, checkedItems, setCheckedItems],
+  );
+
+  const handleToggleAddItem = useCallback(() => {
+    setShowAddItem((prev) => !prev);
+    setDeleteMode(false);
+    setReorderMode(false);
+  }, []);
+
+  const handleToggleDeleteMode = useCallback(() => {
+    setDeleteMode((prev) => !prev);
+    setReorderMode(false);
+    setShowAddItem(false);
+  }, []);
+
+  const handleToggleReorderMode = useCallback(() => {
+    setReorderMode((prev) => !prev);
+    setDeleteMode(false);
+    setShowAddItem(false);
+  }, []);
+
+  const handleReorder = useCallback(
+    (items: GroceryItem[]) => {
+      setItemOrder(items.map((i) => i.name));
+    },
+    [setItemOrder],
+  );
+
   const handleClearChecked = () => clearChecked();
 
   const handleClearAll = () => {
@@ -141,7 +212,9 @@ export const useGroceryScreen = () => {
       try {
         await clearAll();
         setGeneratedItems([]);
-        setShowClearMenu(false);
+        setRemovedGeneratedItems(new Set());
+        setDeleteMode(false);
+        setReorderMode(false);
       } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
@@ -166,7 +239,9 @@ export const useGroceryScreen = () => {
         );
         await saveSelections([], {});
         setGeneratedItems([]);
-        setShowClearMenu(false);
+        setRemovedGeneratedItems(new Set());
+        setDeleteMode(false);
+        setReorderMode(false);
       } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
@@ -190,7 +265,8 @@ export const useGroceryScreen = () => {
           new Set([...checkedItems].filter((name) => generatedNames.has(name))),
         );
         setContextCustomItems([]);
-        setShowClearMenu(false);
+        setDeleteMode(false);
+        setReorderMode(false);
       } catch {
         showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
@@ -212,7 +288,7 @@ export const useGroceryScreen = () => {
     setNewItemText('');
   };
 
-  const totalItems = generatedItems.length + customItems.length;
+  const totalItems = visibleGeneratedItems.length + customItems.length;
   const checkedCount = checkedItems.size;
 
   const hiddenAtHomeCount = useMemo(
@@ -237,8 +313,8 @@ export const useGroceryScreen = () => {
     hasLoadedOnce,
     showAddItem,
     setShowAddItem,
-    showClearMenu,
-    setShowClearMenu,
+    deleteMode,
+    reorderMode,
     newItemText,
     setNewItemText,
     totalItems,
@@ -246,9 +322,16 @@ export const useGroceryScreen = () => {
     hiddenAtHomeCount,
     itemsToBuy,
     checkedItemsToBuy,
+    uncheckedItems,
+    pickedItems,
     groceryListWithChecked,
     handleItemToggle,
     handleAddItem,
+    handleDeleteItem,
+    handleToggleAddItem,
+    handleToggleDeleteMode,
+    handleToggleReorderMode,
+    handleReorder,
     handleClearChecked,
     handleClearAll,
     handleClearMealPlanItems,

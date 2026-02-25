@@ -3,32 +3,43 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { GroceryItemRow } from '../GroceryItemRow';
 import { GroceryListView } from '../GroceryListView';
-import type { GroceryItem, GroceryList } from '@/lib/types';
+import type { GroceryItem } from '@/lib/types';
 
-vi.mock('react-native-draggable-flatlist', () => ({
-  default: ({ data, renderItem }: any) =>
-    React.createElement(
-      'div',
-      { 'data-testid': 'draggable-list' },
-      data.map((item: any, index: number) =>
-        React.createElement(React.Fragment, { key: index },
-          renderItem({ item, drag: vi.fn(), isActive: false }),
-        ),
-      ),
-    ),
+vi.mock('@dnd-kit/core', () => ({
+  DndContext: ({ children }: any) => React.createElement('div', { 'data-testid': 'dnd-context' }, children),
+  PointerSensor: class {},
+  TouchSensor: class {},
+  KeyboardSensor: class {},
+  closestCenter: vi.fn(),
+  useSensor: vi.fn(() => ({})),
+  useSensors: vi.fn(() => []),
 }));
 
-vi.mock('react-native-gesture-handler', () => ({
-  GestureHandlerRootView: ({ children }: any) =>
-    React.createElement('div', { 'data-testid': 'gesture-root' }, children),
+vi.mock('@dnd-kit/sortable', () => ({
+  SortableContext: ({ children }: any) => React.createElement('div', { 'data-testid': 'sortable-context' }, children),
+  useSortable: () => ({
+    attributes: {},
+    listeners: {},
+    setNodeRef: vi.fn(),
+    transform: null,
+    transition: null,
+    isDragging: false,
+  }),
+  arrayMove: vi.fn((arr: any[], from: number, to: number) => {
+    const result = [...arr];
+    const [moved] = result.splice(from, 1);
+    result.splice(to, 0, moved);
+    return result;
+  }),
+  verticalListSortingStrategy: {},
+}));
+
+vi.mock('@dnd-kit/utilities', () => ({
+  CSS: { Transform: { toString: (t: any) => (t ? `translate(${t.x}px, ${t.y}px)` : undefined) } },
 }));
 
 vi.mock('@/lib/haptics', () => ({
   hapticSelection: vi.fn(),
-}));
-
-vi.mock('@/lib/hooks/useIsTouchDevice', () => ({
-  useIsTouchDevice: () => true,
 }));
 
 const buildItem = (overrides: Partial<GroceryItem> = {}): GroceryItem => ({
@@ -40,10 +51,6 @@ const buildItem = (overrides: Partial<GroceryItem> = {}): GroceryItem => ({
   quantity_sources: [],
   recipe_sources: [],
   ...overrides,
-});
-
-const buildList = (items: GroceryItem[]): GroceryList => ({
-  items,
 });
 
 describe('GroceryItemRow', () => {
@@ -152,35 +159,30 @@ describe('GroceryItemRow', () => {
 
 describe('GroceryListView', () => {
   it('shows empty state when no items', () => {
-    render(<GroceryListView groceryList={buildList([])} />);
+    render(<GroceryListView uncheckedItems={[]} pickedItems={[]} />);
     expect(screen.getByText('No items yet')).toBeDefined();
   });
 
-  it('renders all items', () => {
+  it('renders unchecked items in to-buy card', () => {
     const items = [
       buildItem({ name: 'Milk' }),
       buildItem({ name: 'Eggs', category: 'dairy' }),
       buildItem({ name: 'Bread', category: 'bakery' }),
     ];
-    render(<GroceryListView groceryList={buildList(items)} />);
+    render(<GroceryListView uncheckedItems={items} pickedItems={[]} />);
     expect(screen.getByText('Milk')).toBeDefined();
     expect(screen.getByText('Eggs')).toBeDefined();
     expect(screen.getByText('Bread')).toBeDefined();
   });
 
-  it('sorts checked items to bottom', () => {
-    const items = [
-      buildItem({ name: 'Apple', checked: true }),
-      buildItem({ name: 'Banana', checked: false }),
-      buildItem({ name: 'Cherry', checked: false }),
-    ];
-    const { container } = render(
-      <GroceryListView groceryList={buildList(items)} />,
+  it('renders picked items in separate card', () => {
+    const unchecked = [buildItem({ name: 'Banana', checked: false })];
+    const picked = [buildItem({ name: 'Apple', checked: true })];
+    render(
+      <GroceryListView uncheckedItems={unchecked} pickedItems={picked} />,
     );
-    const texts = Array.from(container.querySelectorAll('[data-component="Text"]'))
-      .map((el) => el.textContent)
-      .filter((t) => ['Apple', 'Banana', 'Cherry'].includes(t || ''));
-    expect(texts).toEqual(['Banana', 'Cherry', 'Apple']);
+    expect(screen.getByText('Banana')).toBeDefined();
+    expect(screen.getByText('Apple')).toBeDefined();
   });
 
   it('filters items using filterOutItems', () => {
@@ -190,7 +192,8 @@ describe('GroceryListView', () => {
     ];
     render(
       <GroceryListView
-        groceryList={buildList(items)}
+        uncheckedItems={items}
+        pickedItems={[]}
         filterOutItems={(name) => name === 'Salt'}
       />,
     );
@@ -203,7 +206,8 @@ describe('GroceryListView', () => {
     const items = [buildItem({ name: 'Butter' })];
     render(
       <GroceryListView
-        groceryList={buildList(items)}
+        uncheckedItems={items}
+        pickedItems={[]}
         onItemToggle={handleToggle}
       />,
     );
@@ -211,49 +215,29 @@ describe('GroceryListView', () => {
     expect(handleToggle).toHaveBeenCalledWith('Butter', true);
   });
 
-  it('syncs checked state when groceryList prop updates', () => {
-    const handleToggle = vi.fn();
-    const uncheckedList = buildList([
-      buildItem({ name: 'Milk', checked: false }),
-      buildItem({ name: 'Eggs', checked: false }),
-    ]);
-
-    const { rerender, container } = render(
-      <GroceryListView groceryList={uncheckedList} onItemToggle={handleToggle} />,
+  it('calls onDeleteItem when trash is pressed in delete mode', () => {
+    const handleDelete = vi.fn();
+    const items = [buildItem({ name: 'Butter' })];
+    render(
+      <GroceryListView
+        uncheckedItems={items}
+        pickedItems={[]}
+        deleteMode={true}
+        onDeleteItem={handleDelete}
+      />,
     );
-
-    // Items appear sorted: unchecked first; Milk is unchecked so it's at top
-    const getItemOrder = () =>
-      Array.from(container.querySelectorAll('[data-component="Text"]'))
-        .map((el) => el.textContent)
-        .filter((t) => ['Milk', 'Eggs'].includes(t || ''));
-    expect(getItemOrder()).toEqual(['Milk', 'Eggs']);
-
-    // Simulate Firestore refresh: parent passes Milk as checked → should sort to bottom
-    const updatedList = buildList([
-      buildItem({ name: 'Milk', checked: true }),
-      buildItem({ name: 'Eggs', checked: false }),
-    ]);
-    rerender(<GroceryListView groceryList={updatedList} onItemToggle={handleToggle} />);
-
-    // Milk is now checked → sorted after Eggs
-    expect(getItemOrder()).toEqual(['Eggs', 'Milk']);
+    const deleteButton = screen.getByTestId('delete-Butter');
+    fireEvent.click(deleteButton);
+    expect(handleDelete).toHaveBeenCalledWith('Butter');
   });
 
-  it('syncs when items are added after initial render', () => {
-    const emptyList = buildList([]);
-    const { rerender } = render(
-      <GroceryListView groceryList={emptyList} />,
+  it('shows both cards when there are unchecked and picked items', () => {
+    const unchecked = [buildItem({ name: 'Milk', checked: false })];
+    const picked = [buildItem({ name: 'Flour', checked: true })];
+    render(
+      <GroceryListView uncheckedItems={unchecked} pickedItems={picked} />,
     );
-
-    // Items arrive later (e.g., generated from meal plan after recipes load)
-    const populatedList = buildList([
-      buildItem({ name: 'Flour', checked: true }),
-      buildItem({ name: 'Sugar', checked: false }),
-    ]);
-    rerender(<GroceryListView groceryList={populatedList} />);
-
+    expect(screen.getByText('Milk')).toBeDefined();
     expect(screen.getByText('Flour')).toBeDefined();
-    expect(screen.getByText('Sugar')).toBeDefined();
   });
 });

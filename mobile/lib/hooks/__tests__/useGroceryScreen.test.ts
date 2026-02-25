@@ -24,10 +24,12 @@ const mockSetCheckedItems = vi.fn();
 const mockClearChecked = vi.fn();
 const mockAddCustomItem = vi.fn();
 const mockSetCustomItems = vi.fn();
+const mockSetItemOrder = vi.fn();
 
 let mockContextState = {
   checkedItems: new Set<string>(),
   customItems: [] as CustomGroceryItem[],
+  itemOrder: [] as string[],
   selectedMealKeys: [] as string[],
   mealServings: {} as Record<string, number>,
   isLoading: false,
@@ -36,6 +38,7 @@ let mockContextState = {
   clearChecked: mockClearChecked,
   addCustomItem: mockAddCustomItem,
   setCustomItems: mockSetCustomItems,
+  setItemOrder: mockSetItemOrder,
   saveSelections: mockSaveSelections,
   clearAll: mockClearAll,
   refreshFromApi: mockRefreshFromApi,
@@ -90,6 +93,7 @@ describe('useGroceryScreen', () => {
     mockContextState = {
       checkedItems: new Set<string>(),
       customItems: [],
+      itemOrder: [],
       selectedMealKeys: [],
       mealServings: {},
       isLoading: false,
@@ -98,6 +102,7 @@ describe('useGroceryScreen', () => {
       clearChecked: mockClearChecked,
       addCustomItem: mockAddCustomItem,
       setCustomItems: mockSetCustomItems,
+      setItemOrder: mockSetItemOrder,
       saveSelections: mockSaveSelections,
       clearAll: mockClearAll,
       refreshFromApi: mockRefreshFromApi,
@@ -334,6 +339,231 @@ describe('useGroceryScreen', () => {
       });
 
       expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set());
+    });
+  });
+
+  describe('handleToggleAddItem', () => {
+    it('toggles showAddItem on and off', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.showAddItem).toBe(false);
+
+      act(() => {
+        result.current.handleToggleAddItem();
+      });
+
+      expect(result.current.showAddItem).toBe(true);
+
+      act(() => {
+        result.current.handleToggleAddItem();
+      });
+
+      expect(result.current.showAddItem).toBe(false);
+    });
+
+    it('closes delete mode and reorder mode when opening add item', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+      expect(result.current.deleteMode).toBe(true);
+
+      act(() => {
+        result.current.handleToggleAddItem();
+      });
+
+      expect(result.current.showAddItem).toBe(true);
+      expect(result.current.deleteMode).toBe(false);
+      expect(result.current.reorderMode).toBe(false);
+    });
+  });
+
+  describe('handleToggleDeleteMode', () => {
+    it('toggles deleteMode on and off', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.deleteMode).toBe(false);
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+
+      expect(result.current.deleteMode).toBe(true);
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+
+      expect(result.current.deleteMode).toBe(false);
+    });
+
+    it('closes add item and reorder mode when entering delete mode', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.setShowAddItem(true);
+      });
+      expect(result.current.showAddItem).toBe(true);
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+
+      expect(result.current.deleteMode).toBe(true);
+      expect(result.current.showAddItem).toBe(false);
+      expect(result.current.reorderMode).toBe(false);
+    });
+  });
+
+  describe('handleToggleReorderMode', () => {
+    it('toggles reorderMode on and off', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.reorderMode).toBe(false);
+
+      act(() => {
+        result.current.handleToggleReorderMode();
+      });
+
+      expect(result.current.reorderMode).toBe(true);
+
+      act(() => {
+        result.current.handleToggleReorderMode();
+      });
+
+      expect(result.current.reorderMode).toBe(false);
+    });
+
+    it('closes delete mode and add item when entering reorder mode', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+      expect(result.current.deleteMode).toBe(true);
+
+      act(() => {
+        result.current.handleToggleReorderMode();
+      });
+
+      expect(result.current.reorderMode).toBe(true);
+      expect(result.current.deleteMode).toBe(false);
+      expect(result.current.showAddItem).toBe(false);
+    });
+  });
+
+  describe('handleDeleteItem', () => {
+    it('removes a custom item by filtering it from context', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleDeleteItem('bread');
+      });
+
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'milk', category: 'dairy' },
+      ]);
+    });
+
+    it('removes checked state when deleting an item', () => {
+      mockContextState.checkedItems = new Set(['bread']);
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleDeleteItem('bread');
+      });
+
+      expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set());
+    });
+  });
+
+  describe('uncheckedItems and pickedItems', () => {
+    it('separates items into unchecked and picked lists', () => {
+      mockContextState.checkedItems = new Set(['bread']);
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems).toEqual([
+        expect.objectContaining({ name: 'milk', checked: false }),
+      ]);
+      expect(result.current.pickedItems).toEqual([
+        expect.objectContaining({ name: 'bread', checked: true }),
+      ]);
+    });
+  });
+
+  describe('handleReorder', () => {
+    it('calls setItemOrder with reordered names', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+        { name: 'eggs', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      const reorderedItems = [
+        expect.objectContaining({ name: 'eggs' }),
+        expect.objectContaining({ name: 'bread' }),
+        expect.objectContaining({ name: 'milk' }),
+      ];
+
+      act(() => {
+        result.current.handleReorder([
+          { name: 'eggs', category: 'dairy', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
+          { name: 'bread', category: 'bakery', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
+          { name: 'milk', category: 'dairy', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
+        ]);
+      });
+
+      expect(mockSetItemOrder).toHaveBeenCalledWith(['eggs', 'bread', 'milk']);
+    });
+  });
+
+  describe('item ordering', () => {
+    it('sorts unchecked items by itemOrder', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+        { name: 'eggs', category: 'dairy' },
+      ];
+      mockContextState.itemOrder = ['eggs', 'milk', 'bread'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems.map((i) => i.name)).toEqual([
+        'eggs',
+        'milk',
+        'bread',
+      ]);
+    });
+
+    it('appends unordered items at the end', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+        { name: 'eggs', category: 'dairy' },
+      ];
+      mockContextState.itemOrder = ['milk'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems[0].name).toBe('milk');
+      expect(result.current.uncheckedItems.length).toBe(3);
     });
   });
 

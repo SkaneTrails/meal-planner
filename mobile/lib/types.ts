@@ -244,6 +244,7 @@ export interface GroceryListState {
   meal_servings: Record<string, number>;
   checked_items: string[];
   custom_items: CustomGroceryItem[];
+  item_order: string[];
   updated_at?: string | null;
   created_by?: string | null;
 }
@@ -260,6 +261,7 @@ export interface GroceryListStatePatch {
   meal_servings?: Record<string, number>;
   checked_items?: string[];
   custom_items?: CustomGroceryItem[];
+  item_order?: string[];
 }
 
 // API Response types

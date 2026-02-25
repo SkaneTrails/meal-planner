@@ -72,6 +72,7 @@ const TERMINAL_ICONS: Partial<Record<IoniconName, TerminalGlyph>> = {
   camera: { char: '\u{1F4F7}', emoji: true }, // 📷
   shuffle: { char: '\u{1F500}', emoji: true }, // 🔀
   'reorder-three': { char: '\u2261' }, // ≡
+  'swap-vertical': { char: '\u2195', emoji: true }, // ↕
 
   // ── Status & indicators ────────────────────────────────────────────
   checkmark: { char: '\u2713' }, // ✓

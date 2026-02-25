@@ -477,6 +477,7 @@ const it: Translations = {
     itemCountOne: '1 articolo',
     addItemLabel: 'Aggiungi articolo',
     addItemExamplePlaceholder: 'es. Latte, 2 litri',
+    pickedSection: 'Raccolti',
     goToMealPlan:
       'Vai al Menu settimanale e tocca "Crea lista" per generare la lista della spesa dai pasti pianificati.',
   },

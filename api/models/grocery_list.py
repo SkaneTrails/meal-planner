@@ -137,6 +137,7 @@ class GroceryListState(BaseModel):
     meal_servings: dict[str, int] = Field(default_factory=dict, description="Servings per meal key")
     checked_items: list[str] = Field(default_factory=list, description="Names of checked-off items")
     custom_items: list[CustomGroceryItem] = Field(default_factory=list, description="Manually added items")
+    item_order: list[str] = Field(default_factory=list, description="User-defined item ordering by name")
     updated_at: datetime | None = None
     created_by: str | None = None
 
@@ -148,6 +149,7 @@ class GroceryListStateSave(BaseModel):
     meal_servings: dict[str, int] = Field(default_factory=dict)
     checked_items: list[str] = Field(default_factory=list)
     custom_items: list[CustomGroceryItem] = Field(default_factory=list)
+    item_order: list[str] = Field(default_factory=list)
 
 
 class GroceryListStatePatch(BaseModel):
@@ -160,3 +162,4 @@ class GroceryListStatePatch(BaseModel):
     meal_servings: dict[str, int] | None = None
     checked_items: list[str] | None = None
     custom_items: list[CustomGroceryItem] | None = None
+    item_order: list[str] | None = None

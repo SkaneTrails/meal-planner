@@ -26,8 +26,8 @@ export default function GroceryScreen() {
     hasLoadedOnce,
     showAddItem,
     setShowAddItem,
-    showClearMenu,
-    setShowClearMenu,
+    deleteMode,
+    reorderMode,
     newItemText,
     setNewItemText,
     totalItems,
@@ -35,9 +35,15 @@ export default function GroceryScreen() {
     hiddenAtHomeCount,
     itemsToBuy,
     checkedItemsToBuy,
-    groceryListWithChecked,
+    uncheckedItems,
+    pickedItems,
     handleItemToggle,
     handleAddItem,
+    handleDeleteItem,
+    handleToggleAddItem,
+    handleToggleDeleteMode,
+    handleToggleReorderMode,
+    handleReorder,
     handleClearChecked,
     handleClearAll,
     handleClearMealPlanItems,
@@ -70,15 +76,11 @@ export default function GroceryScreen() {
             checkedCount={checkedCount}
             hiddenAtHomeCount={hiddenAtHomeCount}
             showAddItem={showAddItem}
-            showClearMenu={showClearMenu}
-            onToggleAddItem={() => {
-              setShowAddItem(!showAddItem);
-              setShowClearMenu(false);
-            }}
-            onToggleClearMenu={() => {
-              setShowClearMenu(!showClearMenu);
-              setShowAddItem(false);
-            }}
+            deleteMode={deleteMode}
+            reorderMode={reorderMode}
+            onToggleAddItem={handleToggleAddItem}
+            onToggleDeleteMode={handleToggleDeleteMode}
+            onToggleReorderMode={handleToggleReorderMode}
             onClearChecked={handleClearChecked}
             onClearMealPlanItems={handleClearMealPlanItems}
             onClearManualItems={handleClearManualItems}
@@ -90,6 +92,7 @@ export default function GroceryScreen() {
               newItemText={newItemText}
               onChangeText={setNewItemText}
               onSubmit={handleAddItem}
+              onDismiss={() => setShowAddItem(false)}
             />
           )}
         </View>
@@ -97,9 +100,14 @@ export default function GroceryScreen() {
 
       {totalItems > 0 ? (
         <GroceryListView
-          groceryList={groceryListWithChecked}
+          uncheckedItems={uncheckedItems}
+          pickedItems={pickedItems}
+          deleteMode={deleteMode}
+          reorderMode={reorderMode}
           onItemToggle={handleItemToggle}
+          onDeleteItem={handleDeleteItem}
           filterOutItems={filterOutItemsAtHome}
+          onReorder={handleReorder}
         />
       ) : (
         <EmptyGroceryState
