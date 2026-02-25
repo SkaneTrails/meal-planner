@@ -211,3 +211,21 @@ The household's **Ingredient Substitutions** table determines which product repl
 ### Lactose-free — Italian products
 
 Use "(senza lattosio)" suffix for dairy that needs substituting: panna fresca (senza lattosio), latte (senza lattosio), crème fraîche (senza lattosio).
+
+### Dairy-free — Italian products
+
+When the household is dairy-free, use Italian-market plant-based products:
+
+| Dairy product             | Italian plant-based replacement                            |
+| ------------------------- | ---------------------------------------------------------- |
+| Latte                     | Latte di avena, latte di soia, latte di mandorla           |
+| Panna da cucina           | Panna vegetale (avena o soia), crema di cocco              |
+| Burro (cottura)           | Olio di semi o margarina vegetale                          |
+| Burro (finitura)          | Burro vegetale (es. Naturli, Vallé)                        |
+| Parmigiano / Grana Padano | Lievito alimentare + pinoli tostati, o parmigiano vegetale |
+| Mozzarella                | Omettere o usare mozzarella vegetale                       |
+| Ricotta                   | Tofu morbido frullato o ricotta di anacardi                |
+| Mascarpone                | Crema di anacardi o mascarpone vegetale                    |
+| Yogurt                    | Yogurt vegetale (soia o avena)                             |
+
+**Brands widely available in Italian supermarkets:** Alpro, Valsoia, Riso Scotti, Granarolo (linea vegetale), Oatly.

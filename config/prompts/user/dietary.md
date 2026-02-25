@@ -102,7 +102,37 @@ Use lactose-free alternatives for:
 - **Parmesan, Grana Padano, aged cheese** (naturally low lactose)
 - **Ricotta, mozzarella**
 - **Coconut milk, coconut cream** (already dairy-free!)
-<!-- END:lactose_free -->
+  <!-- END:lactose_free -->
+  <!-- BEGIN:dairy_free -->
+
+## Dairy
+
+**This household is completely dairy-free.** Replace ALL dairy products with plant-based alternatives. There are NO exceptions — butter, parmesan, mozzarella, ricotta ALL get replaced.
+
+### Substitution rules
+
+| Dairy product             | Plant-based replacement                                        |
+| ------------------------- | -------------------------------------------------------------- |
+| Milk                      | Oat milk (or other plant milk)                                 |
+| Cream (cooking)           | Oat cream or coconut cream                                     |
+| Cream (whipping)          | Coconut cream (chilled)                                        |
+| Butter (frying)           | Neutral oil or plant-based margarine                           |
+| Butter (finishing/baking) | Plant-based butter (e.g. Naturli)                              |
+| Crème fraîche             | Plant-based crème fraîche or cashew cream                      |
+| Yogurt                    | Plant-based yogurt (soy or oat)                                |
+| Cream cheese              | Plant-based cream cheese                                       |
+| Mozzarella                | Skip or use plant-based mozzarella                             |
+| Parmesan / Grana Padano   | Nutritional yeast + toasted pine nuts, or plant-based parmesan |
+| Ricotta                   | Blended silken tofu or cashew ricotta                          |
+| Feta                      | Marinated tofu or plant-based feta                             |
+
+### Cooking adjustments
+
+- **Sauces**: Plant-based creams may be thinner — reduce slightly or add a small starch slurry (1 tsp cornstarch in cold water) to reach the right consistency
+- **Gratins/browning**: Plant-based cheese melts differently — add breadcrumbs or nutritional yeast for a golden crust
+- **Richness**: Without butter/cream, compensate with quality olive oil, avocado, tahini, or coconut fat for richness
+- **Umami**: Parmesan substitutes lack depth — add miso paste, nutritional yeast, or soy sauce to boost savory flavor
+<!-- END:dairy_free -->
 
 ## Fats
 

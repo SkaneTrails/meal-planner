@@ -151,10 +151,19 @@ class TestActiveSections:
     def test_lactose_free(self) -> None:
         cfg = DietaryConfig(dairy="lactose_free")
         assert "lactose_free" in cfg.active_sections()
+        assert "dairy_free" not in cfg.active_sections()
+
+    def test_dairy_free(self) -> None:
+        cfg = DietaryConfig(dairy="dairy_free")
+        tags = cfg.active_sections()
+        assert "dairy_free" in tags
+        assert "lactose_free" not in tags
 
     def test_regular_dairy_no_tag(self) -> None:
         cfg = DietaryConfig(dairy="regular")
-        assert "lactose_free" not in cfg.active_sections()
+        tags = cfg.active_sections()
+        assert "lactose_free" not in tags
+        assert "dairy_free" not in tags
 
     def test_seafood_ok_true(self) -> None:
         cfg = DietaryConfig(seafood_ok=True)
@@ -173,6 +182,12 @@ class TestActiveSections:
         cfg = DietaryConfig(meat_strategy="split", dairy="lactose_free", seafood_ok=True)
         tags = cfg.active_sections()
         assert tags == {"meat_split", "lactose_free", "seafood_ok"}
+
+    def test_full_config_dairy_free_tags(self) -> None:
+        """All-meat + dairy-free + no seafood → 3 tags (no lactose_free)."""
+        cfg = DietaryConfig(meat_strategy="all", dairy="dairy_free", seafood_ok=False)
+        tags = cfg.active_sections()
+        assert tags == {"dairy_free", "no_seafood"}
 
 
 # ---------------------------------------------------------------------------
@@ -232,6 +247,27 @@ class TestRenderDietaryTemplate:
         rendered = render_dietary_template(template, cfg)
         assert "Meat split." in rendered
         assert "Dairy rules." not in rendered
+
+    def test_dairy_free_section_included(self) -> None:
+        template = (
+            "<!-- BEGIN:lactose_free -->\nLactose rules.\n<!-- END:lactose_free -->\n"
+            "<!-- BEGIN:dairy_free -->\nDairy-free rules.\n<!-- END:dairy_free -->\n"
+        )
+        cfg = DietaryConfig(dairy="dairy_free")
+        rendered = render_dietary_template(template, cfg)
+        assert "Dairy-free rules." in rendered
+        assert "Lactose rules." not in rendered
+
+    def test_dairy_free_excludes_lactose_free(self) -> None:
+        """Dairy-free and lactose-free are mutually exclusive."""
+        template = (
+            "<!-- BEGIN:lactose_free -->\nLactose rules.\n<!-- END:lactose_free -->\n"
+            "<!-- BEGIN:dairy_free -->\nDairy-free rules.\n<!-- END:dairy_free -->\n"
+        )
+        cfg = DietaryConfig(dairy="lactose_free")
+        rendered = render_dietary_template(template, cfg)
+        assert "Lactose rules." in rendered
+        assert "Dairy-free rules." not in rendered
 
     def test_seafood_ok_excludes_no_seafood(self) -> None:
         template = (

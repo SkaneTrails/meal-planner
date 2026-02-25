@@ -174,3 +174,24 @@ The household's **Ingredient Substitutions** table determines which product repl
 ### Lactose-free — Swedish products
 
 **Not exceptions** (DO mark as laktosfri): fetaost, färskost, grädde, mjölk, crème fraîche, kvarg, kesella.
+
+### Dairy-free — Swedish products
+
+When the household is dairy-free, replace ALL dairy with plant-based alternatives:
+
+| Dairy product           | Swedish plant-based replacement                               |
+| ----------------------- | ------------------------------------------------------------- |
+| Mjölk                   | Havredryck (Oatly)                                            |
+| Grädde (matlagning)     | Havrecreme (iMat Fraiche) eller kokosgrädde                   |
+| Grädde (vispa)          | Kokosgrädde (kyld)                                            |
+| Smör (stekning)         | Rapsolja eller växtbaserat margarin                           |
+| Smör (finitura/bakning) | Växtbaserat smör (Naturli, Flora)                             |
+| Crème fraîche           | iMat Fraiche (Oatly) eller cashewcreme                        |
+| Yoghurt                 | Havreyoghurt (Oatly) eller sojayoghurt                        |
+| Kvarg / Kesella         | Växtbaserad kvarg eller cashewcreme                           |
+| Ost (parmesan etc.)     | Näringsjäst + rostade pinjenötter, eller växtbaserad parmesan |
+| Mozzarella              | Utelämna eller använd växtbaserad mozzarella                  |
+| Fetaost                 | Marinerad tofu eller växtbaserad feta                         |
+| Ricotta                 | Mixad silkestofu eller cashewricotta                          |
+
+**Vanliga märken i Sverige:** Oatly, Alpro, Naturli, Planti.
