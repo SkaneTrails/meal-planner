@@ -216,7 +216,7 @@ describe('useHouseholdSettings', () => {
       household_size: 4,
       default_servings: 4,
       language: 'sv',
-      dietary: { lactose_free: false, seafood_ok: true, meat: 'all', meat_portions: 4, dairy: 'regular', ingredient_replacements: [] },
+      dietary: { diet_type: 'no_restrictions', seafood_ok: true, meat: 'all', meat_portions: 4, dairy: 'regular', ingredient_replacements: [] },
       equipment: ['convection_oven'],
     });
   });
@@ -351,7 +351,7 @@ describe('useUpdateHouseholdSettings', () => {
       household_size: 6,
       default_servings: 4,
       language: 'en',
-      dietary: { lactose_free: false, seafood_ok: true, meat: 'all', meat_portions: 4, dairy: 'regular', ingredient_replacements: [] },
+      dietary: { diet_type: 'no_restrictions', seafood_ok: true, meat: 'all', meat_portions: 4, dairy: 'regular', ingredient_replacements: [] },
       equipment: ['convection_oven'],
     });
   });

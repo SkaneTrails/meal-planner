@@ -47,6 +47,26 @@ def _sanitize_alternative(value: str) -> str:
     return cleaned
 
 
+def _resolve_meat_portions(portions: int, portion_base: int) -> tuple[str, int, int]:
+    """Resolve meat strategy from explicit ``meat_portions`` value."""
+    if portions == 0:
+        return "vegetarian", 0, portion_base
+    if portions >= portion_base:
+        return "all", portion_base, 0
+    return "split", portions, portion_base - portions
+
+
+def _resolve_legacy_meat(legacy: str, portion_base: int) -> tuple[str, int, int]:
+    """Resolve meat strategy from the legacy ``meat`` enum (all/split/none)."""
+    if legacy == "split":
+        return legacy, 1, max(portion_base - 1, 1)
+    if legacy in ("all", "none"):
+        meat_eaters = portion_base if legacy == "all" else 0
+        vegetarians = 0 if legacy == "all" else portion_base
+        return legacy, meat_eaters, vegetarians
+    return legacy, 0, 0
+
+
 @dataclass(frozen=True)
 class DietaryConfig:
     """Dietary preferences loaded from household Firestore settings."""
@@ -63,8 +83,8 @@ class DietaryConfig:
         """Create from a Firestore ``dietary`` settings dict.
 
         Handles None values and missing keys gracefully, falling back
-        to safe defaults.  Prefers ``meat_portions`` (numeric) over
-        the legacy ``meat`` enum for determining ``meat_strategy``.
+        to safe defaults.  Prefers ``diet_type`` over ``meat_portions``
+        over the legacy ``meat`` enum for determining ``meat_strategy``.
 
         ``default_servings`` is the denominator for proportional meat
         splits (meat_portions is relative to servings).
@@ -73,57 +93,71 @@ class DietaryConfig:
             return cls()
 
         portion_base = default_servings
+        diet_type = dietary.get("diet_type") or "no_restrictions"
 
-        meat_portions = dietary.get("meat_portions")
-        if meat_portions is not None:
-            portions = int(meat_portions)
-            if portions == 0:
-                meat_strategy = "vegetarian"
-                meat_eaters = 0
-                vegetarians = portion_base
-            elif portions >= portion_base:
-                meat_strategy = "all"
-                meat_eaters = portion_base
-                vegetarians = 0
-            else:
-                meat_strategy = "split"
-                meat_eaters = portions
-                vegetarians = portion_base - portions
-        else:
-            legacy = dietary.get("meat") or "none"
-            meat_strategy = legacy
-            if legacy == "split":
-                meat_eaters = 1
-                vegetarians = max(portion_base - 1, 1)
-            elif legacy in ("all", "none"):
-                meat_eaters = portion_base if legacy == "all" else 0
-                vegetarians = 0 if legacy == "all" else portion_base
-            else:
-                meat_eaters = 0
-                vegetarians = 0
-
-        # Ingredient replacements
-        raw_replacements = dietary.get("ingredient_replacements")
-        if isinstance(raw_replacements, list):
-            replacements = tuple(
-                (
-                    _sanitize_alternative(str(r.get("original", ""))),
-                    _sanitize_alternative(str(r.get("replacement", ""))),
-                    bool(r.get("meat_substitute", True)),
-                )
-                for r in raw_replacements
-                if isinstance(r, dict)
-            )
-        else:
-            replacements = ()
+        meat_strategy, meat_eaters, vegetarians = cls._resolve_meat(dietary, diet_type, portion_base)
+        seafood_ok, dairy = cls._resolve_seafood_dairy(dietary, diet_type)
+        replacements = cls._parse_replacements(dietary.get("ingredient_replacements"))
 
         return cls(
             meat_strategy=meat_strategy,
             meat_eaters=meat_eaters,
             vegetarians=vegetarians,
             ingredient_replacements=replacements,
-            dairy=dietary.get("dairy") or "regular",
-            seafood_ok=raw_seafood if isinstance(raw_seafood := dietary.get("seafood_ok"), bool) else True,
+            dairy=dairy,
+            seafood_ok=seafood_ok,
+        )
+
+    @staticmethod
+    def _resolve_meat(dietary: dict, diet_type: str, portion_base: int) -> tuple[str, int, int]:
+        """Determine meat strategy and eater counts from diet settings.
+
+        - ``no_restrictions``: everyone eats meat.  Legacy data without
+          ``diet_type`` also falls here and honours ``meat`` / ``meat_portions``.
+        - ``pescatarian`` / ``vegetarian``: mixed household supported
+          via ``meat_portions``.  Defaults to no-meat when unset.
+        - ``vegan``: no meat at all.
+        """
+        if diet_type == "vegan":
+            return "vegetarian", 0, portion_base
+
+        meat_portions = dietary.get("meat_portions")
+        if meat_portions is not None:
+            return _resolve_meat_portions(int(meat_portions), portion_base)
+
+        # Legacy fallback — no_restrictions defaults to all-meat,
+        # pescatarian/vegetarian default to no-meat.
+        legacy_default = "all" if diet_type == "no_restrictions" else "none"
+        return _resolve_legacy_meat(dietary.get("meat") or legacy_default, portion_base)
+
+    @staticmethod
+    def _resolve_seafood_dairy(dietary: dict, diet_type: str) -> tuple[bool, str]:
+        """Derive seafood and dairy from stored values plus diet_type overrides."""
+        raw_seafood = dietary.get("seafood_ok")
+        seafood_ok = raw_seafood if isinstance(raw_seafood, bool) else True
+        dairy = dietary.get("dairy") or "regular"
+
+        if diet_type == "vegetarian":
+            seafood_ok = False
+        elif diet_type == "vegan":
+            seafood_ok = False
+            dairy = "dairy_free"
+
+        return seafood_ok, dairy
+
+    @staticmethod
+    def _parse_replacements(raw_replacements: list | None) -> tuple[tuple[str, str, bool], ...]:
+        """Parse ingredient replacements from Firestore list."""
+        if not isinstance(raw_replacements, list):
+            return ()
+        return tuple(
+            (
+                _sanitize_alternative(str(r.get("original", ""))),
+                _sanitize_alternative(str(r.get("replacement", ""))),
+                bool(r.get("meat_substitute", True)),
+            )
+            for r in raw_replacements
+            if isinstance(r, dict)
         )
 
     def active_sections(self) -> set[str]:
@@ -137,6 +171,8 @@ class DietaryConfig:
 
         if self.dairy == "lactose_free":
             tags.add("lactose_free")
+        elif self.dairy == "dairy_free":
+            tags.add("dairy_free")
 
         if self.seafood_ok:
             tags.add("seafood_ok")

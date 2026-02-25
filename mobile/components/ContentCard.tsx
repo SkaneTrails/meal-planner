@@ -13,25 +13,27 @@
 import type React from 'react';
 import {
   type LayoutChangeEvent,
+  Pressable,
   type StyleProp,
+  Text,
   View,
   type ViewStyle,
 } from 'react-native';
-import { spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { FrameSegment } from './TerminalFrame';
 import { TerminalFrame } from './TerminalFrame';
 
 interface ContentCardProps {
   children: React.ReactNode;
-  /** Flat chrome: TerminalFrame border label (top-left). */
+  /** TerminalFrame label (flat chrome) / collapsed row title (full chrome). */
   label?: string;
-  /** Flat chrome: pressable segments in the top border (right). */
+  /** Pressable segments: TerminalFrame border (flat) / collapsed row actions (full). */
   rightSegments?: FrameSegment[];
   /** Flat chrome: box-drawing variant. Default: 'single'. */
   frameVariant?: 'single' | 'double';
   /** Flat chrome: inner padding inside the frame. Default: spacing.md. */
   framePadding?: number;
-  /** Flat chrome: collapse to header-only row. */
+  /** Collapse to a compact header-only row (both chrome modes). */
   collapsed?: boolean;
   /** Full chrome: override the default card styling (merged on top of defaults). */
   cardStyle?: StyleProp<ViewStyle>;
@@ -58,7 +60,8 @@ export const ContentCard = ({
   onLayout,
   style,
 }: ContentCardProps) => {
-  const { colors, borderRadius, shadows, overrides, chrome } = useTheme();
+  const { colors, fonts, borderRadius, shadows, overrides, chrome } =
+    useTheme();
 
   if (chrome === 'flat') {
     return (
@@ -80,6 +83,58 @@ export const ContentCard = ({
       <View style={style} onLayout={onLayout}>
         {children}
       </View>
+    );
+  }
+
+  /* ── Full-chrome collapsed summary row ─────────────────────── */
+  if (collapsed) {
+    const expandSegment = rightSegments?.find((s) => s.onPress);
+    const summarySegment = rightSegments?.find((s) => !s.onPress);
+
+    return (
+      <Pressable
+        onPress={expandSegment?.onPress}
+        onLayout={onLayout}
+        style={[
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: colors.card.bg,
+            borderRadius: borderRadius.md,
+            borderWidth: overrides.cardBorderWidth,
+            borderColor: colors.card.borderColor,
+            paddingVertical: spacing.sm,
+            paddingHorizontal: spacing.md,
+            ...shadows.card,
+          },
+          cardStyle,
+          style,
+        ]}
+      >
+        {label && (
+          <Text
+            style={{
+              fontFamily: fonts.bodySemibold,
+              fontSize: fontSize.sm,
+              color: colors.content.heading,
+            }}
+          >
+            {label}
+          </Text>
+        )}
+        {summarySegment && (
+          <Text
+            style={{
+              fontFamily: fonts.body,
+              fontSize: fontSize.sm,
+              color: colors.content.subtitle,
+            }}
+          >
+            {summarySegment.label}
+          </Text>
+        )}
+      </Pressable>
     );
   }
 

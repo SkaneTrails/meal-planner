@@ -41,7 +41,7 @@ export const DEFAULT_SETTINGS: HouseholdSettings = {
   ai_features_enabled: true,
   note_suggestions: [],
   dietary: {
-    lactose_free: false,
+    diet_type: 'no_restrictions',
     seafood_ok: true,
     meat: 'all',
     meat_portions: 2,

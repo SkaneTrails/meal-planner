@@ -6,7 +6,7 @@
  */
 
 import { Text, View } from 'react-native';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { ThemeToggle } from './ThemeToggle';
 
 interface SettingToggleRowProps {
@@ -41,7 +41,6 @@ export const SettingToggleRow = ({
           style={{
             fontFamily: fonts.bodyMedium,
             fontSize: fontSize.md,
-            fontWeight: fontWeight.medium,
             color: colors.content.body,
           }}
         >

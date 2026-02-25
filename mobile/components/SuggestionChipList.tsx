@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { Chip } from './Chip';
 import { ChipGroup } from './ChipGroup';
 import type { ChipItem } from './ItemChipList';
@@ -23,6 +23,8 @@ interface SuggestionChipListProps {
   disabled?: boolean;
   gap?: number;
   dotColor?: string;
+  /** Use subtle surface tint instead of SurfaceCard (for nesting inside ContentCard). */
+  embedded?: boolean;
 }
 
 export const SuggestionChipList = ({
@@ -33,15 +35,18 @@ export const SuggestionChipList = ({
   disabled = false,
   gap,
   dotColor,
+  embedded = false,
 }: SuggestionChipListProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
+
+  const Wrapper = embedded ? EmbeddedCard : SurfaceCardWrapper;
 
   if (groups) {
     const hasItems = groups.some((g) => g.items.length > 0);
     if (!hasItems) return null;
 
     return (
-      <SurfaceCard radius="lg">
+      <Wrapper colors={colors} borderRadius={borderRadius} radius="lg">
         {groups.map(({ heading: groupHeading, items: groupItems }) => {
           if (groupItems.length === 0) return null;
           return (
@@ -49,7 +54,7 @@ export const SuggestionChipList = ({
               <Text
                 style={{
                   fontSize: fontSize.xs,
-                  fontWeight: fontWeight.semibold,
+                  fontFamily: fonts.bodySemibold,
                   color: colors.content.strong,
                   marginBottom: spacing.sm,
                   textTransform: 'uppercase',
@@ -72,19 +77,19 @@ export const SuggestionChipList = ({
             </View>
           );
         })}
-      </SurfaceCard>
+      </Wrapper>
     );
   }
 
   if (!items || items.length === 0) return null;
 
   return (
-    <SurfaceCard padding={spacing.md}>
+    <Wrapper colors={colors} borderRadius={borderRadius}>
       {heading && (
         <Text
           style={{
             fontSize: fontSize.xs,
-            fontWeight: fontWeight.semibold,
+            fontFamily: fonts.bodySemibold,
             color: colors.content.icon,
             marginBottom: spacing.sm,
           }}
@@ -104,6 +109,38 @@ export const SuggestionChipList = ({
           />
         ))}
       </ChipGroup>
-    </SurfaceCard>
+    </Wrapper>
   );
 };
+
+/* ── Wrapper variants ──────────────────────────────────────── */
+
+interface WrapperProps {
+  children: React.ReactNode;
+  colors: ReturnType<typeof useTheme>['colors'];
+  borderRadius: ReturnType<typeof useTheme>['borderRadius'];
+  radius?: 'sm' | 'md' | 'lg';
+}
+
+const SurfaceCardWrapper = ({ children, radius = 'md' }: WrapperProps) => (
+  <SurfaceCard padding={spacing.md} radius={radius}>
+    {children}
+  </SurfaceCard>
+);
+
+const EmbeddedCard = ({
+  children,
+  colors,
+  borderRadius,
+  radius = 'md',
+}: WrapperProps) => (
+  <View
+    style={{
+      backgroundColor: colors.surface.subtle,
+      borderRadius: borderRadius[radius],
+      padding: spacing.md,
+    }}
+  >
+    {children}
+  </View>
+);

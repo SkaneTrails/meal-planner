@@ -1,5 +1,5 @@
-import { Text } from 'react-native';
-import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
+import { Text, View } from 'react-native';
+import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { Chip } from './Chip';
 import { ChipGroup } from './ChipGroup';
 import { SurfaceCard } from './SurfaceCard';
@@ -19,6 +19,8 @@ interface ItemChipListProps {
   capitalize?: boolean;
   gap?: number;
   dotColors?: readonly string[];
+  /** Use subtle surface tint instead of SurfaceCard (for nesting inside ContentCard). */
+  embedded?: boolean;
 }
 
 export const ItemChipList = ({
@@ -29,17 +31,18 @@ export const ItemChipList = ({
   capitalize = false,
   gap,
   dotColors,
+  embedded = false,
 }: ItemChipListProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts, borderRadius } = useTheme();
 
   if (items.length === 0) return null;
 
-  return (
-    <SurfaceCard padding={spacing.md} style={{ marginBottom: spacing.md }}>
+  const content = (
+    <>
       <Text
         style={{
           fontSize: fontSize.xs,
-          fontWeight: fontWeight.semibold,
+          fontFamily: fonts.bodySemibold,
           color: colors.content.strong,
           marginBottom: spacing.sm,
         }}
@@ -59,6 +62,27 @@ export const ItemChipList = ({
           />
         ))}
       </ChipGroup>
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <View
+        style={{
+          backgroundColor: colors.surface.subtle,
+          borderRadius: borderRadius.md,
+          padding: spacing.md,
+          marginBottom: spacing.md,
+        }}
+      >
+        {content}
+      </View>
+    );
+  }
+
+  return (
+    <SurfaceCard padding={spacing.md} style={{ marginBottom: spacing.md }}>
+      {content}
     </SurfaceCard>
   );
 };
