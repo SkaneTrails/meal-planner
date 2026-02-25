@@ -1,5 +1,11 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Button, ButtonGroup, Chip, ChipGroup } from '@/components';
+import {
+  ActionButton,
+  Button,
+  ButtonGroup,
+  Chip,
+  ChipGroup,
+} from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
@@ -228,9 +234,7 @@ const NoteEditor = ({
             size="md"
             onPress={onSave}
           />
-          <Button
-            variant="text"
-            tone="cancel"
+          <ActionButton.Cancel
             label={t('mealPlan.notesCancel')}
             size="md"
             onPress={onCancel}

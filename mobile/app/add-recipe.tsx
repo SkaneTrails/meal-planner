@@ -8,12 +8,13 @@ import {
   View,
 } from 'react-native';
 import {
+  ActionButton,
   Button,
+  ContentCard,
   EnhancingOverlay,
   FormField,
   IconCircle,
   ScreenLayout,
-  SurfaceCard,
   Toggle,
 } from '@/components';
 import { ManualRecipeForm } from '@/components/add-recipe/ManualRecipeForm';
@@ -137,9 +138,9 @@ export default function AddRecipeScreen() {
 
           {/* URL input */}
           <FormField label={t('addRecipe.urlLabel')}>
-            <SurfaceCard
+            <ContentCard
               padding={0}
-              style={{
+              cardStyle={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 paddingHorizontal: spacing.lg,
@@ -165,16 +166,12 @@ export default function AddRecipeScreen() {
                 editable={!isPending}
               />
               {url !== '' && (
-                <Button
-                  variant="icon"
-                  tone="cancel"
-                  icon="close-circle"
-                  size="sm"
+                <ActionButton.ClearInput
                   onPress={() => setUrl('')}
                   disabled={isPending}
                 />
               )}
-            </SurfaceCard>
+            </ContentCard>
           </FormField>
 
           {/* AI Enhancement toggle */}
@@ -190,8 +187,8 @@ export default function AddRecipeScreen() {
             }
             disabled={aiEnabled}
           >
-            <SurfaceCard
-              style={{
+            <ContentCard
+              cardStyle={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -251,7 +248,7 @@ export default function AddRecipeScreen() {
                 disabled={isPending || !aiEnabled}
                 variant="ai"
               />
-            </SurfaceCard>
+            </ContentCard>
           </Pressable>
 
           {/* Diet & Meal type pickers */}

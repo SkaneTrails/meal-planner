@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { Button, SectionLabel } from '@/components';
+import { ActionButton, SectionLabel } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -67,11 +67,9 @@ export const TagEditor = ({ editTags, setEditTags, t }: TagEditorProps) => {
             borderColor: colors.input.border,
           }}
         />
-        <Button
-          variant="icon"
+        <ActionButton.Add
           onPress={handleAddTag}
           disabled={!newTag.trim()}
-          icon="add"
           iconSize={24}
           style={{
             paddingHorizontal: spacing.lg,

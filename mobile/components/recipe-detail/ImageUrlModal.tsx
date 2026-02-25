@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { BottomSheetModal, Button } from '@/components';
+import { ActionButton, BottomSheetModal, Button } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 
@@ -63,13 +63,7 @@ export const ImageUrlModal = ({
       subtitle={t('recipe.imageUrlPrompt')}
       headerRight={
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-          <Button
-            variant="text"
-            tone="cancel"
-            onPress={onClose}
-            label={t('common.cancel')}
-            size="lg"
-          />
+          <ActionButton.Cancel onPress={onClose} label={t('common.cancel')} />
           <Button
             variant="primary"
             onPress={handleSave}

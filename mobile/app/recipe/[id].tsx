@@ -6,6 +6,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import {
+  ActionButton,
   EnhancingOverlay,
   GradientBackground,
   IconButton,
@@ -193,11 +194,9 @@ export default function RecipeDetailScreen() {
           headerTintColor: colors.white,
           headerBackTitle: '',
           headerLeft: () => (
-            <IconButton
+            <ActionButton.Back
               tone="glass"
-              icon="chevron-back"
               size="md"
-              iconSize={24}
               onPress={() => router.replace('/(tabs)/recipes')}
               style={{ marginLeft: spacing.sm }}
             />

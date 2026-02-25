@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { SurfaceCard } from '@/components';
+import { ContentCard } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
@@ -14,7 +14,7 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
   if (changes.length === 0) return null;
 
   return (
-    <SurfaceCard style={{ marginBottom: spacing.xl }}>
+    <ContentCard variant="surface" style={{ marginBottom: spacing.xl }}>
       <View
         style={{
           flexDirection: 'row',
@@ -61,6 +61,6 @@ export const ReviewAiChanges = ({ changes, t }: ReviewAiChangesProps) => {
           </Text>
         </View>
       ))}
-    </SurfaceCard>
+    </ContentCard>
   );
 };

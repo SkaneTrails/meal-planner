@@ -165,7 +165,6 @@ export const AiSection = ({
           value={dietary.diet_type ?? 'no_restrictions'}
           onSelect={(value) => onUpdateDietary('diet_type', value)}
           disabled={disabledByAi}
-          embedded
         />
 
         <SectionLabel text={t('householdSettings.dietary.dairy')} />
@@ -174,7 +173,6 @@ export const AiSection = ({
           value={isVegan ? 'dairy_free' : dietary.dairy}
           onSelect={(value) => onUpdateDietary('dairy', value)}
           disabled={disabledByAi || isVegan}
-          embedded
         />
 
         {/* Mixed Household — only for no_restrictions */}
@@ -300,13 +298,11 @@ export const AiSection = ({
           equipment={equipment}
           canEdit={!disabledByAi}
           onToggle={onToggleEquipment}
-          embedded
         />
         <AvailableEquipment
           equipment={equipment}
           canEdit={!disabledByAi}
           onToggle={onToggleEquipment}
-          embedded
         />
       </ContentCard>
     </>

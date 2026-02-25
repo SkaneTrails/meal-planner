@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Button, Chip, SurfaceCard } from '@/components';
+import { ActionButton, Button, Chip, ContentCard } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { HouseholdMember } from '@/lib/types';
@@ -41,9 +41,8 @@ const MemberCard = ({
     member.role === 'admin' ? colors.warning : colors.text.muted;
 
   return (
-    <SurfaceCard
-      radius="lg"
-      padding={spacing.md}
+    <ContentCard
+      variant="surface"
       style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -71,6 +70,7 @@ const MemberCard = ({
             <Text
               style={{
                 fontSize: fontSize.xs,
+                fontFamily: fonts.body,
                 color: colors.content.subtitle,
               }}
             >
@@ -79,7 +79,13 @@ const MemberCard = ({
           )}
         </View>
         {member.display_name && (
-          <Text style={{ fontSize: fontSize.sm, color: colors.content.strong }}>
+          <Text
+            style={{
+              fontSize: fontSize.sm,
+              fontFamily: fonts.body,
+              color: colors.content.strong,
+            }}
+          >
             {member.email}
           </Text>
         )}
@@ -95,16 +101,9 @@ const MemberCard = ({
         </View>
       </View>
       {canEdit && !isSelf && (
-        <Button
-          variant="text"
-          tone="warning"
-          onPress={onRemove}
-          icon="trash-outline"
-          iconSize={18}
-          hitSlop={8}
-        />
+        <ActionButton.Delete onPress={onRemove} iconSize={18} hitSlop={8} />
       )}
-    </SurfaceCard>
+    </ContentCard>
   );
 };
 
@@ -128,11 +127,7 @@ const AddMemberForm = ({
   const { t } = useTranslation();
 
   return (
-    <SurfaceCard
-      radius="lg"
-      padding={spacing.md}
-      style={{ marginTop: spacing.sm }}
-    >
+    <ContentCard variant="surface" style={{ marginTop: spacing.sm }}>
       <View
         style={{
           flexDirection: 'row',
@@ -154,6 +149,7 @@ const AddMemberForm = ({
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm,
             fontSize: fontSize.md,
+            fontFamily: fonts.body,
             color: colors.input.text,
           }}
         />
@@ -201,7 +197,7 @@ const AddMemberForm = ({
           }}
         />
       </View>
-    </SurfaceCard>
+    </ContentCard>
   );
 };
 
@@ -218,7 +214,7 @@ export const MembersSection = ({
   onRemoveMember,
   isAddPending,
 }: MembersSectionProps) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -242,11 +238,17 @@ export const MembersSection = ({
           ))}
         </View>
       ) : (
-        <SurfaceCard radius="lg" style={{ alignItems: 'center' }}>
-          <Text style={{ color: colors.content.strong, fontSize: fontSize.sm }}>
+        <ContentCard variant="surface" style={{ alignItems: 'center' }}>
+          <Text
+            style={{
+              color: colors.content.strong,
+              fontSize: fontSize.sm,
+              fontFamily: fonts.body,
+            }}
+          >
             {t('admin.noMembers')}
           </Text>
-        </SurfaceCard>
+        </ContentCard>
       )}
 
       {canEdit && (

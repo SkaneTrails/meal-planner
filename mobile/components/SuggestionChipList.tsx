@@ -2,8 +2,8 @@ import { Text, View } from 'react-native';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { Chip } from './Chip';
 import { ChipGroup } from './ChipGroup';
+import { ContentCard } from './ContentCard';
 import type { ChipItem } from './ItemChipList';
-import { SurfaceCard } from './SurfaceCard';
 
 const getKey = (item: ChipItem): string =>
   typeof item === 'string' ? item : item.key;
@@ -23,8 +23,6 @@ interface SuggestionChipListProps {
   disabled?: boolean;
   gap?: number;
   dotColor?: string;
-  /** Use subtle surface tint instead of SurfaceCard (for nesting inside ContentCard). */
-  embedded?: boolean;
 }
 
 export const SuggestionChipList = ({
@@ -35,18 +33,15 @@ export const SuggestionChipList = ({
   disabled = false,
   gap,
   dotColor,
-  embedded = false,
 }: SuggestionChipListProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
-
-  const Wrapper = embedded ? EmbeddedCard : SurfaceCardWrapper;
+  const { colors, fonts } = useTheme();
 
   if (groups) {
     const hasItems = groups.some((g) => g.items.length > 0);
     if (!hasItems) return null;
 
     return (
-      <Wrapper colors={colors} borderRadius={borderRadius} radius="lg">
+      <ContentCard variant="surface" padding={spacing.md}>
         {groups.map(({ heading: groupHeading, items: groupItems }) => {
           if (groupItems.length === 0) return null;
           return (
@@ -77,14 +72,14 @@ export const SuggestionChipList = ({
             </View>
           );
         })}
-      </Wrapper>
+      </ContentCard>
     );
   }
 
   if (!items || items.length === 0) return null;
 
   return (
-    <Wrapper colors={colors} borderRadius={borderRadius}>
+    <ContentCard variant="surface" padding={spacing.md}>
       {heading && (
         <Text
           style={{
@@ -109,38 +104,6 @@ export const SuggestionChipList = ({
           />
         ))}
       </ChipGroup>
-    </Wrapper>
+    </ContentCard>
   );
 };
-
-/* ── Wrapper variants ──────────────────────────────────────── */
-
-interface WrapperProps {
-  children: React.ReactNode;
-  colors: ReturnType<typeof useTheme>['colors'];
-  borderRadius: ReturnType<typeof useTheme>['borderRadius'];
-  radius?: 'sm' | 'md' | 'lg';
-}
-
-const SurfaceCardWrapper = ({ children, radius = 'md' }: WrapperProps) => (
-  <SurfaceCard padding={spacing.md} radius={radius}>
-    {children}
-  </SurfaceCard>
-);
-
-const EmbeddedCard = ({
-  children,
-  colors,
-  borderRadius,
-  radius = 'md',
-}: WrapperProps) => (
-  <View
-    style={{
-      backgroundColor: colors.surface.subtle,
-      borderRadius: borderRadius[radius],
-      padding: spacing.md,
-    }}
-  >
-    {children}
-  </View>
-);

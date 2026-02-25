@@ -6,6 +6,7 @@
  */
 
 import { TextInput, View } from 'react-native';
+import { ActionButton } from '@/components';
 import { Button } from '@/components/Button';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -70,11 +71,7 @@ export const UrlInputBar = ({
         editable={!disabled}
       />
       {showClear && onClear && (
-        <Button
-          variant="icon"
-          tone="cancel"
-          icon="close-circle"
-          size="sm"
+        <ActionButton.ClearInput
           onPress={onClear}
           style={{ marginRight: spacing.sm }}
         />

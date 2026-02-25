@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Button } from '@/components';
+import { ActionButton, Button } from '@/components';
 import { ScreenHeaderBar } from '@/components/ScreenHeaderBar';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
@@ -45,12 +45,8 @@ export const ScreenHeader = ({
             justifyContent: 'space-between',
           }}
         >
-          <Button
-            variant="text"
-            tone="alt"
+          <ActionButton.Back
             onPress={onBack}
-            icon="chevron-back"
-            iconSize={24}
             label={t('common.back')}
             style={{
               padding: spacing.sm,

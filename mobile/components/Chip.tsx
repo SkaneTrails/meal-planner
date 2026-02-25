@@ -121,7 +121,7 @@ export const Chip = ({
       <Text
         style={{
           fontSize: chipFontSize(variant, isSmall),
-          fontFamily: isSmall ? fonts.bodyMedium : undefined,
+          fontFamily: isSmall ? fonts.bodyMedium : fonts.body,
           color: resolvedColor,
           ...(capitalize && { textTransform: 'capitalize' as const }),
           ...(uppercase && { textTransform: 'uppercase' as const }),

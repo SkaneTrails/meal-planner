@@ -1,11 +1,21 @@
 /**
  * Theme-aware content container.
  *
- * - **Full chrome** (light/pastel): renders a card with background, rounded
- *   corners, border, and shadow — all from theme tokens. Use `highlighted`
- *   for accent-border variants (e.g. today's meal-plan card).
+ * Two variants:
+ *
+ * ### `variant="card"` (default)
+ * - **Full chrome** (light/pastel): card with background, rounded corners,
+ *   border, and shadow — all from theme tokens. Use `highlighted` for
+ *   accent-border variants (e.g. today's meal-plan card).
  * - **Flat chrome** (terminal): renders inside a `TerminalFrame` with
  *   box-drawing borders and optional labels/segments.
+ *
+ * ### `variant="surface"`
+ * Inner grouping container — must always live inside a card-variant ContentCard.
+ * - **Full chrome**: `surface.subtle` background, theme `borderRadius`, no
+ *   border or shadow.
+ * - **Flat chrome**: plain `View` (no TerminalFrame).
+ * - Ignores `collapsed`, `label`, `rightSegments`, `highlighted`.
  *
  * Consumers use this component unconditionally — no theme check required.
  */
@@ -25,22 +35,30 @@ import { TerminalFrame } from './TerminalFrame';
 
 interface ContentCardProps {
   children: React.ReactNode;
-  /** TerminalFrame label (flat chrome) / collapsed row title (full chrome). */
+  /**
+   * Visual variant:
+   * - `"card"` (default) — top-level card with bg, border, shadow, TerminalFrame.
+   * - `"surface"` — inner grouping: subtle bg, no border/shadow, plain View in flat.
+   */
+  variant?: 'card' | 'surface';
+  /** TerminalFrame label (flat chrome) / collapsed row title (full chrome). Card only. */
   label?: string;
-  /** Pressable segments: TerminalFrame border (flat) / collapsed row actions (full). */
+  /** Pressable segments: TerminalFrame border (flat) / collapsed row actions (full). Card only. */
   rightSegments?: FrameSegment[];
-  /** Flat chrome: box-drawing variant. Default: 'single'. */
+  /** Flat chrome: box-drawing variant. Default: 'single'. Card only. */
   frameVariant?: 'single' | 'double';
-  /** Flat chrome: inner padding inside the frame. Default: spacing.md. */
+  /** Flat chrome: inner padding inside the frame. Default: spacing.md. Card only. */
   framePadding?: number;
-  /** Collapse to a compact header-only row (both chrome modes). */
+  /** Collapse to a compact header-only row (both chrome modes). Card only. */
   collapsed?: boolean;
   /** Full chrome: override the default card styling (merged on top of defaults). */
   cardStyle?: StyleProp<ViewStyle>;
-  /** When false, light mode renders a bare View (no card bg/shadow). Default: true. */
+  /** When false, light mode renders a bare View (no card bg/shadow). Default: true. Card only. */
   card?: boolean;
-  /** Accent border + highlighted background (e.g. today's card). */
+  /** Accent border + highlighted background (e.g. today's card). Card only. */
   highlighted?: boolean;
+  /** Override padding. Default: `spacing.md` for card, `spacing.md` for surface. */
+  padding?: number;
   /** Layout event forwarded to the outer View. */
   onLayout?: (event: LayoutChangeEvent) => void;
   /** Outer wrapper style applied in both modes. */
@@ -49,6 +67,7 @@ interface ContentCardProps {
 
 export const ContentCard = ({
   children,
+  variant = 'card',
   label,
   rightSegments,
   frameVariant = 'single',
@@ -57,12 +76,41 @@ export const ContentCard = ({
   cardStyle,
   card = true,
   highlighted = false,
+  padding,
   onLayout,
   style,
 }: ContentCardProps) => {
   const { colors, fonts, borderRadius, shadows, overrides, chrome } =
     useTheme();
 
+  /* ── Surface variant ───────────────────────────────────────── */
+  if (variant === 'surface') {
+    if (chrome === 'flat') {
+      return (
+        <View style={style} onLayout={onLayout}>
+          {children}
+        </View>
+      );
+    }
+
+    return (
+      <View
+        onLayout={onLayout}
+        style={[
+          {
+            backgroundColor: colors.surface.subtle,
+            borderRadius: borderRadius.md,
+            padding: padding ?? spacing.md,
+          },
+          style,
+        ]}
+      >
+        {children}
+      </View>
+    );
+  }
+
+  /* ── Card variant ──────────────────────────────────────────── */
   if (chrome === 'flat') {
     return (
       <TerminalFrame
@@ -153,7 +201,7 @@ export const ContentCard = ({
           borderColor: highlighted
             ? colors.ai.primary
             : colors.card.borderColor,
-          padding: spacing.md,
+          padding: padding ?? spacing.md,
           ...shadows.card,
         },
         cardStyle,

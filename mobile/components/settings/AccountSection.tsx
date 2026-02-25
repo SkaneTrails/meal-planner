@@ -1,5 +1,10 @@
 import { ActivityIndicator, Text, View } from 'react-native';
-import { AnimatedPressable, Button, IconCircle, Section } from '@/components';
+import {
+  ActionButton,
+  AnimatedPressable,
+  IconCircle,
+  Section,
+} from '@/components';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
@@ -70,13 +75,9 @@ export const AccountSection = ({
             marginBottom: spacing.md,
           }}
         />
-        <Button
-          variant="text"
-          tone="warning"
-          icon="log-out-outline"
+        <ActionButton.SignOut
           label={t('settings.signOut')}
           onPress={onSignOut}
-          iconSize={iconSize.lg}
           style={{
             justifyContent: 'center',
           }}

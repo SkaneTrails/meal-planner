@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import {
+  ActionButton,
   BottomSheetModal,
   Button,
   ChipPicker,
@@ -108,13 +109,7 @@ export const EditRecipeModal = ({
       title={t('recipe.editRecipe')}
       headerRight={
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-          <Button
-            variant="text"
-            tone="cancel"
-            label={t('common.cancel')}
-            onPress={onClose}
-            size="lg"
-          />
+          <ActionButton.Cancel label={t('common.cancel')} onPress={onClose} />
           <Button
             variant="primary"
             label={t('common.save')}
@@ -357,10 +352,7 @@ export const EditRecipeModal = ({
             }}
           />
         )}
-        <Button
-          variant="text"
-          tone="warning"
-          icon="trash-outline"
+        <ActionButton.Delete
           label={t('recipe.deleteRecipe')}
           onPress={onDelete}
           style={{ paddingVertical: spacing.md, justifyContent: 'center' }}

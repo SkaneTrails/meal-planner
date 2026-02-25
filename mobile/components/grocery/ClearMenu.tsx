@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Button, ButtonGroup } from '@/components';
+import { ActionButton, Button, ButtonGroup } from '@/components';
 import { useTranslation } from '@/lib/i18n';
 import { spacing } from '@/lib/theme';
 
@@ -49,11 +49,8 @@ export const ClearMenu = ({
           label={t('grocery.clearManualItems')}
           onPress={onClearManualItems}
         />
-        <Button
-          variant="text"
-          tone="warning"
+        <ActionButton.Delete
           size="sm"
-          icon="trash-outline"
           label={t('grocery.clearEntireList')}
           onPress={onClearAll}
         />

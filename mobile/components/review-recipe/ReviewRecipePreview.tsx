@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { SurfaceCard } from '@/components';
+import { ContentCard } from '@/components';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { RecipeCreate } from '@/lib/types';
@@ -18,7 +18,7 @@ export const ReviewRecipePreview = ({
   const instructions = recipe.instructions ?? [];
 
   return (
-    <SurfaceCard style={{ marginBottom: spacing.xl }}>
+    <ContentCard variant="surface" style={{ marginBottom: spacing.xl }}>
       <Text
         style={{
           fontSize: fontSize.lg,
@@ -90,6 +90,6 @@ export const ReviewRecipePreview = ({
           +{instructions.length - 3} {t('common.more')}
         </Text>
       )}
-    </SurfaceCard>
+    </ContentCard>
   );
 };

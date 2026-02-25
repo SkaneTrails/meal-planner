@@ -1,5 +1,10 @@
 import { Pressable, Text, View } from 'react-native';
-import { BottomSheetModal, Button, IconButton } from '@/components';
+import {
+  ActionButton,
+  BottomSheetModal,
+  Button,
+  IconButton,
+} from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSuccess } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
@@ -171,7 +176,7 @@ const GroceryWeekSelector = ({
         gap: spacing.sm,
       }}
     >
-      <IconButton tone="alt" onPress={onPreviousWeek} icon="chevron-back" />
+      <ActionButton.Back onPress={onPreviousWeek} />
       <View
         style={{
           paddingHorizontal: spacing.xl,
@@ -191,7 +196,7 @@ const GroceryWeekSelector = ({
           {formatWeekRange(weekDates, language)}
         </Text>
       </View>
-      <IconButton tone="alt" onPress={onNextWeek} icon="chevron-forward" />
+      <ActionButton.Forward onPress={onNextWeek} />
     </View>
   );
 };

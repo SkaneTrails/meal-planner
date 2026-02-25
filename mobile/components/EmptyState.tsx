@@ -7,8 +7,8 @@ import {
   useTheme,
 } from '@/lib/theme';
 import { Button } from './Button';
+import { ContentCard } from './ContentCard';
 import { IconCircle } from './IconCircle';
-import { SurfaceCard } from './SurfaceCard';
 import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
 interface EmptyStateAction {
@@ -38,7 +38,10 @@ const EmptyState = ({
 
   if (variant === 'compact') {
     return (
-      <SurfaceCard style={{ alignItems: 'center' as const, ...style }}>
+      <ContentCard
+        variant="surface"
+        style={{ alignItems: 'center' as const, ...style }}
+      >
         {icon && (
           <IconCircle
             size="lg"
@@ -63,6 +66,7 @@ const EmptyState = ({
           <Text
             style={{
               fontSize: fontSize.sm,
+              fontFamily: fonts.body,
               color: colors.content.icon,
               textAlign: 'center',
             }}
@@ -70,7 +74,7 @@ const EmptyState = ({
             {subtitle}
           </Text>
         )}
-      </SurfaceCard>
+      </ContentCard>
     );
   }
 

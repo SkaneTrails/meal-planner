@@ -4,7 +4,7 @@
 
 import type React from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { AnimatedPressable, Button } from '@/components';
+import { ActionButton, AnimatedPressable } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
@@ -68,20 +68,13 @@ export const SearchBar = ({
           onBlur={onBlur}
         />
         {searchQuery !== '' && (
-          <Button
-            variant="icon"
-            tone="cancel"
-            icon="close-circle"
-            size="sm"
+          <ActionButton.ClearInput
             onPress={onClear ?? (() => onSearchChange(''))}
           />
         )}
         {isSearchFocused && onClear && (
-          <Button
-            variant="text"
-            tone="cancel"
+          <ActionButton.Cancel
             label={t('common.cancel')}
-            size="lg"
             onPress={onClear}
             style={{ marginLeft: spacing.sm }}
           />

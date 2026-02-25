@@ -5,7 +5,7 @@
 
 import { Redirect, useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, FullScreenLoading, ScreenLayout } from '@/components';
+import { ActionButton, FullScreenLoading, ScreenLayout } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
@@ -117,11 +117,8 @@ export default function NoAccessScreen() {
         </Text>
 
         {/* Sign Out Button - Glass style */}
-        <Button
-          variant="text"
-          tone="warning"
+        <ActionButton.SignOut
           onPress={handleSignOut}
-          icon="log-out-outline"
           label={t('noAccess.signOutButton')}
           style={{
             borderRadius: borderRadius.lg,
