@@ -20,11 +20,13 @@ from api.models.admin import (
     ItemAtHomeResponse,
     MemberAdd,
     MemberResponse,
+    RecipeCountResponse,
     RecipeTransfer,
     TransferResponse,
 )
 from api.models.settings import HouseholdSettings, HouseholdSettingsUpdate
 from api.storage import household_storage, recipe_storage
+from api.storage.recipe_queries import count_recipes
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -59,7 +61,9 @@ async def list_households(user: Annotated[AuthenticatedUser, Depends(require_aut
     _require_superuser(user)
 
     households = household_storage.list_all_households()
-    return [HouseholdResponse(id=h.id, name=h.name, created_by=h.created_by) for h in households]
+    return [
+        HouseholdResponse(id=h.id, name=h.name, created_by=h.created_by, created_at=h.created_at) for h in households
+    ]
 
 
 @router.post("/households", status_code=status.HTTP_201_CREATED)
@@ -81,7 +85,9 @@ async def create_household(
     if household is None:  # pragma: no cover
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create household")
 
-    return HouseholdResponse(id=household.id, name=household.name, created_by=household.created_by)
+    return HouseholdResponse(
+        id=household.id, name=household.name, created_by=household.created_by, created_at=household.created_at
+    )
 
 
 @router.get("/households/{household_id}")
@@ -95,7 +101,9 @@ async def get_household(
     if household is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
 
-    return HouseholdResponse(id=household.id, name=household.name, created_by=household.created_by)
+    return HouseholdResponse(
+        id=household.id, name=household.name, created_by=household.created_by, created_at=household.created_at
+    )
 
 
 @router.patch("/households/{household_id}")
@@ -119,7 +127,9 @@ async def rename_household(
     # Update the name
     household_storage.update_household(household_id, request.name)
 
-    return HouseholdResponse(id=household_id, name=request.name, created_by=household.created_by)
+    return HouseholdResponse(
+        id=household_id, name=request.name, created_by=household.created_by, created_at=household.created_at
+    )
 
 
 @router.get("/households/{household_id}/members")
@@ -248,6 +258,24 @@ async def update_household_settings(
 
     updated = household_storage.get_household_settings(household_id) or {}
     return HouseholdSettings(**updated)
+
+
+# --- Recipe Count Endpoint ---
+
+
+@router.get("/households/{household_id}/recipe-count")
+async def get_household_recipe_count(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)], household_id: str
+) -> RecipeCountResponse:
+    """Get the number of owned recipes for a household (excludes shared). Superuser only."""
+    _require_superuser(user)
+
+    household = household_storage.get_household(household_id)
+    if household is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
+
+    total = count_recipes(household_id=household_id, owned_only=True)
+    return RecipeCountResponse(recipe_count=total)
 
 
 # --- Recipe Management Endpoints ---

@@ -42,6 +42,15 @@ interface RecipeContentProps {
   onEnhance: () => void;
   onToggleKeepScreenOn: () => void;
   onReviewEnhancement: (action: EnhancementReviewAction) => void;
+  portionScaling: {
+    currentPortions: number;
+    originalPortions: number;
+    isScaled: boolean;
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+    scaleIngredients: (ingredients: string[]) => string[];
+  };
 }
 
 type SectionKey =
@@ -77,6 +86,7 @@ export const RecipeContent = ({
   onEnhance,
   onToggleKeepScreenOn,
   onReviewEnhancement,
+  portionScaling,
 }: RecipeContentProps) => {
   const hasOriginal = Boolean(recipe.enhanced && recipe.original);
   const displayIngredients = useMemo(
@@ -85,6 +95,11 @@ export const RecipeContent = ({
         ? recipe.original.ingredients
         : recipe.ingredients,
     [showOriginal, recipe.original, recipe.ingredients],
+  );
+
+  const scaledIngredients = useMemo(
+    () => portionScaling.scaleIngredients(displayIngredients),
+    [portionScaling, displayIngredients],
   );
   const displayInstructions = useMemo(
     () =>
@@ -202,6 +217,7 @@ export const RecipeContent = ({
             actionSegments={actionSegments}
             visibilityLabel={visibilityLabel}
             t={t}
+            portionScaling={portionScaling}
           />
 
           <RecipeTags tags={recipe.tags} />
@@ -233,7 +249,7 @@ export const RecipeContent = ({
         style={{ marginBottom: spacing.md }}
       >
         <RecipeIngredientsList
-          ingredients={displayIngredients}
+          ingredients={scaledIngredients}
           t={t}
           collapsible
           expanded={expanded.ingredients}

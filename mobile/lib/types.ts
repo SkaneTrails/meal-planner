@@ -278,6 +278,7 @@ export interface Household {
   id: string;
   name: string;
   created_by: string;
+  created_at: string;
 }
 
 export interface HouseholdMember {

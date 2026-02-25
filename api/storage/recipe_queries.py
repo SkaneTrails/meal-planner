@@ -47,7 +47,7 @@ def get_recipes_by_ids(recipe_ids: set[str]) -> dict[str, Recipe]:
     return recipes
 
 
-def count_recipes(*, household_id: str | None = None, show_hidden: bool = False) -> int:
+def count_recipes(*, household_id: str | None = None, show_hidden: bool = False, owned_only: bool = False) -> int:
     """Count total recipes visible to a household using Firestore aggregation.
 
     Uses server-side COUNT aggregation to avoid fetching all documents.
@@ -58,6 +58,8 @@ def count_recipes(*, household_id: str | None = None, show_hidden: bool = False)
         household_id: If provided, count owned + shared recipes.
                       If None, count all recipes (for superusers).
         show_hidden: If False (default), exclude hidden recipes from count.
+        owned_only: If True, count only recipes owned by the household
+                    (excludes shared recipes from other households).
 
     Returns:
         Total number of matching recipes.
@@ -77,6 +79,9 @@ def count_recipes(*, household_id: str | None = None, show_hidden: bool = False)
         owned_query = owned_query.where(filter=_HIDDEN_FILTER)
     owned_result = owned_query.count().get()
     owned_count = owned_result[0][0].value  # type: ignore[index]
+
+    if owned_only:
+        return owned_count
 
     shared_not_owned_query = collection.where(filter=FieldFilter("visibility", "==", "shared")).where(
         filter=FieldFilter("household_id", "!=", household_id)
