@@ -353,40 +353,51 @@ const ReplacementRow = ({
           marginBottom: spacing.sm,
         }}
       >
-        <View
+        <ThemedTextInput
+          value={row.original}
+          onChangeText={(v) => onUpdate(index, 'original', v)}
+          disabled={disabled}
+          placeholder={t('householdSettings.dietary.originalPlaceholder')}
+          maxLength={30}
+          testID={`replacement-original-${index}`}
+        />
+        <Text
           style={{
-            flex: 1,
-            minWidth: 0,
-            flexDirection: 'row',
-            gap: spacing.sm,
-            alignItems: 'center',
+            color: colors.content.subtitle,
+            fontSize: fontSize.md,
+            fontFamily: fonts.body,
           }}
         >
-          <ThemedTextInput
-            value={row.original}
-            onChangeText={(v) => onUpdate(index, 'original', v)}
-            disabled={disabled}
-            placeholder={t('householdSettings.dietary.originalPlaceholder')}
-            maxLength={30}
-            testID={`replacement-original-${index}`}
-          />
-          <Text
-            style={{
-              color: colors.content.subtitle,
-              fontSize: fontSize.md,
-              fontFamily: fonts.body,
-            }}
-          >
-            →
-          </Text>
-          <ThemedTextInput
-            value={row.replacement}
-            onChangeText={(v) => onUpdate(index, 'replacement', v)}
-            disabled={disabled}
-            placeholder={t('householdSettings.dietary.replacementPlaceholder')}
-            maxLength={30}
-            testID={`replacement-replacement-${index}`}
-          />
+          →
+        </Text>
+        <ThemedTextInput
+          value={row.replacement}
+          onChangeText={(v) => onUpdate(index, 'replacement', v)}
+          disabled={disabled}
+          placeholder={t('householdSettings.dietary.replacementPlaceholder')}
+          maxLength={30}
+          testID={`replacement-replacement-${index}`}
+        />
+      </View>
+
+      {/* Meat substitute toggle + delete — or standalone delete when no toggle */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <View style={{ flex: 1, minWidth: 0 }}>
+          {showMeatSubstitute && (
+            <SettingToggleRow
+              label={t('householdSettings.dietary.meatSubstitute')}
+              subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
+              value={row.meat_substitute}
+              onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
+              disabled={disabled}
+            />
+          )}
         </View>
         <IconButton
           icon="trash-outline"
@@ -397,17 +408,6 @@ const ReplacementRow = ({
           label={t('common.remove')}
         />
       </View>
-
-      {/* Meat substitute toggle — only when household has a split meat config */}
-      {showMeatSubstitute && (
-        <SettingToggleRow
-          label={t('householdSettings.dietary.meatSubstitute')}
-          subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
-          value={row.meat_substitute}
-          onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
-          disabled={disabled}
-        />
-      )}
     </View>
   );
 };
