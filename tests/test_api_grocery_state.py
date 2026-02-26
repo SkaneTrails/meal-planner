@@ -7,7 +7,6 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from api.auth.models import AuthenticatedUser
 from api.routers.grocery import router
 
 app = FastAPI()
@@ -15,33 +14,15 @@ app.include_router(router)
 
 
 @pytest.fixture
-def client() -> Generator[TestClient]:
+def client(create_test_client) -> Generator[TestClient]:
     """Create test client with mocked auth (user with household)."""
-    from api.auth.firebase import require_auth
-
-    async def mock_auth() -> AuthenticatedUser:
-        return AuthenticatedUser(
-            uid="test_user", email="test@example.com", household_id="test_household", role="member"
-        )
-
-    app.dependency_overrides[require_auth] = mock_auth
-    with TestClient(app) as c:
-        yield c
-    app.dependency_overrides.clear()
+    yield from create_test_client(app)
 
 
 @pytest.fixture
-def client_no_household() -> Generator[TestClient]:
+def client_no_household(create_test_client) -> Generator[TestClient]:
     """Create test client with mocked auth (no household)."""
-    from api.auth.firebase import require_auth
-
-    async def mock_auth() -> AuthenticatedUser:
-        return AuthenticatedUser(uid="superuser", email="super@example.com", household_id=None, role="superuser")
-
-    app.dependency_overrides[require_auth] = mock_auth
-    with TestClient(app) as c:
-        yield c
-    app.dependency_overrides.clear()
+    yield from create_test_client(app, uid="superuser", email="super@example.com", household_id=None, role="superuser")
 
 
 class TestGetGroceryState:

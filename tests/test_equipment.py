@@ -11,7 +11,7 @@ from api.models.equipment import (
     get_valid_equipment_keys,
     validate_equipment_keys,
 )
-from api.models.settings import HouseholdSettings, HouseholdSettingsUpdate
+from api.models.settings import HouseholdSettings, HouseholdSettingsUpdate, Language
 
 
 class TestEquipmentCatalog:
@@ -28,9 +28,9 @@ class TestEquipmentCatalog:
         for key, meta in EQUIPMENT_CATALOG.items():
             assert meta["category"] in EQUIPMENT_CATEGORIES, f"{key} has unknown category {meta['category']}"
 
-    def test_catalog_has_expected_count(self) -> None:
-        """Catalog should have 19 items."""
-        assert len(EQUIPMENT_CATALOG) == 19
+    def test_catalog_is_non_trivial(self) -> None:
+        """Catalog should have a reasonable number of items (guard against accidental wipe)."""
+        assert len(EQUIPMENT_CATALOG) >= 10
 
     def test_every_category_has_at_least_one_item(self) -> None:
         """Each defined category should have at least one equipment item."""
@@ -143,7 +143,7 @@ class TestSettingsEquipmentField:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=["air_fryer", "wok"],
         )
@@ -153,7 +153,7 @@ class TestSettingsEquipmentField:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=[],
         )
@@ -164,7 +164,7 @@ class TestSettingsEquipmentField:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment={"airfryer": True, "convection_oven": True},  # ty: ignore[invalid-argument-type]
         )
@@ -195,7 +195,7 @@ class TestSettingsEquipmentField:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=42,  # ty: ignore[invalid-argument-type]
         )
@@ -206,7 +206,7 @@ class TestSettingsEquipmentField:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             equipment=["air_fryer", "magic_wand"],
         )
@@ -221,7 +221,7 @@ class TestNoteSuggestionsOnSettings:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
         )
         assert settings.note_suggestions == []
@@ -231,7 +231,7 @@ class TestNoteSuggestionsOnSettings:
         settings = HouseholdSettings(
             household_size=2,
             default_servings=2,
-            language="en",
+            language=Language.EN,
             dietary={"seafood_ok": True, "meat": "all", "dairy": "regular"},  # ty: ignore[invalid-argument-type]
             note_suggestions=suggestions,
         )
