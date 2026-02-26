@@ -7,13 +7,15 @@
 
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
+import { resetTabBar, tabBarTranslateY } from '@/lib/tab-bar-scroll';
 import { HIDDEN_ON, isTabActive, TABS } from '@/lib/tab-config';
 import type { TabBarTokens } from '@/lib/theme';
-import { layout, spacing, useTheme } from '@/lib/theme';
+import { iconSize, layout, spacing, useTheme } from '@/lib/theme';
 
 const TabBarBackground = ({ tokens }: { tokens: TabBarTokens }) => {
   const { colors } = useTheme();
@@ -100,11 +102,23 @@ export const FloatingTabBar = () => {
   const { t } = useTranslation();
   const { colors, borderRadius, shadows, tabBar } = useTheme();
 
+  // Show tab bar when navigating to a new screen
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers reset on route change
+  useEffect(() => {
+    resetTabBar();
+  }, [pathname]);
+
   // Hide on auth screens or when not logged in
   if (!user || HIDDEN_ON.includes(pathname)) return null;
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <Animated.View
+      style={[
+        styles.container,
+        { transform: [{ translateY: tabBarTranslateY }] },
+      ]}
+      pointerEvents="box-none"
+    >
       <View style={styles.barOuter}>
         <View
           style={[
@@ -136,7 +150,7 @@ export const FloatingTabBar = () => {
                 >
                   <ThemeIcon
                     name={active ? tab.iconFocused : tab.icon}
-                    size={20}
+                    size={iconSize.lg}
                     color={
                       active ? colors.tabBar.active : colors.tabBar.inactive
                     }
@@ -154,7 +168,7 @@ export const FloatingTabBar = () => {
         ]}
         pointerEvents="none"
       />
-    </View>
+    </Animated.View>
   );
 };
 
@@ -184,7 +198,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconWrap: {
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing['xs-sm'],
   },
 });

@@ -8,10 +8,18 @@
  */
 
 import type { ReactNode } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native';
 import { GradientBackground } from '@/components/GradientBackground';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { useTranslation } from '@/lib/i18n';
+import {
+  borderRadius,
+  fontSize,
+  iconContainer,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 interface FullScreenLoadingProps {
   /** GradientBackground visual mode (default: 'default') */
@@ -38,10 +46,13 @@ export const FullScreenLoading = ({
   children,
 }: FullScreenLoadingProps) => {
   const { colors, fonts } = useTheme();
+  const { t } = useTranslation();
   const isMessage = Boolean(icon || title);
 
+  const effectiveBg = isMessage ? background : 'animated';
+
   return (
-    <GradientBackground {...bgVariant(background)} style={styles.container}>
+    <GradientBackground {...bgVariant(effectiveBg)} style={styles.container}>
       {isMessage ? (
         <View style={styles.content}>
           {icon && (
@@ -70,7 +81,35 @@ export const FullScreenLoading = ({
           )}
         </View>
       ) : (
-        <ActivityIndicator size="large" color={colors.primary} />
+        <View style={styles.content}>
+          <View
+            style={[
+              styles.iconBox,
+              {
+                backgroundColor: colors.card.bg,
+                borderColor: colors.card.borderColor,
+              },
+            ]}
+          >
+            <Image
+              source={require('@/assets/images/icon.png')}
+              style={styles.appIcon}
+            />
+          </View>
+          <Text
+            style={[
+              styles.appName,
+              { color: colors.text.primary, fontFamily: fonts.displayBold },
+            ]}
+          >
+            {t('signIn.appName')}
+          </Text>
+          <ActivityIndicator
+            size="small"
+            color={colors.text.muted}
+            style={{ marginTop: spacing.lg }}
+          />
+        </View>
       )}
       {children}
     </GradientBackground>
@@ -94,6 +133,25 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: fontSize.lg,
     marginTop: spacing.sm,
+    textAlign: 'center',
+  },
+  iconBox: {
+    width: iconContainer['2xl'],
+    height: iconContainer['2xl'],
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    marginBottom: spacing.md,
+  },
+  appIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.sm,
+  },
+  appName: {
+    fontSize: fontSize['2xl'],
+    letterSpacing: letterSpacing.wide,
     textAlign: 'center',
   },
 });
