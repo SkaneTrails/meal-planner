@@ -378,6 +378,27 @@ const ReplacementRow = ({
           maxLength={30}
           testID={`replacement-replacement-${index}`}
         />
+      </View>
+
+      {/* Meat substitute toggle + delete — or standalone delete when no toggle */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: showMeatSubstitute ? 'space-between' : 'flex-end',
+        }}
+      >
+        {showMeatSubstitute && (
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <SettingToggleRow
+              label={t('householdSettings.dietary.meatSubstitute')}
+              subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
+              value={row.meat_substitute}
+              onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
+              disabled={disabled}
+            />
+          </View>
+        )}
         <IconButton
           icon="trash-outline"
           onPress={() => onRemove(index)}
@@ -387,17 +408,6 @@ const ReplacementRow = ({
           label={t('common.remove')}
         />
       </View>
-
-      {/* Meat substitute toggle — only when household has a split meat config */}
-      {showMeatSubstitute && (
-        <SettingToggleRow
-          label={t('householdSettings.dietary.meatSubstitute')}
-          subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
-          value={row.meat_substitute}
-          onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
-          disabled={disabled}
-        />
-      )}
     </View>
   );
 };
