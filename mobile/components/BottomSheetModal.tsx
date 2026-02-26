@@ -34,17 +34,18 @@ export const BottomSheetModal = ({
   footer,
   testID,
 }: BottomSheetModalProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, chrome } = useTheme();
   const { t } = useTranslation();
   const dismissable = dismissableProp ?? !blocking;
   const showCloseButton = !blocking && !headerRight;
+  const isFlat = chrome === 'flat';
 
   const sheetContent = (
     <View
       style={{
         backgroundColor: colors.surface.modal,
-        borderTopLeftRadius: borderRadius.xl,
-        borderTopRightRadius: borderRadius.xl,
+        borderTopLeftRadius: isFlat ? 0 : borderRadius.xl,
+        borderTopRightRadius: isFlat ? 0 : borderRadius.xl,
         maxWidth: layout.contentMaxWidth,
         width: '100%',
         alignSelf: 'center',
@@ -52,6 +53,12 @@ export const BottomSheetModal = ({
         flexShrink: 1,
         minHeight: 0,
         overflow: 'hidden',
+        ...(isFlat && {
+          borderTopWidth: 2,
+          borderLeftWidth: 2,
+          borderRightWidth: 2,
+          borderColor: colors.border,
+        }),
       }}
       testID={testID}
     >
