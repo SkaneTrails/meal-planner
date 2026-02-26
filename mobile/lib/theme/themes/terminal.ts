@@ -65,7 +65,7 @@ const MONO = isWeb
       default: 'monospace',
     }) ?? 'monospace');
 
-const EMOJI = 'NotoEmoji_400Regular';
+const EMOJI = isWeb ? '"Noto Emoji", sans-serif' : 'NotoEmoji_400Regular';
 
 const fonts: FontFamilyTokens = {
   display: MONO,
