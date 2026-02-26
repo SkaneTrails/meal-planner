@@ -2,7 +2,25 @@ import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { Text } from 'react-native';
-import { HelpTip } from '../HelpTip';
+import { HelpTip, HelpTipIcon } from '../HelpTip';
+
+describe('HelpTipIcon', () => {
+  it('renders the info icon toggle', () => {
+    render(<HelpTipIcon helpText="Some help" />);
+    expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
+  });
+
+  it('does not show help text by default', () => {
+    render(<HelpTipIcon helpText="Hidden info" />);
+    expect(screen.queryByText('Hidden info')).toBeNull();
+  });
+
+  it('shows help text after pressing the icon', () => {
+    render(<HelpTipIcon helpText="Visible info" />);
+    fireEvent.click(screen.getByTestId('help-tip-toggle'));
+    expect(screen.getByText('Visible info')).toBeDefined();
+  });
+});
 
 describe('HelpTip', () => {
   it('renders children', () => {

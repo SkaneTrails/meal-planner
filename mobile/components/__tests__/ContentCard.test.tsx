@@ -222,3 +222,47 @@ describe('ContentCard — full chrome collapsed', () => {
     expect(handleExpand).toHaveBeenCalled();
   });
 });
+
+describe('ContentCard — tooltip', () => {
+  beforeEach(() => {
+    useThemeSpy.mockReturnValue(fullTheme());
+  });
+
+  it('renders help-tip toggle when tooltip is set', () => {
+    render(
+      <ContentCard label="LANGUAGE" tooltip="Affects measurements">
+        <Text>Content</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
+  });
+
+  it('does not render help-tip toggle when tooltip is omitted', () => {
+    render(
+      <ContentCard label="LANGUAGE">
+        <Text>Content</Text>
+      </ContentCard>,
+    );
+    expect(screen.queryByTestId('help-tip-toggle')).toBeNull();
+  });
+
+  it('shows popup text when tooltip icon is pressed', () => {
+    render(
+      <ContentCard label="LANGUAGE" tooltip="Adaptation details">
+        <Text>Content</Text>
+      </ContentCard>,
+    );
+    fireEvent.click(screen.getByTestId('help-tip-toggle'));
+    expect(screen.getByText('Adaptation details')).toBeDefined();
+  });
+
+  it('renders header row when only tooltip is set (no label)', () => {
+    render(
+      <ContentCard tooltip="Standalone tooltip">
+        <Text>Body</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
+    expect(screen.getByText('Body')).toBeDefined();
+  });
+});

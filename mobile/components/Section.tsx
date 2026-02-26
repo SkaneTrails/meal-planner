@@ -9,6 +9,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { HelpTipIcon } from './HelpTip';
 import { IconCircle } from './IconCircle';
 import { type IoniconName, ThemeIcon } from './ThemeIcon';
 
@@ -36,6 +37,8 @@ export interface SectionProps {
   disabled?: boolean;
   /** Slot rendered to the right of the title row (e.g., ThemeToggle, step counter). */
   rightAccessory?: ReactNode;
+  /** When set, renders an ⓘ icon that opens a help‑tip popup with this text. */
+  tooltip?: string;
   /** Outer margin bottom. Default: `spacing.xl` (md) / `spacing.xl` (sm). */
   spacing?: number;
   /** Additional style applied to the outer container (e.g. marginTop). */
@@ -62,6 +65,7 @@ export const Section = ({
   onToggle,
   disabled = false,
   rightAccessory,
+  tooltip,
   spacing: spacingProp,
   style,
   children,
@@ -144,10 +148,12 @@ export const Section = ({
           </Text>
         )}
       </View>
+      {tooltip && !isCollapsible && <HelpTipIcon helpText={tooltip} />}
       {rightAccessory && !isCollapsible && rightAccessory}
       {isCollapsible && (
         <ChevronWithAccessory
           rightAccessory={rightAccessory}
+          tooltip={tooltip}
           disabled={disabled}
           chevronRotation={chevronRotation}
           colors={colors}
@@ -190,6 +196,7 @@ export const Section = ({
 
 interface ChevronWithAccessoryProps {
   rightAccessory?: ReactNode;
+  tooltip?: string;
   disabled: boolean;
   chevronRotation: Animated.AnimatedInterpolation<string>;
   colors: ReturnType<typeof useTheme>['colors'];
@@ -197,11 +204,13 @@ interface ChevronWithAccessoryProps {
 
 const ChevronWithAccessory = ({
   rightAccessory,
+  tooltip,
   disabled,
   chevronRotation,
   colors,
 }: ChevronWithAccessoryProps) => {
-  if (rightAccessory) {
+  const hasExtra = !!rightAccessory || !!tooltip;
+  if (hasExtra) {
     return (
       <View
         style={{
@@ -220,6 +229,7 @@ const ChevronWithAccessory = ({
             />
           </Animated.View>
         )}
+        {tooltip && <HelpTipIcon helpText={tooltip} />}
         {rightAccessory}
       </View>
     );

@@ -152,4 +152,49 @@ describe('Section', () => {
       expect(screen.getByText('Content')).toBeDefined();
     });
   });
+
+  describe('tooltip', () => {
+    it('renders help-tip toggle when tooltip is set on static section', () => {
+      render(
+        <Section title="Equipment" tooltip="AI adjusts cooking instructions">
+          <span>Content</span>
+        </Section>,
+      );
+      expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
+    });
+
+    it('does not render help-tip toggle when tooltip is omitted', () => {
+      render(
+        <Section title="Equipment">
+          <span>Content</span>
+        </Section>,
+      );
+      expect(screen.queryByTestId('help-tip-toggle')).toBeNull();
+    });
+
+    it('renders help-tip toggle on collapsible section', () => {
+      render(
+        <Section
+          title="Language"
+          tooltip="Affects measurements and local ingredients"
+          collapsible
+          expanded
+          onToggle={vi.fn()}
+        >
+          <span>Content</span>
+        </Section>,
+      );
+      expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
+    });
+
+    it('shows popup text when tooltip icon is pressed', () => {
+      render(
+        <Section title="Equipment" tooltip="AI adjusts cooking instructions">
+          <span>Content</span>
+        </Section>,
+      );
+      fireEvent.click(screen.getByTestId('help-tip-toggle'));
+      expect(screen.getByText('AI adjusts cooking instructions')).toBeDefined();
+    });
+  });
 });
