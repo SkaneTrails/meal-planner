@@ -29,6 +29,7 @@ import {
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
+import { handleScrollEvent } from '@/lib/tab-bar-scroll';
 import { layout, spacing, useTheme } from '@/lib/theme';
 
 export default function SettingsScreen() {
@@ -82,6 +83,8 @@ export default function SettingsScreen() {
             paddingTop: spacing.sm,
             paddingBottom: layout.tabBar.contentBottomPadding,
           }}
+          onScroll={handleScrollEvent}
+          scrollEventThrottle={16}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

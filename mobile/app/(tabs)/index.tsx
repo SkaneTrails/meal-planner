@@ -16,6 +16,7 @@ import { ScreenTitle } from '@/components/ScreenTitle';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
+import { handleScrollEvent } from '@/lib/tab-bar-scroll';
 import {
   fontSize,
   layout,
@@ -62,6 +63,8 @@ export default function HomeScreen() {
         contentContainerStyle={{
           paddingBottom: layout.tabBar.contentBottomPadding,
         }}
+        onScroll={handleScrollEvent}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={isLoading}

@@ -12,6 +12,7 @@ import {
 import { RecipeCard, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
 import type { TFunction } from '@/lib/i18n';
+import { handleScrollEvent } from '@/lib/tab-bar-scroll';
 import { layout, useTheme } from '@/lib/theme';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 
@@ -79,6 +80,8 @@ export const RecipeGrid = ({
           />
         </View>
       )}
+      onScroll={handleScrollEvent}
+      scrollEventThrottle={16}
       contentContainerStyle={{
         paddingHorizontal: horizontalPadding,
         paddingBottom: layout.tabBar.contentBottomPadding,
