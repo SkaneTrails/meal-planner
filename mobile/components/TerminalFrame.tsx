@@ -317,7 +317,9 @@ export const TerminalFrame = ({
         {B.h}
       </Text>
       {labelFragment(label)}
-      <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+      <View
+        style={{ flex: 1, overflow: 'hidden', height: terminal.charHeight }}
+      >
         <Text style={charStyle} selectable={false}>
           {B.h.repeat(200)}
         </Text>
@@ -333,7 +335,9 @@ export const TerminalFrame = ({
       <Text style={charStyle} selectable={false}>
         {B.tl}
       </Text>
-      <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+      <View
+        style={{ flex: 1, overflow: 'hidden', height: terminal.charHeight }}
+      >
         <Text style={charStyle} selectable={false}>
           {B.h.repeat(200)}
         </Text>
@@ -355,7 +359,9 @@ export const TerminalFrame = ({
         {bottomLabel ? B.h : ''}
       </Text>
       {bottomLabel && labelFragment(bottomLabel)}
-      <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+      <View
+        style={{ flex: 1, overflow: 'hidden', height: terminal.charHeight }}
+      >
         <Text style={charStyle} selectable={false}>
           {B.h.repeat(200)}
         </Text>
@@ -370,7 +376,9 @@ export const TerminalFrame = ({
       <Text style={charStyle} selectable={false}>
         {B.bl}
       </Text>
-      <View style={{ flex: 1, overflow: 'hidden', height: 14 }}>
+      <View
+        style={{ flex: 1, overflow: 'hidden', height: terminal.charHeight }}
+      >
         <Text style={charStyle} selectable={false}>
           {B.h.repeat(200)}
         </Text>
