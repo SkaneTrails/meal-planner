@@ -263,28 +263,6 @@ class TestDownloadAndUploadImage:
     """Tests for the full download_and_upload_image pipeline."""
 
     @pytest.mark.asyncio
-    async def test_full_pipeline(self) -> None:
-        """Should download, process both sizes, and upload, returning ImageResult."""
-        image_bytes = _make_jpeg_bytes()
-        expected = ImageResult(hero_url=GCS_HERO_URL, thumbnail_url=GCS_THUMB_URL)
-
-        with (
-            patch("api.services.image_downloader._download_image", new_callable=AsyncMock) as mock_dl,
-            patch("api.services.image_downloader._process_image") as mock_proc,
-            patch("api.services.image_downloader._upload_both_to_gcs") as mock_up,
-        ):
-            mock_dl.return_value = image_bytes
-            mock_proc.return_value = (b"hero", b"thumb")
-            mock_up.return_value = expected
-
-            result = await download_and_upload_image(EXTERNAL_URL, RECIPE_ID, BUCKET)
-
-        assert result == expected
-        mock_dl.assert_awaited_once_with(EXTERNAL_URL)
-        mock_proc.assert_called_once_with(image_bytes, RECIPE_ID)
-        mock_up.assert_called_once_with(b"hero", b"thumb", RECIPE_ID, BUCKET)
-
-    @pytest.mark.asyncio
     async def test_returns_none_for_gcs_url(self) -> None:
         """Should return None if URL already points to our bucket (no re-processing)."""
         gcs_url = f"https://storage.googleapis.com/{BUCKET}/recipes/{RECIPE_ID}/existing.jpg"

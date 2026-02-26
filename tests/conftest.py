@@ -1,6 +1,7 @@
 """Pytest configuration and fixtures."""
 
 import os
+from collections.abc import Callable, Generator
 
 from dotenv import load_dotenv
 
@@ -15,8 +16,50 @@ os.environ.setdefault("GCS_BUCKET_NAME", "test-bucket")
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", "test-project")
 
 import pytest  # noqa: E402
+from fastapi import FastAPI  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
 
+from api.auth.models import AuthenticatedUser  # noqa: E402
 from api.models.recipe import Recipe  # noqa: E402
+
+type TestClientFactory = Callable[..., Generator[TestClient]]
+
+
+def _create_test_client(
+    app: FastAPI,
+    *,
+    uid: str = "test_user",
+    email: str = "test@example.com",
+    household_id: str | None = "test_household",
+    role: str = "member",
+) -> Generator[TestClient]:
+    """Create a TestClient with mocked Firebase auth."""
+    from api.auth.firebase import require_auth
+
+    async def mock_auth() -> AuthenticatedUser:
+        return AuthenticatedUser(uid=uid, email=email, household_id=household_id, role=role)
+
+    app.dependency_overrides[require_auth] = mock_auth
+    with TestClient(app) as c:
+        yield c
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def create_test_client() -> TestClientFactory:
+    """Factory fixture for creating TestClients with mocked Firebase auth.
+
+    Usage in per-file fixtures::
+
+        @pytest.fixture
+        def client(create_test_client) -> Generator[TestClient]:
+            yield from create_test_client(app)
+
+        @pytest.fixture
+        def superuser_client(create_test_client) -> Generator[TestClient]:
+            yield from create_test_client(app, role="superuser")
+    """
+    return _create_test_client
 
 
 @pytest.fixture
