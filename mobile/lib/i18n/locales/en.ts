@@ -736,7 +736,11 @@ const en = {
       seafoodDesc: 'Household eats fish and shellfish',
       meatDishes: 'Meat Dishes',
       mixedHousehold: 'Mixed Household',
+      mixedHouseholdHelp:
+        'Controls how the AI splits portions when enhancing a recipe. For example, if you have 4 servings and set 2 meat portions, the AI will keep meat in 2 servings and create vegetarian alternatives for the other 2 using your ingredient replacements.',
       dietType: 'Diet',
+      dietTypeHelp:
+        'When you enhance a recipe with AI, it will adjust the recipe to match this preference — for example, replacing meat with plant-based alternatives for a vegetarian household, or removing all animal products for vegan.',
       dietNoRestrictions: 'No restrictions',
       dietNoRestrictionsDesc: 'Eats everything including meat and fish',
       dietPescatarian: 'Pescatarian',

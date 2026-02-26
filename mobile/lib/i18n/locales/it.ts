@@ -733,7 +733,11 @@ const it: Translations = {
       seafoodDesc: 'Il nucleo familiare mangia pesce e frutti di mare',
       meatDishes: 'Piatti di carne',
       mixedHousehold: 'Nucleo misto',
+      mixedHouseholdHelp:
+        "Controlla come l'AI suddivide le porzioni quando migliora una ricetta. Ad esempio, con 4 porzioni e 2 porzioni di carne, l'AI manterrà la carne in 2 porzioni e creerà alternative vegetariane per le altre 2 usando le tue sostituzioni.",
       dietType: 'Dieta',
+      dietTypeHelp:
+        "Quando migliori una ricetta con l'AI, verrà adattata a questa preferenza — ad esempio sostituendo la carne con alternative vegetali per un nucleo vegetariano, o eliminando tutti i prodotti animali per vegano.",
       dietNoRestrictions: 'Nessuna restrizione',
       dietNoRestrictionsDesc: 'Mangia tutto, inclusi carne e pesce',
       dietPescatarian: 'Pescatariano',

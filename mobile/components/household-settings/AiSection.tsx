@@ -3,6 +3,7 @@ import type { DropdownOption } from '@/components';
 import {
   ContentCard,
   DropdownPicker,
+  HelpTip,
   IconButton,
   Section,
   SectionLabel,
@@ -159,7 +160,9 @@ export const AiSection = ({
           title={t('householdSettings.dietary.title')}
           spacing={0}
         />
-        <SectionLabel text={t('householdSettings.dietary.dietType')} />
+        <HelpTip helpText={t('householdSettings.dietary.dietTypeHelp')}>
+          <SectionLabel text={t('householdSettings.dietary.dietType')} />
+        </HelpTip>
         <DropdownPicker
           options={dietTypeOptions}
           value={dietary.diet_type ?? 'no_restrictions'}
@@ -178,9 +181,13 @@ export const AiSection = ({
         {/* Mixed Household — only for no_restrictions */}
         {isMixedEligible && (
           <>
-            <SectionLabel
-              text={t('householdSettings.dietary.mixedHousehold')}
-            />
+            <HelpTip
+              helpText={t('householdSettings.dietary.mixedHouseholdHelp')}
+            >
+              <SectionLabel
+                text={t('householdSettings.dietary.mixedHousehold')}
+              />
+            </HelpTip>
             <View
               style={{
                 backgroundColor: colors.surface.subtle,

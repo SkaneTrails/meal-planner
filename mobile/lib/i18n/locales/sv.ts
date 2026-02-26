@@ -720,7 +720,11 @@ const sv: Translations = {
       seafoodDesc: 'Hushållet äter fisk och skaldjur',
       meatDishes: 'Kötträtter',
       mixedHousehold: 'Blandat hushåll',
+      mixedHouseholdHelp:
+        'Styr hur AI:n fördelar portioner när ett recept förbättras. Om du till exempel har 4 portioner och sätter 2 köttportioner behåller AI:n kött i 2 portioner och skapar vegetariska alternativ för de andra 2 med hjälp av dina ingrediensersättningar.',
       dietType: 'Kost',
+      dietTypeHelp:
+        'När du förbättrar ett recept med AI anpassas det efter denna inställning — till exempel ersätts kött med växtbaserade alternativ för ett vegetariskt hushåll, eller alla animaliska produkter tas bort för veganskt.',
       dietNoRestrictions: 'Inga begränsningar',
       dietNoRestrictionsDesc: 'Äter allt inklusive kött och fisk',
       dietPescatarian: 'Pescetarian',
