@@ -36,7 +36,6 @@ import {
   accentUnderlineStyle,
   dotSize,
   fontSize,
-  fontWeight,
   letterSpacing,
   lineHeight,
   spacing,
@@ -882,7 +881,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
         <Text
           style={{
             fontSize: fontSize['3xl'],
-            fontWeight: fontWeight.bold,
+            fontFamily: fonts.bodyBold,
             color: colors.text.inverse,
             marginBottom: spacing.sm,
             letterSpacing: letterSpacing.normal,
@@ -912,7 +911,13 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
                 size={16}
                 color={colors.gray[500]}
               />
-              <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.body,
+                  color: colors.gray[600],
+                }}
+              >
                 {t('selectRecipe.random.time', { count: recipe.total_time })}
               </Text>
             </View>
@@ -930,7 +935,13 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
                 size={16}
                 color={colors.gray[500]}
               />
-              <Text style={{ fontSize: fontSize.md, color: colors.gray[600] }}>
+              <Text
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.body,
+                  color: colors.gray[600],
+                }}
+              >
                 {t('selectRecipe.random.servings', { count: recipe.servings })}
               </Text>
             </View>
@@ -968,7 +979,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
               <Text
                 style={{
                   fontSize: fontSize.sm,
-                  fontWeight: fontWeight.semibold,
+                  fontFamily: fonts.bodySemibold,
                   color:
                     recipe.diet_label === 'veggie'
                       ? colors.diet.veggie.text
@@ -988,7 +999,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
             <Text
               style={{
                 fontSize: fontSize.md,
-                fontWeight: fontWeight.semibold,
+                fontFamily: fonts.bodySemibold,
                 color: colors.gray[600],
                 marginBottom: spacing.xs,
               }}
@@ -1000,6 +1011,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
             <Text
               style={{
                 fontSize: fontSize.base,
+                fontFamily: fonts.body,
                 color: colors.gray[500],
                 lineHeight: lineHeight.sm,
               }}

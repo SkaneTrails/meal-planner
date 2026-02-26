@@ -30,6 +30,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
+import { HelpTipIcon } from './HelpTip';
 import type { FrameSegment } from './TerminalFrame';
 import { TerminalFrame } from './TerminalFrame';
 import { ThemeIcon } from './ThemeIcon';
@@ -60,6 +61,8 @@ interface ContentCardProps {
   highlighted?: boolean;
   /** Override padding. Default: `spacing.md` for card, `spacing.md` for surface. */
   padding?: number;
+  /** When set, renders an ⓘ icon in the card header that opens a help-tip popup. */
+  tooltip?: string;
   /** Layout event forwarded to the outer View. */
   onLayout?: (event: LayoutChangeEvent) => void;
   /** Outer wrapper style applied in both modes. */
@@ -78,6 +81,7 @@ export const ContentCard = ({
   card = true,
   highlighted = false,
   padding,
+  tooltip,
   onLayout,
   style,
 }: ContentCardProps) => {
@@ -114,16 +118,29 @@ export const ContentCard = ({
   /* ── Card variant ──────────────────────────────────────────── */
   if (chrome === 'flat') {
     return (
-      <TerminalFrame
-        label={label}
-        rightSegments={rightSegments}
-        variant={frameVariant}
-        padding={framePadding}
-        collapsed={collapsed}
-        style={style}
-      >
-        {children}
-      </TerminalFrame>
+      <View style={style}>
+        <TerminalFrame
+          label={label}
+          rightSegments={rightSegments}
+          variant={frameVariant}
+          padding={framePadding}
+          collapsed={collapsed}
+        >
+          {children}
+        </TerminalFrame>
+        {tooltip && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: spacing.md,
+              zIndex: 1,
+            }}
+          >
+            <HelpTipIcon helpText={tooltip} />
+          </View>
+        )}
+      </View>
     );
   }
 
@@ -200,7 +217,8 @@ export const ContentCard = ({
     );
   }
 
-  const hasHeader = !!label || (rightSegments && rightSegments.length > 0);
+  const hasHeader =
+    !!label || (rightSegments && rightSegments.length > 0) || !!tooltip;
 
   return (
     <View
@@ -293,6 +311,7 @@ export const ContentCard = ({
               })}
             </View>
           )}
+          {tooltip && <HelpTipIcon helpText={tooltip} />}
         </View>
       )}
       {children}

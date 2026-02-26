@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View, type ViewStyle } from 'react-native';
 import { ContentCard, Section } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
@@ -159,7 +159,13 @@ export const RecipeContent = ({
     recipe.changes_made.length > 0;
 
   return (
-    <View>
+    <View
+      style={
+        keepScreenOn && Platform.OS === 'web'
+          ? ({ userSelect: 'none' } as unknown as ViewStyle)
+          : undefined
+      }
+    >
       {/* Title (flat chrome only — full chrome shows title in hero) */}
       {chrome === 'flat' && (
         <Text
