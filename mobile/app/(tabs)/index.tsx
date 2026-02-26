@@ -195,6 +195,8 @@ const AddRecipeButton = ({ t, onPress }: { t: TFn; onPress: () => void }) => {
             onPress={onPress}
             hoverScale={1.01}
             pressScale={0.97}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.addRecipe.title')}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -251,6 +253,8 @@ const NextMealCard = ({
       onPress={onPress}
       hoverScale={1.01}
       pressScale={0.99}
+      accessibilityRole="button"
+      accessibilityLabel={nextMeal?.title ?? t('home.nextUp.planYourNextMeal')}
       style={{
         backgroundColor: colors.card.bg,
         borderRadius: borderRadius.md,

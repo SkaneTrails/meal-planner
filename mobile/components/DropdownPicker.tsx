@@ -57,6 +57,8 @@ export const DropdownPicker = <T extends string>({
           onPress={disabled ? undefined : () => setExpanded(true)}
           disabled={disabled}
           testID={testID ? `${testID}-collapsed` : undefined}
+          accessibilityRole="button"
+          accessibilityLabel={selected?.label}
           style={({ pressed }) => ({
             flexDirection: 'row',
             alignItems: 'center',
@@ -108,6 +110,9 @@ export const DropdownPicker = <T extends string>({
             key={option.value}
             onPress={() => handleSelect(option.value)}
             testID={testID ? `${testID}-option-${option.value}` : undefined}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: isSelected }}
+            accessibilityLabel={option.label}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',

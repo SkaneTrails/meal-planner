@@ -771,6 +771,8 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
     return (
       <Pressable
         onPress={() => onSelect(recipe.id)}
+        accessibilityRole="button"
+        accessibilityLabel={recipe.title}
         style={({ pressed }) => ({
           backgroundColor: colors.mealPlan.slotBg,
           borderRadius: borderRadius.sm,
@@ -860,6 +862,8 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
   return (
     <Pressable
       onPress={() => onSelect(recipe.id)}
+      accessibilityRole="button"
+      accessibilityLabel={recipe.title}
       style={({ pressed }) => ({
         backgroundColor: colors.glass.card,
         borderRadius: borderRadius.lg,
@@ -1240,6 +1244,8 @@ const CopyContent = ({
           <Pressable
             key={meal.key}
             onPress={() => handleCopyMeal(meal.recipe?.id, meal.customText)}
+            accessibilityRole="button"
+            accessibilityLabel={meal.recipe?.title || meal.customText}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',

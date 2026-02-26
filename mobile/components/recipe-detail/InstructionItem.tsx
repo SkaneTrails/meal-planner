@@ -113,6 +113,9 @@ export const InstructionItem = ({
   return (
     <Pressable
       onPress={onToggle}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isCompleted }}
+      accessibilityLabel={`${displayNumber}. ${content}`}
       style={({ pressed }) => ({
         flexDirection: 'row',
         alignItems: 'flex-start',

@@ -100,6 +100,8 @@ export const TerminalFrame = ({
       return (
         <Pressable
           onPress={rightSegments?.find((s) => s.onPress)?.onPress}
+          accessibilityRole="button"
+          accessibilityLabel={label}
           style={[
             {
               flexDirection: 'row',
@@ -237,6 +239,8 @@ export const TerminalFrame = ({
     return (
       <Pressable
         onPress={rightSegments?.find((s) => s.onPress)?.onPress}
+        accessibilityRole="button"
+        accessibilityLabel={label}
         style={[{ flexDirection: 'row', alignItems: 'center' }, style]}
       >
         {label && (

@@ -112,6 +112,8 @@ const StatCard = ({
       onPress={onPress}
       hoverScale={1.03}
       pressScale={0.97}
+      accessibilityRole="button"
+      accessibilityLabel={label}
       style={{
         flex: 1,
         backgroundColor: colors.statsCard.bg,

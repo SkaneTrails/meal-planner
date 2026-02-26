@@ -30,6 +30,9 @@ export const RadioGroup = <T extends string>({
             key={option.value}
             onPress={() => onChange(option.value)}
             disabled={disabled}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: isSelected }}
+            accessibilityLabel={option.label}
             style={({ pressed }) => ({
               flexDirection: 'row',
               alignItems: 'center',

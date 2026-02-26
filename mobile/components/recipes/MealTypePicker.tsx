@@ -68,6 +68,9 @@ export const MealTypePicker = ({
                 hapticSelection();
                 onToggle(meal);
               }}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: isSelected }}
+              accessibilityLabel={t(`labels.meal.${meal}`)}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -113,6 +116,8 @@ export const MealTypePicker = ({
             hapticLight();
             onClear();
           }}
+          accessibilityRole="button"
+          accessibilityLabel={t('labels.diet.all')}
           style={{
             alignSelf: 'center',
             paddingVertical: spacing.sm,

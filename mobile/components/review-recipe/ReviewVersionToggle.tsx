@@ -39,6 +39,9 @@ export const ReviewVersionToggle = ({
       >
         <Pressable
           onPress={() => onSelectTab('original')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: selectedTab === 'original' }}
+          accessibilityLabel={t('reviewRecipe.original')}
           style={{
             flex: 1,
             paddingVertical: spacing.md,
@@ -61,6 +64,9 @@ export const ReviewVersionToggle = ({
         </Pressable>
         <Pressable
           onPress={() => onSelectTab('enhanced')}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: selectedTab === 'enhanced' }}
+          accessibilityLabel={t('reviewRecipe.enhanced')}
           style={{
             flex: 1,
             paddingVertical: spacing.md,

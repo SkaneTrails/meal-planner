@@ -95,6 +95,8 @@ export class ErrorBoundary extends Component<
         </Text>
         <Pressable
           onPress={this.handleReload}
+          accessibilityRole="button"
+          accessibilityLabel="Reload App"
           style={{
             backgroundColor: FALLBACK.primary,
             paddingHorizontal: spacing['2xl'],

@@ -68,6 +68,9 @@ const ChipPicker = <T,>({
             <Pressable
               key={labelKey}
               onPress={() => onSelect(value)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: isSelected }}
+              accessibilityLabel={t(labelKey)}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',
