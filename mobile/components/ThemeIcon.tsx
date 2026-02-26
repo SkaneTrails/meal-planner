@@ -75,6 +75,10 @@ const BASE_GLYPHS: Record<string, TerminalGlyph> = {
   shuffle: { char: '\u{1F500}', emoji: true }, // 🔀
   'reorder-three': { char: '\u2261' }, // ≡
   'swap-vertical': { char: '\u2195', emoji: true }, // ↕
+  'swap-horizontal': { char: '\u2194', emoji: true }, // ↔
+  refresh: { char: '\u{1F504}', emoji: true }, // 🔄
+  'person-add': { char: '\u{1F464}', emoji: true }, // 👤
+  construct: { char: '\u{1F6E0}', emoji: true }, // 🛠
 
   // Status & indicators
   checkmark: { char: '\u2713' }, // ✓
@@ -130,6 +134,7 @@ const BASE_GLYPHS: Record<string, TerminalGlyph> = {
   list: { char: '\u2630' }, // ☰
   'chatbubble-ellipses': { char: '\u{1F4AC}', emoji: true }, // 💬
   'ellipsis-horizontal': { char: '\u22EF' }, // ⋯
+  'ellipsis-horizontal-circle': { char: '\u22EF' }, // ⋯
 };
 
 // ── Overrides (variant-specific glyphs that differ from the base) ──────
