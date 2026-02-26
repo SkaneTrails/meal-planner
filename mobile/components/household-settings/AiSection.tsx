@@ -353,31 +353,41 @@ const ReplacementRow = ({
           marginBottom: spacing.sm,
         }}
       >
-        <ThemedTextInput
-          value={row.original}
-          onChangeText={(v) => onUpdate(index, 'original', v)}
-          disabled={disabled}
-          placeholder={t('householdSettings.dietary.originalPlaceholder')}
-          maxLength={30}
-          testID={`replacement-original-${index}`}
-        />
-        <Text
+        <View
           style={{
-            color: colors.content.subtitle,
-            fontSize: fontSize.md,
-            fontFamily: fonts.body,
+            flex: 1,
+            minWidth: 0,
+            flexDirection: 'row',
+            gap: spacing.sm,
+            alignItems: 'center',
           }}
         >
-          →
-        </Text>
-        <ThemedTextInput
-          value={row.replacement}
-          onChangeText={(v) => onUpdate(index, 'replacement', v)}
-          disabled={disabled}
-          placeholder={t('householdSettings.dietary.replacementPlaceholder')}
-          maxLength={30}
-          testID={`replacement-replacement-${index}`}
-        />
+          <ThemedTextInput
+            value={row.original}
+            onChangeText={(v) => onUpdate(index, 'original', v)}
+            disabled={disabled}
+            placeholder={t('householdSettings.dietary.originalPlaceholder')}
+            maxLength={30}
+            testID={`replacement-original-${index}`}
+          />
+          <Text
+            style={{
+              color: colors.content.subtitle,
+              fontSize: fontSize.md,
+              fontFamily: fonts.body,
+            }}
+          >
+            →
+          </Text>
+          <ThemedTextInput
+            value={row.replacement}
+            onChangeText={(v) => onUpdate(index, 'replacement', v)}
+            disabled={disabled}
+            placeholder={t('householdSettings.dietary.replacementPlaceholder')}
+            maxLength={30}
+            testID={`replacement-replacement-${index}`}
+          />
+        </View>
         <IconButton
           icon="trash-outline"
           onPress={() => onRemove(index)}
