@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, Text, View, type ViewStyle } from 'react-native';
 import { ContentCard, Section } from '@/components';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
@@ -162,7 +162,7 @@ export const RecipeContent = ({
     <View
       style={
         keepScreenOn && Platform.OS === 'web'
-          ? { userSelect: 'none' as const }
+          ? ({ userSelect: 'none' } as unknown as ViewStyle)
           : undefined
       }
     >
