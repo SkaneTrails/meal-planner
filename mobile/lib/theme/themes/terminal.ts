@@ -65,7 +65,7 @@ const MONO = isWeb
       default: 'monospace',
     }) ?? 'monospace');
 
-const EMOJI = 'NotoEmoji_400Regular';
+const EMOJI = isWeb ? '"Noto Emoji", sans-serif' : 'NotoEmoji_400Regular';
 
 const fonts: FontFamilyTokens = {
   display: MONO,
@@ -118,6 +118,7 @@ const buttonDisplay: ButtonDisplayConfig = {
 export const terminalTheme: ThemeDefinition = {
   id: 'terminal',
   name: 'Terminal CRT',
+  pickerSwatch: { type: 'text', label: '>_' },
   colors: terminalColors,
   fonts,
   borderRadius: deriveFlatRadii(borderRadius),

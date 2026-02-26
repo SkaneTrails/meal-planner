@@ -127,6 +127,7 @@ const buttonDisplay: ButtonDisplayConfig = {
 export const bubblegumTheme: ThemeDefinition = {
   id: 'bubblegum',
   name: "'90s Bubblegum",
+  pickerSwatch: { type: 'text', label: '\u{1FAE7}' },
   colors: bubblegumColors,
   fonts,
   borderRadius: shrinkRadii(borderRadius, 0.1),

@@ -163,12 +163,24 @@ export type LayoutChrome = 'flat' | 'full';
  */
 export type ToggleStyle = 'switch' | 'checkbox';
 
+/**
+ * Swatch shown next to the theme name in the picker dropdown.
+ *
+ * - `color`: renders a small filled circle (e.g. beige dot for Elegant).
+ * - `text`:  renders a short string or emoji (e.g. 🫧 or >_).
+ */
+export type PickerSwatch =
+  | { readonly type: 'color'; readonly value: string }
+  | { readonly type: 'text'; readonly label: string };
+
 /** A complete set of design tokens that fully describes one visual theme. */
 export interface ThemeDefinition {
   /** Unique registry key — used for storage and lookup. */
   id: string;
   /** Human-readable display name — shown in the theme picker. */
   name: string;
+  /** Visual swatch displayed beside the name in the theme picker. */
+  pickerSwatch: PickerSwatch;
   colors: ColorTokens;
   fonts: FontFamilyTokens;
   borderRadius: BorderRadiusTokens;

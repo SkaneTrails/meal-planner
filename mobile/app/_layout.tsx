@@ -89,7 +89,7 @@ const AppContent = () => {
           />
           <Stack.Screen
             name="(tabs)"
-            options={{ headerShown: false, animation: 'fade' }}
+            options={{ title: 'Aroma', headerShown: false, animation: 'fade' }}
           />
           <Stack.Screen
             name="recipe/[id]"

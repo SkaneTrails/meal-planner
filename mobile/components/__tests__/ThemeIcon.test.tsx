@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { ThemeIcon, TERMINAL_ICONS } from '../ThemeIcon';
+import {
+  ThemeIcon,
+  BASE_GLYPHS,
+  GLYPH_OVERRIDES,
+  resolveGlyph,
+} from '../ThemeIcon';
 
 const useThemeSpy = vi.fn();
 
@@ -37,10 +42,7 @@ describe('ThemeIcon — full chrome', () => {
   it('does not render a terminal glyph', () => {
     render(<ThemeIcon name="home" size={24} color="#000" />);
 
-    // The global mock replaces Ionicons with () => null, so the
-    // terminal glyph character must NOT appear — proving the Ionicons
-    // path was taken instead of the flat-chrome Text path.
-    const glyph = TERMINAL_ICONS.home!;
+    const glyph = BASE_GLYPHS.home;
     expect(screen.queryByText(glyph.char)).toBeNull();
   });
 });
@@ -55,7 +57,7 @@ describe('ThemeIcon — flat chrome', () => {
   it('renders an emoji glyph for a mapped emoji icon', () => {
     render(<ThemeIcon name="home" size={24} color="#0F0" />);
 
-    const glyph = TERMINAL_ICONS.home!;
+    const glyph = BASE_GLYPHS.home;
     expect(glyph.emoji).toBe(true);
     expect(screen.getByText(glyph.char)).toBeTruthy();
   });
@@ -63,7 +65,7 @@ describe('ThemeIcon — flat chrome', () => {
   it('renders a non-emoji glyph for a mapped symbol icon', () => {
     render(<ThemeIcon name="chevron-forward" size={16} color="#0F0" />);
 
-    const glyph = TERMINAL_ICONS['chevron-forward']!;
+    const glyph = BASE_GLYPHS['chevron-forward'];
     expect(glyph.emoji).toBeUndefined();
     expect(screen.getByText(glyph.char)).toBeTruthy();
   });
@@ -101,38 +103,69 @@ describe('ThemeIcon — flat chrome', () => {
       />,
     );
 
-    const glyph = TERMINAL_ICONS.close!;
+    const glyph = BASE_GLYPHS.close;
     expect(screen.getByText(glyph.char)).toBeTruthy();
+  });
+});
+
+// ── resolveGlyph — suffix stripping ─────────────────────────────────
+
+describe('resolveGlyph', () => {
+  it('resolves a base glyph by exact stem', () => {
+    const glyph = resolveGlyph('home' as never);
+    expect(glyph.char).toBe(BASE_GLYPHS.home.char);
+  });
+
+  it('strips -outline suffix and resolves base glyph', () => {
+    const glyph = resolveGlyph('flame-outline' as never);
+    expect(glyph.char).toBe(BASE_GLYPHS.flame.char);
+  });
+
+  it('strips -outline suffix from compound name', () => {
+    const glyph = resolveGlyph('alert-circle-outline' as never);
+    expect(glyph.char).toBe(BASE_GLYPHS['alert-circle'].char);
+  });
+
+  it('uses override when one exists', () => {
+    const glyph = resolveGlyph('heart-outline' as never);
+    expect(glyph.char).toBe(GLYPH_OVERRIDES['heart-outline']!.char);
+    expect(glyph.char).not.toBe(BASE_GLYPHS.heart.char);
+  });
+
+  it('returns fallback for completely unknown icons', () => {
+    const glyph = resolveGlyph('zzz-nonexistent' as never);
+    expect(glyph.char).toBe('\u25AA');
   });
 });
 
 // ── Icon map sanity checks ───────────────────────────────────────────
 
-describe('TERMINAL_ICONS map', () => {
-  it('maps all tab navigation icons', () => {
-    const tabIcons = [
-      'home', 'home-outline', 'book', 'book-outline',
-      'calendar', 'calendar-outline', 'cart', 'cart-outline',
-    ] as const;
-
-    for (const name of tabIcons) {
-      expect(TERMINAL_ICONS[name]).toBeDefined();
+describe('BASE_GLYPHS map', () => {
+  it('covers all tab navigation icon stems', () => {
+    const tabStems = ['home', 'book', 'calendar', 'cart'] as const;
+    for (const stem of tabStems) {
+      expect(BASE_GLYPHS[stem], `${stem} missing from map`).toBeDefined();
     }
   });
 
-  it('maps grocery screen icons', () => {
-    const groceryIcons = [
-      'swap-vertical', 'reorder-three', 'trash-outline',
-      'create-outline', 'calendar-outline', 'checkmark',
+  it('covers grocery screen icon stems', () => {
+    const groceryStems = [
+      'swap-vertical', 'reorder-three', 'trash',
+      'create', 'calendar', 'checkmark',
     ] as const;
-
-    for (const name of groceryIcons) {
-      expect(TERMINAL_ICONS[name], `${name} missing from map`).toBeDefined();
+    for (const stem of groceryStems) {
+      expect(BASE_GLYPHS[stem], `${stem} missing from map`).toBeDefined();
     }
   });
 
   it('has non-empty char for every entry', () => {
-    for (const [name, glyph] of Object.entries(TERMINAL_ICONS)) {
+    for (const [name, glyph] of Object.entries(BASE_GLYPHS)) {
+      expect(glyph.char.length, `${name} has empty char`).toBeGreaterThan(0);
+    }
+  });
+
+  it('has non-empty char for every override', () => {
+    for (const [name, glyph] of Object.entries(GLYPH_OVERRIDES)) {
       expect(glyph.char.length, `${name} has empty char`).toBeGreaterThan(0);
     }
   });
