@@ -153,6 +153,9 @@ export const EditRecipeModal = ({
                 <Pressable
                   key={value}
                   onPress={() => setEditVisibility(value)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={translatedLabel}
                   style={({ pressed }) => ({
                     flex: 1,
                     alignItems: 'center',

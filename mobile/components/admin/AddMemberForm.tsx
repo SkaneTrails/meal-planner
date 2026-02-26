@@ -77,6 +77,9 @@ export const AddMemberForm = ({
           <Pressable
             key={role}
             onPress={() => onRoleChange(role)}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: newMemberRole === role }}
+            accessibilityLabel={t(`labels.role.${role}`)}
             style={{
               flex: 1,
               padding: spacing.sm,

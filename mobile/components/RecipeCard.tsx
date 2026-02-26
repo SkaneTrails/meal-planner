@@ -102,6 +102,8 @@ export const RecipeCard = ({
           onPress={onPress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
+          accessibilityRole="button"
+          accessibilityLabel={recipe.title}
           style={{ marginBottom: spacing.sm }}
         >
           <Animated.View
@@ -197,6 +199,8 @@ export const RecipeCard = ({
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        accessibilityRole="button"
+        accessibilityLabel={recipe.title}
         style={{ marginBottom: spacing['md-lg'] }}
       >
         <Animated.View
@@ -387,6 +391,8 @@ export const RecipeCard = ({
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
+        accessibilityRole="button"
+        accessibilityLabel={recipe.title}
       >
         <Animated.View
           style={{
@@ -565,6 +571,8 @@ export const RecipeCard = ({
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      accessibilityRole="button"
+      accessibilityLabel={recipe.title}
     >
       <Animated.View
         style={{

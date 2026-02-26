@@ -239,6 +239,9 @@ export const GroceryListView = ({
   }) => (
     <Pressable
       onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityState={{ expanded: !collapsed }}
+      accessibilityLabel={label}
       style={{
         flexDirection: 'row',
         alignItems: 'center',

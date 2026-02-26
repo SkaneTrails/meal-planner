@@ -295,6 +295,9 @@ export default function RecipesScreen() {
               setSortBy(option.value as SortOption);
               setShowSortPicker(false);
             }}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: sortBy === option.value }}
+            accessibilityLabel={option.label}
             style={{
               flexDirection: 'row',
               alignItems: 'center',

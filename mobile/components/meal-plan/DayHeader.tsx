@@ -50,6 +50,8 @@ export const DayHeader = ({
       <Pressable
         onPress={onCollapse}
         disabled={!onCollapse}
+        accessibilityRole="button"
+        accessibilityLabel={t('mealPlan.today')}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -103,7 +105,11 @@ export const DayHeader = ({
           }}
         >
           {!isEditing && visibility.showDayNotes && (
-            <Pressable onPress={onStartEdit}>
+            <Pressable
+              onPress={onStartEdit}
+              accessibilityRole="button"
+              accessibilityLabel={note ? note : t('mealPlan.addNote')}
+            >
               {note ? (
                 <View
                   style={{

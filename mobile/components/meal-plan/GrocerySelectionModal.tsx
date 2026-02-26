@@ -236,6 +236,9 @@ const GroceryMealItem = ({
     >
       <Pressable
         onPress={onToggle}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: isSelected }}
+        accessibilityLabel={title}
         style={{ flexDirection: 'row', alignItems: 'center' }}
       >
         <View

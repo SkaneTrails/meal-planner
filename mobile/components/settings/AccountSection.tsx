@@ -114,6 +114,7 @@ export const SettingsNavLink = ({
       pressScale={0.98}
       disableAnimation={isLoading || disabled}
       accessibilityRole="button"
+      accessibilityLabel={title}
     >
       <View
         style={{

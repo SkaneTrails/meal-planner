@@ -35,6 +35,8 @@ export default function SignInScreen() {
       <FullScreenLoading background="animated">
         <Pressable
           onPress={handleSignOut}
+          accessibilityRole="button"
+          accessibilityLabel={t('signIn.signOut')}
           style={({ pressed }) => ({
             position: 'absolute',
             bottom: 48,
@@ -128,6 +130,8 @@ export default function SignInScreen() {
         {/* Sign In Button - Glass style */}
         <Pressable
           onPress={signIn}
+          accessibilityRole="button"
+          accessibilityLabel={t('signIn.continueWithGoogle')}
           style={({ pressed }) => ({
             backgroundColor: pressed
               ? colors.glass.buttonPressed
@@ -177,6 +181,8 @@ export default function SignInScreen() {
         </Text>
         <Pressable
           onPress={handleSignOut}
+          accessibilityRole="button"
+          accessibilityLabel={t('signIn.signOut')}
           style={({ pressed }) => ({
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.sm,

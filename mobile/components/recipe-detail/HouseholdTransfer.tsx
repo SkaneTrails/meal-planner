@@ -52,6 +52,9 @@ export const HouseholdTransfer = ({
               key={household.id}
               onPress={() => !isCurrentHousehold && onTransfer(household.id)}
               disabled={isCurrentHousehold || isTransferring}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: isCurrentHousehold }}
+              accessibilityLabel={household.name}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'center',

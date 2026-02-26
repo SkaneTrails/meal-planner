@@ -167,6 +167,9 @@ export const Section = ({
       {isCollapsible ? (
         <Pressable
           onPress={handleToggle}
+          accessibilityRole="button"
+          accessibilityState={{ expanded }}
+          accessibilityLabel={title}
           style={({ pressed }) => ({
             flexDirection: 'row',
             alignItems: 'center',

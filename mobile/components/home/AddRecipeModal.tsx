@@ -57,6 +57,8 @@ export const AddRecipeModal = ({
           onClose();
           router.push({ pathname: '/add-recipe', params: { manual: 'true' } });
         }}
+        accessibilityRole="button"
+        accessibilityLabel={t('home.addRecipe.manualEntry')}
         style={({ pressed }) => ({
           flexDirection: 'row',
           alignItems: 'center',

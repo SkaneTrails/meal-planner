@@ -149,6 +149,8 @@ const InspirationCard = ({
       onPress={onPress}
       hoverScale={1.01}
       pressScale={0.99}
+      accessibilityRole="button"
+      accessibilityLabel={recipe.title}
       style={{ borderRadius: borderRadius.md, overflow: 'hidden' }}
     >
       <Image
@@ -223,7 +225,13 @@ const InspirationCardCrt = ({
   const { colors, fonts } = useTheme();
 
   return (
-    <AnimatedPressable onPress={onPress} hoverScale={1.01} pressScale={0.99}>
+    <AnimatedPressable
+      onPress={onPress}
+      hoverScale={1.01}
+      pressScale={0.99}
+      accessibilityRole="button"
+      accessibilityLabel={recipe.title}
+    >
       <Image
         source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
         style={{ width: '100%', height: 160 }}
@@ -307,6 +315,8 @@ const GetStartedFallback = ({
         onPress={onPress}
         hoverScale={1.01}
         pressScale={0.99}
+        accessibilityRole="button"
+        accessibilityLabel={t('home.getStarted.addFirstRecipe')}
         style={{
           backgroundColor: colors.glass.solid,
           borderRadius: borderRadius.md,

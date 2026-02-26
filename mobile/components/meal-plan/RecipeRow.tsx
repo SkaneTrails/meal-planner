@@ -38,6 +38,8 @@ export const RecipeRow = ({
     >
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={title}
         style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
       >
         <Image

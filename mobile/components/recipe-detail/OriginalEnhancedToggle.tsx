@@ -35,6 +35,9 @@ export const OriginalEnhancedToggle = ({
     >
       <Pressable
         onPress={showOriginal ? undefined : onToggle}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: showOriginal }}
+        accessibilityLabel={t('recipe.showOriginal')}
         style={{
           flex: 1,
           flexDirection: 'row',
@@ -63,6 +66,9 @@ export const OriginalEnhancedToggle = ({
       </Pressable>
       <Pressable
         onPress={showOriginal ? onToggle : undefined}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: !showOriginal }}
+        accessibilityLabel={t('recipe.showEnhanced')}
         style={{
           flex: 1,
           flexDirection: 'row',

@@ -162,6 +162,9 @@ export const FilterChips = ({
               hapticLight();
               onLibraryScopeChange('all');
             }}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: libraryScope === 'all' }}
+            accessibilityLabel={t('recipes.scopeAll')}
             style={{
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.xs,
@@ -187,6 +190,9 @@ export const FilterChips = ({
               hapticLight();
               onLibraryScopeChange('mine');
             }}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: libraryScope === 'mine' }}
+            accessibilityLabel={t('recipes.scopeMine')}
             style={{
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.xs,
@@ -216,6 +222,9 @@ export const FilterChips = ({
           }}
           hoverScale={1.05}
           pressScale={0.95}
+          accessibilityRole="radio"
+          accessibilityState={{ selected: !dietFilter && !showFavoritesOnly }}
+          accessibilityLabel={t('labels.diet.all')}
           style={{
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.xs,
@@ -252,6 +261,9 @@ export const FilterChips = ({
             }}
             hoverScale={1.05}
             pressScale={0.95}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: dietFilter === diet }}
+            accessibilityLabel={t(`labels.diet.${diet}`)}
             style={{
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.xs,
@@ -293,6 +305,9 @@ export const FilterChips = ({
           }}
           hoverScale={1.05}
           pressScale={0.95}
+          accessibilityRole="button"
+          accessibilityState={{ selected: showFavoritesOnly }}
+          accessibilityLabel={t('recipes.favorites')}
           style={{
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.xs,
@@ -333,6 +348,12 @@ export const FilterChips = ({
           }}
           hoverScale={1.05}
           pressScale={0.95}
+          accessibilityRole="button"
+          accessibilityLabel={
+            mealFilters.length > 0
+              ? t('recipes.mealTypeCount', { count: mealFilters.length })
+              : t('recipes.mealType')
+          }
           style={{
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.xs,
@@ -377,6 +398,8 @@ export const FilterChips = ({
           }}
           hoverScale={1.05}
           pressScale={0.95}
+          accessibilityRole="button"
+          accessibilityLabel={`${t('recipes.sort')}: ${sortOptions.find((o) => o.value === sortBy)?.label}`}
           style={{
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.xs,

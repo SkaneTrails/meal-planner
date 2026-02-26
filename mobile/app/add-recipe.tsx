@@ -186,6 +186,8 @@ export default function AddRecipeScreen() {
                 : undefined
             }
             disabled={aiEnabled}
+            accessibilityRole="button"
+            accessibilityLabel={t('addRecipe.enhanceWithAI')}
           >
             <ContentCard
               cardStyle={{

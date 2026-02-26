@@ -208,6 +208,8 @@ export const ImportRecipeModal = ({
               : undefined
           }
           disabled={aiEnabled}
+          accessibilityRole="button"
+          accessibilityLabel={t('addRecipe.enhanceWithAI')}
         >
           <View
             style={{

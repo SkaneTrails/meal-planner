@@ -132,6 +132,8 @@ export const GeneralSection = ({
         ) : (
           <Pressable
             onPress={canEdit ? onStartEditName : undefined}
+            accessibilityRole="button"
+            accessibilityLabel={householdName ?? undefined}
             style={{
               flexDirection: 'row',
               alignItems: 'center',

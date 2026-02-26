@@ -113,6 +113,9 @@ export const GroceryItemRow = ({
 
       <Pressable
         onPress={handleToggle}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked }}
+        accessibilityLabel={quantity ? `${quantity} ${item.name}` : item.name}
         style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
       >
         <View

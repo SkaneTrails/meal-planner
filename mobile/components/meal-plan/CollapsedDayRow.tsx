@@ -64,6 +64,8 @@ export const CollapsedDayRow = ({
     return (
       <Pressable
         onPress={onExpand}
+        accessibilityRole="button"
+        accessibilityLabel={`${dayName} ${monthDay}, ${summary}`}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -153,6 +155,8 @@ export const CollapsedDayRow = ({
   return (
     <Pressable
       onPress={onExpand}
+      accessibilityRole="button"
+      accessibilityLabel={`${dayName} ${monthDay}, ${summary}`}
       style={[
         styles.container,
         {

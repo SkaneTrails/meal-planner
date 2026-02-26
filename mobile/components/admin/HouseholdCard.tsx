@@ -13,6 +13,8 @@ export const HouseholdCard = ({ household, onPress }: HouseholdCardProps) => {
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={household.name}
       style={({ pressed }) => ({
         backgroundColor: pressed ? colors.bgMid : colors.glass.card,
         borderRadius: borderRadius.lg,

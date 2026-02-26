@@ -62,6 +62,8 @@ export const WeekSelector = ({
                 hapticLight();
                 onJumpToToday();
               }}
+              accessibilityRole="button"
+              accessibilityLabel={t('mealPlan.jumpToToday')}
             >
               <Text
                 style={{

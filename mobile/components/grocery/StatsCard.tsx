@@ -122,6 +122,10 @@ const ItemsAtHomeIndicator = ({
       onPress={() => router.push('/settings')}
       hoverScale={1.02}
       pressScale={0.98}
+      accessibilityRole="button"
+      accessibilityLabel={t('grocery.hiddenAtHome', {
+        count: hiddenAtHomeCount,
+      })}
       style={{
         flexDirection: 'row',
         alignItems: 'center',

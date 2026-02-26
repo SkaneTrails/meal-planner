@@ -104,6 +104,9 @@ export const RecipeInstructions = ({
             <Pressable
               key={index}
               onPress={() => onToggleStep(index)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: isCompleted }}
+              accessibilityLabel={`${index + 1}. ${instruction}`}
               style={({ pressed }) => ({
                 flexDirection: 'row',
                 alignItems: 'flex-start',

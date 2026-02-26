@@ -50,6 +50,8 @@ export const MealCell = ({
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${t(MEAL_TYPE_LABEL_KEYS[mealType])}${displayText ? `: ${displayText}` : ''}`}
       style={{
         padding: 12,
         borderRadius: borderRadius.md,

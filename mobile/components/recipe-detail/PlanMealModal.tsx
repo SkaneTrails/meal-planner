@@ -156,6 +156,8 @@ export const PlanMealModal = ({
                       <Pressable
                         onPress={() => onPlanMeal(date, type)}
                         disabled={isPast}
+                        accessibilityRole="button"
+                        accessibilityLabel={translatedLabel}
                         style={({ pressed }) => ({
                           flex: 1,
                           backgroundColor: isTaken
@@ -205,6 +207,8 @@ export const PlanMealModal = ({
                       {isTaken && !isPast && (
                         <Pressable
                           onPress={() => onClearMeal(date, type)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('recipe.clearMeal')}
                           style={({ pressed }) => ({
                             backgroundColor: pressed
                               ? colors.error
