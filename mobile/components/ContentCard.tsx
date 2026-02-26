@@ -132,8 +132,9 @@ export const ContentCard = ({
           <View
             style={{
               position: 'absolute',
-              top: -1,
+              top: 0,
               right: spacing.md,
+              zIndex: 1,
             }}
           >
             <HelpTipIcon helpText={tooltip} />

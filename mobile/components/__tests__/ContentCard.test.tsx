@@ -265,4 +265,16 @@ describe('ContentCard — tooltip', () => {
     expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
     expect(screen.getByText('Body')).toBeDefined();
   });
+
+  it('renders tooltip in flat chrome mode', () => {
+    useThemeSpy.mockReturnValue(flatTheme());
+    render(
+      <ContentCard label="SETTINGS" tooltip="Flat chrome help">
+        <Text>Terminal content</Text>
+      </ContentCard>,
+    );
+    expect(screen.getByTestId('help-tip-toggle')).toBeDefined();
+    fireEvent.click(screen.getByTestId('help-tip-toggle'));
+    expect(screen.getByText('Flat chrome help')).toBeDefined();
+  });
 });
