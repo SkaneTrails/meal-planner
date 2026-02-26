@@ -498,8 +498,10 @@ const it: Translations = {
     noHousehold: 'Non fai ancora parte di un nucleo familiare',
     language: 'Lingua',
     languageDesc: 'Scegli la tua lingua preferita',
+    languageHelp:
+      "Questo influisce su pi\u00f9 della semplice traduzione. Quando migliora le ricette, l'AI adatter\u00e0 le unit\u00e0 di misura agli standard locali (es. grammi invece di cups), suggerir\u00e0 ingredienti comuni nei supermercati locali e adatter\u00e0 la terminologia culinaria al paese selezionato.",
     languageAiNote:
-      "L'AI tradurrà e adatterà le ricette alla lingua selezionata",
+      "L'AI tradurr\u00e0 e adatter\u00e0 le ricette alla lingua selezionata",
     chooseLanguageTitle: 'Scegli la tua lingua',
     chooseLanguageMessage:
       'Seleziona la lingua per il miglioramento delle ricette. Le ricette verranno tradotte e adattate a questa lingua.',
@@ -750,6 +752,8 @@ const it: Translations = {
       portionsOf: 'su {{total}} porzioni',
       meatNoneHint: 'Tutto vegetariano — si usano le sostituzioni',
       replacements: 'Sostituzioni ingredienti',
+      replacementsHelp:
+        "Definisci le sostituzioni che l'AI applicher\u00e0 quando migliora le ricette. Senza il toggle \u201csostituto carne\u201d, la sostituzione viene sempre applicata a tutte le porzioni. Con il toggle attivo, viene usata solo per le porzioni vegetariane in un nucleo misto \u2014 ad esempio, il pollo viene sostituito con Quorn solo nelle porzioni senza carne.",
       replacementsDesc: 'Sostituisci ingredienti nelle ricette AI',
       original: 'Originale',
       replacement: 'Sostituzione',
@@ -777,6 +781,7 @@ const it: Translations = {
     },
     equipment: {
       title: 'Attrezzatura cucina',
+      help: "L'AI adatter\u00e0 le istruzioni alla tua attrezzatura disponibile \u2014 ad esempio suggerendo tempi per la friggitrice ad aria al posto della frittura, o usando un robot da cucina per i passaggi di preparazione.",
       subtitle: 'Seleziona attrezzatura per ottimizzare le istruzioni',
       yourEquipment: 'La tua attrezzatura ({{count}})',
       categories: {

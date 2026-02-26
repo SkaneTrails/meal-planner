@@ -259,6 +259,7 @@ export default function HouseholdSettingsScreen() {
             {(!focusedSection || focusedSection === 'language') && (
               <ContentCard
                 label={t('settings.language')}
+                tooltip={t('settings.languageHelp')}
                 cardStyle={{
                   borderRadius: borderRadius.lg,
                   padding: spacing['md-lg'],
@@ -288,6 +289,7 @@ export default function HouseholdSettingsScreen() {
                     icon="language"
                     title={t('settings.language')}
                     subtitle={t('settings.languageDesc')}
+                    tooltip={t('settings.languageHelp')}
                     collapsible
                     expanded={expandedSections.has('language')}
                     onToggle={() => toggleSection('language')}

@@ -488,6 +488,8 @@ const sv: Translations = {
     noHousehold: 'Du tillhör inte något hushåll ännu',
     language: 'Språk',
     languageDesc: 'Välj ditt föredragna språk',
+    languageHelp:
+      'Detta påverkar mer än bara översättning. När recept förbättras anpassar AI:n måttenheter till lokala standarder (t.ex. dl istället för cups), föreslår ingredienser som finns i lokala matbutiker och anpassar matlagningsterminologin för det valda landet.',
     languageAiNote: 'AI översätter och anpassar recept till det valda språket',
     chooseLanguageTitle: 'Välj ditt språk',
     chooseLanguageMessage:
@@ -737,6 +739,8 @@ const sv: Translations = {
       portionsOf: 'av {{total}} portioner',
       meatNoneHint: 'Helt vegetariskt — ersättningar används',
       replacements: 'Ingrediensersättningar',
+      replacementsHelp:
+        'Definiera ingrediensbyten som AI:n tillämpar vid förbättring av recept. Utan \u201cköttsubstitut\u201d-växeln ersätts ingrediensen alltid i alla portioner. Med växeln påslagen används bytet bara för de vegetariska portionerna i ett blandat hushåll \u2014 till exempel ersätts kyckling med Quorn bara i de köttfria portionerna.',
       replacementsDesc: 'Ersätt ingredienser i AI-förbättrade recept',
       original: 'Original',
       replacement: 'Ersättning',
@@ -763,6 +767,7 @@ const sv: Translations = {
     },
     equipment: {
       title: 'Köksutrustning',
+      help: 'AI:n anpassar receptinstruktionerna efter din tillgängliga utrustning \u2014 föreslår till exempel tillagningstider för airfryer istället för frityrning, eller använder en matberedare för förberedelsesteget.',
       subtitle: 'Välj utrustning för att optimera receptinstruktioner',
       yourEquipment: 'Din utrustning ({{count}})',
       categories: {

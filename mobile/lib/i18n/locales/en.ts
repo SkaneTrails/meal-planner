@@ -497,6 +497,8 @@ const en = {
     noHousehold: 'You are not part of a household yet',
     language: 'Language',
     languageDesc: 'Choose your preferred language',
+    languageHelp:
+      'This affects more than just translation. When enhancing recipes, the AI will adapt measurements to local standards (e.g. dl instead of cups), suggest ingredients commonly found in local supermarkets, and adjust cooking terminology for the selected country.',
     languageAiNote:
       'AI will translate and adapt recipes to the selected language',
     chooseLanguageTitle: 'Choose Your Language',
@@ -753,6 +755,8 @@ const en = {
       portionsOf: 'of {{total}} portions',
       meatNoneHint: 'All vegetarian — replacements will be used',
       replacements: 'Ingredient Replacements',
+      replacementsHelp:
+        'Define ingredient swaps the AI will apply when enhancing recipes. Without the "meat substitute" toggle, a replacement is always applied to all portions. With the toggle on, it is only used for the vegetarian portions in a mixed household — for example, replacing chicken with Quorn only in the non-meat servings.',
       replacementsDesc: 'Replace ingredients in AI-enhanced recipes',
       original: 'Original',
       replacement: 'Replacement',
@@ -778,6 +782,7 @@ const en = {
     },
     equipment: {
       title: 'Kitchen Equipment',
+      help: 'The AI will tailor recipe instructions to your available equipment — for example, suggesting air fryer times instead of deep-frying, or using a food processor for prep steps you would otherwise do by hand.',
       subtitle: 'Select equipment to optimize recipe instructions',
       yourEquipment: 'Your equipment ({{count}})',
       categories: {

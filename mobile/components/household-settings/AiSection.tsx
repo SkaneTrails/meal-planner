@@ -3,7 +3,6 @@ import type { DropdownOption } from '@/components';
 import {
   ContentCard,
   DropdownPicker,
-  HelpTip,
   IconButton,
   Section,
   SectionLabel,
@@ -160,9 +159,10 @@ export const AiSection = ({
           title={t('householdSettings.dietary.title')}
           spacing={0}
         />
-        <HelpTip helpText={t('householdSettings.dietary.dietTypeHelp')}>
-          <SectionLabel text={t('householdSettings.dietary.dietType')} />
-        </HelpTip>
+        <SectionLabel
+          text={t('householdSettings.dietary.dietType')}
+          tooltip={t('householdSettings.dietary.dietTypeHelp')}
+        />
         <DropdownPicker
           options={dietTypeOptions}
           value={dietary.diet_type ?? 'no_restrictions'}
@@ -181,20 +181,11 @@ export const AiSection = ({
         {/* Mixed Household — only for no_restrictions */}
         {isMixedEligible && (
           <>
-            <HelpTip
-              helpText={t('householdSettings.dietary.mixedHouseholdHelp')}
-            >
-              <SectionLabel
-                text={t('householdSettings.dietary.mixedHousehold')}
-              />
-            </HelpTip>
-            <View
-              style={{
-                backgroundColor: colors.surface.subtle,
-                borderRadius: borderRadius.md,
-                padding: spacing.md,
-              }}
-            >
+            <SectionLabel
+              text={t('householdSettings.dietary.mixedHousehold')}
+              tooltip={t('householdSettings.dietary.mixedHouseholdHelp')}
+            />
+            <ContentCard variant="surface">
               <Text
                 style={{
                   fontSize: fontSize.sm,
@@ -229,7 +220,7 @@ export const AiSection = ({
                   {t('householdSettings.dietary.meatNoneHint')}
                 </Text>
               )}
-            </View>
+            </ContentCard>
           </>
         )}
       </ContentCard>
@@ -243,6 +234,7 @@ export const AiSection = ({
         <Section
           icon="swap-horizontal"
           title={t('householdSettings.dietary.replacements')}
+          tooltip={t('householdSettings.dietary.replacementsHelp')}
           spacing={0}
         />
 
@@ -299,6 +291,7 @@ export const AiSection = ({
         <Section
           icon="construct"
           title={t('householdSettings.equipment.title')}
+          tooltip={t('householdSettings.equipment.help')}
           spacing={0}
         />
         <SelectedEquipment
