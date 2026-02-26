@@ -38,7 +38,7 @@ const MemberCard = ({
   const { colors, fonts } = useTheme();
   const { t } = useTranslation();
   const roleColor =
-    member.role === 'admin' ? colors.warning : colors.text.muted;
+    member.role === 'admin' ? colors.warning : colors.content.subtitle;
 
   return (
     <ContentCard
