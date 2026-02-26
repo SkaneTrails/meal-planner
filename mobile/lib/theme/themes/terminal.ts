@@ -118,6 +118,7 @@ const buttonDisplay: ButtonDisplayConfig = {
 export const terminalTheme: ThemeDefinition = {
   id: 'terminal',
   name: 'Terminal CRT',
+  pickerSwatch: { type: 'text', label: '>_' },
   colors: terminalColors,
   fonts,
   borderRadius: deriveFlatRadii(borderRadius),

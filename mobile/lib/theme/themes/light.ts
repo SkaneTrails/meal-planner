@@ -111,6 +111,7 @@ const buttonDisplay: ButtonDisplayConfig = {
 export const lightTheme: ThemeDefinition = {
   id: 'light',
   name: 'Elegant',
+  pickerSwatch: { type: 'color', value: '#C8B59A' },
   colors: lightColors,
   fonts,
   borderRadius,

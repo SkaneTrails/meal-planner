@@ -674,6 +674,7 @@ vi.mock('@/lib/theme', () => {
   const mockLightTheme = {
     id: 'light',
     name: 'Elegant',
+    pickerSwatch: { type: 'color', value: '#C8B59A' },
     colors: c,
     fonts: mockFonts,
     borderRadius: mockBorderRadius,
@@ -691,6 +692,7 @@ vi.mock('@/lib/theme', () => {
   const mockTerminalTheme = {
     id: 'terminal',
     name: 'Terminal CRT',
+    pickerSwatch: { type: 'text', label: '>_' },
     colors: {},
     fonts: {},
     borderRadius: { '3xs': 0, '2xs': 0, 'xs-sm': 0, xs: 0, 'sm-md': 0, sm: 0, 'md-lg': 0, md: 0, lg: 0, 'lg-xl': 0, xl: 0, '2xl': 0, full: 0 },
@@ -709,6 +711,7 @@ vi.mock('@/lib/theme', () => {
   const mockBubblegumTheme = {
     id: 'bubblegum',
     name: "'90s Bubblegum",
+    pickerSwatch: { type: 'text', label: '\u{1FAE7}' },
     colors: c,
     fonts: mockFonts,
     borderRadius: mockBorderRadius,
