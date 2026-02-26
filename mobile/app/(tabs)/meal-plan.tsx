@@ -40,7 +40,7 @@ import {
 } from '@/lib/utils/dateFormatter';
 
 export default function MealPlanScreen() {
-  const { colors, borderRadius, shadows, chrome } = useTheme();
+  const { colors, borderRadius, shadows, visibility, chrome } = useTheme();
   const router = useRouter();
   const {
     t,
@@ -165,7 +165,7 @@ export default function MealPlanScreen() {
                     },
                   ]
                 : [
-                    ...(chrome === 'flat'
+                    ...(!visibility.showDayNotes
                       ? note
                         ? [
                             {

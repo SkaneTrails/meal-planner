@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   appIcon: {
-    width: 48,
-    height: 48,
+    width: iconContainer.lg,
+    height: iconContainer.lg,
     borderRadius: borderRadius.sm,
   },
   appName: {
