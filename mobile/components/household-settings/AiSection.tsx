@@ -385,11 +385,11 @@ const ReplacementRow = ({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: showMeatSubstitute ? 'space-between' : 'flex-end',
         }}
       >
-        <View style={{ flex: 1, minWidth: 0 }}>
-          {showMeatSubstitute && (
+        {showMeatSubstitute && (
+          <View style={{ flex: 1, minWidth: 0 }}>
             <SettingToggleRow
               label={t('householdSettings.dietary.meatSubstitute')}
               subtitle={t('householdSettings.dietary.meatSubstituteDesc')}
@@ -397,8 +397,8 @@ const ReplacementRow = ({
               onValueChange={(v) => onUpdate(index, 'meat_substitute', v)}
               disabled={disabled}
             />
-          )}
-        </View>
+          </View>
+        )}
         <IconButton
           icon="trash-outline"
           onPress={() => onRemove(index)}
