@@ -8,7 +8,7 @@
  * as collapsible accordions — all start collapsed.
  */
 
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import {
@@ -110,8 +110,6 @@ export default function HouseholdSettingsScreen() {
 
   return (
     <GradientBackground>
-      <Stack.Screen options={{ headerShown: false }} />
-
       {form.isLoading ? (
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}

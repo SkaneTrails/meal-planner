@@ -4,7 +4,7 @@
  * Dairy, Meat dishes, Ingredient replacements, Equipment, Seafood.
  */
 
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { FullScreenLoading, GradientBackground } from '@/components';
 import {
@@ -36,8 +36,6 @@ export default function AiSettingsScreen() {
 
   return (
     <GradientBackground>
-      <Stack.Screen options={{ headerShown: false }} />
-
       {form.isLoading ? (
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
