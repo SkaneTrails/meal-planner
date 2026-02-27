@@ -79,32 +79,16 @@ const AppContent = () => {
       <View style={{ flex: 1 }}>
         <Stack
           screenOptions={{
+            title: 'Aroma',
+            headerShown: false,
             animation: 'slide_from_right',
             contentStyle: { backgroundColor: colors.bgBase },
           }}
         >
-          <Stack.Screen
-            name="sign-in"
-            options={{ headerShown: false, animation: 'fade' }}
-          />
-          <Stack.Screen
-            name="(tabs)"
-            options={{ title: 'Aroma', headerShown: false, animation: 'fade' }}
-          />
-          <Stack.Screen
-            name="recipe/[id]"
-            options={{
-              headerShown: false,
-              animation: 'slide_from_right',
-            }}
-          />
-          <Stack.Screen
-            name="add-recipe"
-            options={{
-              headerShown: false,
-              animation: 'slide_from_right',
-            }}
-          />
+          <Stack.Screen name="sign-in" options={{ animation: 'fade' }} />
+          <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
+          <Stack.Screen name="recipe/[id]" />
+          <Stack.Screen name="add-recipe" />
         </Stack>
         <FloatingTabBar />
         <CRTOverlay />
