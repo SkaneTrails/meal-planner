@@ -506,6 +506,8 @@ const it: Translations = {
     chooseLanguageTitle: 'Scegli la tua lingua',
     chooseLanguageMessage:
       'Seleziona la lingua per il miglioramento delle ricette. Le ricette verranno tradotte e adattate a questa lingua.',
+    groceryList: 'Lista della spesa',
+    groceryListDesc: 'Negozi e articoli che hai sempre a casa',
     itemsAtHome: 'Articoli a casa',
     itemsAtHomeDesc: 'Non appariranno nella lista della spesa',
     yourItems: 'I tuoi articoli ({{count}})',

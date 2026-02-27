@@ -495,6 +495,8 @@ const sv: Translations = {
     chooseLanguageTitle: 'Välj ditt språk',
     chooseLanguageMessage:
       'Välj språk för receptförbättring. Recept översätts och anpassas till detta språk.',
+    groceryList: 'Inköpslista',
+    groceryListDesc: 'Butiker och varor du alltid har hemma',
     itemsAtHome: 'Varor hemma',
     itemsAtHomeDesc: 'Dessa visas inte i din inköpslista',
     yourItems: 'Dina varor ({{count}})',

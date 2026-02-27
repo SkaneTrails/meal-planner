@@ -37,7 +37,7 @@ export const useGroceryList = (options?: GroceryListOptions) => {
 export const useStoreOrder = (storeId: string | null) => {
   return useQuery({
     queryKey: groceryKeys.storeOrder(storeId ?? ''),
-    queryFn: () => api.getStoreOrder(storeId!),
+    queryFn: () => api.getStoreOrder(storeId as string),
     enabled: !!storeId,
   });
 };

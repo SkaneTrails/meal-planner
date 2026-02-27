@@ -32,13 +32,7 @@ import { useTranslation } from '@/lib/i18n';
 import { type AppLanguage, useSettings } from '@/lib/settings-context';
 import { fontSize, layout, spacing, useTheme } from '@/lib/theme';
 
-type SectionKey =
-  | 'general'
-  | 'members'
-  | 'pantry'
-  | 'notes'
-  | 'language'
-  | 'stores';
+type SectionKey = 'general' | 'members' | 'pantry' | 'notes' | 'language';
 
 type TranslationFn = ReturnType<typeof useTranslation>['t'];
 
@@ -46,18 +40,16 @@ const sectionTitles: Record<SectionKey, (t: TranslationFn) => string> = {
   general: (t) => t('householdSettings.general.title'),
   members: (t) => t('settings.membersSection'),
   language: (t) => t('settings.language'),
-  pantry: (t) => t('settings.itemsAtHome'),
+  pantry: (t) => t('settings.groceryList'),
   notes: (t) => t('settings.noteSuggestions'),
-  stores: (t) => t('householdSettings.groceryStores.title'),
 };
 
 const sectionSubtitles: Record<SectionKey, (t: TranslationFn) => string> = {
   general: (t) => t('householdSettings.general.subtitle'),
   members: (t) => t('settings.membersSectionDesc'),
   language: (t) => t('settings.languageDesc'),
-  pantry: (t) => t('settings.itemsAtHomeDesc'),
+  pantry: (t) => t('settings.groceryListDesc'),
   notes: (t) => t('settings.noteSuggestionsDesc'),
-  stores: (t) => t('householdSettings.groceryStores.subtitle'),
 };
 
 export default function HouseholdSettingsScreen() {
@@ -325,7 +317,7 @@ export default function HouseholdSettingsScreen() {
 
             {(!focusedSection || focusedSection === 'pantry') && (
               <ContentCard
-                label={t('settings.itemsAtHome')}
+                label={t('settings.groceryList')}
                 cardStyle={{
                   borderRadius: borderRadius.lg,
                   padding: spacing['md-lg'],
@@ -333,20 +325,36 @@ export default function HouseholdSettingsScreen() {
                 style={{ marginBottom: spacing.lg }}
               >
                 {focusedSection ? (
-                  <ItemsAtHomeSection
-                    itemsAtHome={settings.itemsAtHome}
-                    onAddItem={addItemAtHome}
-                    onRemoveItem={removeItemAtHome}
-                  />
+                  <>
+                    <GroceryStoresSection
+                      stores={form.settings.grocery_stores ?? []}
+                      canEdit={form.canEdit}
+                      onAdd={form.addGroceryStore}
+                      onRemove={form.removeGroceryStore}
+                    />
+                    <View style={{ marginTop: spacing.lg }} />
+                    <ItemsAtHomeSection
+                      itemsAtHome={settings.itemsAtHome}
+                      onAddItem={addItemAtHome}
+                      onRemoveItem={removeItemAtHome}
+                    />
+                  </>
                 ) : (
                   <Section
                     icon="cart"
-                    title={t('settings.itemsAtHome')}
-                    subtitle={t('settings.itemsAtHomeDesc')}
+                    title={t('settings.groceryList')}
+                    subtitle={t('settings.groceryListDesc')}
                     collapsible
                     expanded={expandedSections.has('pantry')}
                     onToggle={() => toggleSection('pantry')}
                   >
+                    <GroceryStoresSection
+                      stores={form.settings.grocery_stores ?? []}
+                      canEdit={form.canEdit}
+                      onAdd={form.addGroceryStore}
+                      onRemove={form.removeGroceryStore}
+                    />
+                    <View style={{ marginTop: spacing.lg }} />
                     <ItemsAtHomeSection
                       itemsAtHome={settings.itemsAtHome}
                       onAddItem={addItemAtHome}
@@ -387,42 +395,6 @@ export default function HouseholdSettingsScreen() {
                       canEdit={form.canEdit}
                       onAdd={form.addNoteSuggestion}
                       onRemove={form.removeNoteSuggestion}
-                    />
-                  </Section>
-                )}
-              </ContentCard>
-            )}
-
-            {(!focusedSection || focusedSection === 'stores') && (
-              <ContentCard
-                label={t('householdSettings.groceryStores.title')}
-                cardStyle={{
-                  borderRadius: borderRadius.lg,
-                  padding: spacing['md-lg'],
-                }}
-                style={{ marginBottom: spacing.lg }}
-              >
-                {focusedSection ? (
-                  <GroceryStoresSection
-                    stores={form.settings.grocery_stores ?? []}
-                    canEdit={form.canEdit}
-                    onAdd={form.addGroceryStore}
-                    onRemove={form.removeGroceryStore}
-                  />
-                ) : (
-                  <Section
-                    icon="storefront-outline"
-                    title={t('householdSettings.groceryStores.title')}
-                    subtitle={t('householdSettings.groceryStores.subtitle')}
-                    collapsible
-                    expanded={expandedSections.has('stores')}
-                    onToggle={() => toggleSection('stores')}
-                  >
-                    <GroceryStoresSection
-                      stores={form.settings.grocery_stores ?? []}
-                      canEdit={form.canEdit}
-                      onAdd={form.addGroceryStore}
-                      onRemove={form.removeGroceryStore}
                     />
                   </Section>
                 )}

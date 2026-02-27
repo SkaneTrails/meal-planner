@@ -505,6 +505,8 @@ const en = {
     chooseLanguageTitle: 'Choose Your Language',
     chooseLanguageMessage:
       'Select the language for recipe enhancement. Recipes will be translated and adapted to this language.',
+    groceryList: 'Grocery List',
+    groceryListDesc: 'Stores and items you always have at home',
     itemsAtHome: 'Items at Home',
     itemsAtHomeDesc: "These won't appear in your grocery list",
     yourItems: 'Your items ({{count}})',
