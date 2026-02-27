@@ -6,7 +6,7 @@
  */
 
 import { TextInput, View } from 'react-native';
-import { ActionButton } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
 import { Button } from '@/components/Button';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
