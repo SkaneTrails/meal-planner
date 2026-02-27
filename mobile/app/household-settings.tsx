@@ -19,6 +19,7 @@ import {
 } from '@/components';
 import {
   GeneralSection,
+  GroceryStoresSection,
   MembersSection,
   NoteSuggestionsSection,
   ReadOnlyBanner,
@@ -39,7 +40,7 @@ const sectionTitles: Record<SectionKey, (t: TranslationFn) => string> = {
   general: (t) => t('householdSettings.general.title'),
   members: (t) => t('settings.membersSection'),
   language: (t) => t('settings.language'),
-  pantry: (t) => t('settings.itemsAtHome'),
+  pantry: (t) => t('settings.groceryList'),
   notes: (t) => t('settings.noteSuggestions'),
 };
 
@@ -47,7 +48,7 @@ const sectionSubtitles: Record<SectionKey, (t: TranslationFn) => string> = {
   general: (t) => t('householdSettings.general.subtitle'),
   members: (t) => t('settings.membersSectionDesc'),
   language: (t) => t('settings.languageDesc'),
-  pantry: (t) => t('settings.itemsAtHomeDesc'),
+  pantry: (t) => t('settings.groceryListDesc'),
   notes: (t) => t('settings.noteSuggestionsDesc'),
 };
 
@@ -316,7 +317,7 @@ export default function HouseholdSettingsScreen() {
 
             {(!focusedSection || focusedSection === 'pantry') && (
               <ContentCard
-                label={t('settings.itemsAtHome')}
+                label={t('settings.groceryList')}
                 cardStyle={{
                   borderRadius: borderRadius.lg,
                   padding: spacing['md-lg'],
@@ -324,25 +325,55 @@ export default function HouseholdSettingsScreen() {
                 style={{ marginBottom: spacing.lg }}
               >
                 {focusedSection ? (
-                  <ItemsAtHomeSection
-                    itemsAtHome={settings.itemsAtHome}
-                    onAddItem={addItemAtHome}
-                    onRemoveItem={removeItemAtHome}
-                  />
+                  <>
+                    <GroceryStoresSection
+                      stores={form.settings.grocery_stores ?? []}
+                      canEdit={form.canEdit}
+                      onAdd={form.addGroceryStore}
+                      onRemove={form.removeGroceryStore}
+                    />
+                    <Section
+                      icon="home"
+                      title={t('settings.itemsAtHome')}
+                      subtitle={t('settings.itemsAtHomeDesc')}
+                      style={{ marginTop: spacing.lg }}
+                      spacing={0}
+                    >
+                      <ItemsAtHomeSection
+                        itemsAtHome={settings.itemsAtHome}
+                        onAddItem={addItemAtHome}
+                        onRemoveItem={removeItemAtHome}
+                      />
+                    </Section>
+                  </>
                 ) : (
                   <Section
                     icon="cart"
-                    title={t('settings.itemsAtHome')}
-                    subtitle={t('settings.itemsAtHomeDesc')}
+                    title={t('settings.groceryList')}
+                    subtitle={t('settings.groceryListDesc')}
                     collapsible
                     expanded={expandedSections.has('pantry')}
                     onToggle={() => toggleSection('pantry')}
                   >
-                    <ItemsAtHomeSection
-                      itemsAtHome={settings.itemsAtHome}
-                      onAddItem={addItemAtHome}
-                      onRemoveItem={removeItemAtHome}
+                    <GroceryStoresSection
+                      stores={form.settings.grocery_stores ?? []}
+                      canEdit={form.canEdit}
+                      onAdd={form.addGroceryStore}
+                      onRemove={form.removeGroceryStore}
                     />
+                    <Section
+                      icon="home"
+                      title={t('settings.itemsAtHome')}
+                      subtitle={t('settings.itemsAtHomeDesc')}
+                      style={{ marginTop: spacing.lg }}
+                      spacing={0}
+                    >
+                      <ItemsAtHomeSection
+                        itemsAtHome={settings.itemsAtHome}
+                        onAddItem={addItemAtHome}
+                        onRemoveItem={removeItemAtHome}
+                      />
+                    </Section>
                   </Section>
                 )}
               </ContentCard>

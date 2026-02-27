@@ -11,7 +11,10 @@ MAX_HOUSEHOLD_SIZE = 20
 MAX_ALTERNATIVE_LENGTH = 30
 MAX_ALTERNATIVE_WORDS = 3
 MAX_REPLACEMENTS = 10
+MAX_STORES = 10
+MAX_STORE_NAME_LENGTH = 40
 _ALTERNATIVE_RE = re.compile(r"^[\w -]+$", re.UNICODE)
+_STORE_NAME_RE = re.compile(r"^[\w ,.'&/-]+$", re.UNICODE)
 
 
 def _validate_ingredient_name(v: object) -> str:
@@ -53,6 +56,48 @@ class Language(str, Enum):
     SV = "sv"  # Swedish
     EN = "en"  # English
     IT = "it"  # Italian
+
+
+class GroceryStore(BaseModel):
+    """A grocery store with a learned item ordering."""
+
+    id: str = Field(..., min_length=1, max_length=MAX_STORE_NAME_LENGTH, description="Unique store identifier")
+    name: str = Field(..., max_length=MAX_STORE_NAME_LENGTH, description="Display name, e.g. 'ICA Maxi'")
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def validate_store_id(cls, v: object) -> str:
+        """Validate store ID is non-empty and safe for Firestore document IDs."""
+        if not isinstance(v, str):
+            msg = "Store ID must be a string"
+            raise TypeError(msg)
+        v = v.strip()
+        if not v:
+            msg = "Store ID must not be empty"
+            raise ValueError(msg)
+        if "/" in v or ".." in v:
+            msg = "Store ID must not contain '/' or '..'"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_store_name(cls, v: object) -> str:
+        """Validate store name for safety and readability."""
+        if not isinstance(v, str):
+            msg = "Store name must be a string"
+            raise TypeError(msg)
+        v = v.strip()
+        if not v:
+            msg = "Store name must not be empty"
+            raise ValueError(msg)
+        if len(v) > MAX_STORE_NAME_LENGTH:
+            msg = f"Store name must be at most {MAX_STORE_NAME_LENGTH} characters"
+            raise ValueError(msg)
+        if not _STORE_NAME_RE.match(v):
+            msg = "Store name may only contain letters, numbers, spaces, commas, periods, apostrophes, ampersands, slashes, and hyphens"
+            raise ValueError(msg)
+        return v
 
 
 class DietType(str, Enum):
@@ -164,6 +209,19 @@ class HouseholdSettings(BaseModel):
 
     dietary: DietarySettings = Field(default_factory=DietarySettings)
     equipment: list[str] = Field(default_factory=list, description="Equipment keys from the equipment catalog")
+    grocery_stores: list[GroceryStore] = Field(
+        default_factory=list, max_length=MAX_STORES, description="Grocery stores with learned sort orders"
+    )
+    active_store_id: str | None = Field(default=None, description="Active store ID for grocery auto-sort")
+
+    @model_validator(mode="after")
+    def validate_active_store_id(self) -> "HouseholdSettings":
+        """Ensure active_store_id references a configured store or is None."""
+        if self.active_store_id is not None:
+            store_ids = {s.id for s in self.grocery_stores}
+            if self.active_store_id not in store_ids:
+                self.active_store_id = None
+        return self
 
     @model_validator(mode="before")
     @classmethod
@@ -172,6 +230,16 @@ class HouseholdSettings(BaseModel):
         if values.get("dietary") is None:
             values.pop("dietary", None)
         return values
+
+    @field_validator("grocery_stores", mode="before")
+    @classmethod
+    def coerce_grocery_stores(cls, v: object) -> list:
+        """Coerce None/non-list to empty list for Firestore compatibility."""
+        if v is None:
+            return []
+        if not isinstance(v, list):
+            return []
+        return v
 
     @field_validator("language", mode="before")
     @classmethod
@@ -231,6 +299,10 @@ class HouseholdSettingsUpdate(BaseModel):
 
     dietary: DietarySettingsUpdate | None = None
     equipment: list[str] | None = None
+    grocery_stores: list[GroceryStore] | None = Field(
+        default=None, max_length=MAX_STORES, description="Grocery stores with learned sort orders"
+    )
+    active_store_id: str | None = None
 
     @field_validator("equipment", mode="before")
     @classmethod
@@ -242,3 +314,13 @@ class HouseholdSettingsUpdate(BaseModel):
             msg = "equipment must be a list of strings or null"
             raise TypeError(msg)
         return validate_equipment_keys(v)
+
+    @field_validator("grocery_stores", mode="before")
+    @classmethod
+    def coerce_grocery_stores(cls, v: object) -> list | None:
+        """Coerce non-list to None for Firestore compatibility."""
+        if v is None:
+            return None
+        if not isinstance(v, list):
+            return None
+        return v

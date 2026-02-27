@@ -13,7 +13,11 @@ import {
 } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import type { HouseholdMember, HouseholdSettings } from '@/lib/types';
+import type {
+  GroceryStore,
+  HouseholdMember,
+  HouseholdSettings,
+} from '@/lib/types';
 
 export const useHouseholdSettingsForm = (paramId: string | undefined) => {
   const { user } = useAuth();
@@ -64,6 +68,9 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
         equipment: Array.isArray(remoteSettings.equipment)
           ? remoteSettings.equipment
           : [],
+        grocery_stores: Array.isArray(remoteSettings.grocery_stores)
+          ? remoteSettings.grocery_stores
+          : [],
       });
     }
   }, [remoteSettings]);
@@ -104,6 +111,31 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
       equipment: prev.equipment.includes(key)
         ? prev.equipment.filter((k) => k !== key)
         : [...prev.equipment, key],
+    }));
+    setHasChanges(true);
+  };
+
+  const addGroceryStore = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setSettings((prev) => {
+      const current = prev.grocery_stores ?? [];
+      if (current.some((s) => s.name === trimmed)) return prev;
+      const newStore: GroceryStore = {
+        id: `store_${Date.now()}`,
+        name: trimmed,
+      };
+      setHasChanges(true);
+      return { ...prev, grocery_stores: [...current, newStore] };
+    });
+  };
+
+  const removeGroceryStore = (id: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      grocery_stores: (prev.grocery_stores ?? []).filter((s) => s.id !== id),
+      active_store_id:
+        prev.active_store_id === id ? null : prev.active_store_id,
     }));
     setHasChanges(true);
   };
@@ -235,6 +267,8 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     updateDietary,
     updateServings,
     toggleEquipment,
+    addGroceryStore,
+    removeGroceryStore,
     updateAiEnabled,
     updateIncludeBreakfast,
     addNoteSuggestion,

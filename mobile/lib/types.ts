@@ -334,6 +334,11 @@ export interface DietarySettings {
 
 import type { WeekStart } from '@/lib/utils/dateFormatter';
 
+export interface GroceryStore {
+  id: string;
+  name: string;
+}
+
 export interface HouseholdSettings {
   household_size: number;
   default_servings: number;
@@ -346,4 +351,20 @@ export interface HouseholdSettings {
   note_suggestions?: string[];
   dietary: DietarySettings;
   equipment: string[];
+  grocery_stores?: GroceryStore[];
+  active_store_id?: string | null;
+}
+
+// Store order learning types
+export interface StoreOrderResponse {
+  item_order: string[];
+}
+
+export interface LearnOrderRequest {
+  tick_sequence: string[];
+}
+
+export interface LearnOrderResponse {
+  updated: boolean;
+  item_order: string[];
 }

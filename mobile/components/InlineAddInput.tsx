@@ -1,5 +1,5 @@
 import { TextInput } from 'react-native';
-import { ActionButton } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
 import { ContentCard } from '@/components/ContentCard';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 

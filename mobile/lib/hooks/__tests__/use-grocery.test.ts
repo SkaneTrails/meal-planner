@@ -9,11 +9,12 @@ import { createQueryWrapper } from '@/test/helpers';
 vi.mock('@/lib/api', () => ({
   api: {
     getGroceryList: vi.fn(),
+    getStoreOrder: vi.fn(),
   },
 }));
 
 import { api } from '@/lib/api';
-import { useGroceryList } from '@/lib/hooks/use-grocery';
+import { useGroceryList, useStoreOrder } from '@/lib/hooks/use-grocery';
 
 const mockApi = vi.mocked(api);
 
@@ -52,5 +53,30 @@ describe('useGroceryList', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockApi.getGroceryList).toHaveBeenCalledWith({ days: 7 });
+  });
+});
+
+describe('useStoreOrder', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockApi.getStoreOrder.mockResolvedValue({ item_order: ['milk', 'bread'] });
+  });
+
+  it('fetches store order when storeId is provided', async () => {
+    const { result } = renderHook(() => useStoreOrder('store_1'), {
+      wrapper: createQueryWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.data?.item_order).toEqual(['milk', 'bread']));
+    expect(mockApi.getStoreOrder).toHaveBeenCalledWith('store_1');
+  });
+
+  it('does not fetch when storeId is null', () => {
+    const { result } = renderHook(() => useStoreOrder(null), {
+      wrapper: createQueryWrapper(),
+    });
+
+    expect(result.current.isFetching).toBe(false);
+    expect(mockApi.getStoreOrder).not.toHaveBeenCalled();
   });
 });

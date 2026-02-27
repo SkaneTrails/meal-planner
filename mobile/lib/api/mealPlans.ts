@@ -8,10 +8,13 @@ import type {
   GroceryListState,
   GroceryListStatePatch,
   GroceryListStateSave,
+  LearnOrderRequest,
+  LearnOrderResponse,
   MealPlan,
   MealPlanUpdate,
   MealUpdateRequest,
   NoteUpdateRequest,
+  StoreOrderResponse,
 } from '../types';
 import { apiRequest } from './client';
 
@@ -89,5 +92,19 @@ export const groceryApi = {
 
   clearGroceryState: (): Promise<void> => {
     return apiRequest<void>('/grocery/state', { method: 'DELETE' });
+  },
+
+  getStoreOrder: (storeId: string): Promise<StoreOrderResponse> => {
+    return apiRequest<StoreOrderResponse>(`/grocery/stores/${storeId}/order`);
+  },
+
+  learnStoreOrder: (
+    storeId: string,
+    body: LearnOrderRequest,
+  ): Promise<LearnOrderResponse> => {
+    return apiRequest<LearnOrderResponse>(`/grocery/stores/${storeId}/learn`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
   },
 };

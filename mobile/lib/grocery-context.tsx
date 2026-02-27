@@ -27,12 +27,14 @@ interface GroceryContextValue {
   selectedMealKeys: string[];
   mealServings: Record<string, number>;
   isLoading: boolean;
+  tickSequence: string[];
   toggleItem: (itemName: string) => void;
   setCheckedItems: (items: Set<string>) => void;
   clearChecked: () => void;
   addCustomItem: (item: CustomGroceryItem) => void;
   setCustomItems: (items: CustomGroceryItem[]) => void;
   setItemOrder: (order: string[]) => void;
+  resetTickSequence: () => void;
   saveSelections: (
     meals: string[],
     servings: Record<string, number>,
@@ -116,6 +118,8 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const checkedRef = useRef<Set<string>>(checkedItems);
   const customItemsRef = useRef<CustomGroceryItem[]>(customItems);
   const itemOrderRef = useRef<string[]>(itemOrder);
+  const tickSequenceRef = useRef<string[]>([]);
+  const [tickSequence, setTickSequence] = useState<string[]>([]);
 
   const flushPatch = useCallback(() => {
     const patch = { ...pendingPatchRef.current };
@@ -213,8 +217,16 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         const newSet = new Set(prev);
         if (newSet.has(itemName)) {
           newSet.delete(itemName);
+          // Remove from tick sequence when unchecked
+          const updated = tickSequenceRef.current.filter((n) => n !== itemName);
+          tickSequenceRef.current = updated;
+          setTickSequence(updated);
         } else {
           newSet.add(itemName);
+          // Track tick order for store layout learning
+          const updated = [...tickSequenceRef.current, itemName];
+          tickSequenceRef.current = updated;
+          setTickSequence(updated);
         }
         checkedRef.current = newSet;
         const arr = Array.from(newSet);
@@ -237,6 +249,11 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     );
     enqueuePatch({ checked_items: [] });
   }, [enqueuePatch]);
+
+  const resetTickSequence = useCallback(() => {
+    tickSequenceRef.current = [];
+    setTickSequence([]);
+  }, []);
 
   const addCustomItem = useCallback(
     (item: CustomGroceryItem) => {
@@ -307,6 +324,8 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     itemOrderRef.current = [];
     setSelectedMealKeys([]);
     setMealServings({});
+    tickSequenceRef.current = [];
+    setTickSequence([]);
     await Promise.all([
       AsyncStorage.removeItem('grocery_selected_meals'),
       AsyncStorage.removeItem('grocery_custom_items'),
@@ -331,12 +350,14 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         selectedMealKeys,
         mealServings,
         isLoading,
+        tickSequence,
         toggleItem,
         setCheckedItems,
         clearChecked,
         addCustomItem,
         setCustomItems,
         setItemOrder,
+        resetTickSequence,
         saveSelections,
         clearAll,
         refreshFromApi,

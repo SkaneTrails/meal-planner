@@ -432,6 +432,7 @@ const sv: Translations = {
     hiddenAtHome: '{{count}} vara/varor dolda (finns hemma)',
     addItemPlaceholder: 'Lägg till en vara...',
     addButton: 'Lägg till',
+    allStores: 'Alla',
     emptyList: 'Din lista är tom',
     emptyListSubtitle:
       'Lägg till måltider i din plan eller lägg till varor manuellt',
@@ -494,6 +495,8 @@ const sv: Translations = {
     chooseLanguageTitle: 'Välj ditt språk',
     chooseLanguageMessage:
       'Välj språk för receptförbättring. Recept översätts och anpassas till detta språk.',
+    groceryList: 'Inköpslista',
+    groceryListDesc: 'Butiker och varor du alltid har hemma',
     itemsAtHome: 'Varor hemma',
     itemsAtHomeDesc: 'Dessa visas inte i din inköpslista',
     yourItems: 'Dina varor ({{count}})',
@@ -797,6 +800,14 @@ const sv: Translations = {
         outdoor_grill: 'Utomhusgrill',
         kitchen_torch: 'Köksbrännare',
       },
+    },
+    groceryStores: {
+      title: 'Mataffärer',
+      subtitle: 'Lägg till dina butiker för att lära dig deras layout',
+      yourStores: 'Dina butiker ({{count}})',
+      addPlaceholder: 'Lägg till en butik...',
+      noStoresYet: 'Inga butiker tillagda',
+      addStoresHint: 'Lägg till dina butiker för att sortera inköpslistor',
     },
     saveChanges: 'Spara ändringar',
     saved: 'Sparat',

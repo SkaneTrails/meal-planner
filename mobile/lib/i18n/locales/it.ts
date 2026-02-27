@@ -440,6 +440,7 @@ const it: Translations = {
     hiddenAtHome: '{{count}} articolo/i nascosti (a casa)',
     addItemPlaceholder: 'Aggiungi un articolo...',
     addButton: 'Aggiungi',
+    allStores: 'Tutti',
     emptyList: 'La tua lista è vuota',
     emptyListSubtitle:
       'Aggiungi pasti al piano o aggiungi articoli manualmente',
@@ -505,6 +506,8 @@ const it: Translations = {
     chooseLanguageTitle: 'Scegli la tua lingua',
     chooseLanguageMessage:
       'Seleziona la lingua per il miglioramento delle ricette. Le ricette verranno tradotte e adattate a questa lingua.',
+    groceryList: 'Lista della spesa',
+    groceryListDesc: 'Negozi e articoli che hai sempre a casa',
     itemsAtHome: 'Articoli a casa',
     itemsAtHomeDesc: 'Non appariranno nella lista della spesa',
     yourItems: 'I tuoi articoli ({{count}})',
@@ -811,6 +814,14 @@ const it: Translations = {
         outdoor_grill: 'Barbecue',
         kitchen_torch: 'Cannello da cucina',
       },
+    },
+    groceryStores: {
+      title: 'Negozi di alimentari',
+      subtitle: 'Aggiungi i tuoi negozi per imparare il loro layout',
+      yourStores: 'I tuoi negozi ({{count}})',
+      addPlaceholder: 'Aggiungi un negozio...',
+      noStoresYet: 'Nessun negozio aggiunto',
+      addStoresHint: 'Aggiungi i tuoi negozi per ordinare la lista della spesa',
     },
     saveChanges: 'Salva modifiche',
     saved: 'Salvato',

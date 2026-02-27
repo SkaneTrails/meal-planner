@@ -14,13 +14,16 @@ import {
   EmptyGroceryState,
   GroceryHeader,
   StatsCard,
+  StoreChips,
 } from '@/components/grocery';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
+import { useSettings } from '@/lib/settings-context';
 import { spacing } from '@/lib/theme';
 
 export default function GroceryScreen() {
   const { t } = useTranslation();
+  const { groceryStores, activeStoreId, setActiveStoreId } = useSettings();
   const {
     isLoading,
     hasLoadedOnce,
@@ -69,6 +72,11 @@ export default function GroceryScreen() {
             paddingBottom: spacing.md,
           }}
         >
+          <StoreChips
+            stores={groceryStores}
+            activeStoreId={activeStoreId}
+            onSelect={setActiveStoreId}
+          />
           <StatsCard
             itemsToBuy={itemsToBuy}
             checkedItemsToBuy={checkedItemsToBuy}

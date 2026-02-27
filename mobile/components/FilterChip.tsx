@@ -44,7 +44,7 @@ const FilterChip = ({
   style,
   labelStyle,
 }: FilterChipProps) => {
-  const { colors, borderRadius } = useTheme();
+  const { colors, borderRadius, fonts } = useTheme();
   const activeColor = activeColorProp ?? colors.content.body;
   const activeTextColor = activeTextColorProp ?? colors.white;
   const inactiveTextColor = inactiveTextColorProp ?? colors.content.body;
@@ -53,6 +53,9 @@ const FilterChip = ({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      accessibilityLabel={label}
       style={({ pressed }) => ({
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.sm,
@@ -73,6 +76,7 @@ const FilterChip = ({
       {leading}
       <Text
         style={{
+          fontFamily: fonts.bodySemibold,
           fontSize: fontSize.lg,
           fontWeight: fontWeight.semibold,
           color: selected ? activeTextColor : inactiveTextColor,

@@ -168,8 +168,8 @@ export default function SettingsScreen() {
               <SettingsSeparator />
               <SettingsNavLink
                 icon="cart"
-                title={t('settings.itemsAtHome')}
-                subtitle={t('settings.itemsAtHomeDesc')}
+                title={t('settings.groceryList')}
+                subtitle={t('settings.groceryListDesc')}
                 disabled={!hasHousehold}
                 isLoading={userLoading}
                 onPress={() => navigateHousehold('pantry')}
