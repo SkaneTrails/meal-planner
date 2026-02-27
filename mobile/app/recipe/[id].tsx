@@ -188,7 +188,8 @@ export default function RecipeDetailScreen() {
     <GradientBackground style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: '',
+          title: 'Aroma',
+          headerTitle: '',
           headerShown: visibility.showStackHeader,
           headerStyle: { backgroundColor: 'transparent' },
           headerTransparent: true,
