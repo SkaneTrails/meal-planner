@@ -53,6 +53,9 @@ const FilterChip = ({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      accessibilityLabel={label}
       style={({ pressed }) => ({
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.sm,

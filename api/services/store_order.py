@@ -29,7 +29,13 @@ def is_order_consistent(db_order: list[str], tick_sequence: list[str]) -> bool:
         return True
 
     position = {name: i for i, name in enumerate(db_order)}
-    known_positions = [position[item] for item in tick_sequence if item in position]
+
+    seen: set[str] = set()
+    known_positions: list[int] = []
+    for item in tick_sequence:
+        if item not in seen and item in position:
+            seen.add(item)
+            known_positions.append(position[item])
 
     if len(known_positions) <= 1:
         return True

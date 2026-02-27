@@ -134,6 +134,8 @@ export const useHouseholdSettingsForm = (paramId: string | undefined) => {
     setSettings((prev) => ({
       ...prev,
       grocery_stores: (prev.grocery_stores ?? []).filter((s) => s.id !== id),
+      active_store_id:
+        prev.active_store_id === id ? null : prev.active_store_id,
     }));
     setHasChanges(true);
   };

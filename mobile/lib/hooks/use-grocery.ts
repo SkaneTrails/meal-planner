@@ -39,5 +39,6 @@ export const useStoreOrder = (storeId: string | null) => {
     queryKey: groceryKeys.storeOrder(storeId ?? ''),
     queryFn: () => api.getStoreOrder(storeId as string),
     enabled: !!storeId,
+    initialData: { item_order: [] },
   });
 };

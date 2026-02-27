@@ -20,7 +20,7 @@ from api.models.grocery_list import (
 )
 from api.services.grocery_categories import detect_category
 from api.services.ingredient_parser import parse_ingredient
-from api.services.store_order import apply_learned_order, is_order_consistent
+from api.services.store_order import apply_learned_order
 from api.storage import grocery_list_storage, meal_plan_storage
 from api.storage.recipe_queries import get_recipes_by_ids
 from api.storage.store_order_storage import get_store_order, save_store_order
@@ -257,16 +257,8 @@ async def learn_store_order(
     household_id = require_household(user)
     current_order = get_store_order(household_id, store_id)
 
-    if is_order_consistent(current_order, body.tick_sequence):
-        # Append any new items that aren't in the DB yet
-        existing = set(current_order)
-        new_items = [item for item in body.tick_sequence if item not in existing]
-        if new_items:
-            updated_order = current_order + new_items
-            save_store_order(household_id, store_id, updated_order)
-            return LearnOrderResponse(updated=True, item_order=updated_order)
-        return LearnOrderResponse(updated=False, item_order=current_order)
-
     updated_order = apply_learned_order(current_order, body.tick_sequence)
-    save_store_order(household_id, store_id, updated_order)
-    return LearnOrderResponse(updated=True, item_order=updated_order)
+    if updated_order != current_order:
+        save_store_order(household_id, store_id, updated_order)
+        return LearnOrderResponse(updated=True, item_order=updated_order)
+    return LearnOrderResponse(updated=False, item_order=current_order)

@@ -44,7 +44,9 @@ def save_store_order(household_id: str, store_id: str, item_order: list[str]) ->
         store_id: The store identifier.
         item_order: Ordered list of item names.
     """
-    _store_order_ref(household_id, store_id).set({"item_order": item_order, "updated_at": datetime.now(tz=UTC)})
+    _store_order_ref(household_id, store_id).set(
+        {"item_order": item_order, "updated_at": datetime.now(tz=UTC)}, merge=True
+    )
 
 
 def delete_store_order(household_id: str, store_id: str) -> None:  # pragma: no cover

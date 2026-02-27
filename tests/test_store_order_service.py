@@ -73,19 +73,12 @@ class TestApplyLearnedOrder:
     def test_full_reversal(self) -> None:
         """DB [C,B,A], tick [A,B,C] → [A,B,C].
 
-        Right-to-left processing:
-        Pair (B,C): B before C in DB ✓ — no move.
-        Pair (A,B): A after B in DB — promote A before B → [A,C,B] wait..
-        Actually let's trace carefully:
-        DB = [C,B,A], pairs right-to-left: (B,C) then (A,B).
-        (B,C): DB positions B=1, C=0. B after C ✓ — no move.
-        (A,B): DB positions A=2, B=1. A after B ✓ — no move??
-        That's wrong — the tick order says A should be BEFORE B.
-
-        Tick [A,B,C] means A was ticked first (encountered first in store).
-        So constraint: A before B, B before C.
-        (B,C): B should be before C. In DB, C=0, B=1 → B is AFTER C → promote B before C → [B,C,A]
-        (A,B): A should be before B. In DB, B=0, A=2 → A is AFTER B → promote A before B → [A,B,C]
+        Right-to-left processing of tick pairs [A,B,C]:
+        Pairs: (B,C), then (A,B).
+        (B,C): constraint "B before C". In DB, C=0, B=1 → B is after C,
+        so promote B before C → [B,C,A].
+        (A,B): constraint "A before B". In DB (after previous step), B=0, A=2
+        → A is after B, so promote A before B → [A,B,C].
         """
         db_order = ["C", "B", "A"]
         tick_sequence = ["A", "B", "C"]

@@ -61,8 +61,24 @@ class Language(str, Enum):
 class GroceryStore(BaseModel):
     """A grocery store with a learned item ordering."""
 
-    id: str = Field(..., description="Unique store identifier")
+    id: str = Field(..., min_length=1, max_length=MAX_STORE_NAME_LENGTH, description="Unique store identifier")
     name: str = Field(..., max_length=MAX_STORE_NAME_LENGTH, description="Display name, e.g. 'ICA Maxi'")
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def validate_store_id(cls, v: object) -> str:
+        """Validate store ID is non-empty and safe for Firestore document IDs."""
+        if not isinstance(v, str):
+            msg = "Store ID must be a string"
+            raise TypeError(msg)
+        v = v.strip()
+        if not v:
+            msg = "Store ID must not be empty"
+            raise ValueError(msg)
+        if "/" in v or ".." in v:
+            msg = "Store ID must not contain '/' or '..'"
+            raise ValueError(msg)
+        return v
 
     @field_validator("name", mode="before")
     @classmethod
@@ -197,6 +213,15 @@ class HouseholdSettings(BaseModel):
         default_factory=list, max_length=MAX_STORES, description="Grocery stores with learned sort orders"
     )
     active_store_id: str | None = Field(default=None, description="Active store ID for grocery auto-sort")
+
+    @model_validator(mode="after")
+    def validate_active_store_id(self) -> "HouseholdSettings":
+        """Ensure active_store_id references a configured store or is None."""
+        if self.active_store_id is not None:
+            store_ids = {s.id for s in self.grocery_stores}
+            if self.active_store_id not in store_ids:
+                self.active_store_id = None
+        return self
 
     @model_validator(mode="before")
     @classmethod
