@@ -332,12 +332,19 @@ export default function HouseholdSettingsScreen() {
                       onAdd={form.addGroceryStore}
                       onRemove={form.removeGroceryStore}
                     />
-                    <View style={{ marginTop: spacing.lg }} />
-                    <ItemsAtHomeSection
-                      itemsAtHome={settings.itemsAtHome}
-                      onAddItem={addItemAtHome}
-                      onRemoveItem={removeItemAtHome}
-                    />
+                    <Section
+                      icon="home"
+                      title={t('settings.itemsAtHome')}
+                      subtitle={t('settings.itemsAtHomeDesc')}
+                      style={{ marginTop: spacing.lg }}
+                      spacing={0}
+                    >
+                      <ItemsAtHomeSection
+                        itemsAtHome={settings.itemsAtHome}
+                        onAddItem={addItemAtHome}
+                        onRemoveItem={removeItemAtHome}
+                      />
+                    </Section>
                   </>
                 ) : (
                   <Section
@@ -354,12 +361,19 @@ export default function HouseholdSettingsScreen() {
                       onAdd={form.addGroceryStore}
                       onRemove={form.removeGroceryStore}
                     />
-                    <View style={{ marginTop: spacing.lg }} />
-                    <ItemsAtHomeSection
-                      itemsAtHome={settings.itemsAtHome}
-                      onAddItem={addItemAtHome}
-                      onRemoveItem={removeItemAtHome}
-                    />
+                    <Section
+                      icon="home"
+                      title={t('settings.itemsAtHome')}
+                      subtitle={t('settings.itemsAtHomeDesc')}
+                      style={{ marginTop: spacing.lg }}
+                      spacing={0}
+                    >
+                      <ItemsAtHomeSection
+                        itemsAtHome={settings.itemsAtHome}
+                        onAddItem={addItemAtHome}
+                        onRemoveItem={removeItemAtHome}
+                      />
+                    </Section>
                   </Section>
                 )}
               </ContentCard>
