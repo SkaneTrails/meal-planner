@@ -67,9 +67,8 @@ describe('useStoreOrder', () => {
       wrapper: createQueryWrapper(),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.data?.item_order).toEqual(['milk', 'bread']));
     expect(mockApi.getStoreOrder).toHaveBeenCalledWith('store_1');
-    expect(result.current.data?.item_order).toEqual(['milk', 'bread']);
   });
 
   it('does not fetch when storeId is null', () => {
