@@ -31,6 +31,7 @@ import {
   useUpdateHouseholdSettings,
 } from './hooks/use-admin';
 import { useAuth } from './hooks/use-auth';
+import type { GroceryStore } from './types';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
@@ -74,11 +75,14 @@ interface SettingsContextType {
   weekStart: WeekStart;
   isLoading: boolean;
   needsLanguagePrompt: boolean;
+  activeStoreId: string | null;
+  groceryStores: GroceryStore[];
   addItemAtHome: (item: string) => Promise<void>;
   removeItemAtHome: (item: string) => Promise<void>;
   isItemAtHome: (item: string) => boolean;
   setLanguage: (language: AppLanguage) => Promise<void>;
   setWeekStart: (weekStart: WeekStart) => Promise<void>;
+  setActiveStoreId: (storeId: string | null) => Promise<void>;
   toggleFavorite: (recipeId: string) => Promise<void>;
   isFavorite: (recipeId: string) => boolean;
   toggleShowHiddenRecipes: () => Promise<void>;
@@ -297,6 +301,20 @@ export const SettingsProvider = ({
     [householdId, updateSettingsMutation],
   );
 
+  const setActiveStoreId = useCallback(
+    async (storeId: string | null) => {
+      if (!householdId) {
+        console.warn('Cannot set active store: no household');
+        return;
+      }
+      await updateSettingsMutation.mutateAsync({
+        householdId,
+        settings: { active_store_id: storeId },
+      });
+    },
+    [householdId, updateSettingsMutation],
+  );
+
   const toggleFavorite = useCallback(
     async (recipeId: string) => {
       if (!householdId) {
@@ -328,17 +346,23 @@ export const SettingsProvider = ({
     await saveLocalSettings(newSettings);
   }, [localSettings, saveLocalSettings]);
 
+  const activeStoreId = householdSettings?.active_store_id ?? null;
+  const groceryStores: GroceryStore[] = householdSettings?.grocery_stores ?? [];
+
   const contextValue = useMemo<SettingsContextType>(
     () => ({
       settings,
       weekStart: resolvedWeekStart,
       isLoading,
       needsLanguagePrompt,
+      activeStoreId,
+      groceryStores,
       addItemAtHome,
       removeItemAtHome,
       isItemAtHome,
       setLanguage,
       setWeekStart,
+      setActiveStoreId,
       toggleFavorite,
       isFavorite,
       toggleShowHiddenRecipes,
@@ -348,11 +372,14 @@ export const SettingsProvider = ({
       resolvedWeekStart,
       isLoading,
       needsLanguagePrompt,
+      activeStoreId,
+      groceryStores,
       addItemAtHome,
       removeItemAtHome,
       isItemAtHome,
       setLanguage,
       setWeekStart,
+      setActiveStoreId,
       toggleFavorite,
       isFavorite,
       toggleShowHiddenRecipes,

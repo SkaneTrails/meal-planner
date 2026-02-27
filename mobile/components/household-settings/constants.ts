@@ -49,4 +49,5 @@ export const DEFAULT_SETTINGS: HouseholdSettings = {
     ingredient_replacements: [],
   },
   equipment: [],
+  grocery_stores: [],
 };

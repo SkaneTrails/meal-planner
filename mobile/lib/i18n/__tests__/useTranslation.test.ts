@@ -30,6 +30,9 @@ describe('useTranslation', () => {
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
       toggleShowHiddenRecipes: vi.fn(),
+      activeStoreId: null,
+      groceryStores: [],
+      setActiveStoreId: vi.fn(),
     });
   });
 
@@ -82,6 +85,9 @@ describe('useTranslation', () => {
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
       toggleShowHiddenRecipes: vi.fn(),
+      activeStoreId: null,
+      groceryStores: [],
+      setActiveStoreId: vi.fn(),
     });
 
     const { result } = renderHook(() => useTranslation());
@@ -103,6 +109,9 @@ describe('useTranslation', () => {
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
       toggleShowHiddenRecipes: vi.fn(),
+      activeStoreId: null,
+      groceryStores: [],
+      setActiveStoreId: vi.fn(),
     });
 
     const { result } = renderHook(() => useTranslation());
@@ -124,6 +133,9 @@ describe('useTranslation', () => {
       toggleFavorite: vi.fn(),
       isFavorite: vi.fn(() => false),
       toggleShowHiddenRecipes: vi.fn(),
+      activeStoreId: null,
+      groceryStores: [],
+      setActiveStoreId: vi.fn(),
     });
 
     const { result } = renderHook(() => useTranslation());

@@ -25,6 +25,7 @@ const mockClearChecked = vi.fn();
 const mockAddCustomItem = vi.fn();
 const mockSetCustomItems = vi.fn();
 const mockSetItemOrder = vi.fn();
+const mockResetTickSequence = vi.fn();
 
 let mockContextState = {
   checkedItems: new Set<string>(),
@@ -33,12 +34,14 @@ let mockContextState = {
   selectedMealKeys: [] as string[],
   mealServings: {} as Record<string, number>,
   isLoading: false,
+  tickSequence: [] as string[],
   toggleItem: vi.fn(),
   setCheckedItems: mockSetCheckedItems,
   clearChecked: mockClearChecked,
   addCustomItem: mockAddCustomItem,
   setCustomItems: mockSetCustomItems,
   setItemOrder: mockSetItemOrder,
+  resetTickSequence: mockResetTickSequence,
   saveSelections: mockSaveSelections,
   clearAll: mockClearAll,
   refreshFromApi: mockRefreshFromApi,
@@ -51,10 +54,13 @@ const mockMealPlan = {
 
 const mockRecipes: Recipe[] = [];
 
+let mockStoreOrderData: { item_order: string[] } | undefined = undefined;
+
 vi.mock('@/lib/hooks', () => ({
   useMealPlan: vi.fn(() => ({ data: mockMealPlan, isLoading: false })),
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
   useGroceryState: vi.fn(() => mockContextState),
+  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
 }));
 
 let focusCallbacks: (() => void)[] = [];
@@ -75,9 +81,17 @@ vi.mock('@/lib/alert', () => ({
   showNotification: vi.fn(),
 }));
 
+const mockLearnStoreOrder = vi.fn().mockResolvedValue({ updated: false, item_order: [] });
+vi.mock('@/lib/api', () => ({
+  api: {
+    learnStoreOrder: (...args: unknown[]) => mockLearnStoreOrder(...args),
+  },
+}));
+
 vi.mock('@/lib/settings-context', () => ({
   useSettings: vi.fn(() => ({
     isItemAtHome: vi.fn(() => false),
+    activeStoreId: null,
     settings: null,
     isLoading: false,
   })),
@@ -97,17 +111,20 @@ describe('useGroceryScreen', () => {
       selectedMealKeys: [],
       mealServings: {},
       isLoading: false,
+      tickSequence: [],
       toggleItem: vi.fn(),
       setCheckedItems: mockSetCheckedItems,
       clearChecked: mockClearChecked,
       addCustomItem: mockAddCustomItem,
       setCustomItems: mockSetCustomItems,
       setItemOrder: mockSetItemOrder,
+      resetTickSequence: mockResetTickSequence,
       saveSelections: mockSaveSelections,
       clearAll: mockClearAll,
       refreshFromApi: mockRefreshFromApi,
     };
     mockMealPlan.meals = {};
+    mockStoreOrderData = undefined;
   });
 
   describe('state from context', () => {
@@ -315,6 +332,87 @@ describe('useGroceryScreen', () => {
       });
 
       expect(mockClearChecked).toHaveBeenCalledOnce();
+    });
+
+    it('resets tick sequence on clear', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleClearChecked();
+      });
+
+      expect(mockResetTickSequence).toHaveBeenCalledOnce();
+    });
+
+    it('calls learnStoreOrder when active store and tick sequence present', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        isItemAtHome: vi.fn(() => false),
+        activeStoreId: 'store_1',
+        groceryStores: [],
+        setActiveStoreId: vi.fn(),
+        settings: null,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useSettings>);
+
+      mockContextState.tickSequence = ['milk', 'bread', 'cheese'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleClearChecked();
+      });
+
+      expect(mockLearnStoreOrder).toHaveBeenCalledWith('store_1', {
+        tick_sequence: ['milk', 'bread', 'cheese'],
+      });
+      expect(mockClearChecked).toHaveBeenCalledOnce();
+      expect(mockResetTickSequence).toHaveBeenCalledOnce();
+    });
+
+    it('skips learnStoreOrder when no active store', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        isItemAtHome: vi.fn(() => false),
+        activeStoreId: null,
+        groceryStores: [],
+        setActiveStoreId: vi.fn(),
+        settings: null,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useSettings>);
+
+      mockContextState.tickSequence = ['milk', 'bread'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleClearChecked();
+      });
+
+      expect(mockLearnStoreOrder).not.toHaveBeenCalled();
+      expect(mockClearChecked).toHaveBeenCalledOnce();
+    });
+
+    it('skips learnStoreOrder when tick sequence too short', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        isItemAtHome: vi.fn(() => false),
+        activeStoreId: 'store_1',
+        groceryStores: [],
+        setActiveStoreId: vi.fn(),
+        settings: null,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useSettings>);
+
+      mockContextState.tickSequence = ['milk'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleClearChecked();
+      });
+
+      expect(mockLearnStoreOrder).not.toHaveBeenCalled();
     });
   });
 
@@ -590,6 +688,80 @@ describe('useGroceryScreen', () => {
 
       expect(result.current.checkedCount).toBe(2);
       expect(result.current.checkedItemsToBuy).toBe(2);
+    });
+  });
+
+  describe('store order sorting', () => {
+    it('sorts unchecked items by store order when available', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'cheese', category: 'dairy' },
+        { name: 'milk', category: 'dairy' },
+      ];
+      mockStoreOrderData = { item_order: ['milk', 'cheese', 'bread'] };
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      const names = result.current.uncheckedItems.map((i) => i.name);
+      expect(names).toEqual(['milk', 'cheese', 'bread']);
+    });
+
+    it('falls back to manual itemOrder when no store order', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'cheese', category: 'dairy' },
+        { name: 'milk', category: 'dairy' },
+      ];
+      mockContextState.itemOrder = ['cheese', 'bread', 'milk'];
+      mockStoreOrderData = undefined;
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      const names = result.current.uncheckedItems.map((i) => i.name);
+      expect(names).toEqual(['cheese', 'bread', 'milk']);
+    });
+
+    it('prefers store order over manual itemOrder', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'cheese', category: 'dairy' },
+        { name: 'milk', category: 'dairy' },
+      ];
+      mockContextState.itemOrder = ['bread', 'cheese', 'milk'];
+      mockStoreOrderData = { item_order: ['milk', 'cheese', 'bread'] };
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      const names = result.current.uncheckedItems.map((i) => i.name);
+      expect(names).toEqual(['milk', 'cheese', 'bread']);
+    });
+
+    it('puts unknown items at end when sorting by store order', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'newitem', category: 'other' },
+        { name: 'milk', category: 'dairy' },
+      ];
+      mockStoreOrderData = { item_order: ['milk', 'bread'] };
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      const names = result.current.uncheckedItems.map((i) => i.name);
+      expect(names).toEqual(['milk', 'bread', 'newitem']);
+    });
+
+    it('falls back to manual order when store order is empty', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+      ];
+      mockContextState.itemOrder = ['milk', 'bread'];
+      mockStoreOrderData = { item_order: [] };
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      const names = result.current.uncheckedItems.map((i) => i.name);
+      expect(names).toEqual(['milk', 'bread']);
     });
   });
 });

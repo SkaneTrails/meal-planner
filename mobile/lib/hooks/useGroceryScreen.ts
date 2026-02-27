@@ -14,7 +14,13 @@ import React, {
   useState,
 } from 'react';
 import { showAlert, showNotification } from '@/lib/alert';
-import { useAllRecipes, useGroceryState, useMealPlan } from '@/lib/hooks';
+import { api } from '@/lib/api';
+import {
+  useAllRecipes,
+  useGroceryState,
+  useMealPlan,
+  useStoreOrder,
+} from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { GroceryItem } from '@/lib/types';
@@ -32,6 +38,8 @@ export const useGroceryScreen = () => {
     addCustomItem,
     setCustomItems: setContextCustomItems,
     setItemOrder,
+    tickSequence,
+    resetTickSequence,
     saveSelections,
     clearAll,
     refreshFromApi,
@@ -49,9 +57,10 @@ export const useGroceryScreen = () => {
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const { t } = useTranslation();
-  const { isItemAtHome } = useSettings();
+  const { isItemAtHome, activeStoreId } = useSettings();
   const { data: mealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
+  const { data: storeOrderData } = useStoreOrder(activeStoreId);
 
   const filterOutItemsAtHome = useCallback(
     (itemName: string) => isItemAtHome(itemName),
@@ -139,14 +148,18 @@ export const useGroceryScreen = () => {
     const unordered = groceryListWithChecked.items.filter(
       (item) => !item.checked,
     );
-    if (itemOrder.length === 0) return unordered;
-    const orderIndex = new Map(itemOrder.map((name, i) => [name, i]));
+
+    const storeOrder = storeOrderData?.item_order ?? [];
+    const effectiveOrder = storeOrder.length > 0 ? storeOrder : itemOrder;
+
+    if (effectiveOrder.length === 0) return unordered;
+    const orderIndex = new Map(effectiveOrder.map((name, i) => [name, i]));
     return [...unordered].sort((a, b) => {
       const ai = orderIndex.get(a.name) ?? Number.MAX_SAFE_INTEGER;
       const bi = orderIndex.get(b.name) ?? Number.MAX_SAFE_INTEGER;
       return ai - bi;
     });
-  }, [groceryListWithChecked.items, itemOrder]);
+  }, [groceryListWithChecked.items, itemOrder, storeOrderData]);
 
   const pickedItems = useMemo(
     () => groceryListWithChecked.items.filter((item) => item.checked),
@@ -205,7 +218,17 @@ export const useGroceryScreen = () => {
     [setItemOrder],
   );
 
-  const handleClearChecked = () => clearChecked();
+  const MIN_TICK_SEQUENCE_LENGTH = 2;
+
+  const handleClearChecked = useCallback(() => {
+    if (activeStoreId && tickSequence.length >= MIN_TICK_SEQUENCE_LENGTH) {
+      api
+        .learnStoreOrder(activeStoreId, { tick_sequence: tickSequence })
+        .catch(() => {});
+    }
+    resetTickSequence();
+    clearChecked();
+  }, [activeStoreId, tickSequence, resetTickSequence, clearChecked]);
 
   const handleClearAll = () => {
     const doClear = async () => {

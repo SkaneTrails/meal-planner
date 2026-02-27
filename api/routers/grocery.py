@@ -4,6 +4,7 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
 from api.auth.firebase import require_auth
 from api.auth.helpers import require_household
@@ -19,8 +20,10 @@ from api.models.grocery_list import (
 )
 from api.services.grocery_categories import detect_category
 from api.services.ingredient_parser import parse_ingredient
+from api.services.store_order import apply_learned_order, is_order_consistent
 from api.storage import grocery_list_storage, meal_plan_storage
 from api.storage.recipe_queries import get_recipes_by_ids
+from api.storage.store_order_storage import get_store_order, save_store_order
 
 router = APIRouter(prefix="/grocery", tags=["grocery"])
 
@@ -198,3 +201,72 @@ async def clear_grocery_state(user: Annotated[AuthenticatedUser, Depends(require
     """Clear (delete) the household's grocery list state."""
     household_id = require_household(user)
     grocery_list_storage.delete_grocery_state(household_id)
+
+
+# ---------------------------------------------------------------------------
+# Store order learning endpoints
+# ---------------------------------------------------------------------------
+
+
+class LearnOrderRequest(BaseModel):
+    """Request body for learning store layout from tick order."""
+
+    tick_sequence: list[str] = Field(..., min_length=2, description="Items in the order they were ticked off")
+
+
+class LearnOrderResponse(BaseModel):
+    """Response from a learn request."""
+
+    updated: bool = Field(..., description="Whether the order was changed (False = already in order)")
+    item_order: list[str] = Field(..., description="The current item ordering after processing")
+
+
+class StoreOrderResponse(BaseModel):
+    """Response containing the learned item ordering for a store."""
+
+    item_order: list[str] = Field(default_factory=list, description="Ordered list of item names")
+
+
+@router.get("/stores/{store_id}/order")
+async def get_store_item_order(
+    store_id: str, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> StoreOrderResponse:
+    """Get the learned item ordering for a store.
+
+    Returns the item ordering that the household has built up
+    over time by ticking off items during shopping trips.
+    """
+    household_id = require_household(user)
+    item_order = get_store_order(household_id, store_id)
+    return StoreOrderResponse(item_order=item_order)
+
+
+@router.post("/stores/{store_id}/learn")
+async def learn_store_order(
+    store_id: str, body: LearnOrderRequest, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> LearnOrderResponse:
+    """Learn store layout from a shopping trip's tick sequence.
+
+    Compares the tick sequence against the stored ordering and only
+    updates when items were ticked out of their stored order. Uses a
+    promote-only algorithm: items ticked earlier than expected get
+    moved up in the list, items already in order stay put.
+
+    Skips the Firestore write entirely when items were already in order.
+    """
+    household_id = require_household(user)
+    current_order = get_store_order(household_id, store_id)
+
+    if is_order_consistent(current_order, body.tick_sequence):
+        # Append any new items that aren't in the DB yet
+        existing = set(current_order)
+        new_items = [item for item in body.tick_sequence if item not in existing]
+        if new_items:
+            updated_order = current_order + new_items
+            save_store_order(household_id, store_id, updated_order)
+            return LearnOrderResponse(updated=True, item_order=updated_order)
+        return LearnOrderResponse(updated=False, item_order=current_order)
+
+    updated_order = apply_learned_order(current_order, body.tick_sequence)
+    save_store_order(household_id, store_id, updated_order)
+    return LearnOrderResponse(updated=True, item_order=updated_order)
