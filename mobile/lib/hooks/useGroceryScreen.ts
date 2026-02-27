@@ -161,10 +161,13 @@ export const useGroceryScreen = () => {
     });
   }, [groceryListWithChecked.items, itemOrder, storeOrderData]);
 
-  const pickedItems = useMemo(
-    () => groceryListWithChecked.items.filter((item) => item.checked),
-    [groceryListWithChecked.items],
-  );
+  const pickedItems = useMemo(() => {
+    const checked = groceryListWithChecked.items.filter((item) => item.checked);
+    const tickIndex = new Map(tickSequence.map((name, i) => [name, i]));
+    return [...checked].sort(
+      (a, b) => (tickIndex.get(a.name) ?? -1) - (tickIndex.get(b.name) ?? -1),
+    );
+  }, [groceryListWithChecked.items, tickSequence]);
 
   const handleItemToggle = (itemName: string, checked: boolean) => {
     const newSet = new Set(checkedItems);

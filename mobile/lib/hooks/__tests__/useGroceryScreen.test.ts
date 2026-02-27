@@ -602,6 +602,24 @@ describe('useGroceryScreen', () => {
         expect.objectContaining({ name: 'bread', checked: true }),
       ]);
     });
+
+    it('sorts picked items by tick-off order', () => {
+      mockContextState.checkedItems = new Set(['eggs', 'bread', 'milk']);
+      mockContextState.tickSequence = ['milk', 'eggs', 'bread'];
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+        { name: 'eggs', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.pickedItems.map((i) => i.name)).toEqual([
+        'milk',
+        'eggs',
+        'bread',
+      ]);
+    });
   });
 
   describe('handleReorder', () => {
