@@ -39,6 +39,7 @@ export const useGroceryScreen = () => {
     setCustomItems: setContextCustomItems,
     setItemOrder,
     tickSequence,
+    toggleItem,
     resetTickSequence,
     saveSelections,
     clearAll,
@@ -169,15 +170,12 @@ export const useGroceryScreen = () => {
     );
   }, [groceryListWithChecked.items, tickSequence]);
 
-  const handleItemToggle = (itemName: string, checked: boolean) => {
-    const newSet = new Set(checkedItems);
-    if (checked) {
-      newSet.add(itemName);
-    } else {
-      newSet.delete(itemName);
-    }
-    setCheckedItems(newSet);
-  };
+  const handleItemToggle = useCallback(
+    (itemName: string, _checked: boolean) => {
+      toggleItem(itemName);
+    },
+    [toggleItem],
+  );
 
   const handleDeleteItem = useCallback(
     (itemName: string) => {
