@@ -417,17 +417,17 @@ describe('useGroceryScreen', () => {
   });
 
   describe('handleItemToggle', () => {
-    it('adds item to checked set when checked', () => {
+    it('delegates to context toggleItem when checking', () => {
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
         result.current.handleItemToggle('milk', true);
       });
 
-      expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set(['milk']));
+      expect(mockContextState.toggleItem).toHaveBeenCalledWith('milk');
     });
 
-    it('removes item from checked set when unchecked', () => {
+    it('delegates to context toggleItem when unchecking', () => {
       mockContextState.checkedItems = new Set(['milk']);
 
       const { result } = renderHook(() => useGroceryScreen());
@@ -436,7 +436,7 @@ describe('useGroceryScreen', () => {
         result.current.handleItemToggle('milk', false);
       });
 
-      expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set());
+      expect(mockContextState.toggleItem).toHaveBeenCalledWith('milk');
     });
   });
 
@@ -600,6 +600,24 @@ describe('useGroceryScreen', () => {
       ]);
       expect(result.current.pickedItems).toEqual([
         expect.objectContaining({ name: 'bread', checked: true }),
+      ]);
+    });
+
+    it('sorts picked items by tick-off order', () => {
+      mockContextState.checkedItems = new Set(['eggs', 'bread', 'milk']);
+      mockContextState.tickSequence = ['milk', 'eggs', 'bread'];
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+        { name: 'eggs', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.pickedItems.map((i) => i.name)).toEqual([
+        'milk',
+        'eggs',
+        'bread',
       ]);
     });
   });
