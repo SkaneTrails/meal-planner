@@ -63,7 +63,7 @@ export const useGroceryScreen = () => {
   const { recipes } = useAllRecipes();
   const { data: storeOrderData } = useStoreOrder(activeStoreId);
 
-  const filterOutItemsAtHome = useCallback(
+  const isGeneratedItemAtHome = useCallback(
     (item: GroceryItem) =>
       item.recipe_sources.length > 0 && isItemAtHome(item.name),
     [isItemAtHome],
@@ -317,11 +317,8 @@ export const useGroceryScreen = () => {
   const checkedCount = checkedItems.size;
 
   const hiddenAtHomeCount = useMemo(
-    () =>
-      groceryListWithChecked.items.filter(
-        (item) => item.recipe_sources.length > 0 && isItemAtHome(item.name),
-      ).length,
-    [groceryListWithChecked.items, isItemAtHome],
+    () => groceryListWithChecked.items.filter(isGeneratedItemAtHome).length,
+    [groceryListWithChecked.items, isGeneratedItemAtHome],
   );
 
   const itemsToBuy = totalItems - hiddenAtHomeCount;
@@ -329,11 +326,9 @@ export const useGroceryScreen = () => {
   const checkedItemsToBuy = useMemo(
     () =>
       groceryListWithChecked.items.filter(
-        (item) =>
-          !(item.recipe_sources.length > 0 && isItemAtHome(item.name)) &&
-          checkedItems.has(item.name),
+        (item) => !isGeneratedItemAtHome(item) && checkedItems.has(item.name),
       ).length,
-    [groceryListWithChecked.items, isItemAtHome, checkedItems],
+    [groceryListWithChecked.items, isGeneratedItemAtHome, checkedItems],
   );
 
   return {
@@ -364,6 +359,6 @@ export const useGroceryScreen = () => {
     handleClearAll,
     handleClearMealPlanItems,
     handleClearManualItems,
-    filterOutItemsAtHome,
+    filterOutItemsAtHome: isGeneratedItemAtHome,
   };
 };

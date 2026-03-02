@@ -710,17 +710,34 @@ describe('useGroceryScreen', () => {
   });
 
   describe('items at home filtering', () => {
-    it('filterOutItemsAtHome hides generated items that are at home', async () => {
+    const mockSettingsWithItemAtHome = async (
+      matcher: (name: string) => boolean,
+    ) => {
       const { useSettings } = await import('@/lib/settings-context');
       vi.mocked(useSettings).mockReturnValue({
-        isItemAtHome: vi.fn((name: string) => name === 'salt'),
+        isItemAtHome: vi.fn(matcher),
         activeStoreId: null,
         groceryStores: [],
         setActiveStoreId: vi.fn(),
         settings: null,
         isLoading: false,
       } as unknown as ReturnType<typeof useSettings>);
+    };
 
+    const buildGroceryItem = (
+      name: string,
+      recipeSources: string[],
+    ): GroceryItem => ({
+      name,
+      quantity: null,
+      unit: null,
+      category: 'other',
+      checked: false,
+      recipe_sources: recipeSources,
+      quantity_sources: [],
+    });
+
+    const setupMealPlanWithSalt = () => {
       mockRecipes.length = 0;
       mockRecipes.push({
         id: 'r1',
@@ -730,33 +747,20 @@ describe('useGroceryScreen', () => {
       } as Recipe);
       mockMealPlan.meals = { mon_dinner: 'r1' };
       mockContextState.selectedMealKeys = ['mon_dinner'];
+    };
+
+    it('filterOutItemsAtHome hides generated items that are at home', async () => {
+      await mockSettingsWithItemAtHome((name) => name === 'salt');
+      setupMealPlanWithSalt();
 
       const { result } = renderHook(() => useGroceryScreen());
 
-      const generated = (name: string): GroceryItem => ({
-        name,
-        quantity: null,
-        unit: null,
-        category: 'other',
-        checked: false,
-        recipe_sources: ['Pasta'],
-        quantity_sources: [],
-      });
-
-      expect(result.current.filterOutItemsAtHome(generated('salt'))).toBe(true);
-      expect(result.current.filterOutItemsAtHome(generated('pasta'))).toBe(false);
+      expect(result.current.filterOutItemsAtHome(buildGroceryItem('salt', ['Pasta']))).toBe(true);
+      expect(result.current.filterOutItemsAtHome(buildGroceryItem('pasta', ['Pasta']))).toBe(false);
     });
 
     it('filterOutItemsAtHome does NOT hide manual items even if they match items at home', async () => {
-      const { useSettings } = await import('@/lib/settings-context');
-      vi.mocked(useSettings).mockReturnValue({
-        isItemAtHome: vi.fn((name: string) => name === 'salt'),
-        activeStoreId: null,
-        groceryStores: [],
-        setActiveStoreId: vi.fn(),
-        settings: null,
-        isLoading: false,
-      } as unknown as ReturnType<typeof useSettings>);
+      await mockSettingsWithItemAtHome((name) => name === 'salt');
 
       mockContextState.customItems = [
         { name: 'salt', category: 'pantry' },
@@ -765,40 +769,13 @@ describe('useGroceryScreen', () => {
 
       const { result } = renderHook(() => useGroceryScreen());
 
-      const manual = (name: string): GroceryItem => ({
-        name,
-        quantity: null,
-        unit: null,
-        category: 'other',
-        checked: false,
-        recipe_sources: [],
-        quantity_sources: [],
-      });
-
-      expect(result.current.filterOutItemsAtHome(manual('salt'))).toBe(false);
-      expect(result.current.filterOutItemsAtHome(manual('bread'))).toBe(false);
+      expect(result.current.filterOutItemsAtHome(buildGroceryItem('salt', []))).toBe(false);
+      expect(result.current.filterOutItemsAtHome(buildGroceryItem('bread', []))).toBe(false);
     });
 
     it('hiddenAtHomeCount only counts generated items, not manual items', async () => {
-      const { useSettings } = await import('@/lib/settings-context');
-      vi.mocked(useSettings).mockReturnValue({
-        isItemAtHome: vi.fn((name: string) => name === 'salt'),
-        activeStoreId: null,
-        groceryStores: [],
-        setActiveStoreId: vi.fn(),
-        settings: null,
-        isLoading: false,
-      } as unknown as ReturnType<typeof useSettings>);
-
-      mockRecipes.length = 0;
-      mockRecipes.push({
-        id: 'r1',
-        title: 'Pasta',
-        ingredients: ['200g pasta', '1 tsp salt'],
-        servings: 2,
-      } as Recipe);
-      mockMealPlan.meals = { mon_dinner: 'r1' };
-      mockContextState.selectedMealKeys = ['mon_dinner'];
+      await mockSettingsWithItemAtHome((name) => name === 'salt');
+      setupMealPlanWithSalt();
       mockContextState.customItems = [
         { name: 'salt', category: 'pantry' },
       ];
@@ -809,15 +786,7 @@ describe('useGroceryScreen', () => {
     });
 
     it('checkedItemsToBuy includes checked manual items even if they match items at home', async () => {
-      const { useSettings } = await import('@/lib/settings-context');
-      vi.mocked(useSettings).mockReturnValue({
-        isItemAtHome: vi.fn((name: string) => name === 'salt'),
-        activeStoreId: null,
-        groceryStores: [],
-        setActiveStoreId: vi.fn(),
-        settings: null,
-        isLoading: false,
-      } as unknown as ReturnType<typeof useSettings>);
+      await mockSettingsWithItemAtHome((name) => name === 'salt');
 
       mockContextState.customItems = [
         { name: 'salt', category: 'pantry' },
