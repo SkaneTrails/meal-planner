@@ -194,7 +194,7 @@ describe('GroceryListView', () => {
       <GroceryListView
         uncheckedItems={items}
         pickedItems={[]}
-        filterOutItems={(name) => name === 'Salt'}
+        filterOutItems={(item) => item.name === 'Salt'}
       />,
     );
     expect(screen.getByText('Milk')).toBeDefined();
