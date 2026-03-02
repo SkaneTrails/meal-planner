@@ -84,7 +84,7 @@ interface GroceryListViewProps {
   reorderMode?: boolean;
   onItemToggle?: (itemName: string, checked: boolean) => void;
   onDeleteItem?: (itemName: string) => void;
-  filterOutItems?: (itemName: string) => boolean;
+  filterOutItems?: (item: GroceryItem) => boolean;
   onReorder?: (items: GroceryItem[]) => void;
 }
 
@@ -107,11 +107,11 @@ export const GroceryListView = ({
   const [pickedCollapsed, setPickedCollapsed] = useState(false);
 
   const filteredUnchecked = filterOutItems
-    ? uncheckedItems.filter((item) => !filterOutItems(item.name))
+    ? uncheckedItems.filter((item) => !filterOutItems(item))
     : uncheckedItems;
 
   const filteredPicked = filterOutItems
-    ? pickedItems.filter((item) => !filterOutItems(item.name))
+    ? pickedItems.filter((item) => !filterOutItems(item))
     : pickedItems;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only fire on reorderMode transitions

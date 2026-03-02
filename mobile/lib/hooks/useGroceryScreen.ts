@@ -64,7 +64,8 @@ export const useGroceryScreen = () => {
   const { data: storeOrderData } = useStoreOrder(activeStoreId);
 
   const filterOutItemsAtHome = useCallback(
-    (itemName: string) => isItemAtHome(itemName),
+    (item: GroceryItem) =>
+      item.recipe_sources.length > 0 && isItemAtHome(item.name),
     [isItemAtHome],
   );
 
@@ -317,8 +318,9 @@ export const useGroceryScreen = () => {
 
   const hiddenAtHomeCount = useMemo(
     () =>
-      groceryListWithChecked.items.filter((item) => isItemAtHome(item.name))
-        .length,
+      groceryListWithChecked.items.filter(
+        (item) => item.recipe_sources.length > 0 && isItemAtHome(item.name),
+      ).length,
     [groceryListWithChecked.items, isItemAtHome],
   );
 
@@ -327,7 +329,9 @@ export const useGroceryScreen = () => {
   const checkedItemsToBuy = useMemo(
     () =>
       groceryListWithChecked.items.filter(
-        (item) => !isItemAtHome(item.name) && checkedItems.has(item.name),
+        (item) =>
+          !(item.recipe_sources.length > 0 && isItemAtHome(item.name)) &&
+          checkedItems.has(item.name),
       ).length,
     [groceryListWithChecked.items, isItemAtHome, checkedItems],
   );
