@@ -30,3 +30,7 @@ tfstate_bucket_name = "your-tfstate-bucket-name"
 # Firestore backup configuration
 # GCS bucket for backups (must be globally unique)
 backup_bucket_name = "your-project-firestore-backups"
+
+# Additional authorized domains for Firebase OAuth redirects
+# Include domains from other apps sharing this GCP project's Identity Platform
+# firebase_authorized_domains = ["other-app.web.app", "other-app.firebaseapp.com"]
