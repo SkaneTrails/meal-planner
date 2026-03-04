@@ -40,17 +40,19 @@ export default function GroceryScreen() {
     checkedItemsToBuy,
     uncheckedItems,
     pickedItems,
+    deleteSelection,
+    mealPlanItemNames,
+    manualItemNames,
     handleItemToggle,
     handleAddItem,
-    handleDeleteItem,
+    toggleDeleteItem,
     handleToggleAddItem,
     handleToggleDeleteMode,
     handleToggleReorderMode,
     handleReorder,
-    handleClearChecked,
-    handleClearAll,
-    handleClearMealPlanItems,
-    handleClearManualItems,
+    handleClearPicked,
+    handleDeleteSelected,
+    setDeleteSelection,
     filterOutItemsAtHome,
   } = useGroceryScreen();
 
@@ -86,13 +88,14 @@ export default function GroceryScreen() {
             showAddItem={showAddItem}
             deleteMode={deleteMode}
             reorderMode={reorderMode}
+            deleteSelection={deleteSelection}
+            mealPlanItemNames={mealPlanItemNames}
+            manualItemNames={manualItemNames}
             onToggleAddItem={handleToggleAddItem}
             onToggleDeleteMode={handleToggleDeleteMode}
             onToggleReorderMode={handleToggleReorderMode}
-            onClearChecked={handleClearChecked}
-            onClearMealPlanItems={handleClearMealPlanItems}
-            onClearManualItems={handleClearManualItems}
-            onClearAll={handleClearAll}
+            onSelectionChange={setDeleteSelection}
+            onDeleteSelected={handleDeleteSelected}
           />
 
           {showAddItem && (
@@ -112,10 +115,12 @@ export default function GroceryScreen() {
           pickedItems={pickedItems}
           deleteMode={deleteMode}
           reorderMode={reorderMode}
+          deleteSelection={deleteSelection}
           onItemToggle={handleItemToggle}
-          onDeleteItem={handleDeleteItem}
+          onToggleDeleteItem={toggleDeleteItem}
           filterOutItems={filterOutItemsAtHome}
           onReorder={handleReorder}
+          onClearPicked={handleClearPicked}
         />
       ) : (
         <EmptyGroceryState
