@@ -405,6 +405,7 @@ describe('useGroceryScreen', () => {
 
       expect(result.current.deleteSelection.size).toBe(0);
       expect(result.current.deleteMode).toBe(false);
+      expect(mockResetTickSequence).toHaveBeenCalled();
     });
   });
 

@@ -43,8 +43,6 @@ export const useGroceryScreen = () => {
     tickSequence,
     toggleItem,
     resetTickSequence,
-    saveSelections,
-    clearAll,
     refreshFromApi,
     isLoading: contextLoading,
   } = useGroceryState();
@@ -324,6 +322,7 @@ export const useGroceryScreen = () => {
 
       setDeleteSelection(new Set());
       setDeleteMode(false);
+      resetTickSequence();
     };
 
     showAlert(t('grocery.deleteSelected'), t('grocery.deleteSelectedMessage'), [
@@ -340,6 +339,7 @@ export const useGroceryScreen = () => {
     checkedItems,
     setContextCustomItems,
     setCheckedItems,
+    resetTickSequence,
     t,
   ]);
 

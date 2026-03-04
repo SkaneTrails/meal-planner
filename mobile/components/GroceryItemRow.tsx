@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSelection } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
@@ -63,6 +64,7 @@ export const GroceryItemRow = ({
   dragAttributes,
 }: GroceryItemRowProps) => {
   const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
+  const { t } = useTranslation();
   const [checked, setChecked] = useState(item.checked);
 
   // Sync with prop when parent updates (e.g., Firestore refresh, new items generated)
@@ -183,7 +185,9 @@ export const GroceryItemRow = ({
           onPress={onToggleDeleteSelection}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: selectedForDelete }}
-          accessibilityLabel={`Select ${item.name} for deletion`}
+          accessibilityLabel={t('grocery.selectForDeletion', {
+            name: item.name,
+          })}
           style={{ marginLeft: spacing.sm, padding: spacing.xs }}
           testID={`select-delete-${item.name}`}
         >

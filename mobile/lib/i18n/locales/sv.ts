@@ -447,6 +447,7 @@ const sv: Translations = {
       'Detta tar bort plockade varor från listan och uppdaterar butiksordningen.',
     deleteSelected: 'Radera',
     deleteSelectedMessage: 'Detta tar bort de valda varorna från din lista.',
+    selectForDeletion: 'Välj {{name}} för radering',
     selectAll: 'Alla',
     clear: 'Rensa',
     failedToClearList: 'Kunde inte rensa listan',
