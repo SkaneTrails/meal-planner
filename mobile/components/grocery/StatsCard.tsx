@@ -171,13 +171,14 @@ interface StatsCardProps {
   showAddItem: boolean;
   deleteMode: boolean;
   reorderMode: boolean;
+  deleteSelection: Set<string>;
+  mealPlanItemNames: string[];
+  manualItemNames: string[];
   onToggleAddItem: () => void;
   onToggleDeleteMode: () => void;
   onToggleReorderMode: () => void;
-  onClearChecked: () => void;
-  onClearMealPlanItems: () => void;
-  onClearManualItems: () => void;
-  onClearAll: () => void;
+  onSelectionChange: (selection: Set<string>) => void;
+  onDeleteSelected: () => void;
 }
 
 export const StatsCard = ({
@@ -189,13 +190,14 @@ export const StatsCard = ({
   showAddItem,
   deleteMode,
   reorderMode,
+  deleteSelection,
+  mealPlanItemNames,
+  manualItemNames,
   onToggleAddItem,
   onToggleDeleteMode,
   onToggleReorderMode,
-  onClearChecked,
-  onClearMealPlanItems,
-  onClearManualItems,
-  onClearAll,
+  onSelectionChange,
+  onDeleteSelected,
 }: StatsCardProps) => {
   const { colors, fonts, shadows, visibility } = useTheme();
   const { t } = useTranslation();
@@ -259,11 +261,11 @@ export const StatsCard = ({
 
       {deleteMode && (
         <ClearMenu
-          checkedCount={checkedCount}
-          onClearChecked={onClearChecked}
-          onClearMealPlanItems={onClearMealPlanItems}
-          onClearManualItems={onClearManualItems}
-          onClearAll={onClearAll}
+          deleteSelection={deleteSelection}
+          mealPlanItemNames={mealPlanItemNames}
+          manualItemNames={manualItemNames}
+          onSelectionChange={onSelectionChange}
+          onDeleteSelected={onDeleteSelected}
         />
       )}
 

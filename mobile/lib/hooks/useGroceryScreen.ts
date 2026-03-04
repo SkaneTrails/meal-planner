@@ -5,6 +5,7 @@
  * This hook handles: item aggregation, display formatting, and screen-level UI state.
  */
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from 'expo-router';
 import React, {
   useCallback,
@@ -13,9 +14,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { showAlert, showNotification } from '@/lib/alert';
+import { showAlert } from '@/lib/alert';
 import { api } from '@/lib/api';
 import {
+  groceryKeys,
   useAllRecipes,
   useGroceryState,
   useMealPlan,
@@ -41,8 +43,6 @@ export const useGroceryScreen = () => {
     tickSequence,
     toggleItem,
     resetTickSequence,
-    saveSelections,
-    clearAll,
     refreshFromApi,
     isLoading: contextLoading,
   } = useGroceryState();
@@ -51,12 +51,16 @@ export const useGroceryScreen = () => {
   const [showAddItem, setShowAddItem] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
   const [reorderMode, setReorderMode] = useState(false);
+  const [deleteSelection, setDeleteSelection] = useState<Set<string>>(
+    new Set(),
+  );
   const [removedGeneratedItems, setRemovedGeneratedItems] = useState<
     Set<string>
   >(new Set());
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const { isItemAtHome, activeStoreId } = useSettings();
   const { data: mealPlan } = useMealPlan();
@@ -76,11 +80,22 @@ export const useGroceryScreen = () => {
     }
   }, [contextLoading, hasLoadedOnce]);
 
-  // Refresh from Firestore when screen gains focus
+  // Refresh from Firestore when screen gains focus; reset modes on blur
   useFocusEffect(
     React.useCallback(() => {
       void refreshFromApi().catch(() => {});
-    }, [refreshFromApi]),
+      if (activeStoreId) {
+        void queryClient.invalidateQueries({
+          queryKey: groceryKeys.storeOrder(activeStoreId),
+        });
+      }
+      return () => {
+        setDeleteMode(false);
+        setDeleteSelection(new Set());
+        setReorderMode(false);
+        setShowAddItem(false);
+      };
+    }, [refreshFromApi, activeStoreId, queryClient]),
   );
 
   // Convert CustomGroceryItem[] from context to GroceryItem[] for display
@@ -178,22 +193,17 @@ export const useGroceryScreen = () => {
     [toggleItem],
   );
 
-  const handleDeleteItem = useCallback(
-    (itemName: string) => {
-      const isCustom = contextCustomItems.some((ci) => ci.name === itemName);
-      if (isCustom) {
-        setContextCustomItems(
-          contextCustomItems.filter((ci) => ci.name !== itemName),
-        );
+  const toggleDeleteItem = useCallback((itemName: string) => {
+    setDeleteSelection((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemName)) {
+        next.delete(itemName);
       } else {
-        setRemovedGeneratedItems((prev) => new Set([...prev, itemName]));
+        next.add(itemName);
       }
-      const newChecked = new Set(checkedItems);
-      newChecked.delete(itemName);
-      setCheckedItems(newChecked);
-    },
-    [contextCustomItems, setContextCustomItems, checkedItems, setCheckedItems],
-  );
+      return next;
+    });
+  }, []);
 
   const handleToggleAddItem = useCallback(() => {
     setShowAddItem((prev) => !prev);
@@ -203,6 +213,7 @@ export const useGroceryScreen = () => {
 
   const handleToggleDeleteMode = useCallback(() => {
     setDeleteMode((prev) => !prev);
+    setDeleteSelection(new Set());
     setReorderMode(false);
     setShowAddItem(false);
   }, []);
@@ -222,90 +233,115 @@ export const useGroceryScreen = () => {
 
   const MIN_TICK_SEQUENCE_LENGTH = 2;
 
-  const handleClearChecked = useCallback(() => {
-    if (activeStoreId && tickSequence.length >= MIN_TICK_SEQUENCE_LENGTH) {
-      api
-        .learnStoreOrder(activeStoreId, { tick_sequence: tickSequence })
-        .catch(() => {});
-    }
-    resetTickSequence();
-    clearChecked();
-  }, [activeStoreId, tickSequence, resetTickSequence, clearChecked]);
-
-  const handleClearAll = () => {
-    const doClear = async () => {
-      try {
-        await clearAll();
-        setGeneratedItems([]);
-        setRemovedGeneratedItems(new Set());
-        setDeleteMode(false);
-        setReorderMode(false);
-      } catch {
-        showNotification(t('common.error'), t('grocery.failedToClearList'));
+  const handleClearPicked = useCallback(() => {
+    const doClear = () => {
+      if (activeStoreId && tickSequence.length >= MIN_TICK_SEQUENCE_LENGTH) {
+        api
+          .learnStoreOrder(activeStoreId, { tick_sequence: tickSequence })
+          .then((response) => {
+            queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
+              item_order: response.item_order,
+            });
+          })
+          .catch(() => {});
       }
+
+      const pickedNames = new Set(
+        [...checkedItems].filter(
+          (name) =>
+            contextCustomItems.some((ci) => ci.name === name) ||
+            visibleGeneratedItems.some((gi) => gi.name === name),
+        ),
+      );
+
+      setContextCustomItems(
+        contextCustomItems.filter((ci) => !pickedNames.has(ci.name)),
+      );
+      setRemovedGeneratedItems((prev) => {
+        const next = new Set(prev);
+        for (const name of pickedNames) {
+          if (!contextCustomItems.some((ci) => ci.name === name)) {
+            next.add(name);
+          }
+        }
+        return next;
+      });
+
+      resetTickSequence();
+      clearChecked();
     };
 
-    showAlert(
-      t('grocery.clearEntireList'),
-      t('grocery.clearEntireListMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-      ],
-    );
-  };
+    showAlert(t('grocery.clearPicked'), t('grocery.clearPickedMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+    ]);
+  }, [
+    activeStoreId,
+    tickSequence,
+    checkedItems,
+    contextCustomItems,
+    visibleGeneratedItems,
+    setContextCustomItems,
+    resetTickSequence,
+    clearChecked,
+    queryClient,
+    t,
+  ]);
 
-  const handleClearMealPlanItems = () => {
-    const doClear = async () => {
-      try {
-        const customNames = new Set(contextCustomItems.map((i) => i.name));
-        setCheckedItems(
-          new Set([...checkedItems].filter((name) => customNames.has(name))),
+  const handleDeleteSelected = useCallback(() => {
+    if (deleteSelection.size === 0) return;
+
+    const doDelete = () => {
+      const customToRemove = new Set<string>();
+      const generatedToRemove = new Set<string>();
+
+      for (const name of deleteSelection) {
+        if (contextCustomItems.some((ci) => ci.name === name)) {
+          customToRemove.add(name);
+        } else {
+          generatedToRemove.add(name);
+        }
+      }
+
+      if (customToRemove.size > 0) {
+        setContextCustomItems(
+          contextCustomItems.filter((ci) => !customToRemove.has(ci.name)),
         );
-        await saveSelections([], {});
-        setGeneratedItems([]);
-        setRemovedGeneratedItems(new Set());
-        setDeleteMode(false);
-        setReorderMode(false);
-      } catch {
-        showNotification(t('common.error'), t('grocery.failedToClearList'));
       }
+      if (generatedToRemove.size > 0) {
+        setRemovedGeneratedItems((prev) => {
+          const next = new Set(prev);
+          for (const name of generatedToRemove) next.add(name);
+          return next;
+        });
+      }
+
+      const newChecked = new Set(checkedItems);
+      for (const name of deleteSelection) newChecked.delete(name);
+      setCheckedItems(newChecked);
+
+      setDeleteSelection(new Set());
+      setDeleteMode(false);
+      resetTickSequence();
     };
 
-    showAlert(
-      t('grocery.clearMealPlanItems'),
-      t('grocery.clearMealPlanItemsMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-      ],
-    );
-  };
-
-  const handleClearManualItems = () => {
-    const doClear = async () => {
-      try {
-        const generatedNames = new Set(generatedItems.map((i) => i.name));
-        setCheckedItems(
-          new Set([...checkedItems].filter((name) => generatedNames.has(name))),
-        );
-        setContextCustomItems([]);
-        setDeleteMode(false);
-        setReorderMode(false);
-      } catch {
-        showNotification(t('common.error'), t('grocery.failedToClearList'));
-      }
-    };
-
-    showAlert(
-      t('grocery.clearManualItems'),
-      t('grocery.clearManualItemsMessage'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
-      ],
-    );
-  };
+    showAlert(t('grocery.deleteSelected'), t('grocery.deleteSelectedMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('grocery.deleteSelected'),
+        style: 'destructive',
+        onPress: doDelete,
+      },
+    ]);
+  }, [
+    deleteSelection,
+    contextCustomItems,
+    checkedItems,
+    setContextCustomItems,
+    setCheckedItems,
+    resetTickSequence,
+    t,
+  ]);
 
   const handleAddItem = () => {
     if (!newItemText.trim()) return;
@@ -331,6 +367,15 @@ export const useGroceryScreen = () => {
     [groceryListWithChecked.items, isGeneratedItemAtHome, checkedItems],
   );
 
+  const mealPlanItemNames = useMemo(
+    () => visibleGeneratedItems.map((i) => i.name),
+    [visibleGeneratedItems],
+  );
+  const manualItemNames = useMemo(
+    () => customItems.map((i) => i.name),
+    [customItems],
+  );
+
   return {
     isLoading: contextLoading,
     hasLoadedOnce,
@@ -338,6 +383,7 @@ export const useGroceryScreen = () => {
     setShowAddItem,
     deleteMode,
     reorderMode,
+    deleteSelection,
     newItemText,
     setNewItemText,
     totalItems,
@@ -348,17 +394,18 @@ export const useGroceryScreen = () => {
     uncheckedItems,
     pickedItems,
     groceryListWithChecked,
+    mealPlanItemNames,
+    manualItemNames,
     handleItemToggle,
     handleAddItem,
-    handleDeleteItem,
+    toggleDeleteItem,
     handleToggleAddItem,
     handleToggleDeleteMode,
     handleToggleReorderMode,
     handleReorder,
-    handleClearChecked,
-    handleClearAll,
-    handleClearMealPlanItems,
-    handleClearManualItems,
+    handleClearPicked,
+    handleDeleteSelected,
+    setDeleteSelection,
     filterOutItemsAtHome: isGeneratedItemAtHome,
   };
 };

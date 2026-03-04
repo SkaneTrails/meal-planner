@@ -61,14 +61,20 @@ vi.mock('@/lib/hooks', () => ({
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
   useGroceryState: vi.fn(() => mockContextState),
   useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
+  groceryKeys: {
+    all: ['grocery'] as const,
+    storeOrder: (storeId: string) => ['grocery', 'storeOrder', storeId] as const,
+  },
 }));
 
-let focusCallbacks: (() => void)[] = [];
+let focusCallbacks: (() => (() => void) | void)[] = [];
+let focusCleanups: (() => void)[] = [];
 vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({ push: vi.fn(), back: vi.fn() })),
-  useFocusEffect: vi.fn((cb: () => void) => {
+  useFocusEffect: vi.fn((cb: () => (() => void) | void) => {
     focusCallbacks.push(cb);
-    cb();
+    const cleanup = cb();
+    if (cleanup) focusCleanups.push(cleanup);
   }),
 }));
 
@@ -79,6 +85,15 @@ vi.mock('@/lib/i18n', () => ({
 vi.mock('@/lib/alert', () => ({
   showAlert: vi.fn(),
   showNotification: vi.fn(),
+}));
+
+const mockInvalidateQueries = vi.fn().mockResolvedValue(undefined);
+const mockSetQueryData = vi.fn();
+vi.mock('@tanstack/react-query', () => ({
+  useQueryClient: vi.fn(() => ({
+    invalidateQueries: mockInvalidateQueries,
+    setQueryData: mockSetQueryData,
+  })),
 }));
 
 const mockLearnStoreOrder = vi.fn().mockResolvedValue({ updated: false, item_order: [] });
@@ -104,6 +119,8 @@ describe('useGroceryScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     focusCallbacks = [];
+    focusCleanups = [];
+    mockLearnStoreOrder.mockResolvedValue({ updated: false, item_order: [] });
     mockContextState = {
       checkedItems: new Set<string>(),
       customItems: [],
@@ -131,6 +148,71 @@ describe('useGroceryScreen', () => {
     it('calls refreshFromApi on focus', () => {
       renderHook(() => useGroceryScreen());
       expect(mockRefreshFromApi).toHaveBeenCalled();
+    });
+
+    it('invalidates store order query on focus when store is active', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        isItemAtHome: vi.fn(() => false),
+        activeStoreId: 'store_1',
+        groceryStores: [],
+        setActiveStoreId: vi.fn(),
+        settings: null,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useSettings>);
+
+      renderHook(() => useGroceryScreen());
+
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['grocery', 'storeOrder', 'store_1'],
+      });
+    });
+
+    it('skips store order invalidation on focus when no store is active', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        isItemAtHome: vi.fn(() => false),
+        activeStoreId: null,
+        groceryStores: [],
+        setActiveStoreId: vi.fn(),
+        settings: null,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useSettings>);
+
+      renderHook(() => useGroceryScreen());
+      expect(mockInvalidateQueries).not.toHaveBeenCalled();
+    });
+
+    it('resets all modes on blur (tab leave)', () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleToggleDeleteMode();
+      });
+      act(() => {
+        result.current.toggleDeleteItem('bread');
+      });
+      act(() => {
+        result.current.setShowAddItem(true);
+      });
+
+      expect(result.current.deleteMode).toBe(true);
+      expect(result.current.deleteSelection.size).toBe(1);
+
+      const lastCleanup = focusCleanups[focusCleanups.length - 1];
+      act(() => {
+        lastCleanup();
+      });
+
+      expect(result.current.deleteMode).toBe(false);
+      expect(result.current.deleteSelection.size).toBe(0);
+      expect(result.current.reorderMode).toBe(false);
+      expect(result.current.showAddItem).toBe(false);
     });
 
     it('converts CustomGroceryItem[] to GroceryItem[] for display', () => {
@@ -253,17 +335,36 @@ describe('useGroceryScreen', () => {
     });
   });
 
-  describe('handleClearAll', () => {
-    it('delegates to context.clearAll via confirmation dialog', async () => {
+  describe('handleDeleteSelected', () => {
+    it('does nothing when selection is empty', () => {
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleClearAll();
+        result.current.handleDeleteSelected();
+      });
+
+      expect(showAlert).not.toHaveBeenCalled();
+    });
+
+    it('removes selected custom items via confirmation dialog', async () => {
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+      ];
+      mockContextState.checkedItems = new Set(['bread']);
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.toggleDeleteItem('bread');
+      });
+      act(() => {
+        result.current.handleDeleteSelected();
       });
 
       expect(showAlert).toHaveBeenCalledWith(
-        'grocery.clearEntireList',
-        'grocery.clearEntireListMessage',
+        'grocery.deleteSelected',
+        'grocery.deleteSelectedMessage',
         expect.arrayContaining([
           expect.objectContaining({ style: 'cancel' }),
           expect.objectContaining({ style: 'destructive' }),
@@ -277,19 +378,22 @@ describe('useGroceryScreen', () => {
         await destructiveAction!.onPress!();
       });
 
-      expect(mockClearAll).toHaveBeenCalledOnce();
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'milk', category: 'dairy' },
+      ]);
+      expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set());
     });
-  });
 
-  describe('handleClearMealPlanItems', () => {
-    it('delegates to context.saveSelections to clear meal selections', async () => {
+    it('clears selection and exits delete mode after confirming', async () => {
       mockContextState.customItems = [{ name: 'bread', category: 'bakery' }];
-      mockContextState.checkedItems = new Set(['bread', 'chicken']);
 
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleClearMealPlanItems();
+        result.current.toggleDeleteItem('bread');
+      });
+      act(() => {
+        result.current.handleDeleteSelected();
       });
 
       const destructiveAction = vi.mocked(showAlert).mock.calls[0][2]!.find(
@@ -299,52 +403,61 @@ describe('useGroceryScreen', () => {
         await destructiveAction!.onPress!();
       });
 
-      expect(mockSaveSelections).toHaveBeenCalledWith([], {});
-      expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set(['bread']));
+      expect(result.current.deleteSelection.size).toBe(0);
+      expect(result.current.deleteMode).toBe(false);
+      expect(mockResetTickSequence).toHaveBeenCalled();
     });
   });
 
-  describe('handleClearManualItems', () => {
-    it('delegates to context.setCustomItems to clear custom items', async () => {
+  describe('handleClearPicked', () => {
+    it('shows confirmation dialog', () => {
+      mockContextState.checkedItems = new Set(['bread']);
+      mockContextState.customItems = [{ name: 'bread', category: 'bakery' }];
+
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleClearManualItems();
+        result.current.handleClearPicked();
+      });
+
+      expect(showAlert).toHaveBeenCalledWith(
+        'grocery.clearPicked',
+        'grocery.clearPickedMessage',
+        expect.arrayContaining([
+          expect.objectContaining({ style: 'cancel' }),
+          expect.objectContaining({ style: 'destructive' }),
+        ]),
+      );
+    });
+
+    it('removes picked custom items and clears checked', () => {
+      mockContextState.checkedItems = new Set(['bread']);
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleClearPicked();
       });
 
       const destructiveAction = vi.mocked(showAlert).mock.calls[0][2]!.find(
         (b) => b.style === 'destructive',
       );
-      await act(async () => {
-        await destructiveAction!.onPress!();
-      });
-
-      expect(mockSetCustomItems).toHaveBeenCalledWith([]);
-    });
-  });
-
-  describe('handleClearChecked', () => {
-    it('delegates to context.clearChecked', () => {
-      const { result } = renderHook(() => useGroceryScreen());
-
       act(() => {
-        result.current.handleClearChecked();
+        destructiveAction!.onPress!();
       });
 
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'milk', category: 'dairy' },
+      ]);
       expect(mockClearChecked).toHaveBeenCalledOnce();
-    });
-
-    it('resets tick sequence on clear', () => {
-      const { result } = renderHook(() => useGroceryScreen());
-
-      act(() => {
-        result.current.handleClearChecked();
-      });
-
       expect(mockResetTickSequence).toHaveBeenCalledOnce();
     });
 
-    it('calls learnStoreOrder when active store and tick sequence present', async () => {
+    it('calls learnStoreOrder and updates cache with response', async () => {
       const { useSettings } = await import('@/lib/settings-context');
       vi.mocked(useSettings).mockReturnValue({
         isItemAtHome: vi.fn(() => false),
@@ -355,17 +468,43 @@ describe('useGroceryScreen', () => {
         isLoading: false,
       } as unknown as ReturnType<typeof useSettings>);
 
+      mockLearnStoreOrder.mockResolvedValue({
+        updated: true,
+        item_order: ['milk', 'bread', 'cheese'],
+      });
+
       mockContextState.tickSequence = ['milk', 'bread', 'cheese'];
+      mockContextState.checkedItems = new Set(['milk', 'bread', 'cheese']);
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+        { name: 'cheese', category: 'dairy' },
+      ];
 
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleClearChecked();
+        result.current.handleClearPicked();
+      });
+
+      const destructiveAction = vi.mocked(showAlert).mock.calls[0][2]!.find(
+        (b) => b.style === 'destructive',
+      );
+      act(() => {
+        destructiveAction!.onPress!();
       });
 
       expect(mockLearnStoreOrder).toHaveBeenCalledWith('store_1', {
         tick_sequence: ['milk', 'bread', 'cheese'],
       });
+
+      await vi.waitFor(() => {
+        expect(mockSetQueryData).toHaveBeenCalledWith(
+          ['grocery', 'storeOrder', 'store_1'],
+          { item_order: ['milk', 'bread', 'cheese'] },
+        );
+      });
+
       expect(mockClearChecked).toHaveBeenCalledOnce();
       expect(mockResetTickSequence).toHaveBeenCalledOnce();
     });
@@ -382,11 +521,23 @@ describe('useGroceryScreen', () => {
       } as unknown as ReturnType<typeof useSettings>);
 
       mockContextState.tickSequence = ['milk', 'bread'];
+      mockContextState.checkedItems = new Set(['milk', 'bread']);
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ];
 
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleClearChecked();
+        result.current.handleClearPicked();
+      });
+
+      const destructiveAction = vi.mocked(showAlert).mock.calls[0][2]!.find(
+        (b) => b.style === 'destructive',
+      );
+      act(() => {
+        destructiveAction!.onPress!();
       });
 
       expect(mockLearnStoreOrder).not.toHaveBeenCalled();
@@ -405,11 +556,20 @@ describe('useGroceryScreen', () => {
       } as unknown as ReturnType<typeof useSettings>);
 
       mockContextState.tickSequence = ['milk'];
+      mockContextState.checkedItems = new Set(['milk']);
+      mockContextState.customItems = [{ name: 'milk', category: 'dairy' }];
 
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleClearChecked();
+        result.current.handleClearPicked();
+      });
+
+      const destructiveAction = vi.mocked(showAlert).mock.calls[0][2]!.find(
+        (b) => b.style === 'destructive',
+      );
+      act(() => {
+        destructiveAction!.onPress!();
       });
 
       expect(mockLearnStoreOrder).not.toHaveBeenCalled();
@@ -551,8 +711,8 @@ describe('useGroceryScreen', () => {
     });
   });
 
-  describe('handleDeleteItem', () => {
-    it('removes a custom item by filtering it from context', () => {
+  describe('toggleDeleteItem', () => {
+    it('adds an item to the delete selection', () => {
       mockContextState.customItems = [
         { name: 'bread', category: 'bakery' },
         { name: 'milk', category: 'dairy' },
@@ -561,27 +721,28 @@ describe('useGroceryScreen', () => {
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleDeleteItem('bread');
+        result.current.toggleDeleteItem('bread');
       });
 
-      expect(mockSetCustomItems).toHaveBeenCalledWith([
-        { name: 'milk', category: 'dairy' },
-      ]);
+      expect(result.current.deleteSelection).toEqual(new Set(['bread']));
     });
 
-    it('removes checked state when deleting an item', () => {
-      mockContextState.checkedItems = new Set(['bread']);
+    it('removes an already-selected item from the delete selection', () => {
       mockContextState.customItems = [
         { name: 'bread', category: 'bakery' },
+        { name: 'milk', category: 'dairy' },
       ];
 
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
-        result.current.handleDeleteItem('bread');
+        result.current.toggleDeleteItem('bread');
+      });
+      act(() => {
+        result.current.toggleDeleteItem('bread');
       });
 
-      expect(mockSetCheckedItems).toHaveBeenCalledWith(new Set());
+      expect(result.current.deleteSelection).toEqual(new Set());
     });
   });
 
@@ -706,6 +867,30 @@ describe('useGroceryScreen', () => {
 
       expect(result.current.checkedCount).toBe(2);
       expect(result.current.checkedItemsToBuy).toBe(2);
+    });
+  });
+
+  describe('mealPlanItemNames and manualItemNames', () => {
+    it('manualItemNames contains custom item names', () => {
+      mockContextState.customItems = [{ name: 'bread', category: 'bakery' }];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.manualItemNames).toEqual(['bread']);
+    });
+
+    it('manualItemNames is empty when no custom items', () => {
+      mockContextState.customItems = [];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.manualItemNames).toEqual([]);
+    });
+
+    it('mealPlanItemNames is empty when no generated items', () => {
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.mealPlanItemNames).toEqual([]);
     });
   });
 

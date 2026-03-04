@@ -4,17 +4,18 @@
 
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { ActionButton } from '@/components/ActionButton';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSelection } from '@/lib/haptics';
+import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 
 interface GroceryItemRowProps {
   item: GroceryItem;
   onToggle?: (checked: boolean) => void;
-  onDelete?: () => void;
   deleteMode?: boolean;
+  selectedForDelete?: boolean;
+  onToggleDeleteSelection?: () => void;
   showReorder?: boolean;
   dragListeners?: Record<string, unknown>;
   dragAttributes?: Record<string, unknown>;
@@ -55,13 +56,15 @@ const formatQuantity = (item: GroceryItem): string => {
 export const GroceryItemRow = ({
   item,
   onToggle,
-  onDelete,
   deleteMode = false,
+  selectedForDelete = false,
+  onToggleDeleteSelection,
   showReorder,
   dragListeners,
   dragAttributes,
 }: GroceryItemRowProps) => {
   const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
+  const { t } = useTranslation();
   const [checked, setChecked] = useState(item.checked);
 
   // Sync with prop when parent updates (e.g., Firestore refresh, new items generated)
@@ -72,6 +75,7 @@ export const GroceryItemRow = ({
   const quantity = formatQuantity(item);
 
   const handleToggle = () => {
+    if (deleteMode) return;
     hapticSelection();
     const newValue = !checked;
     setChecked(newValue);
@@ -113,8 +117,9 @@ export const GroceryItemRow = ({
 
       <Pressable
         onPress={handleToggle}
+        disabled={deleteMode}
         accessibilityRole="checkbox"
-        accessibilityState={{ checked }}
+        accessibilityState={{ checked, disabled: deleteMode }}
         accessibilityLabel={quantity ? `${quantity} ${item.name}` : item.name}
         style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
       >
@@ -175,14 +180,42 @@ export const GroceryItemRow = ({
         </View>
       </Pressable>
 
-      {deleteMode && onDelete && (
-        <ActionButton.Delete
-          onPress={onDelete}
-          size="sm"
-          iconSize={iconSize.md}
-          style={{ marginLeft: spacing.sm }}
-          testID={`delete-${item.name}`}
-        />
+      {deleteMode && onToggleDeleteSelection && (
+        <Pressable
+          onPress={onToggleDeleteSelection}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: selectedForDelete }}
+          accessibilityLabel={t('grocery.selectForDeletion', {
+            name: item.name,
+          })}
+          style={{ marginLeft: spacing.sm, padding: spacing.xs }}
+          testID={`select-delete-${item.name}`}
+        >
+          <View
+            style={{
+              width: spacing['2xl'],
+              height: spacing['2xl'],
+              borderRadius: borderRadius['xs-sm'],
+              borderWidth: overrides.checkboxBorderWidth,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: selectedForDelete
+                ? colors.danger
+                : 'transparent',
+              borderColor: selectedForDelete
+                ? colors.checkbox.checkedBorder
+                : colors.surface.border,
+            }}
+          >
+            {selectedForDelete && (
+              <ThemeIcon
+                name="checkmark"
+                size={iconSize.xs}
+                color={colors.white}
+              />
+            )}
+          </View>
+        </Pressable>
       )}
 
       {!deleteMode && !showReorder && (

@@ -155,6 +155,19 @@ describe('GroceryItemRow', () => {
     fireEvent.click(screen.getByText('Butter'));
     expect(handleToggle).toHaveBeenLastCalledWith(false);
   });
+
+  it('does not call onToggle in delete mode', () => {
+    const handleToggle = vi.fn();
+    render(
+      <GroceryItemRow
+        item={buildItem()}
+        onToggle={handleToggle}
+        deleteMode={true}
+      />,
+    );
+    fireEvent.click(screen.getByText('Milk'));
+    expect(handleToggle).not.toHaveBeenCalled();
+  });
 });
 
 describe('GroceryListView', () => {
@@ -215,20 +228,35 @@ describe('GroceryListView', () => {
     expect(handleToggle).toHaveBeenCalledWith('Butter', true);
   });
 
-  it('calls onDeleteItem when trash is pressed in delete mode', () => {
-    const handleDelete = vi.fn();
+  it('calls onToggleDeleteItem when checkbox is pressed in delete mode', () => {
+    const handleToggle = vi.fn();
     const items = [buildItem({ name: 'Butter' })];
     render(
       <GroceryListView
         uncheckedItems={items}
         pickedItems={[]}
         deleteMode={true}
-        onDeleteItem={handleDelete}
+        onToggleDeleteItem={handleToggle}
       />,
     );
-    const deleteButton = screen.getByTestId('delete-Butter');
-    fireEvent.click(deleteButton);
-    expect(handleDelete).toHaveBeenCalledWith('Butter');
+    const selectButton = screen.getByTestId('select-delete-Butter');
+    fireEvent.click(selectButton);
+    expect(handleToggle).toHaveBeenCalledWith('Butter');
+  });
+
+  it('shows item as selected when in deleteSelection', () => {
+    const items = [buildItem({ name: 'Butter' })];
+    render(
+      <GroceryListView
+        uncheckedItems={items}
+        pickedItems={[]}
+        deleteMode={true}
+        deleteSelection={new Set(['Butter'])}
+        onToggleDeleteItem={vi.fn()}
+      />,
+    );
+    const selectButton = screen.getByTestId('select-delete-Butter');
+    expect(selectButton).toBeDefined();
   });
 
   it('shows both cards when there are unchecked and picked items', () => {
@@ -239,5 +267,44 @@ describe('GroceryListView', () => {
     );
     expect(screen.getByText('Milk')).toBeDefined();
     expect(screen.getByText('Flour')).toBeDefined();
+  });
+
+  it('shows clear picked button when there are picked items and onClearPicked provided', () => {
+    const unchecked = [buildItem({ name: 'Milk', checked: false })];
+    const picked = [buildItem({ name: 'Flour', checked: true })];
+    const handleClearPicked = vi.fn();
+    render(
+      <GroceryListView
+        uncheckedItems={unchecked}
+        pickedItems={picked}
+        onClearPicked={handleClearPicked}
+      />,
+    );
+    const clearPickedBtn = screen.getByTestId('clear-picked');
+    expect(clearPickedBtn).toBeDefined();
+    fireEvent.click(clearPickedBtn);
+    expect(handleClearPicked).toHaveBeenCalledOnce();
+  });
+
+  it('hides clear picked button when no picked items', () => {
+    const unchecked = [buildItem({ name: 'Milk', checked: false })];
+    const handleClearPicked = vi.fn();
+    render(
+      <GroceryListView
+        uncheckedItems={unchecked}
+        pickedItems={[]}
+        onClearPicked={handleClearPicked}
+      />,
+    );
+    expect(screen.queryByTestId('clear-picked')).toBeNull();
+  });
+
+  it('hides clear picked button when onClearPicked not provided', () => {
+    const unchecked = [buildItem({ name: 'Milk', checked: false })];
+    const picked = [buildItem({ name: 'Flour', checked: true })];
+    render(
+      <GroceryListView uncheckedItems={unchecked} pickedItems={picked} />,
+    );
+    expect(screen.queryByTestId('clear-picked')).toBeNull();
   });
 });

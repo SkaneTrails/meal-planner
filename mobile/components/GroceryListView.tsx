@@ -27,6 +27,7 @@ import { useTranslation } from '@/lib/i18n';
 import { handleScrollEvent } from '@/lib/tab-bar-scroll';
 import { fontSize, iconSize, layout, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
+import { Button } from './Button';
 import { ContentCard } from './ContentCard';
 import { GroceryItemRow } from './GroceryItemRow';
 import { EmptyGroceryState } from './grocery/EmptyGroceryState';
@@ -36,14 +37,16 @@ interface SortableItemProps {
   item: GroceryItem;
   deleteMode: boolean;
   onToggle?: (checked: boolean) => void;
-  onDelete?: () => void;
+  selectedForDelete?: boolean;
+  onToggleDeleteSelection?: () => void;
 }
 
 const SortableItem = ({
   item,
   deleteMode,
   onToggle,
-  onDelete,
+  selectedForDelete,
+  onToggleDeleteSelection,
 }: SortableItemProps) => {
   const {
     attributes,
@@ -67,7 +70,8 @@ const SortableItem = ({
       <GroceryItemRow
         item={item}
         onToggle={onToggle}
-        onDelete={onDelete}
+        selectedForDelete={selectedForDelete}
+        onToggleDeleteSelection={onToggleDeleteSelection}
         deleteMode={deleteMode}
         showReorder={true}
         dragListeners={listeners}
@@ -82,10 +86,12 @@ interface GroceryListViewProps {
   pickedItems: GroceryItem[];
   deleteMode?: boolean;
   reorderMode?: boolean;
+  deleteSelection?: Set<string>;
   onItemToggle?: (itemName: string, checked: boolean) => void;
-  onDeleteItem?: (itemName: string) => void;
+  onToggleDeleteItem?: (itemName: string) => void;
   filterOutItems?: (item: GroceryItem) => boolean;
   onReorder?: (items: GroceryItem[]) => void;
+  onClearPicked?: () => void;
 }
 
 export const GroceryListView = ({
@@ -93,10 +99,12 @@ export const GroceryListView = ({
   pickedItems,
   deleteMode = false,
   reorderMode = false,
+  deleteSelection,
   onItemToggle,
-  onDeleteItem,
+  onToggleDeleteItem,
   filterOutItems,
   onReorder,
+  onClearPicked,
 }: GroceryListViewProps) => {
   const { colors, fonts } = useTheme();
   const { t } = useTranslation();
@@ -182,7 +190,10 @@ export const GroceryListView = ({
         key={item.name}
         item={item}
         onToggle={(checked) => onItemToggle?.(item.name, checked)}
-        onDelete={onDeleteItem ? () => onDeleteItem(item.name) : undefined}
+        selectedForDelete={deleteSelection?.has(item.name)}
+        onToggleDeleteSelection={
+          onToggleDeleteItem ? () => onToggleDeleteItem(item.name) : undefined
+        }
         deleteMode={deleteMode}
         showReorder={false}
       />
@@ -217,8 +228,11 @@ export const GroceryListView = ({
                 item={item}
                 deleteMode={deleteMode}
                 onToggle={(checked) => onItemToggle?.(item.name, checked)}
-                onDelete={
-                  onDeleteItem ? () => onDeleteItem(item.name) : undefined
+                selectedForDelete={deleteSelection?.has(item.name)}
+                onToggleDeleteSelection={
+                  onToggleDeleteItem
+                    ? () => onToggleDeleteItem(item.name)
+                    : undefined
                 }
               />
             ))}
@@ -299,6 +313,25 @@ export const GroceryListView = ({
               marginVertical: spacing.sm,
             }}
           />
+        )}
+
+        {filteredPicked.length > 0 && onClearPicked && (
+          <View
+            style={{
+              alignItems: 'flex-start',
+              marginBottom: spacing.sm,
+            }}
+          >
+            <Button
+              variant="text"
+              tone="warning"
+              size="sm"
+              icon="checkmark-done-outline"
+              label={t('grocery.clearPickedButton')}
+              onPress={onClearPicked}
+              testID="clear-picked"
+            />
+          </View>
         )}
 
         {filteredPicked.length > 0 && (

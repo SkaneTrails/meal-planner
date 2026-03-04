@@ -440,20 +440,25 @@ const it: Translations = {
     hiddenAtHome: '{{count}} articolo/i nascosti (a casa)',
     addItemPlaceholder: 'Aggiungi un articolo...',
     addButton: 'Aggiungi',
-    allStores: 'Tutti',
+    allStores: 'Nessuno',
     emptyList: 'La tua lista è vuota',
     emptyListSubtitle:
       'Aggiungi pasti al piano o aggiungi articoli manualmente',
-    clearEntireList: 'Cancellare tutta la lista?',
+    clearEntireList: 'Cancellare tutta la lista',
     clearEntireListMessage:
       'Questo rimuoverà tutti gli articoli dalla lista della spesa.',
-    clearMealPlanItems: 'Cancella articoli del piano',
-    clearMealPlanItemsMessage:
-      'Questo rimuoverà tutti gli articoli dalle ricette del piano.',
-    clearManualItems: 'Cancella articoli manuali',
-    clearManualItemsMessage:
-      'Questo rimuoverà tutti gli articoli aggiunti manualmente.',
+    selectMealPlanItems: 'Seleziona articoli ricette',
+    selectManualItems: 'Seleziona articoli manuali',
     clearChecked: 'Deseleziona tutti',
+    clearPicked: 'Cancellare articoli raccolti',
+    clearPickedButton: 'Cancella raccolti',
+    clearPickedMessage:
+      "Questo rimuoverà gli articoli raccolti dalla lista e aggiornerà l'ordinamento del negozio.",
+    deleteSelected: 'Elimina',
+    deleteSelectedMessage:
+      'Questo eliminerà gli articoli selezionati dalla lista.',
+    selectForDeletion: 'Seleziona {{name}} per eliminazione',
+    selectAll: 'Tutti',
     clear: 'Cancella',
     failedToClearList: 'Impossibile cancellare la lista',
     categories: {
