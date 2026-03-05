@@ -107,4 +107,16 @@ export const groceryApi = {
       body: JSON.stringify(body),
     });
   },
+
+  setActiveStore: (
+    storeId: string | null,
+  ): Promise<{ active_store_id: string | null }> => {
+    return apiRequest<{ active_store_id: string | null }>(
+      '/grocery/active-store',
+      {
+        method: 'PUT',
+        body: JSON.stringify({ store_id: storeId }),
+      },
+    );
+  },
 };

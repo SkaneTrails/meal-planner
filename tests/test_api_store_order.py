@@ -1,6 +1,7 @@
 """Tests for store order learning endpoints (GET/POST /grocery/stores/{id}/...)."""
 
 from collections.abc import Generator
+from typing import ClassVar
 from unittest.mock import patch
 
 import pytest
@@ -132,3 +133,60 @@ class TestLearnStoreOrder:
         assert data["updated"] is True
         assert data["item_order"] == ["A", "D", "B", "C", "E"]
         mock_save.assert_called_once()
+
+
+class TestSetActiveStore:
+    """Tests for PUT /grocery/active-store."""
+
+    _MOCK_SETTINGS: ClassVar[dict] = {
+        "grocery_stores": [{"id": "store_1", "name": "ICA"}, {"id": "store_2", "name": "Coop"}]
+    }
+
+    def test_member_can_set_active_store(self, client: TestClient) -> None:
+        """Regular household members should be able to select a store."""
+        with (
+            patch("api.routers.grocery.household_storage.get_household_settings", return_value=self._MOCK_SETTINGS),
+            patch("api.routers.grocery.household_storage.update_household_settings", return_value=True),
+        ):
+            response = client.put("/grocery/active-store", json={"store_id": "store_1"})
+
+        assert response.status_code == 200
+        assert response.json()["active_store_id"] == "store_1"
+
+    def test_member_can_deselect_store(self, client: TestClient) -> None:
+        """Regular household members should be able to deselect (set null)."""
+        with patch("api.routers.grocery.household_storage.update_household_settings", return_value=True):
+            response = client.put("/grocery/active-store", json={"store_id": None})
+
+        assert response.status_code == 200
+        assert response.json()["active_store_id"] is None
+
+    def test_calls_storage_with_correct_args(self, client: TestClient) -> None:
+        with (
+            patch("api.routers.grocery.household_storage.get_household_settings", return_value=self._MOCK_SETTINGS),
+            patch("api.routers.grocery.household_storage.update_household_settings", return_value=True) as mock_update,
+        ):
+            client.put("/grocery/active-store", json={"store_id": "store_2"})
+
+        mock_update.assert_called_once_with("test_household", {"active_store_id": "store_2"})
+
+    def test_returns_404_when_household_not_found(self, client: TestClient) -> None:
+        with (
+            patch("api.routers.grocery.household_storage.get_household_settings", return_value=self._MOCK_SETTINGS),
+            patch("api.routers.grocery.household_storage.update_household_settings", return_value=False),
+        ):
+            response = client.put("/grocery/active-store", json={"store_id": "store_1"})
+
+        assert response.status_code == 404
+
+    def test_rejects_unknown_store_id(self, client: TestClient) -> None:
+        """Store ID must reference a configured grocery store."""
+        with patch("api.routers.grocery.household_storage.get_household_settings", return_value=self._MOCK_SETTINGS):
+            response = client.put("/grocery/active-store", json={"store_id": "nonexistent"})
+
+        assert response.status_code == 400
+        assert "Unknown store ID" in response.json()["detail"]
+
+    def test_requires_household(self, client_no_household: TestClient) -> None:
+        response = client_no_household.put("/grocery/active-store", json={"store_id": "store_1"})
+        assert response.status_code == 403
