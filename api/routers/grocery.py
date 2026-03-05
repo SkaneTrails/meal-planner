@@ -226,6 +226,15 @@ async def set_active_store(
 ) -> ActiveStoreResponse:
     """Set the active store for grocery sorting. Any household member can do this."""
     household_id = require_household(user)
+
+    if body.store_id is not None:
+        settings = household_storage.get_household_settings(household_id)
+        if not settings:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
+        store_ids = {s["id"] for s in settings.get("grocery_stores", []) if isinstance(s, dict)}
+        if body.store_id not in store_ids:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unknown store ID")
+
     success = household_storage.update_household_settings(household_id, {"active_store_id": body.store_id})
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")

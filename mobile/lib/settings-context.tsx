@@ -315,6 +315,7 @@ export const SettingsProvider = ({
         console.warn('Cannot set active store: no household');
         return;
       }
+      await queryClient.cancelQueries({ queryKey: settingsQueryKey });
       const previous =
         queryClient.getQueryData<HouseholdSettings>(settingsQueryKey);
       queryClient.setQueryData<HouseholdSettings>(settingsQueryKey, (old) =>
