@@ -21,7 +21,7 @@ from api.models.grocery_list import (
 from api.services.grocery_categories import detect_category
 from api.services.ingredient_parser import parse_ingredient
 from api.services.store_order import apply_learned_order
-from api.storage import grocery_list_storage, meal_plan_storage
+from api.storage import grocery_list_storage, household_storage, meal_plan_storage
 from api.storage.recipe_queries import get_recipes_by_ids
 from api.storage.store_order_storage import get_store_order, save_store_order
 
@@ -201,6 +201,35 @@ async def clear_grocery_state(user: Annotated[AuthenticatedUser, Depends(require
     """Clear (delete) the household's grocery list state."""
     household_id = require_household(user)
     grocery_list_storage.delete_grocery_state(household_id)
+
+
+# ---------------------------------------------------------------------------
+# Active store selection (any household member)
+# ---------------------------------------------------------------------------
+
+
+class SetActiveStoreRequest(BaseModel):
+    """Request body for setting the active store."""
+
+    store_id: str | None = Field(..., description="Store ID to select, or null to deselect")
+
+
+class ActiveStoreResponse(BaseModel):
+    """Response after setting the active store."""
+
+    active_store_id: str | None = Field(..., description="The currently active store ID")
+
+
+@router.put("/active-store")
+async def set_active_store(
+    body: SetActiveStoreRequest, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> ActiveStoreResponse:
+    """Set the active store for grocery sorting. Any household member can do this."""
+    household_id = require_household(user)
+    success = household_storage.update_household_settings(household_id, {"active_store_id": body.store_id})
+    if not success:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Household not found")
+    return ActiveStoreResponse(active_store_id=body.store_id)
 
 
 # ---------------------------------------------------------------------------

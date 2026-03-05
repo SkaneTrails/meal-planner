@@ -10,6 +10,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQueryClient } from '@tanstack/react-query';
 import type React from 'react';
 import {
   createContext,
@@ -19,6 +20,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { api } from './api';
 import {
   useAddFavoriteRecipe,
   useAddItemAtHome,
@@ -31,7 +33,7 @@ import {
   useUpdateHouseholdSettings,
 } from './hooks/use-admin';
 import { useAuth } from './hooks/use-auth';
-import type { GroceryStore } from './types';
+import type { GroceryStore, HouseholdSettings } from './types';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
@@ -133,6 +135,7 @@ export const SettingsProvider = ({
   const addFavoriteMutation = useAddFavoriteRecipe();
   const removeFavoriteMutation = useRemoveFavoriteRecipe();
   const updateSettingsMutation = useUpdateHouseholdSettings();
+  const queryClient = useQueryClient();
 
   // Load device-local settings from AsyncStorage (only showHiddenRecipes)
   useEffect(() => {
@@ -301,18 +304,32 @@ export const SettingsProvider = ({
     [householdId, updateSettingsMutation],
   );
 
+  const settingsQueryKey = useMemo(
+    () => ['admin', 'settings', householdId ?? ''],
+    [householdId],
+  );
+
   const setActiveStoreId = useCallback(
     async (storeId: string | null) => {
       if (!householdId) {
         console.warn('Cannot set active store: no household');
         return;
       }
-      await updateSettingsMutation.mutateAsync({
-        householdId,
-        settings: { active_store_id: storeId },
-      });
+      const previous =
+        queryClient.getQueryData<HouseholdSettings>(settingsQueryKey);
+      queryClient.setQueryData<HouseholdSettings>(settingsQueryKey, (old) =>
+        old ? { ...old, active_store_id: storeId } : undefined,
+      );
+      try {
+        await api.setActiveStore(storeId);
+      } catch (error) {
+        queryClient.setQueryData(settingsQueryKey, previous);
+        throw error;
+      } finally {
+        queryClient.invalidateQueries({ queryKey: settingsQueryKey });
+      }
     },
-    [householdId, updateSettingsMutation],
+    [householdId, queryClient, settingsQueryKey],
   );
 
   const toggleFavorite = useCallback(
