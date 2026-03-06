@@ -2,16 +2,20 @@
  * Authentication hook for Firebase Auth with Google Sign-In.
  * Provides user state and sign-in/sign-out methods.
  *
- * Uses Firebase's signInWithPopup for web and expo-auth-session for native.
+ * Web: signInWithPopup on desktop, signInWithRedirect on mobile
+ * (mobile Safari opens popups as new tabs where sessionStorage is inaccessible).
+ * Native: expo-auth-session.
  */
 
 import * as Google from 'expo-auth-session/providers/google';
 import {
   signOut as firebaseSignOut,
   GoogleAuthProvider,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithCredential,
   signInWithPopup,
+  signInWithRedirect,
   type User,
 } from 'firebase/auth';
 import {
@@ -53,6 +57,15 @@ const isAuthConfigured =
       process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
       process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
   );
+
+/**
+ * Detect mobile web browsers where signInWithPopup opens a new tab
+ * instead of a real popup, breaking sessionStorage-based auth state.
+ */
+const isMobileWeb =
+  Platform.OS === 'web' &&
+  typeof navigator !== 'undefined' &&
+  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
@@ -168,6 +181,20 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, []);
 
+  // Handle pending redirect result (mobile web uses signInWithRedirect)
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !auth) return;
+    getRedirectResult(auth as NonNullable<typeof auth>).catch((err) => {
+      if (__DEV__) {
+        console.error('getRedirectResult error:', err);
+      }
+      const code = (err as { code?: string }).code;
+      if (code && !code.includes('popup-closed-by-user')) {
+        setError('signInFailed');
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (Platform.OS === 'web') return;
 
@@ -206,7 +233,17 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        await signInWithPopup(auth as NonNullable<typeof auth>, googleProvider);
+        if (isMobileWeb) {
+          await signInWithRedirect(
+            auth as NonNullable<typeof auth>,
+            googleProvider,
+          );
+        } else {
+          await signInWithPopup(
+            auth as NonNullable<typeof auth>,
+            googleProvider,
+          );
+        }
       } else {
         await promptAsync();
       }

@@ -7,12 +7,10 @@
 
 import { BlurView } from 'expo-blur';
 import { usePathname, useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import { resetTabBar, tabBarTranslateY } from '@/lib/tab-bar-scroll';
 import { HIDDEN_ON, isTabActive, TABS } from '@/lib/tab-config';
 import type { TabBarTokens } from '@/lib/theme';
 import { iconSize, layout, spacing, useTheme } from '@/lib/theme';
@@ -102,23 +100,11 @@ export const FloatingTabBar = () => {
   const { t } = useTranslation();
   const { colors, borderRadius, shadows, tabBar } = useTheme();
 
-  // Show tab bar when navigating to a new screen
-  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname triggers reset on route change
-  useEffect(() => {
-    resetTabBar();
-  }, [pathname]);
-
   // Hide on auth screens or when not logged in
   if (!user || HIDDEN_ON.includes(pathname)) return null;
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        { transform: [{ translateY: tabBarTranslateY }] },
-      ]}
-      pointerEvents="box-none"
-    >
+    <View style={styles.container} pointerEvents="box-none">
       <View style={styles.barOuter}>
         <View
           style={[
@@ -168,7 +154,7 @@ export const FloatingTabBar = () => {
         ]}
         pointerEvents="none"
       />
-    </Animated.View>
+    </View>
   );
 };
 
