@@ -16,6 +16,7 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: production
 
     env:
@@ -60,6 +61,7 @@ jobs:
       - name: Build web app
         working-directory: mobile
         env:
+          CI: "true"
           # Secrets from GCP Secret Manager (Terraform-managed)
           EXPO_PUBLIC_API_URL: ${{ steps.secrets.outputs.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_FIREBASE_API_KEY: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_API_KEY }}
@@ -70,8 +72,8 @@ jobs:
           EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ env.GCP_PROJECT_ID }}.firebaseapp.com
           EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ env.GCP_PROJECT_ID }}
           EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ env.GCP_PROJECT_ID }}.firebasestorage.app
-        run: npx expo export --platform web
+        run: pnpm run build:web
 
       - name: Deploy to Firebase Hosting
         working-directory: mobile
-        run: npx firebase-tools deploy --only hosting --project ${{ env.GCP_PROJECT_ID }}
+        run: npx -y firebase-tools deploy --only hosting --project ${{ env.GCP_PROJECT_ID }}
