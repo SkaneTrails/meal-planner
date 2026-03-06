@@ -61,7 +61,7 @@ jobs:
       - name: Build web app
         working-directory: mobile
         env:
-          CI: "true"
+          EXPO_NO_TELEMETRY: "1"
           # Secrets from GCP Secret Manager (Terraform-managed)
           EXPO_PUBLIC_API_URL: ${{ steps.secrets.outputs.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_FIREBASE_API_KEY: ${{ steps.secrets.outputs.EXPO_PUBLIC_FIREBASE_API_KEY }}
@@ -72,7 +72,17 @@ jobs:
           EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ env.GCP_PROJECT_ID }}.firebaseapp.com
           EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ env.GCP_PROJECT_ID }}
           EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ env.GCP_PROJECT_ID }}.firebasestorage.app
-        run: pnpm run build:web
+        run: |
+          # Expo 55 export hangs after completing — Node process stays alive.
+          # Use timeout to kill the hung process, then verify the export succeeded.
+          timeout 180 pnpm run build:web || {
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 124 ] && [ -f dist/index.html ]; then
+              echo "Build completed but process hung — killed by timeout (expected with Expo 55)"
+            else
+              exit $EXIT_CODE
+            fi
+          }
 
       - name: Deploy to Firebase Hosting
         working-directory: mobile
