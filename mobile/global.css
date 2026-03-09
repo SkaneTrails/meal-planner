@@ -5,6 +5,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Prevent browser-level page scroll on web.
+ * All scrolling should happen inside React Native ScrollViews.
+ * Without this, scroll chaining from Animated.ScrollView (recipe detail hero
+ * parallax) propagates to the document and shifts the floating tab bar.
+ */
+html,
+body,
+#root {
+  overflow: hidden;
+  height: 100%;
+}
+
 /* Meal Planner Color Palette - Soft Beige/Cream */
 :root {
   --color-background: #f5e6d3;
