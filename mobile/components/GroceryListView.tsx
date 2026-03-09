@@ -289,7 +289,6 @@ export const GroceryListView = ({
         paddingHorizontal: spacing.xl,
         paddingBottom: layout.tabBar.contentBottomPadding,
       }}
-      scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
     >
       <ContentCard>

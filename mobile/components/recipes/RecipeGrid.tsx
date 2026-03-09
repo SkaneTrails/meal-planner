@@ -80,7 +80,6 @@ export const RecipeGrid = ({
           />
         </View>
       )}
-      scrollEventThrottle={16}
       contentContainerStyle={{
         paddingHorizontal: horizontalPadding,
         paddingBottom: layout.tabBar.contentBottomPadding,

@@ -65,7 +65,10 @@ const isAuthConfigured =
 const isMobileWeb =
   Platform.OS === 'web' &&
   typeof navigator !== 'undefined' &&
-  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' &&
+      typeof navigator.maxTouchPoints === 'number' &&
+      navigator.maxTouchPoints > 1));
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
@@ -188,10 +191,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       if (__DEV__) {
         console.error('getRedirectResult error:', err);
       }
-      const code = (err as { code?: string }).code;
-      if (code && !code.includes('popup-closed-by-user')) {
-        setError('signInFailed');
-      }
+      setError('signInFailed');
     });
   }, []);
 

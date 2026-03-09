@@ -63,7 +63,6 @@ export default function HomeScreen() {
         contentContainerStyle={{
           paddingBottom: layout.tabBar.contentBottomPadding,
         }}
-        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={isLoading}

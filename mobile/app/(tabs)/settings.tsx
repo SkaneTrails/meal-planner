@@ -83,7 +83,6 @@ export default function SettingsScreen() {
             paddingTop: spacing.sm,
             paddingBottom: layout.tabBar.contentBottomPadding,
           }}
-          scrollEventThrottle={16}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
