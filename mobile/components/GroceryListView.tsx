@@ -24,7 +24,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
-import { handleScrollEvent } from '@/lib/tab-bar-scroll';
+
 import { fontSize, iconSize, layout, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 import { Button } from './Button';
@@ -289,8 +289,6 @@ export const GroceryListView = ({
         paddingHorizontal: spacing.xl,
         paddingBottom: layout.tabBar.contentBottomPadding,
       }}
-      onScroll={handleScrollEvent}
-      scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
     >
       <ContentCard>

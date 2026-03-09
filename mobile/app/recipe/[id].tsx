@@ -32,7 +32,7 @@ import {
 } from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
-import { reportScroll } from '@/lib/tab-bar-scroll';
+
 import { layout, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
@@ -224,11 +224,7 @@ export default function RecipeDetailScreen() {
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          {
-            useNativeDriver: true,
-            listener: (e: { nativeEvent: { contentOffset: { y: number } } }) =>
-              reportScroll(e.nativeEvent.contentOffset.y),
-          },
+          { useNativeDriver: true },
         )}
         scrollEventThrottle={16}
       >

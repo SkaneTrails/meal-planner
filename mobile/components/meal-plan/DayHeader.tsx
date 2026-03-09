@@ -8,7 +8,13 @@ import {
 } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  iconSize,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import { formatDayHeader } from '@/lib/utils/dateFormatter';
 
 interface DayHeaderProps {
@@ -47,11 +53,7 @@ export const DayHeader = ({
   const { colors, fonts, borderRadius, visibility } = useTheme();
   return (
     <>
-      <Pressable
-        onPress={onCollapse}
-        disabled={!onCollapse}
-        accessibilityRole="button"
-        accessibilityLabel={t('mealPlan.today')}
+      <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -59,7 +61,13 @@ export const DayHeader = ({
           marginBottom: isEditing ? spacing.sm : spacing.md,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Pressable
+          onPress={onCollapse}
+          disabled={!onCollapse}
+          accessibilityRole="button"
+          accessibilityLabel={t('mealPlan.today')}
+          style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+        >
           {isToday && visibility.showTodayBadge && (
             <View
               style={{
@@ -86,7 +94,7 @@ export const DayHeader = ({
               fontSize: fontSize.xl,
               fontFamily: fonts.bodySemibold,
               color: isToday ? colors.primary : colors.content.headingMuted,
-              letterSpacing: -0.2,
+              letterSpacing: letterSpacing.normal,
             }}
           >
             {formatDayHeader(
@@ -95,80 +103,73 @@ export const DayHeader = ({
               !visibility.showTodayBadge && isToday ? '' : t('mealPlan.today'),
             )}
           </Text>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: spacing.sm,
-          }}
-        >
-          {!isEditing && visibility.showDayNotes && (
-            <Pressable
-              onPress={onStartEdit}
-              accessibilityRole="button"
-              accessibilityLabel={note ? note : t('mealPlan.addNote')}
-            >
-              {note ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: spacing.sm,
-                  }}
-                >
-                  {note
-                    .split(' ')
-                    .filter((t) => t.trim())
-                    .map((tag, index) => {
-                      const tagIndex = noteSuggestions.indexOf(tag);
-                      const tagDotColor =
-                        tagIndex >= 0
-                          ? colors.tagDot[tagIndex % colors.tagDot.length]
-                          : colors.content.icon;
-                      return (
-                        <Chip
-                          key={`${tag}-${index}`}
-                          label={tag}
-                          variant="display"
-                          dot={tagDotColor}
-                        />
-                      );
-                    })}
-                </View>
-              ) : (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: colors.surface.hover,
-                    paddingHorizontal: spacing.sm,
-                    paddingVertical: spacing.xs,
-                    borderRadius: borderRadius.md,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: fontSize.base,
-                      color: colors.content.icon,
-                    }}
-                  >
-                    {t('mealPlan.addNote')}
-                  </Text>
-                </View>
-              )}
-            </Pressable>
-          )}
           {onCollapse && visibility.showChevrons && (
             <ThemeIcon
               name="chevron-up"
               size={iconSize.sm}
               color={colors.content.subtitle}
+              style={{ marginLeft: spacing.sm }}
             />
           )}
-        </View>
-      </Pressable>
+        </Pressable>
+
+        {!isEditing && visibility.showDayNotes && (
+          <Pressable
+            onPress={onStartEdit}
+            accessibilityRole="button"
+            accessibilityLabel={note ? note : t('mealPlan.addNote')}
+          >
+            {note ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: spacing.sm,
+                }}
+              >
+                {note
+                  .split(' ')
+                  .filter((t) => t.trim())
+                  .map((tag, index) => {
+                    const tagIndex = noteSuggestions.indexOf(tag);
+                    const tagDotColor =
+                      tagIndex >= 0
+                        ? colors.tagDot[tagIndex % colors.tagDot.length]
+                        : colors.content.icon;
+                    return (
+                      <Chip
+                        key={`${tag}-${index}`}
+                        label={tag}
+                        variant="display"
+                        dot={tagDotColor}
+                      />
+                    );
+                  })}
+              </View>
+            ) : (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: colors.surface.hover,
+                  paddingHorizontal: spacing.sm,
+                  paddingVertical: spacing.xs,
+                  borderRadius: borderRadius.md,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: fontSize.base,
+                    color: colors.content.icon,
+                  }}
+                >
+                  {t('mealPlan.addNote')}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+        )}
+      </View>
 
       {isEditing && (
         <NoteEditor

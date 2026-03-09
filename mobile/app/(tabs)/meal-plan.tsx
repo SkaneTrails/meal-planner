@@ -25,7 +25,7 @@ import { SelectMealModal } from '@/components/meal-plan/SelectMealModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
-import { reportScroll } from '@/lib/tab-bar-scroll';
+
 import {
   iconContainer,
   iconSize,
@@ -96,9 +96,7 @@ export default function MealPlanScreen() {
   } = useMealPlanActions();
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const y = event.nativeEvent.contentOffset.y;
-    handleScroll(y);
-    reportScroll(y);
+    handleScroll(event.nativeEvent.contentOffset.y);
   };
 
   return (
