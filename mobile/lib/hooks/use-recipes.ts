@@ -5,6 +5,7 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ import type {
   DietLabel,
   EnhancementReviewAction,
   MealLabel,
+  MealPlan,
   PaginatedRecipeList,
   Recipe,
   RecipeCreate,
@@ -104,6 +106,65 @@ export const useAllRecipes = () => {
     recipes,
     totalCount,
   };
+};
+
+/**
+ * Build a recipe lookup map that includes both paginated recipes and
+ * individually-fetched recipes referenced by the meal plan.
+ *
+ * Recipes on later pages may not be loaded yet when the meal plan renders.
+ * This hook detects missing IDs and fetches them individually so meal plan
+ * slots always resolve to a recipe instead of showing a raw Firestore ID.
+ */
+export const useMealPlanRecipes = (
+  recipes: Recipe[],
+  mealPlan: MealPlan | undefined,
+) => {
+  const paginatedMap = useMemo(() => {
+    const map: Record<string, Recipe> = {};
+    for (const recipe of recipes) {
+      map[recipe.id] = recipe;
+    }
+    return map;
+  }, [recipes]);
+
+  const missingIds = useMemo(() => {
+    if (!mealPlan) return [];
+    const needed = new Set<string>();
+
+    for (const value of Object.values(mealPlan.meals ?? {})) {
+      if (value && !value.startsWith('custom:')) {
+        needed.add(value);
+      }
+    }
+    for (const ids of Object.values(mealPlan.extras ?? {})) {
+      for (const id of ids) {
+        needed.add(id);
+      }
+    }
+
+    return [...needed].filter((id) => !paginatedMap[id]);
+  }, [mealPlan, paginatedMap]);
+
+  const individualQueries = useQueries({
+    queries: missingIds.map((id) => ({
+      queryKey: recipeKeys.detail(id),
+      queryFn: () => api.getRecipe(id),
+      staleTime: 5 * 60 * 1000,
+    })),
+  });
+
+  const recipeMap = useMemo(() => {
+    const map: Record<string, Recipe> = { ...paginatedMap };
+    for (const query of individualQueries) {
+      if (query.data) {
+        map[query.data.id] = query.data;
+      }
+    }
+    return map;
+  }, [paginatedMap, individualQueries]);
+
+  return recipeMap;
 };
 
 /**

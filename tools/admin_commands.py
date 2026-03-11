@@ -37,6 +37,10 @@ _project: str = ""
 
 
 def _get_db() -> firestore.Client:
+    if not _project:
+        print("ERROR: --project is required. Pass the GCP project ID, e.g.:")
+        print("  uv run python tools/recipe_manager.py --project hikes-482104 list")
+        raise SystemExit(1)
     return firestore.Client(project=_project, database=DATABASE)
 
 
