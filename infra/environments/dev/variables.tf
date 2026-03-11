@@ -85,3 +85,11 @@ variable "backup_schedule" {
   type        = string
   default     = "0 3 * * *"
 }
+
+# External WIF bindings (repo names that need viewer-only access)
+# Set in terraform.tfvars (gitignored) — see terraform.tfvars.example
+variable "external_wif_repos" {
+  description = "Map of label to external GitHub repo (owner/repo) granted viewer-only WIF access"
+  type        = map(string)
+  default     = {}
+}
