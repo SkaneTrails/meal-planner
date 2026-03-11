@@ -51,6 +51,7 @@ vi.mock('@/lib/hooks', () => ({
     refetch: mockRefetch,
   })),
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
+  useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
   useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
   useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
   useUpdateExtras: vi.fn(() => ({ mutate: mockUpdateExtrasMutate })),

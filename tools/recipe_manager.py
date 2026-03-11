@@ -66,6 +66,10 @@ _project: str = ""
 
 def get_db(project: str) -> firestore.Client:
     """Get Firestore client for the given GCP project."""
+    if not project:
+        print("ERROR: --project is required. Pass the GCP project ID, e.g.:")
+        print("  uv run python tools/recipe_manager.py --project hikes-482104 list")
+        raise SystemExit(1)
     return firestore.Client(project=project, database=DATABASE)
 
 
@@ -133,6 +137,14 @@ def display_recipe(recipe_id: str, data: dict) -> None:
     print(f"Category: {data.get('category', 'N/A')}")
     print(f"Cuisine: {data.get('cuisine', 'N/A')}")
     print(f"Tags: {data.get('tags', [])}")
+
+    print(f"Hidden: {data.get('hidden', False)}")
+    print(f"Favorited: {data.get('favorited', False)}")
+    print(f"Household ID: {data.get('household_id', 'N/A')}")
+    print(f"Visibility: {data.get('visibility', 'N/A')}")
+    print(f"Created By: {data.get('created_by', 'N/A')}")
+    print(f"Created At: {data.get('created_at', 'N/A')}")
+    print(f"Enhanced: {data.get('enhanced', False)}")
 
     print(f"\n--- INGREDIENTS ({len(data.get('ingredients', []))}) ---")
     for i, ing in enumerate(data.get("ingredients", []), 1):

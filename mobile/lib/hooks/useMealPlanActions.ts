@@ -9,6 +9,7 @@ import {
   useAllRecipes,
   useGroceryState,
   useMealPlan,
+  useMealPlanRecipes,
   useRemoveMeal,
   useUpdateExtras,
   useUpdateNote,
@@ -106,13 +107,7 @@ export const useMealPlanActions = () => {
   const removeMeal = useRemoveMeal();
   const updateExtras = useUpdateExtras();
 
-  const recipeMap = useMemo(() => {
-    const map: Record<string, Recipe> = {};
-    for (const recipe of recipes) {
-      map[recipe.id] = recipe;
-    }
-    return map;
-  }, [recipes]);
+  const recipeMap = useMealPlanRecipes(recipes, mealPlan);
 
   const getNoteForDate = useCallback(
     (date: Date): string | null => {

@@ -58,6 +58,7 @@ vi.mock('@/lib/hooks', () => ({
     isLoading: false,
     refetch: mockRefetchRecipes,
   })),
+  useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
   useMealPlan: vi.fn(() => ({
     data: mockMealPlan,
     isLoading: false,

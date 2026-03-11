@@ -37,11 +37,13 @@ import {
   useRecipes,
   useRecipe,
   useAllRecipes,
+  useMealPlanRecipes,
   useCreateRecipe,
   useScrapeRecipe,
   useUpdateRecipe,
   useDeleteRecipe,
 } from '@/lib/hooks/use-recipes';
+import type { MealPlan } from '@/lib/types';
 
 // Cast for easy access
 const mockApi = vi.mocked(api);
@@ -319,5 +321,141 @@ describe('useAllRecipes', () => {
 
     expect(result.current.recipes).toEqual([]);
     expect(result.current.totalCount).toBe(0);
+  });
+});
+
+describe('useMealPlanRecipes', () => {
+  const baseMealPlan: MealPlan = {
+    household_id: 'h1',
+    meals: {},
+    notes: {},
+    extras: {},
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('builds recipeMap from paginated recipes when no meal plan', () => {
+    const recipes = [
+      mockRecipe({ id: 'r1', title: 'Pasta' }),
+      mockRecipe({ id: 'r2', title: 'Soup' }),
+    ];
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes(recipes, undefined),
+      { wrapper: createQueryWrapper() },
+    );
+
+    expect(result.current).toEqual({
+      r1: recipes[0],
+      r2: recipes[1],
+    });
+    expect(mockApi.getRecipe).not.toHaveBeenCalled();
+  });
+
+  it('does not fetch when all meal plan recipes are already paginated', () => {
+    const recipes = [
+      mockRecipe({ id: 'r1', title: 'Pasta' }),
+      mockRecipe({ id: 'r2', title: 'Soup' }),
+    ];
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      meals: { '2025-03-12_lunch': 'r1', '2025-03-12_dinner': 'r2' },
+    };
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes(recipes, mealPlan),
+      { wrapper: createQueryWrapper() },
+    );
+
+    expect(result.current).toEqual({
+      r1: recipes[0],
+      r2: recipes[1],
+    });
+    expect(mockApi.getRecipe).not.toHaveBeenCalled();
+  });
+
+  it('fetches missing recipes individually', async () => {
+    const paginatedRecipe = mockRecipe({ id: 'r1', title: 'Pasta' });
+    const missingRecipe = mockRecipe({ id: 'r-missing', title: 'Kimchi Fried Rice' });
+    mockApi.getRecipe.mockResolvedValue(missingRecipe);
+
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      meals: {
+        '2025-03-12_lunch': 'r1',
+        '2025-03-12_dinner': 'r-missing',
+      },
+    };
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes([paginatedRecipe], mealPlan),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await waitFor(() => expect(result.current['r-missing']).toBeDefined());
+    expect(mockApi.getRecipe).toHaveBeenCalledWith('r-missing');
+    expect(mockApi.getRecipe).toHaveBeenCalledTimes(1);
+    expect(result.current['r1']).toEqual(paginatedRecipe);
+    expect(result.current['r-missing']).toEqual(missingRecipe);
+  });
+
+  it('ignores custom text entries in meals', () => {
+    const recipes = [mockRecipe({ id: 'r1', title: 'Pasta' })];
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      meals: {
+        '2025-03-12_lunch': 'r1',
+        '2025-03-12_dinner': 'custom:Leftovers',
+      },
+    };
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes(recipes, mealPlan),
+      { wrapper: createQueryWrapper() },
+    );
+
+    expect(result.current).toEqual({ r1: recipes[0] });
+    expect(mockApi.getRecipe).not.toHaveBeenCalled();
+  });
+
+  it('fetches missing extras recipes', async () => {
+    const extrasRecipe = mockRecipe({ id: 'extra-1', title: 'Bread' });
+    mockApi.getRecipe.mockResolvedValue(extrasRecipe);
+
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      extras: { '2025-03-10': ['extra-1'] },
+    };
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes([], mealPlan),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await waitFor(() => expect(result.current['extra-1']).toBeDefined());
+    expect(mockApi.getRecipe).toHaveBeenCalledWith('extra-1');
+    expect(result.current['extra-1']).toEqual(extrasRecipe);
+  });
+
+  it('deduplicates IDs across meals and extras', async () => {
+    const recipe = mockRecipe({ id: 'shared-id', title: 'Shared' });
+    mockApi.getRecipe.mockResolvedValue(recipe);
+
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      meals: { '2025-03-12_lunch': 'shared-id' },
+      extras: { '2025-03-10': ['shared-id'] },
+    };
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes([], mealPlan),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await waitFor(() => expect(result.current['shared-id']).toBeDefined());
+    // Should only fetch once even though it appears in both meals and extras
+    expect(mockApi.getRecipe).toHaveBeenCalledTimes(1);
   });
 });

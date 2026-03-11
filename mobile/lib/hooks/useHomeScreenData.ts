@@ -1,6 +1,11 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useAllRecipes, useGroceryState, useMealPlan } from '@/lib/hooks';
+import {
+  useAllRecipes,
+  useGroceryState,
+  useMealPlan,
+  useMealPlanRecipes,
+} from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { Recipe } from '@/lib/types';
@@ -11,7 +16,7 @@ export const WEEKLY_TRACKABLE_MEALS = 14;
 
 const getNextMeal = (
   mealPlan: { meals?: Record<string, string> } | undefined,
-  recipes: Recipe[],
+  recipeMap: Record<string, Recipe>,
 ): {
   title: string;
   imageUrl?: string;
@@ -34,7 +39,7 @@ const getNextMeal = (
       if (value.startsWith('custom:')) {
         return { title: value.slice(7), isCustom: true, mealType };
       }
-      const recipe = recipes.find((r) => r.id === value);
+      const recipe = recipeMap[value];
       if (recipe) {
         return {
           title: recipe.title,
@@ -62,7 +67,7 @@ const getNextMeal = (
           isTomorrow: true,
         };
       }
-      const recipe = recipes.find((r) => r.id === value);
+      const recipe = recipeMap[value];
       if (recipe) {
         return {
           title: recipe.title,
@@ -112,6 +117,8 @@ export const useHomeScreenData = () => {
   const inspirationIdRef = useRef<string | null>(null);
   const greetingKey = useMemo(() => getGreetingKey(), []);
 
+  const recipeMap = useMealPlanRecipes(recipes, mealPlan);
+
   const isLoading = recipesLoading || mealPlanLoading;
 
   const handleRefresh = useCallback(() => {
@@ -127,14 +134,13 @@ export const useHomeScreenData = () => {
       ).length;
     }
 
-    const recipeMap = new Map(recipes.map((r) => [r.id, r]));
     const ingredientNames = new Set<string>();
 
     selectedMealKeys.forEach((key) => {
       const recipeId = mealPlan.meals?.[key];
       if (!recipeId || recipeId.startsWith('custom:')) return;
 
-      const recipe = recipeMap.get(recipeId);
+      const recipe = recipeMap[recipeId];
       if (!recipe) return;
 
       recipe.ingredients.forEach((ingredient) => {
@@ -161,7 +167,7 @@ export const useHomeScreenData = () => {
   }, [
     mealPlan,
     selectedMealKeys,
-    recipes,
+    recipeMap,
     customItems,
     checkedItems,
     isItemAtHome,
@@ -219,7 +225,7 @@ export const useHomeScreenData = () => {
     100,
     Math.round((plannedMealsCount / WEEKLY_TRACKABLE_MEALS) * 100),
   );
-  const nextMeal = getNextMeal(mealPlan, recipes);
+  const nextMeal = getNextMeal(mealPlan, recipeMap);
 
   const handleImportRecipe = useCallback(() => {
     if (recipeUrl.trim()) {
