@@ -7,13 +7,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import type React from 'react';
 import { useEffect, useRef } from 'react';
-import {
-  Animated,
-  Easing,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 import { useTheme } from '@/lib/theme';
 
 interface GradientBackgroundProps {
@@ -152,21 +146,12 @@ export const GradientBackground = ({
   animated = false,
 }: GradientBackgroundProps) => {
   const { colors, animatedBackground } = useTheme();
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   // Non-animated, or theme disables animation: plain bgBase background
   if (!animated || !animatedBackground) {
     return (
       <View
-        style={[
-          styles.container,
-          style,
-          {
-            width: windowWidth,
-            height: windowHeight,
-            backgroundColor: colors.bgBase,
-          },
-        ]}
+        style={[styles.container, style, { backgroundColor: colors.bgBase }]}
       >
         {children}
       </View>
