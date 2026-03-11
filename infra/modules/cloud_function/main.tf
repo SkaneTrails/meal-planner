@@ -73,6 +73,10 @@ resource "google_cloudfunctions2_function" "scrape_recipe" {
     max_instance_count = var.max_instances
     available_memory   = var.memory
     timeout_seconds    = var.timeout
+    available_cpu      = "1"
+
+    # Extra CPU during startup for faster cold starts
+    startup_cpu_boost = true
 
     # Use dedicated service account
     service_account_email = google_service_account.function.email
