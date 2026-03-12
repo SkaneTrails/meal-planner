@@ -59,13 +59,16 @@ const isAuthConfigured =
   );
 
 /**
- * Detect mobile web browsers where signInWithPopup opens a new tab
- * instead of a real popup, breaking sessionStorage-based auth state.
+ * Detect iOS Safari where signInWithPopup opens a new tab instead of a
+ * real popup, breaking sessionStorage-based auth state.  Only these
+ * browsers need signInWithRedirect — Android Chrome handles popups fine
+ * and actually *breaks* with signInWithRedirect (auth state lost after
+ * the Google redirect).
  */
-const isMobileWeb =
+const isIOSSafari =
   Platform.OS === 'web' &&
   typeof navigator !== 'undefined' &&
-  (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+  (/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' &&
       typeof navigator.maxTouchPoints === 'number' &&
       navigator.maxTouchPoints > 1));
@@ -233,7 +236,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        if (isMobileWeb) {
+        if (isIOSSafari) {
           await signInWithRedirect(
             auth as NonNullable<typeof auth>,
             googleProvider,
