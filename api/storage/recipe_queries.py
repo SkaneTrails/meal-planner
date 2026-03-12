@@ -218,39 +218,63 @@ def get_all_recipes(
     return _deduplicate_recipes(recipes)
 
 
+def _is_unique_recipe(recipe: Recipe, *, include_duplicates: bool, seen_urls: set[str]) -> bool:
+    """Check if a recipe should be included after URL deduplication."""
+    if include_duplicates:
+        return True
+    normalized = normalize_url(recipe.url) if recipe.url else f"__no_url_{recipe.id}"
+    if normalized in seen_urls:  # pragma: no cover
+        return False
+    seen_urls.add(normalized)
+    return True
+
+
 def _stream_unique_recipes(
     queries: list, *, cursor_doc: object | None, target: int, include_duplicates: bool
 ) -> list[Recipe]:
     """Stream recipes from queries, deduplicating by ID and optionally by URL.
 
     Collects up to `target` unique recipes across all queries.
+    Fetches in batches to handle URL deduplication correctly — if a batch
+    contains many duplicates, subsequent batches are fetched until `target`
+    unique recipes are collected or the query is exhausted.
     """
     seen_ids: set[str] = set()
     seen_urls: set[str] = set()
     results: list[Recipe] = []
+    batch_size = target
 
     for query in queries:
         q = query
         if cursor_doc is not None:
             q = q.start_after(cursor_doc)
 
-        for doc in q.limit(target).stream():
-            if doc.id in seen_ids:  # pragma: no cover
-                continue
-            seen_ids.add(doc.id)
+        last_doc = None
+        exhausted = False
+        while not exhausted and len(results) < target:
+            batch_query = q.limit(batch_size)
+            if last_doc is not None:
+                batch_query = q.start_after(last_doc).limit(batch_size)
 
-            data = doc.to_dict()
-            recipe = _doc_to_recipe(doc.id, data)
+            doc_count = 0
+            for doc in batch_query.stream():
+                doc_count += 1
+                last_doc = doc
 
-            if not include_duplicates:
-                normalized = normalize_url(recipe.url) if recipe.url else f"__no_url_{recipe.id}"
-                if normalized in seen_urls:  # pragma: no cover
+                if doc.id in seen_ids:  # pragma: no cover
                     continue
-                seen_urls.add(normalized)
+                seen_ids.add(doc.id)
 
-            results.append(recipe)
-            if len(results) >= target:
-                return results
+                recipe = _doc_to_recipe(doc.id, doc.to_dict())
+                if not _is_unique_recipe(recipe, include_duplicates=include_duplicates, seen_urls=seen_urls):
+                    continue  # pragma: no cover
+
+                results.append(recipe)
+                if len(results) >= target:
+                    return results
+
+            if doc_count < batch_size:
+                exhausted = True
 
     return results
 
