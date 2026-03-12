@@ -27,7 +27,7 @@ sleep 1
 
 # Start API server in background
 echo "Starting API server..."
-uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload &
+uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir api --reload-dir config &
 API_PID=$!
 
 # Give API time to start

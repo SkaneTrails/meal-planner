@@ -71,6 +71,7 @@ export const RecipeGrid = ({
       keyExtractor={(item) => item.id}
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
+      style={{ flex: 1 }}
       renderItem={({ item }) => (
         <View style={{ width: cardWidth, padding: cardGap / 2 }}>
           <RecipeCard

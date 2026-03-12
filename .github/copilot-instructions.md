@@ -203,7 +203,7 @@ Skills in `.github/skills/` provide domain-specific instructions:
 For local development setup, environment configuration, and troubleshooting, see the `local-development` skill.
 
 **Quick reference:**
-- API: `uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload`
+- API: `uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir api --reload-dir config`
 - Mobile: `cd mobile && npx expo start --web`
 
 ### Code Quality Tools

@@ -8,6 +8,8 @@ from api.storage.recipe_queries import (
     _build_household_query,
     _deduplicate_recipes,
     _exclude_copied_originals,
+    _is_unique_recipe,
+    _stream_unique_recipes,
     count_recipes,
     get_all_recipes,
     get_recipes_by_ids,
@@ -1964,6 +1966,124 @@ class TestGetRecipesPaginated:
 
         assert len(recipes) == 2
         assert next_cursor is not None
+
+
+class TestIsUniqueRecipe:
+    """Tests for _is_unique_recipe URL deduplication helper."""
+
+    def _make_recipe(self, recipe_id: str, url: str | None = None) -> Recipe:
+        return Recipe(id=recipe_id, title=f"Recipe {recipe_id}", url=url, ingredients=[], instructions=[])
+
+    def test_always_unique_when_include_duplicates(self) -> None:
+        seen_urls: set[str] = set()
+        r = self._make_recipe("r1", "https://example.com/pasta")
+        assert _is_unique_recipe(r, include_duplicates=True, seen_urls=seen_urls) is True
+        # Same URL again still unique when include_duplicates=True
+        assert _is_unique_recipe(r, include_duplicates=True, seen_urls=seen_urls) is True
+
+    def test_duplicate_url_rejected(self) -> None:
+        seen_urls: set[str] = set()
+        r1 = self._make_recipe("r1", "https://example.com/pasta")
+        r2 = self._make_recipe("r2", "https://example.com/pasta")
+        assert _is_unique_recipe(r1, include_duplicates=False, seen_urls=seen_urls) is True
+        assert _is_unique_recipe(r2, include_duplicates=False, seen_urls=seen_urls) is False
+
+    def test_no_url_uses_id_sentinel(self) -> None:
+        seen_urls: set[str] = set()
+        r1 = self._make_recipe("r1", "")
+        r2 = self._make_recipe("r2", "")
+        assert _is_unique_recipe(r1, include_duplicates=False, seen_urls=seen_urls) is True
+        # Different ID → different sentinel → unique
+        assert _is_unique_recipe(r2, include_duplicates=False, seen_urls=seen_urls) is True
+
+
+class TestStreamUniqueRecipes:
+    """Tests for _stream_unique_recipes multi-batch deduplication."""
+
+    def _make_mock_doc(self, doc_id: str, url: str = "") -> MagicMock:
+        doc = MagicMock()
+        doc.id = doc_id
+        doc.exists = True
+        doc.to_dict.return_value = {
+            "title": f"Recipe {doc_id}",
+            "url": url or f"https://example.com/{doc_id}",
+            "ingredients": [],
+            "instructions": [],
+        }
+        return doc
+
+    def test_fetches_additional_batches_when_duplicates_exhaust_first(self) -> None:
+        """When first batch is mostly duplicates, should fetch more batches."""
+        # 3 docs with same URL (only first kept), then 2 unique in second batch
+        batch1_docs = [
+            self._make_mock_doc("r1", url="https://example.com/same"),
+            self._make_mock_doc("r2", url="https://example.com/same"),
+            self._make_mock_doc("r3", url="https://example.com/same"),
+        ]
+        batch2_docs = [
+            self._make_mock_doc("r4", url="https://example.com/unique1"),
+            self._make_mock_doc("r5", url="https://example.com/unique2"),
+        ]
+
+        mock_query = MagicMock()
+        mock_query.limit.return_value = mock_query
+        mock_query.start_after.return_value = mock_query
+        # First .stream() returns batch1, second returns batch2
+        mock_query.stream.side_effect = [iter(batch1_docs), iter(batch2_docs)]
+
+        results = _stream_unique_recipes([mock_query], cursor_doc=None, target=3, include_duplicates=False)
+
+        assert len(results) == 3
+        assert [r.id for r in results] == ["r1", "r4", "r5"]
+
+    def test_stops_when_query_exhausted(self) -> None:
+        """Should stop fetching when query returns fewer docs than batch size."""
+        docs = [
+            self._make_mock_doc("r1", url="https://example.com/a"),
+            self._make_mock_doc("r2", url="https://example.com/a"),
+        ]
+
+        mock_query = MagicMock()
+        mock_query.limit.return_value = mock_query
+        mock_query.stream.return_value = iter(docs)
+
+        results = _stream_unique_recipes([mock_query], cursor_doc=None, target=5, include_duplicates=False)
+
+        assert len(results) == 1
+        assert results[0].id == "r1"
+
+    def test_deduplicates_doc_ids_across_queries(self) -> None:
+        """Same doc ID appearing in both queries should be deduplicated."""
+        shared_doc = self._make_mock_doc("shared1")
+        unique_doc = self._make_mock_doc("unique1")
+
+        query1 = MagicMock()
+        query1.limit.return_value = query1
+        query1.stream.return_value = iter([shared_doc])
+
+        query2 = MagicMock()
+        query2.limit.return_value = query2
+        query2.stream.return_value = iter([self._make_mock_doc("shared1"), unique_doc])
+
+        results = _stream_unique_recipes([query1, query2], cursor_doc=None, target=10, include_duplicates=True)
+
+        assert len(results) == 2
+        assert [r.id for r in results] == ["shared1", "unique1"]
+
+    def test_include_duplicates_skips_url_dedup(self) -> None:
+        """With include_duplicates=True, same-URL recipes are all kept."""
+        docs = [
+            self._make_mock_doc("r1", url="https://example.com/same"),
+            self._make_mock_doc("r2", url="https://example.com/same"),
+        ]
+
+        mock_query = MagicMock()
+        mock_query.limit.return_value = mock_query
+        mock_query.stream.return_value = iter(docs)
+
+        results = _stream_unique_recipes([mock_query], cursor_doc=None, target=10, include_duplicates=True)
+
+        assert len(results) == 2
 
 
 class TestReviewEnhancement:
