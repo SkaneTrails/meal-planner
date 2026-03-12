@@ -42,10 +42,12 @@ const ArrowButton = ({
   direction,
   onPress,
   disabled,
+  t,
 }: {
   direction: 'back' | 'forward';
   onPress: () => void;
   disabled: boolean;
+  t: TFunction;
 }) => {
   const { colors } = useTheme();
 
@@ -54,7 +56,11 @@ const ArrowButton = ({
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
-      accessibilityLabel={`Scroll ${direction}`}
+      accessibilityLabel={
+        direction === 'back'
+          ? t('featured.scrollBack')
+          : t('featured.scrollForward')
+      }
       style={{
         justifyContent: 'center',
         alignItems: 'center',
@@ -145,11 +151,13 @@ export const FeaturedCarousel = ({
               direction="back"
               onPress={() => scroll('back')}
               disabled={!canScrollBack}
+              t={t}
             />
             <ArrowButton
               direction="forward"
               onPress={() => scroll('forward')}
               disabled={!canScrollForward}
+              t={t}
             />
           </View>
         )}

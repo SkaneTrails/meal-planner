@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from api.models.recipe import Recipe
 
 RECIPES_PER_CATEGORY = 8
+MIN_RECIPES_PER_CATEGORY = 3
 CATEGORIES_TO_SHOW = 3
 
 _MORNING_START = 5
@@ -24,16 +25,35 @@ _AFTERNOON_START = 12
 _EVENING_START = 17
 
 CATEGORY_DEFINITIONS: list[CategoryDefinition] = [
+    # Seasonal
     CategoryDefinition(key="cozy-winter", any_tags=["comfort-food", "hearty"], seasons=["winter"]),
     CategoryDefinition(key="hearty-soups", any_tags=["soup", "stew"], seasons=["winter", "autumn"]),
+    CategoryDefinition(key="summer-salads", required_tags=["salad"], seasons=["summer"]),
+    CategoryDefinition(key="grilled-favorites", any_tags=["grilled", "bbq"], seasons=["summer"]),
+    CategoryDefinition(
+        key="light-and-fresh",
+        required_tags=["light"],
+        any_tags=["refreshing", "no-cook", "salad"],
+        seasons=["summer", "spring"],
+    ),
+    CategoryDefinition(key="comfort-classics", required_tags=["comfort-food"], seasons=["autumn", "winter"]),
+    CategoryDefinition(
+        key="autumn-harvest", any_tags=["pumpkin", "sweet-potato", "beetroot", "root-vegetables"], seasons=["autumn"]
+    ),
+    CategoryDefinition(
+        key="spring-fresh", required_tags=["spring"], any_tags=["fresh", "light", "refreshing"], seasons=["spring"]
+    ),
+    CategoryDefinition(key="slow-cooked", any_tags=["slow-cooked"], seasons=["autumn", "winter"]),
+    # Time-of-day
     CategoryDefinition(
         key="quick-breakfast", required_tags=["breakfast"], any_tags=["quick", "easy"], times=["morning"]
     ),
-    CategoryDefinition(key="summer-salads", required_tags=["salad"], seasons=["summer"]),
-    CategoryDefinition(key="weeknight-dinners", any_tags=["weeknight", "easy"], times=["evening"]),
-    CategoryDefinition(key="grilled-favorites", any_tags=["grilled", "bbq"], seasons=["summer"]),
-    CategoryDefinition(key="light-and-fresh", any_tags=["light", "refreshing", "fresh"], seasons=["summer", "spring"]),
-    CategoryDefinition(key="comfort-classics", required_tags=["comfort-food"], seasons=["autumn", "winter"]),
+    CategoryDefinition(key="weeknight-dinners", required_tags=["weeknight"], times=["evening"]),
+    CategoryDefinition(key="pasta-night", required_tags=["pasta"], times=["evening"]),
+    CategoryDefinition(key="curry-night", required_tags=["curry"], times=["evening"]),
+    CategoryDefinition(key="date-night", required_tags=["date-night"], times=["evening"]),
+    CategoryDefinition(key="lunchbox-ideas", any_tags=["lunchbox", "make-ahead"], times=["morning", "afternoon"]),
+    # All year
     CategoryDefinition(key="one-pot-wonders", any_tags=["one-pot", "one-pan"]),
     CategoryDefinition(key="meal-prep", any_tags=["meal-prep", "batch-cooking", "freezer-friendly"]),
     CategoryDefinition(key="high-protein", required_tags=["high-protein"]),
@@ -41,12 +61,17 @@ CATEGORY_DEFINITIONS: list[CategoryDefinition] = [
     CategoryDefinition(
         key="asian-inspired", any_tags=["japanese", "thai", "chinese", "korean", "vietnamese", "indian"]
     ),
-    CategoryDefinition(key="mediterranean", any_tags=["mediterranean", "greek", "italian"]),
-    CategoryDefinition(key="pasta-night", required_tags=["pasta"], times=["evening"]),
-    CategoryDefinition(
-        key="autumn-harvest", any_tags=["pumpkin", "sweet-potato", "beetroot", "root-vegetables"], seasons=["autumn"]
-    ),
-    CategoryDefinition(key="spring-fresh", any_tags=["spring", "fresh", "light"], seasons=["spring"]),
+    CategoryDefinition(key="mediterranean", required_tags=["mediterranean"]),
+    CategoryDefinition(key="veggie-delights", any_tags=["vegetarian", "vegan"]),
+    CategoryDefinition(key="seafood-picks", any_tags=["salmon", "shrimp", "fish", "seafood"]),
+    CategoryDefinition(key="quick-and-easy", required_tags=["quick"]),
+    CategoryDefinition(key="wok-and-stir-fry", any_tags=["stir-fry", "wok"]),
+    CategoryDefinition(key="bowl-food", required_tags=["bowl"]),
+    CategoryDefinition(key="baking-and-bread", any_tags=["baking", "bread"]),
+    CategoryDefinition(key="spicy-and-bold", any_tags=["spicy", "smoky"]),
+    CategoryDefinition(key="mexican-fiesta", any_tags=["mexican", "tex-mex"]),
+    CategoryDefinition(key="nordic-classics", any_tags=["nordic", "swedish"]),
+    CategoryDefinition(key="middle-eastern", any_tags=["middle-eastern", "lebanese", "turkish", "moroccan"]),
 ]
 
 
@@ -124,7 +149,7 @@ def build_featured_categories(recipes: list[Recipe], *, now: datetime | None = N
         if len(categories) >= CATEGORIES_TO_SHOW:
             break
         selected = _select_recipes(recipes, definition)
-        if selected:
+        if len(selected) >= MIN_RECIPES_PER_CATEGORY:
             categories.append(FeaturedCategory(key=definition.key, recipes=selected))
 
     return FeaturedCategoriesResponse(categories=categories, season=season, time_of_day=time_of_day)

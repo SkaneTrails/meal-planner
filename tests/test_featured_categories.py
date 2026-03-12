@@ -14,6 +14,7 @@ from api.routers.featured import router
 from api.services.featured_categories import (
     CATEGORIES_TO_SHOW,
     CATEGORY_DEFINITIONS,
+    MIN_RECIPES_PER_CATEGORY,
     RECIPES_PER_CATEGORY,
     _is_eligible,
     _recipe_matches,
@@ -201,21 +202,26 @@ class TestBuildFeaturedCategories:
         assert result.categories == []
 
     def test_returns_up_to_three_categories(self) -> None:
-        recipes = [
-            _make_recipe("r1", ["comfort-food", "hearty", "winter"]),
-            _make_recipe("r2", ["soup", "winter"]),
-            _make_recipe("r3", ["one-pot", "weeknight", "easy"]),
-            _make_recipe("r4", ["pasta", "weeknight"]),
-            _make_recipe("r5", ["comfort-food", "autumn"]),
-        ]
+        recipes = (
+            [_make_recipe(f"s{i}", ["comfort-food", "hearty", "winter"]) for i in range(5)]
+            + [_make_recipe(f"p{i}", ["soup", "winter"]) for i in range(5)]
+            + [_make_recipe(f"o{i}", ["one-pot", "weeknight"]) for i in range(5)]
+            + [_make_recipe(f"pa{i}", ["pasta", "weeknight"]) for i in range(5)]
+        )
         result = build_featured_categories(recipes, now=self._winter_evening())
         assert len(result.categories) <= CATEGORIES_TO_SHOW
 
-    def test_skips_empty_categories(self) -> None:
+    def test_skips_categories_below_minimum_recipes(self) -> None:
         recipes = [_make_recipe("r1", ["soup", "winter"])]
         result = build_featured_categories(recipes, now=self._winter_evening())
-        for cat in result.categories:
-            assert len(cat.recipes) >= 1
+        assert result.categories == []
+
+    def test_includes_categories_at_minimum_threshold(self) -> None:
+        recipes = [_make_recipe(f"r{i}", ["soup", "winter"]) for i in range(MIN_RECIPES_PER_CATEGORY)]
+        result = build_featured_categories(recipes, now=self._winter_evening())
+        soup_cats = [c for c in result.categories if c.key == "hearty-soups"]
+        assert len(soup_cats) == 1
+        assert len(soup_cats[0].recipes) == MIN_RECIPES_PER_CATEGORY
 
     def test_each_category_has_max_8_recipes(self) -> None:
         recipes = [_make_recipe(f"r{i}", ["soup", "winter"]) for i in range(20)]
@@ -224,18 +230,18 @@ class TestBuildFeaturedCategories:
             assert len(cat.recipes) <= RECIPES_PER_CATEGORY
 
     def test_summer_morning_picks_summer_categories(self) -> None:
-        recipes = [
-            _make_recipe("r1", ["salad", "summer", "light"]),
-            _make_recipe("r2", ["grilled", "bbq", "summer"]),
-            _make_recipe("r3", ["breakfast", "quick", "eggs"]),
-        ]
+        recipes = (
+            [_make_recipe(f"s{i}", ["salad", "summer", "light"]) for i in range(5)]
+            + [_make_recipe(f"g{i}", ["grilled", "bbq", "summer"]) for i in range(5)]
+            + [_make_recipe(f"b{i}", ["breakfast", "quick", "eggs"]) for i in range(5)]
+        )
         result = build_featured_categories(recipes, now=self._summer_morning())
         category_keys = {c.key for c in result.categories}
         winter_keys = {"cozy-winter", "hearty-soups", "comfort-classics"}
         assert not category_keys & winter_keys
 
     def test_category_keys_are_valid_strings(self) -> None:
-        recipes = [_make_recipe("r1", ["soup", "winter", "comfort-food"])]
+        recipes = [_make_recipe(f"r{i}", ["soup", "winter", "comfort-food"]) for i in range(5)]
         result = build_featured_categories(recipes, now=self._winter_evening())
         for cat in result.categories:
             assert isinstance(cat.key, str)
@@ -275,10 +281,8 @@ class TestFeaturedEndpoint:
         assert response.status_code == 200
 
     def test_returns_featured_structure(self, client: TestClient) -> None:
-        recipes = [
-            _make_recipe("r1", ["soup", "winter", "comfort-food"]),
-            _make_recipe("r2", ["stew", "hearty", "winter"]),
-            _make_recipe("r3", ["one-pot", "easy"]),
+        recipes = [_make_recipe(f"s{i}", ["soup", "winter", "comfort-food"]) for i in range(5)] + [
+            _make_recipe(f"t{i}", ["stew", "hearty", "winter"]) for i in range(5)
         ]
         with (
             patch("api.routers.featured.get_all_recipes", return_value=recipes),
