@@ -567,175 +567,178 @@ export const RecipeCard = ({
   }
 
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      accessibilityRole="button"
-      accessibilityLabel={recipe.title}
-    >
-      <Animated.View
-        style={{
-          width: cardSize,
-          height: cardHeight,
-          backgroundColor: colors.white,
-          borderRadius: borderRadius['lg-xl'],
-          overflow: 'hidden',
-          transform: [{ scale: scaleAnim }],
-          ...shadows.cardRaised,
-        }}
+    <View style={{ position: 'relative' }}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        accessibilityRole="button"
+        accessibilityLabel={recipe.title}
       >
-        {/* Image with gradient overlay */}
-        <View style={{ position: 'relative' }}>
-          <Image
-            source={{
-              uri:
-                recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE,
-            }}
-            style={{ width: '100%', height: imageHeight }}
-            contentFit="cover"
-            placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
-            transition={300}
-          />
-
-          {/* Subtle bottom gradient for depth */}
-          <LinearGradient
-            colors={['transparent', colors.overlay.gradientSubtle]}
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 60,
-            }}
-          />
-
-          {/* AI Enhanced badge - top left */}
-          {recipe.enhanced && (
-            <View
-              style={{
-                position: 'absolute',
-                top: spacing['sm-md'],
-                left: spacing['sm-md'],
-                backgroundColor: colors.ai.badge,
-                paddingHorizontal: spacing.sm,
-                paddingVertical: spacing.xs,
-                borderRadius: borderRadius['sm-md'],
-                flexDirection: 'row',
-                alignItems: 'center',
-                ...shadows.sm,
-              }}
-            >
-              <ThemeIcon
-                name="sparkles"
-                size={fontSize.base}
-                color={colors.white}
-              />
-              <Text
-                style={{
-                  fontSize: fontSize.xs,
-                  fontWeight: fontWeight.semibold,
-                  color: colors.white,
-                  marginLeft: spacing['2xs'],
-                }}
-              >
-                AI
-              </Text>
-            </View>
-          )}
-
-          {/* Favorite heart icon - top right, subtle */}
-          {showFavorite && (
-            <View
-              style={{
-                position: 'absolute',
-                top: spacing['sm-md'],
-                right: spacing['sm-md'],
-                ...shadows.sm,
-              }}
-            >
-              <IconButton
-                icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
-                onPress={handleToggleFavorite}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                size="sm"
-                iconSize={16}
-                tone={isRecipeFavorite ? 'danger' : 'glassSubtle'}
-              />
-            </View>
-          )}
-        </View>
-
-        {/* Content below image */}
-        <View
+        <Animated.View
           style={{
-            paddingHorizontal: spacing['sm-md'],
-            paddingVertical: spacing['xs-sm'],
-            paddingBottom: 8,
-            gap: 4,
+            width: cardSize,
+            height: cardHeight,
+            backgroundColor: colors.white,
+            borderRadius: borderRadius['lg-xl'],
+            overflow: 'hidden',
+            transform: [{ scale: scaleAnim }],
+            ...shadows.cardRaised,
           }}
         >
-          {/* Title - 2 lines max */}
-          <Text
-            style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              fontWeight: fontWeight.semibold,
-              color: colors.content.heading,
-              lineHeight: lineHeight.sm,
-            }}
-            numberOfLines={2}
-          >
-            {recipe.title}
-          </Text>
+          {/* Image with gradient overlay */}
+          <View style={{ position: 'relative' }}>
+            <Image
+              source={{
+                uri:
+                  recipe.thumbnail_url || recipe.image_url || PLACEHOLDER_IMAGE,
+              }}
+              style={{ width: '100%', height: imageHeight }}
+              contentFit="cover"
+              placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+              transition={300}
+            />
 
-          {/* Time info */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: spacing['sm-md'],
-            }}
-          >
-            {totalTime && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {/* Subtle bottom gradient for depth */}
+            <LinearGradient
+              colors={['transparent', colors.overlay.gradientSubtle]}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 60,
+              }}
+            />
+
+            {/* AI Enhanced badge - top left */}
+            {recipe.enhanced && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: spacing['sm-md'],
+                  left: spacing['sm-md'],
+                  backgroundColor: colors.ai.badge,
+                  paddingHorizontal: spacing.sm,
+                  paddingVertical: spacing.xs,
+                  borderRadius: borderRadius['sm-md'],
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  ...shadows.sm,
+                }}
+              >
                 <ThemeIcon
-                  name="time-outline"
-                  size={fontSize.md}
-                  color={colors.content.secondary}
+                  name="sparkles"
+                  size={fontSize.base}
+                  color={colors.white}
                 />
                 <Text
                   style={{
                     fontSize: fontSize.xs,
-                    color: colors.content.secondary,
+                    fontWeight: fontWeight.semibold,
+                    color: colors.white,
                     marginLeft: spacing['2xs'],
                   }}
                 >
-                  {totalTime} min
-                </Text>
-              </View>
-            )}
-            {recipe.servings && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <ThemeIcon
-                  name="people-outline"
-                  size={fontSize.md}
-                  color={colors.content.secondary}
-                />
-                <Text
-                  style={{
-                    fontSize: fontSize.xs,
-                    color: colors.content.secondary,
-                    marginLeft: spacing['2xs'],
-                  }}
-                >
-                  {recipe.servings}
+                  AI
                 </Text>
               </View>
             )}
           </View>
+
+          {/* Content below image */}
+          <View
+            style={{
+              paddingHorizontal: spacing['sm-md'],
+              paddingVertical: spacing['xs-sm'],
+              paddingBottom: 8,
+              gap: 4,
+            }}
+          >
+            {/* Title - 2 lines max */}
+            <Text
+              style={{
+                fontSize: fontSize.md,
+                fontFamily: fonts.bodySemibold,
+                fontWeight: fontWeight.semibold,
+                color: colors.content.heading,
+                lineHeight: lineHeight.sm,
+              }}
+              numberOfLines={2}
+            >
+              {recipe.title}
+            </Text>
+
+            {/* Time info */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing['sm-md'],
+              }}
+            >
+              {totalTime && (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <ThemeIcon
+                    name="time-outline"
+                    size={fontSize.md}
+                    color={colors.content.secondary}
+                  />
+                  <Text
+                    style={{
+                      fontSize: fontSize.xs,
+                      color: colors.content.secondary,
+                      marginLeft: spacing['2xs'],
+                    }}
+                  >
+                    {totalTime} min
+                  </Text>
+                </View>
+              )}
+              {recipe.servings && (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <ThemeIcon
+                    name="people-outline"
+                    size={fontSize.md}
+                    color={colors.content.secondary}
+                  />
+                  <Text
+                    style={{
+                      fontSize: fontSize.xs,
+                      color: colors.content.secondary,
+                      marginLeft: spacing['2xs'],
+                    }}
+                  >
+                    {recipe.servings}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </Animated.View>
+      </Pressable>
+
+      {/* Favorite heart icon - outside Pressable to avoid nested <button> on web */}
+      {showFavorite && (
+        <View
+          style={{
+            position: 'absolute',
+            top: spacing['sm-md'],
+            right: spacing['sm-md'],
+            zIndex: 1,
+            ...shadows.sm,
+          }}
+        >
+          <IconButton
+            icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
+            onPress={handleToggleFavorite}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            size="sm"
+            iconSize={16}
+            tone={isRecipeFavorite ? 'danger' : 'glassSubtle'}
+          />
         </View>
-      </Animated.View>
-    </Pressable>
+      )}
+    </View>
   );
 };

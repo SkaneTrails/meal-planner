@@ -9,4 +9,4 @@ echo "Starting FastAPI server on http://localhost:8000"
 echo "API docs available at http://localhost:8000/api/docs"
 echo ""
 
-uv run uvicorn api.main:app --reload --port 8000
+uv run uvicorn api.main:app --reload --reload-dir api --reload-dir config --port 8000

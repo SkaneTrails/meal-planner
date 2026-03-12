@@ -39,7 +39,7 @@ uv run pre-commit install
 ./scripts/run-api.sh
 
 # Or manually
-uv run uvicorn api.main:app --reload --port 8000
+uv run uvicorn api.main:app --reload --reload-dir api --reload-dir config --port 8000
 ```
 
 ### Mobile App

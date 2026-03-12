@@ -151,6 +151,8 @@ export const useMealPlanRecipes = (
       queryKey: recipeKeys.detail(id),
       queryFn: () => api.getRecipe(id),
       staleTime: 5 * 60 * 1000,
+      retry: (count: number, error: unknown) =>
+        (error as { status?: number }).status !== 404 && count < 3,
     })),
   });
 
