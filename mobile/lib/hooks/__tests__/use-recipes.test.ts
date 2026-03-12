@@ -11,7 +11,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { createQueryWrapper, createTestQueryClient, mockRecipe } from '@/test/helpers';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
 vi.mock('@/lib/api', () => ({
@@ -33,6 +33,7 @@ vi.mock('@/lib/settings-context', () => ({
 
 // Import AFTER mock setup
 import { api } from '@/lib/api';
+import { ApiClientError } from '@/lib/api/client';
 import {
   useRecipes,
   useRecipe,
@@ -457,5 +458,57 @@ describe('useMealPlanRecipes', () => {
     await waitFor(() => expect(result.current['shared-id']).toBeDefined());
     // Should only fetch once even though it appears in both meals and extras
     expect(mockApi.getRecipe).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not retry on 404 errors', async () => {
+    mockApi.getRecipe.mockRejectedValue(new ApiClientError('Not found', 404));
+
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      meals: { '2025-03-12_lunch': 'deleted-recipe' },
+    };
+
+    const retryClient = new QueryClient({
+      defaultOptions: { queries: { gcTime: 0, retryDelay: 0 } },
+    });
+    const wrapper = ({ children }: { children: React.ReactNode }) =>
+      React.createElement(QueryClientProvider, { client: retryClient }, children);
+
+    const { result } = renderHook(
+      () => useMealPlanRecipes([], mealPlan),
+      { wrapper },
+    );
+
+    await waitFor(() =>
+      expect(result.current['deleted-recipe']).toBeUndefined(),
+    );
+    // Wait a tick to ensure no retries are pending
+    await new Promise((r) => setTimeout(r, 50));
+    expect(mockApi.getRecipe).toHaveBeenCalledTimes(1);
+  });
+
+  it('retries on transient errors', async () => {
+    mockApi.getRecipe.mockRejectedValue(new ApiClientError('Server error', 500));
+
+    const mealPlan: MealPlan = {
+      ...baseMealPlan,
+      meals: { '2025-03-12_lunch': 'flaky-recipe' },
+    };
+
+    const retryClient = new QueryClient({
+      defaultOptions: { queries: { gcTime: 0, retryDelay: 0 } },
+    });
+    const wrapper = ({ children }: { children: React.ReactNode }) =>
+      React.createElement(QueryClientProvider, { client: retryClient }, children);
+
+    renderHook(
+      () => useMealPlanRecipes([], mealPlan),
+      { wrapper },
+    );
+
+    // The retry function allows up to 3 retries (count < 3), so total calls = 4 (1 initial + 3 retries)
+    await waitFor(() =>
+      expect(mockApi.getRecipe).toHaveBeenCalledTimes(4),
+    );
   });
 });
