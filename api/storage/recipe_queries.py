@@ -223,7 +223,7 @@ def _is_unique_recipe(recipe: Recipe, *, include_duplicates: bool, seen_urls: se
     if include_duplicates:
         return True
     normalized = normalize_url(recipe.url) if recipe.url else f"__no_url_{recipe.id}"
-    if normalized in seen_urls:  # pragma: no cover
+    if normalized in seen_urls:
         return False
     seen_urls.add(normalized)
     return True
@@ -261,13 +261,13 @@ def _stream_unique_recipes(
                 doc_count += 1
                 last_doc = doc
 
-                if doc.id in seen_ids:  # pragma: no cover
+                if doc.id in seen_ids:
                     continue
                 seen_ids.add(doc.id)
 
                 recipe = _doc_to_recipe(doc.id, doc.to_dict())
                 if not _is_unique_recipe(recipe, include_duplicates=include_duplicates, seen_urls=seen_urls):
-                    continue  # pragma: no cover
+                    continue
 
                 results.append(recipe)
                 if len(results) >= target:

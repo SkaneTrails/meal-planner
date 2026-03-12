@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
+import { ApiClientError } from '../api/client';
 import { useSettings } from '../settings-context';
 import type {
   DietLabel,
@@ -152,7 +153,7 @@ export const useMealPlanRecipes = (
       queryFn: () => api.getRecipe(id),
       staleTime: 5 * 60 * 1000,
       retry: (count: number, error: unknown) =>
-        (error as { status?: number }).status !== 404 && count < 3,
+        !(error instanceof ApiClientError && error.status === 404) && count < 3,
     })),
   });
 
