@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import admin, grocery, meal_plans, recipes
+from api.routers import admin, featured, grocery, meal_plans, recipes
 
 load_dotenv()
 
@@ -32,6 +32,8 @@ app.add_middleware(
 )
 
 # Include routers with /api/v1 prefix
+# featured must come before recipes so /recipes/featured isn't caught by /recipes/{recipe_id}
+app.include_router(featured.router, prefix="/api/v1")
 app.include_router(recipes.router, prefix="/api/v1")
 app.include_router(meal_plans.router, prefix="/api/v1")
 app.include_router(grocery.router, prefix="/api/v1")
