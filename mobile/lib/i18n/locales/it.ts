@@ -139,6 +139,7 @@ const it: Translations = {
 
   recipes: {
     title: 'Ricettario',
+    allRecipes: 'Tutte le ricette',
     collectionCount: '{{count}} ricette nella tua collezione',
     filteredCount: '{{count}} ricette',
     searchPlaceholder: 'Cerca ricette...',
@@ -833,6 +834,26 @@ const it: Translations = {
     savedMessage: 'Impostazioni nucleo familiare aggiornate',
     failedToSave: 'Impossibile salvare le impostazioni',
     invalidHouseholdId: 'ID nucleo familiare non valido',
+  },
+
+  featured: {
+    'cozy-winter': 'Inverno accogliente',
+    'hearty-soups': 'Zuppe sostanziose',
+    'quick-breakfast': 'Colazione veloce',
+    'summer-salads': 'Insalate estive',
+    'weeknight-dinners': 'Cene infrasettimanali',
+    'grilled-favorites': 'Grigliate preferite',
+    'light-and-fresh': 'Leggero e fresco',
+    'comfort-classics': 'Classici comfort',
+    'one-pot-wonders': 'Piatti unici',
+    'meal-prep': 'Meal prep',
+    'high-protein': 'Ricchi di proteine',
+    'family-favorites': 'Preferiti in famiglia',
+    'asian-inspired': 'Ispirazione asiatica',
+    mediterranean: 'Mediterraneo',
+    'pasta-night': 'Serata pasta',
+    'autumn-harvest': 'Raccolto autunnale',
+    'spring-fresh': 'Fresco di primavera',
   },
 };
 

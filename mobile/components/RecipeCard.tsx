@@ -567,7 +567,7 @@ export const RecipeCard = ({
   }
 
   return (
-    <View style={{ position: 'relative' }}>
+    <View style={{ position: 'relative', width: cardSize, height: cardHeight }}>
       <Pressable
         onPress={onPress}
         onPressIn={handlePressIn}

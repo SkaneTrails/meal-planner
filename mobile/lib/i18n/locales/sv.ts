@@ -139,6 +139,7 @@ const sv: Translations = {
 
   recipes: {
     title: 'Receptbibliotek',
+    allRecipes: 'Alla recept',
     collectionCount: '{{count}} recept i din samling',
     filteredCount: '{{count}} recept',
     searchPlaceholder: 'Sök recept...',
@@ -819,6 +820,26 @@ const sv: Translations = {
     savedMessage: 'Hushållsinställningarna uppdaterade',
     failedToSave: 'Kunde inte spara inställningar',
     invalidHouseholdId: 'Ogiltigt hushålls-ID',
+  },
+
+  featured: {
+    'cozy-winter': 'Mysig vinter',
+    'hearty-soups': 'Rejäla soppor',
+    'quick-breakfast': 'Snabb frukost',
+    'summer-salads': 'Sommarsallader',
+    'weeknight-dinners': 'Vardagsmiddagar',
+    'grilled-favorites': 'Grillfavoriter',
+    'light-and-fresh': 'Lätt & fräscht',
+    'comfort-classics': 'Klassisk husmanskost',
+    'one-pot-wonders': 'Engrytaunder',
+    'meal-prep': 'Matlådor',
+    'high-protein': 'Proteinrikt',
+    'family-favorites': 'Familjefavoriter',
+    'asian-inspired': 'Asiatiskt inspirerat',
+    mediterranean: 'Medelhavskök',
+    'pasta-night': 'Pastakväll',
+    'autumn-harvest': 'Höstskörd',
+    'spring-fresh': 'Vårfräscht',
   },
 };
 

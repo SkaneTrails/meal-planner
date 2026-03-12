@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import type {
   DietLabel,
   EnhancementReviewAction,
+  FeaturedCategoriesResponse,
   MealLabel,
   PaginatedRecipeList,
   Recipe,
@@ -275,5 +276,9 @@ export const recipeApi = {
     return apiRequest<void>(`/recipes/${recipeId}/notes/${noteId}`, {
       method: 'DELETE',
     });
+  },
+
+  getFeaturedCategories: (): Promise<FeaturedCategoriesResponse> => {
+    return apiRequest<FeaturedCategoriesResponse>('/recipes/featured');
   },
 };

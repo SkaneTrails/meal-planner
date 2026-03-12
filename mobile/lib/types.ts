@@ -368,3 +368,14 @@ export interface LearnOrderResponse {
   updated: boolean;
   item_order: string[];
 }
+
+export interface FeaturedCategory {
+  key: string;
+  recipes: Recipe[];
+}
+
+export interface FeaturedCategoriesResponse {
+  categories: FeaturedCategory[];
+  season: string;
+  time_of_day: string;
+}

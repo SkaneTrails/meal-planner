@@ -143,6 +143,7 @@ const en = {
   // ── Recipes screen ────────────────────────────────────────────────
   recipes: {
     title: 'Recipe Library',
+    allRecipes: 'All Recipes',
     collectionCount: '{{count}} recipes in your collection',
     filteredCount: '{{count}} recipes',
     searchPlaceholder: 'Search recipes...',
@@ -835,6 +836,27 @@ const en = {
     savedMessage: 'Household settings updated',
     failedToSave: 'Failed to save settings',
     invalidHouseholdId: 'Invalid household ID',
+  },
+
+  // ── Featured recipe categories ──────────────────────────────────────
+  featured: {
+    'cozy-winter': 'Cozy Winter',
+    'hearty-soups': 'Hearty Soups',
+    'quick-breakfast': 'Quick Breakfast',
+    'summer-salads': 'Summer Salads',
+    'weeknight-dinners': 'Weeknight Dinners',
+    'grilled-favorites': 'Grilled Favorites',
+    'light-and-fresh': 'Light & Fresh',
+    'comfort-classics': 'Comfort Classics',
+    'one-pot-wonders': 'One-Pot Wonders',
+    'meal-prep': 'Meal Prep',
+    'high-protein': 'High Protein',
+    'family-favorites': 'Family Favorites',
+    'asian-inspired': 'Asian Inspired',
+    mediterranean: 'Mediterranean',
+    'pasta-night': 'Pasta Night',
+    'autumn-harvest': 'Autumn Harvest',
+    'spring-fresh': 'Spring Fresh',
   },
 } as const;
 
