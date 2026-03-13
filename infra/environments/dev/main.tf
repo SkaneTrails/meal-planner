@@ -254,4 +254,13 @@ module "workload_federation" {
     cloudrun  = module.iam.github_actions_cloudrun_service_account.id
     terraform = module.iam.github_actions_terraform_service_account.id
   }
+
+  # External repos allowed to run terraform plan with viewer-only access
+  # Repo names come from var.external_wif_repos (set in terraform.tfvars, gitignored)
+  external_repo_bindings = {
+    for label, repo in var.external_wif_repos : label => {
+      repository         = repo
+      service_account_id = module.iam.github_actions_viewer_service_account.id
+    }
+  }
 }

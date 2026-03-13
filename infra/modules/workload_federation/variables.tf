@@ -18,3 +18,12 @@ variable "service_account_ids" {
   type        = map(string)
   default     = {}
 }
+
+variable "external_repo_bindings" {
+  description = "Map of external repos to service account IDs for WIF impersonation. Key = label, value = { repository, service_account_id }"
+  type = map(object({
+    repository         = string
+    service_account_id = string
+  }))
+  default = {}
+}
