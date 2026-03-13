@@ -18,6 +18,7 @@ import {
   ScreenHeader,
   ScreenLayout,
 } from '@/components';
+import { FeaturedCategoriesSection } from '@/components/recipes/FeaturedCategoriesSection';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { MealTypePicker } from '@/components/recipes/MealTypePicker';
@@ -257,6 +258,14 @@ export default function RecipesScreen() {
           }
         }}
         isFetchingNextPage={isFetchingNextPage}
+        listHeader={
+          !hasActiveFilters ? (
+            <FeaturedCategoriesSection
+              onRecipePress={(id) => router.push(`/recipe/${id}`)}
+              t={t}
+            />
+          ) : null
+        }
         t={t}
       />
 

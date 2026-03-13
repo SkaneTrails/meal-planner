@@ -130,7 +130,7 @@ Write-Host ""
 Write-Host "=== Setup Complete ===" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "You can now start the API:" -ForegroundColor Green
-Write-Host "  uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload"
+Write-Host "  uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir api --reload-dir config"
 Write-Host ""
 Write-Host "Note: ADC uses service account impersonation - no key files on disk!" -ForegroundColor Cyan
 Write-Host "To refresh credentials, re-run this script or:" -ForegroundColor Yellow

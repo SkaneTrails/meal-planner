@@ -27,6 +27,7 @@ interface RecipeGridProps {
   mealFilters: MealLabel[];
   onEndReached?: () => void;
   isFetchingNextPage?: boolean;
+  listHeader?: React.ReactElement | null;
   t: TFunction;
 }
 
@@ -41,6 +42,7 @@ export const RecipeGrid = ({
   mealFilters,
   onEndReached,
   isFetchingNextPage,
+  listHeader,
   t,
 }: RecipeGridProps) => {
   const { colors } = useTheme();
@@ -71,6 +73,7 @@ export const RecipeGrid = ({
       keyExtractor={(item) => item.id}
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
+      style={{ flex: 1 }}
       renderItem={({ item }) => (
         <View style={{ width: cardWidth, padding: cardGap / 2 }}>
           <RecipeCard
@@ -87,6 +90,8 @@ export const RecipeGrid = ({
       }}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
+      ListHeaderComponent={listHeader}
+      ListHeaderComponentStyle={{ alignSelf: 'stretch' }}
       refreshControl={
         <RefreshControl
           refreshing={isLoading}

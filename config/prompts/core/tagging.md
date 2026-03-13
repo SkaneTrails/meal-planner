@@ -60,7 +60,9 @@ When or where you'd eat it:
 
 How it's cooked:
 
-`grilled` · `oven-baked` · `airfryer` · `slow-cooked` · `one-pot` · `one-pan` · `no-cook` · `raw` · `smoked` · `deep-fried` · `steamed` · `wok`
+`grilled` · `oven-baked` · `airfryer` · `slow-cooked` · `one-pot` · `one-pan` · `no-cook` · `raw` · `smoked` · `deep-fried` · `steamed` · `wok` · `stir-fry`
+
+**`one-pot` / `one-pan` precision:** Only apply when the ENTIRE cooking process uses a single vessel. A soup that requires browning in a pan first and then simmering in a pot is NOT one-pot. A stir-fry served over separately boiled rice is NOT one-pan.
 
 ### 9. Effort & Speed
 
@@ -73,6 +75,12 @@ How much time/effort it takes:
 The feel of the dish:
 
 `comfort-food` · `light` · `refreshing` · `hearty` · `spicy` · `smoky` · `creamy` · `crunchy` · `fresh` · `indulgent` · `rustic` · `elegant`
+
+**`light` precision:** Only for dishes that are genuinely low in heaviness — salads, ceviches, broth-based soups, steamed fish. Do NOT tag hearty pastas, stews, or baked dishes as `light` just because they have vegetables.
+
+**`fresh` precision:** Only for dishes where freshness is the defining character — raw preparations, salads, cold dishes, dishes built around uncooked herbs/citrus. A warm casserole with fresh herbs is NOT `fresh`.
+
+**`refreshing` precision:** Cold or chilled dishes meant to cool you down — gazpacho, fruit salads, cold noodles, smoothies. Hot dishes are never `refreshing`.
 
 ### 11. Fitness & Activity
 
@@ -92,6 +100,7 @@ Apply when clearly relevant to the recipe's nutritional profile:
 4. **Don't guess dietary tags** — only tag `vegan` if truly vegan, `gluten-free` if truly gluten-free. For dairy-free recipes, use `dairy-free` NOT `lactose-free` — they mean different things
 5. **Minimum 8 tags** per recipe — most recipes should have 10–15 spanning multiple categories
 6. **Cuisine from content, not assumption** — base cuisine tags on actual ingredients and techniques, not just the recipe title
-7. **Seasonal tags from ingredients and serving style** — a gazpacho is `summer` even if not stated; a beef stew is `winter`
+7. **Seasonal tags from ingredients and serving style** — a gazpacho is `summer` even if not stated; a beef stew is `winter`. Only tag a season when the dish clearly belongs there — don't add `summer` just because a recipe uses tomatoes
 8. **Speed tags from total time** — if total_time ≤ 30 min, add `quick`; if ≤ 15 min, add both `quick` and `under-15-min`
 9. **ALL tags in English** — regardless of recipe language. Tags are always English for consistency
+10. **Tags drive featured categories** — the app uses tags to populate featured recipe carousels (e.g., "One-Pot Wonders", "Light & Fresh", "Seafood Picks"). Inaccurate tags cause wrong recipes to appear in these categories. When in doubt, leave a tag out rather than over-tagging
