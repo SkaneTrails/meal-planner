@@ -2,20 +2,23 @@
  * Authentication hook for Firebase Auth with Google Sign-In.
  * Provides user state and sign-in/sign-out methods.
  *
- * Web: signInWithPopup on desktop, signInWithRedirect on mobile
- * (mobile Safari opens popups as new tabs where sessionStorage is inaccessible).
+ * Web: signInWithPopup for all browsers (including iOS Safari).
  * Native: expo-auth-session.
+ *
+ * Note: signInWithRedirect was previously used for iOS Safari, but Safari's
+ * ITP blocks cross-origin storage after the redirect through firebaseapp.com,
+ * causing an infinite login loop. signInWithPopup works on iOS Safari — it
+ * opens a new tab, and Firebase communicates the result back via
+ * BroadcastChannel / localStorage events.
  */
 
 import * as Google from 'expo-auth-session/providers/google';
 import {
   signOut as firebaseSignOut,
   GoogleAuthProvider,
-  getRedirectResult,
   onAuthStateChanged,
   signInWithCredential,
   signInWithPopup,
-  signInWithRedirect,
   type User,
 } from 'firebase/auth';
 import {
@@ -57,21 +60,6 @@ const isAuthConfigured =
       process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
       process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
   );
-
-/**
- * Detect iOS Safari where signInWithPopup opens a new tab instead of a
- * real popup, breaking sessionStorage-based auth state.  Only these
- * browsers need signInWithRedirect — Android Chrome handles popups fine
- * and actually *breaks* with signInWithRedirect (auth state lost after
- * the Google redirect).
- */
-const isIOSSafari =
-  Platform.OS === 'web' &&
-  typeof navigator !== 'undefined' &&
-  (/iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' &&
-      typeof navigator.maxTouchPoints === 'number' &&
-      navigator.maxTouchPoints > 1));
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
@@ -187,17 +175,6 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, []);
 
-  // Handle pending redirect result (mobile web uses signInWithRedirect)
-  useEffect(() => {
-    if (Platform.OS !== 'web' || !auth) return;
-    getRedirectResult(auth as NonNullable<typeof auth>).catch((err) => {
-      if (__DEV__) {
-        console.error('getRedirectResult error:', err);
-      }
-      setError('signInFailed');
-    });
-  }, []);
-
   useEffect(() => {
     if (Platform.OS === 'web') return;
 
@@ -236,17 +213,7 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     setError(null);
     try {
       if (Platform.OS === 'web' && googleProvider) {
-        if (isIOSSafari) {
-          await signInWithRedirect(
-            auth as NonNullable<typeof auth>,
-            googleProvider,
-          );
-        } else {
-          await signInWithPopup(
-            auth as NonNullable<typeof auth>,
-            googleProvider,
-          );
-        }
+        await signInWithPopup(auth as NonNullable<typeof auth>, googleProvider);
       } else {
         await promptAsync();
       }
