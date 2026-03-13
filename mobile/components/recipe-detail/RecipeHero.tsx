@@ -1,8 +1,8 @@
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Animated, Text, type TextStyle, View } from 'react-native';
-import { IconButton } from '@/components';
-import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
+import type { ReactNode } from 'react';
+import { Animated } from 'react-native';
+import { useTheme } from '@/lib/theme';
+import { HeroOverlay } from './HeroOverlay';
 import {
   PLACEHOLDER_BLURHASH,
   PLACEHOLDER_IMAGE,
@@ -16,8 +16,8 @@ interface RecipeHeroProps {
   hidden: boolean;
   headerHeight: number;
   scrollY: Animated.Value;
-  isUpdatingImage: boolean;
-  onPickImage: () => void;
+  /** Buttons rendered in the top-right corner of the hero (e.g. favorite, camera). */
+  topRightButtons?: ReactNode;
   onThumbUp: () => void;
   onThumbDown: () => void;
 }
@@ -29,12 +29,11 @@ export const RecipeHero = ({
   hidden,
   headerHeight,
   scrollY,
-  isUpdatingImage,
-  onPickImage,
+  topRightButtons,
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { colors, fonts, visibility } = useTheme();
+  const { visibility } = useTheme();
   return (
     <Animated.View
       style={{
@@ -68,65 +67,20 @@ export const RecipeHero = ({
       />
 
       {visibility.showHeroOverlay && (
-        <>
-          <LinearGradient
-            colors={['transparent', colors.overlay.gradientHeavy]}
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              paddingTop: Math.round((headerHeight * 2) / 7),
-              paddingBottom: spacing['4xl'] + spacing.sm,
-              paddingHorizontal: spacing.xl,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-              }}
-            >
-              <Text
-                style={
-                  {
-                    fontSize: fontSize['4xl'],
-                    fontFamily: fonts.display,
-                    color: colors.white,
-                    letterSpacing: letterSpacing.tight,
-                    flex: 1,
-                    marginRight: spacing.md,
-                    textShadow: `1px 2px 4px ${colors.overlay.backdrop}`,
-                  } as TextStyle
-                }
-              >
-                {title}
-              </Text>
-              <ThumbRating
-                rating={rating}
-                hidden={hidden}
-                onThumbUp={onThumbUp}
-                onThumbDown={onThumbDown}
-                size={24}
-              />
-            </View>
-          </LinearGradient>
-
-          <IconButton
-            tone="glass"
-            icon="camera"
-            size={44}
-            iconSize={20}
-            isPending={isUpdatingImage}
-            onPress={onPickImage}
-            style={{
-              position: 'absolute',
-              top: 60,
-              right: spacing.lg,
-            }}
-          />
-        </>
+        <HeroOverlay
+          title={title}
+          headerHeight={headerHeight}
+          topRight={topRightButtons}
+          titleRight={
+            <ThumbRating
+              rating={rating}
+              hidden={hidden}
+              onThumbUp={onThumbUp}
+              onThumbDown={onThumbDown}
+              size={24}
+            />
+          }
+        />
       )}
     </Animated.View>
   );
