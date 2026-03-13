@@ -203,19 +203,7 @@ export default function RecipeDetailScreen() {
               style={{ marginLeft: spacing.sm }}
             />
           ),
-          headerRight: () => (
-            <IconButton
-              tone={isRecipeFavorite ? 'glassCoral' : 'glass'}
-              icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
-              size="md"
-              iconSize={22}
-              onPress={() => {
-                hapticLight();
-                if (id) toggleFavorite(id);
-              }}
-              style={{ marginRight: spacing.sm }}
-            />
-          ),
+          headerRight: () => null,
         }}
       />
 
@@ -235,10 +223,30 @@ export default function RecipeDetailScreen() {
           hidden={recipe.hidden}
           headerHeight={HEADER_HEIGHT}
           scrollY={scrollY}
-          isUpdatingImage={isUpdatingImage}
-          onPickImage={handlePickImage}
           onThumbUp={handleThumbUp}
           onThumbDown={handleThumbDown}
+          topRightButtons={
+            <>
+              <IconButton
+                tone={isRecipeFavorite ? 'glassCoral' : 'glass'}
+                icon={isRecipeFavorite ? 'heart' : 'heart-outline'}
+                size="md"
+                iconSize={22}
+                onPress={() => {
+                  hapticLight();
+                  if (id) toggleFavorite(id);
+                }}
+              />
+              <IconButton
+                tone="glass"
+                icon="camera"
+                size="md"
+                iconSize={20}
+                isPending={isUpdatingImage}
+                onPress={handlePickImage}
+              />
+            </>
+          }
         />
 
         {chrome === 'flat' ? (
