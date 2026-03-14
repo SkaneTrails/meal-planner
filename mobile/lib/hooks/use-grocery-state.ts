@@ -69,6 +69,7 @@ export const useClearGroceryState = () => {
         checked_items: [],
         custom_items: [],
         item_order: [],
+        removed_items: [],
         updated_at: null,
         created_by: null,
       } satisfies GroceryListState);

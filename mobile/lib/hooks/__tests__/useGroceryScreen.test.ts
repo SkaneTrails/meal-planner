@@ -25,12 +25,14 @@ const mockClearChecked = vi.fn();
 const mockAddCustomItem = vi.fn();
 const mockSetCustomItems = vi.fn();
 const mockSetItemOrder = vi.fn();
+const mockSetRemovedItems = vi.fn();
 const mockResetTickSequence = vi.fn();
 
 let mockContextState = {
   checkedItems: new Set<string>(),
   customItems: [] as CustomGroceryItem[],
   itemOrder: [] as string[],
+  removedItems: [] as string[],
   selectedMealKeys: [] as string[],
   mealServings: {} as Record<string, number>,
   isLoading: false,
@@ -41,6 +43,7 @@ let mockContextState = {
   addCustomItem: mockAddCustomItem,
   setCustomItems: mockSetCustomItems,
   setItemOrder: mockSetItemOrder,
+  setRemovedItems: mockSetRemovedItems,
   resetTickSequence: mockResetTickSequence,
   saveSelections: mockSaveSelections,
   clearAll: mockClearAll,
@@ -125,6 +128,7 @@ describe('useGroceryScreen', () => {
       checkedItems: new Set<string>(),
       customItems: [],
       itemOrder: [],
+      removedItems: [],
       selectedMealKeys: [],
       mealServings: {},
       isLoading: false,
@@ -135,6 +139,7 @@ describe('useGroceryScreen', () => {
       addCustomItem: mockAddCustomItem,
       setCustomItems: mockSetCustomItems,
       setItemOrder: mockSetItemOrder,
+      setRemovedItems: mockSetRemovedItems,
       resetTickSequence: mockResetTickSequence,
       saveSelections: mockSaveSelections,
       clearAll: mockClearAll,
