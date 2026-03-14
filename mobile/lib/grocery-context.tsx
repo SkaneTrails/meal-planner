@@ -138,27 +138,6 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const tickSequenceRef = useRef<string[]>([]);
   const [tickSequence, setTickSequence] = useState<string[]>([]);
 
-  const flushPatch = useCallback(() => {
-    const patch = { ...pendingPatchRef.current };
-    pendingPatchRef.current = {};
-    if (Object.keys(patch).length === 0) return;
-    api.patchGroceryState(patch).catch((err: unknown) => {
-      console.warn(
-        '[GroceryContext] Patch failed, will resync on next focus:',
-        err,
-      );
-    });
-  }, []);
-
-  const enqueuePatch = useCallback(
-    (fields: Record<string, unknown>) => {
-      pendingPatchRef.current = { ...pendingPatchRef.current, ...fields };
-      if (patchTimerRef.current) clearTimeout(patchTimerRef.current);
-      patchTimerRef.current = setTimeout(flushPatch, DEBOUNCE_MS);
-    },
-    [flushPatch],
-  );
-
   const applyState = useCallback((state: GroceryListState) => {
     const checked = new Set(state.checked_items);
     setCheckedItemsState(checked);
@@ -175,6 +154,37 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     setSelectedMealKeys(state.selected_meals || []);
     setMealServings(state.meal_servings || {});
   }, []);
+
+  const flushPatch = useCallback((): Promise<void> => {
+    const patch = { ...pendingPatchRef.current };
+    pendingPatchRef.current = {};
+    if (Object.keys(patch).length === 0) return Promise.resolve();
+    return api
+      .patchGroceryState(patch)
+      .then((response) => {
+        applyState(response);
+        cacheToAsyncStorage({
+          checkedItems: response.checked_items,
+          customItems: response.custom_items || [],
+          itemOrder: response.item_order || [],
+          removedItems: response.removed_items || [],
+          selectedMealKeys: response.selected_meals || [],
+          mealServings: response.meal_servings || {},
+        });
+      })
+      .catch(() => {
+        pendingPatchRef.current = { ...patch, ...pendingPatchRef.current };
+      });
+  }, [applyState]);
+
+  const enqueuePatch = useCallback(
+    (fields: Record<string, unknown>) => {
+      pendingPatchRef.current = { ...pendingPatchRef.current, ...fields };
+      if (patchTimerRef.current) clearTimeout(patchTimerRef.current);
+      patchTimerRef.current = setTimeout(flushPatch, DEBOUNCE_MS);
+    },
+    [flushPatch],
+  );
 
   const loadFromApi = useCallback(async () => {
     try {
@@ -345,15 +355,29 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         'grocery_meal_servings',
         JSON.stringify(servings),
       ).catch(() => {});
-      await api.patchGroceryState({
+      const response = await api.patchGroceryState({
         selected_meals: meals,
         meal_servings: servings,
       });
+      applyState(response);
+      cacheToAsyncStorage({
+        checkedItems: response.checked_items,
+        customItems: response.custom_items || [],
+        itemOrder: response.item_order || [],
+        removedItems: response.removed_items || [],
+        selectedMealKeys: response.selected_meals || [],
+        mealServings: response.meal_servings || {},
+      });
     },
-    [],
+    [applyState],
   );
 
   const clearAll = useCallback(async () => {
+    if (patchTimerRef.current) {
+      clearTimeout(patchTimerRef.current);
+      patchTimerRef.current = null;
+    }
+    pendingPatchRef.current = {};
     setCheckedItemsState(new Set());
     checkedRef.current = new Set();
     setCustomItemsState([]);
@@ -379,8 +403,13 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshFromApi = useCallback(async () => {
     setIsLoading(true);
+    if (patchTimerRef.current) {
+      clearTimeout(patchTimerRef.current);
+      patchTimerRef.current = null;
+    }
+    await flushPatch();
     await loadFromApi();
-  }, [loadFromApi]);
+  }, [loadFromApi, flushPatch]);
 
   return (
     <GroceryContext.Provider
