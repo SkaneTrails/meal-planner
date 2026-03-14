@@ -49,6 +49,7 @@ def save_grocery_state(  # noqa: PLR0913
         meal_servings: Servings per meal key, e.g. {"2026-02-10_lunch": 4}.
         checked_items: List of checked item names.
         custom_items: Custom items, each with at least "name" and optionally "category".
+        removed_items: Generated item names hidden by the user (cleared/deleted).
         created_by: Email of the user saving the list.
 
     Returns:

@@ -321,13 +321,14 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   const setRemovedItems = useCallback(
     (items: string[]) => {
-      setRemovedItemsState(items);
-      removedItemsRef.current = items;
+      const deduped = [...new Set(items)];
+      setRemovedItemsState(deduped);
+      removedItemsRef.current = deduped;
       AsyncStorage.setItem(
         'grocery_removed_items',
-        JSON.stringify(items),
+        JSON.stringify(deduped),
       ).catch(() => {});
-      enqueuePatch({ removed_items: items });
+      enqueuePatch({ removed_items: deduped });
     },
     [enqueuePatch],
   );
