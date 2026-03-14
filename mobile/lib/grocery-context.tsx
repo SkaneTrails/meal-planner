@@ -137,6 +137,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const removedItemsRef = useRef<string[]>(removedItems);
   const tickSequenceRef = useRef<string[]>([]);
   const [tickSequence, setTickSequence] = useState<string[]>([]);
+  const isMountedRef = useRef(true);
 
   const applyState = useCallback((state: GroceryListState) => {
     const checked = new Set(state.checked_items);
@@ -162,7 +163,12 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     return api
       .patchGroceryState(patch)
       .then((response) => {
-        applyState(response);
+        if (!isMountedRef.current) return;
+        const hasPending = Object.keys(pendingPatchRef.current).length > 0;
+        const effective = hasPending
+          ? { ...response, ...pendingPatchRef.current }
+          : response;
+        applyState(effective as GroceryListState);
         cacheToAsyncStorage({
           checkedItems: response.checked_items,
           customItems: response.custom_items || [],
@@ -172,7 +178,8 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
           mealServings: response.meal_servings || {},
         });
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        console.warn('[GroceryContext] Patch failed, will retry:', err);
         pendingPatchRef.current = { ...patch, ...pendingPatchRef.current };
       });
   }, [applyState]);
@@ -225,6 +232,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     return () => {
+      isMountedRef.current = false;
       if (patchTimerRef.current) {
         clearTimeout(patchTimerRef.current);
         flushPatch();

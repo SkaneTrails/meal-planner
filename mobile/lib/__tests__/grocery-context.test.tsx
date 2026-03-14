@@ -356,6 +356,12 @@ describe('GroceryProvider', () => {
     });
 
     it('flushes pending patches before loading', async () => {
+      const callOrder: string[] = [];
+      mockPatchGroceryState.mockImplementation(() => {
+        callOrder.push('patch');
+        return Promise.resolve({ ...emptyState, checked_items: ['milk'] });
+      });
+
       const { result } = renderHook(() => useGroceryState(), {
         wrapper: createGroceryWrapper(),
       });
@@ -368,21 +374,24 @@ describe('GroceryProvider', () => {
 
       // Refresh immediately (before debounce fires)
       const updatedState = { ...emptyState, checked_items: ['milk'] };
-      mockPatchGroceryState.mockResolvedValue(updatedState);
-      mockGetGroceryState.mockResolvedValue(updatedState);
+      mockGetGroceryState.mockImplementation(() => {
+        callOrder.push('get');
+        return Promise.resolve(updatedState);
+      });
 
       await act(async () => {
         await result.current.refreshFromApi();
       });
 
-      // The patch should have been flushed before the GET
-      expect(mockPatchGroceryState).toHaveBeenCalled();
+      // The patch must have been flushed before the GET
+      expect(callOrder).toEqual(['patch', 'get']);
       expect(result.current.checkedItems.has('milk')).toBe(true);
     });
   });
 
   describe('patch reliability', () => {
     it('re-queues failed patches for retry', async () => {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { result } = renderHook(() => useGroceryState(), {
         wrapper: createGroceryWrapper(),
       });
@@ -413,6 +422,7 @@ describe('GroceryProvider', () => {
       });
 
       expect(mockPatchGroceryState).toHaveBeenCalledTimes(2);
+      spy.mockRestore();
     });
 
     it('caches server response to AsyncStorage on successful patch', async () => {
