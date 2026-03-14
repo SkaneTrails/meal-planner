@@ -35,11 +35,13 @@ export const useGroceryScreen = () => {
     clearChecked,
     customItems: contextCustomItems,
     itemOrder,
+    removedItems,
     selectedMealKeys,
     mealServings,
     addCustomItem,
     setCustomItems: setContextCustomItems,
     setItemOrder,
+    setRemovedItems,
     tickSequence,
     toggleItem,
     resetTickSequence,
@@ -54,9 +56,6 @@ export const useGroceryScreen = () => {
   const [deleteSelection, setDeleteSelection] = useState<Set<string>>(
     new Set(),
   );
-  const [removedGeneratedItems, setRemovedGeneratedItems] = useState<
-    Set<string>
-  >(new Set());
   const [generatedItems, setGeneratedItems] = useState<GroceryItem[]>([]);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
@@ -146,9 +145,11 @@ export const useGroceryScreen = () => {
     selectedMealKeys,
   ]);
 
+  const removedSet = useMemo(() => new Set(removedItems), [removedItems]);
+
   const visibleGeneratedItems = useMemo(
-    () => generatedItems.filter((i) => !removedGeneratedItems.has(i.name)),
-    [generatedItems, removedGeneratedItems],
+    () => generatedItems.filter((i) => !removedSet.has(i.name)),
+    [generatedItems, removedSet],
   );
 
   const groceryListWithChecked = useMemo(() => {
@@ -257,15 +258,15 @@ export const useGroceryScreen = () => {
       setContextCustomItems(
         contextCustomItems.filter((ci) => !pickedNames.has(ci.name)),
       );
-      setRemovedGeneratedItems((prev) => {
-        const next = new Set(prev);
-        for (const name of pickedNames) {
-          if (!contextCustomItems.some((ci) => ci.name === name)) {
-            next.add(name);
-          }
+      const generatedToRemove: string[] = [];
+      for (const name of pickedNames) {
+        if (!contextCustomItems.some((ci) => ci.name === name)) {
+          generatedToRemove.push(name);
         }
-        return next;
-      });
+      }
+      if (generatedToRemove.length > 0) {
+        setRemovedItems([...removedItems, ...generatedToRemove]);
+      }
 
       resetTickSequence();
       clearChecked();
@@ -281,7 +282,9 @@ export const useGroceryScreen = () => {
     checkedItems,
     contextCustomItems,
     visibleGeneratedItems,
+    removedItems,
     setContextCustomItems,
+    setRemovedItems,
     resetTickSequence,
     clearChecked,
     queryClient,
@@ -309,11 +312,7 @@ export const useGroceryScreen = () => {
         );
       }
       if (generatedToRemove.size > 0) {
-        setRemovedGeneratedItems((prev) => {
-          const next = new Set(prev);
-          for (const name of generatedToRemove) next.add(name);
-          return next;
-        });
+        setRemovedItems([...removedItems, ...generatedToRemove]);
       }
 
       const newChecked = new Set(checkedItems);
@@ -337,7 +336,9 @@ export const useGroceryScreen = () => {
     deleteSelection,
     contextCustomItems,
     checkedItems,
+    removedItems,
     setContextCustomItems,
+    setRemovedItems,
     setCheckedItems,
     resetTickSequence,
     t,

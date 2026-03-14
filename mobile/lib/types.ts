@@ -245,6 +245,7 @@ export interface GroceryListState {
   checked_items: string[];
   custom_items: CustomGroceryItem[];
   item_order: string[];
+  removed_items: string[];
   updated_at?: string | null;
   created_by?: string | null;
 }
@@ -254,6 +255,8 @@ export interface GroceryListStateSave {
   meal_servings: Record<string, number>;
   checked_items?: string[];
   custom_items?: CustomGroceryItem[];
+  item_order?: string[];
+  removed_items?: string[];
 }
 
 export interface GroceryListStatePatch {
@@ -262,6 +265,7 @@ export interface GroceryListStatePatch {
   checked_items?: string[];
   custom_items?: CustomGroceryItem[];
   item_order?: string[];
+  removed_items?: string[];
 }
 
 // API Response types

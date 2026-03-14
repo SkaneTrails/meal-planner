@@ -25,6 +25,7 @@ const emptyState: GroceryListState = {
   checked_items: [],
   custom_items: [],
   item_order: [],
+  removed_items: [],
 };
 
 const mockGetGroceryState = vi.fn<() => Promise<GroceryListState>>();
@@ -86,6 +87,7 @@ describe('GroceryProvider', () => {
     expect(result.current.checkedItems.size).toBe(0);
     expect(result.current.customItems).toEqual([]);
     expect(result.current.itemOrder).toEqual([]);
+    expect(result.current.removedItems).toEqual([]);
     expect(result.current.selectedMealKeys).toEqual([]);
     expect(result.current.mealServings).toEqual({});
     expect(mockGetGroceryState).toHaveBeenCalledOnce();
@@ -98,6 +100,7 @@ describe('GroceryProvider', () => {
       checked_items: ['milk', 'eggs'],
       custom_items: [{ name: 'bread', category: 'bakery' }],
       item_order: [],
+      removed_items: [],
     });
 
     const { result } = renderHook(() => useGroceryState(), {
@@ -226,6 +229,21 @@ describe('GroceryProvider', () => {
     });
   });
 
+  describe('setRemovedItems', () => {
+    it('updates removed items and enqueues API patch', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setRemovedItems(['pasta', 'rice']);
+      });
+
+      expect(result.current.removedItems).toEqual(['pasta', 'rice']);
+    });
+  });
+
   describe('addCustomItem', () => {
     it('appends a custom item', async () => {
       const { result } = renderHook(() => useGroceryState(), {
@@ -290,6 +308,7 @@ describe('GroceryProvider', () => {
         checked_items: ['milk'],
         custom_items: [{ name: 'bread', category: 'other' }],
         item_order: [],
+        removed_items: [],
       });
 
       const { result } = renderHook(() => useGroceryState(), {
@@ -304,6 +323,7 @@ describe('GroceryProvider', () => {
       expect(result.current.checkedItems.size).toBe(0);
       expect(result.current.customItems).toEqual([]);
       expect(result.current.itemOrder).toEqual([]);
+      expect(result.current.removedItems).toEqual([]);
       expect(result.current.selectedMealKeys).toEqual([]);
       expect(result.current.mealServings).toEqual({});
       expect(mockClearGroceryState).toHaveBeenCalledOnce();

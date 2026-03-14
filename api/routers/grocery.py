@@ -159,6 +159,7 @@ async def save_grocery_state(
         meal_servings=body.meal_servings,
         checked_items=body.checked_items,
         custom_items=[item.model_dump() for item in body.custom_items],
+        removed_items=body.removed_items,
         created_by=user.email,
     )
     return GroceryListState(**data)
@@ -190,6 +191,7 @@ async def patch_grocery_state(
             meal_servings=body.meal_servings or {},
             checked_items=body.checked_items or [],
             custom_items=[item.model_dump() for item in (body.custom_items or [])],
+            removed_items=body.removed_items or [],
             created_by=user.email,
         )
         return GroceryListState(**data)

@@ -138,6 +138,7 @@ class GroceryListState(BaseModel):
     checked_items: list[str] = Field(default_factory=list, description="Names of checked-off items")
     custom_items: list[CustomGroceryItem] = Field(default_factory=list, description="Manually added items")
     item_order: list[str] = Field(default_factory=list, description="User-defined item ordering by name")
+    removed_items: list[str] = Field(default_factory=list, description="Generated items removed by clear-picked")
     updated_at: datetime | None = None
     created_by: str | None = None
 
@@ -150,6 +151,7 @@ class GroceryListStateSave(BaseModel):
     checked_items: list[str] = Field(default_factory=list)
     custom_items: list[CustomGroceryItem] = Field(default_factory=list)
     item_order: list[str] = Field(default_factory=list)
+    removed_items: list[str] = Field(default_factory=list)
 
 
 class GroceryListStatePatch(BaseModel):
@@ -163,3 +165,4 @@ class GroceryListStatePatch(BaseModel):
     checked_items: list[str] | None = None
     custom_items: list[CustomGroceryItem] | None = None
     item_order: list[str] | None = None
+    removed_items: list[str] | None = None
