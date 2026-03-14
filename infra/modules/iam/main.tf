@@ -115,9 +115,10 @@ resource "google_project_iam_member" "github_actions_terraform_editor" {
 }
 
 # Grant prerequisite roles to the terraform SA via additive iam_member.
-# Safe because the prerequisite_roles binding uses ignore_changes = [members],
-# so Terraform won't strip the additive grant on apply.
-resource "google_project_iam_member" "terraform_role_admin" {
+# The prerequisite_roles binding (authoritative) also includes the SA, but if
+# external drift removes it from the binding, these additive grants ensure the
+# SA can still reconcile the drift on the next apply.
+resource "google_project_iam_member" "github_actions_terraform_role_admin" {
   project = var.project
   role    = "roles/iam.roleAdmin"
   member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
@@ -125,7 +126,7 @@ resource "google_project_iam_member" "terraform_role_admin" {
   depends_on = [google_service_account.github_actions_terraform]
 }
 
-resource "google_project_iam_member" "terraform_project_iam_admin" {
+resource "google_project_iam_member" "github_actions_terraform_project_iam_admin" {
   project = var.project
   role    = "roles/resourcemanager.projectIamAdmin"
   member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
@@ -222,13 +223,10 @@ resource "google_project_iam_member" "local_dev_secrets" {
 }
 
 # Grant prerequisite roles needed to create custom roles.
-# Uses iam_binding (authoritative) for user members. The terraform SA also gets
-# these roles via separate iam_member resources (additive) above.
-#
-# ignore_changes on members prevents a self-locking failure: if someone modifies
-# these bindings outside Terraform, the SA may lose projectIamAdmin, making it
-# unable to reconcile the drift. By ignoring member changes, the binding is
-# stable and the SA's access is guaranteed by its own iam_member grants.
+# Uses iam_binding (authoritative) — must include ALL members for these roles.
+# The terraform SA is also granted these roles via separate iam_member resources
+# (additive) above, so even if external drift removes the SA from this binding,
+# the SA retains access and can reconcile the drift on the next apply.
 resource "google_project_iam_binding" "prerequisite_roles" {
   for_each = toset(local.prerequisite_roles)
 
@@ -237,10 +235,6 @@ resource "google_project_iam_binding" "prerequisite_roles" {
   members = concat(local.user_members, [
     "serviceAccount:${google_service_account.github_actions_terraform.email}",
   ])
-
-  lifecycle {
-    ignore_changes = [members]
-  }
 
   depends_on = [
     var.iam_api_service,
