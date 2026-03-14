@@ -1,6 +1,6 @@
 # Stage 1: Build dependencies
 FROM python:3.14-slim@sha256:6a27522252aef8432841f224d9baaa6e9fce07b07584154fa0b9a96603af7456 AS builder
-COPY --from=ghcr.io/astral-sh/uv@sha256:10902f58a1606787602f303954cea099626a4adb02acbac4c69920fe9d278f82 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv@sha256:cbe0a44ba994e327b8fe7ed72beef1aaa7d2c4c795fd406d1dbf328bacb2f1c5 /uv /usr/local/bin/uv
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
