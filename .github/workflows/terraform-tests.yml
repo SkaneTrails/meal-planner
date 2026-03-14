@@ -5,6 +5,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform-tests.yml"
+      - ".tflint.hcl"
 
 permissions:
   contents: read
@@ -12,6 +13,29 @@ permissions:
   pull-requests: write
 
 jobs:
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@4cb9feea73331a35b422df102992a03a44a3bb33 # v6.2.1
+        with:
+          tflint_version: latest
+
+      - name: Initialize TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Run TFLint
+        run: |
+          echo "Running TFLint..."
+          cd infra
+          tflint --recursive --config="${GITHUB_WORKSPACE}/.tflint.hcl" --format compact
+
   terraform-checks:
     name: Format / Validate / Plan
     runs-on: ubuntu-latest
