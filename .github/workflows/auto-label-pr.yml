@@ -26,7 +26,7 @@ jobs:
               labels.push('🪲 type: bug');
             }
             if (/- \[(x|X)\] ✨ New feature/.test(body)) {
-              labels.push('✨ type: enhancement');
+              labels.push('✨ type: feature');
             }
             if (/- \[(x|X)\] 💥 Breaking change/.test(body)) {
               labels.push('⚠️ BREAKING');
@@ -50,7 +50,7 @@ jobs:
             }
 
       - name: Based on files changed
-        if: github.event.action == 'opened' || github.event.action == 'synchronized' || github.event.action == 'ready_for_review'
+        if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'ready_for_review'
         uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6.0.1
         with:
           configuration-path: .github/labeler.yml

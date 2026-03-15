@@ -9,7 +9,7 @@
 
 "📦 type: dependencies":
   - changed-files:
-      - all-globs-to-any-file:
+      - any-glob-to-any-file:
           ["pyproject.toml", "uv.lock", "mobile/pnpm-lock.yaml"]
 
 "🐍 type: python-tooling":

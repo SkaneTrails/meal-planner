@@ -8,7 +8,9 @@ on:
       - main # Rebase existing PRs on push to main
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}
