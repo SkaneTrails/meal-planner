@@ -36,6 +36,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Compare alternatives** - when the user suggests a different approach, analyze both options and explain the tradeoffs
 - **Troubleshoot step-by-step** - when debugging, suggest one fix at a time and wait for results
 - **Exploratory questions → answer only** - when asked "how", "why", or "what would the changes be", answer the question only. NEVER start implementing. Wait for explicit instruction to proceed
+- **Answer questions before acting** - when the user asks a question (including "why did you do X?"), answer the question first. Do not silently correct or move on. Ask before proceeding to fix
 - **Assess test coverage for bugs** - when a bug is reported, assess whether a test should be added to catch it. Explain why existing tests missed it (e.g., mocking strategy, missing coverage) and propose a targeted test if appropriate
 - **Track iterations** - when a command/approach fails, IMMEDIATELY log to Failure Tracking table in `.copilot-tasks.md` BEFORE retrying with a different approach
 - **Plan before non-trivial changes** - before implementing any non-trivial change, present a plan and save it to `.copilot-tasks.md`. If information is missing, ask — don't assume. Trivial changes (e.g., renaming a label, fixing a typo) can proceed directly. A change is non-trivial when it affects multiple consumers, alters component interfaces, introduces new patterns, or has side effects beyond the immediate target
