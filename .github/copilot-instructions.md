@@ -34,6 +34,7 @@ You are collaborating with a human who may make changes between your edits:
 - **Read before editing** - the human may have modified, moved, or intentionally removed content
 - **Verify suggestions** - when given review comments or suggestions, verify they are correct against actual code before applying
 - **Compare alternatives** - when the user suggests a different approach, analyze both options and explain the tradeoffs
+- **Stop and ask when blocked by environment** - when a failure is caused by something outside your control (locked files, permission errors, GUI-only actions, expired auth, running processes), stop immediately and ask the user for help. The human can often resolve these in seconds. Do not spend tokens on workarounds — describe the blocker and what the user can do to fix it
 - **Troubleshoot step-by-step** - when debugging, suggest one fix at a time and wait for results
 - **Exploratory questions → answer only** - when asked "how", "why", or "what would the changes be", answer the question only. NEVER start implementing. Wait for explicit instruction to proceed
 - **Answer questions before acting** - when the user asks a question (including "why did you do X?"), answer the question first. Do not silently correct or move on. Ask before proceeding to fix
