@@ -47,11 +47,11 @@ jobs:
         working-directory: mobile
         run: pnpm install --frozen-lockfile
 
-      - name: Cache pre-commit hooks
+      - name: Cache prek hooks
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          path: ~/.cache/prek
+          key: ${{ runner.os }}-prek-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Prime pre-commit cache
-        run: uv run pre-commit install-hooks
+      - name: Prime prek cache
+        run: uv run prek install-hooks

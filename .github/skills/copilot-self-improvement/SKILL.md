@@ -73,7 +73,7 @@ Extract BEFORE proceeding with other work.
 
 **Test:** Could a regex, AST parser, or schema validator enforce this? → Tool territory.
 
-When detected: check project's pre-commit config / `pyproject.toml` / `tsconfig.json`. If tool exists, remove the instruction. If not, propose adding the tool.
+When detected: check project's prek config (`.pre-commit-config.yaml`) / `pyproject.toml` / `tsconfig.json`. If tool exists, remove the instruction. If not, propose adding the tool.
 
 **Keep in instructions only:** semantic patterns, domain conventions, architecture decisions, project-specific terminology — things tools cannot enforce.
 
