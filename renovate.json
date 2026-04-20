@@ -60,7 +60,7 @@
       "matchPackageNames": [
         "ruff",
         "deptry",
-        "pre-commit"
+        "prek"
       ],
       "matchManagers": [
         "pep621",

@@ -40,7 +40,7 @@ Everything from testing to deployment is automated. Push to `main` and the pipel
 
 | What          | How                                                                                             |
 | ------------- | ----------------------------------------------------------------------------------------------- |
-| **Testing**   | Pre-commit hooks, pytest (API), Vitest (mobile), security scans — all run on every PR           |
+| **Testing**   | Prek hooks, pytest (API), Vitest (mobile), security scans — all run on every PR                 |
 | **Building**  | Docker image built and pushed to Artifact Registry                                              |
 | **Deploying** | Terraform applies infrastructure changes, deploys API to Cloud Run, web app to Firebase Hosting |
 | **Patching**  | [Renovate](https://docs.renovatebot.com/) keeps all dependencies up to date automatically       |
