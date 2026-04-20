@@ -97,6 +97,13 @@
         "mobile/**"
       ],
       "allowedVersions": "<4.0.0"
+    },
+    {
+      "description": "setup-trivy digest lookup broken post-compromise; pinned to verified SHA",
+      "matchPackageNames": [
+        "aquasecurity/setup-trivy"
+      ],
+      "enabled": false
     }
   ]
 }
