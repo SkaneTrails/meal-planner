@@ -279,7 +279,7 @@ export default function RecipeDetailScreen() {
           >
             <View
               style={{
-                ...StyleSheet.absoluteFillObject,
+                ...StyleSheet.absoluteFill,
                 backgroundColor: colors.bgBase,
                 borderTopLeftRadius: radii['2xl'],
                 borderTopRightRadius: radii['2xl'],
