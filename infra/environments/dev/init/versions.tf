@@ -1,5 +1,5 @@
 #
-# If pre-commit fails in the GitHub Action after updating a version, try running terraform init
+# If prek fails in the GitHub Action after updating a version, try running terraform init
 # from a Google Cloud console and push the lockfile. This usually resolves the problem.
 #
 terraform {

@@ -34,7 +34,7 @@ dependencies = [
 optional-dependencies.dev = [
   "deptry>=0.24",
   "meal-planner[test]",
-  "pre-commit>=3.6",
+  "prek>=0.3",
   "pyproject-fmt>=2.11",
   "ruff>=0.11",
   "ty>=0.0.5",

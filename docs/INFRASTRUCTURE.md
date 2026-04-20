@@ -257,7 +257,7 @@ terraform apply
 ## Phase 10: Renovate (Dependency Updates)
 
 [Renovate](https://github.com/apps/renovate) keeps dependencies across the entire project
-up to date automatically — Python packages, npm modules, GitHub Actions, pre-commit
+up to date automatically — Python packages, npm modules, GitHub Actions, prek
 hooks, and Docker images.
 
 ### Quick setup
@@ -282,9 +282,9 @@ hooks, and Docker images.
 Updates are grouped to reduce PR noise:
 
 - Python testing tools (pytest, coverage, etc.)
-- Linting tools (ruff, pre-commit, deptry)
+- Linting tools (ruff, prek, deptry)
 - GitHub Actions
-- Pre-commit hooks
+- Prek hooks
 
 No additional configuration is needed — the [renovate.json](../renovate.json) in this
 repo has everything.

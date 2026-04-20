@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  pre-commit:
+  prek:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,17 +47,16 @@ jobs:
         working-directory: mobile
         run: pnpm install --frozen-lockfile
 
-      - name: Cache pre-commit hooks
+      - name: Cache prek hooks
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          path: ~/.cache/prek
+          key: ${{ runner.os }}-prek-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pre-commit-
+            ${{ runner.os }}-prek-
 
-      # Use uv run instead of pre-commit/action to avoid duplicate pip install
-      - name: Run pre-commit on all files
-        run: uv run pre-commit run --all-files
+      - name: Run prek on all files
+        run: uv run prek run --all-files
 
   test-api:
     runs-on: ubuntu-latest
