@@ -42,6 +42,16 @@ output "github_actions_terraform_email" {
   value       = google_service_account.github_actions_terraform.email
 }
 
+output "github_actions_viewer_service_account" {
+  description = "Read-only service account for external repos (terraform plan)"
+  value       = google_service_account.github_actions_viewer
+}
+
+output "github_actions_viewer_email" {
+  description = "Email of the viewer service account"
+  value       = google_service_account.github_actions_viewer.email
+}
+
 output "local_dev_service_account" {
   description = "Service account for local development"
   value       = google_service_account.local_dev
