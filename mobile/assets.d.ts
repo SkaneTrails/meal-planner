@@ -4,3 +4,6 @@ declare module '*.png' {
   const value: ImageSourcePropType;
   export default value;
 }
+
+/** Allow side-effect CSS imports (NativeWind/Metro handles these at build time). */
+declare module '*.css' {}

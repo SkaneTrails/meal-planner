@@ -114,14 +114,27 @@ resource "google_project_iam_member" "github_actions_terraform_editor" {
   depends_on = [google_service_account.github_actions_terraform]
 }
 
-# NOTE: roles/iam.roleAdmin and roles/resourcemanager.projectIamAdmin for the
-# terraform SA are granted via the prerequisite_roles binding above (which uses
-# iam_binding). Do NOT add separate iam_member resources for those roles — mixing
-# iam_binding (authoritative) with iam_member (additive) on the same role causes
-# them to fight, stripping the SA's permissions on every apply.
+# Grant prerequisite roles to the terraform SA via additive iam_member.
+# The prerequisite_roles binding (authoritative) also includes the SA, but if
+# external drift removes it from the binding, these additive grants ensure the
+# SA can still reconcile the drift on the next apply.
+resource "google_project_iam_member" "github_actions_terraform_role_admin" {
+  project = var.project
+  role    = "roles/iam.roleAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
 
-# Remove old iam_member resources from state without destroying them in GCP.
-# The prerequisite_roles binding now manages these roles for the terraform SA.
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+resource "google_project_iam_member" "github_actions_terraform_project_iam_admin" {
+  project = var.project
+  role    = "roles/resourcemanager.projectIamAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_terraform.email}"
+
+  depends_on = [google_service_account.github_actions_terraform]
+}
+
+# Remove old iam_member resources from state (superseded by the resources above).
 removed {
   from = google_project_iam_member.github_actions_terraform_iam_admin
   lifecycle { destroy = false }
@@ -230,10 +243,11 @@ resource "google_project_iam_member" "local_dev_secrets" {
   depends_on = [google_service_account.local_dev]
 }
 
-# Grant prerequisite roles needed to create custom roles
-# Uses iam_binding (authoritative) — must include ALL members for these roles,
-# including the terraform SA. Mixing iam_binding + iam_member on the same role
-# causes them to fight (binding strips members that only iam_member knows about).
+# Grant prerequisite roles needed to create custom roles.
+# Uses iam_binding (authoritative) — must include ALL members for these roles.
+# The terraform SA is also granted these roles via separate iam_member resources
+# (additive) above, so even if external drift removes the SA from this binding,
+# the SA retains access and can reconcile the drift on the next apply.
 resource "google_project_iam_binding" "prerequisite_roles" {
   for_each = toset(local.prerequisite_roles)
 

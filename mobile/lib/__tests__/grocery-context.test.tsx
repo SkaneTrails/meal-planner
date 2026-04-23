@@ -25,6 +25,7 @@ const emptyState: GroceryListState = {
   checked_items: [],
   custom_items: [],
   item_order: [],
+  removed_items: [],
 };
 
 const mockGetGroceryState = vi.fn<() => Promise<GroceryListState>>();
@@ -86,6 +87,7 @@ describe('GroceryProvider', () => {
     expect(result.current.checkedItems.size).toBe(0);
     expect(result.current.customItems).toEqual([]);
     expect(result.current.itemOrder).toEqual([]);
+    expect(result.current.removedItems).toEqual([]);
     expect(result.current.selectedMealKeys).toEqual([]);
     expect(result.current.mealServings).toEqual({});
     expect(mockGetGroceryState).toHaveBeenCalledOnce();
@@ -98,6 +100,7 @@ describe('GroceryProvider', () => {
       checked_items: ['milk', 'eggs'],
       custom_items: [{ name: 'bread', category: 'bakery' }],
       item_order: [],
+      removed_items: [],
     });
 
     const { result } = renderHook(() => useGroceryState(), {
@@ -226,6 +229,21 @@ describe('GroceryProvider', () => {
     });
   });
 
+  describe('setRemovedItems', () => {
+    it('updates removed items and enqueues API patch', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setRemovedItems(['pasta', 'rice']);
+      });
+
+      expect(result.current.removedItems).toEqual(['pasta', 'rice']);
+    });
+  });
+
   describe('addCustomItem', () => {
     it('appends a custom item', async () => {
       const { result } = renderHook(() => useGroceryState(), {
@@ -243,6 +261,12 @@ describe('GroceryProvider', () => {
 
   describe('saveSelections', () => {
     it('saves meals and servings via PATCH', async () => {
+      mockPatchGroceryState.mockResolvedValue({
+        ...emptyState,
+        selected_meals: ['monday-lunch', 'tuesday-dinner'],
+        meal_servings: { 'monday-lunch': 4, 'tuesday-dinner': 2 },
+      });
+
       const { result } = renderHook(() => useGroceryState(), {
         wrapper: createGroceryWrapper(),
       });
@@ -290,6 +314,7 @@ describe('GroceryProvider', () => {
         checked_items: ['milk'],
         custom_items: [{ name: 'bread', category: 'other' }],
         item_order: [],
+        removed_items: [],
       });
 
       const { result } = renderHook(() => useGroceryState(), {
@@ -304,6 +329,7 @@ describe('GroceryProvider', () => {
       expect(result.current.checkedItems.size).toBe(0);
       expect(result.current.customItems).toEqual([]);
       expect(result.current.itemOrder).toEqual([]);
+      expect(result.current.removedItems).toEqual([]);
       expect(result.current.selectedMealKeys).toEqual([]);
       expect(result.current.mealServings).toEqual({});
       expect(mockClearGroceryState).toHaveBeenCalledOnce();
@@ -327,6 +353,105 @@ describe('GroceryProvider', () => {
       });
 
       expect(result.current.checkedItems.has('new-item')).toBe(true);
+    });
+
+    it('flushes pending patches before loading', async () => {
+      const callOrder: string[] = [];
+      mockPatchGroceryState.mockImplementation(() => {
+        callOrder.push('patch');
+        return Promise.resolve({ ...emptyState, checked_items: ['milk'] });
+      });
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      // Make a change that enqueues a debounced patch
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+
+      // Refresh immediately (before debounce fires)
+      const updatedState = { ...emptyState, checked_items: ['milk'] };
+      mockGetGroceryState.mockImplementation(() => {
+        callOrder.push('get');
+        return Promise.resolve(updatedState);
+      });
+
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      // The patch must have been flushed before the GET
+      expect(callOrder).toEqual(['patch', 'get']);
+      expect(result.current.checkedItems.has('milk')).toBe(true);
+    });
+  });
+
+  describe('patch reliability', () => {
+    it('re-queues failed patches for retry', async () => {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      // Make patch fail
+      mockPatchGroceryState.mockRejectedValueOnce(new Error('offline'));
+
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+
+      const updatedState = { ...emptyState, checked_items: ['milk'] };
+      mockGetGroceryState.mockResolvedValue(updatedState);
+
+      // First refresh: flushPatch sends the pending patch (fails), data re-queued
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledTimes(1);
+
+      // Second refresh: flushPatch retries the re-queued data (succeeds)
+      mockPatchGroceryState.mockResolvedValue(updatedState);
+
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledTimes(2);
+      spy.mockRestore();
+    });
+
+    it('caches server response to AsyncStorage on successful patch', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      const serverResponse = {
+        ...emptyState,
+        checked_items: ['milk'],
+        custom_items: [{ name: 'bread', category: 'other' as const }],
+      };
+      mockPatchGroceryState.mockResolvedValue(serverResponse);
+      mockGetGroceryState.mockResolvedValue(serverResponse);
+
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+
+      // Trigger flush via refreshFromApi instead of advancing timers
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      // AsyncStorage should have the server-confirmed state from the PATCH response
+      expect(mockStorage['grocery_checked_items']).toBe(
+        JSON.stringify(['milk']),
+      );
     });
   });
 });

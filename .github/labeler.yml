@@ -1,0 +1,65 @@
+"📝 type: documentation":
+  - changed-files:
+      - any-glob-to-any-file:
+          ["docs/**", "README.md", "CONTRIBUTING.md", "*.md"]
+
+"⚙️ type: github-actions":
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**", ".github/actions/**"]
+
+"📦 type: dependencies":
+  - changed-files:
+      - any-glob-to-any-file:
+          ["pyproject.toml", "uv.lock", "mobile/pnpm-lock.yaml"]
+
+"🐍 type: python-tooling":
+  - changed-files:
+      - any-glob-to-any-file:
+          ["pyproject.toml", ".python-version", ".pre-commit-config.yaml"]
+
+"🌑 type: terraform":
+  - changed-files:
+      - any-glob-to-any-file: [".terraform-version", "infra/**"]
+
+"🔧 type: maintenance":
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/*
+          - .editorconfig
+          - .gitignore
+          - .pre-commit-config.yaml
+          - CHANGELOG.md
+          - LICENSE
+          - README.md
+          - renovate.json
+
+"🔧 type: refactor":
+  - changed-files:
+      - any-glob-to-any-file: ["api/**/*.py", "tests/**/*.py"]
+
+"🏗️ type: infrastructure":
+  - changed-files:
+      - any-glob-to-any-file: ["infra/**", "Dockerfile", "*.yaml", "*.yml"]
+
+"✨ type: feature":
+  - changed-files:
+      - any-glob-to-any-file:
+          [
+            "api/**/*.py",
+            "mobile/app/**",
+            "mobile/components/**",
+            "mobile/lib/**",
+          ]
+
+"📱 type: mobile":
+  - changed-files:
+      - any-glob-to-any-file: ["mobile/**"]
+
+"☁️ type: cloud-function":
+  - changed-files:
+      - any-glob-to-any-file: ["functions/**"]
+
+"🚀 type: deployment":
+  - changed-files:
+      - any-glob-to-any-file:
+          ["infra/**", "Dockerfile", ".github/workflows/deploy*"]

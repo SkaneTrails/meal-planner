@@ -5,6 +5,7 @@ on:
     paths:
       - "infra/**"
       - ".github/workflows/terraform-tests.yml"
+      - ".tflint.hcl"
 
 permissions:
   contents: read
@@ -12,6 +13,29 @@ permissions:
   pull-requests: write
 
 jobs:
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@b480b8fcdaa6f2c577f8e4fa799e89e756bb7c93 # v6.2.2
+        with:
+          tflint_version: v0.61.0
+
+      - name: Initialize TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Run TFLint
+        run: |
+          echo "Running TFLint..."
+          cd infra
+          tflint --recursive --config="${GITHUB_WORKSPACE}/.tflint.hcl" --format compact
+
   terraform-checks:
     name: Format / Validate / Plan
     runs-on: ubuntu-latest
@@ -54,11 +78,15 @@ jobs:
 
       - name: Reconstruct gitignored files
         working-directory: ${{ env.TF_DIR }}
+        env:
+          TF_SUPERUSERS_CONTENT: ${{ secrets.TF_SUPERUSERS }}
+          TF_USERS_CONTENT: ${{ secrets.TF_USERS }}
+          TF_VARS_CONTENT: ${{ secrets.TF_VARS_FILE }}
         run: |
           mkdir -p access
-          printf '%s\n' "${{ secrets.TF_SUPERUSERS }}" > access/superusers.txt
-          printf '%s\n' "${{ secrets.TF_USERS }}" > access/users.txt
-          printf '%s\n' '${{ secrets.TF_VARS_FILE }}' > terraform.tfvars
+          printenv TF_SUPERUSERS_CONTENT > access/superusers.txt
+          printenv TF_USERS_CONTENT > access/users.txt
+          printenv TF_VARS_CONTENT > terraform.tfvars
 
           # Partial backend config — actual bucket/prefix come from -backend-config flags
           printf 'terraform {\n  backend "gcs" {}\n}\n' > backend.tf
@@ -106,7 +134,7 @@ jobs:
       # ---------------------------------------------------------------
 
       - name: Post plan to PR
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: always() && github.event_name == 'pull_request'
         env:
           FMT_OUTCOME: ${{ steps.fmt.outcome }}

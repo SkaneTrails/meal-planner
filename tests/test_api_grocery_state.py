@@ -40,6 +40,7 @@ class TestGetGroceryState:
         assert data["checked_items"] == []
         assert data["custom_items"] == []
         assert data["item_order"] == []
+        assert data["removed_items"] == []
 
     def test_returns_saved_state(self, client: TestClient) -> None:
         """Should return previously saved state."""
@@ -91,6 +92,7 @@ class TestSaveGroceryState:
             meal_servings={"2026-02-10_lunch": 2},
             checked_items=["flour"],
             custom_items=[{"name": "Napkins", "category": "other"}],
+            removed_items=[],
             created_by="test@example.com",
         )
 
@@ -161,6 +163,22 @@ class TestPatchGroceryState:
 
         assert response.status_code == 200
         assert response.json()["item_order"] == ["eggs", "milk", "bread"]
+
+    def test_patches_removed_items(self, client: TestClient) -> None:
+        """Should update removed generated items."""
+        result = {
+            "selected_meals": [],
+            "meal_servings": {},
+            "checked_items": [],
+            "custom_items": [],
+            "removed_items": ["tomatoes", "onions"],
+            "updated_at": None,
+        }
+        with patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=result):
+            response = client.patch("/grocery/state", json={"removed_items": ["tomatoes", "onions"]})
+
+        assert response.status_code == 200
+        assert response.json()["removed_items"] == ["tomatoes", "onions"]
 
     def test_creates_state_if_none_exists(self, client: TestClient) -> None:
         """Should create a new state when patch finds no existing state."""
