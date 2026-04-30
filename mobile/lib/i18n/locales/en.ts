@@ -46,7 +46,7 @@ const en = {
       all: 'All',
       breakfast: 'Breakfast',
       starter: 'Starter',
-      salad: 'Salad',
+      side_dish: 'Side Dish',
       meal: 'Meal',
       mainCourse: 'Main Course',
       dessert: 'Dessert',

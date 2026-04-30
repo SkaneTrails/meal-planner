@@ -45,7 +45,7 @@ const sv: Translations = {
       all: 'Alla',
       breakfast: 'Frukost',
       starter: 'Förrätt',
-      salad: 'Sallad',
+      side_dish: 'Tillbehör',
       meal: 'Måltid',
       mainCourse: 'Huvudrätt',
       dessert: 'Efterrätt',

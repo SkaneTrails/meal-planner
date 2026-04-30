@@ -45,7 +45,7 @@ const it: Translations = {
       all: 'Tutti',
       breakfast: 'Colazione',
       starter: 'Antipasto',
-      salad: 'Insalata',
+      side_dish: 'Contorno',
       meal: 'Pasto',
       mainCourse: 'Piatto principale',
       dessert: 'Dolce',
