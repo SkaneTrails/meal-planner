@@ -227,9 +227,21 @@ export const useGroceryScreen = () => {
 
   const handleReorder = useCallback(
     (items: GroceryItem[]) => {
-      setItemOrder(items.map((i) => i.name));
+      const order = items.map((i) => i.name);
+      setItemOrder(order);
+
+      if (activeStoreId) {
+        api
+          .setStoreOrder(activeStoreId, order)
+          .then((response) => {
+            queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
+              item_order: response.item_order,
+            });
+          })
+          .catch(() => {});
+      }
     },
-    [setItemOrder],
+    [setItemOrder, activeStoreId, queryClient],
   );
 
   const MIN_TICK_SEQUENCE_LENGTH = 2;
