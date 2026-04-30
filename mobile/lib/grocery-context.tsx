@@ -357,7 +357,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         clearTimeout(patchTimerRef.current);
         patchTimerRef.current = null;
       }
-      pendingPatchRef.current = {};
+      await flushPatch();
 
       setSelectedMealKeys(meals);
       setMealServings(servings);
@@ -387,7 +387,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         mealServings: response.meal_servings || {},
       });
     },
-    [applyState],
+    [applyState, flushPatch],
   );
 
   const clearAll = useCallback(async () => {
