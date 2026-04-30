@@ -818,7 +818,7 @@ describe('useGroceryScreen', () => {
       expect(mockSetItemOrder).toHaveBeenCalledWith(['eggs', 'bread', 'milk']);
     });
 
-    it('saves to store order when active store is set', async () => {
+    it('saves to store order when active store is set, preserving hidden items', async () => {
       const { useSettings } = await import('@/lib/settings-context');
       vi.mocked(useSettings).mockReturnValue({
         isItemAtHome: vi.fn(() => false),
@@ -827,16 +827,22 @@ describe('useGroceryScreen', () => {
         isLoading: false,
       } as unknown as ReturnType<typeof useSettings>);
 
+      mockStoreOrderData = { item_order: ['eggs', 'bread', 'cheese', 'butter'] };
+
       const { result } = renderHook(() => useGroceryScreen());
 
       act(() => {
         result.current.handleReorder([
-          { name: 'eggs', category: 'dairy', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
           { name: 'bread', category: 'bakery', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
+          { name: 'eggs', category: 'dairy', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
         ]);
       });
 
-      expect(mockSetStoreOrder).toHaveBeenCalledWith('store_1', ['eggs', 'bread']);
+      expect(mockSetStoreOrder).toHaveBeenCalledWith('store_1', ['bread', 'eggs', 'cheese', 'butter']);
+      expect(mockSetQueryData).toHaveBeenCalledWith(
+        ['grocery', 'storeOrder', 'store_1'],
+        { item_order: ['bread', 'eggs', 'cheese', 'butter'] },
+      );
     });
   });
 
