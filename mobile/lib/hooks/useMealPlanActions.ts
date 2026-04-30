@@ -23,7 +23,11 @@ export const useMealPlanActions = () => {
   const router = useRouter();
   const { t, language } = useTranslation();
   const { weekStart, settings } = useSettings();
-  const { saveSelections } = useGroceryState();
+  const {
+    saveSelections,
+    selectedMealKeys: existingMealKeys,
+    mealServings: existingServings,
+  } = useGroceryState();
 
   const MEAL_TYPES: MealTypeOption[] = useMemo(() => {
     const types: MealTypeOption[] = [];
@@ -402,14 +406,24 @@ export const useMealPlanActions = () => {
       return;
     }
     try {
-      const mealsArray = Array.from(selectedMeals);
-      await saveSelections(mealsArray, mealServings);
+      const newMeals = Array.from(selectedMeals);
+      const mergedMeals = [...new Set([...existingMealKeys, ...newMeals])];
+      const mergedServings = { ...existingServings, ...mealServings };
+      await saveSelections(mergedMeals, mergedServings);
       setShowGroceryModal(false);
       setTimeout(() => router.push('/(tabs)/grocery'), 100);
     } catch {
       showNotification(t('common.error'), t('mealPlan.failedToSaveSelections'));
     }
-  }, [selectedMeals, mealServings, router, t, saveSelections]);
+  }, [
+    selectedMeals,
+    mealServings,
+    existingMealKeys,
+    existingServings,
+    router,
+    t,
+    saveSelections,
+  ]);
 
   const openGroceryModal = useCallback(() => {
     hapticLight();

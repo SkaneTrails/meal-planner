@@ -284,6 +284,48 @@ describe('GroceryProvider', () => {
       expect(mockPatchGroceryState).toHaveBeenCalledWith({
         selected_meals: ['monday-lunch', 'tuesday-dinner'],
         meal_servings: { 'monday-lunch': 4, 'tuesday-dinner': 2 },
+        removed_items: [],
+      });
+    });
+
+    it('clears removed items but preserves checked items when saving new selections', async () => {
+      mockGetGroceryState.mockResolvedValue({
+        ...emptyState,
+        selected_meals: ['monday-lunch'],
+        meal_servings: { 'monday-lunch': 2 },
+        checked_items: ['flour', 'sugar'],
+        removed_items: ['butter'],
+      });
+
+      mockPatchGroceryState.mockResolvedValue({
+        ...emptyState,
+        selected_meals: ['tuesday-dinner'],
+        meal_servings: { 'tuesday-dinner': 4 },
+        checked_items: ['flour', 'sugar'],
+        removed_items: [],
+      });
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.checkedItems.size).toBe(2);
+      expect(result.current.removedItems).toEqual(['butter']);
+
+      await act(async () => {
+        await result.current.saveSelections(
+          ['tuesday-dinner'],
+          { 'tuesday-dinner': 4 },
+        );
+      });
+
+      expect(result.current.checkedItems.size).toBe(2);
+      expect(result.current.removedItems).toEqual([]);
+      expect(mockPatchGroceryState).toHaveBeenCalledWith({
+        selected_meals: ['tuesday-dinner'],
+        meal_servings: { 'tuesday-dinner': 4 },
+        removed_items: [],
       });
     });
   });

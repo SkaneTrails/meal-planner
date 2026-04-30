@@ -353,8 +353,17 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   const saveSelections = useCallback(
     async (meals: string[], servings: Record<string, number>) => {
+      if (patchTimerRef.current) {
+        clearTimeout(patchTimerRef.current);
+        patchTimerRef.current = null;
+      }
+      pendingPatchRef.current = {};
+
       setSelectedMealKeys(meals);
       setMealServings(servings);
+      setRemovedItemsState([]);
+      removedItemsRef.current = [];
+
       AsyncStorage.setItem(
         'grocery_selected_meals',
         JSON.stringify(meals),
@@ -366,6 +375,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.patchGroceryState({
         selected_meals: meals,
         meal_servings: servings,
+        removed_items: [],
       });
       applyState(response);
       cacheToAsyncStorage({
