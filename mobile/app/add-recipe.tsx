@@ -273,19 +273,21 @@ export default function AddRecipeScreen() {
           />
 
           {/* Import button */}
-          <Button
-            variant="primary"
-            onPress={handleImport}
-            disabled={!url}
-            isPending={isPending}
-            icon="download-outline"
-            label={t('addRecipe.importButton')}
-            loadingLabel={
-              enhanceWithAI
-                ? t('addRecipe.importingEnhancing')
-                : t('addRecipe.importing')
-            }
-          />
+          <View style={{ marginTop: spacing.lg }}>
+            <Button
+              variant="primary"
+              onPress={handleImport}
+              disabled={!url}
+              isPending={isPending}
+              icon="download-outline"
+              label={t('addRecipe.importButton')}
+              loadingLabel={
+                enhanceWithAI
+                  ? t('addRecipe.importingEnhancing')
+                  : t('addRecipe.importing')
+              }
+            />
+          </View>
 
           {/* Or add manually link */}
           <View

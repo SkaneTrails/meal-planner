@@ -25,20 +25,12 @@ export type FontFamilyTokens = {
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
 const isWeb = Platform.OS === 'web';
 
-/** Cormorant Garamond for display headings, DM Sans for body text. */
+/** DM Sans for all text (display, body, accent). */
 export const defaultFontFamily: FontFamilyTokens = {
-  display: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_600SemiBold',
-  displayRegular: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_400Regular',
-  displayMedium: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_500Medium',
-  displayBold: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_700Bold',
+  display: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
+  displayRegular: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
+  displayMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+  displayBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
   body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
   bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
   bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
