@@ -55,7 +55,11 @@ vi.mock('@/lib/hooks', () => ({
   useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
   useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
   useUpdateExtras: vi.fn(() => ({ mutate: mockUpdateExtrasMutate })),
-  useGroceryState: vi.fn(() => ({ saveSelections: mockSaveSelections })),
+  useGroceryState: vi.fn(() => ({
+    saveSelections: mockSaveSelections,
+    selectedMealKeys: [] as string[],
+    mealServings: {} as Record<string, number>,
+  })),
 }));
 
 vi.mock('expo-router', () => ({
@@ -207,6 +211,31 @@ describe('useMealPlanActions', () => {
         { '2026-01-05_lunch': 4 },
       );
       expect(result.current.showGroceryModal).toBe(false);
+    });
+
+    it('merges new meals with existing selections from context', async () => {
+      const { useGroceryState } = await import('@/lib/hooks');
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: ['2026-01-06_dinner'],
+        mealServings: { '2026-01-06_dinner': 2 },
+      } as unknown as ReturnType<typeof useGroceryState>);
+
+      const { result } = renderActions();
+
+      act(() => result.current.handleToggleMeal(new Date('2026-01-05'), 'lunch', 4));
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        expect.arrayContaining(['2026-01-06_dinner', '2026-01-05_lunch']),
+        { '2026-01-06_dinner': 2, '2026-01-05_lunch': 4 },
+      );
+
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: [] as string[],
+        mealServings: {} as Record<string, number>,
+      } as unknown as ReturnType<typeof useGroceryState>);
     });
   });
 
