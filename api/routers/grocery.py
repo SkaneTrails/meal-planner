@@ -302,3 +302,23 @@ async def learn_store_order(
         save_store_order(household_id, store_id, updated_order)
         return LearnOrderResponse(updated=True, item_order=updated_order)
     return LearnOrderResponse(updated=False, item_order=current_order)
+
+
+class SetStoreOrderRequest(BaseModel):
+    """Request body for directly setting a store's item ordering."""
+
+    item_order: list[str] = Field(..., description="Complete item ordering to save")
+
+
+@router.put("/stores/{store_id}/order")
+async def set_store_item_order(
+    store_id: str, body: SetStoreOrderRequest, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> StoreOrderResponse:
+    """Directly set the item ordering for a store.
+
+    Used when the user manually reorders items via drag-and-drop.
+    Replaces the entire stored ordering for the given store.
+    """
+    household_id = require_household(user)
+    save_store_order(household_id, store_id, body.item_order)
+    return StoreOrderResponse(item_order=body.item_order)
