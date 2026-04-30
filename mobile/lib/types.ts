@@ -9,7 +9,7 @@ export type LibraryScope = 'all' | 'mine';
 export type MealLabel =
   | 'breakfast'
   | 'starter'
-  | 'salad'
+  | 'side_dish'
   | 'meal'
   | 'dessert'
   | 'drink'
