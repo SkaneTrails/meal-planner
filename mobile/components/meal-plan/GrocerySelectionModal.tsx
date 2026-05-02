@@ -15,6 +15,7 @@ import {
   formatDayHeader,
   formatWeekRange,
 } from '@/lib/utils/dateFormatter';
+import { EXTRAS_KEY_PREFIX } from '@/lib/utils/groceryAggregator';
 import type { MealTypeOption } from './meal-plan-constants';
 
 interface GrocerySelectionModalProps {
@@ -39,6 +40,8 @@ interface GrocerySelectionModalProps {
   onChangeServings: (key: string, delta: number) => void;
   onPreviousWeek: () => void;
   onNextWeek: () => void;
+  extrasRecipes: Recipe[];
+  onToggleExtra: (recipeId: string, recipeServings?: number) => void;
 }
 
 export const GrocerySelectionModal = ({
@@ -56,6 +59,8 @@ export const GrocerySelectionModal = ({
   onChangeServings,
   onPreviousWeek,
   onNextWeek,
+  extrasRecipes,
+  onToggleExtra,
 }: GrocerySelectionModalProps) => {
   const { colors, fonts } = useTheme();
   return (
@@ -147,6 +152,42 @@ export const GrocerySelectionModal = ({
             </View>
           );
         })}
+
+        {extrasRecipes.length > 0 && (
+          <View style={{ marginBottom: spacing.lg }}>
+            <Text
+              style={{
+                fontSize: fontSize['lg-xl'],
+                fontFamily: fonts.bodySemibold,
+                color: colors.content.tertiary,
+                marginBottom: spacing['sm-md'],
+              }}
+            >
+              {t('mealPlan.extras.headerTitle')}
+            </Text>
+            {extrasRecipes.map((recipe) => {
+              const key = `${EXTRAS_KEY_PREFIX}${recipe.id}`;
+              const isSelected = selectedMeals.has(key);
+              const recipeServings = recipe.servings;
+              const currentServings = mealServings[key] || recipeServings || 2;
+
+              return (
+                <GroceryMealItem
+                  key={recipe.id}
+                  title={recipe.title}
+                  label={t('mealPlan.extras.headerTitle')}
+                  isSelected={isSelected}
+                  currentServings={currentServings}
+                  mealKey={key}
+                  onToggle={() =>
+                    onToggleExtra(recipe.id, recipeServings ?? undefined)
+                  }
+                  onChangeServings={onChangeServings}
+                />
+              );
+            })}
+          </View>
+        )}
       </View>
     </BottomSheetModal>
   );

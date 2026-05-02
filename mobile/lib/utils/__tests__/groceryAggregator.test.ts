@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   aggregateIngredients,
+  EXTRAS_KEY_PREFIX,
   type RecipeForAggregation,
 } from '../groceryAggregator';
 
@@ -211,5 +212,66 @@ describe('aggregateIngredients', () => {
     const result = aggregateIngredients(['mon-lunch'], meals, recipes, {});
     expect(result[0].name).toBe('salt och peppar');
     expect(result[0].quantity).toBeNull();
+  });
+
+  it('aggregates extras recipes by recipe ID directly', () => {
+    const recipes = [
+      makeRecipe({
+        id: 'r1',
+        title: 'Hummus',
+        ingredients: ['400 g kikärtor', '2 msk tahini'],
+        servings: 4,
+      }),
+    ];
+    const meals = {};
+    const key = `${EXTRAS_KEY_PREFIX}r1`;
+    const result = aggregateIngredients([key], meals, recipes, {});
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe('kikärtor');
+    expect(result[0].quantity).toBe('400');
+  });
+
+  it('scales extras recipes by mealServings', () => {
+    const recipes = [
+      makeRecipe({
+        id: 'r1',
+        title: 'Guacamole',
+        ingredients: ['200 g avokado'],
+        servings: 2,
+      }),
+    ];
+    const meals = {};
+    const key = `${EXTRAS_KEY_PREFIX}r1`;
+    const result = aggregateIngredients([key], meals, recipes, { [key]: 4 });
+    expect(result[0].quantity).toBe('400');
+    expect(result[0].recipe_sources).toEqual(['Guacamole (×4)']);
+  });
+
+  it('merges extras and regular meal ingredients', () => {
+    const recipes = [
+      makeRecipe({
+        id: 'r1',
+        title: 'Pasta',
+        ingredients: ['200 g tomat'],
+        servings: 4,
+      }),
+      makeRecipe({
+        id: 'r2',
+        title: 'Salsa',
+        ingredients: ['100 g tomat'],
+        servings: 2,
+      }),
+    ];
+    const meals = { 'mon-lunch': 'r1' };
+    const extrasKey = `${EXTRAS_KEY_PREFIX}r2`;
+    const result = aggregateIngredients(
+      ['mon-lunch', extrasKey],
+      meals,
+      recipes,
+      {},
+    );
+    const tomat = result.find((r) => r.name === 'tomat');
+    expect(tomat?.quantity).toBe('300');
+    expect(tomat?.recipe_sources).toEqual(['Pasta', 'Salsa']);
   });
 });

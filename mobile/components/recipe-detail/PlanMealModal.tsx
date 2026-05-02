@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { ActionButton, BottomSheetModal } from '@/components';
+import { ActionButton, BottomSheetModal, Button } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
@@ -20,6 +20,8 @@ interface PlanMealModalProps {
   onPlanMeal: (date: Date, mealType: MealType) => void;
   onClearMeal: (date: Date, mealType: MealType) => void;
   getMealForSlot: (date: Date, mealType: MealType) => string | null;
+  onAddToExtras?: () => void;
+  isInExtras?: boolean;
 }
 
 export const PlanMealModal = ({
@@ -35,6 +37,8 @@ export const PlanMealModal = ({
   onPlanMeal,
   onClearMeal,
   getMealForSlot,
+  onAddToExtras,
+  isInExtras,
 }: PlanMealModalProps) => {
   const { colors, fonts, borderRadius } = useTheme();
   const resolvedMealTypes = mealTypesProp ?? DEFAULT_MEAL_TYPES;
@@ -241,6 +245,28 @@ export const PlanMealModal = ({
           );
         })}
       </View>
+
+      {onAddToExtras && (
+        <View
+          style={{
+            marginTop: spacing.lg,
+            borderTopWidth: 1,
+            borderTopColor: colors.gray[700],
+            paddingTop: spacing.lg,
+          }}
+        >
+          <Button
+            variant="primary"
+            onPress={onAddToExtras}
+            disabled={isInExtras}
+            label={
+              isInExtras
+                ? t('mealPlan.extras.alreadyAdded')
+                : t('recipe.addToOthers')
+            }
+          />
+        </View>
+      )}
     </BottomSheetModal>
   );
 };
