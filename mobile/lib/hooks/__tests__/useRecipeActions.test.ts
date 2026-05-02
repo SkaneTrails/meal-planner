@@ -6,6 +6,7 @@ import type { Recipe } from '@/lib/types';
 const mockMutateAsync = vi.fn();
 const mockDeleteMutateAsync = vi.fn();
 const mockSetMealMutateAsync = vi.fn();
+const mockUpdateExtrasMutateAsync = vi.fn();
 const mockTransferMutateAsync = vi.fn();
 const mockReviewMutateAsync = vi.fn();
 const mockEnhanceMutateAsync = vi.fn();
@@ -19,6 +20,7 @@ vi.mock('@/lib/hooks', () => ({
   useDeleteRecipe: vi.fn(() => ({ mutateAsync: mockDeleteMutateAsync })),
   useUpdateRecipe: vi.fn(() => ({ mutateAsync: mockMutateAsync })),
   useSetMeal: vi.fn(() => ({ mutateAsync: mockSetMealMutateAsync })),
+  useUpdateExtras: vi.fn(() => ({ mutateAsync: mockUpdateExtrasMutateAsync })),
   useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
   useReviewEnhancement: vi.fn(() => ({ mutateAsync: mockReviewMutateAsync, isPending: false })),
   useEnhanceRecipe: vi.fn(() => ({ mutateAsync: mockEnhanceMutateAsync, isPending: false })),

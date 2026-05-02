@@ -20,6 +20,8 @@ export interface RecipeForAggregation {
   servings?: number;
 }
 
+export const EXTRAS_KEY_PREFIX = 'extras_';
+
 export const aggregateIngredients = (
   selectedMealKeys: string[],
   meals: Record<string, string>,
@@ -30,7 +32,9 @@ export const aggregateIngredients = (
   const ingredientsMap = new Map<string, GroceryItem>();
 
   selectedMealKeys.forEach((key) => {
-    const recipeId = meals[key];
+    const recipeId = key.startsWith(EXTRAS_KEY_PREFIX)
+      ? key.slice(EXTRAS_KEY_PREFIX.length)
+      : meals[key];
     if (!recipeId) return;
 
     // Include custom (quick) meals as simple grocery items

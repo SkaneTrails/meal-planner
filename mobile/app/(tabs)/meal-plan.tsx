@@ -79,10 +79,12 @@ export default function MealPlanScreen() {
     handleEditCustomText,
     handleRemoveMeal,
     handleToggleMeal,
+    handleToggleExtra,
     handleChangeServings,
     handleCreateGroceryList,
     openGroceryModal,
     getExtrasRecipes,
+    getGroceryExtrasRecipes,
     handleAddExtra,
     handleRemoveExtra,
     expandedPastDays,
@@ -391,6 +393,8 @@ export default function MealPlanScreen() {
         onChangeServings={handleChangeServings}
         onPreviousWeek={() => setGroceryWeekOffset((prev) => prev - 1)}
         onNextWeek={() => setGroceryWeekOffset((prev) => prev + 1)}
+        extrasRecipes={getGroceryExtrasRecipes()}
+        onToggleExtra={handleToggleExtra}
       />
 
       <SelectMealModal
