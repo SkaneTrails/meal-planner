@@ -26,7 +26,10 @@ import {
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { GroceryItem } from '@/lib/types';
-import { aggregateIngredients } from '@/lib/utils/groceryAggregator';
+import {
+  aggregateIngredients,
+  EXTRAS_KEY_PREFIX,
+} from '@/lib/utils/groceryAggregator';
 
 export const useGroceryScreen = () => {
   const {
@@ -123,8 +126,16 @@ export const useGroceryScreen = () => {
       return;
     }
 
+    // Filter out stale extras keys whose recipes were removed from the meal plan
+    const allExtrasIds = new Set(Object.values(mealPlan.extras ?? {}).flat());
+    const activeKeys = selectedMealKeys.filter(
+      (key) =>
+        !key.startsWith(EXTRAS_KEY_PREFIX) ||
+        allExtrasIds.has(key.slice(EXTRAS_KEY_PREFIX.length)),
+    );
+
     const items = aggregateIngredients(
-      selectedMealKeys,
+      activeKeys,
       mealPlan.meals,
       recipes.map((r) => ({
         id: r.id,
