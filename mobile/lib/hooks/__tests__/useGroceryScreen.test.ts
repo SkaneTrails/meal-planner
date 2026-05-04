@@ -100,9 +100,11 @@ vi.mock('@tanstack/react-query', () => ({
 }));
 
 const mockLearnStoreOrder = vi.fn().mockResolvedValue({ updated: false, item_order: [] });
+const mockSetStoreOrder = vi.fn().mockResolvedValue({ item_order: [] });
 vi.mock('@/lib/api', () => ({
   api: {
     learnStoreOrder: (...args: unknown[]) => mockLearnStoreOrder(...args),
+    setStoreOrder: (...args: unknown[]) => mockSetStoreOrder(...args),
   },
 }));
 
@@ -124,6 +126,7 @@ describe('useGroceryScreen', () => {
     focusCallbacks = [];
     focusCleanups = [];
     mockLearnStoreOrder.mockResolvedValue({ updated: false, item_order: [] });
+    mockSetStoreOrder.mockResolvedValue({ item_order: [] });
     mockContextState = {
       checkedItems: new Set<string>(),
       customItems: [],
@@ -813,6 +816,33 @@ describe('useGroceryScreen', () => {
       });
 
       expect(mockSetItemOrder).toHaveBeenCalledWith(['eggs', 'bread', 'milk']);
+    });
+
+    it('saves to store order when active store is set, preserving hidden items', async () => {
+      const { useSettings } = await import('@/lib/settings-context');
+      vi.mocked(useSettings).mockReturnValue({
+        isItemAtHome: vi.fn(() => false),
+        activeStoreId: 'store_1',
+        settings: null,
+        isLoading: false,
+      } as unknown as ReturnType<typeof useSettings>);
+
+      mockStoreOrderData = { item_order: ['eggs', 'bread', 'cheese', 'butter'] };
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleReorder([
+          { name: 'bread', category: 'bakery', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
+          { name: 'eggs', category: 'dairy', checked: false, quantity: null, unit: null, quantity_sources: [], recipe_sources: [] },
+        ]);
+      });
+
+      expect(mockSetStoreOrder).toHaveBeenCalledWith('store_1', ['bread', 'eggs', 'cheese', 'butter']);
+      expect(mockSetQueryData).toHaveBeenCalledWith(
+        ['grocery', 'storeOrder', 'store_1'],
+        { item_order: ['bread', 'eggs', 'cheese', 'butter'] },
+      );
     });
   });
 

@@ -73,6 +73,7 @@ export default function RecipeDetailScreen() {
     saveImageUrl,
     handlePlanMeal,
     handleClearMeal,
+    handleAddToExtras,
     handleThumbUp,
     handleThumbDown,
     handleDelete,
@@ -94,6 +95,13 @@ export default function RecipeDetailScreen() {
     [weekOffset, weekStart],
   );
   const { data: mealPlan } = useMealPlan();
+
+  const weekKey = useMemo(() => formatDateLocal(weekDates[0]), [weekDates]);
+  const currentWeekExtras = useMemo(
+    () => mealPlan?.extras?.[weekKey] ?? [],
+    [mealPlan?.extras, weekKey],
+  );
+  const isInExtras = !!id && currentWeekExtras.includes(id);
 
   const planMealTypes = useMemo(() => {
     const types: { type: MealType; labelKey: string }[] = [];
@@ -385,6 +393,8 @@ export default function RecipeDetailScreen() {
         onPlanMeal={handlePlanMeal}
         onClearMeal={handleClearMeal}
         getMealForSlot={getMealForSlot}
+        onAddToExtras={() => handleAddToExtras(weekKey, currentWeekExtras)}
+        isInExtras={isInExtras}
       />
 
       {showEditModal && (

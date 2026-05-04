@@ -12,6 +12,7 @@ import {
   useRemoveEnhancement,
   useReviewEnhancement,
   useSetMeal,
+  useUpdateExtras,
   useUpdateRecipe,
 } from '@/lib/hooks';
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
@@ -50,6 +51,7 @@ export const useRecipeActions = (
   const deleteRecipe = useDeleteRecipe();
   const updateRecipe = useUpdateRecipe();
   const setMeal = useSetMeal();
+  const updateExtras = useUpdateExtras();
   const reviewEnhancement = useReviewEnhancement();
   const enhanceRecipe = useEnhanceRecipe();
   const removeEnhancement = useRemoveEnhancement();
@@ -161,6 +163,34 @@ export const useRecipeActions = (
       });
     } catch {
       showNotification(t('common.error'), t('recipe.failedToClearMeal'));
+    }
+  };
+
+  const handleAddToExtras = async (
+    weekStartDate: string,
+    currentExtras: string[],
+  ) => {
+    if (!id) return;
+    if (currentExtras.includes(id)) {
+      showNotification(
+        t('mealPlan.extras.alreadyAdded'),
+        t('mealPlan.extras.alreadyAddedMessage'),
+      );
+      return;
+    }
+    hapticSuccess();
+    try {
+      await updateExtras.mutateAsync({
+        week: weekStartDate,
+        extras: [...currentExtras, id],
+      });
+      setShowPlanModal(false);
+      showNotification(
+        t('recipe.addedToOthers'),
+        t('recipe.addedToOthersMessage', { title: recipe?.title ?? '' }),
+      );
+    } catch {
+      showNotification(t('common.error'), t('mealPlan.extras.failedToAdd'));
     }
   };
 
@@ -509,6 +539,7 @@ export const useRecipeActions = (
     saveImageUrl,
     handlePlanMeal,
     handleClearMeal,
+    handleAddToExtras,
     handleThumbUp,
     handleThumbDown,
     handleDelete,

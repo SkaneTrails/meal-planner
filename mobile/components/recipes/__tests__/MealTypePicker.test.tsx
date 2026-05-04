@@ -11,7 +11,7 @@ const mockT = (key: string) => {
   const translations: Record<string, string> = {
     'labels.meal.breakfast': 'Breakfast',
     'labels.meal.starter': 'Starter',
-    'labels.meal.salad': 'Salad',
+    'labels.meal.side_dish': 'Side Dish',
     'labels.meal.meal': 'Meal',
     'labels.meal.dessert': 'Dessert',
     'labels.meal.drink': 'Drink',
@@ -38,7 +38,7 @@ describe('MealTypePicker', () => {
 
     expect(screen.getByText('Breakfast')).toBeDefined();
     expect(screen.getByText('Starter')).toBeDefined();
-    expect(screen.getByText('Salad')).toBeDefined();
+    expect(screen.getByText('Side Dish')).toBeDefined();
     expect(screen.getByText('Meal')).toBeDefined();
     expect(screen.getByText('Dessert')).toBeDefined();
     expect(screen.getByText('Drink')).toBeDefined();
@@ -58,23 +58,23 @@ describe('MealTypePicker', () => {
       />,
     );
 
-    fireEvent.click(screen.getByText('Salad'));
-    expect(handleToggle).toHaveBeenCalledWith('salad');
+    fireEvent.click(screen.getByText('Side Dish'));
+    expect(handleToggle).toHaveBeenCalledWith('side_dish');
   });
 
   it('calls onToggle for already-selected type (deselect)', () => {
     const handleToggle = vi.fn();
     render(
       <MealTypePicker
-        selected={['salad']}
+        selected={['side_dish']}
         onToggle={handleToggle}
         onClear={vi.fn()}
         t={mockT}
       />,
     );
 
-    fireEvent.click(screen.getByText('Salad'));
-    expect(handleToggle).toHaveBeenCalledWith('salad');
+    fireEvent.click(screen.getByText('Side Dish'));
+    expect(handleToggle).toHaveBeenCalledWith('side_dish');
   });
 
   it('does not show clear button when nothing selected', () => {
@@ -93,7 +93,7 @@ describe('MealTypePicker', () => {
   it('shows clear button when types are selected', () => {
     render(
       <MealTypePicker
-        selected={['salad', 'drink']}
+        selected={['side_dish', 'drink']}
         onToggle={vi.fn()}
         onClear={vi.fn()}
         t={mockT}
