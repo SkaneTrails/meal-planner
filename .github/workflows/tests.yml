@@ -33,7 +33,7 @@ jobs:
           node-version: "24"
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@10
 
       - name: Cache pnpm store
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -93,7 +93,7 @@ jobs:
           node-version: "24"
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@10
 
       - name: Cache pnpm store
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
