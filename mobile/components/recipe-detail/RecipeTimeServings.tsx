@@ -13,26 +13,22 @@ interface TimeStatCardProps {
 }
 
 const TimeStatCard = ({ icon, label, value }: TimeStatCardProps) => {
-  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
+  const { colors, fonts, visibility } = useTheme();
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: colors.statsCard.bg,
-        borderRadius: borderRadius.md,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: colors.statsCard.borderColor,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.xs,
         alignItems: 'center',
-        ...shadows.sm,
       }}
     >
       {visibility.showStatIcons && (
         <ThemeIcon
           name={icon}
-          size={18}
+          size={16}
           color={colors.content.secondary}
-          style={{ marginBottom: spacing.sm }}
+          style={{ marginBottom: spacing.xs }}
         />
       )}
       <Text
@@ -52,6 +48,7 @@ const TimeStatCard = ({ icon, label, value }: TimeStatCardProps) => {
           color: colors.content.secondary,
           letterSpacing: letterSpacing.wide,
           textTransform: 'uppercase',
+          marginTop: 2,
         }}
       >
         {label}
@@ -143,26 +140,22 @@ const InteractiveStatCard = ({
   onReset,
   decrementDisabled,
 }: TimeStatCardProps & ServingsInteractiveProps) => {
-  const { colors, fonts, borderRadius, shadows, visibility } = useTheme();
+  const { colors, fonts, visibility } = useTheme();
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: colors.statsCard.bg,
-        borderRadius: borderRadius.md,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: isScaled ? colors.primary : colors.statsCard.borderColor,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.xs,
         alignItems: 'center',
-        ...shadows.sm,
       }}
     >
       {visibility.showStatIcons && (
         <ThemeIcon
           name={icon}
-          size={18}
-          color={colors.content.secondary}
-          style={{ marginBottom: spacing.sm }}
+          size={16}
+          color={isScaled ? colors.primary : colors.content.secondary}
+          style={{ marginBottom: spacing.xs }}
         />
       )}
       <ServingsInteractive
@@ -181,6 +174,7 @@ const InteractiveStatCard = ({
           color: colors.content.secondary,
           letterSpacing: letterSpacing.wide,
           textTransform: 'uppercase',
+          marginTop: 2,
         }}
       >
         {label}
@@ -221,7 +215,7 @@ export const RecipeTimeServings = ({
   t,
   portionScaling,
 }: RecipeTimeServingsProps) => {
-  const { colors, fonts, visibility, chrome } = useTheme();
+  const { colors, fonts, chrome } = useTheme();
   const hasAnyTime = prepTime || cookTime || totalTime;
   if (!hasAnyTime && !servings) return null;
 
@@ -328,11 +322,12 @@ export const RecipeTimeServings = ({
   }
 
   return (
-    <ContentCard card={false} style={{ marginTop: spacing.lg }}>
+    <ContentCard card={false} style={{ marginTop: 0 }}>
       <View
         style={{
           flexDirection: 'row',
-          gap: visibility.showStatDividers ? 0 : spacing.sm,
+          alignItems: 'stretch',
+          gap: 0,
         }}
       >
         {stats.map((stat, i) => (
@@ -356,12 +351,13 @@ export const RecipeTimeServings = ({
                 value={stat.value}
               />
             )}
-            {visibility.showStatDividers && i < stats.length - 1 && (
+            {i < stats.length - 1 && (
               <View
                 style={{
                   width: 1,
-                  backgroundColor: colors.primary,
-                  opacity: 0.3,
+                  alignSelf: 'center',
+                  height: '60%',
+                  backgroundColor: colors.border,
                 }}
               />
             )}

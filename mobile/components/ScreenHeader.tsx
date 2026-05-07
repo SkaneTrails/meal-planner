@@ -10,6 +10,8 @@ interface ScreenHeaderProps {
   subtitle?: string;
   variant?: 'centered' | 'large';
   onBack?: () => void;
+  /** Optional label for the back button (renders as text variant when provided). */
+  backLabel?: string;
   rightAction?: ReactNode;
   children?: ReactNode;
   style?: ViewStyle;
@@ -20,6 +22,7 @@ export const ScreenHeader = ({
   subtitle,
   variant = 'centered',
   onBack,
+  backLabel,
   rightAction,
   children,
   style,
@@ -49,9 +52,14 @@ export const ScreenHeader = ({
             {onBack ? (
               <ActionButton.Back
                 onPress={onBack}
-                tone="glass"
+                label={backLabel}
+                tone={backLabel ? 'alt' : 'glass'}
                 size="md"
-                style={shadows.sm}
+                style={
+                  backLabel
+                    ? { padding: spacing.sm, marginLeft: -spacing.sm }
+                    : shadows.sm
+                }
               />
             ) : (
               <View />

@@ -15,8 +15,8 @@ export const RecipeTags = ({ tags }: RecipeTagsProps) => {
       style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: spacing.lg,
-        gap: spacing.sm,
+        marginTop: spacing.sm,
+        gap: spacing.xs,
       }}
     >
       {tags.map((tag) => (

@@ -15,7 +15,7 @@ import type { ColorTokens } from './colors';
 /** Signature petrol — deep blue-green, the only saturated color. */
 const PETROL = '#0E5C6F';
 const PETROL_DARK = '#0A4654';
-const PETROL_DEEP = '#073744';
+const _PETROL_DEEP = '#073744';
 const PETROL_LIGHT = '#3A8A9C';
 const PETROL_SOFT = '#7FB5BF';
 const PETROL_TINT = '#D4E6EA';
@@ -106,7 +106,7 @@ export const petrolColors: ColorTokens = {
     secondary: INK_MUTED,
     muted: INK_SOFT,
     light: INK_FAINT,
-    inverse: '#FFFFFF',
+    inverse: INK,
     dark: INK,
   },
   border: inkA(0.1),
@@ -429,9 +429,9 @@ export const petrolColors: ColorTokens = {
       pressed: petrolA(0.18),
     },
     glass: {
-      bg: 'rgba(255, 255, 255, 0.35)',
-      fg: '#FFFFFF',
-      pressed: 'rgba(255, 255, 255, 0.5)',
+      bg: 'rgba(255, 255, 255, 0.6)',
+      fg: PETROL_DARK,
+      pressed: 'rgba(255, 255, 255, 0.8)',
     },
     glassSolid: {
       // Soft petrol-tinted wash so icon buttons read as actual buttons

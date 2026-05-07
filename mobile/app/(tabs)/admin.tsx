@@ -86,6 +86,7 @@ export default function AdminScreen() {
             ? router.back()
             : router.replace('/(tabs)/settings')
         }
+        backLabel={t('common.back')}
       />
 
       <CurrentUserInfo email={currentUser.email} role={currentUser.role} />

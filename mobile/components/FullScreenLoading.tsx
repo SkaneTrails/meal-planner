@@ -45,11 +45,16 @@ export const FullScreenLoading = ({
   subtitle,
   children,
 }: FullScreenLoadingProps) => {
-  const { colors, fonts } = useTheme();
+  const { colors, fonts, themeName } = useTheme();
   const { t } = useTranslation();
   const isMessage = Boolean(icon || title);
 
   const effectiveBg = isMessage ? background : 'animated';
+
+  const appIcon =
+    themeName === 'petrol'
+      ? require('@/assets/images/icon-petrol.png')
+      : require('@/assets/images/icon.png');
 
   return (
     <GradientBackground {...bgVariant(effectiveBg)} style={styles.container}>
@@ -91,10 +96,7 @@ export const FullScreenLoading = ({
               },
             ]}
           >
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.appIcon}
-            />
+            <Image source={appIcon} style={styles.appIcon} />
           </View>
           <Text
             style={[
@@ -106,7 +108,7 @@ export const FullScreenLoading = ({
           </Text>
           <ActivityIndicator
             size="small"
-            color={colors.text.muted}
+            color={colors.accent}
             style={{ marginTop: spacing.lg }}
           />
         </View>

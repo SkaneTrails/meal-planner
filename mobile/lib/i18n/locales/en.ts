@@ -209,6 +209,7 @@ const en = {
     enhanceConfirm:
       'Use AI to improve this recipe with better instructions, precise measurements, and cooking tips?',
     enhance: 'Enhance',
+    edit: 'Edit',
     enhanceSuccess: 'Recipe enhanced',
     enhanceSuccessMessage: 'The recipe has been improved by AI',
     enhanceFailed: 'Could not enhance recipe',
@@ -409,6 +410,8 @@ const en = {
         'Add some recipes with the "{{mealType}}" meal type to use random selection',
       servings: '{{count}} servings',
       time: '{{count}} min',
+      swipeHint: 'Swipe right to go back',
+      swipeHintWeb: '← → to browse',
     },
     copy: {
       title: 'Copy a meal from your existing plan:',

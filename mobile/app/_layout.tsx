@@ -14,7 +14,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
-import { AppState, type AppStateStatus, View } from 'react-native';
+import { AppState, type AppStateStatus, Platform, View } from 'react-native';
 import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
@@ -50,9 +50,18 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 const AppContent = () => {
-  const { colors } = useTheme();
+  const { colors, themeName } = useTheme();
   const { needsLanguagePrompt, setLanguage } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (favicon) {
+      favicon.href =
+        themeName === 'petrol' ? '/favicon-petrol.png' : '/favicon.png';
+    }
+  }, [themeName]);
 
   const { t } = useTranslation();
 

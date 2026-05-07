@@ -16,7 +16,6 @@ import {
   DMSans_600SemiBold,
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
-import { DMSerifDisplay_400Regular } from '@expo-google-fonts/dm-serif-display';
 import { Platform } from 'react-native';
 
 import { borderRadius, type ShadowTokens } from '../layout';
@@ -29,13 +28,9 @@ import type {
 } from '../theme-context';
 import type { FontFamilyTokens } from '../typography';
 
-// ── Typography — editorial serif display + clean sans body ─────────────
+// ── Typography — clean sans throughout ─────────────────────────────────
 
 const isWeb = Platform.OS === 'web';
-
-const SERIF = isWeb
-  ? '"DM Serif Display", Georgia, "Times New Roman", serif'
-  : 'DMSerifDisplay_400Regular';
 
 const SANS = isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular';
 const SANS_MEDIUM = isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium';
@@ -43,11 +38,11 @@ const SANS_SEMIBOLD = isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold';
 const SANS_BOLD = isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold';
 
 const petrolFonts: FontFamilyTokens = {
-  // Display = serif. Used for hero titles, screen headings, recipe names.
-  display: SERIF,
-  displayRegular: SERIF,
-  displayMedium: SERIF,
-  displayBold: SERIF,
+  // Display = sans bold. Used for hero titles, screen headings, recipe names.
+  display: SANS_BOLD,
+  displayRegular: SANS,
+  displayMedium: SANS_MEDIUM,
+  displayBold: SANS_BOLD,
   // Body = sans. Calm and legible for descriptions, lists, UI chrome.
   body: SANS,
   bodyMedium: SANS_MEDIUM,
@@ -175,6 +170,5 @@ export const petrolTheme: ThemeDefinition = {
     DMSans_500Medium,
     DMSans_600SemiBold,
     DMSans_700Bold,
-    DMSerifDisplay_400Regular,
   },
 };

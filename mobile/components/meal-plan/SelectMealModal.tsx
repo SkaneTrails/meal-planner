@@ -12,7 +12,16 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  Animated,
+  Image,
+  PanResponder,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {
   ActionButton,
   BottomSheetModal,
@@ -456,6 +465,8 @@ const MEAL_TYPE_TO_LABEL: Record<MealType, string[]> = {
 /** Extras/others accepts everything that is not a main meal. */
 const isExtrasEligible = (r: Recipe) => r.meal_label !== 'meal';
 
+const CARD_MIN_HEIGHT = 380;
+
 const RandomContent = ({
   date,
   mealType,
@@ -470,8 +481,10 @@ const RandomContent = ({
   const { recipes } = useAllRecipes();
   const setMeal = useSetMeal();
 
-  const randomIdRef = useRef<string | null>(null);
-  const [shuffleCount, setShuffleCount] = useState(0);
+  const [history, setHistory] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const translateX = useRef(new Animated.Value(0)).current;
+  const isAnimating = useRef(false);
 
   const MEAL_TYPE_LABELS: Record<MealType, string> = useMemo(
     () => ({
@@ -492,27 +505,160 @@ const RandomContent = ({
     });
   }, [recipes, mealType]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: shuffleCount triggers re-pick intentionally
-  const randomRecipe = useMemo(() => {
-    if (mealTypeRecipes.length === 0) return null;
-    const existing = mealTypeRecipes.find((r) => r.id === randomIdRef.current);
-    if (existing) return existing;
-    const picked =
-      mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
-    randomIdRef.current = picked.id;
-    return picked;
-  }, [mealTypeRecipes, shuffleCount]);
+  // Initialize history with first random recipe
+  useEffect(() => {
+    if (mealTypeRecipes.length > 0 && history.length === 0) {
+      const picked =
+        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+      setHistory([picked.id]);
+    }
+  }, [mealTypeRecipes, history.length]);
 
-  const shuffleRandom = useCallback(() => {
+  const recipeMap = useMemo(
+    () => new Map(mealTypeRecipes.map((r) => [r.id, r])),
+    [mealTypeRecipes],
+  );
+
+  const currentRecipe = history[currentIndex]
+    ? (recipeMap.get(history[currentIndex]) ?? null)
+    : null;
+
+  // Get upcoming cards for the stack preview (up to 2 behind current)
+  const stackRecipes = useMemo(() => {
+    const stack: (Recipe | null)[] = [];
+    for (let i = 1; i <= 2; i++) {
+      const idx = currentIndex + i;
+      if (idx < history.length) {
+        stack.push(recipeMap.get(history[idx]) ?? null);
+      }
+    }
+    return stack;
+  }, [currentIndex, history, recipeMap]);
+
+  const canGoBack = currentIndex > 0;
+  const canGoForward = currentIndex < history.length - 1;
+
+  const pickNewRandom = useCallback(() => {
     if (mealTypeRecipes.length <= 1) return;
     let picked: Recipe;
+    const lastId = history[history.length - 1];
     do {
       picked =
         mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
-    } while (picked.id === randomIdRef.current && mealTypeRecipes.length > 1);
-    randomIdRef.current = picked.id;
-    setShuffleCount((c) => c + 1);
-  }, [mealTypeRecipes]);
+    } while (picked.id === lastId && mealTypeRecipes.length > 1);
+    const newHistory = [...history.slice(0, currentIndex + 1), picked.id];
+    setHistory(newHistory);
+    setCurrentIndex(newHistory.length - 1);
+  }, [mealTypeRecipes, history, currentIndex]);
+
+  // Preload next recipe image when history changes
+  useEffect(() => {
+    const nextIdx = currentIndex + 1;
+    if (nextIdx < history.length) {
+      const nextRecipe = recipeMap.get(history[nextIdx]);
+      const url = nextRecipe?.thumbnail_url || nextRecipe?.image_url;
+      if (url) Image.prefetch(url);
+    }
+    // Also prefetch a random candidate for when user shuffles next
+    if (mealTypeRecipes.length > 1) {
+      const candidate =
+        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+      const url = candidate?.thumbnail_url || candidate?.image_url;
+      if (url) Image.prefetch(url);
+    }
+  }, [currentIndex, history, recipeMap, mealTypeRecipes]);
+
+  const animateTo = useCallback(
+    (direction: 'left' | 'right', onMidpoint: () => void) => {
+      if (isAnimating.current) return;
+      isAnimating.current = true;
+      const exitValue = direction === 'left' ? -350 : 350;
+      const enterValue = direction === 'left' ? 350 : -350;
+      Animated.timing(translateX, {
+        toValue: exitValue,
+        duration: 150,
+        useNativeDriver: true,
+      }).start(() => {
+        onMidpoint();
+        translateX.setValue(enterValue);
+        Animated.spring(translateX, {
+          toValue: 0,
+          tension: 80,
+          friction: 12,
+          useNativeDriver: true,
+        }).start(() => {
+          isAnimating.current = false;
+        });
+      });
+    },
+    [translateX],
+  );
+
+  const goBack = useCallback(() => {
+    if (!canGoBack || isAnimating.current) return;
+    animateTo('right', () => setCurrentIndex((i) => i - 1));
+  }, [canGoBack, animateTo]);
+
+  const goForwardOrShuffle = useCallback(() => {
+    if (isAnimating.current) return;
+    animateTo('left', () => {
+      if (canGoForward) {
+        setCurrentIndex((i) => i + 1);
+      } else {
+        pickNewRandom();
+      }
+    });
+  }, [canGoForward, pickNewRandom, animateTo]);
+
+  // Use refs so PanResponder always calls the latest callbacks
+  const goBackRef = useRef(goBack);
+  goBackRef.current = goBack;
+  const goForwardOrShuffleRef = useRef(goForwardOrShuffle);
+  goForwardOrShuffleRef.current = goForwardOrShuffle;
+  const canGoBackRef = useRef(canGoBack);
+  canGoBackRef.current = canGoBack;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        Math.abs(gesture.dx) > 20 &&
+        Math.abs(gesture.dx) > Math.abs(gesture.dy),
+      onPanResponderMove: Animated.event([null, { dx: translateX }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: (_, gesture) => {
+        const SWIPE_THRESHOLD = 60;
+        if (gesture.dx > SWIPE_THRESHOLD && canGoBackRef.current) {
+          goBackRef.current();
+        } else if (gesture.dx < -SWIPE_THRESHOLD) {
+          goForwardOrShuffleRef.current();
+        } else {
+          Animated.spring(translateX, {
+            toValue: 0,
+            tension: 100,
+            friction: 10,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    }),
+  ).current;
+
+  // Keyboard arrows for web
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goBack();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goForwardOrShuffle();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [goBack, goForwardOrShuffle]);
 
   const handleSelectRecipe = async (recipeId: string) => {
     try {
@@ -525,17 +671,20 @@ const RandomContent = ({
 
   const mealLabel = MEAL_TYPE_LABELS[mealType]?.toLowerCase() || '';
 
-  if (!randomRecipe) {
-    return (
-      <EmptyState
-        icon="dice-outline"
-        title={t('selectRecipe.random.noRecipes', { mealType: mealLabel })}
-        subtitle={t('selectRecipe.random.addRecipesHint', {
-          mealType: mealLabel,
-        })}
-        style={{ paddingVertical: spacing['4xl'] }}
-      />
-    );
+  if (!currentRecipe) {
+    if (mealTypeRecipes.length === 0) {
+      return (
+        <EmptyState
+          icon="dice-outline"
+          title={t('selectRecipe.random.noRecipes', { mealType: mealLabel })}
+          subtitle={t('selectRecipe.random.addRecipesHint', {
+            mealType: mealLabel,
+          })}
+          style={{ paddingVertical: spacing['4xl'] }}
+        />
+      );
+    }
+    return null;
   }
 
   return (
@@ -568,23 +717,89 @@ const RandomContent = ({
         </Text>
       </View>
 
-      <RandomRecipeCard
-        recipe={randomRecipe}
-        onSelect={handleSelectRecipe}
-        t={t}
-      />
+      {/* Card stack */}
+      <View
+        style={{
+          position: 'relative',
+          minHeight: CARD_MIN_HEIGHT,
+          marginBottom: spacing.md,
+        }}
+      >
+        {/* Background stack cards */}
+        {stackRecipes.map((recipe, i) =>
+          recipe ? (
+            <View
+              key={recipe.id}
+              style={{
+                position: 'absolute',
+                top: (i + 1) * 6,
+                left: (i + 1) * 6,
+                right: -(i + 1) * 6,
+                opacity: 0.7 - i * 0.25,
+                transform: [{ scale: 1 - (i + 1) * 0.03 }],
+                borderRadius: borderRadius.lg,
+                overflow: 'hidden',
+                backgroundColor: colors.glass.card,
+                minHeight: CARD_MIN_HEIGHT,
+              }}
+            >
+              <RandomRecipeCard recipe={recipe} onSelect={() => {}} t={t} />
+            </View>
+          ) : null,
+        )}
+
+        {/* Active card */}
+        <Animated.View
+          {...panResponder.panHandlers}
+          style={{
+            transform: [{ translateX }],
+            zIndex: 10,
+            minHeight: CARD_MIN_HEIGHT,
+          }}
+        >
+          <RandomRecipeCard
+            recipe={currentRecipe}
+            onSelect={handleSelectRecipe}
+            t={t}
+          />
+        </Animated.View>
+      </View>
+
+      {/* Navigation dots */}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: spacing.xs,
+          marginBottom: spacing.md,
+        }}
+      >
+        {history.map((_, i) => (
+          <View
+            key={`dot-${i}`}
+            style={{
+              width: i === currentIndex ? 8 : 5,
+              height: i === currentIndex ? 8 : 5,
+              borderRadius: 4,
+              backgroundColor:
+                i === currentIndex ? colors.accent : colors.gray[300],
+            }}
+          />
+        ))}
+      </View>
 
       <View
         style={{
           flexDirection: 'row',
           gap: spacing.md,
-          marginTop: spacing.xl,
+          marginTop: spacing.md,
         }}
       >
         <View style={{ flex: 1 }}>
           <Button
             variant="primary"
-            onPress={() => handleSelectRecipe(randomRecipe.id)}
+            onPress={() => handleSelectRecipe(currentRecipe.id)}
             disabled={setMeal.isPending}
             icon="checkmark-circle"
             label={t('selectRecipe.random.addToPlan')}
@@ -593,7 +808,7 @@ const RandomContent = ({
         <Button
           variant="text"
           tone="alt"
-          onPress={shuffleRandom}
+          onPress={goForwardOrShuffle}
           disabled={setMeal.isPending}
           icon="shuffle"
           iconSize={20}
@@ -606,6 +821,23 @@ const RandomContent = ({
           }}
         />
       </View>
+
+      {/* Back hint */}
+      {canGoBack && (
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: fontSize.sm,
+            fontFamily: fonts.body,
+            color: colors.content.tertiary,
+            marginTop: spacing.sm,
+          }}
+        >
+          {Platform.OS === 'web'
+            ? t('selectRecipe.random.swipeHintWeb')
+            : t('selectRecipe.random.swipeHint')}
+        </Text>
+      )}
     </>
   );
 };
@@ -777,6 +1009,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
           backgroundColor: colors.mealPlan.slotBg,
           borderRadius: borderRadius.sm,
           overflow: 'hidden',
+          minHeight: 380,
           transform: [{ scale: pressed ? 0.99 : 1 }],
         })}
       >
@@ -791,6 +1024,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
         )}
         <View style={{ padding: spacing.lg }}>
           <Text
+            numberOfLines={2}
             style={{
               fontSize: fontSize['2xl'],
               fontFamily: fonts.bodySemibold,
@@ -868,6 +1102,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
         backgroundColor: colors.glass.card,
         borderRadius: borderRadius.lg,
         overflow: 'hidden',
+        minHeight: 380,
         ...shadows.md,
         transform: [{ scale: pressed ? 0.99 : 1 }],
       })}
@@ -883,6 +1118,7 @@ const RandomRecipeCard = ({ recipe, onSelect, t }: RandomRecipeCardProps) => {
       )}
       <View style={{ padding: spacing.lg }}>
         <Text
+          numberOfLines={2}
           style={{
             fontSize: fontSize['3xl'],
             fontFamily: fonts.bodyBold,
