@@ -6,7 +6,7 @@
  *   • DM Serif Display for headings — confident, magazine-like display type.
  *   • DM Sans for body — clean, generous, easy to read.
  *   • Pill-shaped buttons & meta chips, very rounded — soft, approachable.
- *   • Solid dark tab bar with white icons, anchored to the bottom.
+ *   • Floating glass tab bar with petrol-tinted active state.
  *   • Quiet layered shadows for restrained depth.
  */
 

@@ -745,6 +745,8 @@ vi.mock('@/lib/theme', () => {
     requiredFonts: {},
   };
 
+  const themeRegistry = { light: mockLightTheme, terminal: mockTerminalTheme, bubblegum: mockBubblegumTheme, petrol: mockPetrolTheme };
+
   return {
   spacing: { '2xs': 2, xs: 4, 'xs-sm': 6, sm: 8, 'sm-md': 10, md: 12, 'md-lg': 14, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
@@ -802,10 +804,10 @@ vi.mock('@/lib/theme', () => {
   terminalTheme: mockTerminalTheme,
   bubblegumTheme: mockBubblegumTheme,
   petrolTheme: mockPetrolTheme,
-  themes: { light: mockLightTheme, terminal: mockTerminalTheme, bubblegum: mockBubblegumTheme, petrol: mockPetrolTheme },
+  themes: themeRegistry,
   defaultThemeId: 'light',
   allRequiredFonts: {},
-  isThemeId: (value: string) => ['light', 'terminal', 'bubblegum', 'petrol'].includes(value),
+  isThemeId: (value: string) => value in themeRegistry,
   };
 });
 
