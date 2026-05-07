@@ -523,6 +523,17 @@ const RandomContent = ({
     ? (recipeMap.get(history[currentIndex]) ?? null)
     : null;
 
+  // If the current history entry no longer exists in recipeMap (e.g. data
+  // refreshed), reset history with a fresh random pick so the UI never blanks.
+  useEffect(() => {
+    if (!currentRecipe && mealTypeRecipes.length > 0 && history.length > 0) {
+      const picked =
+        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+      setHistory([picked.id]);
+      setCurrentIndex(0);
+    }
+  }, [currentRecipe, mealTypeRecipes, history.length]);
+
   // Get upcoming cards for the stack preview (up to 2 behind current)
   const stackRecipes = useMemo(() => {
     const stack: (Recipe | null)[] = [];
@@ -546,9 +557,15 @@ const RandomContent = ({
       picked =
         mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
     } while (picked.id === lastId && mealTypeRecipes.length > 1);
-    const newHistory = [...history.slice(0, currentIndex + 1), picked.id];
+    const MAX_HISTORY = 50;
+    const trimmed = history.slice(
+      Math.max(0, currentIndex + 1 - MAX_HISTORY),
+      currentIndex + 1,
+    );
+    const newHistory = [...trimmed, picked.id];
+    const newIndex = newHistory.length - 1;
     setHistory(newHistory);
-    setCurrentIndex(newHistory.length - 1);
+    setCurrentIndex(newIndex);
   }, [mealTypeRecipes, history, currentIndex]);
 
   // Preload next recipe image when history changes
@@ -765,7 +782,7 @@ const RandomContent = ({
         </Animated.View>
       </View>
 
-      {/* Navigation dots */}
+      {/* Navigation dots (windowed: max 9 around current index) */}
       <View
         style={{
           flexDirection: 'row',
@@ -775,18 +792,28 @@ const RandomContent = ({
           marginBottom: spacing.md,
         }}
       >
-        {history.map((_, i) => (
-          <View
-            key={`dot-${i}`}
-            style={{
-              width: i === currentIndex ? 8 : 5,
-              height: i === currentIndex ? 8 : 5,
-              borderRadius: 4,
-              backgroundColor:
-                i === currentIndex ? colors.accent : colors.gray[300],
-            }}
-          />
-        ))}
+        {(() => {
+          const MAX_DOTS = 9;
+          const half = Math.floor(MAX_DOTS / 2);
+          let start = Math.max(0, currentIndex - half);
+          const end = Math.min(history.length, start + MAX_DOTS);
+          if (end - start < MAX_DOTS) start = Math.max(0, end - MAX_DOTS);
+          return history.slice(start, end).map((_, j) => {
+            const i = start + j;
+            return (
+              <View
+                key={`dot-${i}`}
+                style={{
+                  width: i === currentIndex ? 8 : 5,
+                  height: i === currentIndex ? 8 : 5,
+                  borderRadius: 4,
+                  backgroundColor:
+                    i === currentIndex ? colors.accent : colors.gray[300],
+                }}
+              />
+            );
+          });
+        })()}
       </View>
 
       <View

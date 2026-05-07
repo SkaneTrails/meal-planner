@@ -28,16 +28,15 @@ interface RecipeActionButtonsProps {
   onToggleKeepScreenOn: () => void;
 }
 
-type TileTone = 'glassSolid' | 'glassSubtle' | 'glassAi';
-
 interface ActionTile {
   key: string;
   icon: string;
   label: string;
   onPress: () => void;
-  tone: TileTone;
+  /** When true, the AI accent color is used for the icon. */
+  accentAi?: boolean;
   disabled?: boolean;
-  fadeWhenDisabled?: boolean;
+  dimmed?: boolean;
 }
 
 export const RecipeActionButtons = ({
@@ -68,9 +67,8 @@ export const RecipeActionButtons = ({
       key: 'edit',
       icon: 'create',
       label: t('recipe.edit'),
-      tone: 'glassSolid',
-      disabled: !canEdit,
-      fadeWhenDisabled: true,
+      // Not disabled — onPress shows an alert with copy option when uneditable.
+      dimmed: !canEdit,
       onPress: canEdit
         ? onOpenEditModal
         : () =>
@@ -85,7 +83,6 @@ export const RecipeActionButtons = ({
       key: 'plan',
       icon: 'calendar',
       label: t('mealPlan.title'),
-      tone: 'glassSolid',
       onPress: onShowPlanModal,
     },
     ...(canCopy
@@ -94,9 +91,8 @@ export const RecipeActionButtons = ({
             key: 'copy',
             icon: 'copy-outline',
             label: t('recipe.copy'),
-            tone: 'glassSolid' as const,
             disabled: isCopying,
-            fadeWhenDisabled: true,
+            dimmed: isCopying,
             onPress: onCopy,
           },
         ]
@@ -107,9 +103,9 @@ export const RecipeActionButtons = ({
             key: 'enhance',
             icon: 'sparkles',
             label: t('recipe.enhance'),
-            tone: 'glassAi' as const,
+            accentAi: true,
             disabled: enhanceDisabled,
-            fadeWhenDisabled: true,
+            dimmed: enhanceDisabled,
             onPress: onEnhance,
           },
         ]
@@ -118,7 +114,6 @@ export const RecipeActionButtons = ({
       key: 'screen',
       icon: keepScreenOn ? 'sunny' : 'sunny-outline',
       label: t(keepScreenOn ? 'recipe.screenOnActive' : 'recipe.keepScreenOn'),
-      tone: keepScreenOn ? 'glassSolid' : 'glassSubtle',
       onPress: onToggleKeepScreenOn,
     },
   ];
@@ -126,9 +121,7 @@ export const RecipeActionButtons = ({
   return (
     <View style={rowStyle}>
       {tiles.map((tile) => {
-        // Unified background; only icon color differentiates the AI action.
-        const fg = tile.tone === 'glassAi' ? aiFg : tone.fg;
-        const dimmed = tile.fadeWhenDisabled && tile.disabled;
+        const fg = tile.accentAi ? aiFg : tone.fg;
         return (
           <Pressable
             key={tile.key}
@@ -143,9 +136,7 @@ export const RecipeActionButtons = ({
                 backgroundColor:
                   pressed && !tile.disabled ? tone.pressed : tone.bg,
               },
-              dimmed
-                ? { opacity: tile.key === 'enhance' ? opacity.disabled : 0.5 }
-                : null,
+              tile.dimmed ? { opacity: opacity.disabled } : null,
             ]}
           >
             <ThemeIcon name={tile.icon as never} size={18} color={fg} />
