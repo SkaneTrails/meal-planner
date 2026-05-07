@@ -1,4 +1,10 @@
-import { Pressable, Text, View, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
@@ -56,6 +62,8 @@ export const RecipeActionButtons = ({
   onToggleKeepScreenOn,
 }: RecipeActionButtonsProps) => {
   const { visibility, colors, fonts, shadows } = useTheme();
+  const { width } = useWindowDimensions();
+  const compact = width < COMPACT_BREAKPOINT;
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
@@ -131,6 +139,7 @@ export const RecipeActionButtons = ({
             accessibilityLabel={tile.label}
             style={({ pressed }) => [
               pillStyle,
+              compact ? compactPillStyle : null,
               shadows.sm,
               {
                 backgroundColor:
@@ -140,17 +149,19 @@ export const RecipeActionButtons = ({
             ]}
           >
             <ThemeIcon name={tile.icon as never} size={18} color={fg} />
-            <Text
-              numberOfLines={1}
-              style={{
-                fontSize: fontSize.md,
-                fontFamily: fonts.bodyMedium,
-                color: fg,
-                letterSpacing: letterSpacing.normal,
-              }}
-            >
-              {tile.label}
-            </Text>
+            {!compact && (
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: fontSize.md,
+                  fontFamily: fonts.bodyMedium,
+                  color: fg,
+                  letterSpacing: letterSpacing.normal,
+                }}
+              >
+                {tile.label}
+              </Text>
+            )}
           </Pressable>
         );
       })}
@@ -176,3 +187,11 @@ const pillStyle: ViewStyle = {
   paddingHorizontal: spacing.sm,
   borderRadius: borderRadius.full,
 };
+
+const compactPillStyle: ViewStyle = {
+  paddingHorizontal: spacing.xs,
+  gap: 0,
+};
+
+/** Below this width, action pills collapse to icon-only (no labels). */
+const COMPACT_BREAKPOINT = 480;

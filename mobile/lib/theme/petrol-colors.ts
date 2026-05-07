@@ -27,9 +27,9 @@ const PAPER_LIGHT = '#FCFCFC';
 const PAPER_MID = '#F1F2F3';
 const PAPER_DEEP = '#E7E9EA';
 
-/** Ink — near-black with a faint cool cast for headings/body. */
-const INK = '#11181C';
-const INK_BODY = '#1F2A2E';
+/** Ink — dark grey with a faint cool cast for headings/body. */
+const INK = '#2C3539';
+const INK_BODY = '#3A464B';
 const INK_MUTED = '#5A6A6E';
 const INK_SOFT = '#8A969A';
 const INK_FAINT = '#B7BFC2';

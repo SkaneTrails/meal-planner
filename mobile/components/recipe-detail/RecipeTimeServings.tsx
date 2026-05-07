@@ -92,7 +92,9 @@ const ServingsInteractive = ({
           onPress={onDecrement}
           disabled={decrementDisabled}
           tone="alt"
-          size="sm"
+          size={26}
+          iconSize={14}
+          hitSlop={9}
           label={t('recipe.decreasePortions')}
         />
         <Pressable
@@ -121,7 +123,9 @@ const ServingsInteractive = ({
           icon="add"
           onPress={onIncrement}
           tone="alt"
-          size="sm"
+          size={26}
+          iconSize={14}
+          hitSlop={9}
           label={t('recipe.increasePortions')}
         />
       </View>
