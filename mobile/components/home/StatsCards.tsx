@@ -118,40 +118,53 @@ const StatCard = ({
         flex: 1,
         backgroundColor: colors.statsCard.bg,
         borderRadius: borderRadius.md,
-        padding: 12,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.sm,
         borderWidth: 1,
         borderColor: colors.statsCard.borderColor,
+        alignItems: 'center',
         ...shadows.sm,
       }}
     >
       {visibility.showStatIcons && (
         <ThemeIcon
           name={icon}
-          size={18}
+          size={16}
           color={iconColor}
-          style={{ marginBottom: 8 }}
+          style={{ marginBottom: spacing['2xs'] }}
         />
       )}
-      <Text
+      <View
         style={{
-          fontSize: fontSize['3xl'],
-          fontFamily: fonts.bodySemibold,
-          color: colors.content.body,
-          letterSpacing: letterSpacing.tight,
+          flexDirection: 'row',
+          alignItems: 'baseline',
+          gap: spacing['2xs'],
         }}
       >
-        {value}
-      </Text>
-      <Text
-        style={{
-          fontSize: fontSize.xs,
-          fontFamily: fonts.body,
-          color: subtitle ? colors.content.secondary : 'transparent',
-          marginBottom: 2,
-        }}
-      >
-        {subtitle || ' '}
-      </Text>
+        <Text
+          style={{
+            fontSize: fontSize['2xl'],
+            fontFamily: fonts.bodySemibold,
+            color: colors.content.body,
+            letterSpacing: letterSpacing.tight,
+          }}
+          numberOfLines={1}
+        >
+          {value}
+        </Text>
+        {subtitle && (
+          <Text
+            style={{
+              fontSize: fontSize.xs,
+              fontFamily: fonts.body,
+              color: colors.content.secondary,
+            }}
+            numberOfLines={1}
+          >
+            {subtitle}
+          </Text>
+        )}
+      </View>
       <Text
         style={{
           fontSize: fontSize.xs,
@@ -159,7 +172,9 @@ const StatCard = ({
           color: colors.content.secondary,
           letterSpacing: letterSpacing.wide,
           textTransform: 'uppercase',
+          marginTop: 2,
         }}
+        numberOfLines={1}
       >
         {label}
       </Text>

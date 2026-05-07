@@ -22,7 +22,7 @@ export const RecipeRow = ({
   onPress,
   onRemove,
 }: RecipeRowProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   const resolvedImage = imageUrl || PLACEHOLDER_IMAGE;
 
   return (
@@ -34,6 +34,7 @@ export const RecipeRow = ({
         borderRadius: borderRadius.sm,
         padding: spacing.md,
         marginBottom: spacing['xs-sm'],
+        ...shadows.card,
       }}
     >
       <Pressable
