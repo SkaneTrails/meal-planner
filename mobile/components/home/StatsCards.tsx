@@ -172,7 +172,7 @@ const StatCard = ({
           color: colors.content.secondary,
           letterSpacing: letterSpacing.wide,
           textTransform: 'uppercase',
-          marginTop: 2,
+          marginTop: spacing['2xs'],
         }}
         numberOfLines={1}
       >

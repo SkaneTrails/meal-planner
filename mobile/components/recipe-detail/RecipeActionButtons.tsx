@@ -63,9 +63,7 @@ export const RecipeActionButtons = ({
 }: RecipeActionButtonsProps) => {
   const { visibility, colors, fonts, shadows } = useTheme();
   const { width } = useWindowDimensions();
-  // On narrow screens (phones), labels get truncated and look ugly with
-  // ellipsis dots — collapse to icon-only pills below this breakpoint.
-  const compact = width < 480;
+  const compact = width < COMPACT_BREAKPOINT;
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
@@ -194,3 +192,6 @@ const compactPillStyle: ViewStyle = {
   paddingHorizontal: spacing.xs,
   gap: 0,
 };
+
+/** Below this width, action pills collapse to icon-only (no labels). */
+const COMPACT_BREAKPOINT = 480;
