@@ -118,7 +118,7 @@ export const HouseholdDetailModal = ({
             icon="person-add"
             iconSize={18}
             size="md"
-            tone="glass"
+            tone="glassSubtle"
           />
         ) : undefined
       }

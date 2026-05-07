@@ -10,6 +10,8 @@ import {
 } from '@/lib/theme';
 
 interface HeroOverlayProps {
+  /** Content rendered in the top-left corner, below the status bar (e.g. back button). */
+  topLeft?: ReactNode;
   /** Content rendered in the top-right corner, below the status bar. */
   topRight?: ReactNode;
   /** Recipe title displayed in the bottom gradient. */
@@ -21,6 +23,7 @@ interface HeroOverlayProps {
 }
 
 export const HeroOverlay = ({
+  topLeft,
   topRight,
   title,
   titleRight,
@@ -40,6 +43,7 @@ export const HeroOverlay = ({
         </View>
       </LinearGradient>
 
+      {topLeft && <View style={topLeftContainerStyle}>{topLeft}</View>}
       {topRight && <View style={topRightContainerStyle}>{topRight}</View>}
     </>
   );
@@ -74,9 +78,17 @@ const titleStyle = (
   textShadow: `1px 2px 4px ${colors.overlay.backdrop}`,
 });
 
+const topButtonTop = layout.screenPaddingTop + spacing.sm;
+
+const topLeftContainerStyle: ViewStyle = {
+  position: 'absolute',
+  top: topButtonTop,
+  left: spacing.lg,
+};
+
 const topRightContainerStyle: ViewStyle = {
   position: 'absolute',
-  top: layout.screenPaddingTop + spacing.sm,
+  top: topButtonTop,
   right: spacing.lg,
   gap: spacing.sm,
   alignItems: 'center',

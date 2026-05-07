@@ -10,6 +10,10 @@ import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { Recipe } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
+import {
+  aggregateIngredients,
+  EXTRAS_KEY_PREFIX,
+} from '@/lib/utils/groceryAggregator';
 
 /** 7 days x 2 tracked meals (lunch + dinner) = 14 slots per week. */
 export const WEEKLY_TRACKABLE_MEALS = 14;
@@ -107,8 +111,14 @@ export const useHomeScreenData = () => {
     isLoading: mealPlanLoading,
     refetch: refetchMealPlan,
   } = useMealPlan();
-  const { checkedItems, selectedMealKeys, customItems, refreshFromApi } =
-    useGroceryState();
+  const {
+    checkedItems,
+    selectedMealKeys,
+    customItems,
+    removedItems,
+    mealServings,
+    refreshFromApi,
+  } = useGroceryState();
   const { isItemAtHome, weekStart } = useSettings();
   const { t } = useTranslation();
   const [recipeUrl, setRecipeUrl] = useState('');
@@ -134,43 +144,46 @@ export const useHomeScreenData = () => {
       ).length;
     }
 
-    const ingredientNames = new Set<string>();
+    // Filter out stale extras keys whose recipes were removed from the meal plan
+    const allExtrasIds = new Set(Object.values(mealPlan.extras ?? {}).flat());
+    const activeKeys = selectedMealKeys.filter(
+      (key) =>
+        !key.startsWith(EXTRAS_KEY_PREFIX) ||
+        allExtrasIds.has(key.slice(EXTRAS_KEY_PREFIX.length)),
+    );
 
-    selectedMealKeys.forEach((key) => {
-      const recipeId = mealPlan.meals?.[key];
-      if (!recipeId || recipeId.startsWith('custom:')) return;
+    const generatedItems = aggregateIngredients(
+      activeKeys,
+      mealPlan.meals ?? {},
+      recipes.map((r) => ({
+        id: r.id,
+        title: r.title,
+        ingredients: r.ingredients,
+        servings: r.servings ?? undefined,
+      })),
+      mealServings,
+    );
 
-      const recipe = recipeMap[recipeId];
-      if (!recipe) return;
+    const removedSet = new Set(removedItems);
+    const visibleItems = generatedItems.filter((i) => !removedSet.has(i.name));
 
-      recipe.ingredients.forEach((ingredient) => {
-        const name = ingredient
-          .toLowerCase()
-          .trim()
-          .replace(/\s*\(steg\s*\d+\)\s*$/i, '')
-          .replace(/\s*\(step\s*\d+\)\s*$/i, '')
-          .replace(/\s+till\s+\w+$/i, '');
-        ingredientNames.add(name);
-      });
-    });
+    const allItems = [
+      ...visibleItems,
+      ...customItems.map((ci) => ({ name: ci.name })),
+    ];
 
-    customItems.forEach((item) => ingredientNames.add(item.name));
-
-    let uncheckedCount = 0;
-    ingredientNames.forEach((name) => {
-      if (!isItemAtHome(name) && !checkedItems.has(name)) {
-        uncheckedCount++;
-      }
-    });
-
-    return uncheckedCount;
+    return allItems.filter(
+      (item) => !checkedItems.has(item.name) && !isItemAtHome(item.name),
+    ).length;
   }, [
     mealPlan,
     selectedMealKeys,
-    recipeMap,
+    recipes,
     customItems,
     checkedItems,
     isItemAtHome,
+    removedItems,
+    mealServings,
   ]);
 
   const inspirationRecipes = useMemo(() => {

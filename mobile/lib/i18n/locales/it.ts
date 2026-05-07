@@ -206,6 +206,7 @@ const it: Translations = {
     enhanceConfirm:
       "Usare l'AI per migliorare questa ricetta con istruzioni migliori, misure precise e consigli di cottura?",
     enhance: 'Migliora',
+    edit: 'Modifica',
     enhanceSuccess: 'Ricetta migliorata',
     enhanceSuccessMessage: "La ricetta è stata migliorata dall'AI",
     enhanceFailed: 'Impossibile migliorare la ricetta',
@@ -407,6 +408,8 @@ const it: Translations = {
         'Aggiungi ricette con il tipo "{{mealType}}" per usare la selezione casuale',
       servings: '{{count}} porzioni',
       time: '{{count}} min',
+      swipeHint: 'Scorri a destra per tornare indietro',
+      swipeHintWeb: '← → per sfogliare',
     },
     copy: {
       title: 'Copia un pasto dal tuo piano esistente:',

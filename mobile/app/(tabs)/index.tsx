@@ -341,8 +341,8 @@ const NextMealCard = ({
       {!visibility.showFrameLabels && (
         <Text
           style={{
-            fontSize: fontSize.xl,
-            fontFamily: fonts.display,
+            fontSize: fontSize['2xl'],
+            fontFamily: fonts.bodySemibold,
             color: colors.content.heading,
             marginBottom: spacing.sm,
             letterSpacing: letterSpacing.normal,

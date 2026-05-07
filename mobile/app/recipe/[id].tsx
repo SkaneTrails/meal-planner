@@ -6,7 +6,6 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import {
-  ActionButton,
   EnhancingOverlay,
   GradientBackground,
   IconButton,
@@ -203,14 +202,16 @@ export default function RecipeDetailScreen() {
           headerTransparent: true,
           headerTintColor: colors.white,
           headerBackTitle: '',
-          headerLeft: () => (
-            <ActionButton.Back
-              tone="glass"
-              size="md"
-              onPress={() => router.replace('/(tabs)/recipes')}
-              style={{ marginLeft: spacing.sm }}
-            />
-          ),
+          headerLeft: () =>
+            visibility.showHeroOverlay ? null : (
+              <IconButton
+                tone="glass"
+                icon="chevron-back"
+                size="md"
+                onPress={() => router.replace('/(tabs)/recipes')}
+                style={{ marginLeft: spacing.sm }}
+              />
+            ),
           headerRight: () => null,
         }}
       />
@@ -233,6 +234,14 @@ export default function RecipeDetailScreen() {
           scrollY={scrollY}
           onThumbUp={handleThumbUp}
           onThumbDown={handleThumbDown}
+          topLeftButton={
+            <IconButton
+              tone="glass"
+              icon="chevron-back"
+              size="md"
+              onPress={() => router.replace('/(tabs)/recipes')}
+            />
+          }
           topRightButtons={
             <>
               <IconButton
@@ -249,7 +258,7 @@ export default function RecipeDetailScreen() {
                 tone="glass"
                 icon="camera"
                 size="md"
-                iconSize={20}
+                iconSize={22}
                 isPending={isUpdatingImage}
                 onPress={handlePickImage}
               />

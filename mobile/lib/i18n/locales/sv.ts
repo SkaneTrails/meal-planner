@@ -204,6 +204,7 @@ const sv: Translations = {
     enhanceConfirm:
       'Använda AI för att förbättra receptet med bättre instruktioner, exakta mått och lagningstips?',
     enhance: 'Förbättra',
+    edit: 'Redigera',
     enhanceSuccess: 'Recept förbättrat',
     enhanceSuccessMessage: 'Receptet har förbättrats av AI',
     enhanceFailed: 'Kunde inte förbättra receptet',
@@ -400,6 +401,8 @@ const sv: Translations = {
         'Lägg till recept med måltidstypen "{{mealType}}" för att använda slumpval',
       servings: '{{count}} portioner',
       time: '{{count}} min',
+      swipeHint: 'Svep åt höger för att gå tillbaka',
+      swipeHintWeb: '← → för att bläddra',
     },
     copy: {
       title: 'Kopiera en måltid från din befintliga plan:',

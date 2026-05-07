@@ -110,7 +110,7 @@ const InspirationHeader = ({
       <Text
         style={{
           fontSize: fontSize['2xl'],
-          fontFamily: fonts.display,
+          fontFamily: fonts.bodySemibold,
           color: colors.content.heading,
           letterSpacing: letterSpacing.normal,
         }}
@@ -155,7 +155,7 @@ const InspirationCard = ({
     >
       <Image
         source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
-        style={{ width: '100%', height: 160 }}
+        style={{ width: '100%', height: 240 }}
         contentFit="cover"
         placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
         transition={200}
@@ -234,7 +234,7 @@ const InspirationCardCrt = ({
     >
       <Image
         source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
-        style={{ width: '100%', height: 160 }}
+        style={{ width: '100%', height: 240 }}
         contentFit="cover"
         placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
         transition={200}
