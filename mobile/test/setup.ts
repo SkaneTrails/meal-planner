@@ -726,6 +726,25 @@ vi.mock('@/lib/theme', () => {
     requiredFonts: {},
   };
 
+  const mockPetrolTheme = {
+    id: 'petrol',
+    name: 'Petrol',
+    pickerSwatch: { type: 'color', value: '#0E5C6F' },
+    colors: c,
+    fonts: mockFonts,
+    borderRadius: mockBorderRadius,
+    shadows: mockShadows,
+    buttonDisplay: { display: 'both', wrapper: 'animated', shape: 'circle', interaction: 'scale' },
+    overrides: { checkedOpacity: 0.78, checkboxBorderWidth: 1.5, dashedBorderWidth: 1, cardBorderWidth: 0, cardHighlightBorderWidth: 0, segmentedControlGap: 6, segmentedControlPadding: 4, segmentedControlActiveIndicator: 'underline', chipToggleGap: 8 },
+    visibility: { showStackHeader: true, showTodayDot: true, showTodayBadge: true, showDayNotes: true, showChevrons: true, showStatIcons: true, showProgressBar: true, showAddItemLabel: true, showEmptyStateIcon: true, showHeroOverlay: true, showRecipeActionButtons: true, showVisibilityChip: true, showRecipeTags: true, showFrameLabels: false, showChipToggleDot: true, showStatDividers: false, showSectionHeaderIcon: false, showCheckmarkIndicator: true },
+    chrome: 'full' as const,
+    toggleStyle: 'switch' as const,
+    iconContainerRadius: 0.5,
+    buttonRadius: 9999,
+    tabBar: { borderRadius: 16, borderWidth: 0.5, blur: true, blurIntensity: 40, blurTint: 'light' },
+    requiredFonts: {},
+  };
+
   return {
   spacing: { '2xs': 2, xs: 4, 'xs-sm': 6, sm: 8, 'sm-md': 10, md: 12, 'md-lg': 14, lg: 16, xl: 20, '2xl': 24, '3xl': 32, '4xl': 40 },
   layout: {
@@ -782,10 +801,11 @@ vi.mock('@/lib/theme', () => {
   lightTheme: mockLightTheme,
   terminalTheme: mockTerminalTheme,
   bubblegumTheme: mockBubblegumTheme,
-  themes: { light: mockLightTheme, terminal: mockTerminalTheme, bubblegum: mockBubblegumTheme },
+  petrolTheme: mockPetrolTheme,
+  themes: { light: mockLightTheme, terminal: mockTerminalTheme, bubblegum: mockBubblegumTheme, petrol: mockPetrolTheme },
   defaultThemeId: 'light',
   allRequiredFonts: {},
-  isThemeId: (value: string) => ['light', 'terminal', 'bubblegum'].includes(value),
+  isThemeId: (value: string) => ['light', 'terminal', 'bubblegum', 'petrol'].includes(value),
   };
 });
 

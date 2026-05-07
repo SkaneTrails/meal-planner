@@ -21,6 +21,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo-google-fonts/dm-serif-display": "^0.4.2",
     "@expo-google-fonts/noto-emoji": "^0.4.6",
     "@expo/ngrok": "^4.1.0",
     "@expo/vector-icons": "^15.0.3",
