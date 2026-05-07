@@ -287,6 +287,7 @@ export const GroceryListView = ({
       style={{ flex: 1 }}
       contentContainerStyle={{
         paddingHorizontal: spacing.xl,
+        paddingTop: spacing.md,
         paddingBottom: layout.tabBar.contentBottomPadding,
       }}
       showsVerticalScrollIndicator={false}

@@ -177,6 +177,7 @@ const Header = ({
             size={44}
             iconSize={24}
             color={colors.border}
+            textColor={colors.accent}
             style={shadows.sm}
           />
         )}

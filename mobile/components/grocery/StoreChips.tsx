@@ -24,6 +24,7 @@ export const StoreChips = ({
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      style={{ marginBottom: spacing.md }}
       contentContainerStyle={{ gap: spacing.xs, paddingVertical: spacing.xs }}
     >
       <FilterChip
