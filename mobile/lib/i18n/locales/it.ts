@@ -130,6 +130,8 @@ const it: Translations = {
       title: 'Ispirazione',
       shuffle: 'Mescola',
     },
+    thisWeek: 'Questa settimana',
+    openPlanner: 'Apri pianificatore →',
     getStarted: {
       title: 'Inizia',
       addFirstRecipe: 'Aggiungi la tua prima ricetta',

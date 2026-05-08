@@ -133,6 +133,8 @@ const en = {
       title: 'Inspiration',
       shuffle: 'Shuffle',
     },
+    thisWeek: 'This week',
+    openPlanner: 'Open planner →',
     getStarted: {
       title: 'Get Started',
       addFirstRecipe: 'Add your first recipe',
