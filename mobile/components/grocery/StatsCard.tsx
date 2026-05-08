@@ -4,7 +4,6 @@ import {
   ActionButton,
   AnimatedPressable,
   ButtonGroup,
-  ContentCard,
   IconButton,
 } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
@@ -166,7 +165,6 @@ interface StatsCardProps {
   itemsToBuy: number;
   checkedItemsToBuy: number;
   totalItems: number;
-  checkedCount: number;
   hiddenAtHomeCount: number;
   showAddItem: boolean;
   deleteMode: boolean;
@@ -185,7 +183,6 @@ export const StatsCard = ({
   itemsToBuy,
   checkedItemsToBuy,
   totalItems,
-  checkedCount,
   hiddenAtHomeCount,
   showAddItem,
   deleteMode,
@@ -199,55 +196,17 @@ export const StatsCard = ({
   onSelectionChange,
   onDeleteSelected,
 }: StatsCardProps) => {
-  const { colors, fonts, shadows, visibility } = useTheme();
-  const { t } = useTranslation();
-
-  const progressLabel =
-    itemsToBuy > 0 ? `${checkedItemsToBuy}/${itemsToBuy}` : undefined;
+  const { visibility } = useTheme();
 
   return (
-    <ContentCard
-      label={t('grocery.title').toUpperCase()}
-      rightSegments={progressLabel ? [{ label: progressLabel }] : undefined}
-      frameVariant="double"
-      cardStyle={{ ...shadows.card, marginBottom: spacing.sm }}
-      style={{ marginBottom: spacing.sm }}
-    >
+    <View style={{ marginBottom: spacing.sm }}>
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
         }}
       >
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: fontSize.sm,
-              fontFamily: fonts.body,
-              color: colors.content.tertiary,
-            }}
-          >
-            {t('grocery.thisWeeksShopping')}
-          </Text>
-          <Text
-            style={{
-              fontSize: fontSize['xl-2xl'],
-              fontFamily: fonts.bodySemibold,
-              fontWeight: fontWeight.semibold,
-              color: colors.content.heading,
-              marginTop: spacing.xs,
-            }}
-          >
-            {itemsToBuy === 0
-              ? t('grocery.noItemsYet')
-              : t('grocery.itemsProgress', {
-                  checked: checkedItemsToBuy,
-                  total: itemsToBuy,
-                })}
-          </Text>
-        </View>
-
         <ActionButtons
           showAddItem={showAddItem}
           deleteMode={deleteMode}
@@ -277,6 +236,6 @@ export const StatsCard = ({
       )}
 
       <ItemsAtHomeIndicator hiddenAtHomeCount={hiddenAtHomeCount} />
-    </ContentCard>
+    </View>
   );
 };
