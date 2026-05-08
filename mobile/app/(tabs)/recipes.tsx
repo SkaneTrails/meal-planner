@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 import {
   BottomSheetModal,
-  Button,
-  ContentCard,
+  IconButton,
   ScreenHeader,
   ScreenLayout,
 } from '@/components';
@@ -174,6 +173,7 @@ export default function RecipesScreen() {
     <ScreenLayout>
       <ScreenHeader
         title={t('recipes.title')}
+        variant="large"
         subtitle={
           hasActiveFilters
             ? t('recipes.filteredCount', {
@@ -181,41 +181,16 @@ export default function RecipesScreen() {
               })
             : t('recipes.collectionCount', { count: totalCount })
         }
-      >
-        <ContentCard
-          highlighted
-          padding={spacing.md}
-          cardStyle={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginHorizontal: spacing.xl,
-            marginBottom: spacing.sm,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: fonts.bodyBold,
-              fontSize: fontSize.xl,
-              color: colors.content.subtitle,
-              flex: 1,
-            }}
-          >
-            {t('recipes.callToAction')}
-          </Text>
-          <Button
-            variant="primary"
-            size="sm"
-            onPress={() => setShowImportModal(true)}
+        rightAction={
+          <IconButton
             icon="add"
+            onPress={() => setShowImportModal(true)}
             label={t('recipes.addRecipe')}
-            style={{
-              paddingHorizontal: spacing.md,
-              paddingVertical: spacing.xs,
-            }}
+            tone="ai"
+            size="md"
           />
-        </ContentCard>
-
+        }
+      >
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
