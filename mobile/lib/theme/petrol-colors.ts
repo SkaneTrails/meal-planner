@@ -68,33 +68,37 @@ export const petrolColors: ColorTokens = {
   gold: '#B89968',
   goldLight: '#E5D9C2',
 
-  // Category colors — desaturated, on cool washes.
+  // Category colors — Phase 6 unified neutral wash. Petrol keeps a single
+  // accent identity, so category chips read as quiet ink-tinted surfaces.
   category: {
-    recipes: { bg: PETROL_WASH, text: PETROL_DARK },
-    planned: { bg: PAPER_MID, text: INK_BODY },
-    grocery: { bg: '#EFEFF1', text: INK_BODY },
-    add: { bg: PETROL_TINT, text: PETROL_DARK },
+    recipes: { bg: inkA(0.04), text: INK_BODY },
+    planned: { bg: inkA(0.04), text: INK_BODY },
+    grocery: { bg: inkA(0.04), text: INK_BODY },
+    add: { bg: petrolA(0.08), text: PETROL_DARK },
   },
 
-  // Diet — muted, modern.
+  // Diet — Phase 6 accent discipline. Petrol commits to a single saturated
+  // accent (the petrol blue), so diet chips render as neutral washes; only
+  // the `text` colour (also reused as a dot/marker by recipe-detail-constants)
+  // keeps a hue cue. Other themes still ship their colourful diet variants.
   diet: {
     veggie: {
-      bg: '#E6EFE6',
+      bg: inkA(0.04),
       text: '#3F6B45',
-      cardBg: rgba(63, 107, 69, 0.1),
-      border: rgba(63, 107, 69, 0.55),
+      cardBg: rgba(63, 107, 69, 0.08),
+      border: rgba(63, 107, 69, 0.4),
     },
     fish: {
-      bg: PETROL_WASH,
+      bg: inkA(0.04),
       text: PETROL_DARK,
-      cardBg: petrolA(0.1),
-      border: petrolA(0.55),
+      cardBg: petrolA(0.08),
+      border: petrolA(0.4),
     },
     meat: {
-      bg: '#F1E2E0',
+      bg: inkA(0.04),
       text: '#8C3F39',
-      cardBg: rgba(140, 63, 57, 0.1),
-      border: rgba(140, 63, 57, 0.55),
+      cardBg: rgba(140, 63, 57, 0.08),
+      border: rgba(140, 63, 57, 0.4),
     },
   },
 
