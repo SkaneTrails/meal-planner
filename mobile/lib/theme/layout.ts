@@ -145,14 +145,16 @@ export const opacity = {
   pressed: 0.9,
 } as const;
 
-// Animation durations - smooth, premium feel
+// Animation durations — Phase 7. Tightened toward modern minimalism:
+// fast/normal under 250ms, springs less bouncy. Calm editorial UIs use
+// short ease-out timing instead of springy overshoots.
 export const animation = {
-  fast: 150,
-  normal: 250,
-  slow: 350,
+  fast: 120,
+  normal: 200,
+  slow: 320,
   spring: {
-    damping: 15,
-    stiffness: 100,
+    damping: 22,
+    stiffness: 180,
   },
 } as const;
 
