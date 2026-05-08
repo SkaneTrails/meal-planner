@@ -62,21 +62,39 @@ export const BottomSheetModal = ({
       }}
       testID={testID}
     >
+      {!isFlat && (
+        <View
+          style={{
+            alignItems: 'center',
+            paddingTop: spacing.sm,
+            paddingBottom: spacing.xs,
+          }}
+        >
+          <View
+            style={{
+              width: 36,
+              height: 4,
+              borderRadius: 2,
+              backgroundColor: colors.surface.divider,
+            }}
+          />
+        </View>
+      )}
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingHorizontal: spacing.xl,
-          paddingTop: spacing.xl,
+          paddingTop: isFlat ? spacing.xl : spacing.md,
           marginBottom: subtitle ? spacing.xs : spacing.lg,
         }}
       >
         <Text
           style={{
-            fontSize: fontSize['3xl'],
-            fontFamily: fonts.bodyBold,
-            fontWeight: fontWeight.bold,
+            fontSize: fontSize['2xl'],
+            fontFamily: fonts.bodySemibold,
+            fontWeight: fontWeight.semibold,
             color: colors.content.headingWarm,
             flex: 1,
           }}
@@ -90,12 +108,9 @@ export const BottomSheetModal = ({
             testID="close-button"
             accessibilityLabel={t('common.close')}
             accessibilityRole="button"
+            hitSlop={12}
           >
-            <ThemeIcon
-              name="close"
-              size={24}
-              color={colors.content.headingWarm}
-            />
+            <ThemeIcon name="close" size={22} color={colors.content.body} />
           </Pressable>
         )}
       </View>
@@ -105,7 +120,7 @@ export const BottomSheetModal = ({
           style={{
             fontSize: fontSize.md,
             fontFamily: fonts.body,
-            color: colors.gray[500],
+            color: colors.content.tertiary,
             paddingHorizontal: spacing.xl,
             marginBottom: spacing.md,
           }}
