@@ -103,10 +103,7 @@ export default function MealPlanScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeader
-        title={t('mealPlan.title')}
-        subtitle={t('mealPlan.subtitle')}
-      >
+      <ScreenHeader title={t('mealPlan.title')}>
         <WeekSelector
           weekDates={weekDates}
           weekOffset={weekOffset}
@@ -201,7 +198,7 @@ export default function MealPlanScreen() {
                   key={date.toISOString()}
                   label={frameLabel}
                   rightSegments={rightSegments}
-                  frameVariant={isToday ? 'double' : 'single'}
+                  elevation={isToday ? 'elevated' : 'bordered'}
                   collapsed={isCollapsed}
                   highlighted={isToday}
                   onLayout={
