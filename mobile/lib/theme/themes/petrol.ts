@@ -55,10 +55,9 @@ const petrolFonts: FontFamilyTokens = {
 // ── Border radii — pill-friendly, generous curves ──────────────────────
 
 /**
- * Petrol uses very rounded shapes:
- *   • small chrome (chips, badges) → pill (`full`)
- *   • cards/containers → soft rounded
- *   • buttons → pill via `buttonRadius`
+ * Petrol uses the canonical 4-step radius ramp with a slight upward bias
+ * for a softer, editorial feel. Half-step keys remain so legacy consumers
+ * keep working, but they collapse to the same 4-based values.
  */
 const petrolRadii = {
   ...borderRadius,
@@ -67,11 +66,11 @@ const petrolRadii = {
   'xs-sm': 8,
   xs: 10,
   'sm-md': 12,
-  sm: 14,
+  sm: 12,
   'md-lg': 16,
-  md: 18,
-  lg: 22,
-  'lg-xl': 26,
+  md: 16,
+  lg: 20,
+  'lg-xl': 24,
   xl: 28,
   '2xl': 32,
   full: 9999,

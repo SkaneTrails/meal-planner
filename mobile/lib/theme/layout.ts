@@ -2,20 +2,24 @@
  * Spacing, layout, border radius, icon sizes, shadows, and animation constants.
  */
 
-// Spacing scale - consistent rhythm
+// Spacing scale — modernized in Phase 2 of the design-system refresh.
+// Values snap to a 4-based ramp (4/8/12/16/24/32/40). Half-step keys
+// (`xs-sm`, `sm-md`, `md-lg`, `lg-xl`) are preserved to avoid touching the
+// ~100 consumer call sites, but their values now collapse to the nearest
+// 4-step neighbour for a tighter, more consistent rhythm across all themes.
 export const spacing = {
   '2xs': 2,
   xs: 4,
-  'xs-sm': 6,
+  'xs-sm': 8,
   sm: 8,
-  'sm-md': 10,
+  'sm-md': 12,
   md: 12,
-  'md-lg': 14,
+  'md-lg': 16,
   lg: 16,
-  xl: 20,
-  '2xl': 24,
-  '3xl': 32,
-  '4xl': 40,
+  xl: 24,
+  '2xl': 32,
+  '3xl': 40,
+  '4xl': 48,
 } as const;
 
 // Layout constants
@@ -27,9 +31,11 @@ export const layout = {
     alignSelf: 'center' as const,
     width: '100%' as const,
   },
-  screenPaddingTop: 44,
-  screenPaddingHorizontal: 20,
-  sectionGap: 24,
+  screenPaddingTop: 48,
+  screenPaddingHorizontal: 24,
+  /** Vertical breathing room between sibling sections on a screen.
+   *  Single source of truth — replaces ad-hoc `spacing.lg`/`xl`/`2xl` between blocks. */
+  sectionGap: 32,
   cardGap: 8,
   /** @deprecated Use layout.tabBar instead */
   tabBarHeight: 88,
@@ -44,18 +50,22 @@ export const layout = {
   },
 } as const;
 
-// Border radius - standardized scale
+// Border radius — modernized in Phase 2.
+// Half-step keys collapse to the canonical 4-step ramp (4/8/12/16/20/24).
+// Themes (e.g. Petrol) override this map with their own personality —
+// Petrol uses a softer, pill-friendly variant; Bubblegum stays rounder;
+// Terminal forces sharp.
 export const borderRadius = {
-  '3xs': 3,
+  '3xs': 4,
   '2xs': 4,
-  'xs-sm': 6,
+  'xs-sm': 8,
   xs: 8,
-  'sm-md': 10,
+  'sm-md': 12,
   sm: 12,
-  'md-lg': 14,
+  'md-lg': 16,
   md: 16,
   lg: 20,
-  'lg-xl': 22,
+  'lg-xl': 24,
   xl: 24,
   '2xl': 32,
   full: 9999,
