@@ -134,7 +134,7 @@ const en = {
       shuffle: 'Shuffle',
     },
     thisWeek: 'This week',
-    openPlanner: 'Open planner →',
+    openPlanner: 'Open planner',
     getStarted: {
       title: 'Get Started',
       addFirstRecipe: 'Add your first recipe',

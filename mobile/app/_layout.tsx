@@ -15,7 +15,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState, type AppStateStatus, Platform, View } from 'react-native';
-import { resetRecipeFilterCache } from '@/app/(tabs)/recipes';
 import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
@@ -31,6 +30,7 @@ import {
   QueryProvider,
   restoreQueryCache,
 } from '@/lib/query-provider';
+import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
 import {
   type AppLanguage,
   SettingsProvider,

@@ -65,7 +65,7 @@ export default function GroceryScreen() {
   }
 
   const subtitle =
-    totalItems === 0
+    itemsToBuy === 0
       ? t('grocery.noItemsYet')
       : t('grocery.itemsProgress', {
           checked: checkedItemsToBuy,

@@ -27,6 +27,7 @@ import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useDebouncedValue, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
+import { recipeFilterCache } from '@/lib/recipes/filterCache';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
@@ -39,25 +40,8 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// Module-level filter cache. Persists user-applied filters across screen
-// blurs (e.g. tapping a recipe and coming back from the detail page).
-// Cleared via the in-screen 'Rensa' action OR by
-// `resetRecipeFilterCache` when the user navigates away from the
-// recipes flow entirely (see root layout pathname watcher).
-const defaultFilterState = {
-  searchQuery: '',
-  dietFilter: null as DietLabel | null,
-  mealFilters: [] as MealLabel[],
-  sortBy: 'newest' as SortOption,
-  showFavoritesOnly: false,
-  libraryScope: 'all' as LibraryScope,
-};
-
-const filterCache: typeof defaultFilterState = { ...defaultFilterState };
-
-export const resetRecipeFilterCache = () => {
-  Object.assign(filterCache, defaultFilterState, { mealFilters: [] });
-};
+// Module-level filter cache lives in `lib/recipes/filterCache` so the
+// root layout can reset filters without coupling to this route file.
 
 export default function RecipesScreen() {
   const { colors, borderRadius, fonts } = useTheme();
@@ -69,55 +53,59 @@ export default function RecipesScreen() {
   // Filters are seeded from a module-level cache so they survive when the
   // Recipes screen is unmounted (e.g. tabs reset on navigate-back from a
   // recipe detail). Each setter also writes back to the cache.
-  const [searchQuery, setSearchQueryState] = useState(filterCache.searchQuery);
+  const [searchQuery, setSearchQueryState] = useState(
+    recipeFilterCache.searchQuery,
+  );
   const [dietFilter, setDietFilterState] = useState<DietLabel | null>(
-    filterCache.dietFilter,
+    recipeFilterCache.dietFilter,
   );
   const [mealFilters, setMealFiltersState] = useState<MealLabel[]>(
-    filterCache.mealFilters,
+    recipeFilterCache.mealFilters,
   );
-  const [sortBy, setSortByState] = useState<SortOption>(filterCache.sortBy);
+  const [sortBy, setSortByState] = useState<SortOption>(
+    recipeFilterCache.sortBy,
+  );
   const [showFavoritesOnly, setShowFavoritesOnlyState] = useState(
-    filterCache.showFavoritesOnly,
+    recipeFilterCache.showFavoritesOnly,
   );
   const [libraryScope, setLibraryScopeState] = useState<LibraryScope>(
-    filterCache.libraryScope,
+    recipeFilterCache.libraryScope,
   );
 
   const setSearchQuery = useCallback((v: string) => {
-    filterCache.searchQuery = v;
+    recipeFilterCache.searchQuery = v;
     setSearchQueryState(v);
   }, []);
   const setDietFilter = useCallback((v: DietLabel | null) => {
-    filterCache.dietFilter = v;
+    recipeFilterCache.dietFilter = v;
     setDietFilterState(v);
   }, []);
   const setMealFilters = useCallback(
     (v: MealLabel[] | ((prev: MealLabel[]) => MealLabel[])) => {
       setMealFiltersState((prev) => {
         const next = typeof v === 'function' ? v(prev) : v;
-        filterCache.mealFilters = next;
+        recipeFilterCache.mealFilters = next;
         return next;
       });
     },
     [],
   );
   const setSortBy = useCallback((v: SortOption) => {
-    filterCache.sortBy = v;
+    recipeFilterCache.sortBy = v;
     setSortByState(v);
   }, []);
   const setShowFavoritesOnly = useCallback(
     (v: boolean | ((prev: boolean) => boolean)) => {
       setShowFavoritesOnlyState((prev) => {
         const next = typeof v === 'function' ? v(prev) : v;
-        filterCache.showFavoritesOnly = next;
+        recipeFilterCache.showFavoritesOnly = next;
         return next;
       });
     },
     [],
   );
   const setLibraryScope = useCallback((v: LibraryScope) => {
-    filterCache.libraryScope = v;
+    recipeFilterCache.libraryScope = v;
     setLibraryScopeState(v);
   }, []);
   const { isFavorite } = useSettings();
@@ -136,12 +124,12 @@ export default function RecipesScreen() {
   // hydrate state from the cache so a cleared cache resets the UI.
   useFocusEffect(
     useCallback(() => {
-      setSearchQueryState(filterCache.searchQuery);
-      setDietFilterState(filterCache.dietFilter);
-      setMealFiltersState(filterCache.mealFilters);
-      setSortByState(filterCache.sortBy);
-      setShowFavoritesOnlyState(filterCache.showFavoritesOnly);
-      setLibraryScopeState(filterCache.libraryScope);
+      setSearchQueryState(recipeFilterCache.searchQuery);
+      setDietFilterState(recipeFilterCache.dietFilter);
+      setMealFiltersState(recipeFilterCache.mealFilters);
+      setSortByState(recipeFilterCache.sortBy);
+      setShowFavoritesOnlyState(recipeFilterCache.showFavoritesOnly);
+      setLibraryScopeState(recipeFilterCache.libraryScope);
     }, []),
   );
 

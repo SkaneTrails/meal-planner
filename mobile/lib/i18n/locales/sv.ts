@@ -131,7 +131,7 @@ const sv: Translations = {
       shuffle: 'Slumpa',
     },
     thisWeek: 'Denna vecka',
-    openPlanner: 'Öppna planeraren →',
+    openPlanner: 'Öppna planeraren',
     getStarted: {
       title: 'Kom igång',
       addFirstRecipe: 'Lägg till ditt första recept',

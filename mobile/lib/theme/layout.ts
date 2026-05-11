@@ -3,10 +3,11 @@
  */
 
 // Spacing scale — modernized in Phase 2 of the design-system refresh.
-// Values snap to a 4-based ramp (4/8/12/16/24/32/40). Half-step keys
-// (`xs-sm`, `sm-md`, `md-lg`, `lg-xl`) are preserved to avoid touching the
-// ~100 consumer call sites, but their values now collapse to the nearest
-// 4-step neighbour for a tighter, more consistent rhythm across all themes.
+// Values snap to a 4-based ramp with a 2px hairline accent at the bottom
+// (2/4/8/12/16/24/32/40/48). Half-step keys (`xs-sm`, `sm-md`, `md-lg`,
+// `lg-xl`) are preserved to avoid touching the ~100 consumer call sites,
+// but their values now collapse to the nearest 4-step neighbour for a
+// tighter, more consistent rhythm across all themes.
 export const spacing = {
   '2xs': 2,
   xs: 4,

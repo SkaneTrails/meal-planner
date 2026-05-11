@@ -20,6 +20,7 @@ import type { ReactNode } from 'react';
 import {
   Pressable,
   type StyleProp,
+  StyleSheet,
   Text,
   View,
   type ViewStyle,
@@ -81,12 +82,12 @@ export const Row = ({
     }),
     ...(variant === 'divider' &&
       !isLast && {
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.surface.divider,
       }),
   };
 
-  const showAutoChevron = !!onPress && !trailing;
+  const showAutoChevron = !!onPress && !trailing && !disabled;
 
   const content = (
     <>
