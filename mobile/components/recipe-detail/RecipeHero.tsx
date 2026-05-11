@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { Animated } from 'react-native';
-import { useTheme } from '@/lib/theme';
+import { layout, spacing, useTheme } from '@/lib/theme';
 import { HeroOverlay } from './HeroOverlay';
 import {
   PLACEHOLDER_BLURHASH,
@@ -36,13 +36,17 @@ export const RecipeHero = ({
   onThumbUp,
   onThumbDown,
 }: RecipeHeroProps) => {
-  const { visibility } = useTheme();
+  const { visibility, borderRadius } = useTheme();
   return (
     <Animated.View
       style={{
         position: 'relative',
         height: headerHeight,
         overflow: 'hidden',
+        maxWidth: layout.contentMaxWidth,
+        alignSelf: 'center',
+        marginHorizontal: spacing.xl,
+        borderRadius: borderRadius.xl,
         transform: [
           {
             translateY: scrollY.interpolate({
