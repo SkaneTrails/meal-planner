@@ -24,7 +24,7 @@ interface WeekStripProps {
 }
 
 export const WeekStrip = ({ mealPlan, weekStart, t }: WeekStripProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
   const router = useRouter();
 
   const weekDates = getWeekDatesArray(0, weekStart);
@@ -99,43 +99,52 @@ export const WeekStrip = ({ mealPlan, weekStart, t }: WeekStripProps) => {
               style={{
                 flex: 1,
                 alignItems: 'center',
-                paddingVertical: spacing.sm,
+                paddingVertical: spacing.xs,
                 marginHorizontal: 2,
-                borderRadius: borderRadius.sm,
-                backgroundColor: isToday
-                  ? colors.surface.subtle
-                  : 'transparent',
               }}
             >
               <Text
                 style={{
-                  fontFamily: isToday ? fonts.bodyBold : fonts.bodyMedium,
+                  fontFamily: fonts.bodySemibold,
                   fontSize: fontSize.xs,
-                  color: isToday
-                    ? colors.content.heading
-                    : colors.content.subtitle,
-                  marginBottom: 6,
+                  color: isToday ? colors.accent : colors.content.subtitle,
+                  marginBottom: spacing.xs,
                   letterSpacing: letterSpacing.wide,
                 }}
               >
                 {dayLabel}
               </Text>
-              <Text
+              <View
                 style={{
-                  fontFamily: fonts.bodySemibold,
-                  fontSize: fontSize.lg,
-                  color: isToday ? colors.content.heading : colors.content.body,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: isToday ? colors.accent : 'transparent',
                 }}
               >
-                {date.getDate()}
-              </Text>
+                <Text
+                  style={{
+                    fontFamily: isToday ? fonts.bodyBold : fonts.bodyMedium,
+                    fontSize: fontSize.md,
+                    color: isToday ? colors.white : colors.content.body,
+                  }}
+                >
+                  {date.getDate()}
+                </Text>
+              </View>
               <View
                 style={{
                   marginTop: 6,
                   width: 5,
                   height: 5,
                   borderRadius: 3,
-                  backgroundColor: hasMeal ? colors.accent : 'transparent',
+                  backgroundColor: hasMeal
+                    ? isToday
+                      ? colors.accent
+                      : colors.content.subtitle
+                    : 'transparent',
                 }}
               />
             </Pressable>

@@ -64,20 +64,59 @@ export const HeroNextMeal = ({ nextMeal, t, onPress }: HeroNextMealProps) => {
       >
         <Image
           source={imageSource}
-          style={{ width: '100%', height: 320 }}
+          style={{ width: '100%', aspectRatio: 5 / 4, maxHeight: 320 }}
           contentFit="cover"
           placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
           transition={200}
         />
+
+        {/* Floating "open" pill — clearer affordance than an inline
+            chevron. Opaque white backdrop so the label stays readable
+            over any photo (the theme's `glassSolid` tone is only 7%
+            tint in petrol, which vanishes over busy hero images). */}
+        <View
+          style={{
+            position: 'absolute',
+            top: spacing.md,
+            right: spacing.md,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.xs,
+            paddingHorizontal: spacing.sm,
+            paddingVertical: 6,
+            borderRadius: borderRadius.full,
+            backgroundColor: colors.card.bg,
+            ...shadows.sm,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: fonts.bodySemibold,
+              fontSize: fontSize.xs,
+              color: colors.content.body,
+              letterSpacing: letterSpacing.wide,
+              textTransform: 'uppercase',
+            }}
+          >
+            {t('home.openPlanner')}
+          </Text>
+          <ThemeIcon
+            name="arrow-forward"
+            size={14}
+            color={colors.content.body}
+          />
+        </View>
+
         <LinearGradient
           colors={['transparent', colors.overlay.gradientHeavy]}
+          locations={[0.35, 1]}
           style={{
             position: 'absolute',
             left: 0,
             right: 0,
             bottom: 0,
             paddingHorizontal: spacing.xl,
-            paddingTop: spacing['3xl'],
+            paddingTop: spacing['2xl'],
             paddingBottom: spacing.xl,
           }}
         >
@@ -89,39 +128,23 @@ export const HeroNextMeal = ({ nextMeal, t, onPress }: HeroNextMealProps) => {
               opacity: 0.85,
               letterSpacing: letterSpacing.wider,
               textTransform: 'uppercase',
-              marginBottom: spacing.sm,
+              marginBottom: spacing.xs,
             }}
           >
             {eyebrow}
           </Text>
-          <View
+          <Text
             style={{
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              gap: spacing.md,
+              fontFamily: fonts.displayBold,
+              fontSize: fontSize['4xl'],
+              lineHeight: 36,
+              color: colors.white,
+              letterSpacing: letterSpacing.tight,
             }}
+            numberOfLines={2}
           >
-            <Text
-              style={{
-                flex: 1,
-                fontFamily: fonts.displayBold,
-                fontSize: fontSize['4xl'],
-                lineHeight: 32,
-                color: colors.white,
-                letterSpacing: letterSpacing.tight,
-              }}
-              numberOfLines={3}
-            >
-              {title}
-            </Text>
-            <ThemeIcon
-              name="arrow-forward"
-              size={24}
-              color={colors.white}
-              style={{ opacity: 0.85, marginBottom: 4 }}
-            />
-          </View>
+            {title}
+          </Text>
         </LinearGradient>
       </AnimatedPressable>
     </View>

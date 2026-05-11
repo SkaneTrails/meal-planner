@@ -1,9 +1,10 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import type { FrameSegment } from '@/components';
-import { AnimatedPressable, Button, TerminalFrame } from '@/components';
+import { AnimatedPressable, TerminalFrame } from '@/components';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {
@@ -73,11 +74,11 @@ export const InspirationSection = ({
     }
 
     return (
-      <View style={{ paddingHorizontal: spacing.lg, marginBottom: spacing.lg }}>
-        <InspirationHeader t={t} onShuffle={shuffleInspiration} />
+      <View style={{ paddingHorizontal: spacing.xl, marginBottom: spacing.xl }}>
         <InspirationCard
           recipe={inspirationRecipe}
           t={t}
+          onShuffle={shuffleInspiration}
           onPress={() => router.push(`/recipe/${inspirationRecipe.id}`)}
         />
       </View>
@@ -89,129 +90,153 @@ export const InspirationSection = ({
 
 /* ── Sub-components ── */
 
-const InspirationHeader = ({
-  t,
-  onShuffle,
-}: {
-  t: Data['t'];
-  onShuffle: () => void;
-}) => {
-  const { colors, fonts } = useTheme();
-
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: spacing['sm-md'],
-      }}
-    >
-      <Text
-        style={{
-          fontSize: fontSize['2xl'],
-          fontFamily: fonts.bodySemibold,
-          color: colors.content.heading,
-          letterSpacing: letterSpacing.normal,
-        }}
-      >
-        {t('home.inspiration.title')}
-      </Text>
-      <Button
-        variant="text"
-        tone="alt"
-        size="sm"
-        onPress={() => {
-          hapticLight();
-          onShuffle();
-        }}
-        icon="shuffle"
-        iconSize={12}
-        label={t('home.inspiration.shuffle')}
-      />
-    </View>
-  );
-};
-
 const InspirationCard = ({
   recipe,
   t,
+  onShuffle,
   onPress,
 }: {
   recipe: Recipe;
   t: Data['t'];
+  onShuffle: () => void;
   onPress: () => void;
 }) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
 
   return (
-    <AnimatedPressable
-      onPress={onPress}
-      hoverScale={1.01}
-      pressScale={0.99}
-      accessibilityRole="button"
-      accessibilityLabel={recipe.title}
-      style={{ borderRadius: borderRadius.md, overflow: 'hidden' }}
+    // Wrapper holds the card AND the shuffle pill as siblings so the
+    // pill isn't a button nested inside the card's button (which would
+    // raise the React Native Web "<button> cannot contain a nested
+    // <button>" warning).
+    <View
+      style={{
+        borderRadius: borderRadius.lg,
+        overflow: 'hidden',
+        backgroundColor: colors.card.bg,
+        ...shadows.sm,
+      }}
     >
-      <Image
-        source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
-        style={{ width: '100%', height: 240 }}
-        contentFit="cover"
-        placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
-        transition={200}
-      />
-      <LinearGradient
-        colors={['transparent', colors.overlay.gradientHeavy]}
+      <AnimatedPressable
+        onPress={onPress}
+        hoverScale={1.01}
+        pressScale={0.99}
+        accessibilityRole="button"
+        accessibilityLabel={recipe.title}
+      >
+        <Image
+          source={recipe.image_url ? { uri: recipe.image_url } : HOMEPAGE_HERO}
+          style={{ width: '100%', aspectRatio: 16 / 10, maxHeight: 260 }}
+          contentFit="cover"
+          placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
+          transition={200}
+        />
+
+        <LinearGradient
+          colors={['transparent', colors.overlay.gradientHeavy]}
+          locations={[0.35, 1]}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            paddingHorizontal: spacing.xl,
+            paddingTop: spacing['2xl'],
+            paddingBottom: spacing.xl,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: fonts.bodySemibold,
+              fontSize: fontSize.xs,
+              color: colors.white,
+              opacity: 0.85,
+              letterSpacing: letterSpacing.wider,
+              textTransform: 'uppercase',
+              marginBottom: spacing.xs,
+            }}
+          >
+            {t('home.inspiration.title')}
+          </Text>
+          <Text
+            style={{
+              fontSize: fontSize['3xl'],
+              fontFamily: fonts.displayBold,
+              color: colors.white,
+              letterSpacing: letterSpacing.tight,
+              lineHeight: 32,
+            }}
+            numberOfLines={2}
+          >
+            {recipe.title}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: spacing.sm,
+              gap: spacing['xs-sm'],
+            }}
+          >
+            {recipe.meal_label && (
+              <LabelBadge
+                label={t(`labels.meal.${recipe.meal_label}`)}
+                borderColor={colors.glass.faint}
+              />
+            )}
+            {recipe.diet_label && (
+              <LabelBadge
+                label={t(`labels.diet.${recipe.diet_label}`)}
+                borderColor={
+                  recipe.diet_label === 'veggie'
+                    ? colors.diet.veggie.border
+                    : recipe.diet_label === 'fish'
+                      ? colors.diet.fish.border
+                      : colors.diet.meat.border
+                }
+              />
+            )}
+          </View>
+        </LinearGradient>
+      </AnimatedPressable>
+
+      {/* Floating shuffle pill — sibling of the card Pressable (not a
+          child) so it doesn't trigger nested-button warnings on web.
+          Opaque white backdrop matches the hero's "Open" pill. */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('home.inspiration.shuffle')}
+        onPress={() => {
+          hapticLight();
+          onShuffle();
+        }}
         style={{
           position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 100,
-          justifyContent: 'flex-end',
-          padding: spacing['md-lg'],
+          top: spacing.md,
+          right: spacing.md,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: spacing.xs,
+          paddingHorizontal: spacing.sm,
+          paddingVertical: 6,
+          borderRadius: borderRadius.full,
+          backgroundColor: colors.card.bg,
+          ...shadows.sm,
         }}
       >
+        <ThemeIcon name="shuffle" size={14} color={colors.content.body} />
         <Text
           style={{
-            fontSize: fontSize['2xl'],
             fontFamily: fonts.bodySemibold,
-            color: colors.white,
-            letterSpacing: letterSpacing.tight,
+            fontSize: fontSize.xs,
+            color: colors.content.body,
+            letterSpacing: letterSpacing.wide,
+            textTransform: 'uppercase',
           }}
-          numberOfLines={2}
         >
-          {recipe.title}
+          {t('home.inspiration.shuffle')}
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 8,
-            gap: spacing['xs-sm'],
-          }}
-        >
-          {recipe.meal_label && (
-            <LabelBadge
-              label={t(`labels.meal.${recipe.meal_label}`)}
-              borderColor={colors.glass.faint}
-            />
-          )}
-          {recipe.diet_label && (
-            <LabelBadge
-              label={t(`labels.diet.${recipe.diet_label}`)}
-              borderColor={
-                recipe.diet_label === 'veggie'
-                  ? colors.diet.veggie.border
-                  : recipe.diet_label === 'fish'
-                    ? colors.diet.fish.border
-                    : colors.diet.meat.border
-              }
-            />
-          )}
-        </View>
-      </LinearGradient>
-    </AnimatedPressable>
+      </Pressable>
+    </View>
   );
 };
 

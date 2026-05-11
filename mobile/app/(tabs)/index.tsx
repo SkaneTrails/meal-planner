@@ -88,6 +88,11 @@ export default function HomeScreen() {
 /**
  * Bare top bar with the only two header actions: add recipe + settings.
  * No greeting, no title — the hero IS the title.
+ *
+ * The buttons share the same opaque-white-card + sm-shadow language as
+ * the floating "Open" / "Shuffle" pills on the hero and inspiration
+ * cards, so the whole tab feels like one editorial surface instead of
+ * three different icon styles.
  */
 const TopBar = ({
   onAdd,
@@ -96,7 +101,7 @@ const TopBar = ({
   onAdd: () => void;
   onSettings: () => void;
 }) => {
-  const { colors } = useTheme();
+  const { colors, shadows } = useTheme();
   return (
     <View
       style={{
@@ -113,16 +118,18 @@ const TopBar = ({
         icon="add"
         size={44}
         iconSize={22}
-        tone="subtle"
+        color={colors.card.bg}
         textColor={colors.content.body}
+        style={shadows.sm}
       />
       <IconButton
         onPress={onSettings}
         icon="settings-outline"
         size={44}
         iconSize={22}
-        tone="subtle"
+        color={colors.card.bg}
         textColor={colors.content.body}
+        style={shadows.sm}
       />
     </View>
   );
