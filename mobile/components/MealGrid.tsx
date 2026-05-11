@@ -53,7 +53,7 @@ export const MealCell = ({
       accessibilityRole="button"
       accessibilityLabel={`${t(MEAL_TYPE_LABEL_KEYS[mealType])}${displayText ? `: ${displayText}` : ''}`}
       style={{
-        padding: 12,
+        padding: spacing.md,
         borderRadius: borderRadius.md,
         minHeight: 80,
         backgroundColor: colors.glass.button,

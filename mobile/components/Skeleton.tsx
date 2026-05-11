@@ -110,7 +110,7 @@ export const RecipeListSkeleton = ({
   return (
     <View style={styles.gridContainer}>
       {Array.from({ length: count }).map((_, i) => (
-        <View key={i} style={{ padding: 4 }}>
+        <View key={i} style={{ padding: spacing.xs }}>
           <RecipeCardSkeleton cardSize={cardSize} />
         </View>
       ))}

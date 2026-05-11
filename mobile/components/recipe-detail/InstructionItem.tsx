@@ -174,7 +174,7 @@ export const InstructionItem = ({
                 fontSize: fontSize.sm,
                 fontFamily: fonts.bodySemibold,
                 color: colors.white,
-                marginLeft: 4,
+                marginLeft: spacing.xs,
               }}
             >
               {time} min

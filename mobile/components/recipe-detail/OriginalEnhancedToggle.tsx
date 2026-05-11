@@ -28,7 +28,7 @@ export const OriginalEnhancedToggle = ({
         flexDirection: 'row',
         backgroundColor: trackBg,
         borderRadius: borderRadius.lg,
-        padding: 4,
+        padding: spacing.xs,
         borderWidth: 1,
         borderColor: colors.toggle.borderColor,
       }}

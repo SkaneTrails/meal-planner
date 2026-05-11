@@ -273,7 +273,9 @@ export const RecipeTimeServings = ({
           <View style={{ flexDirection: 'row' }}>
             {stats.map((stat, i) => (
               <View key={stat.label} style={{ flex: 1, flexDirection: 'row' }}>
-                <View style={{ flex: 1, alignItems: 'center', padding: 12 }}>
+                <View
+                  style={{ flex: 1, alignItems: 'center', padding: spacing.md }}
+                >
                   {stat.interactive && portionScaling ? (
                     <ServingsInteractive
                       value={stat.value}
