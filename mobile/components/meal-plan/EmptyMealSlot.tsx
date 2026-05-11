@@ -30,6 +30,7 @@ export const EmptyMealSlot = ({
         borderRadius: borderRadius.sm,
         padding: spacing.md,
         marginBottom: spacing['xs-sm'],
+        minHeight: 88,
       }}
     >
       {/* Label section */}

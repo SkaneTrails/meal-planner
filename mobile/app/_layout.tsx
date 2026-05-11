@@ -10,7 +10,7 @@
 import { NotoEmoji_400Regular } from '@expo-google-fonts/noto-emoji';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
@@ -30,6 +30,7 @@ import {
   QueryProvider,
   restoreQueryCache,
 } from '@/lib/query-provider';
+import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
 import {
   type AppLanguage,
   SettingsProvider,
@@ -53,6 +54,20 @@ const AppContent = () => {
   const { colors, themeName } = useTheme();
   const { needsLanguagePrompt, setLanguage } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
+  const pathname = usePathname();
+
+  // Recipe library filters persist between /recipes and /recipe/[id].
+  // Anywhere else, reset the cache so refocusing the Recipes tab
+  // shows a clean library.
+  useEffect(() => {
+    const inRecipesFlow =
+      pathname === '/recipes' ||
+      pathname === '/(tabs)/recipes' ||
+      pathname.startsWith('/recipe/');
+    if (!inRecipesFlow) {
+      resetRecipeFilterCache();
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (Platform.OS !== 'web') return;

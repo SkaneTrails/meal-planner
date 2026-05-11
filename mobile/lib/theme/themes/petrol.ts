@@ -55,10 +55,9 @@ const petrolFonts: FontFamilyTokens = {
 // ── Border radii — pill-friendly, generous curves ──────────────────────
 
 /**
- * Petrol uses very rounded shapes:
- *   • small chrome (chips, badges) → pill (`full`)
- *   • cards/containers → soft rounded
- *   • buttons → pill via `buttonRadius`
+ * Petrol uses the canonical 4-step radius ramp with a slight upward bias
+ * for a softer, editorial feel. Half-step keys remain so legacy consumers
+ * keep working, but they collapse to the same 4-based values.
  */
 const petrolRadii = {
   ...borderRadius,
@@ -67,11 +66,11 @@ const petrolRadii = {
   'xs-sm': 8,
   xs: 10,
   'sm-md': 12,
-  sm: 14,
+  sm: 12,
   'md-lg': 16,
-  md: 18,
-  lg: 22,
-  'lg-xl': 26,
+  md: 16,
+  lg: 20,
+  'lg-xl': 24,
   xl: 28,
   '2xl': 32,
   full: 9999,
@@ -114,20 +113,24 @@ const visibility: VisibilityTokens = {
   showCheckmarkIndicator: true,
 };
 
-// ── Shadows — quiet, layered lift (no warmth, low alpha) ───────────────
+// ── Shadows — quieter, editorial lift (Phase 3) ────────────────────────
+// Modern minimalism keeps shadows extremely soft and short. Reserve the
+// stronger presets (`xl`, `float`, `cardRaised`) for things that truly
+// float (modals, drag state, the single primary FAB). Default `card` is
+// almost imperceptible — sections rely on whitespace + hairlines instead.
 
 const petrolShadows: ShadowTokens = {
   none: { boxShadow: '0px 0px 0px 0px transparent' },
-  xs: { boxShadow: '0px 1px 2px 0px rgba(17, 24, 28, 0.04)' },
-  sm: { boxShadow: '0px 1px 3px 0px rgba(17, 24, 28, 0.06)' },
-  card: { boxShadow: '0px 2px 6px 0px rgba(17, 24, 28, 0.05)' },
-  md: { boxShadow: '0px 3px 8px 0px rgba(17, 24, 28, 0.07)' },
-  lg: { boxShadow: '0px 6px 16px 0px rgba(17, 24, 28, 0.08)' },
-  xl: { boxShadow: '0px 12px 28px 0px rgba(17, 24, 28, 0.1)' },
-  glow: { boxShadow: '0px 0px 16px 0px rgba(14, 92, 111, 0.18)' },
-  glowSoft: { boxShadow: '0px 0px 10px 0px rgba(14, 92, 111, 0.12)' },
-  cardRaised: { boxShadow: '0px 4px 12px 0px rgba(17, 24, 28, 0.08)' },
-  float: { boxShadow: '0px 8px 20px 0px rgba(17, 24, 28, 0.1)' },
+  xs: { boxShadow: '0px 1px 1px 0px rgba(17, 24, 28, 0.03)' },
+  sm: { boxShadow: '0px 1px 2px 0px rgba(17, 24, 28, 0.04)' },
+  card: { boxShadow: '0px 1px 3px 0px rgba(17, 24, 28, 0.04)' },
+  md: { boxShadow: '0px 2px 6px 0px rgba(17, 24, 28, 0.05)' },
+  lg: { boxShadow: '0px 4px 12px 0px rgba(17, 24, 28, 0.06)' },
+  xl: { boxShadow: '0px 10px 24px 0px rgba(17, 24, 28, 0.08)' },
+  glow: { boxShadow: '0px 0px 14px 0px rgba(14, 92, 111, 0.16)' },
+  glowSoft: { boxShadow: '0px 0px 8px 0px rgba(14, 92, 111, 0.1)' },
+  cardRaised: { boxShadow: '0px 3px 10px 0px rgba(17, 24, 28, 0.06)' },
+  float: { boxShadow: '0px 8px 20px 0px rgba(17, 24, 28, 0.08)' },
 };
 
 // ── Button config — circular icon buttons, soft pill labels ────────────

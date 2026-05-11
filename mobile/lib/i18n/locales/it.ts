@@ -130,6 +130,8 @@ const it: Translations = {
       title: 'Ispirazione',
       shuffle: 'Mescola',
     },
+    thisWeek: 'Questa settimana',
+    openPlanner: 'Apri pianificatore',
     getStarted: {
       title: 'Inizia',
       addFirstRecipe: 'Aggiungi la tua prima ricetta',
@@ -444,6 +446,8 @@ const it: Translations = {
     thisWeeksShopping: 'Spesa della settimana',
     noItemsYet: 'Nessun articolo ancora',
     itemsProgress: '{{checked}} di {{total}} articoli',
+    itemsSelected: '{{count}} selezionati',
+    dragToReorder: 'Trascina per riordinare',
     hiddenAtHome: '{{count}} articolo/i nascosti (a casa)',
     addItemPlaceholder: 'Aggiungi un articolo...',
     addButton: 'Aggiungi',

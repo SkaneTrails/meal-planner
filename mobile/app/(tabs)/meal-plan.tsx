@@ -103,10 +103,7 @@ export default function MealPlanScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeader
-        title={t('mealPlan.title')}
-        subtitle={t('mealPlan.subtitle')}
-      >
+      <ScreenHeader title={t('mealPlan.title')} variant="large">
         <WeekSelector
           weekDates={weekDates}
           weekOffset={weekOffset}
@@ -160,7 +157,8 @@ export default function MealPlanScreen() {
                 ? [
                     { label: summary },
                     {
-                      label: '\u25BC',
+                      icon: 'chevron-down' as const,
+                      label: '',
                       onPress: () => togglePastDay(dateStr),
                     },
                   ]
@@ -183,7 +181,8 @@ export default function MealPlanScreen() {
                     ...(isPast
                       ? [
                           {
-                            label: '\u25B2',
+                            icon: 'chevron-up' as const,
+                            label: '',
                             onPress: () => togglePastDay(dateStr),
                           },
                         ]
@@ -201,7 +200,7 @@ export default function MealPlanScreen() {
                   key={date.toISOString()}
                   label={frameLabel}
                   rightSegments={rightSegments}
-                  frameVariant={isToday ? 'double' : 'single'}
+                  elevation={isToday ? 'elevated' : 'bordered'}
                   collapsed={isCollapsed}
                   highlighted={isToday}
                   onLayout={

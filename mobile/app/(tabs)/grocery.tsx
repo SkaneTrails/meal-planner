@@ -34,7 +34,6 @@ export default function GroceryScreen() {
     newItemText,
     setNewItemText,
     totalItems,
-    checkedCount,
     hiddenAtHomeCount,
     itemsToBuy,
     checkedItemsToBuy,
@@ -65,9 +64,21 @@ export default function GroceryScreen() {
     );
   }
 
+  const subtitle =
+    itemsToBuy === 0
+      ? t('grocery.noItemsYet')
+      : t('grocery.itemsProgress', {
+          checked: checkedItemsToBuy,
+          total: itemsToBuy,
+        });
+
   return (
     <ScreenLayout>
-      <ScreenHeader title={t('grocery.thisWeeksShopping')}>
+      <ScreenHeader
+        title={t('grocery.thisWeeksShopping')}
+        subtitle={subtitle}
+        variant="large"
+      >
         <View
           style={{
             paddingHorizontal: spacing.xl,
@@ -83,7 +94,6 @@ export default function GroceryScreen() {
             itemsToBuy={itemsToBuy}
             checkedItemsToBuy={checkedItemsToBuy}
             totalItems={totalItems}
-            checkedCount={checkedCount}
             hiddenAtHomeCount={hiddenAtHomeCount}
             showAddItem={showAddItem}
             deleteMode={deleteMode}

@@ -266,6 +266,8 @@ export const useHomeScreenData = () => {
     plannedMealsCount,
     plannedMealsPercentage,
     nextMeal,
+    mealPlan,
+    weekStart,
     inspirationRecipes,
     inspirationRecipe,
     shuffleInspiration,

@@ -133,6 +133,8 @@ const en = {
       title: 'Inspiration',
       shuffle: 'Shuffle',
     },
+    thisWeek: 'This week',
+    openPlanner: 'Open planner',
     getStarted: {
       title: 'Get Started',
       addFirstRecipe: 'Add your first recipe',
@@ -445,6 +447,8 @@ const en = {
     thisWeeksShopping: "This week's shopping",
     noItemsYet: 'No items yet',
     itemsProgress: '{{checked}} of {{total}} items',
+    itemsSelected: '{{count}} selected',
+    dragToReorder: 'Drag to reorder',
     hiddenAtHome: '{{count}} item(s) hidden (at home)',
     addItemPlaceholder: 'Add an item...',
     addButton: 'Add',

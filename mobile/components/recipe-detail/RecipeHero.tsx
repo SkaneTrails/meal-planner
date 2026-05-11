@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { Animated } from 'react-native';
-import { useTheme } from '@/lib/theme';
+import { layout, useTheme } from '@/lib/theme';
 import { HeroOverlay } from './HeroOverlay';
 import {
   PLACEHOLDER_BLURHASH,
@@ -43,6 +43,7 @@ export const RecipeHero = ({
         position: 'relative',
         height: headerHeight,
         overflow: 'hidden',
+        ...layout.contentContainer,
         transform: [
           {
             translateY: scrollY.interpolate({

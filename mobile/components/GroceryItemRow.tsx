@@ -132,11 +132,14 @@ export const GroceryItemRow = ({
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: spacing.md,
-            backgroundColor: checked
-              ? colors.checkbox.checkedBg
-              : 'transparent',
+            // Neutral checked surface — the bright petrol fill paired
+            // with the gray-blue strike text used to read as "red+blue".
+            // Use the row's own subtle surface + a soft border so the
+            // check stays legible without competing with the accent color
+            // used for primary actions.
+            backgroundColor: checked ? colors.surface.subtle : 'transparent',
             borderColor: checked
-              ? colors.checkbox.checkedBorder
+              ? colors.content.subtitle
               : colors.surface.border,
           }}
         >
@@ -144,7 +147,7 @@ export const GroceryItemRow = ({
             <ThemeIcon
               name="checkmark"
               size={iconSize.xs}
-              color={colors.white}
+              color={colors.content.body}
             />
           )}
         </View>
@@ -191,6 +194,10 @@ export const GroceryItemRow = ({
           style={{ marginLeft: spacing.sm, padding: spacing.xs }}
           testID={`select-delete-${item.name}`}
         >
+          {/* Neutral selection mark — bright red fill alongside the
+              petrol-checked grocery checkbox produced the "red + blue"
+              row described in the open todos. A filled-ink square reads
+              as "selected for action" without injecting a new accent. */}
           <View
             style={{
               width: spacing['2xl'],
@@ -200,10 +207,10 @@ export const GroceryItemRow = ({
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: selectedForDelete
-                ? colors.danger
+                ? colors.content.body
                 : 'transparent',
               borderColor: selectedForDelete
-                ? colors.checkbox.checkedBorder
+                ? colors.content.body
                 : colors.surface.border,
             }}
           >

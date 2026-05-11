@@ -4,7 +4,13 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { CRTOverlay } from '@/components/CRTOverlay';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  layout,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -62,22 +68,40 @@ export const BottomSheetModal = ({
       }}
       testID={testID}
     >
+      {!isFlat && (
+        <View
+          style={{
+            alignItems: 'center',
+            paddingTop: spacing.sm,
+            paddingBottom: spacing.xs,
+          }}
+        >
+          <View
+            style={{
+              width: 36,
+              height: 4,
+              borderRadius: 2,
+              backgroundColor: colors.surface.divider,
+            }}
+          />
+        </View>
+      )}
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingHorizontal: spacing.xl,
-          paddingTop: spacing.xl,
+          paddingTop: isFlat ? spacing.xl : spacing.md,
           marginBottom: subtitle ? spacing.xs : spacing.lg,
         }}
       >
         <Text
           style={{
             fontSize: fontSize['3xl'],
-            fontFamily: fonts.bodyBold,
-            fontWeight: fontWeight.bold,
-            color: colors.content.headingWarm,
+            fontFamily: fonts.display,
+            letterSpacing: letterSpacing.tight,
+            color: colors.content.heading,
             flex: 1,
           }}
         >
@@ -90,12 +114,9 @@ export const BottomSheetModal = ({
             testID="close-button"
             accessibilityLabel={t('common.close')}
             accessibilityRole="button"
+            hitSlop={12}
           >
-            <ThemeIcon
-              name="close"
-              size={24}
-              color={colors.content.headingWarm}
-            />
+            <ThemeIcon name="close" size={22} color={colors.content.body} />
           </Pressable>
         )}
       </View>
@@ -105,7 +126,7 @@ export const BottomSheetModal = ({
           style={{
             fontSize: fontSize.md,
             fontFamily: fonts.body,
-            color: colors.gray[500],
+            color: colors.content.tertiary,
             paddingHorizontal: spacing.xl,
             marginBottom: spacing.md,
           }}

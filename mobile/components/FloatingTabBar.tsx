@@ -109,7 +109,10 @@ export const FloatingTabBar = () => {
         <View
           style={[
             styles.bar,
-            shadows.md,
+            // Phase 5: lighter floating-bar shadow. The shadow scale is now
+            // very quiet across themes, so this reads as a soft lift rather
+            // than the prior heavy "elevated card" look.
+            shadows.sm,
             { borderRadius: tabBar.borderRadius },
           ]}
         >

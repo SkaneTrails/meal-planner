@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 import {
   BottomSheetModal,
-  Button,
-  ContentCard,
+  IconButton,
   ScreenHeader,
   ScreenLayout,
 } from '@/components';
@@ -28,6 +27,7 @@ import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import { useCurrentUser, useDebouncedValue, useRecipes } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
+import { recipeFilterCache } from '@/lib/recipes/filterCache';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { DietLabel, LibraryScope, MealLabel } from '@/lib/types';
@@ -40,6 +40,9 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+// Module-level filter cache lives in `lib/recipes/filterCache` so the
+// root layout can reset filters without coupling to this route file.
+
 export default function RecipesScreen() {
   const { colors, borderRadius, fonts } = useTheme();
   const router = useRouter();
@@ -47,12 +50,64 @@ export default function RecipesScreen() {
   const { t } = useTranslation();
   const [showImportModal, setShowImportModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
-  const [mealFilters, setMealFilters] = useState<MealLabel[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [libraryScope, setLibraryScope] = useState<LibraryScope>('all');
+  // Filters are seeded from a module-level cache so they survive when the
+  // Recipes screen is unmounted (e.g. tabs reset on navigate-back from a
+  // recipe detail). Each setter also writes back to the cache.
+  const [searchQuery, setSearchQueryState] = useState(
+    recipeFilterCache.searchQuery,
+  );
+  const [dietFilter, setDietFilterState] = useState<DietLabel | null>(
+    recipeFilterCache.dietFilter,
+  );
+  const [mealFilters, setMealFiltersState] = useState<MealLabel[]>(
+    recipeFilterCache.mealFilters,
+  );
+  const [sortBy, setSortByState] = useState<SortOption>(
+    recipeFilterCache.sortBy,
+  );
+  const [showFavoritesOnly, setShowFavoritesOnlyState] = useState(
+    recipeFilterCache.showFavoritesOnly,
+  );
+  const [libraryScope, setLibraryScopeState] = useState<LibraryScope>(
+    recipeFilterCache.libraryScope,
+  );
+
+  const setSearchQuery = useCallback((v: string) => {
+    recipeFilterCache.searchQuery = v;
+    setSearchQueryState(v);
+  }, []);
+  const setDietFilter = useCallback((v: DietLabel | null) => {
+    recipeFilterCache.dietFilter = v;
+    setDietFilterState(v);
+  }, []);
+  const setMealFilters = useCallback(
+    (v: MealLabel[] | ((prev: MealLabel[]) => MealLabel[])) => {
+      setMealFiltersState((prev) => {
+        const next = typeof v === 'function' ? v(prev) : v;
+        recipeFilterCache.mealFilters = next;
+        return next;
+      });
+    },
+    [],
+  );
+  const setSortBy = useCallback((v: SortOption) => {
+    recipeFilterCache.sortBy = v;
+    setSortByState(v);
+  }, []);
+  const setShowFavoritesOnly = useCallback(
+    (v: boolean | ((prev: boolean) => boolean)) => {
+      setShowFavoritesOnlyState((prev) => {
+        const next = typeof v === 'function' ? v(prev) : v;
+        recipeFilterCache.showFavoritesOnly = next;
+        return next;
+      });
+    },
+    [],
+  );
+  const setLibraryScope = useCallback((v: LibraryScope) => {
+    recipeFilterCache.libraryScope = v;
+    setLibraryScopeState(v);
+  }, []);
   const { isFavorite } = useSettings();
   const { data: currentUser } = useCurrentUser();
 
@@ -63,16 +118,18 @@ export default function RecipesScreen() {
     }
   }, [addRecipe, router]);
 
+  // Filters persist between the recipes list and recipe detail pages,
+  // but reset when the user navigates elsewhere (root layout clears
+  // `filterCache` on pathname change). When the screen refocuses we
+  // hydrate state from the cache so a cleared cache resets the UI.
   useFocusEffect(
     useCallback(() => {
-      return () => {
-        setSearchQuery('');
-        setDietFilter(null);
-        setMealFilters([]);
-        setSortBy('newest');
-        setShowFavoritesOnly(false);
-        setLibraryScope('all');
-      };
+      setSearchQueryState(recipeFilterCache.searchQuery);
+      setDietFilterState(recipeFilterCache.dietFilter);
+      setMealFiltersState(recipeFilterCache.mealFilters);
+      setSortByState(recipeFilterCache.sortBy);
+      setShowFavoritesOnlyState(recipeFilterCache.showFavoritesOnly);
+      setLibraryScopeState(recipeFilterCache.libraryScope);
     }, []),
   );
 
@@ -142,38 +199,45 @@ export default function RecipesScreen() {
     currentUser?.household_id,
   ]);
 
-  const handleDietChange = useCallback((diet: DietLabel | null) => {
-    setDietFilter(diet);
-    setShowFavoritesOnly(false);
-  }, []);
+  const handleDietChange = useCallback(
+    (diet: DietLabel | null) => {
+      setDietFilter(diet);
+      setShowFavoritesOnly(false);
+    },
+    [setDietFilter, setShowFavoritesOnly],
+  );
 
   const handleFavoritesToggle = useCallback(() => {
     setShowFavoritesOnly((prev) => {
       if (!prev) setDietFilter(null);
       return !prev;
     });
-  }, []);
+  }, [setDietFilter, setShowFavoritesOnly]);
 
-  const handleMealTypeToggle = useCallback((meal: MealLabel) => {
-    setMealFilters((prev) =>
-      prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal],
-    );
-  }, []);
+  const handleMealTypeToggle = useCallback(
+    (meal: MealLabel) => {
+      setMealFilters((prev) =>
+        prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal],
+      );
+    },
+    [setMealFilters],
+  );
 
   const handleMealTypeClear = useCallback(() => {
     setMealFilters([]);
-  }, []);
+  }, [setMealFilters]);
 
   const handleSearchClear = useCallback(() => {
     hapticLight();
     searchInputRef.current?.blur();
     setSearchQuery('');
-  }, []);
+  }, [setSearchQuery]);
 
   return (
     <ScreenLayout>
       <ScreenHeader
         title={t('recipes.title')}
+        variant="large"
         subtitle={
           hasActiveFilters
             ? t('recipes.filteredCount', {
@@ -181,41 +245,16 @@ export default function RecipesScreen() {
               })
             : t('recipes.collectionCount', { count: totalCount })
         }
-      >
-        <ContentCard
-          highlighted
-          padding={spacing.md}
-          cardStyle={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginHorizontal: spacing.xl,
-            marginBottom: spacing.sm,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: fonts.bodyBold,
-              fontSize: fontSize.xl,
-              color: colors.content.subtitle,
-              flex: 1,
-            }}
-          >
-            {t('recipes.callToAction')}
-          </Text>
-          <Button
-            variant="primary"
-            size="sm"
-            onPress={() => setShowImportModal(true)}
+        rightAction={
+          <IconButton
             icon="add"
+            onPress={() => setShowImportModal(true)}
             label={t('recipes.addRecipe')}
-            style={{
-              paddingHorizontal: spacing.md,
-              paddingVertical: spacing.xs,
-            }}
+            tone="default"
+            size="md"
           />
-        </ContentCard>
-
+        }
+      >
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

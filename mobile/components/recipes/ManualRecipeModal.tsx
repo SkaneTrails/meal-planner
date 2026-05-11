@@ -144,8 +144,8 @@ export const ManualRecipeModal = ({
 
   const inputStyle = {
     ...styles.inputStyle,
-    borderWidth: 1,
-    borderColor: colors.input.border,
+    fontSize: fontSize.md,
+    backgroundColor: colors.input.bgSubtle,
     fontFamily: fonts.body,
   };
 
@@ -237,7 +237,7 @@ export const ManualRecipeModal = ({
       <View style={{ marginBottom: spacing.lg }}>
         <Text
           style={{
-            fontSize: fontSize.lg,
+            fontSize: fontSize.md,
             fontFamily: fonts.bodySemibold,
             color: colors.content.body,
             marginBottom: spacing.sm,

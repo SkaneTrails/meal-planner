@@ -59,6 +59,15 @@ interface ContentCardProps {
   card?: boolean;
   /** Accent border + highlighted background (e.g. today's card). Card only. */
   highlighted?: boolean;
+  /**
+   * Visual elevation — Phase 3 of the design refresh.
+   * - `"elevated"` (default) — current card behavior: bg + border + shadow.
+   * - `"bordered"` — flat surface with hairline border, no shadow. Modern editorial look.
+   * - `"flat"` — no bg, border, or shadow; just padding. Use when sections only need
+   *   spacing rhythm and a heading (composes well with the new `Section` primitive).
+   * Applies in `chrome: 'full'` mode only; flat-chrome (terminal) uses TerminalFrame regardless.
+   */
+  elevation?: 'elevated' | 'bordered' | 'flat';
   /** Override padding. Default: `spacing.md` for card, `spacing.md` for surface. */
   padding?: number;
   /** When set, renders an ⓘ icon in the card header that opens a help-tip popup. */
@@ -80,6 +89,7 @@ export const ContentCard = ({
   cardStyle,
   card = true,
   highlighted = false,
+  elevation = 'elevated',
   padding,
   tooltip,
   onLayout,
@@ -220,11 +230,25 @@ export const ContentCard = ({
   const hasHeader =
     !!label || (rightSegments && rightSegments.length > 0) || !!tooltip;
 
-  return (
-    <View
-      onLayout={onLayout}
-      style={[
-        {
+  const isFlat = elevation === 'flat';
+  const isBordered = elevation === 'bordered';
+  const elevationStyle = isFlat
+    ? {
+        backgroundColor: 'transparent' as const,
+        borderRadius: 0,
+        borderWidth: 0,
+        borderColor: 'transparent' as const,
+      }
+    : isBordered
+      ? {
+          backgroundColor: highlighted
+            ? colors.dayCard.bgToday
+            : colors.card.bg,
+          borderRadius: borderRadius.md,
+          borderWidth: 1,
+          borderColor: highlighted ? colors.ai.primary : colors.surface.border,
+        }
+      : {
           backgroundColor: highlighted
             ? colors.dayCard.bgToday
             : colors.card.bg,
@@ -235,8 +259,16 @@ export const ContentCard = ({
           borderColor: highlighted
             ? colors.ai.primary
             : colors.card.borderColor,
-          padding: padding ?? spacing.md,
           ...shadows.card,
+        };
+
+  return (
+    <View
+      onLayout={onLayout}
+      style={[
+        {
+          padding: padding ?? spacing.md,
+          ...elevationStyle,
         },
         cardStyle,
         style,
