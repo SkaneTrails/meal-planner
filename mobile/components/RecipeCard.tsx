@@ -233,7 +233,7 @@ export const RecipeCard = ({
           <View style={{ flex: 1, marginLeft: spacing.lg }}>
             <Text
               style={{
-                fontSize: fontSize['lg-xl'],
+                fontSize: fontSize.lg,
                 fontFamily: fonts.bodyMedium,
                 color: colors.content.heading,
                 letterSpacing: letterSpacing.normal,
@@ -659,8 +659,7 @@ export const RecipeCard = ({
             <Text
               style={{
                 fontSize: fontSize.md,
-                fontFamily: fonts.bodySemibold,
-                fontWeight: fontWeight.semibold,
+                fontFamily: fonts.bodyMedium,
                 color: colors.content.heading,
                 lineHeight: lineHeight.sm,
               }}

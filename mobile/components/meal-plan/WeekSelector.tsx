@@ -48,10 +48,9 @@ export const WeekSelector = ({
         <View style={{ alignItems: 'center' }}>
           <Text
             style={{
-              fontSize: fontSize.md,
-              fontFamily: fonts.bodySemibold,
-              fontWeight: fontWeight.semibold,
-              color: colors.content.strong,
+              fontSize: fontSize.base,
+              fontFamily: fonts.body,
+              color: colors.content.subtitle,
             }}
           >
             {formatWeekRange(weekDates, language)}

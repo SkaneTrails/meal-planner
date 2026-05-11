@@ -357,21 +357,21 @@ export const lightColors = {
   primaryDark: '#1A1A1A',
   primaryLight: '#404040',
 
-  // Background gradients - warm cream/linen tones
-  bgBase: '#EDE4DA',
-  bgLight: '#FAF5EF',
-  bgMid: '#F0E4D8',
-  bgDark: '#E5D5C5',
-  bgWarm: '#F8EDE2',
+  // Background gradients - cool petrol / glacier tones
+  bgBase: '#DCE7EC',
+  bgLight: '#EEF4F6',
+  bgMid: '#C9DAE1',
+  bgDark: '#A8C0CA',
+  bgWarm: '#E2ECF0',
 
-  // Accent colors - Warm terracotta/burnt orange
-  accent: '#D4845A',
-  accentDark: '#C07548',
-  accentLight: '#F0C4A8',
-  coral: '#E0855A',
-  coralSoft: '#F0A888',
-  gold: '#C4A060',
-  goldLight: '#E8D5A3',
+  // Accent colors - Deep petrol
+  accent: '#2C5664',
+  accentDark: '#1F4250',
+  accentLight: '#7BA0AE',
+  coral: '#3D6E7E',
+  coralSoft: '#9CBAC5',
+  gold: '#7E8C5A',
+  goldLight: '#C8D2B0',
 
   // Category colors (luxurious pastels)
   category: {
@@ -403,65 +403,65 @@ export const lightColors = {
     },
   },
 
-  // Neutrals - refined gray scale with warmth
+  // Neutrals - cool slate scale
   white: '#FFFFFF',
-  offWhite: '#FAFAFA',
+  offWhite: '#F8FAFB',
   text: {
-    primary: '#5D4E40',
-    secondary: 'rgba(93, 78, 64, 0.7)',
-    muted: 'rgba(93, 78, 64, 0.5)',
-    light: 'rgba(93, 78, 64, 0.35)',
-    inverse: '#2D2D2D',
-    dark: '#5D4E40',
+    primary: '#2E444C',
+    secondary: 'rgba(46, 68, 76, 0.7)',
+    muted: 'rgba(46, 68, 76, 0.5)',
+    light: 'rgba(46, 68, 76, 0.35)',
+    inverse: '#1A2429',
+    dark: '#2E444C',
   },
-  border: 'rgba(93, 78, 64, 0.18)',
-  borderLight: 'rgba(93, 78, 64, 0.1)',
-  borderFaint: 'rgba(93, 78, 64, 0.04)',
+  border: 'rgba(46, 68, 76, 0.18)',
+  borderLight: 'rgba(46, 68, 76, 0.1)',
+  borderFaint: 'rgba(46, 68, 76, 0.04)',
 
-  // Content colors — dark text/icons on light backgrounds (warm brown family)
+  // Content colors — dark text/icons on light backgrounds (cool slate family)
   content: {
-    heading: '#5D4E40',
-    headingMuted: 'rgba(93, 78, 64, 0.75)',
-    headingWarm: '#4A3728',
-    body: '#5D4E40',
-    secondary: '#8B7355',
-    strong: 'rgba(93, 78, 64, 0.8)',
-    tertiary: 'rgba(93, 78, 64, 0.7)',
-    subtitle: 'rgba(93, 78, 64, 0.6)',
-    icon: 'rgba(93, 78, 64, 0.5)',
-    placeholder: 'rgba(93, 78, 64, 0.4)',
-    placeholderHex: '#8B735580',
+    heading: '#2E444C',
+    headingMuted: 'rgba(46, 68, 76, 0.75)',
+    headingWarm: '#1F3742',
+    body: '#2E444C',
+    secondary: '#52707C',
+    strong: 'rgba(46, 68, 76, 0.8)',
+    tertiary: 'rgba(46, 68, 76, 0.7)',
+    subtitle: 'rgba(46, 68, 76, 0.6)',
+    icon: 'rgba(46, 68, 76, 0.5)',
+    placeholder: 'rgba(46, 68, 76, 0.4)',
+    placeholderHex: '#52707C80',
   },
 
-  // Interactive surface states — warm brown at various opacities
+  // Interactive surface states — cool slate at various opacities
   surface: {
-    overlay: 'rgba(93, 78, 64, 0.85)',
-    overlayMedium: 'rgba(93, 78, 64, 0.75)',
-    border: 'rgba(93, 78, 64, 0.18)',
-    borderLight: 'rgba(93, 78, 64, 0.12)',
-    divider: 'rgba(93, 78, 64, 0.12)',
-    dividerSolid: '#DDD0C2',
-    modal: '#F2EAE0',
-    pressed: 'rgba(93, 78, 64, 0.12)',
-    active: 'rgba(93, 78, 64, 0.08)',
-    subtle: 'rgba(93, 78, 64, 0.06)',
-    hover: 'rgba(93, 78, 64, 0.05)',
-    tint: 'rgba(93, 78, 64, 0.04)',
-    sheetOverlay: 'rgba(235, 232, 228, 0.94)',
-    iconBg: 'rgba(139, 115, 85, 0.1)',
+    overlay: 'rgba(46, 68, 76, 0.85)',
+    overlayMedium: 'rgba(46, 68, 76, 0.75)',
+    border: 'rgba(46, 68, 76, 0.18)',
+    borderLight: 'rgba(46, 68, 76, 0.12)',
+    divider: 'rgba(46, 68, 76, 0.12)',
+    dividerSolid: '#C2D0D6',
+    modal: '#EAF1F4',
+    pressed: 'rgba(46, 68, 76, 0.12)',
+    active: 'rgba(46, 68, 76, 0.08)',
+    subtle: 'rgba(46, 68, 76, 0.06)',
+    hover: 'rgba(46, 68, 76, 0.05)',
+    tint: 'rgba(46, 68, 76, 0.04)',
+    sheetOverlay: 'rgba(228, 236, 240, 0.94)',
+    iconBg: 'rgba(82, 112, 124, 0.1)',
   },
 
-  // Button colors — warm vivid orange
+  // Button colors — deep petrol
   button: {
-    primary: '#D97A45',
-    primaryPressed: '#C06B38',
+    primary: '#2C5664',
+    primaryPressed: '#1F4250',
     primaryText: '#FFFFFF',
-    disabled: '#C5B8A8',
-    primarySubtle: 'rgba(217, 122, 69, 0.08)',
-    primarySurface: 'rgba(217, 122, 69, 0.1)',
-    primaryActive: 'rgba(217, 122, 69, 0.14)',
-    primaryHover: 'rgba(217, 122, 69, 0.18)',
-    primaryDivider: 'rgba(217, 122, 69, 0.22)',
+    disabled: '#A8BCC4',
+    primarySubtle: 'rgba(44, 86, 100, 0.08)',
+    primarySurface: 'rgba(44, 86, 100, 0.1)',
+    primaryActive: 'rgba(44, 86, 100, 0.14)',
+    primaryHover: 'rgba(44, 86, 100, 0.18)',
+    primaryDivider: 'rgba(44, 86, 100, 0.22)',
   },
 
   // Refined gray scale
@@ -601,26 +601,26 @@ export const lightColors = {
     text: 'rgba(180, 80, 70, 0.9)',
   },
 
-  // Gradient decorative — animated background orbs and gradient stops
+  // Gradient decorative — animated background orbs and gradient stops (cold petrol palette)
   gradient: {
-    orb1: '#EEDACC',
-    orb2: '#E0C4AE',
-    orb3: '#D5C4B6',
-    orb4: '#7A726A',
-    orb5: '#EADAC8',
-    orb6: '#8A827A',
-    stop1: '#D8BCA6',
-    stop2: '#E6D0BC',
+    orb1: '#E0EBEF',
+    orb2: '#B8CED6',
+    orb3: '#CEDCE2',
+    orb4: '#5C7E8A',
+    orb5: '#D6E2E7',
+    orb6: '#7B98A4',
+    stop1: '#A2BCC6',
+    stop2: '#D2DFE4',
   },
 
   // Background overlays — used by GradientBackground to tint/cover the base image
   background: {
-    mutedOverlay: 'rgba(0, 0, 0, 0.12)',
-    defaultOverlay: 'rgba(255, 255, 255, 0.06)',
-    structuredWash: 'rgba(240, 234, 226, 0.96)',
-    structuredGradientStart: 'rgba(220, 212, 202, 0.12)',
+    mutedOverlay: 'rgba(20, 40, 50, 0.12)',
+    defaultOverlay: 'rgba(255, 255, 255, 0.05)',
+    structuredWash: 'rgba(220, 231, 236, 0.96)',
+    structuredGradientStart: 'rgba(162, 188, 198, 0.16)',
     structuredGradientEnd: 'transparent',
-    animatedOverlay: 'rgba(255, 255, 255, 0.06)',
+    animatedOverlay: 'rgba(255, 255, 255, 0.05)',
   },
 
   // Tag dot colors — muted palette for note/suggestion tags

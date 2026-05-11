@@ -98,7 +98,7 @@ export const BottomSheetModal = ({
       >
         <Text
           style={{
-            fontSize: fontSize['3xl'],
+            fontSize: fontSize['xl-2xl'],
             fontFamily: fonts.display,
             letterSpacing: letterSpacing.tight,
             color: colors.content.heading,
@@ -124,7 +124,7 @@ export const BottomSheetModal = ({
       {subtitle && (
         <Text
           style={{
-            fontSize: fontSize.md,
+            fontSize: fontSize.base,
             fontFamily: fonts.body,
             color: colors.content.tertiary,
             paddingHorizontal: spacing.xl,

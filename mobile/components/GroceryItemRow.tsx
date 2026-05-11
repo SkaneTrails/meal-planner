@@ -155,7 +155,7 @@ export const GroceryItemRow = ({
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              fontSize: fontSize.xl,
+              fontSize: fontSize.lg,
               fontFamily: fonts.bodyMedium,
               fontWeight: fontWeight.medium,
               textDecorationLine: checked ? 'line-through' : 'none',
@@ -169,7 +169,7 @@ export const GroceryItemRow = ({
           {item.recipe_sources.length > 0 && (
             <Text
               style={{
-                fontSize: fontSize.base,
+                fontSize: fontSize.sm,
                 fontFamily: fonts.body,
                 color: checked
                   ? colors.listItem.checkedText

@@ -1,16 +1,10 @@
-import { Text, View, type ViewStyle } from 'react-native';
-import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { View, type ViewStyle } from 'react-native';
+import type { ButtonTone } from '@/components/Button';
+import { Button } from '@/components/Button';
 import type { IoniconName } from '@/components/ThemeIcon';
-import { ThemeIcon } from '@/components/ThemeIcon';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import {
-  borderRadius,
-  fontSize,
-  letterSpacing,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -34,8 +28,8 @@ interface ActionTile {
   icon: IoniconName;
   label: string;
   onPress: () => void;
-  /** Use the AI accent fg instead of the regular content color. */
-  accentAi?: boolean;
+  /** Tone override — defaults to "glass". Use "glassAi" for AI-accented actions. */
+  tone?: ButtonTone;
   disabled?: boolean;
   dimmed?: boolean;
 }
@@ -56,7 +50,7 @@ export const RecipeActionButtons = ({
   onEnhance,
   onToggleKeepScreenOn,
 }: RecipeActionButtonsProps) => {
-  const { visibility, colors, fonts, shadows } = useTheme();
+  const { visibility } = useTheme();
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
@@ -101,7 +95,7 @@ export const RecipeActionButtons = ({
             key: 'enhance',
             icon: 'sparkles' as IoniconName,
             label: t('recipe.enhance'),
-            accentAi: true,
+            tone: 'glassAi' as const,
             disabled: enhanceDisabled,
             dimmed: enhanceDisabled,
             onPress: onEnhance,
@@ -118,43 +112,23 @@ export const RecipeActionButtons = ({
 
   return (
     <View style={rowStyle}>
-      {tiles.map((tile) => {
-        const fg = tile.accentAi
-          ? colors.tones.glassAi.fg
-          : colors.content.body;
-        return (
-          <AnimatedPressable
-            key={tile.key}
-            onPress={tile.onPress}
-            disabled={tile.disabled}
-            accessibilityRole="button"
-            accessibilityLabel={tile.label}
-            hoverScale={1.02}
-            pressScale={0.97}
-            style={{
-              ...tileStyle,
-              backgroundColor: colors.card.bg,
-              ...shadows.sm,
-              ...(tile.dimmed ? { opacity: 0.5 } : null),
-            }}
-          >
-            <ThemeIcon name={tile.icon} size={22} color={fg} />
-            <Text
-              numberOfLines={1}
-              style={{
-                fontFamily: fonts.bodySemibold,
-                fontSize: fontSize.xs,
-                color: fg,
-                letterSpacing: letterSpacing.wide,
-                textTransform: 'uppercase',
-                marginTop: spacing.xs,
-              }}
-            >
-              {tile.label}
-            </Text>
-          </AnimatedPressable>
-        );
-      })}
+      {tiles.map((tile) => (
+        <Button
+          key={tile.key}
+          variant="primary"
+          size="sm"
+          tone={tile.tone ?? 'glass'}
+          icon={tile.icon}
+          label={tile.label}
+          onPress={tile.onPress}
+          disabled={tile.disabled}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            ...(tile.dimmed ? { opacity: 0.5 } : null),
+          }}
+        />
+      ))}
     </View>
   );
 };
@@ -164,14 +138,5 @@ const rowStyle: ViewStyle = {
   alignItems: 'stretch',
   gap: spacing.sm,
   width: '100%',
-};
-
-const tileStyle: ViewStyle = {
-  flex: 1,
-  minWidth: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingVertical: spacing.md,
-  paddingHorizontal: spacing.xs,
-  borderRadius: borderRadius.md,
+  flexWrap: 'wrap',
 };
