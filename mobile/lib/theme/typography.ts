@@ -62,29 +62,29 @@ export const fontFamilyWeight = {
 // Rule of thumb: micro/eyebrow sizes start at 12; default body sits at 14–15;
 // reading body at 16; section headings at 18–22; screen titles at 24–32.
 export const fontSize = {
-  xs: 12,
-  sm: 13,
-  base: 14,
-  md: 15,
-  lg: 16,
-  xl: 18,
-  'lg-xl': 19,
-  '2xl': 20,
-  'xl-2xl': 22,
-  '3xl': 24,
-  '3xl-4xl': 30,
-  '4xl': 28,
-  '5xl': 36,
-  '6xl': 44,
+  xs: 11,
+  sm: 12,
+  base: 13,
+  md: 14,
+  lg: 15,
+  xl: 16,
+  'lg-xl': 17,
+  '2xl': 18,
+  'xl-2xl': 19,
+  '3xl': 21,
+  '3xl-4xl': 24,
+  '4xl': 24,
+  '5xl': 30,
+  '6xl': 36,
 } as const;
 
-// Line-height ramp aligned to the new font sizes (~1.4–1.5× body, ~1.25 headings).
+// Line-height ramp aligned to the new font sizes (~1.4× body, ~1.2 headings).
 export const lineHeight = {
-  sm: 18,
-  md: 20,
-  lg: 24,
-  xl: 26,
-  '2xl': 30,
+  sm: 16,
+  md: 18,
+  lg: 22,
+  xl: 24,
+  '2xl': 28,
 } as const;
 
 // Font weights for typography hierarchy
@@ -113,88 +113,88 @@ export const createTypography = (fonts: FontFamilyTokens) =>
     displayLarge: {
       fontFamily: fonts.displayBold,
       fontSize: fontSize['6xl'],
-      lineHeight: 48,
+      lineHeight: 40,
       letterSpacing: letterSpacing.tighter,
     },
     displayMedium: {
       fontFamily: fonts.display,
       fontSize: fontSize['4xl'],
-      lineHeight: 34,
+      lineHeight: 30,
       letterSpacing: letterSpacing.tight,
     },
     displaySmall: {
       fontFamily: fonts.display,
       fontSize: fontSize['3xl'],
-      lineHeight: 30,
+      lineHeight: 26,
       letterSpacing: letterSpacing.snug,
     },
 
     headingLarge: {
       fontFamily: fonts.bodyBold,
       fontSize: fontSize['3xl'],
-      lineHeight: 30,
+      lineHeight: 26,
       letterSpacing: letterSpacing.snug,
     },
     headingMedium: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize['2xl'],
-      lineHeight: 26,
+      lineHeight: 22,
       letterSpacing: letterSpacing.normal,
     },
     headingSmall: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.xl,
-      lineHeight: 24,
+      lineHeight: 20,
       letterSpacing: letterSpacing.normal,
     },
 
     bodyLarge: {
       fontFamily: fonts.body,
       fontSize: fontSize.lg,
-      lineHeight: 24,
+      lineHeight: 22,
     },
     bodyMedium: {
       fontFamily: fonts.body,
       fontSize: fontSize.md,
-      lineHeight: 22,
+      lineHeight: 20,
     },
     bodySmall: {
       fontFamily: fonts.body,
       fontSize: fontSize.base,
-      lineHeight: 20,
+      lineHeight: 18,
     },
 
     labelLarge: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.lg,
-      lineHeight: 20,
+      lineHeight: 18,
     },
     labelMedium: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.md,
-      lineHeight: 20,
+      lineHeight: 18,
     },
     labelSmall: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.sm,
-      lineHeight: 18,
+      lineHeight: 16,
     },
 
     caption: {
       fontFamily: fonts.bodyMedium,
       fontSize: fontSize.base,
-      lineHeight: 20,
+      lineHeight: 18,
     },
     captionSmall: {
       fontFamily: fonts.bodyMedium,
       fontSize: fontSize.sm,
-      lineHeight: 18,
+      lineHeight: 16,
     },
 
     overline: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.xs,
-      lineHeight: 16,
+      lineHeight: 14,
       letterSpacing: letterSpacing.wider,
       textTransform: 'uppercase' as const,
     },
