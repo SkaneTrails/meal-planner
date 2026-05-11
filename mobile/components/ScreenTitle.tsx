@@ -77,23 +77,23 @@ export const ScreenTitle = ({
 
 const styles = StyleSheet.create({
   centeredTitle: {
-    fontSize: fontSize['3xl'],
+    fontSize: fontSize['xl-2xl'],
     fontWeight: fontWeight.bold,
     letterSpacing: letterSpacing.tight,
     textAlign: 'center',
   },
   centeredSubtitle: {
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     marginTop: spacing['2xs'],
     textAlign: 'center',
   },
   largeTitle: {
-    fontSize: fontSize['4xl'],
+    fontSize: fontSize['3xl'],
     letterSpacing: letterSpacing.tight,
     textAlign: 'center',
   },
   largeSubtitle: {
-    fontSize: fontSize.lg,
+    fontSize: fontSize.base,
     letterSpacing: letterSpacing.normal,
     marginTop: spacing.xs,
     textAlign: 'center',

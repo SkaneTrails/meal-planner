@@ -52,7 +52,7 @@ export const EmptyGroceryState = ({
       <Text
         style={{
           color: colors.content.body,
-          fontSize: fontSize['xl-2xl'],
+          fontSize: fontSize.xl,
           fontFamily: fonts.bodySemibold,
           textAlign: 'center',
         }}
@@ -62,7 +62,7 @@ export const EmptyGroceryState = ({
       <Text
         style={{
           color: colors.content.tertiary,
-          fontSize: fontSize.xl,
+          fontSize: fontSize.base,
           marginTop: spacing.sm,
           textAlign: 'center',
           lineHeight: lineHeight.lg,

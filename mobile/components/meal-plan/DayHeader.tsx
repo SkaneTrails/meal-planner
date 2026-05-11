@@ -91,8 +91,8 @@ export const DayHeader = ({
           )}
           <Text
             style={{
-              fontSize: fontSize.xl,
-              fontFamily: fonts.bodySemibold,
+              fontSize: fontSize.lg,
+              fontFamily: fonts.bodyMedium,
               color: isToday ? colors.primary : colors.content.headingMuted,
               letterSpacing: letterSpacing.normal,
             }}

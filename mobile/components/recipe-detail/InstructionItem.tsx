@@ -183,7 +183,7 @@ export const InstructionItem = ({
         )}
         <Text
           style={{
-            fontSize: fontSize.xl,
+            fontSize: fontSize.lg,
             fontFamily: fonts.body,
             color: isCompleted
               ? colors.timeline.completedText

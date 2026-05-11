@@ -3,12 +3,13 @@ import { HomeScreenSkeleton, IconButton, ScreenLayout } from '@/components';
 import { HeroNextMeal } from '@/components/home/HeroNextMeal';
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { WeekStrip } from '@/components/home/WeekStrip';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { layout, spacing, useTheme } from '@/lib/theme';
 
 export default function HomeScreen() {
-  const { colors } = useTheme();
+  const { colors, shadows } = useTheme();
   const {
     router,
     recipes,
@@ -48,19 +49,51 @@ export default function HomeScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        <TopBar
-          onAdd={() => {
-            hapticLight();
-            router.push({
-              pathname: '/(tabs)/recipes',
-              params: { addRecipe: 'true' },
-            });
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: spacing.xl,
+            paddingBottom: spacing.lg,
           }}
-          onSettings={() => {
-            hapticLight();
-            router.push('/settings');
-          }}
-        />
+        >
+          <ScreenTitle
+            title={t('signIn.appName')}
+            subtitle={t('home.subtitle')}
+            variant="large"
+            style={{ flex: 1 }}
+          />
+          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+            <IconButton
+              onPress={() => {
+                hapticLight();
+                router.push({
+                  pathname: '/(tabs)/recipes',
+                  params: { addRecipe: 'true' },
+                });
+              }}
+              icon="add"
+              size={40}
+              iconSize={20}
+              color={colors.card.bg}
+              textColor={colors.content.body}
+              style={shadows.sm}
+            />
+            <IconButton
+              onPress={() => {
+                hapticLight();
+                router.push('/settings');
+              }}
+              icon="settings-outline"
+              size={40}
+              iconSize={20}
+              color={colors.card.bg}
+              textColor={colors.content.body}
+              style={shadows.sm}
+            />
+          </View>
+        </View>
 
         <HeroNextMeal
           nextMeal={nextMeal}
@@ -84,53 +117,3 @@ export default function HomeScreen() {
     </ScreenLayout>
   );
 }
-
-/**
- * Bare top bar with the only two header actions: add recipe + settings.
- * No greeting, no title — the hero IS the title.
- *
- * The buttons share the same opaque-white-card + sm-shadow language as
- * the floating "Open" / "Shuffle" pills on the hero and inspiration
- * cards, so the whole tab feels like one editorial surface instead of
- * three different icon styles.
- */
-const TopBar = ({
-  onAdd,
-  onSettings,
-}: {
-  onAdd: () => void;
-  onSettings: () => void;
-}) => {
-  const { colors, shadows } = useTheme();
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        gap: spacing.sm,
-        paddingHorizontal: spacing.xl,
-        paddingBottom: spacing.lg,
-      }}
-    >
-      <IconButton
-        onPress={onAdd}
-        icon="add"
-        size={44}
-        iconSize={22}
-        color={colors.card.bg}
-        textColor={colors.content.body}
-        style={shadows.sm}
-      />
-      <IconButton
-        onPress={onSettings}
-        icon="settings-outline"
-        size={44}
-        iconSize={22}
-        color={colors.card.bg}
-        textColor={colors.content.body}
-        style={shadows.sm}
-      />
-    </View>
-  );
-};

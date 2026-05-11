@@ -136,8 +136,8 @@ export const HeroNextMeal = ({ nextMeal, t, onPress }: HeroNextMealProps) => {
           <Text
             style={{
               fontFamily: fonts.displayBold,
-              fontSize: fontSize['4xl'],
-              lineHeight: 36,
+              fontSize: fontSize['3xl'],
+              lineHeight: 30,
               color: colors.white,
               letterSpacing: letterSpacing.tight,
             }}
