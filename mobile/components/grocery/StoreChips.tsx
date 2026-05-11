@@ -18,7 +18,9 @@ export const StoreChips = ({
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  if (stores.length === 0) return null;
+  // With a single configured store the chip row is just a redundant
+  // 'All stores' + that one store — both select the same items. Hide.
+  if (stores.length <= 1) return null;
 
   return (
     <ScrollView

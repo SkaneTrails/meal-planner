@@ -438,6 +438,8 @@ const sv: Translations = {
     thisWeeksShopping: 'Veckans inköp',
     noItemsYet: 'Inga varor ännu',
     itemsProgress: '{{checked}} av {{total}} varor',
+    itemsSelected: '{{count}} valda',
+    dragToReorder: 'Dra för att sortera',
     hiddenAtHome: '{{count}} vara/varor dolda (finns hemma)',
     addItemPlaceholder: 'Lägg till en vara...',
     addButton: 'Lägg till',
