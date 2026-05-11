@@ -2,25 +2,25 @@
  * Spacing, layout, border radius, icon sizes, shadows, and animation constants.
  */
 
-// Spacing scale — modernized in Phase 2 of the design-system refresh.
-// Values snap to a 4-based ramp with a 2px hairline accent at the bottom
-// (2/4/8/12/16/24/32/40/48). Half-step keys (`xs-sm`, `sm-md`, `md-lg`,
-// `lg-xl`) are preserved to avoid touching the ~100 consumer call sites,
-// but their values now collapse to the nearest 4-step neighbour for a
-// tighter, more consistent rhythm across all themes.
+// Spacing scale — tightened for a more compact, harmonious rhythm.
+// Values follow a 2-based ramp at the small end (2/4/6/8/10/12/14/16) and
+// step up in larger increments above 16 (20/28/36/44). Half-step keys
+// (`xs-sm`, `sm-md`, `md-lg`) are preserved to avoid touching the ~100
+// consumer call sites and now sit between their neighbours (6/10/14) for a
+// finer, less spongy spacing rhythm across all themes.
 export const spacing = {
   '2xs': 2,
   xs: 4,
-  'xs-sm': 8,
+  'xs-sm': 6,
   sm: 8,
-  'sm-md': 12,
+  'sm-md': 10,
   md: 12,
-  'md-lg': 16,
+  'md-lg': 14,
   lg: 16,
-  xl: 24,
-  '2xl': 32,
-  '3xl': 40,
-  '4xl': 48,
+  xl: 20,
+  '2xl': 28,
+  '3xl': 36,
+  '4xl': 44,
 } as const;
 
 // Layout constants
@@ -32,12 +32,12 @@ export const layout = {
     alignSelf: 'center' as const,
     width: '100%' as const,
   },
-  screenPaddingTop: 48,
-  screenPaddingHorizontal: 24,
+  screenPaddingTop: 32,
+  screenPaddingHorizontal: 20,
   /** Vertical breathing room between sibling sections on a screen.
    *  Single source of truth — replaces ad-hoc `spacing.lg`/`xl`/`2xl` between blocks. */
-  sectionGap: 32,
-  cardGap: 8,
+  sectionGap: 24,
+  cardGap: 6,
   /** @deprecated Use layout.tabBar instead */
   tabBarHeight: 88,
   tabBar: {
@@ -91,13 +91,13 @@ export interface BorderRadiusTokens {
 
 // Icon sizes - standardized
 export const iconSize = {
-  xs: 14,
-  sm: 16,
-  md: 18,
-  lg: 20,
-  xl: 24,
-  '2xl': 32,
-  '3xl': 40,
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 22,
+  '2xl': 28,
+  '3xl': 36,
 } as const;
 
 // Dot indicator sizes (colored dots in chips/tags)
@@ -107,12 +107,12 @@ export const dotSize = {
 
 // Icon container sizes (circles around icons)
 export const iconContainer = {
-  xs: 36,
-  sm: 32,
-  md: 40,
-  lg: 48,
-  xl: 56,
-  '2xl': 80,
+  xs: 30,
+  sm: 28,
+  md: 36,
+  lg: 42,
+  xl: 48,
+  '2xl': 68,
 } as const;
 
 export type IconContainerSize = keyof typeof iconContainer;
