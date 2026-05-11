@@ -39,6 +39,26 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+// Module-level filter cache. Persists user-applied filters across screen
+// blurs (e.g. tapping a recipe and coming back from the detail page).
+// Cleared via the in-screen 'Rensa' action OR by
+// `resetRecipeFilterCache` when the user navigates away from the
+// recipes flow entirely (see root layout pathname watcher).
+const defaultFilterState = {
+  searchQuery: '',
+  dietFilter: null as DietLabel | null,
+  mealFilters: [] as MealLabel[],
+  sortBy: 'newest' as SortOption,
+  showFavoritesOnly: false,
+  libraryScope: 'all' as LibraryScope,
+};
+
+const filterCache: typeof defaultFilterState = { ...defaultFilterState };
+
+export const resetRecipeFilterCache = () => {
+  Object.assign(filterCache, defaultFilterState, { mealFilters: [] });
+};
+
 export default function RecipesScreen() {
   const { colors, borderRadius, fonts } = useTheme();
   const router = useRouter();
@@ -46,12 +66,60 @@ export default function RecipesScreen() {
   const { t } = useTranslation();
   const [showImportModal, setShowImportModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dietFilter, setDietFilter] = useState<DietLabel | null>(null);
-  const [mealFilters, setMealFilters] = useState<MealLabel[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [libraryScope, setLibraryScope] = useState<LibraryScope>('all');
+  // Filters are seeded from a module-level cache so they survive when the
+  // Recipes screen is unmounted (e.g. tabs reset on navigate-back from a
+  // recipe detail). Each setter also writes back to the cache.
+  const [searchQuery, setSearchQueryState] = useState(filterCache.searchQuery);
+  const [dietFilter, setDietFilterState] = useState<DietLabel | null>(
+    filterCache.dietFilter,
+  );
+  const [mealFilters, setMealFiltersState] = useState<MealLabel[]>(
+    filterCache.mealFilters,
+  );
+  const [sortBy, setSortByState] = useState<SortOption>(filterCache.sortBy);
+  const [showFavoritesOnly, setShowFavoritesOnlyState] = useState(
+    filterCache.showFavoritesOnly,
+  );
+  const [libraryScope, setLibraryScopeState] = useState<LibraryScope>(
+    filterCache.libraryScope,
+  );
+
+  const setSearchQuery = useCallback((v: string) => {
+    filterCache.searchQuery = v;
+    setSearchQueryState(v);
+  }, []);
+  const setDietFilter = useCallback((v: DietLabel | null) => {
+    filterCache.dietFilter = v;
+    setDietFilterState(v);
+  }, []);
+  const setMealFilters = useCallback(
+    (v: MealLabel[] | ((prev: MealLabel[]) => MealLabel[])) => {
+      setMealFiltersState((prev) => {
+        const next = typeof v === 'function' ? v(prev) : v;
+        filterCache.mealFilters = next;
+        return next;
+      });
+    },
+    [],
+  );
+  const setSortBy = useCallback((v: SortOption) => {
+    filterCache.sortBy = v;
+    setSortByState(v);
+  }, []);
+  const setShowFavoritesOnly = useCallback(
+    (v: boolean | ((prev: boolean) => boolean)) => {
+      setShowFavoritesOnlyState((prev) => {
+        const next = typeof v === 'function' ? v(prev) : v;
+        filterCache.showFavoritesOnly = next;
+        return next;
+      });
+    },
+    [],
+  );
+  const setLibraryScope = useCallback((v: LibraryScope) => {
+    filterCache.libraryScope = v;
+    setLibraryScopeState(v);
+  }, []);
   const { isFavorite } = useSettings();
   const { data: currentUser } = useCurrentUser();
 
@@ -62,16 +130,18 @@ export default function RecipesScreen() {
     }
   }, [addRecipe, router]);
 
+  // Filters persist between the recipes list and recipe detail pages,
+  // but reset when the user navigates elsewhere (root layout clears
+  // `filterCache` on pathname change). When the screen refocuses we
+  // hydrate state from the cache so a cleared cache resets the UI.
   useFocusEffect(
     useCallback(() => {
-      return () => {
-        setSearchQuery('');
-        setDietFilter(null);
-        setMealFilters([]);
-        setSortBy('newest');
-        setShowFavoritesOnly(false);
-        setLibraryScope('all');
-      };
+      setSearchQueryState(filterCache.searchQuery);
+      setDietFilterState(filterCache.dietFilter);
+      setMealFiltersState(filterCache.mealFilters);
+      setSortByState(filterCache.sortBy);
+      setShowFavoritesOnlyState(filterCache.showFavoritesOnly);
+      setLibraryScopeState(filterCache.libraryScope);
     }, []),
   );
 
