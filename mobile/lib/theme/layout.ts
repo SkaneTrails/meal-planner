@@ -2,12 +2,12 @@
  * Spacing, layout, border radius, icon sizes, shadows, and animation constants.
  */
 
-// Spacing scale — modernized in Phase 2 of the design-system refresh.
-// Values snap to a 4-based ramp with a 2px hairline accent at the bottom
-// (2/4/8/12/16/24/32/40/48). Half-step keys (`xs-sm`, `sm-md`, `md-lg`,
-// `lg-xl`) are preserved to avoid touching the ~100 consumer call sites,
-// but their values now collapse to the nearest 4-step neighbour for a
-// tighter, more consistent rhythm across all themes.
+// Spacing scale — tightened for a more compact, harmonious rhythm.
+// Values follow a 2-based ramp at the small end (2/4/6/8/10/12/14/16) and
+// step up in larger increments above 16 (20/28/36/44). Half-step keys
+// (`xs-sm`, `sm-md`, `md-lg`) are preserved to avoid touching the ~100
+// consumer call sites and now sit between their neighbours (6/10/14) for a
+// finer, less spongy spacing rhythm across all themes.
 export const spacing = {
   '2xs': 2,
   xs: 4,

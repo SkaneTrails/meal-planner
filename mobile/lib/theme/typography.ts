@@ -56,11 +56,11 @@ export const fontFamilyWeight = {
   accent: '500' as const,
 };
 
-// Typography scale — modernized in Phase 1 of the design-system refresh.
+// Typography scale — tightened for a more compact, modern UI.
 // Token keys are preserved (large blast radius) but values are bumped to a
-// contemporary ramp (body 14–16, headings 18–28, display 30–44).
-// Rule of thumb: micro/eyebrow sizes start at 12; default body sits at 14–15;
-// reading body at 16; section headings at 18–22; screen titles at 24–32.
+// smaller ramp (body 13–15, headings 16–24, display 24–36).
+// Rule of thumb: micro/eyebrow sizes start at 11; default body sits at 13–14;
+// reading body at 15; section headings at 16–18; screen titles at 21–24.
 export const fontSize = {
   xs: 11,
   sm: 12,
