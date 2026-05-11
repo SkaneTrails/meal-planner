@@ -157,7 +157,8 @@ export default function MealPlanScreen() {
                 ? [
                     { label: summary },
                     {
-                      label: '\u25BC',
+                      icon: 'chevron-down' as const,
+                      label: '',
                       onPress: () => togglePastDay(dateStr),
                     },
                   ]
@@ -180,7 +181,8 @@ export default function MealPlanScreen() {
                     ...(isPast
                       ? [
                           {
-                            label: '\u25B2',
+                            icon: 'chevron-up' as const,
+                            label: '',
                             onPress: () => togglePastDay(dateStr),
                           },
                         ]
