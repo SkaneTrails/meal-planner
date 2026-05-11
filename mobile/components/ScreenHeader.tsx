@@ -29,7 +29,13 @@ export const ScreenHeader = ({
 }: ScreenHeaderProps) => {
   const { shadows } = useTheme();
   const isLarge = variant === 'large';
-  const hasNav = !!onBack || !!rightAction;
+  const hasBack = !!onBack;
+  const hasNav = hasBack || !!rightAction;
+  // When the large header has a right action but no back button, we float
+  // that action over the title row instead of reserving a separate nav
+  // band above it. That kept the top ~80px of phone screens entirely
+  // empty except for a small icon.
+  const floatRightAction = isLarge && !!rightAction && !hasBack;
 
   return (
     <ScreenHeaderBar style={style}>
@@ -40,7 +46,7 @@ export const ScreenHeader = ({
           paddingBottom: children ? spacing.sm : spacing.md,
         }}
       >
-        {isLarge && hasNav && (
+        {isLarge && hasNav && !floatRightAction && (
           <View
             style={{
               flexDirection: 'row',
@@ -67,7 +73,27 @@ export const ScreenHeader = ({
             {rightAction}
           </View>
         )}
-        <ScreenTitle variant={variant} title={title} subtitle={subtitle} />
+        {floatRightAction ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+              gap: spacing.md,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <ScreenTitle
+                variant={variant}
+                title={title}
+                subtitle={subtitle}
+              />
+            </View>
+            {rightAction}
+          </View>
+        ) : (
+          <ScreenTitle variant={variant} title={title} subtitle={subtitle} />
+        )}
       </View>
       {children}
     </ScreenHeaderBar>
