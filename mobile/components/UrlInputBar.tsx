@@ -20,6 +20,9 @@ interface UrlInputBarProps {
   disabled?: boolean;
   showClear?: boolean;
   onClear?: () => void;
+  /** When true, the inline submit button is never rendered (used when
+   * the surrounding modal already shows a full-width primary CTA). */
+  hideSubmit?: boolean;
 }
 
 export const UrlInputBar = ({
@@ -31,6 +34,7 @@ export const UrlInputBar = ({
   disabled,
   showClear,
   onClear,
+  hideSubmit,
 }: UrlInputBarProps) => {
   const { colors, fonts, borderRadius } = useTheme();
 
@@ -76,7 +80,7 @@ export const UrlInputBar = ({
           style={{ marginRight: spacing.sm }}
         />
       )}
-      {!showClear && (
+      {!showClear && !hideSubmit && (
         <Button
           variant="primary"
           onPress={onSubmit}

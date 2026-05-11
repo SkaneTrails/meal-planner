@@ -357,7 +357,7 @@ export const petrolColors: ColorTokens = {
   input: {
     bg: 'rgba(255, 255, 255, 0.95)',
     bgSubtle: inkA(0.03),
-    border: 'transparent',
+    border: inkA(0.12),
     text: INK,
     placeholder: INK_SOFT,
   },

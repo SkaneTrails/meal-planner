@@ -14,6 +14,7 @@ import {
   EnhancingOverlay,
   FormField,
   IconCircle,
+  ScreenHeader,
   ScreenLayout,
   Toggle,
 } from '@/components';
@@ -33,7 +34,6 @@ import {
   fontWeight,
   layout,
   letterSpacing,
-  lineHeight,
   spacing,
   useTheme,
 } from '@/lib/theme';
@@ -50,7 +50,7 @@ const SUPPORTED_SITES = [
 ];
 
 export default function AddRecipeScreen() {
-  const { colors, borderRadius, shadows } = useTheme();
+  const { colors, borderRadius } = useTheme();
   const actions = useAddRecipeActions();
   const { settings } = useSettings();
   const aiEnabled = settings.aiEnabled;
@@ -79,6 +79,12 @@ export default function AddRecipeScreen() {
       style={{ flex: 1 }}
     >
       <ScreenLayout constrained={false}>
+        <ScreenHeader
+          title={t('addRecipe.title')}
+          subtitle={t('addRecipe.description')}
+          variant="large"
+          onBack={() => actions.router.back()}
+        />
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={[
@@ -91,51 +97,6 @@ export default function AddRecipeScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Instructions */}
-          <View
-            style={{
-              backgroundColor: colors.primary,
-              borderRadius: borderRadius.lg,
-              padding: spacing.lg,
-              marginBottom: spacing['2xl'],
-              ...shadows.md,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: spacing.sm,
-              }}
-            >
-              <ThemeIcon
-                name="information-circle"
-                size={22}
-                color={colors.white}
-              />
-              <Text
-                style={{
-                  marginLeft: spacing.sm,
-                  fontSize: fontSize['2xl'],
-                  fontWeight: fontWeight.semibold,
-                  color: colors.white,
-                  letterSpacing: letterSpacing.normal,
-                }}
-              >
-                {t('addRecipe.title')}
-              </Text>
-            </View>
-            <Text
-              style={{
-                color: colors.text.secondary,
-                fontSize: fontSize.lg,
-                lineHeight: lineHeight.lg,
-              }}
-            >
-              {t('addRecipe.description')}
-            </Text>
-          </View>
-
           {/* URL input */}
           <FormField label={t('addRecipe.urlLabel')}>
             <ContentCard
@@ -345,14 +306,14 @@ export default function AddRecipeScreen() {
           />
 
           {/* Supported sites */}
-          <View style={{ marginTop: spacing['3xl'] }}>
+          <View style={{ marginTop: spacing.xl }}>
             <Text
               style={{
-                fontSize: fontSize.md,
+                fontSize: fontSize.xs,
                 fontWeight: fontWeight.semibold,
-                color: colors.gray[600],
-                marginBottom: spacing.md,
-                letterSpacing: letterSpacing.wide,
+                color: colors.content.subtitle,
+                marginBottom: spacing.sm,
+                letterSpacing: letterSpacing.wider,
                 textTransform: 'uppercase',
               }}
             >
@@ -362,23 +323,23 @@ export default function AddRecipeScreen() {
               style={{
                 flexDirection: 'row',
                 flexWrap: 'wrap',
-                gap: spacing.sm,
+                gap: spacing.xs,
               }}
             >
               {[...SUPPORTED_SITES, t('addRecipe.andMore')].map((site) => (
                 <View
                   key={site}
                   style={{
-                    backgroundColor: colors.glass.card,
-                    paddingHorizontal: spacing.md,
-                    paddingVertical: spacing.sm,
+                    backgroundColor: colors.surface.subtle,
+                    paddingHorizontal: spacing.sm,
+                    paddingVertical: spacing.xs,
                     borderRadius: borderRadius.sm,
                   }}
                 >
                   <Text
                     style={{
-                      fontSize: fontSize.md,
-                      color: colors.text.inverse,
+                      fontSize: fontSize.sm,
+                      color: colors.content.body,
                     }}
                   >
                     {site}
