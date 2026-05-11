@@ -113,14 +113,16 @@ const TopBar = ({
         icon="add"
         size={44}
         iconSize={22}
-        textColor={colors.content.heading}
+        tone="subtle"
+        textColor={colors.content.body}
       />
       <IconButton
         onPress={onSettings}
         icon="settings-outline"
         size={44}
         iconSize={22}
-        textColor={colors.content.heading}
+        tone="subtle"
+        textColor={colors.content.body}
       />
     </View>
   );

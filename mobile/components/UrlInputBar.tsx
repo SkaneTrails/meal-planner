@@ -37,7 +37,7 @@ export const UrlInputBar = ({
   return (
     <View
       style={{
-        backgroundColor: colors.input.bg,
+        backgroundColor: colors.input.bgSubtle,
         borderRadius: borderRadius.md,
         padding: spacing.xs,
         flexDirection: 'row',

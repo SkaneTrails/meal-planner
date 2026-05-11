@@ -1,11 +1,6 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import {
-  ActionButton,
-  AnimatedPressable,
-  ButtonGroup,
-  IconButton,
-} from '@/components';
+import { AnimatedPressable, ButtonGroup, IconButton } from '@/components';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
@@ -43,7 +38,15 @@ const ActionButtons = ({
           pressScale={0.95}
         />
       ) : (
-        <ActionButton.Add onPress={onToggleAddItem} iconSize={iconSize.md} />
+        <IconButton
+          icon="add"
+          iconSize={iconSize.md}
+          onPress={onToggleAddItem}
+          label="Add"
+          tone="subtle"
+          hoverScale={1.08}
+          pressScale={0.95}
+        />
       )}
       {totalItems > 1 && (
         <IconButton

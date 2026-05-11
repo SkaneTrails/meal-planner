@@ -323,7 +323,7 @@ export const GroceryListView = ({
           >
             <Button
               variant="text"
-              tone="warning"
+              tone="subtle"
               size="sm"
               icon="checkmark-done-outline"
               label={t('grocery.clearPickedButton')}
