@@ -1,8 +1,16 @@
-import { useWindowDimensions, View, type ViewStyle } from 'react-native';
-import { Button } from '@/components/Button';
+import { Text, View, type ViewStyle } from 'react-native';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import type { IoniconName } from '@/components/ThemeIcon';
+import { ThemeIcon } from '@/components/ThemeIcon';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { borderRadius, spacing, useTheme } from '@/lib/theme';
+import {
+  borderRadius,
+  fontSize,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -21,14 +29,12 @@ interface RecipeActionButtonsProps {
   onToggleKeepScreenOn: () => void;
 }
 
-type IconName = Parameters<typeof Button>[0]['icon'];
-
 interface ActionTile {
   key: string;
-  icon: IconName;
+  icon: IoniconName;
   label: string;
   onPress: () => void;
-  /** When true, the AI accent tone is used (glassAi instead of glassSolid). */
+  /** Use the AI accent fg instead of the regular content color. */
   accentAi?: boolean;
   disabled?: boolean;
   dimmed?: boolean;
@@ -50,16 +56,14 @@ export const RecipeActionButtons = ({
   onEnhance,
   onToggleKeepScreenOn,
 }: RecipeActionButtonsProps) => {
-  const { visibility, shadows } = useTheme();
-  const { width } = useWindowDimensions();
-  const compact = width < COMPACT_BREAKPOINT;
+  const { visibility, colors, fonts, shadows } = useTheme();
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
   const tiles: ActionTile[] = [
     {
       key: 'edit',
-      icon: 'create',
+      icon: 'create-outline',
       label: t('recipe.edit'),
       // Not disabled — onPress shows an alert with copy option when uneditable.
       dimmed: !canEdit,
@@ -75,7 +79,7 @@ export const RecipeActionButtons = ({
     },
     {
       key: 'plan',
-      icon: 'calendar',
+      icon: 'calendar-outline',
       label: t('mealPlan.title'),
       onPress: onShowPlanModal,
     },
@@ -83,7 +87,7 @@ export const RecipeActionButtons = ({
       ? [
           {
             key: 'copy',
-            icon: 'copy-outline' as IconName,
+            icon: 'copy-outline' as IoniconName,
             label: t('recipe.copy'),
             disabled: isCopying,
             dimmed: isCopying,
@@ -95,7 +99,7 @@ export const RecipeActionButtons = ({
       ? [
           {
             key: 'enhance',
-            icon: 'sparkles' as IconName,
+            icon: 'sparkles' as IoniconName,
             label: t('recipe.enhance'),
             accentAi: true,
             disabled: enhanceDisabled,
@@ -106,7 +110,7 @@ export const RecipeActionButtons = ({
       : []),
     {
       key: 'screen',
-      icon: (keepScreenOn ? 'sunny' : 'sunny-outline') as IconName,
+      icon: (keepScreenOn ? 'sunny' : 'sunny-outline') as IoniconName,
       label: t(keepScreenOn ? 'recipe.screenOnActive' : 'recipe.keepScreenOn'),
       onPress: onToggleKeepScreenOn,
     },
@@ -114,25 +118,43 @@ export const RecipeActionButtons = ({
 
   return (
     <View style={rowStyle}>
-      {tiles.map((tile) => (
-        <Button
-          key={tile.key}
-          variant="text"
-          tone={tile.accentAi ? 'glassAi' : 'glassSolid'}
-          size="md"
-          icon={tile.icon}
-          label={compact ? undefined : tile.label}
-          disabled={tile.disabled}
-          onPress={tile.onPress}
-          iconSize={18}
-          style={{
-            ...pillStyleBase,
-            ...(compact ? compactPillExtra : null),
-            ...shadows.sm,
-            ...(tile.dimmed ? { opacity: 0.5 } : null),
-          }}
-        />
-      ))}
+      {tiles.map((tile) => {
+        const fg = tile.accentAi
+          ? colors.tones.glassAi.fg
+          : colors.content.body;
+        return (
+          <AnimatedPressable
+            key={tile.key}
+            onPress={tile.onPress}
+            disabled={tile.disabled}
+            accessibilityRole="button"
+            accessibilityLabel={tile.label}
+            hoverScale={1.02}
+            pressScale={0.97}
+            style={{
+              ...tileStyle,
+              backgroundColor: colors.card.bg,
+              ...shadows.sm,
+              ...(tile.dimmed ? { opacity: 0.5 } : null),
+            }}
+          >
+            <ThemeIcon name={tile.icon} size={22} color={fg} />
+            <Text
+              numberOfLines={1}
+              style={{
+                fontFamily: fonts.bodySemibold,
+                fontSize: fontSize.xs,
+                color: fg,
+                letterSpacing: letterSpacing.wide,
+                textTransform: 'uppercase',
+                marginTop: spacing.xs,
+              }}
+            >
+              {tile.label}
+            </Text>
+          </AnimatedPressable>
+        );
+      })}
     </View>
   );
 };
@@ -144,18 +166,12 @@ const rowStyle: ViewStyle = {
   width: '100%',
 };
 
-const pillStyleBase: ViewStyle = {
+const tileStyle: ViewStyle = {
   flex: 1,
   minWidth: 0,
+  alignItems: 'center',
   justifyContent: 'center',
   paddingVertical: spacing.md,
-  paddingHorizontal: spacing.sm,
-  borderRadius: borderRadius.full,
-};
-
-const compactPillExtra: ViewStyle = {
   paddingHorizontal: spacing.xs,
+  borderRadius: borderRadius.md,
 };
-
-/** Below this width, action pills collapse to icon-only (no labels). */
-const COMPACT_BREAKPOINT = 480;

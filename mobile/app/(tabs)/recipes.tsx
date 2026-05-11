@@ -186,7 +186,7 @@ export default function RecipesScreen() {
             icon="add"
             onPress={() => setShowImportModal(true)}
             label={t('recipes.addRecipe')}
-            tone="ai"
+            tone="default"
             size="md"
           />
         }
