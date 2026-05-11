@@ -4,7 +4,13 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { CRTOverlay } from '@/components/CRTOverlay';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
-import { fontSize, fontWeight, layout, spacing, useTheme } from '@/lib/theme';
+import {
+  fontSize,
+  layout,
+  letterSpacing,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -92,10 +98,10 @@ export const BottomSheetModal = ({
       >
         <Text
           style={{
-            fontSize: fontSize['2xl'],
-            fontFamily: fonts.bodySemibold,
-            fontWeight: fontWeight.semibold,
-            color: colors.content.headingWarm,
+            fontSize: fontSize['3xl'],
+            fontFamily: fonts.display,
+            letterSpacing: letterSpacing.tight,
+            color: colors.content.heading,
             flex: 1,
           }}
         >

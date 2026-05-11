@@ -74,22 +74,19 @@ export const ScreenHeader = ({
           </View>
         )}
         {floatRightAction ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              gap: spacing.md,
-            }}
-          >
-            <View style={{ flex: 1 }}>
-              <ScreenTitle
-                variant={variant}
-                title={title}
-                subtitle={subtitle}
-              />
+          <View style={{ position: 'relative' }}>
+            <ScreenTitle variant={variant} title={title} subtitle={subtitle} />
+            <View
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                bottom: 0,
+                justifyContent: 'center',
+              }}
+            >
+              {rightAction}
             </View>
-            {rightAction}
           </View>
         ) : (
           <ScreenTitle variant={variant} title={title} subtitle={subtitle} />

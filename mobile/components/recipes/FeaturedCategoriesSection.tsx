@@ -50,7 +50,7 @@ export const FeaturedCategoriesSection = ({
           color: colors.content.subtitle,
           letterSpacing: letterSpacing.wider,
           textTransform: 'uppercase',
-          marginTop: spacing['xl'],
+          marginTop: spacing.xl,
           marginBottom: spacing.sm,
         }}
       >

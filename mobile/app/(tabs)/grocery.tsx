@@ -74,7 +74,11 @@ export default function GroceryScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeader title={t('grocery.thisWeeksShopping')} subtitle={subtitle}>
+      <ScreenHeader
+        title={t('grocery.thisWeeksShopping')}
+        subtitle={subtitle}
+        variant="large"
+      >
         <View
           style={{
             paddingHorizontal: spacing.xl,

@@ -103,7 +103,7 @@ export default function MealPlanScreen() {
 
   return (
     <ScreenLayout>
-      <ScreenHeader title={t('mealPlan.title')}>
+      <ScreenHeader title={t('mealPlan.title')} variant="large">
         <WeekSelector
           weekDates={weekDates}
           weekOffset={weekOffset}

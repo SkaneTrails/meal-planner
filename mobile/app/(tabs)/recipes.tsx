@@ -211,33 +211,39 @@ export default function RecipesScreen() {
     currentUser?.household_id,
   ]);
 
-  const handleDietChange = useCallback((diet: DietLabel | null) => {
-    setDietFilter(diet);
-    setShowFavoritesOnly(false);
-  }, []);
+  const handleDietChange = useCallback(
+    (diet: DietLabel | null) => {
+      setDietFilter(diet);
+      setShowFavoritesOnly(false);
+    },
+    [setDietFilter, setShowFavoritesOnly],
+  );
 
   const handleFavoritesToggle = useCallback(() => {
     setShowFavoritesOnly((prev) => {
       if (!prev) setDietFilter(null);
       return !prev;
     });
-  }, []);
+  }, [setDietFilter, setShowFavoritesOnly]);
 
-  const handleMealTypeToggle = useCallback((meal: MealLabel) => {
-    setMealFilters((prev) =>
-      prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal],
-    );
-  }, []);
+  const handleMealTypeToggle = useCallback(
+    (meal: MealLabel) => {
+      setMealFilters((prev) =>
+        prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal],
+      );
+    },
+    [setMealFilters],
+  );
 
   const handleMealTypeClear = useCallback(() => {
     setMealFilters([]);
-  }, []);
+  }, [setMealFilters]);
 
   const handleSearchClear = useCallback(() => {
     hapticLight();
     searchInputRef.current?.blur();
     setSearchQuery('');
-  }, []);
+  }, [setSearchQuery]);
 
   return (
     <ScreenLayout>

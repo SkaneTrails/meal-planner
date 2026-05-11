@@ -106,7 +106,7 @@ export const Section = ({
 
   const titleStyle =
     size === 'sm'
-      ? { ...typography.displaySmall, color: colors.content.heading }
+      ? { ...typography.headingLarge, color: colors.content.heading }
       : {
           fontFamily: fonts.bodyBold,
           fontSize: fontSize.lg,

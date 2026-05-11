@@ -90,11 +90,13 @@ const styles = StyleSheet.create({
   largeTitle: {
     fontSize: fontSize['4xl'],
     letterSpacing: letterSpacing.tight,
+    textAlign: 'center',
   },
   largeSubtitle: {
     fontSize: fontSize.lg,
     letterSpacing: letterSpacing.normal,
     marginTop: spacing.xs,
+    textAlign: 'center',
   },
   eyebrowCentered: {
     fontSize: fontSize.xs,
@@ -107,6 +109,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     letterSpacing: letterSpacing.wider,
     textTransform: 'uppercase',
+    textAlign: 'center',
     marginBottom: spacing.sm,
   },
 });
