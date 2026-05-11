@@ -71,7 +71,7 @@ export default function SettingsScreen() {
   return (
     <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <ScreenHeader title={t('settings.title')} />
+        <ScreenHeader title={t('settings.title')} variant="large" />
 
         <ScrollView
           style={{ flex: 1 }}
