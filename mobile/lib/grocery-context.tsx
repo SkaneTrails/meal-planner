@@ -40,6 +40,7 @@ interface GroceryContextValue {
   saveSelections: (
     meals: string[],
     servings: Record<string, number>,
+    removedItems?: string[],
   ) => Promise<void>;
   clearAll: () => Promise<void>;
   refreshFromApi: () => Promise<void>;
@@ -352,7 +353,11 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const saveSelections = useCallback(
-    async (meals: string[], servings: Record<string, number>) => {
+    async (
+      meals: string[],
+      servings: Record<string, number>,
+      removedItemsOverride?: string[],
+    ) => {
       if (patchTimerRef.current) {
         clearTimeout(patchTimerRef.current);
         patchTimerRef.current = null;
@@ -361,8 +366,6 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
       setSelectedMealKeys(meals);
       setMealServings(servings);
-      setRemovedItemsState([]);
-      removedItemsRef.current = [];
 
       AsyncStorage.setItem(
         'grocery_selected_meals',
@@ -375,7 +378,9 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       const response = await api.patchGroceryState({
         selected_meals: meals,
         meal_servings: servings,
-        removed_items: [],
+        ...(removedItemsOverride !== undefined
+          ? { removed_items: removedItemsOverride }
+          : {}),
       });
       applyState(response);
       cacheToAsyncStorage({

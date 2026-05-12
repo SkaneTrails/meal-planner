@@ -17,7 +17,7 @@ export interface RecipeForAggregation {
   id: string;
   title: string;
   ingredients: string[];
-  servings?: number;
+  servings?: number | null;
 }
 
 export const EXTRAS_KEY_PREFIX = 'extras_';

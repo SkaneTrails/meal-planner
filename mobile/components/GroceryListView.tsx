@@ -25,7 +25,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
 
-import { fontSize, iconSize, layout, spacing, useTheme } from '@/lib/theme';
+import {
+  borderRadius,
+  fontSize,
+  iconSize,
+  layout,
+  spacing,
+  useTheme,
+} from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 import { Button } from './Button';
 import { ContentCard } from './ContentCard';
@@ -323,12 +330,15 @@ export const GroceryListView = ({
           >
             <Button
               variant="text"
-              tone="subtle"
+              tone="glassSolid"
               size="sm"
               icon="checkmark-done-outline"
               label={t('grocery.clearPickedButton')}
               onPress={onClearPicked}
               testID="clear-picked"
+              hoverScale={1.08}
+              pressScale={0.95}
+              style={{ borderRadius: borderRadius.full }}
             />
           </View>
         )}

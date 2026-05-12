@@ -59,6 +59,7 @@ vi.mock('@/lib/hooks', () => ({
     saveSelections: mockSaveSelections,
     selectedMealKeys: [] as string[],
     mealServings: {} as Record<string, number>,
+    removedItems: [] as string[],
   })),
 }));
 
@@ -209,6 +210,7 @@ describe('useMealPlanActions', () => {
       expect(mockSaveSelections).toHaveBeenCalledWith(
         ['2026-01-05_lunch'],
         { '2026-01-05_lunch': 4 },
+        [],
       );
       expect(result.current.showGroceryModal).toBe(false);
     });
@@ -219,6 +221,7 @@ describe('useMealPlanActions', () => {
         saveSelections: mockSaveSelections,
         selectedMealKeys: ['2026-01-06_dinner'],
         mealServings: { '2026-01-06_dinner': 2 },
+        removedItems: [] as string[],
       } as unknown as ReturnType<typeof useGroceryState>);
 
       const { result } = renderActions();
@@ -229,12 +232,42 @@ describe('useMealPlanActions', () => {
       expect(mockSaveSelections).toHaveBeenCalledWith(
         expect.arrayContaining(['2026-01-06_dinner', '2026-01-05_lunch']),
         { '2026-01-06_dinner': 2, '2026-01-05_lunch': 4 },
+        [],
       );
 
       vi.mocked(useGroceryState).mockReturnValue({
         saveSelections: mockSaveSelections,
         selectedMealKeys: [] as string[],
         mealServings: {} as Record<string, number>,
+        removedItems: [] as string[],
+      } as unknown as ReturnType<typeof useGroceryState>);
+    });
+
+    it('restores removed items for meals explicitly selected again', async () => {
+      const { useGroceryState } = await import('@/lib/hooks');
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: ['2026-01-05_lunch'],
+        mealServings: { '2026-01-05_lunch': 4 },
+        removedItems: ['chicken', 'curry paste', 'butter'],
+      } as unknown as ReturnType<typeof useGroceryState>);
+
+      const { result } = renderActions();
+
+      act(() => result.current.handleToggleMeal(new Date('2026-01-05'), 'lunch', 4));
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        ['2026-01-05_lunch'],
+        { '2026-01-05_lunch': 4 },
+        ['butter'],
+      );
+
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: [] as string[],
+        mealServings: {} as Record<string, number>,
+        removedItems: [] as string[],
       } as unknown as ReturnType<typeof useGroceryState>);
     });
   });

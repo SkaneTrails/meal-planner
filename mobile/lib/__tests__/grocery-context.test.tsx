@@ -284,11 +284,10 @@ describe('GroceryProvider', () => {
       expect(mockPatchGroceryState).toHaveBeenCalledWith({
         selected_meals: ['monday-lunch', 'tuesday-dinner'],
         meal_servings: { 'monday-lunch': 4, 'tuesday-dinner': 2 },
-        removed_items: [],
       });
     });
 
-    it('clears removed items but preserves checked items when saving new selections', async () => {
+    it('preserves removed items and checked items when saving new selections', async () => {
       mockGetGroceryState.mockResolvedValue({
         ...emptyState,
         selected_meals: ['monday-lunch'],
@@ -299,10 +298,10 @@ describe('GroceryProvider', () => {
 
       mockPatchGroceryState.mockResolvedValue({
         ...emptyState,
-        selected_meals: ['tuesday-dinner'],
-        meal_servings: { 'tuesday-dinner': 4 },
+        selected_meals: ['monday-lunch', 'tuesday-dinner'],
+        meal_servings: { 'monday-lunch': 2, 'tuesday-dinner': 4 },
         checked_items: ['flour', 'sugar'],
-        removed_items: [],
+        removed_items: ['butter'],
       });
 
       const { result } = renderHook(() => useGroceryState(), {
@@ -315,17 +314,50 @@ describe('GroceryProvider', () => {
 
       await act(async () => {
         await result.current.saveSelections(
-          ['tuesday-dinner'],
-          { 'tuesday-dinner': 4 },
+          ['monday-lunch', 'tuesday-dinner'],
+          { 'monday-lunch': 2, 'tuesday-dinner': 4 },
         );
       });
 
       expect(result.current.checkedItems.size).toBe(2);
-      expect(result.current.removedItems).toEqual([]);
+      expect(result.current.removedItems).toEqual(['butter']);
+      expect(mockPatchGroceryState).toHaveBeenCalledWith({
+        selected_meals: ['monday-lunch', 'tuesday-dinner'],
+        meal_servings: { 'monday-lunch': 2, 'tuesday-dinner': 4 },
+      });
+    });
+
+    it('applies an explicit removed items override when provided', async () => {
+      mockGetGroceryState.mockResolvedValue({
+        ...emptyState,
+        removed_items: ['butter', 'milk'],
+      });
+
+      mockPatchGroceryState.mockResolvedValue({
+        ...emptyState,
+        selected_meals: ['tuesday-dinner'],
+        meal_servings: { 'tuesday-dinner': 4 },
+        removed_items: ['milk'],
+      });
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      await act(async () => {
+        await result.current.saveSelections(
+          ['tuesday-dinner'],
+          { 'tuesday-dinner': 4 },
+          ['milk'],
+        );
+      });
+
+      expect(result.current.removedItems).toEqual(['milk']);
       expect(mockPatchGroceryState).toHaveBeenCalledWith({
         selected_meals: ['tuesday-dinner'],
         meal_servings: { 'tuesday-dinner': 4 },
-        removed_items: [],
+        removed_items: ['milk'],
       });
     });
   });
