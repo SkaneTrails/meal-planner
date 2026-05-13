@@ -442,9 +442,12 @@ export const useMealPlanActions = () => {
       const newMeals = Array.from(selectedMeals);
       const mergedMeals = [...new Set([...existingMealKeys, ...newMeals])];
       const mergedServings = { ...existingServings, ...mealServings };
+      const readdedMealKeys = newMeals.filter((key) =>
+        existingMealKeys.includes(key),
+      );
       const restoredItemNames = new Set(
         aggregateIngredients(
-          newMeals,
+          readdedMealKeys,
           mealPlan?.meals ?? {},
           recipes,
           mergedServings,

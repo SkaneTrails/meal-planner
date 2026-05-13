@@ -24,6 +24,7 @@ const mockMealPlan = {
     '2026-01-05_lunch': 'recipe-1',
     '2026-01-05_dinner': 'custom:Pasta night',
     '2026-01-06_lunch': 'unknown-id',
+    '2026-01-06_dinner': 'recipe-2',
   },
   notes: {
     '2026-01-05': 'Office Gym',
@@ -36,6 +37,14 @@ const mockRecipes: Recipe[] = [
     title: 'Chicken Curry',
     ingredients: ['chicken', 'curry paste'],
     instructions: ['Cook chicken', 'Add curry'],
+    visibility: 'household',
+    household_id: 'h1',
+  }),
+  mockRecipe({
+    id: 'recipe-2',
+    title: 'Chicken Rice Bowl',
+    ingredients: ['chicken', 'rice'],
+    instructions: ['Cook chicken', 'Serve with rice'],
     visibility: 'household',
     household_id: 'h1',
   }),
@@ -270,6 +279,36 @@ describe('useMealPlanActions', () => {
         removedItems: [] as string[],
       } as unknown as ReturnType<typeof useGroceryState>);
     });
+
+    it('does not restore shared ingredients when adding a different meal later', async () => {
+      const { useGroceryState } = await import('@/lib/hooks');
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: ['2026-01-05_lunch'],
+        mealServings: { '2026-01-05_lunch': 4 },
+        removedItems: ['chicken'],
+      } as unknown as ReturnType<typeof useGroceryState>);
+
+      const { result } = renderActions();
+
+      act(() =>
+        result.current.handleToggleMeal(new Date('2026-01-06'), 'dinner', 2),
+      );
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        expect.arrayContaining(['2026-01-05_lunch', '2026-01-06_dinner']),
+        { '2026-01-05_lunch': 4, '2026-01-06_dinner': 2 },
+        ['chicken'],
+      );
+
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: [] as string[],
+        mealServings: {} as Record<string, number>,
+        removedItems: [] as string[],
+      } as unknown as ReturnType<typeof useGroceryState>);
+    });
   });
 
   describe('handleMealPress', () => {
@@ -383,8 +422,8 @@ describe('useMealPlanActions', () => {
 
     it('counts only matching meal types (unknown-id counts as present)', () => {
       const { result } = renderActions();
-      // 2026-01-06 has only lunch (unknown-id) = 1
-      expect(result.current.countMealsForDate(new Date('2026-01-06'))).toBe(1);
+      // 2026-01-06 has lunch (unknown-id) and dinner (recipe-2) = 2
+      expect(result.current.countMealsForDate(new Date('2026-01-06'))).toBe(2);
     });
   });
 

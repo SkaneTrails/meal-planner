@@ -25,14 +25,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from '@/lib/i18n';
 
-import {
-  borderRadius,
-  fontSize,
-  iconSize,
-  layout,
-  spacing,
-  useTheme,
-} from '@/lib/theme';
+import { fontSize, iconSize, layout, spacing, useTheme } from '@/lib/theme';
 import type { GroceryItem } from '@/lib/types';
 import { Button } from './Button';
 import { ContentCard } from './ContentCard';
@@ -113,7 +106,7 @@ export const GroceryListView = ({
   onReorder,
   onClearPicked,
 }: GroceryListViewProps) => {
-  const { colors, fonts } = useTheme();
+  const { borderRadius, colors, fonts } = useTheme();
   const { t } = useTranslation();
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
   const orderedItemsRef = useRef<GroceryItem[]>([]);
