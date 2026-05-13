@@ -21,6 +21,7 @@ def save_meal_plan(
     household_id: str,
     meals: dict[str, str],
     notes: dict[str, str] | None = None,
+    last_modified_by: dict[str, str] | None = None,
     extras: dict[str, list[str]] | None = None,
 ) -> None:  # pragma: no cover
     """
@@ -30,6 +31,8 @@ def save_meal_plan(
         household_id: The household identifier.
         meals: Dictionary with date_mealtype keys and recipe_id/custom values.
         notes: Optional dictionary with date keys and note text values.
+        last_modified_by: Optional dictionary with date_mealtype keys and
+            email values for the user who last changed each slot.
         extras: Optional week-keyed dict of recipe ID lists for the "Other" section.
     """
     db = get_firestore_client()
@@ -38,6 +41,8 @@ def save_meal_plan(
     data: dict[str, Any] = {"meals": meals, "updated_at": datetime.now(tz=UTC)}
     if notes is not None:
         data["notes"] = notes
+    if last_modified_by is not None:
+        data["last_modified_by"] = last_modified_by
     if extras is not None:
         data["extras"] = extras
 
@@ -46,7 +51,7 @@ def save_meal_plan(
 
 def load_meal_plan(
     household_id: str,
-) -> tuple[dict[str, str], dict[str, str], dict[str, list[str]]]:  # pragma: no cover
+) -> tuple[dict[str, str], dict[str, str], dict[str, str], dict[str, list[str]]]:  # pragma: no cover
     """
     Load the meal plan from Firestore.
 
@@ -54,7 +59,7 @@ def load_meal_plan(
         household_id: The household identifier.
 
     Returns:
-        Tuple of (meals dict, notes dict, extras week-keyed dict).
+        Tuple of (meals dict, notes dict, last_modified_by dict, extras week-keyed dict).
     """
     db = get_firestore_client()
     doc = cast(
@@ -62,16 +67,18 @@ def load_meal_plan(
     )
 
     if not doc.exists:
-        return {}, {}, {}
+        return {}, {}, {}, {}
 
     data = doc.to_dict()
     if data is None:
-        return {}, {}, {}
+        return {}, {}, {}, {}
 
-    return data.get("meals", {}), data.get("notes", {}), data.get("extras", {})
+    return data.get("meals", {}), data.get("notes", {}), data.get("last_modified_by", {}), data.get("extras", {})
 
 
-def update_meal(household_id: str, date_str: str, meal_type_str: str, value: str) -> None:  # pragma: no cover
+def update_meal(
+    household_id: str, date_str: str, meal_type_str: str, value: str, modified_by: str
+) -> None:  # pragma: no cover
     """
     Update a single meal in the meal plan.
 
@@ -80,12 +87,15 @@ def update_meal(household_id: str, date_str: str, meal_type_str: str, value: str
         date_str: The ISO date string of the meal.
         meal_type_str: The meal type value (breakfast, lunch, dinner, snack).
         value: The recipe ID or custom text (prefixed with "custom:").
+        modified_by: Email of the user who changed the slot.
     """
     db = get_firestore_client()
     doc_ref = db.collection(MEAL_PLANS_COLLECTION).document(_get_meal_plan_doc_id(household_id))
 
     key = f"{date_str}_{meal_type_str}"
-    doc_ref.set({"meals": {key: value}, "updated_at": datetime.now(tz=UTC)}, merge=True)
+    doc_ref.set(
+        {"meals": {key: value}, "last_modified_by": {key: modified_by}, "updated_at": datetime.now(tz=UTC)}, merge=True
+    )
 
 
 def delete_meal(household_id: str, date_str: str, meal_type_str: str) -> None:  # pragma: no cover
@@ -107,7 +117,8 @@ def delete_meal(household_id: str, date_str: str, meal_type_str: str) -> None:  
         return
 
     key = f"meals.{date_str}_{meal_type_str}"
-    doc_ref.update({key: DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
+    meta_key = f"last_modified_by.{date_str}_{meal_type_str}"
+    doc_ref.update({key: DELETE_FIELD, meta_key: DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
 
 
 def update_day_note(household_id: str, date_str: str, note: str) -> None:  # pragma: no cover

@@ -79,7 +79,7 @@ async def generate_grocery_list(
     effective_end = end_date if end_date is not None else effective_start + timedelta(days=days - 1)
 
     # Load meal plan
-    meals, _, extras = meal_plan_storage.load_meal_plan(household_id)
+    meals, _, _, extras = meal_plan_storage.load_meal_plan(household_id)
 
     recipe_ids, custom_meal_texts = _collect_meal_entries(meals, effective_start, effective_end)
 

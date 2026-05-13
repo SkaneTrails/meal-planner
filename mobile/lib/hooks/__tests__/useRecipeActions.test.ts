@@ -40,6 +40,12 @@ vi.mock('@/lib/hooks/use-auth', () => ({
   })),
 }));
 
+vi.mock('@/lib/settings-context', () => ({
+  useSettings: vi.fn(() => ({
+    settings: { aiEnabled: true },
+  })),
+}));
+
 vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
@@ -631,7 +637,7 @@ describe('useRecipeActions', () => {
       );
     });
 
-    it('copies with keepEnhanced=true when choosing Copy As Is', async () => {
+    it('copies the original version when choosing Copy Original', async () => {
       const recipe = makeRecipe({
         household_id: 'other-household',
         visibility: 'shared',
@@ -646,11 +652,11 @@ describe('useRecipeActions', () => {
 
       expect(mockCopyMutateAsync).toHaveBeenCalledWith({
         id: 'recipe-1',
-        keepEnhanced: true,
+        keepEnhanced: false,
       });
     });
 
-    it('copies with keepEnhanced=false when choosing Copy & Enhance', async () => {
+    it('copies the original version and auto-enhances when choosing Copy & Enhance', async () => {
       const recipe = makeRecipe({
         household_id: 'other-household',
         visibility: 'shared',
@@ -667,6 +673,7 @@ describe('useRecipeActions', () => {
         id: 'recipe-1',
         keepEnhanced: false,
       });
+      expect(mockEnhanceMutateAsync).toHaveBeenCalledWith('copied-recipe-1');
     });
 
     it('calls copyRecipe and navigates to copy on success', async () => {

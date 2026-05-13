@@ -259,6 +259,7 @@ export default function MealPlanScreen() {
                         label={label}
                         recipe={meal.recipe}
                         customText={meal.customText}
+                        lastModifiedBy={meal.lastModifiedBy}
                         onRemove={handleRemoveMeal}
                         onMealPress={handleMealPress}
                         onEditCustomText={handleEditCustomText}

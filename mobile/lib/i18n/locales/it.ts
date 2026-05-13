@@ -303,9 +303,9 @@ const it: Translations = {
       'Verrà creata una copia privata nel tuo nucleo familiare. Potrai poi migliorarla con le tue preferenze.',
     copyEnhancedTitle: 'Ricetta migliorata',
     copyEnhancedMessage:
-      'Questa ricetta è stata migliorata per un altro nucleo familiare. Vuoi migliorarla per il tuo?',
+      'Questa ricetta è stata migliorata per le preferenze di un altro nucleo familiare. Vuoi copiare la versione originale e migliorarla per il tuo?',
     copyAndEnhance: 'Copia e migliora',
-    copyAsIs: "Copia così com'è",
+    copyAsIs: 'Copia originale',
     copySuccess: 'Ricetta copiata nel tuo nucleo familiare',
     copyFailed: 'Impossibile copiare la ricetta',
     belongsToAnother: 'Altro nucleo familiare',
