@@ -15,6 +15,21 @@ router = APIRouter(prefix="/meal-plans", tags=["meal-plans"])
 
 # Expected number of parts when splitting meal key
 _MEAL_KEY_PARTS = 2
+_INITIALS_SEGMENTS = 2
+
+
+def _build_modifier_label(user: AuthenticatedUser) -> str:
+    """Build a display-safe initials label for slot attribution."""
+    source = (user.name or user.email).strip()
+    local_part = source.split("@", 1)[0].strip()
+    if not local_part:
+        return ""
+
+    segments = [segment.strip() for segment in local_part.replace("-", " ").replace("_", " ").replace(".", " ").split()]
+    segments = [segment for segment in segments if segment]
+    if len(segments) >= _INITIALS_SEGMENTS:
+        return f"{segments[0][0]}{segments[1][0]}".upper()
+    return local_part[:_INITIALS_SEGMENTS].upper()
 
 
 class MealUpdateRequest(BaseModel):
@@ -89,8 +104,10 @@ async def get_meal_plan(
     Superusers can specify any household_id to view.
     """
     resolved_id = _resolve_household(user, household_id)
-    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
+    meals, notes, last_modified_by, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(
+        household_id=resolved_id, meals=meals, notes=notes, last_modified_by=last_modified_by, extras=extras
+    )
 
 
 @router.put("")
@@ -120,7 +137,7 @@ async def update_meal_plan(
         if value is None:
             meal_plan_storage.delete_meal(resolved_id, date_str, meal_type_str)
         else:
-            meal_plan_storage.update_meal(resolved_id, date_str, meal_type_str, value)
+            meal_plan_storage.update_meal(resolved_id, date_str, meal_type_str, value, _build_modifier_label(user))
 
     # Process note updates
     for date_str, note in updates.notes.items():
@@ -132,8 +149,10 @@ async def update_meal_plan(
             meal_plan_storage.update_extras(resolved_id, week, week_extras)
 
     # Return updated meal plan
-    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
+    meals, notes, last_modified_by, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(
+        household_id=resolved_id, meals=meals, notes=notes, last_modified_by=last_modified_by, extras=extras
+    )
 
 
 @router.post("/meals")
@@ -152,10 +171,14 @@ async def update_single_meal(
     if request.value is None:
         meal_plan_storage.delete_meal(resolved_id, date_str, request.meal_type)
     else:
-        meal_plan_storage.update_meal(resolved_id, date_str, request.meal_type, request.value)
+        meal_plan_storage.update_meal(
+            resolved_id, date_str, request.meal_type, request.value, _build_modifier_label(user)
+        )
 
-    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
+    meals, notes, last_modified_by, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(
+        household_id=resolved_id, meals=meals, notes=notes, last_modified_by=last_modified_by, extras=extras
+    )
 
 
 @router.post("/notes")
@@ -171,8 +194,10 @@ async def update_single_note(
     resolved_id = _resolve_household(user, household_id)
     meal_plan_storage.update_day_note(resolved_id, request.date.isoformat(), request.note)
 
-    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
+    meals, notes, last_modified_by, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(
+        household_id=resolved_id, meals=meals, notes=notes, last_modified_by=last_modified_by, extras=extras
+    )
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
@@ -185,7 +210,7 @@ async def clear_meal_plan(
     Superusers can specify household_id to clear any household.
     """
     resolved_id = _resolve_household(user, household_id)
-    meal_plan_storage.save_meal_plan(resolved_id, {}, {}, {})
+    meal_plan_storage.save_meal_plan(resolved_id, {}, {}, {}, {})
 
 
 @router.post("/extras")
@@ -202,5 +227,7 @@ async def update_extras(
     resolved_id = _resolve_household(user, household_id)
     meal_plan_storage.update_extras(resolved_id, request.week, request.extras)
 
-    meals, notes, extras = meal_plan_storage.load_meal_plan(resolved_id)
-    return MealPlan(household_id=resolved_id, meals=meals, notes=notes, extras=extras)
+    meals, notes, last_modified_by, extras = meal_plan_storage.load_meal_plan(resolved_id)
+    return MealPlan(
+        household_id=resolved_id, meals=meals, notes=notes, last_modified_by=last_modified_by, extras=extras
+    )

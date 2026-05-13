@@ -29,6 +29,10 @@ const mockMealPlan = {
   notes: {
     '2026-01-05': 'Office Gym',
   },
+  last_modified_by: {
+    '2026-01-05_lunch': 'test.user@example.com',
+  },
+  extras: {},
 };
 
 const mockRecipes: Recipe[] = [
@@ -121,7 +125,10 @@ describe('useMealPlanActions', () => {
     it('returns recipe when meal value is a known recipe ID', () => {
       const { result } = renderActions();
       const slot = result.current.getMealForSlot(new Date('2026-01-05'), 'lunch');
-      expect(slot).toEqual({ recipe: expect.objectContaining({ id: 'recipe-1', title: 'Chicken Curry' }) });
+      expect(slot).toEqual({
+        recipe: expect.objectContaining({ id: 'recipe-1', title: 'Chicken Curry' }),
+        lastModifiedBy: 'test.user@example.com',
+      });
     });
 
     it('returns customText when meal value starts with "custom:"', () => {

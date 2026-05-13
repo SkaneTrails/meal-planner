@@ -135,17 +135,24 @@ export const useMealPlanActions = () => {
     (
       date: Date,
       mealType: MealType,
-    ): { recipe?: Recipe; customText?: string } | null => {
+    ): {
+      recipe?: Recipe;
+      customText?: string;
+      lastModifiedBy?: string;
+    } | null => {
       if (!mealPlan?.meals) return null;
       const dateStr = formatDateLocal(date);
       const key = `${dateStr}_${mealType}`;
       const value = mealPlan.meals[key];
+      const lastModifiedBy = mealPlan.last_modified_by?.[key];
       if (!value) return null;
       if (value.startsWith('custom:')) {
-        return { customText: value.slice(7) };
+        return { customText: value.slice(7), lastModifiedBy };
       }
       const recipe = recipeMap[value];
-      return recipe ? { recipe } : { customText: value };
+      return recipe
+        ? { recipe, lastModifiedBy }
+        : { customText: value, lastModifiedBy };
     },
     [mealPlan, recipeMap],
   );

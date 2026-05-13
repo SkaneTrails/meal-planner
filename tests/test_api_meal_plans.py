@@ -37,7 +37,7 @@ class TestGetMealPlan:
 
     def test_get_empty_meal_plan(self, client: TestClient) -> None:
         """Should return empty meal plan for new household."""
-        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})):
+        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})):
             response = client.get("/meal-plans")
 
         assert response.status_code == 200
@@ -45,12 +45,16 @@ class TestGetMealPlan:
         assert data["household_id"] == "test_household"
         assert data["meals"] == {}
         assert data["notes"] == {}
+        assert data["last_modified_by"] == {}
 
     def test_get_meal_plan_with_meals(self, client: TestClient) -> None:
         """Should return meal plan with existing meals."""
         meals = {"2025-01-15_lunch": "recipe123", "2025-01-15_dinner": "custom:Pizza"}
         notes = {"2025-01-15": "office day"}
-        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=(meals, notes, {})):
+        last_modified_by = {"2025-01-15_lunch": "CE"}
+        with patch(
+            "api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=(meals, notes, last_modified_by, {})
+        ):
             response = client.get("/meal-plans")
 
         assert response.status_code == 200
@@ -58,6 +62,7 @@ class TestGetMealPlan:
         assert data["meals"]["2025-01-15_lunch"] == "recipe123"
         assert data["meals"]["2025-01-15_dinner"] == "custom:Pizza"
         assert data["notes"]["2025-01-15"] == "office day"
+        assert data["last_modified_by"]["2025-01-15_lunch"] == "CE"
 
     def test_get_meal_plan_superuser_requires_household_id(self, client_no_household: TestClient) -> None:
         """Superuser without household must specify household_id parameter."""
@@ -68,7 +73,7 @@ class TestGetMealPlan:
 
     def test_get_meal_plan_superuser_with_household_id(self, client_no_household: TestClient) -> None:
         """Superuser can access any household by specifying household_id."""
-        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})):
+        with patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})):
             response = client_no_household.get("/meal-plans?household_id=test-household")
 
             assert response.status_code == 200
@@ -92,19 +97,19 @@ class TestUpdateMealPlan:
             patch("api.routers.meal_plans.meal_plan_storage.update_meal") as mock_update,
             patch(
                 "api.routers.meal_plans.meal_plan_storage.load_meal_plan",
-                return_value=({"2025-01-15_lunch": "recipe123"}, {}, {}),
+                return_value=({"2025-01-15_lunch": "recipe123"}, {}, {"2025-01-15_lunch": "TE"}, {}),
             ),
         ):
             response = client.put("/meal-plans", json={"meals": {"2025-01-15_lunch": "recipe123"}, "notes": {}})
 
         assert response.status_code == 200
-        mock_update.assert_called_once_with("test_household", "2025-01-15", "lunch", "recipe123")
+        mock_update.assert_called_once_with("test_household", "2025-01-15", "lunch", "recipe123", "TE")
 
     def test_update_delete_meal(self, client: TestClient) -> None:
         """Should delete meal when value is None."""
         with (
             patch("api.routers.meal_plans.meal_plan_storage.delete_meal") as mock_delete,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})),
         ):
             response = client.put("/meal-plans", json={"meals": {"2025-01-15_lunch": None}, "notes": {}})
 
@@ -124,7 +129,7 @@ class TestUpdateMealPlan:
             patch("api.routers.meal_plans.meal_plan_storage.update_day_note") as mock_note,
             patch(
                 "api.routers.meal_plans.meal_plan_storage.load_meal_plan",
-                return_value=({}, {"2025-01-15": "work from home"}, {}),
+                return_value=({}, {"2025-01-15": "work from home"}, {}, {}),
             ),
         ):
             response = client.put("/meal-plans", json={"meals": {}, "notes": {"2025-01-15": "work from home"}})
@@ -137,7 +142,7 @@ class TestUpdateMealPlan:
         extras = {"2025-01-13": ["recipe1", "recipe2"]}
         with (
             patch("api.routers.meal_plans.meal_plan_storage.update_extras") as mock_extras,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, extras)),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, extras)),
         ):
             response = client.put("/meal-plans", json={"meals": {}, "notes": {}, "extras": extras})
 
@@ -153,20 +158,20 @@ class TestUpdateSingleMeal:
         """Should update a single meal."""
         with (
             patch("api.routers.meal_plans.meal_plan_storage.update_meal") as mock_update,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})),
         ):
             response = client.post(
                 "/meal-plans/meals", json={"date": "2025-01-15", "meal_type": "dinner", "value": "recipe456"}
             )
 
         assert response.status_code == 200
-        mock_update.assert_called_once_with("test_household", "2025-01-15", "dinner", "recipe456")
+        mock_update.assert_called_once_with("test_household", "2025-01-15", "dinner", "recipe456", "TE")
 
     def test_delete_single_meal(self, client: TestClient) -> None:
         """Should delete meal when value is None."""
         with (
             patch("api.routers.meal_plans.meal_plan_storage.delete_meal") as mock_delete,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})),
         ):
             response = client.post(
                 "/meal-plans/meals", json={"date": "2025-01-15", "meal_type": "dinner", "value": None}
@@ -191,7 +196,7 @@ class TestUpdateSingleNote:
         """Should update a single note."""
         with (
             patch("api.routers.meal_plans.meal_plan_storage.update_day_note") as mock_note,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})),
         ):
             response = client.post("/meal-plans/notes", json={"date": "2025-01-15", "note": "busy day"})
 
@@ -214,7 +219,7 @@ class TestClearMealPlan:
             response = client.delete("/meal-plans")
 
         assert response.status_code == 204
-        mock_save.assert_called_once_with("test_household", {}, {}, {})
+        mock_save.assert_called_once_with("test_household", {}, {}, {}, {})
 
 
 class TestUpdateExtras:
@@ -226,7 +231,7 @@ class TestUpdateExtras:
         week = "2025-01-13"
         with (
             patch("api.routers.meal_plans.meal_plan_storage.update_extras") as mock_update,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {week: extras})),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {week: extras})),
         ):
             response = client.post("/meal-plans/extras", json={"week": week, "extras": extras})
 
@@ -240,7 +245,7 @@ class TestUpdateExtras:
         week = "2025-01-13"
         with (
             patch("api.routers.meal_plans.meal_plan_storage.update_extras") as mock_update,
-            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {})),
+            patch("api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})),
         ):
             response = client.post("/meal-plans/extras", json={"week": week, "extras": []})
 

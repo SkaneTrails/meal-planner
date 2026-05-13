@@ -296,9 +296,9 @@ const sv: Translations = {
       'Detta skapar en privat kopia i ditt hushåll. Du kan sedan förbättra den med dina preferenser.',
     copyEnhancedTitle: 'Förbättrat recept',
     copyEnhancedMessage:
-      'Det här receptet har förbättrats för ett annat hushåll. Vill du förbättra det för ditt?',
+      'Det här receptet förbättrades för ett annat hushålls preferenser. Vill du kopiera originalversionen och förbättra den för ditt?',
     copyAndEnhance: 'Kopiera & förbättra',
-    copyAsIs: 'Kopiera som det är',
+    copyAsIs: 'Kopiera original',
     copySuccess: 'Receptet kopierat till ditt hushåll',
     copyFailed: 'Kunde inte kopiera receptet',
     belongsToAnother: 'Annat hushåll',

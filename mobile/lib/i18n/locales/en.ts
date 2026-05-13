@@ -301,9 +301,9 @@ const en = {
       'This will create a private copy in your household. You can then enhance it with your preferences.',
     copyEnhancedTitle: 'Enhanced Recipe',
     copyEnhancedMessage:
-      'This recipe was enhanced for another household. Would you like to re-enhance it for yours?',
+      "This recipe was enhanced for another household's preferences. Copy the original version and enhance it for yours?",
     copyAndEnhance: 'Copy & Enhance',
-    copyAsIs: 'Copy As Is',
+    copyAsIs: 'Copy Original',
     copySuccess: 'Recipe copied to your household',
     copyFailed: 'Failed to copy recipe',
     belongsToAnother: 'Another Household',

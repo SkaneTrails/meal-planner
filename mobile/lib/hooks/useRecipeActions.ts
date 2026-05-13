@@ -18,6 +18,7 @@ import {
 import { useHouseholds, useTransferRecipe } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
+import { useSettings } from '@/lib/settings-context';
 import type {
   DietLabel,
   EnhancementReviewAction,
@@ -46,6 +47,9 @@ export const useRecipeActions = (
   const { user, loading: authLoading } = useAuth();
   const isAuthReady = !authLoading && !!user;
   const { t } = useTranslation();
+  const {
+    settings: { aiEnabled },
+  } = useSettings();
 
   const { data: currentUser } = useCurrentUser({ enabled: isAuthReady });
   const deleteRecipe = useDeleteRecipe();
@@ -397,15 +401,38 @@ export const useRecipeActions = (
   const canCopy = Boolean(!isOwned && isSharedOrLegacy);
   const isCopy = Boolean(recipe?.copied_from);
 
-  const doCopy = async (keepEnhanced: boolean) => {
+  const doCopy = async ({
+    keepEnhanced,
+    autoEnhance = false,
+  }: {
+    keepEnhanced: boolean;
+    autoEnhance?: boolean;
+  }) => {
     if (!id) return;
+
+    let copiedId: string | null = null;
+
     try {
       const copied = await copyRecipe.mutateAsync({ id, keepEnhanced });
+      copiedId = copied.id;
+
+      if (autoEnhance && aiEnabled) {
+        const enhanced = await enhanceRecipe.mutateAsync(copied.id);
+        hapticSuccess();
+        router.replace(`/recipe/${enhanced.id}`);
+        return;
+      }
+
       hapticSuccess();
       showNotification(t('common.success'), t('recipe.copySuccess'));
       router.replace(`/recipe/${copied.id}`);
     } catch {
       hapticWarning();
+      if (copiedId) {
+        router.replace(`/recipe/${copiedId}`);
+        showNotification(t('common.error'), t('recipe.enhanceFailed'));
+        return;
+      }
       showNotification(t('common.error'), t('recipe.copyFailed'));
     }
   };
@@ -414,29 +441,36 @@ export const useRecipeActions = (
     if (!id || !recipe) return;
 
     if (recipe.enhanced) {
+      const buttons = [
+        { text: t('common.cancel'), style: 'cancel' as const },
+        {
+          text: t('recipe.copyAsIs'),
+          onPress: () => void doCopy({ keepEnhanced: false }),
+        },
+      ];
+
+      if (aiEnabled) {
+        buttons.push({
+          text: t('recipe.copyAndEnhance'),
+          onPress: () =>
+            void doCopy({
+              keepEnhanced: false,
+              autoEnhance: true,
+            }),
+        });
+      }
+
       showAlert(
         t('recipe.copyEnhancedTitle'),
-        t('recipe.copyEnhancedMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('recipe.copyAsIs'),
-            onPress: () => doCopy(true),
-          },
-          {
-            text: t('recipe.copyAndEnhance'),
-            onPress: async () => {
-              await doCopy(false);
-            },
-          },
-        ],
+        aiEnabled ? t('recipe.copyEnhancedMessage') : t('recipe.copyConfirm'),
+        buttons,
       );
     } else {
       showAlert(t('recipe.copyToHousehold'), t('recipe.copyConfirm'), [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('recipe.copy'),
-          onPress: () => doCopy(false),
+          onPress: () => void doCopy({ keepEnhanced: false }),
         },
       ]);
     }
