@@ -57,7 +57,7 @@ class TestGenerateGroceryList:
 
     def test_generate_empty_meal_plan(self, client: TestClient) -> None:
         """Should return empty list for empty meal plan."""
-        with patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=({}, {}, [])):
+        with patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=({}, {}, {}, {})):
             response = client.get("/grocery")
 
         assert response.status_code == 200
@@ -75,7 +75,7 @@ class TestGenerateGroceryList:
         """Should include custom meals as simple grocery items."""
         meals = {"2025-01-15_lunch": "custom:Eating out"}
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
             response = client.get("/grocery")
@@ -95,7 +95,7 @@ class TestGenerateGroceryList:
         mock_recipe.title = "Test Recipe"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={"recipe123": mock_recipe}),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
@@ -118,7 +118,7 @@ class TestGenerateGroceryList:
         mock_recipe2.title = "Recipe 2"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch(
                 "api.routers.grocery.get_recipes_by_ids",
                 return_value={"recipe1": mock_recipe1, "recipe2": mock_recipe2},
@@ -145,7 +145,7 @@ class TestGenerateGroceryList:
         mock_recipe.title = "Test Recipe"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={"recipe1": mock_recipe}) as mock_batch,
         ):
             response = client.get("/grocery?start_date=2025-01-14&end_date=2025-01-16")
@@ -163,7 +163,7 @@ class TestGenerateGroceryList:
         mock_recipe.title = "Good Recipe"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={"recipe2": mock_recipe}),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
@@ -177,7 +177,7 @@ class TestGenerateGroceryList:
         meals = {"notadate_dinner": "recipe1"}
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={}),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
@@ -194,7 +194,10 @@ class TestGenerateGroceryList:
         mock_recipe.title = "Extra Recipe"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=({}, {}, ["extra1"])),
+            patch(
+                "api.routers.grocery.meal_plan_storage.load_meal_plan",
+                return_value=({}, {}, {}, {"2025-01-13": ["extra1"]}),
+            ),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={"extra1": mock_recipe}),
         ):
             response = client.get("/grocery")
@@ -207,7 +210,7 @@ class TestGenerateGroceryList:
         meals = {"2025-01-15_dinner": "missing_recipe"}
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={}),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):
@@ -232,7 +235,7 @@ class TestGenerateGroceryList:
         foreign_recipe.title = "Foreign"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch(
                 "api.routers.grocery.get_recipes_by_ids",
                 return_value={"owned": owned_recipe, "foreign": foreign_recipe},
@@ -256,7 +259,7 @@ class TestGenerateGroceryList:
         shared_recipe.title = "Shared Recipe"
 
         with (
-            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, [])),
+            patch("api.routers.grocery.meal_plan_storage.load_meal_plan", return_value=(meals, {}, {}, {})),
             patch("api.routers.grocery.get_recipes_by_ids", return_value={"shared_recipe": shared_recipe}),
             patch("api.routers.grocery._get_today", return_value=date(2025, 1, 15)),
         ):

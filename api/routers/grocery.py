@@ -83,9 +83,13 @@ async def generate_grocery_list(
 
     recipe_ids, custom_meal_texts = _collect_meal_entries(meals, effective_start, effective_end)
 
-    # Also include extras (Other section) - these are not date-bound
-    for extra_id in extras:
-        recipe_ids.add(extra_id)
+    # Also include extras (Other section) - these are not date-bound.
+    # Stored shape is week-keyed lists, but accept a flat list defensively.
+    if isinstance(extras, dict):
+        for week_extras in extras.values():
+            recipe_ids.update(week_extras)
+    else:
+        recipe_ids.update(extras)
 
     # Load recipes and collect ingredients
     grocery_list = GroceryList()
