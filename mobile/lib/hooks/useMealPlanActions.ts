@@ -18,7 +18,10 @@ import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
-import { EXTRAS_KEY_PREFIX } from '@/lib/utils/groceryAggregator';
+import {
+  aggregateIngredients,
+  EXTRAS_KEY_PREFIX,
+} from '@/lib/utils/groceryAggregator';
 
 export const useMealPlanActions = () => {
   const router = useRouter();
@@ -28,6 +31,7 @@ export const useMealPlanActions = () => {
     saveSelections,
     selectedMealKeys: existingMealKeys,
     mealServings: existingServings,
+    removedItems,
   } = useGroceryState();
 
   const MEAL_TYPES: MealTypeOption[] = useMemo(() => {
@@ -438,7 +442,22 @@ export const useMealPlanActions = () => {
       const newMeals = Array.from(selectedMeals);
       const mergedMeals = [...new Set([...existingMealKeys, ...newMeals])];
       const mergedServings = { ...existingServings, ...mealServings };
-      await saveSelections(mergedMeals, mergedServings);
+      const readdedMealKeys = newMeals.filter((key) =>
+        existingMealKeys.includes(key),
+      );
+      const restoredItemNames = new Set(
+        aggregateIngredients(
+          readdedMealKeys,
+          mealPlan?.meals ?? {},
+          recipes,
+          mergedServings,
+        ).map((item) => item.name),
+      );
+      const nextRemovedItems =
+        restoredItemNames.size === 0
+          ? removedItems
+          : removedItems.filter((name) => !restoredItemNames.has(name));
+      await saveSelections(mergedMeals, mergedServings, nextRemovedItems);
       setShowGroceryModal(false);
       setTimeout(() => router.push('/(tabs)/grocery'), 100);
     } catch {
@@ -449,6 +468,9 @@ export const useMealPlanActions = () => {
     mealServings,
     existingMealKeys,
     existingServings,
+    mealPlan?.meals,
+    recipes,
+    removedItems,
     router,
     t,
     saveSelections,
