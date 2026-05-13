@@ -114,16 +114,16 @@ class TestMealPlan:
         plan = MealPlan(
             household_id="household1",
             meals={"2025-01-15_dinner": "recipe1"},
-            last_modified_by={"2025-01-15_dinner": "cook@example.com"},
+            last_modified_by={"2025-01-15_dinner": "CB"},
         )
-        assert plan.last_modified_by["2025-01-15_dinner"] == "cook@example.com"
+        assert plan.last_modified_by["2025-01-15_dinner"] == "CB"
 
     def test_get_meals_for_day_includes_last_modified_by(self) -> None:
         """Should expose slot attribution on planned meals."""
         plan = MealPlan(
             household_id="household1",
             meals={"2025-01-15_dinner": "recipe1"},
-            last_modified_by={"2025-01-15_dinner": "cook@example.com"},
+            last_modified_by={"2025-01-15_dinner": "CB"},
         )
         meals = plan.get_meals_for_day(date(2025, 1, 15))
-        assert meals[0].last_modified_by == "cook@example.com"
+        assert meals[0].last_modified_by == "CB"

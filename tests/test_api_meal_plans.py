@@ -51,7 +51,7 @@ class TestGetMealPlan:
         """Should return meal plan with existing meals."""
         meals = {"2025-01-15_lunch": "recipe123", "2025-01-15_dinner": "custom:Pizza"}
         notes = {"2025-01-15": "office day"}
-        last_modified_by = {"2025-01-15_lunch": "chef@example.com"}
+        last_modified_by = {"2025-01-15_lunch": "CE"}
         with patch(
             "api.routers.meal_plans.meal_plan_storage.load_meal_plan", return_value=(meals, notes, last_modified_by, {})
         ):
@@ -62,7 +62,7 @@ class TestGetMealPlan:
         assert data["meals"]["2025-01-15_lunch"] == "recipe123"
         assert data["meals"]["2025-01-15_dinner"] == "custom:Pizza"
         assert data["notes"]["2025-01-15"] == "office day"
-        assert data["last_modified_by"]["2025-01-15_lunch"] == "chef@example.com"
+        assert data["last_modified_by"]["2025-01-15_lunch"] == "CE"
 
     def test_get_meal_plan_superuser_requires_household_id(self, client_no_household: TestClient) -> None:
         """Superuser without household must specify household_id parameter."""
@@ -97,13 +97,13 @@ class TestUpdateMealPlan:
             patch("api.routers.meal_plans.meal_plan_storage.update_meal") as mock_update,
             patch(
                 "api.routers.meal_plans.meal_plan_storage.load_meal_plan",
-                return_value=({"2025-01-15_lunch": "recipe123"}, {}, {"2025-01-15_lunch": "user@example.com"}, {}),
+                return_value=({"2025-01-15_lunch": "recipe123"}, {}, {"2025-01-15_lunch": "TE"}, {}),
             ),
         ):
             response = client.put("/meal-plans", json={"meals": {"2025-01-15_lunch": "recipe123"}, "notes": {}})
 
         assert response.status_code == 200
-        mock_update.assert_called_once_with("test_household", "2025-01-15", "lunch", "recipe123", "test@example.com")
+        mock_update.assert_called_once_with("test_household", "2025-01-15", "lunch", "recipe123", "TE")
 
     def test_update_delete_meal(self, client: TestClient) -> None:
         """Should delete meal when value is None."""
@@ -165,7 +165,7 @@ class TestUpdateSingleMeal:
             )
 
         assert response.status_code == 200
-        mock_update.assert_called_once_with("test_household", "2025-01-15", "dinner", "recipe456", "test@example.com")
+        mock_update.assert_called_once_with("test_household", "2025-01-15", "dinner", "recipe456", "TE")
 
     def test_delete_single_meal(self, client: TestClient) -> None:
         """Should delete meal when value is None."""

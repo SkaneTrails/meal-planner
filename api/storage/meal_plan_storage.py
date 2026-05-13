@@ -32,7 +32,7 @@ def save_meal_plan(
         meals: Dictionary with date_mealtype keys and recipe_id/custom values.
         notes: Optional dictionary with date keys and note text values.
         last_modified_by: Optional dictionary with date_mealtype keys and
-            email values for the user who last changed each slot.
+            display-safe initials values for the user who last changed each slot.
         extras: Optional week-keyed dict of recipe ID lists for the "Other" section.
     """
     db = get_firestore_client()
@@ -87,7 +87,7 @@ def update_meal(
         date_str: The ISO date string of the meal.
         meal_type_str: The meal type value (breakfast, lunch, dinner, snack).
         value: The recipe ID or custom text (prefixed with "custom:").
-        modified_by: Email of the user who changed the slot.
+        modified_by: Display-safe initials label of the user who changed the slot.
     """
     db = get_firestore_client()
     doc_ref = db.collection(MEAL_PLANS_COLLECTION).document(_get_meal_plan_doc_id(household_id))

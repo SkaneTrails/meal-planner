@@ -15,6 +15,21 @@ router = APIRouter(prefix="/meal-plans", tags=["meal-plans"])
 
 # Expected number of parts when splitting meal key
 _MEAL_KEY_PARTS = 2
+_INITIALS_SEGMENTS = 2
+
+
+def _build_modifier_label(user: AuthenticatedUser) -> str:
+    """Build a display-safe initials label for slot attribution."""
+    source = (user.name or user.email).strip()
+    local_part = source.split("@", 1)[0].strip()
+    if not local_part:
+        return ""
+
+    segments = [segment.strip() for segment in local_part.replace("-", " ").replace("_", " ").replace(".", " ").split()]
+    segments = [segment for segment in segments if segment]
+    if len(segments) >= _INITIALS_SEGMENTS:
+        return f"{segments[0][0]}{segments[1][0]}".upper()
+    return local_part[:_INITIALS_SEGMENTS].upper()
 
 
 class MealUpdateRequest(BaseModel):
@@ -122,7 +137,7 @@ async def update_meal_plan(
         if value is None:
             meal_plan_storage.delete_meal(resolved_id, date_str, meal_type_str)
         else:
-            meal_plan_storage.update_meal(resolved_id, date_str, meal_type_str, value, user.email)
+            meal_plan_storage.update_meal(resolved_id, date_str, meal_type_str, value, _build_modifier_label(user))
 
     # Process note updates
     for date_str, note in updates.notes.items():
@@ -156,7 +171,9 @@ async def update_single_meal(
     if request.value is None:
         meal_plan_storage.delete_meal(resolved_id, date_str, request.meal_type)
     else:
-        meal_plan_storage.update_meal(resolved_id, date_str, request.meal_type, request.value, user.email)
+        meal_plan_storage.update_meal(
+            resolved_id, date_str, request.meal_type, request.value, _build_modifier_label(user)
+        )
 
     meals, notes, last_modified_by, extras = meal_plan_storage.load_meal_plan(resolved_id)
     return MealPlan(

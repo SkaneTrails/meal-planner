@@ -441,24 +441,29 @@ export const useRecipeActions = (
     if (!id || !recipe) return;
 
     if (recipe.enhanced) {
+      const buttons = [
+        { text: t('common.cancel'), style: 'cancel' as const },
+        {
+          text: t('recipe.copyAsIs'),
+          onPress: () => void doCopy({ keepEnhanced: false }),
+        },
+      ];
+
+      if (aiEnabled) {
+        buttons.push({
+          text: t('recipe.copyAndEnhance'),
+          onPress: () =>
+            void doCopy({
+              keepEnhanced: false,
+              autoEnhance: true,
+            }),
+        });
+      }
+
       showAlert(
         t('recipe.copyEnhancedTitle'),
-        t('recipe.copyEnhancedMessage'),
-        [
-          { text: t('common.cancel'), style: 'cancel' },
-          {
-            text: t('recipe.copyAsIs'),
-            onPress: () => void doCopy({ keepEnhanced: false }),
-          },
-          {
-            text: t('recipe.copyAndEnhance'),
-            onPress: () =>
-              void doCopy({
-                keepEnhanced: false,
-                autoEnhance: true,
-              }),
-          },
-        ],
+        aiEnabled ? t('recipe.copyEnhancedMessage') : t('recipe.copyConfirm'),
+        buttons,
       );
     } else {
       showAlert(t('recipe.copyToHousehold'), t('recipe.copyConfirm'), [

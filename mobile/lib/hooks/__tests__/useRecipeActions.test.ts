@@ -14,6 +14,9 @@ const mockRemoveEnhancementMutateAsync = vi.fn();
 const mockCopyMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
+const mockUseSettings = vi.fn(() => ({
+  settings: { aiEnabled: true },
+}));
 
 vi.mock('@/lib/hooks', () => ({
   useCurrentUser: vi.fn(() => ({ data: mockCurrentUser() })),
@@ -41,9 +44,7 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 vi.mock('@/lib/settings-context', () => ({
-  useSettings: vi.fn(() => ({
-    settings: { aiEnabled: true },
-  })),
+  useSettings: () => mockUseSettings(),
 }));
 
 vi.mock('expo-router', () => ({
@@ -105,6 +106,7 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockUseSettings.mockReturnValue({ settings: { aiEnabled: true } });
   mockMutateAsync.mockResolvedValue(undefined);
   mockDeleteMutateAsync.mockResolvedValue(undefined);
   mockSetMealMutateAsync.mockResolvedValue(undefined);
@@ -634,6 +636,29 @@ describe('useRecipeActions', () => {
           expect.objectContaining({ text: 'recipe.copyAsIs' }),
           expect.objectContaining({ text: 'recipe.copyAndEnhance' }),
         ]),
+      );
+    });
+
+    it('hides Copy & Enhance when AI is disabled', async () => {
+      mockUseSettings.mockReturnValue({ settings: { aiEnabled: false } });
+      const recipe = makeRecipe({
+        household_id: 'other-household',
+        visibility: 'shared',
+        enhanced: true,
+      });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.copyEnhancedTitle',
+        'recipe.copyConfirm',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel' }),
+          expect.objectContaining({ text: 'recipe.copyAsIs' }),
+        ]),
+      );
+      expect(mockShowAlert.mock.calls[0][2]).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ text: 'recipe.copyAndEnhance' })]),
       );
     });
 
