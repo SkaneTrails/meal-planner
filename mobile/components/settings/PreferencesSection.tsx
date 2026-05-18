@@ -30,7 +30,7 @@ export const PersonalPreferencesSection = ({
       />
 
       {canManageAppearance ? (
-        <View style={{ marginTop: spacing.lg }}>
+        <View testID="appearance-section" style={{ marginTop: spacing.lg }}>
           <Text
             style={{
               fontFamily: fonts.bodySemibold,

@@ -125,7 +125,7 @@ describe('Settings screen', () => {
         ),
       );
 
-      expect(screen.queryByText('Appearance')).toBeNull();
+      expect(screen.queryByTestId('appearance-section')).toBeNull();
     });
 
     it('hides appearance settings for admins', async () => {
@@ -146,28 +146,28 @@ describe('Settings screen', () => {
         ),
       );
 
-        expect(screen.queryByText('Appearance')).toBeNull();
-      });
+      expect(screen.queryByTestId('appearance-section')).toBeNull();
+    });
 
-      it('shows appearance settings for superusers', async () => {
-        mockCurrentUserData = {
-          uid: 'user-6',
-          email: 'superuser@example.com',
-          role: 'superuser',
-          household_id: 'household-abc',
-          household_name: 'Test House',
-        };
+    it('shows appearance settings for superusers', async () => {
+      mockCurrentUserData = {
+        uid: 'user-6',
+        email: 'superuser@example.com',
+        role: 'superuser',
+        household_id: 'household-abc',
+        household_name: 'Test House',
+      };
 
-        const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
-        const Wrapper = createQueryWrapper();
+      const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
+      const Wrapper = createQueryWrapper();
 
-        render(
-          React.createElement(Wrapper, null,
-            React.createElement(SettingsScreen)
-          ),
-        );
+      render(
+        React.createElement(Wrapper, null,
+          React.createElement(SettingsScreen)
+        ),
+      );
 
-        expect(screen.getByText('Appearance')).toBeTruthy();
+      expect(screen.getByTestId('appearance-section')).toBeTruthy();
     });
   });
 
