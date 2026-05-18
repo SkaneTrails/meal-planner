@@ -37,6 +37,7 @@ export default function SettingsScreen() {
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { settings, toggleShowHiddenRecipes } = useSettings();
   const { t } = useTranslation();
+  const canManageAppearance = currentUser?.role === 'superuser';
 
   const householdId = currentUser?.household_id;
   const hasHousehold = !!householdId;
@@ -93,6 +94,7 @@ export default function SettingsScreen() {
               <PersonalPreferencesSection
                 showHiddenRecipes={settings.showHiddenRecipes}
                 onToggleShowHidden={toggleShowHiddenRecipes}
+                canManageAppearance={canManageAppearance}
               />
             </Section>
           </View>

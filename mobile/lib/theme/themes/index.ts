@@ -18,8 +18,8 @@ import { terminalTheme } from './terminal';
 // ── Theme list — first entry is the default ────────────────────────────
 
 const allThemes: ThemeDefinition[] = [
-  lightTheme,
   petrolTheme,
+  lightTheme,
   terminalTheme,
   bubblegumTheme,
 ];
