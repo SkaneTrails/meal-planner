@@ -38,10 +38,15 @@ export const useTranslation = () => {
       setTranslations(en);
       return;
     }
+    setTranslations(en);
     let cancelled = false;
-    getLocale(language).then((locale) => {
-      if (!cancelled) setTranslations(locale);
-    });
+    getLocale(language)
+      .then((locale) => {
+        if (!cancelled) setTranslations(locale);
+      })
+      .catch(() => {
+        if (!cancelled) setTranslations(en);
+      });
     return () => {
       cancelled = true;
     };

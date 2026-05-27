@@ -2,7 +2,12 @@
  * Vitest setup — global mocks for Expo modules and other native dependencies.
  */
 
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
+import { resetAsyncStorage } from './mocks/async-storage';
+
+beforeEach(() => {
+  resetAsyncStorage();
+});
 
 // Suppress known React Native Web warnings that are harmless in jsdom.
 // These fire because RN-specific props (onLongPress, numberOfLines, onPressIn)
@@ -94,8 +99,8 @@ vi.mock('@/components/FullScreenLoading', () => ({
   FullScreenLoading: FullScreenLoadingMock,
 }));
 
-// Mock @/components — barrel import (kept for any remaining barrel consumers + tests that mock it)
-// Also register per-path mocks since source files now use direct imports.
+// Mock @/components barrel — kept for screen-level tests that mock the barrel path.
+// Source files use direct imports; this covers any remaining barrel consumers.
 const BottomSheetModalMock = ({ visible, children, title, subtitle, headerRight, footer, onClose }: any) => {
   if (!visible) return null;
   const { createElement } = require('react');

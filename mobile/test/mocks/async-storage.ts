@@ -3,7 +3,11 @@
  * Provides an in-memory implementation for tests.
  */
 
-const store: Record<string, string> = {};
+let store: Record<string, string> = {};
+
+export const resetAsyncStorage = () => {
+  store = {};
+};
 
 const AsyncStorage = {
   getItem: async (key: string) => store[key] ?? null,
