@@ -1,5 +1,5 @@
 #
-# If pre-commit fails in the GitHub Action after updating a version, try running terraform init
+# If prek fails in the GitHub Action after updating a version, try running terraform init
 # from a Google Cloud console and push the lockfile. This usually resolves the problem.
 #
 terraform {
@@ -8,17 +8,17 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 7.28.0"
+      version = "~> 7.32.0"
     }
 
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.8.0"
+      version = "~> 3.9.0"
     }
 
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.8.0"
+      version = "~> 2.9.0"
     }
   }
 }

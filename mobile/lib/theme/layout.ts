@@ -2,7 +2,12 @@
  * Spacing, layout, border radius, icon sizes, shadows, and animation constants.
  */
 
-// Spacing scale - consistent rhythm
+// Spacing scale — tightened for a more compact, harmonious rhythm.
+// Values follow a 2-based ramp at the small end (2/4/6/8/10/12/14/16) and
+// step up in larger increments above 16 (20/28/36/44). Half-step keys
+// (`xs-sm`, `sm-md`, `md-lg`) are preserved to avoid touching the ~100
+// consumer call sites and now sit between their neighbours (6/10/14) for a
+// finer, less spongy spacing rhythm across all themes.
 export const spacing = {
   '2xs': 2,
   xs: 4,
@@ -13,9 +18,9 @@ export const spacing = {
   'md-lg': 14,
   lg: 16,
   xl: 20,
-  '2xl': 24,
-  '3xl': 32,
-  '4xl': 40,
+  '2xl': 28,
+  '3xl': 36,
+  '4xl': 44,
 } as const;
 
 // Layout constants
@@ -27,10 +32,12 @@ export const layout = {
     alignSelf: 'center' as const,
     width: '100%' as const,
   },
-  screenPaddingTop: 44,
+  screenPaddingTop: 32,
   screenPaddingHorizontal: 20,
+  /** Vertical breathing room between sibling sections on a screen.
+   *  Single source of truth — replaces ad-hoc `spacing.lg`/`xl`/`2xl` between blocks. */
   sectionGap: 24,
-  cardGap: 8,
+  cardGap: 6,
   /** @deprecated Use layout.tabBar instead */
   tabBarHeight: 88,
   tabBar: {
@@ -44,18 +51,22 @@ export const layout = {
   },
 } as const;
 
-// Border radius - standardized scale
+// Border radius — modernized in Phase 2.
+// Half-step keys collapse to the canonical 4-step ramp (4/8/12/16/20/24).
+// Themes (e.g. Petrol) override this map with their own personality —
+// Petrol uses a softer, pill-friendly variant; Bubblegum stays rounder;
+// Terminal forces sharp.
 export const borderRadius = {
-  '3xs': 3,
+  '3xs': 4,
   '2xs': 4,
-  'xs-sm': 6,
+  'xs-sm': 8,
   xs: 8,
-  'sm-md': 10,
+  'sm-md': 12,
   sm: 12,
-  'md-lg': 14,
+  'md-lg': 16,
   md: 16,
   lg: 20,
-  'lg-xl': 22,
+  'lg-xl': 24,
   xl: 24,
   '2xl': 32,
   full: 9999,
@@ -80,13 +91,13 @@ export interface BorderRadiusTokens {
 
 // Icon sizes - standardized
 export const iconSize = {
-  xs: 14,
-  sm: 16,
-  md: 18,
-  lg: 20,
-  xl: 24,
-  '2xl': 32,
-  '3xl': 40,
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 22,
+  '2xl': 28,
+  '3xl': 36,
 } as const;
 
 // Dot indicator sizes (colored dots in chips/tags)
@@ -96,12 +107,12 @@ export const dotSize = {
 
 // Icon container sizes (circles around icons)
 export const iconContainer = {
-  xs: 36,
-  sm: 32,
-  md: 40,
-  lg: 48,
-  xl: 56,
-  '2xl': 80,
+  xs: 30,
+  sm: 28,
+  md: 36,
+  lg: 42,
+  xl: 48,
+  '2xl': 68,
 } as const;
 
 export type IconContainerSize = keyof typeof iconContainer;
@@ -135,14 +146,16 @@ export const opacity = {
   pressed: 0.9,
 } as const;
 
-// Animation durations - smooth, premium feel
+// Animation durations — Phase 7. Tightened toward modern minimalism:
+// fast/normal under 250ms, springs less bouncy. Calm editorial UIs use
+// short ease-out timing instead of springy overshoots.
 export const animation = {
-  fast: 150,
-  normal: 250,
-  slow: 350,
+  fast: 120,
+  normal: 200,
+  slow: 320,
   spring: {
-    damping: 15,
-    stiffness: 100,
+    damping: 22,
+    stiffness: 180,
   },
 } as const;
 

@@ -7,6 +7,7 @@ interface RecipeRowProps {
   title: string;
   imageUrl?: string | null;
   subtitle?: string;
+  cornerLabel?: string;
   onPress: () => void;
   onRemove: () => void;
 }
@@ -19,21 +20,23 @@ export const RecipeRow = ({
   title,
   imageUrl,
   subtitle,
+  cornerLabel,
   onPress,
   onRemove,
 }: RecipeRowProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts, borderRadius, shadows } = useTheme();
   const resolvedImage = imageUrl || PLACEHOLDER_IMAGE;
 
   return (
     <View
       style={{
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'stretch',
         backgroundColor: colors.mealPlan.slotBg,
         borderRadius: borderRadius.sm,
         padding: spacing.md,
         marginBottom: spacing['xs-sm'],
+        ...shadows.card,
       }}
     >
       <Pressable
@@ -77,14 +80,32 @@ export const RecipeRow = ({
         </View>
       </Pressable>
 
-      <IconButton
-        tone="cancel"
-        onPress={onRemove}
-        icon="close"
-        size={28}
-        iconSize={18}
-        style={{ marginLeft: spacing.sm }}
-      />
+      <View
+        style={{
+          marginLeft: spacing.sm,
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+        }}
+      >
+        <IconButton
+          tone="cancel"
+          onPress={onRemove}
+          icon="close"
+          size={28}
+          iconSize={18}
+        />
+        {cornerLabel ? (
+          <Text
+            style={{
+              fontSize: fontSize.xs,
+              fontFamily: fonts.bodyMedium,
+              color: colors.content.tertiary,
+            }}
+          >
+            {cornerLabel}
+          </Text>
+        ) : null}
+      </View>
     </View>
   );
 };

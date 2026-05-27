@@ -13,7 +13,7 @@ import type { MealLabel } from '@/lib/types';
 const MEAL_TYPE_ICONS: Record<MealLabel, IoniconName> = {
   breakfast: 'cafe-outline',
   starter: 'flame-outline',
-  salad: 'leaf-outline',
+  side_dish: 'leaf-outline',
   meal: 'restaurant-outline',
   dessert: 'ice-cream-outline',
   drink: 'wine-outline',
@@ -25,7 +25,7 @@ const MEAL_TYPE_ICONS: Record<MealLabel, IoniconName> = {
 const MEAL_TYPES: MealLabel[] = [
   'breakfast',
   'starter',
-  'salad',
+  'side_dish',
   'meal',
   'dessert',
   'drink',

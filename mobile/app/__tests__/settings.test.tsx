@@ -106,6 +106,69 @@ describe('Settings screen', () => {
 
       expect(mockPush).not.toHaveBeenCalled();
     });
+
+    it('hides appearance settings for members', async () => {
+      mockCurrentUserData = {
+        uid: 'user-4',
+        email: 'member@example.com',
+        role: 'member',
+        household_id: 'household-abc',
+        household_name: 'Test House',
+      };
+
+      const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
+      const Wrapper = createQueryWrapper();
+
+      render(
+        React.createElement(Wrapper, null,
+          React.createElement(SettingsScreen)
+        ),
+      );
+
+      expect(screen.queryByTestId('appearance-section')).toBeNull();
+    });
+
+    it('hides appearance settings for admins', async () => {
+      mockCurrentUserData = {
+        uid: 'user-5',
+        email: 'admin@example.com',
+        role: 'admin',
+        household_id: 'household-abc',
+        household_name: 'Test House',
+      };
+
+      const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
+      const Wrapper = createQueryWrapper();
+
+      render(
+        React.createElement(Wrapper, null,
+          React.createElement(SettingsScreen)
+        ),
+      );
+
+      expect(screen.queryByTestId('appearance-section')).toBeNull();
+    });
+
+    it('shows appearance settings for superusers', async () => {
+      mockCurrentUserData = {
+        uid: 'user-6',
+        email: 'superuser@example.com',
+        role: 'superuser',
+        household_id: 'household-abc',
+        household_name: 'Test House',
+      };
+
+      const { default: SettingsScreen } = await import('@/app/(tabs)/settings');
+      const Wrapper = createQueryWrapper();
+
+      render(
+        React.createElement(Wrapper, null,
+          React.createElement(SettingsScreen)
+        ),
+      );
+
+      expect(screen.getByTestId('appearance-section')).toBeTruthy();
+    });
   });
 
   describe('AI settings navigation', () => {

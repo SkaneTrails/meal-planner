@@ -880,7 +880,7 @@ class TestParseRecipe:
             mock_client_class.return_value = mock_client
 
             response = client.post(
-                "/recipes/parse?diet_label=fish&meal_label=salad",
+                "/recipes/parse?diet_label=fish&meal_label=side_dish",
                 json={
                     "url": "https://example.com/fish-salad",
                     "html": "<html><head><title>Fish</title></head><body>" + "x" * 100 + "</body></html>",
@@ -890,7 +890,7 @@ class TestParseRecipe:
         assert response.status_code == 201
         saved_create = mock_save.call_args[0][0]
         assert saved_create.diet_label.value == "fish"
-        assert saved_create.meal_label.value == "salad"
+        assert saved_create.meal_label.value == "side_dish"
 
 
 class TestPreviewRecipe:

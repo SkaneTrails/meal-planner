@@ -10,6 +10,8 @@ interface ScreenHeaderProps {
   subtitle?: string;
   variant?: 'centered' | 'large';
   onBack?: () => void;
+  /** Optional label for the back button (renders as text variant when provided). */
+  backLabel?: string;
   rightAction?: ReactNode;
   children?: ReactNode;
   style?: ViewStyle;
@@ -20,13 +22,20 @@ export const ScreenHeader = ({
   subtitle,
   variant = 'centered',
   onBack,
+  backLabel,
   rightAction,
   children,
   style,
 }: ScreenHeaderProps) => {
   const { shadows } = useTheme();
   const isLarge = variant === 'large';
-  const hasNav = !!onBack || !!rightAction;
+  const hasBack = !!onBack;
+  const hasNav = hasBack || !!rightAction;
+  // When the large header has a right action but no back button, we float
+  // that action over the title row instead of reserving a separate nav
+  // band above it. That kept the top ~80px of phone screens entirely
+  // empty except for a small icon.
+  const floatRightAction = isLarge && !!rightAction && !hasBack;
 
   return (
     <ScreenHeaderBar style={style}>
@@ -37,7 +46,7 @@ export const ScreenHeader = ({
           paddingBottom: children ? spacing.sm : spacing.md,
         }}
       >
-        {isLarge && hasNav && (
+        {isLarge && hasNav && !floatRightAction && (
           <View
             style={{
               flexDirection: 'row',
@@ -49,9 +58,14 @@ export const ScreenHeader = ({
             {onBack ? (
               <ActionButton.Back
                 onPress={onBack}
-                tone="glass"
+                label={backLabel}
+                tone={backLabel ? 'alt' : 'glass'}
                 size="md"
-                style={shadows.sm}
+                style={
+                  backLabel
+                    ? { padding: spacing.sm, marginLeft: -spacing.sm }
+                    : shadows.sm
+                }
               />
             ) : (
               <View />
@@ -59,7 +73,24 @@ export const ScreenHeader = ({
             {rightAction}
           </View>
         )}
-        <ScreenTitle variant={variant} title={title} subtitle={subtitle} />
+        {floatRightAction ? (
+          <View style={{ position: 'relative' }}>
+            <ScreenTitle variant={variant} title={title} subtitle={subtitle} />
+            <View
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                bottom: 0,
+                justifyContent: 'center',
+              }}
+            >
+              {rightAction}
+            </View>
+          </View>
+        ) : (
+          <ScreenTitle variant={variant} title={title} subtitle={subtitle} />
+        )}
       </View>
       {children}
     </ScreenHeaderBar>

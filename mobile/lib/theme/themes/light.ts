@@ -1,24 +1,16 @@
 /**
  * Light theme — "Elegant"
  *
- * Warm earth tones with Cormorant Garamond headings, DM Sans body text,
+ * Warm earth tones with DM Sans text,
  * and a subtle animated gradient background. This is the default theme.
  */
 
-import {
-  CormorantGaramond_400Regular,
-  CormorantGaramond_500Medium,
-  CormorantGaramond_600SemiBold,
-  CormorantGaramond_700Bold,
-} from '@expo-google-fonts/cormorant-garamond';
 import {
   DMSans_400Regular,
   DMSans_500Medium,
   DMSans_600SemiBold,
   DMSans_700Bold,
 } from '@expo-google-fonts/dm-sans';
-
-import { Platform } from 'react-native';
 
 import { lightColors } from '../colors';
 import { borderRadius, type ShadowTokens } from '../layout';
@@ -28,7 +20,7 @@ import type {
   ThemeDefinition,
   VisibilityTokens,
 } from '../theme-context';
-import type { FontFamilyTokens } from '../typography';
+import { defaultFontFamily } from '../typography';
 
 const defaultOverrides: StyleOverrides = {
   checkedOpacity: 0.85,
@@ -63,28 +55,6 @@ const visibility: VisibilityTokens = {
   showCheckmarkIndicator: true,
 };
 
-const isWeb = Platform.OS === 'web';
-
-const fonts: FontFamilyTokens = {
-  display: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_600SemiBold',
-  displayRegular: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_400Regular',
-  displayMedium: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_500Medium',
-  displayBold: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_700Bold',
-  body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
-  bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
-  bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
-  bodyBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
-  accent: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
-};
-
 /** Elegant uses no drop shadows — clean, flat design. */
 const FLAT = { boxShadow: '0px 0px 0px 0px transparent' } as const;
 const flatShadows: ShadowTokens = {
@@ -113,7 +83,7 @@ export const lightTheme: ThemeDefinition = {
   name: 'Elegant',
   pickerSwatch: { type: 'color', value: '#C8B59A' },
   colors: lightColors,
-  fonts,
+  fonts: defaultFontFamily,
   borderRadius,
   shadows: flatShadows,
   buttonDisplay,
@@ -134,9 +104,5 @@ export const lightTheme: ThemeDefinition = {
     DMSans_500Medium,
     DMSans_600SemiBold,
     DMSans_700Bold,
-    CormorantGaramond_400Regular,
-    CormorantGaramond_500Medium,
-    CormorantGaramond_600SemiBold,
-    CormorantGaramond_700Bold,
   },
 };

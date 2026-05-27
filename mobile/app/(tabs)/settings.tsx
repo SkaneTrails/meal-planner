@@ -6,7 +6,6 @@
 
 import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import { ContentCard } from '@/components/ContentCard';
 import { GradientBackground } from '@/components/GradientBackground';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { Section } from '@/components/Section';
@@ -14,8 +13,8 @@ import {
   AboutSection,
   AccountSection,
   PersonalPreferencesSection,
+  SettingsGroup,
   SettingsNavLink,
-  SettingsSeparator,
 } from '@/components/settings';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { showNotification } from '@/lib/alert';
@@ -28,15 +27,15 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 
-import { layout, spacing, useTheme } from '@/lib/theme';
+import { layout, spacing } from '@/lib/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { borderRadius, colors } = useTheme();
   const { user, signOut } = useAuth();
   const { data: currentUser, isLoading: userLoading } = useCurrentUser();
   const { settings, toggleShowHiddenRecipes } = useSettings();
   const { t } = useTranslation();
+  const canManageAppearance = currentUser?.role === 'superuser';
 
   const householdId = currentUser?.household_id;
   const hasHousehold = !!householdId;
@@ -71,7 +70,7 @@ export default function SettingsScreen() {
   return (
     <GradientBackground>
       <View style={[{ flex: 1 }, layout.contentContainer]}>
-        <ScreenHeader title={t('settings.title')} />
+        <ScreenHeader title={t('settings.title')} variant="large" />
 
         <ScrollView
           style={{ flex: 1 }}
@@ -84,57 +83,27 @@ export default function SettingsScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ContentCard
-            label={t('settings.generalSettings')}
-            cardStyle={{
-              borderRadius: borderRadius.lg,
-              padding: spacing['md-lg'],
-            }}
-            style={{ marginBottom: spacing.lg }}
-          >
+          <View style={{ marginBottom: spacing.lg }}>
             <Section
               icon="settings"
               title={t('settings.generalSettings')}
               spacing={0}
             >
-              <View
-                style={{
-                  backgroundColor: colors.surface.subtle,
-                  borderRadius: borderRadius.md,
-                  padding: spacing.md,
-                  marginTop: spacing.sm,
-                }}
-              >
-                <PersonalPreferencesSection
-                  showHiddenRecipes={settings.showHiddenRecipes}
-                  onToggleShowHidden={toggleShowHiddenRecipes}
-                />
-              </View>
+              <PersonalPreferencesSection
+                showHiddenRecipes={settings.showHiddenRecipes}
+                onToggleShowHidden={toggleShowHiddenRecipes}
+                canManageAppearance={canManageAppearance}
+              />
             </Section>
-          </ContentCard>
+          </View>
 
-          <ContentCard
-            label={t('settings.householdSettings')}
-            cardStyle={{
-              borderRadius: borderRadius.lg,
-              padding: spacing['md-lg'],
-            }}
-            style={{ marginBottom: spacing.lg }}
-          >
+          <View style={{ marginBottom: spacing.lg }}>
             <Section
               icon="home"
               title={t('settings.householdSettings')}
               spacing={0}
             />
-            <View
-              style={{
-                backgroundColor: colors.surface.subtle,
-                borderRadius: borderRadius.md,
-                padding: spacing.md,
-                marginTop: spacing.sm,
-                opacity: !hasHousehold || userLoading ? 0.5 : 1,
-              }}
-            >
+            <SettingsGroup disabled={!hasHousehold || userLoading}>
               <SettingsNavLink
                 icon="cog"
                 title={t('householdSettings.general.title')}
@@ -143,7 +112,6 @@ export default function SettingsScreen() {
                 isLoading={userLoading}
                 onPress={() => navigateHousehold('general')}
               />
-              <SettingsSeparator />
               <SettingsNavLink
                 icon="people"
                 title={t('settings.membersSection')}
@@ -152,7 +120,6 @@ export default function SettingsScreen() {
                 isLoading={userLoading}
                 onPress={() => navigateHousehold('members')}
               />
-              <SettingsSeparator />
               <SettingsNavLink
                 icon="language"
                 title={t('settings.language')}
@@ -161,7 +128,6 @@ export default function SettingsScreen() {
                 isLoading={userLoading}
                 onPress={() => navigateHousehold('language')}
               />
-              <SettingsSeparator />
               <SettingsNavLink
                 icon="cart"
                 title={t('settings.groceryList')}
@@ -170,7 +136,6 @@ export default function SettingsScreen() {
                 isLoading={userLoading}
                 onPress={() => navigateHousehold('pantry')}
               />
-              <SettingsSeparator />
               <SettingsNavLink
                 icon="document-text-outline"
                 title={t('settings.noteSuggestions')}
@@ -179,17 +144,10 @@ export default function SettingsScreen() {
                 isLoading={userLoading}
                 onPress={() => navigateHousehold('notes')}
               />
-            </View>
-          </ContentCard>
+            </SettingsGroup>
+          </View>
 
-          <ContentCard
-            label={t('settings.aiSettings')}
-            cardStyle={{
-              borderRadius: borderRadius.lg,
-              padding: spacing['md-lg'],
-            }}
-            style={{ marginBottom: spacing.lg }}
-          >
+          <View style={{ marginBottom: spacing.lg }}>
             <Section
               icon="sparkles"
               title={t('settings.aiSettings')}
@@ -203,14 +161,8 @@ export default function SettingsScreen() {
               }
               spacing={0}
             />
-            <View
-              style={{
-                backgroundColor: colors.surface.subtle,
-                borderRadius: borderRadius.md,
-                padding: spacing.md,
-                marginTop: spacing.sm,
-                opacity: !hasHousehold || userLoading || !aiEnabled ? 0.5 : 1,
-              }}
+            <SettingsGroup
+              disabled={!hasHousehold || userLoading || !aiEnabled}
             >
               <SettingsNavLink
                 icon="sparkles"
@@ -224,67 +176,40 @@ export default function SettingsScreen() {
                   }
                 }}
               />
-            </View>
-          </ContentCard>
+            </SettingsGroup>
+          </View>
 
           {currentUser?.role === 'superuser' && (
-            <ContentCard
-              label={t('settings.adminSection')}
-              cardStyle={{
-                borderRadius: borderRadius.lg,
-                padding: spacing['md-lg'],
-              }}
-              style={{ marginBottom: spacing.lg }}
-            >
+            <View style={{ marginBottom: spacing.lg }}>
               <Section
                 icon="shield-checkmark"
                 title={t('settings.adminSection')}
                 spacing={0}
               />
-              <View
-                style={{
-                  backgroundColor: colors.surface.subtle,
-                  borderRadius: borderRadius.md,
-                  padding: spacing.md,
-                  marginTop: spacing.sm,
-                }}
-              >
+              <SettingsGroup>
                 <SettingsNavLink
                   icon="terminal"
                   title={t('settings.adminDashboard')}
                   subtitle={t('settings.adminDashboardDesc')}
                   onPress={() => router.push('/admin')}
                 />
-              </View>
-            </ContentCard>
+              </SettingsGroup>
+            </View>
           )}
 
           <View style={{ flex: 1 }} />
 
-          <ContentCard
-            cardStyle={{
-              borderRadius: borderRadius.lg,
-              padding: spacing['md-lg'],
-            }}
-            style={{ marginBottom: spacing.lg }}
-          >
+          <View style={{ marginBottom: spacing.lg }}>
             <AccountSection
               userEmail={user?.email}
               displayName={user?.displayName}
               onSignOut={handleSignOut}
             />
-          </ContentCard>
+          </View>
 
-          <ContentCard
-            label={t('settings.about')}
-            cardStyle={{
-              borderRadius: borderRadius.lg,
-              padding: spacing['md-lg'],
-            }}
-            style={{ marginBottom: spacing.lg }}
-          >
+          <View style={{ marginBottom: spacing.lg }}>
             <AboutSection />
-          </ContentCard>
+          </View>
         </ScrollView>
       </View>
     </GradientBackground>

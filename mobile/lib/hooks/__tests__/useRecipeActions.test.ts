@@ -6,6 +6,7 @@ import type { Recipe } from '@/lib/types';
 const mockMutateAsync = vi.fn();
 const mockDeleteMutateAsync = vi.fn();
 const mockSetMealMutateAsync = vi.fn();
+const mockUpdateExtrasMutateAsync = vi.fn();
 const mockTransferMutateAsync = vi.fn();
 const mockReviewMutateAsync = vi.fn();
 const mockEnhanceMutateAsync = vi.fn();
@@ -13,6 +14,9 @@ const mockRemoveEnhancementMutateAsync = vi.fn();
 const mockCopyMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
+const mockUseSettings = vi.fn(() => ({
+  settings: { aiEnabled: true },
+}));
 
 vi.mock('@/lib/hooks/use-recipes', () => ({
   useDeleteRecipe: vi.fn(() => ({ mutateAsync: mockDeleteMutateAsync })),
@@ -25,6 +29,7 @@ vi.mock('@/lib/hooks/use-recipes', () => ({
 
 vi.mock('@/lib/hooks/use-meal-plan', () => ({
   useSetMeal: vi.fn(() => ({ mutateAsync: mockSetMealMutateAsync })),
+  useUpdateExtras: vi.fn(() => ({ mutateAsync: mockUpdateExtrasMutateAsync })),
 }));
 
 vi.mock('@/lib/hooks/useImagePicker', () => ({
@@ -42,6 +47,10 @@ vi.mock('@/lib/hooks/use-auth', () => ({
     user: { email: 'test@example.com' },
     loading: false,
   })),
+}));
+
+vi.mock('@/lib/settings-context', () => ({
+  useSettings: () => mockUseSettings(),
 }));
 
 vi.mock('expo-router', () => ({
@@ -103,6 +112,7 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockUseSettings.mockReturnValue({ settings: { aiEnabled: true } });
   mockMutateAsync.mockResolvedValue(undefined);
   mockDeleteMutateAsync.mockResolvedValue(undefined);
   mockSetMealMutateAsync.mockResolvedValue(undefined);
@@ -635,7 +645,30 @@ describe('useRecipeActions', () => {
       );
     });
 
-    it('copies with keepEnhanced=true when choosing Copy As Is', async () => {
+    it('hides Copy & Enhance when AI is disabled', async () => {
+      mockUseSettings.mockReturnValue({ settings: { aiEnabled: false } });
+      const recipe = makeRecipe({
+        household_id: 'other-household',
+        visibility: 'shared',
+        enhanced: true,
+      });
+      const { result } = renderHook(() => useRecipeActions('recipe-1', recipe), { wrapper });
+      await act(async () => result.current.handleCopyRecipe());
+
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        'recipe.copyEnhancedTitle',
+        'recipe.copyConfirm',
+        expect.arrayContaining([
+          expect.objectContaining({ text: 'common.cancel' }),
+          expect.objectContaining({ text: 'recipe.copyAsIs' }),
+        ]),
+      );
+      expect(mockShowAlert.mock.calls[0][2]).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ text: 'recipe.copyAndEnhance' })]),
+      );
+    });
+
+    it('copies the original version when choosing Copy Original', async () => {
       const recipe = makeRecipe({
         household_id: 'other-household',
         visibility: 'shared',
@@ -650,11 +683,11 @@ describe('useRecipeActions', () => {
 
       expect(mockCopyMutateAsync).toHaveBeenCalledWith({
         id: 'recipe-1',
-        keepEnhanced: true,
+        keepEnhanced: false,
       });
     });
 
-    it('copies with keepEnhanced=false when choosing Copy & Enhance', async () => {
+    it('copies the original version and auto-enhances when choosing Copy & Enhance', async () => {
       const recipe = makeRecipe({
         household_id: 'other-household',
         visibility: 'shared',
@@ -671,6 +704,7 @@ describe('useRecipeActions', () => {
         id: 'recipe-1',
         keepEnhanced: false,
       });
+      expect(mockEnhanceMutateAsync).toHaveBeenCalledWith('copied-recipe-1');
     });
 
     it('calls copyRecipe and navigates to copy on success', async () => {

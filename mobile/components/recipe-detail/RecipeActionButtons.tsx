@@ -1,8 +1,10 @@
-import { ButtonGroup } from '@/components/ButtonGroup';
-import { IconButton } from '@/components/IconButton';
+import { View, type ViewStyle } from 'react-native';
+import type { ButtonTone } from '@/components/Button';
+import { Button } from '@/components/Button';
+import type { IoniconName } from '@/components/ThemeIcon';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
-import { opacity, useTheme } from '@/lib/theme';
+import { spacing, useTheme } from '@/lib/theme';
 
 interface RecipeActionButtonsProps {
   canEdit: boolean;
@@ -19,6 +21,17 @@ interface RecipeActionButtonsProps {
   onCopy: () => void;
   onEnhance: () => void;
   onToggleKeepScreenOn: () => void;
+}
+
+interface ActionTile {
+  key: string;
+  icon: IoniconName;
+  label: string;
+  onPress: () => void;
+  /** Tone override — defaults to "glass". Use "glassAi" for AI-accented actions. */
+  tone?: ButtonTone;
+  disabled?: boolean;
+  dimmed?: boolean;
 }
 
 export const RecipeActionButtons = ({
@@ -41,76 +54,89 @@ export const RecipeActionButtons = ({
   if (!visibility.showRecipeActionButtons) return null;
   const enhanceDisabled = isEnhancing || !aiEnabled || !isOwned;
 
+  const tiles: ActionTile[] = [
+    {
+      key: 'edit',
+      icon: 'create-outline',
+      label: t('recipe.edit'),
+      // Not disabled — onPress shows an alert with copy option when uneditable.
+      dimmed: !canEdit,
+      onPress: canEdit
+        ? onOpenEditModal
+        : () =>
+            showAlert(t('recipe.cannotEdit'), t('recipe.cannotEditMessage'), [
+              { text: t('common.cancel'), style: 'cancel' },
+              ...(canCopy
+                ? [{ text: t('recipe.copy'), onPress: onCopy }]
+                : [{ text: t('common.ok') }]),
+            ]),
+    },
+    {
+      key: 'plan',
+      icon: 'calendar-outline',
+      label: t('mealPlan.title'),
+      onPress: onShowPlanModal,
+    },
+    ...(canCopy
+      ? [
+          {
+            key: 'copy',
+            icon: 'copy-outline' as IoniconName,
+            label: t('recipe.copy'),
+            disabled: isCopying,
+            dimmed: isCopying,
+            onPress: onCopy,
+          },
+        ]
+      : []),
+    ...(canEnhance
+      ? [
+          {
+            key: 'enhance',
+            icon: 'sparkles' as IoniconName,
+            label: t('recipe.enhance'),
+            tone: 'glassAi' as const,
+            disabled: enhanceDisabled,
+            dimmed: enhanceDisabled,
+            onPress: onEnhance,
+          },
+        ]
+      : []),
+    {
+      key: 'screen',
+      icon: (keepScreenOn ? 'sunny' : 'sunny-outline') as IoniconName,
+      label: t(keepScreenOn ? 'recipe.screenOnActive' : 'recipe.keepScreenOn'),
+      onPress: onToggleKeepScreenOn,
+    },
+  ];
+
   return (
-    <ButtonGroup gap={8}>
-      <IconButton
-        icon="create"
-        iconSize={20}
-        onPress={
-          canEdit
-            ? onOpenEditModal
-            : () =>
-                showAlert(
-                  t('recipe.cannotEdit'),
-                  t('recipe.cannotEditMessage'),
-                  [
-                    { text: t('common.cancel'), style: 'cancel' },
-                    ...(canCopy
-                      ? [{ text: t('recipe.copy'), onPress: onCopy }]
-                      : [{ text: t('common.ok') }]),
-                  ],
-                )
-        }
-        label={t('recipe.edit')}
-        disabled={!canEdit}
-        disableAnimation={!canEdit}
-        tone="glassSolid"
-        size="md"
-        style={{ opacity: canEdit ? 1 : 0.5 }}
-      />
-      <IconButton
-        icon="calendar"
-        iconSize={20}
-        onPress={onShowPlanModal}
-        label={t('mealPlan.title')}
-        tone="glassSolid"
-        size="md"
-      />
-      {canCopy && (
-        <IconButton
-          icon="copy-outline"
-          iconSize={20}
-          onPress={onCopy}
-          label={t('recipe.copy')}
-          disabled={isCopying}
-          tone="glassSolid"
-          size="md"
-          style={{ opacity: isCopying ? 0.5 : 1 }}
+    <View style={rowStyle}>
+      {tiles.map((tile) => (
+        <Button
+          key={tile.key}
+          variant="primary"
+          size="sm"
+          tone={tile.tone ?? 'glass'}
+          icon={tile.icon}
+          label={tile.label}
+          onPress={tile.onPress}
+          disabled={tile.disabled}
+          style={{
+            flex: 1,
+            minWidth: 0,
+            ...(tile.dimmed ? { opacity: 0.5 } : null),
+          }}
         />
-      )}
-      {canEnhance && (
-        <IconButton
-          icon="sparkles"
-          iconSize={20}
-          onPress={onEnhance}
-          label={t('recipe.enhance')}
-          disabled={enhanceDisabled}
-          disableAnimation={enhanceDisabled}
-          tone="glassAi"
-          size="md"
-          style={{ opacity: enhanceDisabled ? opacity.disabled : 1 }}
-        />
-      )}
-      <IconButton
-        icon={keepScreenOn ? 'sunny' : 'sunny-outline'}
-        iconSize={20}
-        onPress={onToggleKeepScreenOn}
-        label={t(
-          keepScreenOn ? 'recipe.screenOnActive' : 'recipe.keepScreenOn',
-        )}
-        tone={keepScreenOn ? 'glassSolid' : 'glassSubtle'}
-        size="md"
-      />
-    </ButtonGroup>
+      ))}
+    </View>
   );
+};
+
+const rowStyle: ViewStyle = {
+  flexDirection: 'row',
+  alignItems: 'stretch',
+  gap: spacing.sm,
+  width: '100%',
+  flexWrap: 'wrap',
 };

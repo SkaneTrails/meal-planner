@@ -24,10 +24,15 @@ const mockMealPlan = {
     '2026-01-05_lunch': 'recipe-1',
     '2026-01-05_dinner': 'custom:Pasta night',
     '2026-01-06_lunch': 'unknown-id',
+    '2026-01-06_dinner': 'recipe-2',
   },
   notes: {
     '2026-01-05': 'Office Gym',
   },
+  last_modified_by: {
+    '2026-01-05_lunch': 'test.user@example.com',
+  },
+  extras: {},
 };
 
 const mockRecipes: Recipe[] = [
@@ -39,13 +44,26 @@ const mockRecipes: Recipe[] = [
     visibility: 'household',
     household_id: 'h1',
   }),
+  mockRecipe({
+    id: 'recipe-2',
+    title: 'Chicken Rice Bowl',
+    ingredients: ['chicken', 'rice'],
+    instructions: ['Cook chicken', 'Serve with rice'],
+    visibility: 'household',
+    household_id: 'h1',
+  }),
 ];
 
 const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 const mockUpdateExtrasMutate = vi.fn();
 
 vi.mock('@/lib/grocery-context', () => ({
-  useGroceryState: vi.fn(() => ({ saveSelections: mockSaveSelections })),
+  useGroceryState: vi.fn(() => ({
+    saveSelections: mockSaveSelections,
+    selectedMealKeys: [] as string[],
+    mealServings: {} as Record<string, number>,
+    removedItems: [] as string[],
+  })),
 }));
 
 vi.mock('@/lib/hooks/use-meal-plan', () => ({
@@ -113,7 +131,10 @@ describe('useMealPlanActions', () => {
     it('returns recipe when meal value is a known recipe ID', () => {
       const { result } = renderActions();
       const slot = result.current.getMealForSlot(new Date('2026-01-05'), 'lunch');
-      expect(slot).toEqual({ recipe: expect.objectContaining({ id: 'recipe-1', title: 'Chicken Curry' }) });
+      expect(slot).toEqual({
+        recipe: expect.objectContaining({ id: 'recipe-1', title: 'Chicken Curry' }),
+        lastModifiedBy: 'test.user@example.com',
+      });
     });
 
     it('returns customText when meal value starts with "custom:"', () => {
@@ -211,8 +232,95 @@ describe('useMealPlanActions', () => {
       expect(mockSaveSelections).toHaveBeenCalledWith(
         ['2026-01-05_lunch'],
         { '2026-01-05_lunch': 4 },
+        [],
       );
       expect(result.current.showGroceryModal).toBe(false);
+    });
+
+    it('merges new meals with existing selections from context', async () => {
+      const { useGroceryState } = await import('@/lib/grocery-context');
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: ['2026-01-06_dinner'],
+        mealServings: { '2026-01-06_dinner': 2 },
+        removedItems: [] as string[],
+      } as unknown as ReturnType<typeof useGroceryState>);
+
+      const { result } = renderActions();
+
+      act(() => result.current.handleToggleMeal(new Date('2026-01-05'), 'lunch', 4));
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        expect.arrayContaining(['2026-01-06_dinner', '2026-01-05_lunch']),
+        { '2026-01-06_dinner': 2, '2026-01-05_lunch': 4 },
+        [],
+      );
+
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: [] as string[],
+        mealServings: {} as Record<string, number>,
+        removedItems: [] as string[],
+      } as unknown as ReturnType<typeof useGroceryState>);
+    });
+
+    it('restores removed items for meals explicitly selected again', async () => {
+      const { useGroceryState } = await import('@/lib/grocery-context');
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: ['2026-01-05_lunch'],
+        mealServings: { '2026-01-05_lunch': 4 },
+        removedItems: ['chicken', 'curry paste', 'butter'],
+      } as unknown as ReturnType<typeof useGroceryState>);
+
+      const { result } = renderActions();
+
+      act(() => result.current.handleToggleMeal(new Date('2026-01-05'), 'lunch', 4));
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        ['2026-01-05_lunch'],
+        { '2026-01-05_lunch': 4 },
+        ['butter'],
+      );
+
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: [] as string[],
+        mealServings: {} as Record<string, number>,
+        removedItems: [] as string[],
+      } as unknown as ReturnType<typeof useGroceryState>);
+    });
+
+    it('does not restore shared ingredients when adding a different meal later', async () => {
+      const { useGroceryState } = await import('@/lib/grocery-context');
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: ['2026-01-05_lunch'],
+        mealServings: { '2026-01-05_lunch': 4 },
+        removedItems: ['chicken'],
+      } as unknown as ReturnType<typeof useGroceryState>);
+
+      const { result } = renderActions();
+
+      act(() =>
+        result.current.handleToggleMeal(new Date('2026-01-06'), 'dinner', 2),
+      );
+      await act(() => result.current.handleCreateGroceryList());
+
+      expect(mockSaveSelections).toHaveBeenCalledWith(
+        expect.arrayContaining(['2026-01-05_lunch', '2026-01-06_dinner']),
+        { '2026-01-05_lunch': 4, '2026-01-06_dinner': 2 },
+        ['chicken'],
+      );
+
+      vi.mocked(useGroceryState).mockReturnValue({
+        saveSelections: mockSaveSelections,
+        selectedMealKeys: [] as string[],
+        mealServings: {} as Record<string, number>,
+        removedItems: [] as string[],
+      } as unknown as ReturnType<typeof useGroceryState>);
     });
   });
 
@@ -327,8 +435,8 @@ describe('useMealPlanActions', () => {
 
     it('counts only matching meal types (unknown-id counts as present)', () => {
       const { result } = renderActions();
-      // 2026-01-06 has only lunch (unknown-id) = 1
-      expect(result.current.countMealsForDate(new Date('2026-01-06'))).toBe(1);
+      // 2026-01-06 has lunch (unknown-id) and dinner (recipe-2) = 2
+      expect(result.current.countMealsForDate(new Date('2026-01-06'))).toBe(2);
     });
   });
 

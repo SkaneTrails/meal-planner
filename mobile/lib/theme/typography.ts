@@ -25,20 +25,12 @@ export type FontFamilyTokens = {
 // Web uses CSS font names with weights, native uses Expo font names (which embed weight)
 const isWeb = Platform.OS === 'web';
 
-/** Cormorant Garamond for display headings, DM Sans for body text. */
+/** DM Sans for all text (display, body, accent). */
 export const defaultFontFamily: FontFamilyTokens = {
-  display: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_600SemiBold',
-  displayRegular: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_400Regular',
-  displayMedium: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_500Medium',
-  displayBold: isWeb
-    ? '"Cormorant Garamond", serif'
-    : 'CormorantGaramond_700Bold',
+  display: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
+  displayRegular: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
+  displayMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
+  displayBold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_700Bold',
   body: isWeb ? '"DM Sans", sans-serif' : 'DMSans_400Regular',
   bodyMedium: isWeb ? '"DM Sans", sans-serif' : 'DMSans_500Medium',
   bodySemibold: isWeb ? '"DM Sans", sans-serif' : 'DMSans_600SemiBold',
@@ -64,30 +56,35 @@ export const fontFamilyWeight = {
   accent: '500' as const,
 };
 
-// Typography scale - refined for luxury feel
+// Typography scale — tightened for a more compact, modern UI.
+// Token keys are preserved (large blast radius) but values are bumped to a
+// smaller ramp (body 13–15, headings 16–24, display 24–36).
+// Rule of thumb: micro/eyebrow sizes start at 11; default body sits at 13–14;
+// reading body at 15; section headings at 16–18; screen titles at 21–24.
 export const fontSize = {
-  xs: 10,
-  sm: 11,
-  base: 12,
-  md: 13,
-  lg: 14,
-  xl: 15,
-  'lg-xl': 16,
-  '2xl': 17,
-  'xl-2xl': 18,
-  '3xl': 20,
-  '3xl-4xl': 28,
-  '4xl': 26,
-  '5xl': 32,
-  '6xl': 40,
+  xs: 11,
+  sm: 12,
+  base: 13,
+  md: 14,
+  lg: 15,
+  xl: 16,
+  'lg-xl': 17,
+  '2xl': 18,
+  'xl-2xl': 19,
+  '3xl': 21,
+  '3xl-4xl': 24,
+  '4xl': 24,
+  '5xl': 30,
+  '6xl': 36,
 } as const;
 
+// Line-height ramp aligned to the new font sizes (~1.4× body, ~1.2 headings).
 export const lineHeight = {
-  sm: 18,
-  md: 20,
+  sm: 16,
+  md: 18,
   lg: 22,
   xl: 24,
-  '2xl': 26,
+  '2xl': 28,
 } as const;
 
 // Font weights for typography hierarchy
@@ -99,14 +96,15 @@ export const fontWeight = {
   bold: '700' as const,
 };
 
-// Letter spacing for typography refinement
+// Letter spacing — soft, neutral defaults. Modern minimalism uses ~0 tracking
+// at body sizes; only large display text gets mild negative tracking.
 export const letterSpacing = {
-  tighter: -0.8,
-  tight: -0.5,
-  snug: -0.3,
-  normal: -0.2,
-  wide: 0.8,
-  wider: 1.2,
+  tighter: -0.4,
+  tight: -0.25,
+  snug: -0.1,
+  normal: 0,
+  wide: 0.4,
+  wider: 0.8,
 } as const;
 
 /** Build typography presets from the given font family tokens. */
@@ -115,49 +113,88 @@ export const createTypography = (fonts: FontFamilyTokens) =>
     displayLarge: {
       fontFamily: fonts.displayBold,
       fontSize: fontSize['6xl'],
+      lineHeight: 40,
       letterSpacing: letterSpacing.tighter,
     },
     displayMedium: {
       fontFamily: fonts.display,
       fontSize: fontSize['4xl'],
+      lineHeight: 30,
       letterSpacing: letterSpacing.tight,
     },
     displaySmall: {
       fontFamily: fonts.display,
       fontSize: fontSize['3xl'],
-      letterSpacing: letterSpacing.normal,
+      lineHeight: 26,
+      letterSpacing: letterSpacing.snug,
     },
 
     headingLarge: {
       fontFamily: fonts.bodyBold,
       fontSize: fontSize['3xl'],
-      letterSpacing: letterSpacing.normal,
+      lineHeight: 26,
+      letterSpacing: letterSpacing.snug,
     },
     headingMedium: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize['2xl'],
+      lineHeight: 22,
       letterSpacing: letterSpacing.normal,
     },
     headingSmall: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.xl,
+      lineHeight: 20,
       letterSpacing: letterSpacing.normal,
     },
 
-    bodyLarge: { fontFamily: fonts.body, fontSize: fontSize.lg },
-    bodyMedium: { fontFamily: fonts.body, fontSize: fontSize.md },
-    bodySmall: { fontFamily: fonts.body, fontSize: fontSize.base },
+    bodyLarge: {
+      fontFamily: fonts.body,
+      fontSize: fontSize.lg,
+      lineHeight: 22,
+    },
+    bodyMedium: {
+      fontFamily: fonts.body,
+      fontSize: fontSize.md,
+      lineHeight: 20,
+    },
+    bodySmall: {
+      fontFamily: fonts.body,
+      fontSize: fontSize.base,
+      lineHeight: 18,
+    },
 
-    labelLarge: { fontFamily: fonts.bodySemibold, fontSize: fontSize.lg },
-    labelMedium: { fontFamily: fonts.bodySemibold, fontSize: fontSize.md },
-    labelSmall: { fontFamily: fonts.bodySemibold, fontSize: fontSize.sm },
+    labelLarge: {
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.lg,
+      lineHeight: 18,
+    },
+    labelMedium: {
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.md,
+      lineHeight: 18,
+    },
+    labelSmall: {
+      fontFamily: fonts.bodySemibold,
+      fontSize: fontSize.sm,
+      lineHeight: 16,
+    },
 
-    caption: { fontFamily: fonts.bodyMedium, fontSize: fontSize.base },
-    captionSmall: { fontFamily: fonts.bodyMedium, fontSize: fontSize.sm },
+    caption: {
+      fontFamily: fonts.bodyMedium,
+      fontSize: fontSize.base,
+      lineHeight: 18,
+    },
+    captionSmall: {
+      fontFamily: fonts.bodyMedium,
+      fontSize: fontSize.sm,
+      lineHeight: 16,
+    },
 
     overline: {
       fontFamily: fonts.bodySemibold,
       fontSize: fontSize.xs,
+      lineHeight: 14,
       letterSpacing: letterSpacing.wider,
       textTransform: 'uppercase' as const,
     },

@@ -27,11 +27,11 @@ interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
   style?:
     | StyleProp<ViewStyle>
     | ((state: { pressed: boolean; hovered: boolean }) => StyleProp<ViewStyle>);
-  /** Scale when pressed (default: 0.97) */
+  /** Scale when pressed (default: 0.99 — Phase 7 calmer modern motion) */
   pressScale?: number;
-  /** Scale when hovered on web (default: 1.02) */
+  /** Scale when hovered on web (default: 1.01 — Phase 7) */
   hoverScale?: number;
-  /** Animation duration in ms (default: 150) */
+  /** Animation duration in ms (default: 120 — Phase 7) */
   animationDuration?: number;
   /** Whether to disable animations */
   disableAnimation?: boolean;
@@ -40,9 +40,9 @@ interface AnimatedPressableProps extends Omit<PressableProps, 'style'> {
 export const AnimatedPressable = ({
   children,
   style,
-  pressScale = 0.97,
-  hoverScale = 1.02,
-  animationDuration = 150,
+  pressScale = 0.99,
+  hoverScale = 1.01,
+  animationDuration = 120,
   disableAnimation = false,
   onPressIn,
   onPressOut,
@@ -66,8 +66,8 @@ export const AnimatedPressable = ({
         Animated.spring(scaleAnim, {
           toValue,
           useNativeDriver: true,
-          damping: 15,
-          stiffness: 200,
+          damping: 22,
+          stiffness: 220,
         }).start();
       } else {
         Animated.timing(scaleAnim, {

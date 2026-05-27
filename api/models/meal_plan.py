@@ -28,6 +28,7 @@ class PlannedMeal(BaseModel):
     recipe_id: str | None = None
     recipe_title: str | None = None
     notes: str | None = None
+    last_modified_by: str | None = None
 
 
 class MealPlan(BaseModel):
@@ -38,6 +39,10 @@ class MealPlan(BaseModel):
     household_id: str = Field(..., description="Household identifier")
     meals: dict[str, str] = Field(default_factory=dict, description="Map of date_mealtype to recipe_id or custom:text")
     notes: dict[str, str] = Field(default_factory=dict, description="Map of date to note text")
+    last_modified_by: dict[str, str] = Field(
+        default_factory=dict,
+        description="Map of date_mealtype to a display-safe initials label for the user who last changed that slot",
+    )
     extras: dict[str, list[str]] = Field(
         default_factory=dict, description="Week-keyed recipe IDs for 'Other' section (key = week start date)"
     )
@@ -58,6 +63,7 @@ class MealPlan(BaseModel):
                             meal_type=meal_type,
                             recipe_id=None if is_custom else value,
                             recipe_title=value[7:] if is_custom else None,
+                            last_modified_by=self.last_modified_by.get(key),
                         )
                     )
         return result
@@ -76,6 +82,7 @@ class MealPlan(BaseModel):
                         meal_type=meal_type,
                         recipe_id=None if is_custom else value,
                         recipe_title=value[7:] if is_custom else None,
+                        last_modified_by=self.last_modified_by.get(key),
                     )
                 )
         return result

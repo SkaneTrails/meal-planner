@@ -8,7 +8,7 @@ import { Text, View } from 'react-native';
 import { FeaturedCarousel } from '@/components/recipes/FeaturedCarousel';
 import { useFeaturedCategories } from '@/lib/hooks/use-featured-categories';
 import type { TFunction } from '@/lib/i18n';
-import { fontSize, spacing, useTheme } from '@/lib/theme';
+import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';
 
 interface FeaturedCategoriesSectionProps {
   onRecipePress: (id: string) => void;
@@ -40,12 +40,16 @@ export const FeaturedCategoriesSection = ({
           t={t}
         />
       ))}
+      {/* Eyebrow-style divider into the main grid below — same typographic
+          treatment as the editorial eyebrows on the home tab so the two
+          surfaces share a section-label language. */}
       <Text
         style={{
-          fontSize: fontSize['3xl'],
+          fontSize: fontSize.xs,
           fontFamily: fonts.bodySemibold,
-          fontWeight: 'bold',
-          color: colors.content.heading,
+          color: colors.content.subtitle,
+          letterSpacing: letterSpacing.wider,
+          textTransform: 'uppercase',
           marginTop: spacing.xl,
           marginBottom: spacing.sm,
         }}

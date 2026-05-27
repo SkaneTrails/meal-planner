@@ -106,7 +106,7 @@ export const GroceryListView = ({
   onReorder,
   onClearPicked,
 }: GroceryListViewProps) => {
-  const { colors, fonts } = useTheme();
+  const { borderRadius, colors, fonts } = useTheme();
   const { t } = useTranslation();
   const [orderedItems, setOrderedItems] = useState<GroceryItem[]>([]);
   const orderedItemsRef = useRef<GroceryItem[]>([]);
@@ -287,6 +287,7 @@ export const GroceryListView = ({
       style={{ flex: 1 }}
       contentContainerStyle={{
         paddingHorizontal: spacing.xl,
+        paddingTop: spacing.md,
         paddingBottom: layout.tabBar.contentBottomPadding,
       }}
       showsVerticalScrollIndicator={false}
@@ -322,12 +323,15 @@ export const GroceryListView = ({
           >
             <Button
               variant="text"
-              tone="warning"
+              tone="glassSolid"
               size="sm"
               icon="checkmark-done-outline"
               label={t('grocery.clearPickedButton')}
               onPress={onClearPicked}
               testID="clear-picked"
+              hoverScale={1.08}
+              pressScale={0.95}
+              style={{ borderRadius: borderRadius.full }}
             />
           </View>
         )}

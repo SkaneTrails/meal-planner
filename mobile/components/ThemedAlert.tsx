@@ -16,6 +16,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -31,6 +32,10 @@ interface ThemedAlertProps {
 }
 
 const ANIMATION_DURATION = 200;
+const STACKED_ALERT_BREAKPOINT = 420;
+
+export const shouldStackAlertButtons = (buttonCount: number, width: number) =>
+  buttonCount > 2 && width < STACKED_ALERT_BREAKPOINT;
 
 const buttonTone = (style?: AlertButton['style']) => {
   if (style === 'destructive') return 'warning' as const;
@@ -68,6 +73,7 @@ const WebOverlay = ({ visible, children }: WrapperProps) => {
 
 export const ThemedAlert = ({ alert, onDismiss }: ThemedAlertProps) => {
   const { colors, fonts, borderRadius, shadows, chrome } = useTheme();
+  const { width } = useWindowDimensions();
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.9)).current;
 
@@ -104,6 +110,10 @@ export const ThemedAlert = ({ alert, onDismiss }: ThemedAlertProps) => {
 
   const buttons = alert?.buttons;
   const hasButtons = buttons && buttons.length > 0;
+  const shouldStackButtons = shouldStackAlertButtons(
+    buttons?.length ?? 0,
+    width,
+  );
 
   // On web, RN Modal portals all share the same z-index so a second Modal
   // (this alert) can render *under* an already-open BottomSheetModal.
@@ -168,8 +178,10 @@ export const ThemedAlert = ({ alert, onDismiss }: ThemedAlertProps) => {
             <View
               style={[
                 styles.buttonRow,
+                { flexDirection: shouldStackButtons ? 'column' : 'row' },
                 { borderTopColor: colors.surface.divider },
               ]}
+              testID="alert-buttons"
             >
               {hasButtons ? (
                 buttons.map((button) => (

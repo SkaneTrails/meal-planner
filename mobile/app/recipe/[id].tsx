@@ -5,7 +5,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { ActionButton } from '@/components/ActionButton';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { EnhancingOverlay } from '@/components/EnhancingOverlay';
 import { GradientBackground } from '@/components/GradientBackground';
@@ -22,10 +21,12 @@ import {
 } from '@/components/recipe-detail/RecipeLoadingStates';
 import { TerminalFabBar } from '@/components/TerminalFabBar';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useMealPlan } from '@/lib/hooks/use-meal-plan';
-import { useRecipe } from '@/lib/hooks/use-recipes';
-import { useKeepScreenOn } from '@/lib/hooks/useKeepScreenOn';
-import { usePortionScaling } from '@/lib/hooks/usePortionScaling';
+import {
+  useKeepScreenOn,
+  useMealPlan,
+  usePortionScaling,
+  useRecipe,
+} from '@/lib/hooks';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 
@@ -69,6 +70,7 @@ export default function RecipeDetailScreen() {
     saveImageUrl,
     handlePlanMeal,
     handleClearMeal,
+    handleAddToExtras,
     handleThumbUp,
     handleThumbDown,
     handleDelete,
@@ -90,6 +92,13 @@ export default function RecipeDetailScreen() {
     [weekOffset, weekStart],
   );
   const { data: mealPlan } = useMealPlan();
+
+  const weekKey = useMemo(() => formatDateLocal(weekDates[0]), [weekDates]);
+  const currentWeekExtras = useMemo(
+    () => mealPlan?.extras?.[weekKey] ?? [],
+    [mealPlan?.extras, weekKey],
+  );
+  const isInExtras = !!id && currentWeekExtras.includes(id);
 
   const planMealTypes = useMemo(() => {
     const types: { type: MealType; labelKey: string }[] = [];
@@ -191,14 +200,16 @@ export default function RecipeDetailScreen() {
           headerTransparent: true,
           headerTintColor: colors.white,
           headerBackTitle: '',
-          headerLeft: () => (
-            <ActionButton.Back
-              tone="glass"
-              size="md"
-              onPress={() => router.replace('/(tabs)/recipes')}
-              style={{ marginLeft: spacing.sm }}
-            />
-          ),
+          headerLeft: () =>
+            visibility.showHeroOverlay ? null : (
+              <IconButton
+                tone="glass"
+                icon="chevron-back"
+                size="md"
+                onPress={() => router.replace('/(tabs)/recipes')}
+                style={{ marginLeft: spacing.sm }}
+              />
+            ),
           headerRight: () => null,
         }}
       />
@@ -221,6 +232,14 @@ export default function RecipeDetailScreen() {
           scrollY={scrollY}
           onThumbUp={handleThumbUp}
           onThumbDown={handleThumbDown}
+          topLeftButton={
+            <IconButton
+              tone="glass"
+              icon="chevron-back"
+              size="md"
+              onPress={() => router.replace('/(tabs)/recipes')}
+            />
+          }
           topRightButtons={
             <>
               <IconButton
@@ -237,7 +256,7 @@ export default function RecipeDetailScreen() {
                 tone="glass"
                 icon="camera"
                 size="md"
-                iconSize={20}
+                iconSize={22}
                 isPending={isUpdatingImage}
                 onPress={handlePickImage}
               />
@@ -381,6 +400,8 @@ export default function RecipeDetailScreen() {
         onPlanMeal={handlePlanMeal}
         onClearMeal={handleClearMeal}
         getMealForSlot={getMealForSlot}
+        onAddToExtras={() => handleAddToExtras(weekKey, currentWeekExtras)}
+        isInExtras={isInExtras}
       />
 
       {showEditModal && (

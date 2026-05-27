@@ -43,6 +43,7 @@ class TestMealPlan:
         assert plan.household_id == "household1"
         assert plan.meals == {}
         assert plan.notes == {}
+        assert plan.last_modified_by == {}
 
     def test_meal_plan_with_meals(self) -> None:
         """Should store meals in correct format."""
@@ -107,3 +108,22 @@ class TestMealPlan:
         plan = MealPlan(household_id="household1", notes={"2025-01-15": "Work from home", "2025-01-16": "Office day"})
         assert plan.notes["2025-01-15"] == "Work from home"
         assert plan.notes["2025-01-16"] == "Office day"
+
+    def test_last_modified_by_storage(self) -> None:
+        """Should store slot attribution by meal key."""
+        plan = MealPlan(
+            household_id="household1",
+            meals={"2025-01-15_dinner": "recipe1"},
+            last_modified_by={"2025-01-15_dinner": "CB"},
+        )
+        assert plan.last_modified_by["2025-01-15_dinner"] == "CB"
+
+    def test_get_meals_for_day_includes_last_modified_by(self) -> None:
+        """Should expose slot attribution on planned meals."""
+        plan = MealPlan(
+            household_id="household1",
+            meals={"2025-01-15_dinner": "recipe1"},
+            last_modified_by={"2025-01-15_dinner": "CB"},
+        )
+        meals = plan.get_meals_for_day(date(2025, 1, 15))
+        assert meals[0].last_modified_by == "CB"

@@ -30,3 +30,9 @@ tfstate_bucket_name = "your-tfstate-bucket-name"
 # Firestore backup configuration
 # GCS bucket for backups (must be globally unique)
 backup_bucket_name = "your-project-firestore-backups"
+
+# External repos granted viewer-only WIF access (for terraform plan)
+# Format: label = "owner/repo"
+# external_wif_repos = {
+#   my-spike = "my-org/my-repo"
+# }

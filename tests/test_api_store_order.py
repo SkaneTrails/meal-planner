@@ -135,6 +135,30 @@ class TestLearnStoreOrder:
         mock_save.assert_called_once()
 
 
+class TestSetStoreOrder:
+    """Tests for PUT /grocery/stores/{store_id}/order."""
+
+    def test_saves_order_directly(self, client: TestClient) -> None:
+        with patch("api.routers.grocery.save_store_order") as mock_save:
+            response = client.put("/grocery/stores/store_1/order", json={"item_order": ["C", "A", "B"]})
+
+        assert response.status_code == 200
+        assert response.json()["item_order"] == ["C", "A", "B"]
+        mock_save.assert_called_once_with("test_household", "store_1", ["C", "A", "B"])
+
+    def test_saves_empty_order(self, client: TestClient) -> None:
+        with patch("api.routers.grocery.save_store_order") as mock_save:
+            response = client.put("/grocery/stores/store_1/order", json={"item_order": []})
+
+        assert response.status_code == 200
+        assert response.json()["item_order"] == []
+        mock_save.assert_called_once_with("test_household", "store_1", [])
+
+    def test_requires_household(self, client_no_household: TestClient) -> None:
+        response = client_no_household.put("/grocery/stores/store_1/order", json={"item_order": ["A"]})
+        assert response.status_code == 403
+
+
 class TestSetActiveStore:
     """Tests for PUT /grocery/active-store."""
 

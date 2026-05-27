@@ -174,7 +174,7 @@ export const InstructionItem = ({
                 fontSize: fontSize.sm,
                 fontFamily: fonts.bodySemibold,
                 color: colors.white,
-                marginLeft: 4,
+                marginLeft: spacing.xs,
               }}
             >
               {time} min
@@ -183,7 +183,7 @@ export const InstructionItem = ({
         )}
         <Text
           style={{
-            fontSize: fontSize.xl,
+            fontSize: fontSize.lg,
             fontFamily: fonts.body,
             color: isCompleted
               ? colors.timeline.completedText

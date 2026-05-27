@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Platform, Text, View, type ViewStyle } from 'react-native';
+import { Platform, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { ContentCard } from '@/components/ContentCard';
 import { Section } from '@/components/Section';
 import type { FrameSegment } from '@/components/TerminalFrame';
@@ -182,7 +182,27 @@ export const RecipeContent = ({
         </Text>
       )}
 
-      {/* ── Card 1: Header (actions, time, tags, toggle) ── */}
+      {/* ── Quick action toolbar (above card, full width) ── */}
+      <View style={{ marginBottom: spacing.md }}>
+        <RecipeActionButtons
+          canEdit={canEdit}
+          canCopy={canCopy}
+          isCopying={isCopying}
+          canEnhance={canEnhance}
+          isEnhancing={isEnhancing}
+          isOwned={isOwned}
+          aiEnabled={aiEnabled}
+          keepScreenOn={keepScreenOn}
+          t={t}
+          onOpenEditModal={onOpenEditModal}
+          onShowPlanModal={onShowPlanModal}
+          onCopy={onCopy}
+          onEnhance={onEnhance}
+          onToggleKeepScreenOn={onToggleKeepScreenOn}
+        />
+      </View>
+
+      {/* ── Card 1: Header (stats, chips, tags, toggle) ── */}
       <ContentCard
         label={chrome === 'flat' ? 'INFO' : undefined}
         style={{ marginBottom: spacing.md }}
@@ -196,25 +216,6 @@ export const RecipeContent = ({
           onToggle={() => toggle('header')}
           spacing={0}
         >
-          <RecipeActionButtons
-            canEdit={canEdit}
-            canCopy={canCopy}
-            isCopying={isCopying}
-            canEnhance={canEnhance}
-            isEnhancing={isEnhancing}
-            isOwned={isOwned}
-            aiEnabled={aiEnabled}
-            keepScreenOn={keepScreenOn}
-            t={t}
-            onOpenEditModal={onOpenEditModal}
-            onShowPlanModal={onShowPlanModal}
-            onCopy={onCopy}
-            onEnhance={onEnhance}
-            onToggleKeepScreenOn={onToggleKeepScreenOn}
-          />
-
-          <RecipeMetaLabels recipe={recipe} t={t} />
-
           <RecipeTimeServings
             prepTime={recipe.prep_time}
             cookTime={recipe.cook_time}
@@ -226,6 +227,19 @@ export const RecipeContent = ({
             t={t}
             portionScaling={portionScaling}
           />
+
+          <RecipeMetaLabels recipe={recipe} t={t} />
+
+          {recipe.tags && recipe.tags.length > 0 && (
+            <View
+              style={{
+                height: StyleSheet.hairlineWidth,
+                backgroundColor: colors.border,
+                marginTop: spacing.md,
+                marginBottom: spacing.xs,
+              }}
+            />
+          )}
 
           <RecipeTags tags={recipe.tags} />
 

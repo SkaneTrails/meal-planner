@@ -233,10 +233,13 @@ export const Button = ({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingVertical: spacing.lg,
+          // Phase 5: tighter vertical (type is bigger in Phase 1, so we don't
+          // need as much padding to hit a 44px tap target). Lighter shadow —
+          // primary actions don't need to look "lifted" in modern minimalism.
+          paddingVertical: spacing.md,
           paddingHorizontal: spacing.xl,
           borderRadius: buttonRadius,
-          ...shadows.md,
+          ...shadows.sm,
         };
       case 'icon':
         return {

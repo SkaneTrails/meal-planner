@@ -17,12 +17,21 @@ import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
+import {
+  aggregateIngredients,
+  EXTRAS_KEY_PREFIX,
+} from '@/lib/utils/groceryAggregator';
 
 export const useMealPlanActions = () => {
   const router = useRouter();
   const { t, language } = useTranslation();
   const { weekStart, settings } = useSettings();
-  const { saveSelections } = useGroceryState();
+  const {
+    saveSelections,
+    selectedMealKeys: existingMealKeys,
+    mealServings: existingServings,
+    removedItems,
+  } = useGroceryState();
 
   const MEAL_TYPES: MealTypeOption[] = useMemo(() => {
     const types: MealTypeOption[] = [];
@@ -88,6 +97,10 @@ export const useMealPlanActions = () => {
     () => getWeekDatesArray(groceryWeekOffset, weekStart),
     [groceryWeekOffset, weekStart],
   );
+  const groceryWeekKey = useMemo(
+    () => formatDateLocal(groceryWeekDates[0]),
+    [groceryWeekDates],
+  );
 
   const todayIndex = useMemo(() => {
     const today = new Date();
@@ -121,17 +134,24 @@ export const useMealPlanActions = () => {
     (
       date: Date,
       mealType: MealType,
-    ): { recipe?: Recipe; customText?: string } | null => {
+    ): {
+      recipe?: Recipe;
+      customText?: string;
+      lastModifiedBy?: string;
+    } | null => {
       if (!mealPlan?.meals) return null;
       const dateStr = formatDateLocal(date);
       const key = `${dateStr}_${mealType}`;
       const value = mealPlan.meals[key];
+      const lastModifiedBy = mealPlan.last_modified_by?.[key];
       if (!value) return null;
       if (value.startsWith('custom:')) {
-        return { customText: value.slice(7) };
+        return { customText: value.slice(7), lastModifiedBy };
       }
       const recipe = recipeMap[value];
-      return recipe ? { recipe } : { customText: value };
+      return recipe
+        ? { recipe, lastModifiedBy }
+        : { customText: value, lastModifiedBy };
     },
     [mealPlan, recipeMap],
   );
@@ -359,6 +379,30 @@ export const useMealPlanActions = () => {
     [removeMeal, t],
   );
 
+  const handleToggleExtra = useCallback(
+    (recipeId: string, recipeServings?: number) => {
+      const key = `${EXTRAS_KEY_PREFIX}${recipeId}`;
+      setSelectedMeals((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(key)) {
+          newSet.delete(key);
+          setMealServings((prevServings) => {
+            const { [key]: _, ...rest } = prevServings;
+            return rest;
+          });
+        } else {
+          newSet.add(key);
+          setMealServings((prevServings) => ({
+            ...prevServings,
+            [key]: recipeServings || 2,
+          }));
+        }
+        return newSet;
+      });
+    },
+    [],
+  );
+
   const handleToggleMeal = useCallback(
     (date: Date, mealType: MealType, recipeServings?: number) => {
       const dateStr = formatDateLocal(date);
@@ -401,14 +445,42 @@ export const useMealPlanActions = () => {
       return;
     }
     try {
-      const mealsArray = Array.from(selectedMeals);
-      await saveSelections(mealsArray, mealServings);
+      const newMeals = Array.from(selectedMeals);
+      const mergedMeals = [...new Set([...existingMealKeys, ...newMeals])];
+      const mergedServings = { ...existingServings, ...mealServings };
+      const readdedMealKeys = newMeals.filter((key) =>
+        existingMealKeys.includes(key),
+      );
+      const restoredItemNames = new Set(
+        aggregateIngredients(
+          readdedMealKeys,
+          mealPlan?.meals ?? {},
+          recipes,
+          mergedServings,
+        ).map((item) => item.name),
+      );
+      const nextRemovedItems =
+        restoredItemNames.size === 0
+          ? removedItems
+          : removedItems.filter((name) => !restoredItemNames.has(name));
+      await saveSelections(mergedMeals, mergedServings, nextRemovedItems);
       setShowGroceryModal(false);
       setTimeout(() => router.push('/(tabs)/grocery'), 100);
     } catch {
       showNotification(t('common.error'), t('mealPlan.failedToSaveSelections'));
     }
-  }, [selectedMeals, mealServings, router, t, saveSelections]);
+  }, [
+    selectedMeals,
+    mealServings,
+    existingMealKeys,
+    existingServings,
+    mealPlan?.meals,
+    recipes,
+    removedItems,
+    router,
+    t,
+    saveSelections,
+  ]);
 
   const openGroceryModal = useCallback(() => {
     hapticLight();
@@ -426,6 +498,15 @@ export const useMealPlanActions = () => {
       .map((id) => recipeMap[id])
       .filter((r): r is Recipe => r !== undefined);
   }, [mealPlan, recipeMap, weekKey]);
+
+  const getGroceryExtrasRecipes = useCallback((): Recipe[] => {
+    if (!mealPlan?.extras) return [];
+    const weekExtras = mealPlan.extras[groceryWeekKey];
+    if (!weekExtras || weekExtras.length === 0) return [];
+    return weekExtras
+      .map((id) => recipeMap[id])
+      .filter((r): r is Recipe => r !== undefined);
+  }, [mealPlan, recipeMap, groceryWeekKey]);
 
   const handleAddExtra = useCallback(
     (mode: 'library' | 'random') => {
@@ -501,10 +582,12 @@ export const useMealPlanActions = () => {
     handleEditCustomText,
     handleRemoveMeal,
     handleToggleMeal,
+    handleToggleExtra,
     handleChangeServings,
     handleCreateGroceryList,
     openGroceryModal,
     getExtrasRecipes,
+    getGroceryExtrasRecipes,
     handleAddExtra,
     handleRemoveExtra,
     expandedPastDays,

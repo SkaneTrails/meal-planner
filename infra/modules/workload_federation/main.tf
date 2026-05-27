@@ -17,14 +17,22 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   description                        = "OIDC identity provider for GitHub Actions"
   disabled                           = false
 
-  # Only allow tokens from this specific repository owner
-  attribute_condition = "assertion.repository_owner == '${var.github_repository_owner}'"
+  # Only allow tokens from our repo owner + explicitly listed external repos
+  attribute_condition = length(var.external_repo_bindings) == 0 ? (
+    "assertion.repository_owner == '${var.github_repository_owner}'"
+    ) : (
+    join(" || ", concat(
+      ["assertion.repository_owner == '${var.github_repository_owner}'"],
+      [for key, binding in var.external_repo_bindings : "assertion.repository == '${binding.repository}'"]
+    ))
+  )
 
   attribute_mapping = {
-    "google.subject"             = "assertion.sub"
-    "attribute.actor"            = "assertion.actor"
-    "attribute.repository"       = "assertion.repository"
-    "attribute.repository_owner" = "assertion.repository_owner"
+    "google.subject"                  = "assertion.sub"
+    "attribute.actor"                 = "assertion.actor"
+    "attribute.repository"            = "assertion.repository"
+    "attribute.repository_owner"      = "assertion.repository_owner"
+    "attribute.repository_visibility" = "assertion.repository_visibility"
   }
 
   oidc {
@@ -39,4 +47,13 @@ resource "google_service_account_iam_member" "workload_identity_user" {
   service_account_id = each.value
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_repository}"
+}
+
+# Allow external repositories to impersonate their assigned service accounts via WIF
+resource "google_service_account_iam_member" "external_repo_wif" {
+  for_each = var.external_repo_bindings
+
+  service_account_id = each.value.service_account_id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${each.value.repository}"
 }

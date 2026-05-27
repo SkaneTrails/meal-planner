@@ -21,7 +21,7 @@ cd meal-planner
 
 # API dependencies
 uv sync --extra dev
-uv run pre-commit install
+uv run prek install
 
 # Mobile dependencies
 cd mobile

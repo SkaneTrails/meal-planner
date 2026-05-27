@@ -79,13 +79,17 @@ async def generate_grocery_list(
     effective_end = end_date if end_date is not None else effective_start + timedelta(days=days - 1)
 
     # Load meal plan
-    meals, _, extras = meal_plan_storage.load_meal_plan(household_id)
+    meals, _, _, extras = meal_plan_storage.load_meal_plan(household_id)
 
     recipe_ids, custom_meal_texts = _collect_meal_entries(meals, effective_start, effective_end)
 
-    # Also include extras (Other section) - these are not date-bound
-    for extra_id in extras:
-        recipe_ids.add(extra_id)
+    # Also include extras (Other section) - these are not date-bound.
+    # Stored shape is week-keyed lists, but accept a flat list defensively.
+    if isinstance(extras, dict):
+        for week_extras in extras.values():
+            recipe_ids.update(week_extras)
+    else:
+        recipe_ids.update(extras)
 
     # Load recipes and collect ingredients
     grocery_list = GroceryList()
@@ -302,3 +306,23 @@ async def learn_store_order(
         save_store_order(household_id, store_id, updated_order)
         return LearnOrderResponse(updated=True, item_order=updated_order)
     return LearnOrderResponse(updated=False, item_order=current_order)
+
+
+class SetStoreOrderRequest(BaseModel):
+    """Request body for directly setting a store's item ordering."""
+
+    item_order: list[str] = Field(..., description="Complete item ordering to save")
+
+
+@router.put("/stores/{store_id}/order")
+async def set_store_item_order(
+    store_id: str, body: SetStoreOrderRequest, user: Annotated[AuthenticatedUser, Depends(require_auth)]
+) -> StoreOrderResponse:
+    """Directly set the item ordering for a store.
+
+    Used when the user manually reorders items via drag-and-drop.
+    Replaces the entire stored ordering for the given store.
+    """
+    household_id = require_household(user)
+    save_store_order(household_id, store_id, body.item_order)
+    return StoreOrderResponse(item_order=body.item_order)

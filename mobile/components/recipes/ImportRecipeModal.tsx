@@ -44,7 +44,7 @@ export const ImportRecipeModal = ({
   onClose,
   onManualMode,
 }: ImportRecipeModalProps) => {
-  const { colors, fonts, borderRadius } = useTheme();
+  const { colors, fonts } = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
   const { settings } = useSettings();
@@ -192,6 +192,7 @@ export const ImportRecipeModal = ({
             disabled={isPending}
             showClear={url !== '' && !isPending}
             onClear={() => setUrl('')}
+            hideSubmit
           />
         </View>
         {/* AI Enhancement toggle */}
@@ -279,18 +280,7 @@ export const ImportRecipeModal = ({
           </View>
         </Pressable>
         {/* Diet & Meal type pickers */}
-        <View
-          style={{
-            marginHorizontal: 0,
-            backgroundColor: colors.card.bg,
-            borderRadius: borderRadius.lg,
-            borderWidth: 1,
-            borderColor: colors.card.borderColor,
-            paddingHorizontal: spacing.lg,
-            paddingTop: spacing.lg,
-            paddingBottom: spacing.xs,
-          }}
-        >
+        <View style={{ marginBottom: spacing.sm }}>
           <ChipPicker
             label={t('recipe.dietType')}
             options={getDietOptions(colors)}

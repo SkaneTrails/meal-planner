@@ -9,7 +9,7 @@ export type LibraryScope = 'all' | 'mine';
 export type MealLabel =
   | 'breakfast'
   | 'starter'
-  | 'salad'
+  | 'side_dish'
   | 'meal'
   | 'dessert'
   | 'drink'
@@ -177,6 +177,7 @@ export interface MealPlan {
   household_id: string;
   meals: Record<string, string>; // date_mealtype -> recipe_id or custom:text
   notes: Record<string, string>; // date -> note text
+  last_modified_by?: Record<string, string>; // date_mealtype -> email of last editor
   extras: Record<string, string[]>; // week start date -> recipe IDs for "Other" section
 }
 

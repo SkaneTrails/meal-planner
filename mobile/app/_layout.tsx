@@ -10,11 +10,11 @@
 import { NotoEmoji_400Regular } from '@expo-google-fonts/noto-emoji';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import { AppState, type AppStateStatus, View } from 'react-native';
+import { AppState, type AppStateStatus, Platform, View } from 'react-native';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { ThemedAlert } from '@/components/ThemedAlert';
@@ -28,6 +28,7 @@ import {
   QueryProvider,
   restoreQueryCache,
 } from '@/lib/query-provider';
+import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
 import {
   type AppLanguage,
   SettingsProvider,
@@ -57,9 +58,32 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 const AppContent = () => {
-  const { colors } = useTheme();
+  const { colors, themeName } = useTheme();
   const { needsLanguagePrompt, setLanguage } = useSettings();
   const [isSaving, setIsSaving] = useState(false);
+  const pathname = usePathname();
+
+  // Recipe library filters persist between /recipes and /recipe/[id].
+  // Anywhere else, reset the cache so refocusing the Recipes tab
+  // shows a clean library.
+  useEffect(() => {
+    const inRecipesFlow =
+      pathname === '/recipes' ||
+      pathname === '/(tabs)/recipes' ||
+      pathname.startsWith('/recipe/');
+    if (!inRecipesFlow) {
+      resetRecipeFilterCache();
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (favicon) {
+      favicon.href =
+        themeName === 'petrol' ? '/favicon-petrol.png' : '/favicon.png';
+    }
+  }, [themeName]);
 
   const { t } = useTranslation();
 

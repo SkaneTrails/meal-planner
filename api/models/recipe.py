@@ -81,7 +81,7 @@ class MealLabel(str, Enum):
 
     BREAKFAST = "breakfast"
     STARTER = "starter"
-    SALAD = "salad"
+    SIDE_DISH = "side_dish"
     MEAL = "meal"
     DESSERT = "dessert"
     DRINK = "drink"

@@ -24,10 +24,10 @@ cd mobile
 pnpm install
 ```
 
-### Pre-commit Hooks
+### Prek Hooks
 
 ```bash
-uv run pre-commit install
+uv run prek install
 ```
 
 ## Running the Application
@@ -407,12 +407,12 @@ See `.github/copilot-instructions.md` for the multi-tenant architecture plan.
 source ~/.bashrc  # or ~/.zshrc
 ```
 
-**Pre-commit fails:**
+**Prek fails:**
 
 ```bash
 # Update hooks
-uv run pre-commit autoupdate
+uv run prek auto-update
 
 # Run manually
-uv run pre-commit run --all-files
+uv run prek run --all-files
 ```

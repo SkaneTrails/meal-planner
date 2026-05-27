@@ -60,7 +60,7 @@ export const MEAL_OPTIONS: { value: MealLabel | null; labelKey: string }[] = [
   { value: null, labelKey: 'labels.meal.none' },
   { value: 'breakfast', labelKey: 'labels.meal.breakfast' },
   { value: 'starter', labelKey: 'labels.meal.starter' },
-  { value: 'salad', labelKey: 'labels.meal.salad' },
+  { value: 'side_dish', labelKey: 'labels.meal.side_dish' },
   { value: 'meal', labelKey: 'labels.meal.mainCourse' },
   { value: 'dessert', labelKey: 'labels.meal.dessert' },
   { value: 'drink', labelKey: 'labels.meal.drink' },

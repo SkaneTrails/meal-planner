@@ -182,6 +182,27 @@ resource "google_project_iam_member" "github_actions_terraform_wif" {
 }
 
 # -----------------------------------------------------------------------------
+# GitHub Actions Viewer Service Account (for external repos running terraform plan)
+# -----------------------------------------------------------------------------
+
+resource "google_service_account" "github_actions_viewer" {
+  project      = var.project
+  account_id   = "github-actions-viewer"
+  display_name = "GitHub Actions Viewer"
+  description  = "Read-only service account for external repos to run terraform plan"
+
+  depends_on = [var.iam_api_service]
+}
+
+resource "google_project_iam_member" "github_actions_viewer" {
+  project = var.project
+  role    = "roles/viewer"
+  member  = "serviceAccount:${google_service_account.github_actions_viewer.email}"
+
+  depends_on = [google_service_account.github_actions_viewer]
+}
+
+# -----------------------------------------------------------------------------
 # Local Development Service Account
 # -----------------------------------------------------------------------------
 

@@ -110,7 +110,7 @@ export const RecipeListSkeleton = ({
   return (
     <View style={styles.gridContainer}>
       {Array.from({ length: count }).map((_, i) => (
-        <View key={i} style={{ padding: 4 }}>
+        <View key={i} style={{ padding: spacing.xs }}>
           <RecipeCardSkeleton cardSize={cardSize} />
         </View>
       ))}
@@ -137,34 +137,41 @@ export const StatCardSkeleton = () => {
 };
 
 export const HomeScreenSkeleton = () => {
+  const { borderRadius } = useTheme();
   return (
     <View style={styles.homeContainer}>
-      {/* Hero skeleton */}
-      <Skeleton width="100%" height={200} borderRadius={0} />
-
-      {/* Stats row */}
-      <View style={styles.statsRow}>
-        <StatCardSkeleton />
-        <StatCardSkeleton />
-        <StatCardSkeleton />
+      {/* Top bar icons */}
+      <View style={styles.topBar}>
+        <Skeleton width={44} height={44} borderRadius={22} />
+        <Skeleton width={44} height={44} borderRadius={22} />
       </View>
 
-      {/* Add recipe section */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Skeleton width={28} height={28} borderRadius={8} />
-          <Skeleton width={100} height={16} style={{ marginLeft: 8 }} />
-        </View>
-        <Skeleton width="100%" height={52} />
+      {/* Hero next-meal card */}
+      <View style={styles.heroWrap}>
+        <Skeleton width="100%" height={320} borderRadius={borderRadius.lg} />
       </View>
 
-      {/* Next up section */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Skeleton width={28} height={28} borderRadius={8} />
-          <Skeleton width={60} height={16} style={{ marginLeft: 8 }} />
-        </View>
-        <Skeleton width="100%" height={64} />
+      {/* Week strip header */}
+      <View style={styles.weekHeader}>
+        <Skeleton width={120} height={14} />
+        <Skeleton width={140} height={14} />
+      </View>
+      <View style={styles.weekStrip}>
+        {Array.from({ length: 7 }).map((_, i) => (
+          <View key={i} style={styles.weekCell}>
+            <Skeleton width={10} height={10} />
+            <Skeleton width={18} height={20} style={{ marginTop: 8 }} />
+          </View>
+        ))}
+      </View>
+
+      {/* Inspiration heading + card */}
+      <View style={styles.inspirationHeader}>
+        <Skeleton width={120} height={20} />
+        <Skeleton width={72} height={28} borderRadius={14} />
+      </View>
+      <View style={styles.heroWrap}>
+        <Skeleton width="100%" height={220} borderRadius={borderRadius.lg} />
       </View>
     </View>
   );
@@ -257,6 +264,42 @@ const styles = StyleSheet.create({
   },
   homeContainer: {
     flex: 1,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+  },
+  heroWrap: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  weekHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  weekStrip: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.xl,
+  },
+  weekCell: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  inspirationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
   },
   statsRow: {
     flexDirection: 'row',

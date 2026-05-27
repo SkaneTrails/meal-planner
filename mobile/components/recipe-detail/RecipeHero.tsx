@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { Animated } from 'react-native';
-import { useTheme } from '@/lib/theme';
+import { layout, useTheme } from '@/lib/theme';
 import { HeroOverlay } from './HeroOverlay';
 import {
   PLACEHOLDER_BLURHASH,
@@ -16,6 +16,8 @@ interface RecipeHeroProps {
   hidden: boolean;
   headerHeight: number;
   scrollY: Animated.Value;
+  /** Content rendered in the top-left corner of the hero (e.g. back button). */
+  topLeftButton?: ReactNode;
   /** Buttons rendered in the top-right corner of the hero (e.g. favorite, camera). */
   topRightButtons?: ReactNode;
   onThumbUp: () => void;
@@ -29,6 +31,7 @@ export const RecipeHero = ({
   hidden,
   headerHeight,
   scrollY,
+  topLeftButton,
   topRightButtons,
   onThumbUp,
   onThumbDown,
@@ -40,6 +43,7 @@ export const RecipeHero = ({
         position: 'relative',
         height: headerHeight,
         overflow: 'hidden',
+        ...layout.contentContainer,
         transform: [
           {
             translateY: scrollY.interpolate({
@@ -70,6 +74,7 @@ export const RecipeHero = ({
         <HeroOverlay
           title={title}
           headerHeight={headerHeight}
+          topLeft={topLeftButton}
           topRight={topRightButtons}
           titleRight={
             <ThumbRating

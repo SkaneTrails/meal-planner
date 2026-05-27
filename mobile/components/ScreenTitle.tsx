@@ -11,6 +11,8 @@ import {
 interface ScreenTitleProps {
   title: string;
   subtitle?: string;
+  /** Small uppercase label above the title (e.g. "RECIPES", "TODAY"). Phase 4 — editorial pattern. */
+  eyebrow?: string;
   variant?: 'centered' | 'large';
   style?: StyleProp<ViewStyle>;
 }
@@ -18,6 +20,7 @@ interface ScreenTitleProps {
 export const ScreenTitle = ({
   title,
   subtitle,
+  eyebrow,
   variant = 'centered',
   style,
 }: ScreenTitleProps) => {
@@ -26,6 +29,19 @@ export const ScreenTitle = ({
 
   return (
     <View style={style}>
+      {eyebrow && (
+        <Text
+          style={[
+            isCentered ? styles.eyebrowCentered : styles.eyebrowLarge,
+            {
+              color: colors.content.subtitle,
+              fontFamily: fonts.bodySemibold,
+            },
+          ]}
+        >
+          {eyebrow}
+        </Text>
+      )}
       <Text
         style={[
           isCentered ? styles.centeredTitle : styles.largeTitle,
@@ -61,23 +77,39 @@ export const ScreenTitle = ({
 
 const styles = StyleSheet.create({
   centeredTitle: {
-    fontSize: fontSize['3xl'],
+    fontSize: fontSize['xl-2xl'],
     fontWeight: fontWeight.bold,
     letterSpacing: letterSpacing.tight,
     textAlign: 'center',
   },
   centeredSubtitle: {
-    fontSize: fontSize.md,
+    fontSize: fontSize.base,
     marginTop: spacing['2xs'],
     textAlign: 'center',
   },
   largeTitle: {
-    fontSize: fontSize['4xl'],
+    fontSize: fontSize['3xl'],
     letterSpacing: letterSpacing.tight,
+    textAlign: 'center',
   },
   largeSubtitle: {
-    fontSize: fontSize.lg,
+    fontSize: fontSize.base,
     letterSpacing: letterSpacing.normal,
     marginTop: spacing.xs,
+    textAlign: 'center',
+  },
+  eyebrowCentered: {
+    fontSize: fontSize.xs,
+    letterSpacing: letterSpacing.wider,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    marginBottom: spacing.xs,
+  },
+  eyebrowLarge: {
+    fontSize: fontSize.xs,
+    letterSpacing: letterSpacing.wider,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    marginBottom: spacing.sm,
   },
 });
