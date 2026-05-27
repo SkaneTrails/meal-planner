@@ -31,7 +31,7 @@ vi.mock('expo-router', () => ({
   })),
 }));
 
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/hooks/use-recipes', () => ({
   useScrapeRecipe: vi.fn(() => ({
     mutateAsync: mockScrapeRecipeMutateAsync,
     isPending: false,
@@ -44,6 +44,9 @@ vi.mock('@/lib/hooks', () => ({
     mutateAsync: mockReviewEnhancementMutateAsync,
     isPending: false,
   })),
+}));
+
+vi.mock('@/lib/hooks/useImagePicker', () => ({
   useImagePicker: vi.fn((onPick: (uri: string) => void) => ({
     pickImage: () => {
       mockPickImage();

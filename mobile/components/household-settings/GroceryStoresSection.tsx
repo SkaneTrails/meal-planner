@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { EmptyState, InlineAddInput, ItemChipList } from '@/components';
+import { EmptyState } from '@/components/EmptyState';
+import { InlineAddInput } from '@/components/InlineAddInput';
+import { ItemChipList } from '@/components/ItemChipList';
 import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 import type { GroceryStore } from '@/lib/types';

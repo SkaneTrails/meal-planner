@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import {
-  ActionButton,
-  BottomSheetModal,
-  Chip,
-  ContentCard,
-  IconButton,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
 import { AddMemberForm } from '@/components/admin/AddMemberForm';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Chip } from '@/components/Chip';
+import { ContentCard } from '@/components/ContentCard';
+import { IconButton } from '@/components/IconButton';
 import { showAlert, showNotification } from '@/lib/alert';
 import {
   useAddMember,

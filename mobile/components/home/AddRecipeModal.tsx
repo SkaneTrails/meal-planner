@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
-import { BottomSheetModal, Divider, UrlInputBar } from '@/components';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Divider } from '@/components/Divider';
 import { ThemeIcon } from '@/components/ThemeIcon';
+import { UrlInputBar } from '@/components/UrlInputBar';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { fontSize, iconContainer, spacing, useTheme } from '@/lib/theme';
 

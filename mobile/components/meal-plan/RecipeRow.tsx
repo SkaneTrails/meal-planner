@@ -1,5 +1,5 @@
 import { Image, Pressable, Text, View } from 'react-native';
-import { IconButton } from '@/components';
+import { IconButton } from '@/components/IconButton';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import { PLACEHOLDER_IMAGE } from './meal-plan-constants';
 

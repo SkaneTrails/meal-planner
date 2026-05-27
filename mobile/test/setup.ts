@@ -94,235 +94,270 @@ vi.mock('@/components/FullScreenLoading', () => ({
   FullScreenLoading: FullScreenLoadingMock,
 }));
 
-// Mock @/components (GradientBackground, ScreenLayout, etc.)
+// Mock @/components — barrel import (kept for any remaining barrel consumers + tests that mock it)
+// Also register per-path mocks since source files now use direct imports.
+const BottomSheetModalMock = ({ visible, children, title, subtitle, headerRight, footer, onClose }: any) => {
+  if (!visible) return null;
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'bottom-sheet-modal' },
+    title && createElement('span', null, title),
+    subtitle && createElement('span', { 'data-testid': 'bottom-sheet-subtitle' }, subtitle),
+    headerRight,
+    children,
+    footer,
+  );
+};
+const ButtonMock = ({ label, onPress, icon, disabled, testID, ...props }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', { onClick: onPress, disabled, 'data-testid': testID }, label ?? icon ?? '');
+};
+const ActionButtonMock = {
+  Delete: ({ label, onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-delete' }, label ?? 'trash-outline');
+  },
+  Dismiss: ({ onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-dismiss' }, 'close');
+  },
+  ClearInput: ({ onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-clear-input' }, 'close-circle');
+  },
+  Cancel: ({ label, onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-cancel' }, label);
+  },
+  SignOut: ({ label, onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-sign-out' }, label);
+  },
+  Add: ({ onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-add' }, 'add');
+  },
+  Back: ({ label, onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-back' }, label ?? 'chevron-back');
+  },
+  Forward: ({ label, onPress, disabled, testID, ...rest }: any) => {
+    const { createElement } = require('react');
+    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-forward' }, label ?? 'chevron-forward');
+  },
+};
+const GradientBackgroundMock = ({ children }: any) => children;
+const ScreenLayoutMock = ({ children }: any) => children;
+const ScreenHeaderBarMock = ({ children }: any) => children;
+const ButtonGroupMock = ({ children }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'button-group' }, children);
+};
+const AnimatedPressableMock = ({ children, onPress, ...props }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', { onClick: onPress, ...props }, children);
+};
+const ChipMock = ({ label, prefix, onPress, disabled, testID }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', {
+    onClick: disabled ? undefined : onPress,
+    disabled: disabled ?? false,
+    'data-testid': testID ?? `chip-${label}`,
+  }, prefix ? `${prefix}${label}` : label);
+};
+const ChipGroupMock = ({ children }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'chip-group' }, children);
+};
+const InlineAddInputMock = ({ value, onChangeText, onSubmit, placeholder, disabled }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'inline-add-input' },
+    createElement('input', { placeholder, value, disabled, onChange: (e: any) => onChangeText(e.target.value) }),
+    createElement('button', { onClick: onSubmit, disabled: disabled || !value?.trim() }, 'Add'),
+  );
+};
+const ItemChipListMock = ({ heading, items, onRemove, disabled }: any) => {
+  const { createElement } = require('react');
+  const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
+  const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
+  return createElement('div', { 'data-testid': 'item-chip-list' },
+    heading && createElement('span', null, heading),
+    items?.map((item: any) => {
+      const key = getKey(item);
+      const label = getLabel(item);
+      return createElement('div', { key, 'data-testid': `item-chip-${key}` },
+        createElement('span', null, label),
+        !disabled && onRemove && createElement('button', { onClick: () => onRemove(item), 'data-testid': `remove-${key}` }, '×'),
+      );
+    }),
+  );
+};
+const SuggestionChipListMock = ({ heading, items, groups, onAdd, disabled }: any) => {
+  const { createElement } = require('react');
+  const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
+  const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
+  const allItems = items ?? groups?.flatMap((g: any) => g.items) ?? [];
+  return createElement('div', { 'data-testid': 'suggestion-chip-list' },
+    heading && createElement('span', null, heading),
+    allItems.map((item: any) => {
+      const key = getKey(item);
+      const label = getLabel(item);
+      return createElement('button', {
+        key,
+        onClick: () => !disabled && onAdd(item),
+        disabled,
+        'data-testid': `suggestion-${key}`,
+      }, label);
+    }),
+  );
+};
+const FilterChipMock = ({ label, selected, onPress }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', {
+    onClick: onPress,
+    'aria-pressed': selected,
+    'data-testid': `chip-${label}`,
+  }, label);
+};
+const SectionMock = ({ title, children }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': `section-${title}` }, title, children);
+};
+const SectionLabelMock = ({ text }: any) => {
+  const { createElement } = require('react');
+  return createElement('span', { 'data-testid': `label-${text}` }, text);
+};
+const SettingToggleRowMock = ({ label, value, onValueChange, disabled }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', {
+    'data-testid': `toggle-${label}`,
+    role: 'switch',
+    'aria-checked': value,
+    disabled: disabled ?? false,
+    onClick: () => onValueChange(!value),
+  }, label);
+};
+const IconCircleMock = ({ children }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'icon-circle' }, children);
+};
+const RadioGroupMock = ({ value, onChange }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': `radio-${value}` });
+};
+const StepperControlMock = ({ value, onDecrement, onIncrement, decrementDisabled, incrementDisabled, subtitle }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'stepper-control' },
+    createElement('button', { onClick: onDecrement, disabled: decrementDisabled, 'aria-label': 'Decrease' }, '−'),
+    createElement('span', null, value),
+    createElement('button', { onClick: onIncrement, disabled: incrementDisabled, 'aria-label': 'Increase' }, '+'),
+    subtitle ? createElement('span', null, subtitle) : null,
+  );
+};
+const ContentCardMock = ({ children }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'content-card' }, children);
+};
+const ThemeToggleMock = ({ value, onValueChange, disabled }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', {
+    onClick: () => onValueChange(!value),
+    disabled: disabled ?? false,
+    'aria-checked': value,
+    role: 'switch',
+  }, value ? 'ON' : 'OFF');
+};
+const DropdownPickerMock = ({ options, value, onSelect, testID }: any) => {
+  const { createElement } = require('react');
+  return createElement('select', {
+    'data-testid': testID ?? 'dropdown-picker',
+    value,
+    onChange: (e: any) => onSelect(e.target.value),
+  }, options?.map((opt: any) =>
+    createElement('option', { key: opt.value, value: opt.value }, opt.label),
+  ));
+};
+const EmptyStateMock = ({ icon, title, subtitle, action, variant, style }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'empty-state' },
+    title && createElement('span', null, title),
+    subtitle && createElement('span', null, subtitle),
+    action && createElement('button', { onClick: action.onPress }, action.label),
+  );
+};
+const ScreenHeaderMock = ({ title, subtitle, onBack, rightAction, children }: any) => {
+  const { createElement } = require('react');
+  return createElement('div', { 'data-testid': 'screen-header' },
+    title && createElement('span', null, title),
+    subtitle && createElement('span', null, subtitle),
+    rightAction,
+    children,
+  );
+};
+const ThemedTextInputMock = ({ value, onChangeText, placeholder, disabled, testID }: any) => {
+  const { createElement } = require('react');
+  return createElement('input', {
+    value,
+    placeholder,
+    disabled: disabled ?? false,
+    onChange: (e: any) => onChangeText(e.target.value),
+    'data-testid': testID ?? 'themed-text-input',
+  });
+};
+const ToggleMock = ({ value, onValueChange, disabled }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', {
+    onClick: () => onValueChange(!value),
+    disabled: disabled ?? false,
+    'aria-checked': value,
+    role: 'switch',
+    'data-testid': 'toggle',
+  }, value ? 'ON' : 'OFF');
+};
+const IconButtonMock = ({ icon, onPress, disabled, testID }: any) => {
+  const { createElement } = require('react');
+  return createElement('button', {
+    onClick: onPress,
+    disabled: disabled ?? false,
+    'data-testid': testID ?? `icon-button-${icon}`,
+  }, icon);
+};
+
+// Barrel mock (for any remaining consumers)
 vi.mock('@/components', () => ({
-  GradientBackground: ({ children }: any) => children,
-  ScreenLayout: ({ children }: any) => children,
-  ScreenHeaderBar: ({ children }: any) => children,
+  GradientBackground: GradientBackgroundMock,
+  ScreenLayout: ScreenLayoutMock,
+  ScreenHeaderBar: ScreenHeaderBarMock,
   FullScreenLoading: FullScreenLoadingMock,
-  BottomSheetModal: ({ visible, children, title, subtitle, headerRight, footer, onClose }: any) => {
-    if (!visible) return null;
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'bottom-sheet-modal' },
-      title && createElement('span', null, title),
-      subtitle && createElement('span', { 'data-testid': 'bottom-sheet-subtitle' }, subtitle),
-      headerRight,
-      children,
-      footer,
-    );
-  },
-  Button: ({ label, onPress, icon, disabled, testID, ...props }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', { onClick: onPress, disabled, 'data-testid': testID }, label ?? icon ?? '');
-  },
-  ActionButton: {
-    Delete: ({ label, onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-delete' }, label ?? 'trash-outline');
-    },
-    Dismiss: ({ onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-dismiss' }, 'close');
-    },
-    ClearInput: ({ onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-clear-input' }, 'close-circle');
-    },
-    Cancel: ({ label, onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-cancel' }, label);
-    },
-    SignOut: ({ label, onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-sign-out' }, label);
-    },
-    Add: ({ onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-add' }, 'add');
-    },
-    Back: ({ label, onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-back' }, label ?? 'chevron-back');
-    },
-    Forward: ({ label, onPress, disabled, testID, ...rest }: any) => {
-      const { createElement } = require('react');
-      return createElement('button', { onClick: onPress, disabled, 'data-testid': testID ?? 'action-forward' }, label ?? 'chevron-forward');
-    },
-  },
-  ButtonGroup: ({ children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'button-group' }, children);
-  },
-  AnimatedPressable: ({ children, onPress, ...props }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', { onClick: onPress, ...props }, children);
-  },
-  Chip: ({ label, prefix, onPress, disabled, testID }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', {
-      onClick: disabled ? undefined : onPress,
-      disabled: disabled ?? false,
-      'data-testid': testID ?? `chip-${label}`,
-    }, prefix ? `${prefix}${label}` : label);
-  },
-  ChipGroup: ({ children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'chip-group' }, children);
-  },
-  InlineAddInput: ({ value, onChangeText, onSubmit, placeholder, disabled }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'inline-add-input' },
-      createElement('input', { placeholder, value, disabled, onChange: (e: any) => onChangeText(e.target.value) }),
-      createElement('button', { onClick: onSubmit, disabled: disabled || !value?.trim() }, 'Add'),
-    );
-  },
-  ItemChipList: ({ heading, items, onRemove, disabled }: any) => {
-    const { createElement } = require('react');
-    const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
-    const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
-    return createElement('div', { 'data-testid': 'item-chip-list' },
-      heading && createElement('span', null, heading),
-      items?.map((item: any) => {
-        const key = getKey(item);
-        const label = getLabel(item);
-        return createElement('div', { key, 'data-testid': `item-chip-${key}` },
-          createElement('span', null, label),
-          !disabled && onRemove && createElement('button', { onClick: () => onRemove(item), 'data-testid': `remove-${key}` }, '×'),
-        );
-      }),
-    );
-  },
-  SuggestionChipList: ({ heading, items, groups, onAdd, disabled }: any) => {
-    const { createElement } = require('react');
-    const getKey = (chip: any) => typeof chip === 'string' ? chip : chip?.key ?? chip?.label;
-    const getLabel = (chip: any) => typeof chip === 'string' ? chip : chip?.label ?? chip?.key;
-    const allItems = items ?? groups?.flatMap((g: any) => g.items) ?? [];
-    return createElement('div', { 'data-testid': 'suggestion-chip-list' },
-      heading && createElement('span', null, heading),
-      allItems.map((item: any) => {
-        const key = getKey(item);
-        const label = getLabel(item);
-        return createElement('button', {
-          key,
-          onClick: () => !disabled && onAdd(item),
-          disabled,
-          'data-testid': `suggestion-${key}`,
-        }, label);
-      }),
-    );
-  },
-  FilterChip: ({ label, selected, onPress }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', {
-      onClick: onPress,
-      'aria-pressed': selected,
-      'data-testid': `chip-${label}`,
-    }, label);
-  },
-  Section: ({ title, children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': `section-${title}` }, title, children);
-  },
-  SectionLabel: ({ text }: any) => {
-    const { createElement } = require('react');
-    return createElement('span', { 'data-testid': `label-${text}` }, text);
-  },
-  SettingToggleRow: ({ label, value, onValueChange, disabled }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', {
-      'data-testid': `toggle-${label}`,
-      role: 'switch',
-      'aria-checked': value,
-      disabled: disabled ?? false,
-      onClick: () => onValueChange(!value),
-    }, label);
-  },
-  IconCircle: ({ children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'icon-circle' }, children);
-  },
-  RadioGroup: ({ value, onChange }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': `radio-${value}` });
-  },
-  StepperControl: ({ value, onDecrement, onIncrement, decrementDisabled, incrementDisabled, subtitle }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'stepper-control' },
-      createElement('button', { onClick: onDecrement, disabled: decrementDisabled, 'aria-label': 'Decrease' }, '−'),
-      createElement('span', null, value),
-      createElement('button', { onClick: onIncrement, disabled: incrementDisabled, 'aria-label': 'Increase' }, '+'),
-      subtitle ? createElement('span', null, subtitle) : null,
-    );
-  },
-  ContentCard: ({ children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'content-card' }, children);
-  },
-  ThemeToggle: ({ value, onValueChange, disabled }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', {
-      onClick: () => onValueChange(!value),
-      disabled: disabled ?? false,
-      'aria-checked': value,
-      role: 'switch',
-    }, value ? 'ON' : 'OFF');
-  },
-  DropdownPicker: ({ options, value, onSelect, testID }: any) => {
-    const { createElement } = require('react');
-    return createElement('select', {
-      'data-testid': testID ?? 'dropdown-picker',
-      value,
-      onChange: (e: any) => onSelect(e.target.value),
-    }, options?.map((opt: any) =>
-      createElement('option', { key: opt.value, value: opt.value }, opt.label),
-    ));
-  },
-  EmptyState: ({ icon, title, subtitle, action, variant, style }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'empty-state' },
-      title && createElement('span', null, title),
-      subtitle && createElement('span', null, subtitle),
-      action && createElement('button', { onClick: action.onPress }, action.label),
-    );
-  },
-  ScreenHeader: ({ title, subtitle, onBack, rightAction, children }: any) => {
-    const { createElement } = require('react');
-    return createElement('div', { 'data-testid': 'screen-header' },
-      title && createElement('span', null, title),
-      subtitle && createElement('span', null, subtitle),
-      rightAction,
-      children,
-    );
-  },
-  ThemedTextInput: ({ value, onChangeText, placeholder, disabled, testID }: any) => {
-    const { createElement } = require('react');
-    return createElement('input', {
-      value,
-      placeholder,
-      disabled: disabled ?? false,
-      onChange: (e: any) => onChangeText(e.target.value),
-      'data-testid': testID ?? 'themed-text-input',
-    });
-  },
-  Toggle: ({ value, onValueChange, disabled }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', {
-      onClick: () => onValueChange(!value),
-      disabled: disabled ?? false,
-      'aria-checked': value,
-      role: 'switch',
-      'data-testid': 'toggle',
-    }, value ? 'ON' : 'OFF');
-  },
-  IconButton: ({ icon, onPress, disabled, testID }: any) => {
-    const { createElement } = require('react');
-    return createElement('button', {
-      onClick: onPress,
-      disabled: disabled ?? false,
-      'data-testid': testID ?? `icon-button-${icon}`,
-    }, icon);
-  },
+  BottomSheetModal: BottomSheetModalMock,
+  Button: ButtonMock,
+  ActionButton: ActionButtonMock,
+  ButtonGroup: ButtonGroupMock,
+  AnimatedPressable: AnimatedPressableMock,
+  Chip: ChipMock,
+  ChipGroup: ChipGroupMock,
+  InlineAddInput: InlineAddInputMock,
+  ItemChipList: ItemChipListMock,
+  SuggestionChipList: SuggestionChipListMock,
+  FilterChip: FilterChipMock,
+  Section: SectionMock,
+  SectionLabel: SectionLabelMock,
+  SettingToggleRow: SettingToggleRowMock,
+  IconCircle: IconCircleMock,
+  RadioGroup: RadioGroupMock,
+  StepperControl: StepperControlMock,
+  ContentCard: ContentCardMock,
+  ThemeToggle: ThemeToggleMock,
+  DropdownPicker: DropdownPickerMock,
+  EmptyState: EmptyStateMock,
+  ScreenHeader: ScreenHeaderMock,
+  ThemedTextInput: ThemedTextInputMock,
+  Toggle: ToggleMock,
+  IconButton: IconButtonMock,
 }));
+
+// Per-path mocks are registered by individual test files that need them.
+// Do not add per-path @/components/* mocks here — they would override
+// real components in component-level tests (components/__tests__/).
 
 // Mock @/lib/alert-context — imperative alert functions used throughout the app
 vi.mock('@/lib/alert-context', () => ({

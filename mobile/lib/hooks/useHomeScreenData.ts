@@ -1,11 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import {
-  useAllRecipes,
-  useGroceryState,
-  useMealPlan,
-  useMealPlanRecipes,
-} from '@/lib/hooks';
+import { useGroceryState } from '@/lib/grocery-context';
+import { useMealPlan } from '@/lib/hooks/use-meal-plan';
+import { useAllRecipes, useMealPlanRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { Recipe } from '@/lib/types';

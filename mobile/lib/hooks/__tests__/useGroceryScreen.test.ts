@@ -59,15 +59,24 @@ const mockRecipes: Recipe[] = [];
 
 let mockStoreOrderData: { item_order: string[] } | undefined = undefined;
 
-vi.mock('@/lib/hooks', () => ({
-  useMealPlan: vi.fn(() => ({ data: mockMealPlan, isLoading: false })),
-  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
+vi.mock('@/lib/grocery-context', () => ({
   useGroceryState: vi.fn(() => mockContextState),
-  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
+}));
+
+vi.mock('@/lib/hooks/use-grocery', () => ({
   groceryKeys: {
     all: ['grocery'] as const,
     storeOrder: (storeId: string) => ['grocery', 'storeOrder', storeId] as const,
   },
+  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
+}));
+
+vi.mock('@/lib/hooks/use-meal-plan', () => ({
+  useMealPlan: vi.fn(() => ({ data: mockMealPlan, isLoading: false })),
+}));
+
+vi.mock('@/lib/hooks/use-recipes', () => ({
+  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
 }));
 
 let focusCallbacks: (() => (() => void) | void)[] = [];

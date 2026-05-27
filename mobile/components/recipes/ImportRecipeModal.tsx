@@ -10,25 +10,23 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import {
-  BottomSheetModal,
-  Button,
-  Divider,
-  IconCircle,
-  Toggle,
-  UrlInputBar,
-} from '@/components';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
 import { ChipPicker } from '@/components/ChipPicker';
+import { Divider } from '@/components/Divider';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
 import { EnhancingOverlay } from '@/components/EnhancingOverlay';
+import { IconCircle } from '@/components/IconCircle';
 import {
   getDietOptions,
   MEAL_OPTIONS,
 } from '@/components/recipe-detail/recipe-detail-constants';
 import { ThemeIcon } from '@/components/ThemeIcon';
+import { Toggle } from '@/components/Toggle';
+import { UrlInputBar } from '@/components/UrlInputBar';
 import { showAlert, showNotification } from '@/lib/alert';
 import { ApiClientError } from '@/lib/api';
-import { useReviewEnhancement, useScrapeRecipe } from '@/lib/hooks';
+import { useReviewEnhancement, useScrapeRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';

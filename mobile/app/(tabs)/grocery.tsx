@@ -3,12 +3,7 @@
  */
 
 import { View } from 'react-native';
-import {
-  GroceryListSkeleton,
-  GroceryListView,
-  ScreenHeader,
-  ScreenLayout,
-} from '@/components';
+import { GroceryListView } from '@/components/GroceryListView';
 import {
   AddItemCard,
   EmptyGroceryState,
@@ -16,6 +11,9 @@ import {
   StatsCard,
   StoreChips,
 } from '@/components/grocery';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { ScreenLayout } from '@/components/ScreenLayout';
+import { GroceryListSkeleton } from '@/components/Skeleton';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';

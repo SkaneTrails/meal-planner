@@ -16,13 +16,10 @@ import React, {
 } from 'react';
 import { showAlert } from '@/lib/alert';
 import { api } from '@/lib/api';
-import {
-  groceryKeys,
-  useAllRecipes,
-  useGroceryState,
-  useMealPlan,
-  useStoreOrder,
-} from '@/lib/hooks';
+import { useGroceryState } from '@/lib/grocery-context';
+import { groceryKeys, useStoreOrder } from '@/lib/hooks/use-grocery';
+import { useMealPlan } from '@/lib/hooks/use-meal-plan';
+import { useAllRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { GroceryItem } from '@/lib/types';

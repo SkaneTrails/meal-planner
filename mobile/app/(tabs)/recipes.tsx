@@ -11,22 +11,22 @@ import {
   type TextInput,
   UIManager,
 } from 'react-native';
-import {
-  BottomSheetModal,
-  Button,
-  ContentCard,
-  ScreenHeader,
-  ScreenLayout,
-} from '@/components';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
+import { ContentCard } from '@/components/ContentCard';
 import { FeaturedCategoriesSection } from '@/components/recipes/FeaturedCategoriesSection';
 import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal';
 import { MealTypePicker } from '@/components/recipes/MealTypePicker';
 import { FilterChips, SearchBar } from '@/components/recipes/RecipeFilters';
 import { RecipeGrid } from '@/components/recipes/RecipeGrid';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import { useCurrentUser, useDebouncedValue, useRecipes } from '@/lib/hooks';
+import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useRecipes } from '@/lib/hooks/use-recipes';
+import { useDebouncedValue } from '@/lib/hooks/useDebouncedValue';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

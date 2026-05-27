@@ -7,15 +7,9 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import {
-  ContentCard,
-  IconButton,
-  IconCircle,
-  ScreenHeader,
-  ScreenLayout,
-  TerminalDivider,
-  TerminalFabBar,
-} from '@/components';
+import { ContentCard } from '@/components/ContentCard';
+import { IconButton } from '@/components/IconButton';
+import { IconCircle } from '@/components/IconCircle';
 import { DayHeader } from '@/components/meal-plan/DayHeader';
 import { EmptyMealSlot } from '@/components/meal-plan/EmptyMealSlot';
 import { ExtrasSection } from '@/components/meal-plan/ExtrasSection';
@@ -23,6 +17,10 @@ import { FilledMealSlot } from '@/components/meal-plan/FilledMealSlot';
 import { GrocerySelectionModal } from '@/components/meal-plan/GrocerySelectionModal';
 import { SelectMealModal } from '@/components/meal-plan/SelectMealModal';
 import { WeekSelector } from '@/components/meal-plan/WeekSelector';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { ScreenLayout } from '@/components/ScreenLayout';
+import { TerminalDivider } from '@/components/TerminalDivider';
+import { TerminalFabBar } from '@/components/TerminalFabBar';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useMealPlanActions } from '@/lib/hooks/useMealPlanActions';
 

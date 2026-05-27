@@ -1,18 +1,16 @@
 import { Image } from 'expo-image';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
-import {
-  AnimatedPressable,
-  Button,
-  ContentCard,
-  HomeScreenSkeleton,
-  IconButton,
-  ScreenLayout,
-  TerminalFabBar,
-  TerminalFrame,
-} from '@/components';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { Button } from '@/components/Button';
+import { ContentCard } from '@/components/ContentCard';
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { StatsCards } from '@/components/home/StatsCards';
+import { IconButton } from '@/components/IconButton';
+import { ScreenLayout } from '@/components/ScreenLayout';
 import { ScreenTitle } from '@/components/ScreenTitle';
+import { HomeScreenSkeleton } from '@/components/Skeleton';
+import { TerminalFabBar } from '@/components/TerminalFabBar';
+import { TerminalFrame } from '@/components/TerminalFrame';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';

@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { Section } from '@/components';
+import { Section } from '@/components/Section';
 import { useTranslation } from '@/lib/i18n';
 import { fontWeight, spacing, useTheme } from '@/lib/theme';
 

@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Chip } from '@/components';
+import { Chip } from '@/components/Chip';
 import { spacing, useTheme } from '@/lib/theme';
 
 interface RecipeTagsProps {

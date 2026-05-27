@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { ContentCard } from '@/components';
+import { ContentCard } from '@/components/ContentCard';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';

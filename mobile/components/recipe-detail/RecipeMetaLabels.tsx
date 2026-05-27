@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Chip } from '@/components';
+import { Chip } from '@/components/Chip';
 import type { TFunction } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';

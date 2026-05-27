@@ -1,12 +1,10 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import {
-  ActionButton,
-  AnimatedPressable,
-  ButtonGroup,
-  ContentCard,
-  IconButton,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { ContentCard } from '@/components/ContentCard';
+import { IconButton } from '@/components/IconButton';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';

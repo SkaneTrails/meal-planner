@@ -44,18 +44,24 @@ const mockRecipes: Recipe[] = [
 const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 const mockUpdateExtrasMutate = vi.fn();
 
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/grocery-context', () => ({
+  useGroceryState: vi.fn(() => ({ saveSelections: mockSaveSelections })),
+}));
+
+vi.mock('@/lib/hooks/use-meal-plan', () => ({
   useMealPlan: vi.fn(() => ({
     data: mockMealPlan,
     isLoading: false,
     refetch: mockRefetch,
   })),
-  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
-  useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
   useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
   useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
   useUpdateExtras: vi.fn(() => ({ mutate: mockUpdateExtrasMutate })),
-  useGroceryState: vi.fn(() => ({ saveSelections: mockSaveSelections })),
+}));
+
+vi.mock('@/lib/hooks/use-recipes', () => ({
+  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
+  useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
 }));
 
 vi.mock('expo-router', () => ({

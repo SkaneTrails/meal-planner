@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from 'react-native';
-import { ContentCard, IconButton, TerminalFrame } from '@/components';
+import { ContentCard } from '@/components/ContentCard';
+import { IconButton } from '@/components/IconButton';
 import type { FrameSegment } from '@/components/TerminalFrame';
+import { TerminalFrame } from '@/components/TerminalFrame';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { useTranslation } from '@/lib/i18n';

@@ -13,24 +13,22 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Pressable, Text, TextInput, View } from 'react-native';
-import {
-  ActionButton,
-  BottomSheetModal,
-  Button,
-  IconCircle,
-  RecipeCard,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
+import { IconCircle } from '@/components/IconCircle';
+import { RecipeCard } from '@/components/RecipeCard';
 import { SearchBar } from '@/components/recipes/RecipeFilters';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import {
-  useAllRecipes,
   useMealPlan,
   useRemoveMeal,
   useSetMeal,
   useUpdateExtras,
-} from '@/lib/hooks';
+} from '@/lib/hooks/use-meal-plan';
+import { useAllRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import {
   accentUnderlineStyle,

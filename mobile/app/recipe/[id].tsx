@@ -5,14 +5,11 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import {
-  ActionButton,
-  EnhancingOverlay,
-  GradientBackground,
-  IconButton,
-  TerminalFabBar,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
+import { EnhancingOverlay } from '@/components/EnhancingOverlay';
+import { GradientBackground } from '@/components/GradientBackground';
+import { IconButton } from '@/components/IconButton';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
@@ -23,13 +20,12 @@ import {
   RecipeLoading,
   RecipeNotFound,
 } from '@/components/recipe-detail/RecipeLoadingStates';
+import { TerminalFabBar } from '@/components/TerminalFabBar';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
-import {
-  useKeepScreenOn,
-  useMealPlan,
-  usePortionScaling,
-  useRecipe,
-} from '@/lib/hooks';
+import { useMealPlan } from '@/lib/hooks/use-meal-plan';
+import { useRecipe } from '@/lib/hooks/use-recipes';
+import { useKeepScreenOn } from '@/lib/hooks/useKeepScreenOn';
+import { usePortionScaling } from '@/lib/hooks/usePortionScaling';
 import { useRecipeActions } from '@/lib/hooks/useRecipeActions';
 import { useSettings } from '@/lib/settings-context';
 

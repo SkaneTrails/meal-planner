@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import {
-  ActionButton,
-  BottomSheetModal,
-  Button,
-  ChipPicker,
-  SectionLabel,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
+import { ChipPicker } from '@/components/ChipPicker';
+import { SectionLabel } from '@/components/SectionLabel';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

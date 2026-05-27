@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { Button, ContentCard } from '@/components';
+import { Button } from '@/components/Button';
+import { ContentCard } from '@/components/ContentCard';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 

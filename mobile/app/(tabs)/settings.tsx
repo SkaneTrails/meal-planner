@@ -6,13 +6,10 @@
 
 import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import {
-  ContentCard,
-  GradientBackground,
-  ScreenHeader,
-  Section,
-  ThemeToggle,
-} from '@/components';
+import { ContentCard } from '@/components/ContentCard';
+import { GradientBackground } from '@/components/GradientBackground';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { Section } from '@/components/Section';
 import {
   AboutSection,
   AccountSection,
@@ -20,6 +17,7 @@ import {
   SettingsNavLink,
   SettingsSeparator,
 } from '@/components/settings';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { showNotification } from '@/lib/alert';
 import {
   useCurrentUser,

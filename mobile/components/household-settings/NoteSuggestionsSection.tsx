@@ -1,10 +1,8 @@
 import { useMemo, useState } from 'react';
-import {
-  EmptyState,
-  InlineAddInput,
-  ItemChipList,
-  SuggestionChipList,
-} from '@/components';
+import { EmptyState } from '@/components/EmptyState';
+import { InlineAddInput } from '@/components/InlineAddInput';
+import { ItemChipList } from '@/components/ItemChipList';
+import { SuggestionChipList } from '@/components/SuggestionChipList';
 import { useTranslation } from '@/lib/i18n';
 import { spacing, useTheme } from '@/lib/theme';
 

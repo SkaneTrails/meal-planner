@@ -7,13 +7,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {
-  ActionButton,
-  Button,
-  FormField,
-  GradientBackground,
-  NumericField,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { Button } from '@/components/Button';
+import { FormField } from '@/components/FormField';
+import { GradientBackground } from '@/components/GradientBackground';
+import { NumericField } from '@/components/NumericField';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { useAddRecipeActions } from '@/lib/hooks/useAddRecipeActions';
 import {

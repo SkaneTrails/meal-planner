@@ -1,13 +1,11 @@
 import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import {
-  ActionButton,
-  ContentCard,
-  DropdownPicker,
-  IconButton,
-  SettingToggleRow,
-  StepperControl,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { ContentCard } from '@/components/ContentCard';
+import { DropdownPicker } from '@/components/DropdownPicker';
+import { IconButton } from '@/components/IconButton';
+import { SettingToggleRow } from '@/components/SettingToggleRow';
+import { StepperControl } from '@/components/StepperControl';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import {

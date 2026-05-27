@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { ContentCard } from '@/components';
+import { ContentCard } from '@/components/ContentCard';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { RecipeCreate } from '@/lib/types';

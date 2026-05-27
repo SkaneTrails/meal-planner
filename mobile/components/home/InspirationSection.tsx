@@ -3,7 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 import type { FrameSegment } from '@/components';
-import { AnimatedPressable, Button, TerminalFrame } from '@/components';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { Button } from '@/components/Button';
+import { TerminalFrame } from '@/components/TerminalFrame';
 import { hapticLight } from '@/lib/haptics';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import {

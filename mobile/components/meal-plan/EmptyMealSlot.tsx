@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
-import { ButtonGroup, IconButton } from '@/components';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { IconButton } from '@/components/IconButton';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { MealType } from '@/lib/types';
 

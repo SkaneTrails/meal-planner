@@ -14,19 +14,25 @@ const mockCopyMutateAsync = vi.fn();
 const mockRouterBack = vi.fn();
 const mockPickImage = vi.fn();
 
-vi.mock('@/lib/hooks', () => ({
-  useCurrentUser: vi.fn(() => ({ data: mockCurrentUser() })),
+vi.mock('@/lib/hooks/use-recipes', () => ({
   useDeleteRecipe: vi.fn(() => ({ mutateAsync: mockDeleteMutateAsync })),
   useUpdateRecipe: vi.fn(() => ({ mutateAsync: mockMutateAsync })),
-  useSetMeal: vi.fn(() => ({ mutateAsync: mockSetMealMutateAsync })),
-  useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
   useReviewEnhancement: vi.fn(() => ({ mutateAsync: mockReviewMutateAsync, isPending: false })),
   useEnhanceRecipe: vi.fn(() => ({ mutateAsync: mockEnhanceMutateAsync, isPending: false })),
   useRemoveEnhancement: vi.fn(() => ({ mutateAsync: mockRemoveEnhancementMutateAsync, isPending: false })),
   useCopyRecipe: vi.fn(() => ({ mutateAsync: mockCopyMutateAsync, isPending: false })),
 }));
 
+vi.mock('@/lib/hooks/use-meal-plan', () => ({
+  useSetMeal: vi.fn(() => ({ mutateAsync: mockSetMealMutateAsync })),
+}));
+
+vi.mock('@/lib/hooks/useImagePicker', () => ({
+  useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
+}));
+
 vi.mock('@/lib/hooks/use-admin', () => ({
+  useCurrentUser: vi.fn(() => ({ data: mockCurrentUser() })),
   useHouseholds: vi.fn(() => ({ data: undefined })),
   useTransferRecipe: vi.fn(() => ({ mutateAsync: mockTransferMutateAsync })),
 }));
@@ -63,7 +69,7 @@ vi.mock('@/lib/haptics', () => ({
 }));
 
 import { showAlert, showNotification } from '@/lib/alert';
-import { useCurrentUser } from '@/lib/hooks';
+import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useRecipeActions } from '../useRecipeActions';
 
 const mockShowAlert = vi.mocked(showAlert);

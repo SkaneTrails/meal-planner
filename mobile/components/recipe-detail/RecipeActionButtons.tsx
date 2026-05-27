@@ -1,4 +1,5 @@
-import { ButtonGroup, IconButton } from '@/components';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { IconButton } from '@/components/IconButton';
 import { showAlert } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
 import { opacity, useTheme } from '@/lib/theme';

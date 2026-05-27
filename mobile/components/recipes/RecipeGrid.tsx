@@ -9,8 +9,9 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { RecipeCard, RecipeListSkeleton } from '@/components';
 import { EmptyState } from '@/components/EmptyState';
+import { RecipeCard } from '@/components/RecipeCard';
+import { RecipeListSkeleton } from '@/components/Skeleton';
 import type { TFunction } from '@/lib/i18n';
 
 import { layout, useTheme } from '@/lib/theme';

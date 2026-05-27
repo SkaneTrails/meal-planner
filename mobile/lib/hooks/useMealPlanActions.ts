@@ -4,16 +4,15 @@ import { Animated, PanResponder, type ScrollView } from 'react-native';
 import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
 import { showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
 import { showNotification } from '@/lib/alert';
+import { useGroceryState } from '@/lib/grocery-context';
 import { hapticLight } from '@/lib/haptics';
 import {
-  useAllRecipes,
-  useGroceryState,
   useMealPlan,
-  useMealPlanRecipes,
   useRemoveMeal,
   useUpdateExtras,
   useUpdateNote,
-} from '@/lib/hooks';
+} from '@/lib/hooks/use-meal-plan';
+import { useAllRecipes, useMealPlanRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { MealType, Recipe } from '@/lib/types';

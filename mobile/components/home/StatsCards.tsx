@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, ContentCard } from '@/components';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { ContentCard } from '@/components/ContentCard';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import type { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { WEEKLY_TRACKABLE_MEALS } from '@/lib/hooks/useHomeScreenData';

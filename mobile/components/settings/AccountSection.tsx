@@ -1,10 +1,8 @@
 import { ActivityIndicator, Text, View } from 'react-native';
-import {
-  ActionButton,
-  AnimatedPressable,
-  IconCircle,
-  Section,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { IconCircle } from '@/components/IconCircle';
+import { Section } from '@/components/Section';
 import { type IoniconName, ThemeIcon } from '@/components/ThemeIcon';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, iconSize, spacing, useTheme } from '@/lib/theme';
