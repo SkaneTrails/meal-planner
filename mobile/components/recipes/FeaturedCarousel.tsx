@@ -14,8 +14,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { RecipeCard } from '@/components';
 import { ContentCard } from '@/components/ContentCard';
+import { RecipeCard } from '@/components/RecipeCard';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import {

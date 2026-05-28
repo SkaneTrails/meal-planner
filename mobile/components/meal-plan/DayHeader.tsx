@@ -1,11 +1,9 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
-import {
-  ActionButton,
-  Button,
-  ButtonGroup,
-  Chip,
-  ChipGroup,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { Button } from '@/components/Button';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { Chip } from '@/components/Chip';
+import { ChipGroup } from '@/components/ChipGroup';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import {

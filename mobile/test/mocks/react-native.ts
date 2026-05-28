@@ -85,6 +85,25 @@ class AnimatedValue {
   interpolate(config: any) { return this; }
 }
 
+// Easing mock — no-op functions that return identity
+const identityFn = (t: number) => t;
+export const Easing = {
+  linear: identityFn,
+  ease: identityFn,
+  quad: identityFn,
+  cubic: identityFn,
+  sin: identityFn,
+  circle: identityFn,
+  exp: identityFn,
+  elastic: () => identityFn,
+  back: () => identityFn,
+  bounce: identityFn,
+  bezier: () => identityFn,
+  in: (fn: any) => fn ?? identityFn,
+  out: (fn: any) => fn ?? identityFn,
+  inOut: (fn: any) => fn ?? identityFn,
+};
+
 export const Animated = {
   Value: AnimatedValue,
   View: mockComponent('AnimatedView'),

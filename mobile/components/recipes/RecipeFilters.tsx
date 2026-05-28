@@ -4,7 +4,8 @@
 
 import type React from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { ActionButton, AnimatedPressable } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';

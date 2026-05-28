@@ -5,7 +5,7 @@
 
 import React, { type ReactNode } from 'react';
 import { View } from 'react-native';
-import { ContentCard } from '@/components';
+import { ContentCard } from '@/components/ContentCard';
 import { useTheme } from '@/lib/theme';
 
 export const SettingsSeparator = () => {

@@ -13,12 +13,10 @@ import { useFonts } from 'expo-font';
 import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { AppState, type AppStateStatus, Platform, View } from 'react-native';
-import { CRTOverlay } from '@/components/CRTOverlay';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
-import { LanguagePromptModal } from '@/components/LanguagePromptModal';
 import { ThemedAlert } from '@/components/ThemedAlert';
 import { showNotification } from '@/lib/alert';
 import { AlertProvider } from '@/lib/alert-context';
@@ -45,6 +43,15 @@ import {
   useTheme,
 } from '@/lib/theme';
 import '../global.css';
+
+const CRTOverlay = lazy(() =>
+  import('@/components/CRTOverlay').then((m) => ({ default: m.CRTOverlay })),
+);
+const LanguagePromptModal = lazy(() =>
+  import('@/components/LanguagePromptModal').then((m) => ({
+    default: m.LanguagePromptModal,
+  })),
+);
 
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Silently ignore on web where splash screen may not be available
@@ -115,13 +122,17 @@ const AppContent = () => {
           <Stack.Screen name="add-recipe" />
         </Stack>
         <FloatingTabBar />
-        <CRTOverlay />
+        <Suspense fallback={null}>
+          <CRTOverlay />
+        </Suspense>
       </View>
-      <LanguagePromptModal
-        visible={needsLanguagePrompt}
-        onConfirm={handleLanguageConfirm}
-        isSaving={isSaving}
-      />
+      <Suspense fallback={null}>
+        <LanguagePromptModal
+          visible={needsLanguagePrompt}
+          onConfirm={handleLanguageConfirm}
+          isSaving={isSaving}
+        />
+      </Suspense>
     </>
   );
 };

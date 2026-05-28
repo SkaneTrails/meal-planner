@@ -1,9 +1,11 @@
 import { RefreshControl, ScrollView, View } from 'react-native';
-import { HomeScreenSkeleton, IconButton, ScreenLayout } from '@/components';
 import { HeroNextMeal } from '@/components/home/HeroNextMeal';
 import { InspirationSection } from '@/components/home/InspirationSection';
 import { WeekStrip } from '@/components/home/WeekStrip';
+import { IconButton } from '@/components/IconButton';
+import { ScreenLayout } from '@/components/ScreenLayout';
 import { ScreenTitle } from '@/components/ScreenTitle';
+import { HomeScreenSkeleton } from '@/components/Skeleton';
 import { hapticLight } from '@/lib/haptics';
 import { useHomeScreenData } from '@/lib/hooks/useHomeScreenData';
 import { layout, spacing, useTheme } from '@/lib/theme';

@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { IconCircle } from '@/components';
+import { IconCircle } from '@/components/IconCircle';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import {
   fontSize,

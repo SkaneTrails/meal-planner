@@ -4,7 +4,7 @@
  */
 
 import { Text, View } from 'react-native';
-import { Button } from '@/components';
+import { Button } from '@/components/Button';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

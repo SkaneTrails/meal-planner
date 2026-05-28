@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, ButtonGroup, IconButton } from '@/components';
+import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { IconButton } from '@/components/IconButton';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';

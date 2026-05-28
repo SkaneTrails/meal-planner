@@ -6,13 +6,10 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import {
-  BottomActionBar,
-  Button,
-  ChipPicker,
-  FullScreenLoading,
-  ScreenLayout,
-} from '@/components';
+import { BottomActionBar } from '@/components/BottomActionBar';
+import { Button } from '@/components/Button';
+import { ChipPicker } from '@/components/ChipPicker';
+import { FullScreenLoading } from '@/components/FullScreenLoading';
 import {
   getDietOptions,
   MEAL_OPTIONS,
@@ -22,6 +19,7 @@ import {
 import { ReviewAiChanges } from '@/components/review-recipe/ReviewAiChanges';
 import { ReviewRecipePreview } from '@/components/review-recipe/ReviewRecipePreview';
 import { ReviewVersionToggle } from '@/components/review-recipe/ReviewVersionToggle';
+import { ScreenLayout } from '@/components/ScreenLayout';
 import { showNotification } from '@/lib/alert';
 import { useCreateRecipe } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';

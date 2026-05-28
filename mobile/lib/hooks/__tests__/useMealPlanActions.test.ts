@@ -57,23 +57,29 @@ const mockRecipes: Recipe[] = [
 const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 const mockUpdateExtrasMutate = vi.fn();
 
-vi.mock('@/lib/hooks', () => ({
-  useMealPlan: vi.fn(() => ({
-    data: mockMealPlan,
-    isLoading: false,
-    refetch: mockRefetch,
-  })),
-  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
-  useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
-  useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
-  useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
-  useUpdateExtras: vi.fn(() => ({ mutate: mockUpdateExtrasMutate })),
+vi.mock('@/lib/grocery-context', () => ({
   useGroceryState: vi.fn(() => ({
     saveSelections: mockSaveSelections,
     selectedMealKeys: [] as string[],
     mealServings: {} as Record<string, number>,
     removedItems: [] as string[],
   })),
+}));
+
+vi.mock('@/lib/hooks/use-meal-plan', () => ({
+  useMealPlan: vi.fn(() => ({
+    data: mockMealPlan,
+    isLoading: false,
+    refetch: mockRefetch,
+  })),
+  useUpdateNote: vi.fn(() => ({ mutate: mockMutate })),
+  useRemoveMeal: vi.fn(() => ({ mutate: mockRemoveMutate })),
+  useUpdateExtras: vi.fn(() => ({ mutate: mockUpdateExtrasMutate })),
+}));
+
+vi.mock('@/lib/hooks/use-recipes', () => ({
+  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: mockRecipes.length })),
+  useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
 }));
 
 vi.mock('expo-router', () => ({
@@ -232,7 +238,7 @@ describe('useMealPlanActions', () => {
     });
 
     it('merges new meals with existing selections from context', async () => {
-      const { useGroceryState } = await import('@/lib/hooks');
+      const { useGroceryState } = await import('@/lib/grocery-context');
       vi.mocked(useGroceryState).mockReturnValue({
         saveSelections: mockSaveSelections,
         selectedMealKeys: ['2026-01-06_dinner'],
@@ -260,7 +266,7 @@ describe('useMealPlanActions', () => {
     });
 
     it('restores removed items for meals explicitly selected again', async () => {
-      const { useGroceryState } = await import('@/lib/hooks');
+      const { useGroceryState } = await import('@/lib/grocery-context');
       vi.mocked(useGroceryState).mockReturnValue({
         saveSelections: mockSaveSelections,
         selectedMealKeys: ['2026-01-05_lunch'],
@@ -288,7 +294,7 @@ describe('useMealPlanActions', () => {
     });
 
     it('does not restore shared ingredients when adding a different meal later', async () => {
-      const { useGroceryState } = await import('@/lib/hooks');
+      const { useGroceryState } = await import('@/lib/grocery-context');
       vi.mocked(useGroceryState).mockReturnValue({
         saveSelections: mockSaveSelections,
         selectedMealKeys: ['2026-01-05_lunch'],
