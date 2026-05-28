@@ -459,6 +459,7 @@ const sv: Translations = {
     deleteSelected: 'Radera',
     deleteSelectedMessage: 'Detta tar bort de valda varorna från din lista.',
     selectForDeletion: 'Välj {{name}} för radering',
+    renameItem: 'Byt namn på {{name}}',
     selectAll: 'Alla',
     clear: 'Rensa',
     failedToClearList: 'Kunde inte rensa listan',

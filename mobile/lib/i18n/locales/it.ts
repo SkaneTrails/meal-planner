@@ -469,6 +469,7 @@ const it: Translations = {
     deleteSelectedMessage:
       'Questo eliminerà gli articoli selezionati dalla lista.',
     selectForDeletion: 'Seleziona {{name}} per eliminazione',
+    renameItem: 'Rinomina {{name}}',
     selectAll: 'Tutti',
     clear: 'Cancella',
     failedToClearList: 'Impossibile cancellare la lista',

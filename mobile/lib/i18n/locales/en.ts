@@ -469,6 +469,7 @@ const en = {
     deleteSelectedMessage:
       'This will delete the selected items from your list.',
     selectForDeletion: 'Select {{name}} for deletion',
+    renameItem: 'Rename {{name}}',
     selectAll: 'All',
     clear: 'Clear',
     failedToClearList: 'Failed to clear list',

@@ -2,8 +2,8 @@
  * Individual grocery item row with checkbox, quantity display, and optional drag handle.
  */
 
-import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSelection } from '@/lib/haptics';
 import { useTranslation } from '@/lib/i18n';
@@ -13,6 +13,7 @@ import type { GroceryItem } from '@/lib/types';
 interface GroceryItemRowProps {
   item: GroceryItem;
   onToggle?: (checked: boolean) => void;
+  onRename?: (newName: string) => void;
   deleteMode?: boolean;
   selectedForDelete?: boolean;
   onToggleDeleteSelection?: () => void;
@@ -56,6 +57,7 @@ const formatQuantity = (item: GroceryItem): string => {
 export const GroceryItemRow = ({
   item,
   onToggle,
+  onRename,
   deleteMode = false,
   selectedForDelete = false,
   onToggleDeleteSelection,
@@ -66,6 +68,9 @@ export const GroceryItemRow = ({
   const { colors, fonts, borderRadius, shadows, overrides } = useTheme();
   const { t } = useTranslation();
   const [checked, setChecked] = useState(item.checked);
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(item.name);
+  const inputRef = useRef<TextInput>(null);
 
   // Sync with prop when parent updates (e.g., Firestore refresh, new items generated)
   useEffect(() => {
@@ -75,11 +80,25 @@ export const GroceryItemRow = ({
   const quantity = formatQuantity(item);
 
   const handleToggle = () => {
-    if (deleteMode) return;
+    if (deleteMode || editing) return;
     hapticSelection();
     const newValue = !checked;
     setChecked(newValue);
     onToggle?.(newValue);
+  };
+
+  const handleStartEdit = () => {
+    setEditValue(item.name);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleSubmitEdit = () => {
+    setEditing(false);
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== item.name) {
+      onRename?.(trimmed);
+    }
   };
 
   return (
@@ -153,19 +172,39 @@ export const GroceryItemRow = ({
         </View>
 
         <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: fontSize.lg,
-              fontFamily: fonts.bodyMedium,
-              fontWeight: fontWeight.medium,
-              textDecorationLine: checked ? 'line-through' : 'none',
-              color: checked
-                ? colors.listItem.checkedText
-                : colors.content.body,
-            }}
-          >
-            {quantity ? `${quantity} ${item.name}` : item.name}
-          </Text>
+          {editing ? (
+            <TextInput
+              ref={inputRef}
+              value={editValue}
+              onChangeText={setEditValue}
+              onSubmitEditing={handleSubmitEdit}
+              onBlur={handleSubmitEdit}
+              returnKeyType="done"
+              style={{
+                fontSize: fontSize.lg,
+                fontFamily: fonts.bodyMedium,
+                fontWeight: fontWeight.medium,
+                color: colors.content.body,
+                padding: 0,
+                margin: 0,
+              }}
+              autoFocus
+            />
+          ) : (
+            <Text
+              style={{
+                fontSize: fontSize.lg,
+                fontFamily: fonts.bodyMedium,
+                fontWeight: fontWeight.medium,
+                textDecorationLine: checked ? 'line-through' : 'none',
+                color: checked
+                  ? colors.listItem.checkedText
+                  : colors.content.body,
+              }}
+            >
+              {quantity ? `${quantity} ${item.name}` : item.name}
+            </Text>
+          )}
           {item.recipe_sources.length > 0 && (
             <Text
               style={{
@@ -225,17 +264,19 @@ export const GroceryItemRow = ({
         </Pressable>
       )}
 
-      {!deleteMode && !showReorder && (
-        <ThemeIcon
-          name={
-            item.recipe_sources.length > 0
-              ? 'calendar-outline'
-              : 'create-outline'
-          }
-          size={iconSize.sm}
-          color={colors.content.tertiary}
-          style={{ marginLeft: spacing.sm }}
-        />
+      {!deleteMode && !showReorder && !checked && onRename && (
+        <Pressable
+          onPress={handleStartEdit}
+          accessibilityLabel={t('grocery.renameItem', { name: item.name })}
+          style={{ marginLeft: spacing.sm, padding: spacing.xs }}
+          testID={`edit-${item.name}`}
+        >
+          <ThemeIcon
+            name="create-outline"
+            size={iconSize.sm}
+            color={colors.content.tertiary}
+          />
+        </Pressable>
       )}
     </View>
   );
