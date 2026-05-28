@@ -94,6 +94,7 @@ export const GroceryItemRow = ({
   };
 
   const handleSubmitEdit = () => {
+    if (!editing) return;
     setEditing(false);
     const trimmed = editValue.trim();
     if (trimmed && trimmed !== item.name) {

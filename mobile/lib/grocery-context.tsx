@@ -122,9 +122,17 @@ const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
     meal_servings: servingsData ? JSON.parse(servingsData) : {},
     item_order: orderData ? JSON.parse(orderData) : [],
     removed_items: removedData ? JSON.parse(removedData) : [],
-    tick_sequence: tickData ? JSON.parse(tickData) : [],
+    tick_sequence: tickData ? safeJsonParse(tickData, []) : [],
   };
 };
+
+function safeJsonParse<T>(raw: string, fallback: T): T {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
 
 export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const [checkedItems, setCheckedItemsState] = useState<Set<string>>(new Set());
@@ -212,9 +220,16 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         mealServings: state.meal_servings || {},
       });
       const tickData = await AsyncStorage.getItem(TICK_SEQUENCE_KEY);
-      const ticks = tickData ? JSON.parse(tickData) : [];
-      tickSequenceRef.current = ticks;
-      setTickSequence(ticks);
+      let ticks: string[] = [];
+      try {
+        ticks = tickData ? JSON.parse(tickData) : [];
+      } catch {
+        ticks = [];
+      }
+      const checkedSet = new Set(state.checked_items || []);
+      const reconciledTicks = ticks.filter((t) => checkedSet.has(t));
+      tickSequenceRef.current = reconciledTicks;
+      setTickSequence(reconciledTicks);
     } catch {
       const cached = await loadFromAsyncStorage();
       const checked = new Set(cached.checked_items || []);
@@ -232,8 +247,9 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       setSelectedMealKeys(cached.selected_meals || []);
       setMealServings(cached.meal_servings || {});
       const ticks = cached.tick_sequence || [];
-      tickSequenceRef.current = ticks;
-      setTickSequence(ticks);
+      const reconciledTicks = ticks.filter((t) => checked.has(t));
+      tickSequenceRef.current = reconciledTicks;
+      setTickSequence(reconciledTicks);
     } finally {
       setIsLoading(false);
     }
