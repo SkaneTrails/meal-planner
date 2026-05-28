@@ -461,10 +461,10 @@ const en = {
     selectMealPlanItems: 'Select Recipe Items',
     selectManualItems: 'Select Manual Items',
     clearChecked: 'Uncheck All',
-    clearPicked: 'Clear Picked Items',
-    clearPickedButton: 'Clear Picked',
-    clearPickedMessage:
-      'This will remove picked items from the list and update store sorting.',
+    clearPicked: 'Done Shopping?',
+    clearPickedButton: 'Done Shopping',
+    clearPickedMessage: 'Picked items will be removed from the list.',
+    clearPickedConfirm: 'Done',
     deleteSelected: 'Delete',
     deleteSelectedMessage:
       'This will delete the selected items from your list.',

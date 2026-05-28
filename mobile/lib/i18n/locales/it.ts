@@ -461,10 +461,10 @@ const it: Translations = {
     selectMealPlanItems: 'Seleziona articoli ricette',
     selectManualItems: 'Seleziona articoli manuali',
     clearChecked: 'Deseleziona tutti',
-    clearPicked: 'Cancellare articoli raccolti',
-    clearPickedButton: 'Cancella raccolti',
-    clearPickedMessage:
-      "Questo rimuoverà gli articoli raccolti dalla lista e aggiornerà l'ordinamento del negozio.",
+    clearPicked: 'Spesa completata?',
+    clearPickedButton: 'Spesa completata',
+    clearPickedMessage: 'Gli articoli raccolti verranno rimossi dalla lista.',
+    clearPickedConfirm: 'Fatto',
     deleteSelected: 'Elimina',
     deleteSelectedMessage:
       'Questo eliminerà gli articoli selezionati dalla lista.',

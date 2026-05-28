@@ -296,7 +296,11 @@ export const useGroceryScreen = () => {
 
     showAlert(t('grocery.clearPicked'), t('grocery.clearPickedMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      {
+        text: t('grocery.clearPickedConfirm'),
+        style: 'destructive',
+        onPress: doClear,
+      },
     ]);
   }, [
     activeStoreId,

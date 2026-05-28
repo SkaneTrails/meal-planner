@@ -247,6 +247,7 @@ export interface GroceryListState {
   custom_items: CustomGroceryItem[];
   item_order: string[];
   removed_items: string[];
+  tick_sequence?: string[];
   updated_at?: string | null;
   created_by?: string | null;
 }
