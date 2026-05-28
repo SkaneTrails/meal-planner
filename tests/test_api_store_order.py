@@ -54,7 +54,7 @@ class TestLearnStoreOrder:
     def test_updates_when_out_of_order(self, client: TestClient) -> None:
         """Items ticked out of DB order trigger a reorder and save."""
         with (
-            patch("api.routers.grocery.get_store_order", return_value=["A", "B", "C", "D", "E"]),
+            patch("api.routers.grocery.get_store_order", return_value=["a", "b", "c", "d", "e"]),
             patch("api.routers.grocery.save_store_order") as mock_save,
         ):
             response = client.post("/grocery/stores/store_1/learn", json={"tick_sequence": ["A", "E", "C"]})
@@ -62,13 +62,13 @@ class TestLearnStoreOrder:
         assert response.status_code == 200
         data = response.json()
         assert data["updated"] is True
-        assert data["item_order"] == ["A", "B", "E", "C", "D"]
-        mock_save.assert_called_once_with("test_household", "store_1", ["A", "B", "E", "C", "D"])
+        assert data["item_order"] == ["a", "b", "e", "c", "d"]
+        mock_save.assert_called_once_with("test_household", "store_1", ["a", "b", "e", "c", "d"])
 
     def test_skips_write_when_already_in_order(self, client: TestClient) -> None:
         """No Firestore write when items are already in correct order."""
         with (
-            patch("api.routers.grocery.get_store_order", return_value=["A", "B", "C", "D", "E"]),
+            patch("api.routers.grocery.get_store_order", return_value=["a", "b", "c", "d", "e"]),
             patch("api.routers.grocery.save_store_order") as mock_save,
         ):
             response = client.post("/grocery/stores/store_1/learn", json={"tick_sequence": ["A", "C", "E"]})
@@ -76,13 +76,13 @@ class TestLearnStoreOrder:
         assert response.status_code == 200
         data = response.json()
         assert data["updated"] is False
-        assert data["item_order"] == ["A", "B", "C", "D", "E"]
+        assert data["item_order"] == ["a", "b", "c", "d", "e"]
         mock_save.assert_not_called()
 
     def test_appends_new_items_even_when_in_order(self, client: TestClient) -> None:
         """New items get appended even if known items are in order."""
         with (
-            patch("api.routers.grocery.get_store_order", return_value=["A", "B"]),
+            patch("api.routers.grocery.get_store_order", return_value=["a", "b"]),
             patch("api.routers.grocery.save_store_order") as mock_save,
         ):
             response = client.post("/grocery/stores/store_1/learn", json={"tick_sequence": ["A", "X", "B", "Y"]})
@@ -90,7 +90,7 @@ class TestLearnStoreOrder:
         assert response.status_code == 200
         data = response.json()
         assert data["updated"] is True
-        assert data["item_order"] == ["A", "B", "X", "Y"]
+        assert data["item_order"] == ["a", "b", "x", "y"]
         mock_save.assert_called_once()
 
     def test_first_trip_with_empty_db(self, client: TestClient) -> None:
@@ -105,6 +105,39 @@ class TestLearnStoreOrder:
         data = response.json()
         assert data["updated"] is True
         assert data["item_order"] == ["milk", "bread", "cheese"]
+        mock_save.assert_called_once()
+
+    def test_deduplicates_mixed_case(self, client: TestClient) -> None:
+        """Mixed-case variants of the same item collapse to one entry."""
+        with (
+            patch("api.routers.grocery.get_store_order", return_value=["Milk", "bread", "milk"]),
+            patch("api.routers.grocery.save_store_order") as mock_save,
+        ):
+            response = client.post("/grocery/stores/store_1/learn", json={"tick_sequence": ["Bread", "MILK"]})
+
+        assert response.status_code == 200
+        data = response.json()
+        # DB dedupes to ["milk", "bread"], tick is ["bread", "milk"]
+        # "bread" ticked before "milk" but appears after in DB → promote bread before milk
+        assert data["item_order"] == ["bread", "milk"]
+        mock_save.assert_called_once()
+
+    def test_strips_leading_quantities(self, client: TestClient) -> None:
+        """Leading quantities are stripped so '2 onion' matches 'onion'."""
+        with (
+            patch("api.routers.grocery.get_store_order", return_value=["onion", "garlic", "tomato"]),
+            patch("api.routers.grocery.save_store_order") as mock_save,
+        ):
+            response = client.post(
+                "/grocery/stores/store_1/learn", json={"tick_sequence": ["2 onion", "3 tomato", "1 garlic"]}
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        # tick order: onion, tomato, garlic — but DB has onion, garlic, tomato
+        # tomato ticked before garlic but appears after → promote tomato before garlic
+        assert data["updated"] is True
+        assert data["item_order"] == ["onion", "tomato", "garlic"]
         mock_save.assert_called_once()
 
     def test_requires_household(self, client_no_household: TestClient) -> None:
@@ -123,7 +156,7 @@ class TestLearnStoreOrder:
     def test_drag_override_two_items(self, client: TestClient) -> None:
         """Manual drag sends a 2-item tick sequence to reorder."""
         with (
-            patch("api.routers.grocery.get_store_order", return_value=["A", "B", "C", "D", "E"]),
+            patch("api.routers.grocery.get_store_order", return_value=["a", "b", "c", "d", "e"]),
             patch("api.routers.grocery.save_store_order") as mock_save,
         ):
             response = client.post("/grocery/stores/store_1/learn", json={"tick_sequence": ["D", "B"]})
@@ -131,7 +164,7 @@ class TestLearnStoreOrder:
         assert response.status_code == 200
         data = response.json()
         assert data["updated"] is True
-        assert data["item_order"] == ["A", "D", "B", "C", "E"]
+        assert data["item_order"] == ["a", "d", "b", "c", "e"]
         mock_save.assert_called_once()
 
 
@@ -143,8 +176,8 @@ class TestSetStoreOrder:
             response = client.put("/grocery/stores/store_1/order", json={"item_order": ["C", "A", "B"]})
 
         assert response.status_code == 200
-        assert response.json()["item_order"] == ["C", "A", "B"]
-        mock_save.assert_called_once_with("test_household", "store_1", ["C", "A", "B"])
+        assert response.json()["item_order"] == ["c", "a", "b"]
+        mock_save.assert_called_once_with("test_household", "store_1", ["c", "a", "b"])
 
     def test_saves_empty_order(self, client: TestClient) -> None:
         with patch("api.routers.grocery.save_store_order") as mock_save:

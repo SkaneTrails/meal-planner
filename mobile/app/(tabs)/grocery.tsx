@@ -41,6 +41,7 @@ export default function GroceryScreen() {
     mealPlanItemNames,
     manualItemNames,
     handleItemToggle,
+    handleItemRename,
     handleAddItem,
     toggleDeleteItem,
     handleToggleAddItem,
@@ -125,6 +126,7 @@ export default function GroceryScreen() {
           reorderMode={reorderMode}
           deleteSelection={deleteSelection}
           onItemToggle={handleItemToggle}
+          onItemRename={handleItemRename}
           onToggleDeleteItem={toggleDeleteItem}
           filterOutItems={filterOutItemsAtHome}
           onReorder={handleReorder}
