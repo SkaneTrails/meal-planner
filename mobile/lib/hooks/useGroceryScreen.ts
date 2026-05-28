@@ -28,7 +28,7 @@ import {
   EXTRAS_KEY_PREFIX,
 } from '@/lib/utils/groceryAggregator';
 
-/** Strip leading quantity (digits, fractions, units) and lowercase for sort matching. */
+/** Strip leading digits, fractions, and whitespace, then lowercase for sort matching. */
 function stripQuantity(name: string): string {
   return name
     .replace(/^[\d\s.,/½⅓⅔¼¾⅛]+/, '')
@@ -222,6 +222,14 @@ export const useGroceryScreen = () => {
     (oldName: string, newName: string) => {
       if (oldName === newName) return;
 
+      const allNames = groceryListWithChecked.items.map((i) => i.name);
+      if (
+        allNames.some(
+          (n) => n !== oldName && n.toLowerCase() === newName.toLowerCase(),
+        )
+      )
+        return;
+
       const isCustom = contextCustomItems.some((ci) => ci.name === oldName);
       if (isCustom) {
         setContextCustomItems(
@@ -243,6 +251,7 @@ export const useGroceryScreen = () => {
     },
     [
       contextCustomItems,
+      groceryListWithChecked.items,
       removedItems,
       itemOrder,
       setContextCustomItems,

@@ -886,6 +886,128 @@ describe('useGroceryScreen', () => {
       expect(result.current.uncheckedItems[0].name).toBe('milk');
       expect(result.current.uncheckedItems.length).toBe(3);
     });
+
+    it('matches store order case-insensitively', () => {
+      mockStoreOrderData = { item_order: ['Milk', 'Bread', 'Eggs'] };
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'eggs', category: 'dairy' },
+        { name: 'milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems.map((i) => i.name)).toEqual([
+        'milk',
+        'bread',
+        'eggs',
+      ]);
+    });
+
+    it('strips leading quantities when matching sort order', () => {
+      mockStoreOrderData = { item_order: ['onion', 'garlic', 'tomato'] };
+      mockContextState.customItems = [
+        { name: '2 onion', category: 'produce' },
+        { name: '3 tomato', category: 'produce' },
+        { name: '1 garlic', category: 'produce' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems.map((i) => i.name)).toEqual([
+        '2 onion',
+        '1 garlic',
+        '3 tomato',
+      ]);
+    });
+  });
+
+  describe('handleItemRename', () => {
+    it('renames a custom item in-place', () => {
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'oat milk');
+      });
+
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'oat milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ]);
+    });
+
+    it('removes generated item and adds new custom item', () => {
+      mockContextState.customItems = [];
+      mockContextState.removedItems = [];
+      mockContextState.selectedMealKeys = ['mon_dinner_r1'];
+      mockRecipes.length = 0;
+      mockRecipes.push({
+        id: 'r1',
+        title: 'Pasta',
+        ingredients: [{ text: 'onion' }],
+      } as unknown as Recipe);
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('onion', 'red onion');
+      });
+
+      expect(mockSetRemovedItems).toHaveBeenCalledWith(['onion']);
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'red onion', category: 'other' },
+      ]);
+    });
+
+    it('no-ops when renaming to the same name', () => {
+      mockContextState.customItems = [{ name: 'milk', category: 'dairy' }];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'milk');
+      });
+
+      expect(mockSetCustomItems).not.toHaveBeenCalled();
+      expect(mockSetRemovedItems).not.toHaveBeenCalled();
+    });
+
+    it('no-ops when new name already exists in the list', () => {
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'oat milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'oat milk');
+      });
+
+      expect(mockSetCustomItems).not.toHaveBeenCalled();
+      expect(mockSetRemovedItems).not.toHaveBeenCalled();
+    });
+
+    it('updates itemOrder when renamed item is in order', () => {
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ];
+      mockContextState.itemOrder = ['bread', 'milk'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'oat milk');
+      });
+
+      expect(mockSetItemOrder).toHaveBeenCalledWith(['bread', 'oat milk']);
+    });
   });
 
   describe('stats', () => {

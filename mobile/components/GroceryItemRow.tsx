@@ -267,6 +267,7 @@ export const GroceryItemRow = ({
       {!deleteMode && !showReorder && !checked && onRename && (
         <Pressable
           onPress={handleStartEdit}
+          accessibilityRole="button"
           accessibilityLabel={t('grocery.renameItem', { name: item.name })}
           style={{ marginLeft: spacing.sm, padding: spacing.xs }}
           testID={`edit-${item.name}`}
