@@ -83,6 +83,8 @@ const cacheToAsyncStorage = async (state: {
   ]).catch(() => {});
 };
 
+const TICK_SEQUENCE_KEY = 'grocery_tick_sequence';
+
 const normalizeCustomItems = (raw: unknown[]): CustomGroceryItem[] =>
   raw.map((item) =>
     typeof item === 'string'
@@ -98,6 +100,7 @@ const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
     servingsData,
     orderData,
     removedData,
+    tickData,
   ] = await Promise.all([
     AsyncStorage.getItem('grocery_checked_items'),
     AsyncStorage.getItem('grocery_custom_items'),
@@ -105,6 +108,7 @@ const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
     AsyncStorage.getItem('grocery_meal_servings'),
     AsyncStorage.getItem('grocery_item_order'),
     AsyncStorage.getItem('grocery_removed_items'),
+    AsyncStorage.getItem(TICK_SEQUENCE_KEY),
   ]);
 
   const rawCustom = customData ? JSON.parse(customData) : [];
@@ -118,8 +122,17 @@ const loadFromAsyncStorage = async (): Promise<Partial<GroceryListState>> => {
     meal_servings: servingsData ? JSON.parse(servingsData) : {},
     item_order: orderData ? JSON.parse(orderData) : [],
     removed_items: removedData ? JSON.parse(removedData) : [],
+    tick_sequence: tickData ? safeJsonParse(tickData, []) : [],
   };
 };
+
+function safeJsonParse<T>(raw: string, fallback: T): T {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
 
 export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const [checkedItems, setCheckedItemsState] = useState<Set<string>>(new Set());
@@ -206,6 +219,17 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         selectedMealKeys: state.selected_meals || [],
         mealServings: state.meal_servings || {},
       });
+      const tickData = await AsyncStorage.getItem(TICK_SEQUENCE_KEY);
+      let ticks: string[] = [];
+      try {
+        ticks = tickData ? JSON.parse(tickData) : [];
+      } catch {
+        ticks = [];
+      }
+      const checkedSet = new Set(state.checked_items || []);
+      const reconciledTicks = ticks.filter((t) => checkedSet.has(t));
+      tickSequenceRef.current = reconciledTicks;
+      setTickSequence(reconciledTicks);
     } catch {
       const cached = await loadFromAsyncStorage();
       const checked = new Set(cached.checked_items || []);
@@ -222,6 +246,10 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       removedItemsRef.current = removed;
       setSelectedMealKeys(cached.selected_meals || []);
       setMealServings(cached.meal_servings || {});
+      const ticks = cached.tick_sequence || [];
+      const reconciledTicks = ticks.filter((t) => checked.has(t));
+      tickSequenceRef.current = reconciledTicks;
+      setTickSequence(reconciledTicks);
     } finally {
       setIsLoading(false);
     }
@@ -264,12 +292,20 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
           const updated = tickSequenceRef.current.filter((n) => n !== itemName);
           tickSequenceRef.current = updated;
           setTickSequence(updated);
+          AsyncStorage.setItem(
+            TICK_SEQUENCE_KEY,
+            JSON.stringify(updated),
+          ).catch(() => {});
         } else {
           newSet.add(itemName);
           // Track tick order for store layout learning
           const updated = [...tickSequenceRef.current, itemName];
           tickSequenceRef.current = updated;
           setTickSequence(updated);
+          AsyncStorage.setItem(
+            TICK_SEQUENCE_KEY,
+            JSON.stringify(updated),
+          ).catch(() => {});
         }
         checkedRef.current = newSet;
         const arr = Array.from(newSet);
@@ -296,6 +332,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const resetTickSequence = useCallback(() => {
     tickSequenceRef.current = [];
     setTickSequence([]);
+    AsyncStorage.removeItem(TICK_SEQUENCE_KEY).catch(() => {});
   }, []);
 
   const addCustomItem = useCallback(
@@ -420,6 +457,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       AsyncStorage.removeItem('grocery_meal_servings'),
       AsyncStorage.removeItem('grocery_item_order'),
       AsyncStorage.removeItem('grocery_removed_items'),
+      AsyncStorage.removeItem(TICK_SEQUENCE_KEY),
     ]).catch(() => {});
     api.clearGroceryState().catch(() => {});
   }, []);

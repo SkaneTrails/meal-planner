@@ -28,6 +28,14 @@ import {
   EXTRAS_KEY_PREFIX,
 } from '@/lib/utils/groceryAggregator';
 
+/** Strip leading digits, fractions, and whitespace, then lowercase for sort matching. */
+function stripQuantity(name: string): string {
+  return name
+    .replace(/^[\d\s.,/½⅓⅔¼¾⅛]+/, '')
+    .trim()
+    .toLowerCase();
+}
+
 export const useGroceryScreen = () => {
   const {
     checkedItems,
@@ -179,19 +187,27 @@ export const useGroceryScreen = () => {
     const effectiveOrder = storeOrder.length > 0 ? storeOrder : itemOrder;
 
     if (effectiveOrder.length === 0) return unordered;
-    const orderIndex = new Map(effectiveOrder.map((name, i) => [name, i]));
+    const orderIndex = new Map(
+      effectiveOrder.map((name, i) => [stripQuantity(name), i]),
+    );
     return [...unordered].sort((a, b) => {
-      const ai = orderIndex.get(a.name) ?? Number.MAX_SAFE_INTEGER;
-      const bi = orderIndex.get(b.name) ?? Number.MAX_SAFE_INTEGER;
+      const ai =
+        orderIndex.get(stripQuantity(a.name)) ?? Number.MAX_SAFE_INTEGER;
+      const bi =
+        orderIndex.get(stripQuantity(b.name)) ?? Number.MAX_SAFE_INTEGER;
       return ai - bi;
     });
   }, [groceryListWithChecked.items, itemOrder, storeOrderData]);
 
   const pickedItems = useMemo(() => {
     const checked = groceryListWithChecked.items.filter((item) => item.checked);
-    const tickIndex = new Map(tickSequence.map((name, i) => [name, i]));
+    const tickIndex = new Map(
+      tickSequence.map((name, i) => [stripQuantity(name), i]),
+    );
     return [...checked].sort(
-      (a, b) => (tickIndex.get(a.name) ?? -1) - (tickIndex.get(b.name) ?? -1),
+      (a, b) =>
+        (tickIndex.get(stripQuantity(a.name)) ?? -1) -
+        (tickIndex.get(stripQuantity(b.name)) ?? -1),
     );
   }, [groceryListWithChecked.items, tickSequence]);
 
@@ -200,6 +216,48 @@ export const useGroceryScreen = () => {
       toggleItem(itemName);
     },
     [toggleItem],
+  );
+
+  const handleItemRename = useCallback(
+    (oldName: string, newName: string) => {
+      if (oldName === newName) return;
+
+      const allNames = groceryListWithChecked.items.map((i) => i.name);
+      if (
+        allNames.some(
+          (n) => n !== oldName && n.toLowerCase() === newName.toLowerCase(),
+        )
+      )
+        return;
+
+      const isCustom = contextCustomItems.some((ci) => ci.name === oldName);
+      if (isCustom) {
+        setContextCustomItems(
+          contextCustomItems.map((ci) =>
+            ci.name === oldName ? { ...ci, name: newName } : ci,
+          ),
+        );
+      } else {
+        setRemovedItems([...removedItems, oldName]);
+        setContextCustomItems([
+          ...contextCustomItems,
+          { name: newName, category: 'other' },
+        ]);
+      }
+
+      if (itemOrder.includes(oldName)) {
+        setItemOrder(itemOrder.map((n) => (n === oldName ? newName : n)));
+      }
+    },
+    [
+      contextCustomItems,
+      groceryListWithChecked.items,
+      removedItems,
+      itemOrder,
+      setContextCustomItems,
+      setRemovedItems,
+      setItemOrder,
+    ],
   );
 
   const toggleDeleteItem = useCallback((itemName: string) => {
@@ -249,12 +307,6 @@ export const useGroceryScreen = () => {
         queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
           item_order: merged,
         });
-
-        api.setStoreOrder(activeStoreId, merged).catch(() => {
-          queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
-            item_order: existingOrder,
-          });
-        });
       }
     },
     [setItemOrder, activeStoreId, storeOrderData, queryClient],
@@ -302,7 +354,11 @@ export const useGroceryScreen = () => {
 
     showAlert(t('grocery.clearPicked'), t('grocery.clearPickedMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      {
+        text: t('grocery.clearPickedConfirm'),
+        style: 'destructive',
+        onPress: doClear,
+      },
     ]);
   }, [
     activeStoreId,
@@ -426,6 +482,7 @@ export const useGroceryScreen = () => {
     mealPlanItemNames,
     manualItemNames,
     handleItemToggle,
+    handleItemRename,
     handleAddItem,
     toggleDeleteItem,
     handleToggleAddItem,
