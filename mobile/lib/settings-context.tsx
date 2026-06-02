@@ -34,6 +34,7 @@ import {
 } from './hooks/use-admin';
 import { useAuth } from './hooks/use-auth';
 import type { GroceryStore, HouseholdSettings } from './types';
+import { normalizeIngredientName } from './utils/ingredientParser';
 
 const STORAGE_KEY = '@meal_planner_settings';
 
@@ -241,7 +242,7 @@ export const SettingsProvider = ({
         console.warn('Cannot add item at home: no household');
         return;
       }
-      const normalizedItem = item.toLowerCase().trim();
+      const normalizedItem = normalizeIngredientName(item);
       if (!normalizedItem) return;
 
       await addItemMutation.mutateAsync({ householdId, item: normalizedItem });
@@ -255,7 +256,9 @@ export const SettingsProvider = ({
         console.warn('Cannot remove item at home: no household');
         return;
       }
-      const normalizedItem = item.toLowerCase().trim();
+      const normalizedItem = normalizeIngredientName(item);
+      if (!normalizedItem) return;
+
       await removeItemMutation.mutateAsync({
         householdId,
         item: normalizedItem,
@@ -266,9 +269,9 @@ export const SettingsProvider = ({
 
   const isItemAtHome = useCallback(
     (item: string) => {
-      const normalizedItem = item.toLowerCase().trim();
+      const normalizedItem = normalizeIngredientName(item);
       return settings.itemsAtHome.some(
-        (homeItem) => homeItem === normalizedItem,
+        (homeItem) => normalizeIngredientName(homeItem) === normalizedItem,
       );
     },
     [settings.itemsAtHome],
