@@ -2,10 +2,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   formatQuantity,
-  normalizeIngredientMatchKey,
   parseIngredient,
   scaleIngredient,
   normalizeIngredientName,
+  normalizePantryItemName,
+  normalizePantryMatchKey,
 } from '../ingredientParser';
 
 describe('formatQuantity', () => {
@@ -228,23 +229,35 @@ describe('normalizeIngredientName', () => {
     expect(normalizeIngredientName("2 cucchiai Olio d'Oliva")).toBe("olio d'oliva");
   });
 
-  it('strips parenthetical notes from the normalized name', () => {
-    expect(normalizeIngredientName('2 krm salt (till nudelvattnet)')).toBe('salt');
+  it('preserves parenthetical notes for generic ingredient grouping', () => {
+    expect(normalizeIngredientName('2 krm salt (till nudelvattnet)')).toBe(
+      'salt (till nudelvattnet)',
+    );
   });
 
-  it('treats spacing-only differences as the same normalized name', () => {
+  it('preserves spacing differences for generic ingredient grouping', () => {
     expect(normalizeIngredientName('japansk soja')).toBe('japansk soja');
     expect(normalizeIngredientName('japansksoja')).toBe('japansksoja');
   });
 });
 
-describe('normalizeIngredientMatchKey', () => {
+describe('normalizePantryItemName', () => {
+  it('strips parenthetical pantry notes', () => {
+    expect(normalizePantryItemName('2 krm salt (till nudelvattnet)')).toBe('salt');
+  });
+
+  it('preserves readable spacing in pantry names', () => {
+    expect(normalizePantryItemName('2 tbsp Olive Oil')).toBe('olive oil');
+  });
+});
+
+describe('normalizePantryMatchKey', () => {
   it('ignores spacing-only differences', () => {
-    expect(normalizeIngredientMatchKey('japansk soja')).toBe('japansksoja');
-    expect(normalizeIngredientMatchKey('japansksoja')).toBe('japansksoja');
+    expect(normalizePantryMatchKey('japansk soja')).toBe('japansksoja');
+    expect(normalizePantryMatchKey('japansksoja')).toBe('japansksoja');
   });
 
   it('ignores parenthetical notes and quantity prefixes', () => {
-    expect(normalizeIngredientMatchKey('2 krm salt (till nudelvattnet)')).toBe('salt');
+    expect(normalizePantryMatchKey('2 krm salt (till nudelvattnet)')).toBe('salt');
   });
 });
