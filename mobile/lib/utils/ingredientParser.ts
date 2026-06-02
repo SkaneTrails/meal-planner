@@ -288,5 +288,16 @@ export function scaleIngredient(
  */
 export function normalizeIngredientName(ingredient: string): string {
   const parsed = parseIngredient(ingredient);
-  return parsed.name.toLowerCase().trim();
+  return parsed.name.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+export function normalizePantryItemName(ingredient: string): string {
+  return normalizeIngredientName(ingredient)
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function normalizePantryMatchKey(ingredient: string): string {
+  return normalizePantryItemName(ingredient).replace(/\s+/g, '');
 }

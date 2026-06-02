@@ -306,6 +306,32 @@ describe('SettingsProvider', () => {
 
       expect(capturedItem).toBe("olio d'oliva");
     });
+
+    it('removes using pantry note stripping and spacing-insensitive matching', async () => {
+      const capturedItems: string[] = [];
+      mockUseRemoveItemAtHome.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          capturedItems.push(params.item);
+          return { items_at_home: [] };
+        },
+      }));
+
+      mockItemsAtHome = ['salt', 'japansksoja'];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      await act(async () => {
+        await result.current.removeItemAtHome('2 krm salt (till nudelvattnet)');
+      });
+      await act(async () => {
+        await result.current.removeItemAtHome('japansk soja');
+      });
+
+      expect(capturedItems).toEqual(['salt', 'japansksoja']);
+    });
   });
 
   describe('isItemAtHome', () => {
@@ -343,6 +369,18 @@ describe('SettingsProvider', () => {
       expect(result.current.isItemAtHome('2 tbsp olive oil')).toBe(true);
       expect(result.current.isItemAtHome('2 stycken ägg')).toBe(true);
       expect(result.current.isItemAtHome("2 cucchiai olio d'oliva")).toBe(true);
+    });
+
+    it('ignores parenthetical notes and spacing-only differences', async () => {
+      mockItemsAtHome = ['salt', 'japansksoja'];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.isItemAtHome('2 krm salt (till nudelvattnet)')).toBe(true);
+      expect(result.current.isItemAtHome('japansk soja')).toBe(true);
     });
 
     it('returns false for partial matches', async () => {

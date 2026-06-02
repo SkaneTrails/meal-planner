@@ -5,6 +5,8 @@ import {
   parseIngredient,
   scaleIngredient,
   normalizeIngredientName,
+  normalizePantryItemName,
+  normalizePantryMatchKey,
 } from '../ingredientParser';
 
 describe('formatQuantity', () => {
@@ -225,5 +227,37 @@ describe('normalizeIngredientName', () => {
     expect(normalizeIngredientName('2 tbsp Olive Oil')).toBe('olive oil');
     expect(normalizeIngredientName('2 stycken Ägg')).toBe('ägg');
     expect(normalizeIngredientName("2 cucchiai Olio d'Oliva")).toBe("olio d'oliva");
+  });
+
+  it('preserves parenthetical notes for generic ingredient grouping', () => {
+    expect(normalizeIngredientName('2 krm salt (till nudelvattnet)')).toBe(
+      'salt (till nudelvattnet)',
+    );
+  });
+
+  it('preserves spacing differences for generic ingredient grouping', () => {
+    expect(normalizeIngredientName('japansk soja')).toBe('japansk soja');
+    expect(normalizeIngredientName('japansksoja')).toBe('japansksoja');
+  });
+});
+
+describe('normalizePantryItemName', () => {
+  it('strips parenthetical pantry notes', () => {
+    expect(normalizePantryItemName('2 krm salt (till nudelvattnet)')).toBe('salt');
+  });
+
+  it('preserves readable spacing in pantry names', () => {
+    expect(normalizePantryItemName('2 tbsp Olive Oil')).toBe('olive oil');
+  });
+});
+
+describe('normalizePantryMatchKey', () => {
+  it('ignores spacing-only differences', () => {
+    expect(normalizePantryMatchKey('japansk soja')).toBe('japansksoja');
+    expect(normalizePantryMatchKey('japansksoja')).toBe('japansksoja');
+  });
+
+  it('ignores parenthetical notes and quantity prefixes', () => {
+    expect(normalizePantryMatchKey('2 krm salt (till nudelvattnet)')).toBe('salt');
   });
 });
