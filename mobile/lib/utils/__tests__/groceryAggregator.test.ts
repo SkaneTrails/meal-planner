@@ -144,6 +144,27 @@ describe('aggregateIngredients', () => {
     expect(result[0].name).toBe('cream');
   });
 
+  it('keeps garnish ingredients when stripping trailing serving notes', () => {
+    const recipes = [
+      makeRecipe({
+        id: 'r1',
+        title: 'Laxpudding',
+        ingredients: [
+          '1 knippe grön sparris till servering',
+          '2 msk riven pepparrot till servering',
+        ],
+        servings: 4,
+      }),
+    ];
+    const meals = { 'mon-lunch': 'r1' };
+    const result = aggregateIngredients(['mon-lunch'], meals, recipes, {});
+
+    expect(result.map((item) => item.name)).toEqual([
+      'grön sparris',
+      'riven pepparrot',
+    ]);
+  });
+
   it('does not merge ingredients with different units', () => {
     const recipes = [
       makeRecipe({

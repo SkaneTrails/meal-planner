@@ -1136,6 +1136,19 @@ describe('useGroceryScreen', () => {
       expect(result.current.hiddenAtHomeCount).toBe(1);
     });
 
+    it('hiddenAtHomeItems only includes generated items that are at home', async () => {
+      await mockSettingsWithItemAtHome((name) => name === 'salt' || name === 'pepper');
+      setupMealPlanWithSalt();
+      mockContextState.customItems = [
+        { name: 'salt', category: 'pantry' },
+        { name: 'pepper', category: 'pantry' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.hiddenAtHomeItems).toEqual(['salt']);
+    });
+
     it('checkedItemsToBuy includes checked manual items even if they match items at home', async () => {
       await mockSettingsWithItemAtHome((name) => name === 'salt');
 

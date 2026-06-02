@@ -297,7 +297,7 @@ describe('SettingsProvider', () => {
       expect(result.current.isItemAtHome('salt')).toBe(true);
     });
 
-    it('matches when grocery item contains a home item', async () => {
+    it('matches after normalizing case and whitespace', async () => {
       mockItemsAtHome = ['salt'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -305,18 +305,19 @@ describe('SettingsProvider', () => {
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      expect(result.current.isItemAtHome('sea salt')).toBe(true);
+      expect(result.current.isItemAtHome('  SALT  ')).toBe(true);
     });
 
-    it('matches when home item contains the grocery item', async () => {
-      mockItemsAtHome = ['olive oil'];
+    it('returns false for partial matches', async () => {
+      mockItemsAtHome = ['salt', 'olive oil'];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      expect(result.current.isItemAtHome('oil')).toBe(true);
+      expect(result.current.isItemAtHome('sea salt')).toBe(false);
+      expect(result.current.isItemAtHome('oil')).toBe(false);
     });
 
     it('returns false for non-matching item', async () => {
