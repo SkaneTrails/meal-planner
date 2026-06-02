@@ -268,9 +268,7 @@ export const SettingsProvider = ({
     (item: string) => {
       const normalizedItem = item.toLowerCase().trim();
       return settings.itemsAtHome.some(
-        (homeItem) =>
-          normalizedItem.includes(homeItem) ||
-          homeItem.includes(normalizedItem),
+        (homeItem) => homeItem === normalizedItem,
       );
     },
     [settings.itemsAtHome],

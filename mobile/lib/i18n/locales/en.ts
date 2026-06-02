@@ -450,6 +450,8 @@ const en = {
     itemsSelected: '{{count}} selected',
     dragToReorder: 'Drag to reorder',
     hiddenAtHome: '{{count}} item(s) hidden (at home)',
+    hiddenAtHomeDetails:
+      'These recipe items are hidden because they are marked under Items at Home:\n\n{{items}}\n\nManually added items stay visible.',
     addItemPlaceholder: 'Add an item...',
     addButton: 'Add',
     allStores: 'None',

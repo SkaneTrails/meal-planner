@@ -442,6 +442,15 @@ export const useGroceryScreen = () => {
     [groceryListWithChecked.items, isGeneratedItemAtHome],
   );
 
+  const hiddenAtHomeItems = useMemo(
+    () =>
+      groceryListWithChecked.items
+        .filter(isGeneratedItemAtHome)
+        .map((item) => item.name)
+        .sort((left, right) => left.localeCompare(right)),
+    [groceryListWithChecked.items, isGeneratedItemAtHome],
+  );
+
   const itemsToBuy = totalItems - hiddenAtHomeCount;
 
   const checkedItemsToBuy = useMemo(
@@ -474,6 +483,7 @@ export const useGroceryScreen = () => {
     totalItems,
     checkedCount,
     hiddenAtHomeCount,
+    hiddenAtHomeItems,
     itemsToBuy,
     checkedItemsToBuy,
     uncheckedItems,

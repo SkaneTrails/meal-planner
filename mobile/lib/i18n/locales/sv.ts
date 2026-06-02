@@ -441,6 +441,8 @@ const sv: Translations = {
     itemsSelected: '{{count}} valda',
     dragToReorder: 'Dra för att sortera',
     hiddenAtHome: '{{count}} vara/varor dolda (finns hemma)',
+    hiddenAtHomeDetails:
+      'Dessa receptvaror är dolda eftersom de är markerade under Varor hemma:\n\n{{items}}\n\nVaror som lagts till manuellt visas fortfarande.',
     addItemPlaceholder: 'Lägg till en vara...',
     addButton: 'Lägg till',
     allStores: 'Ingen',

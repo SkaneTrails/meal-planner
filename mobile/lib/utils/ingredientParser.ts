@@ -96,6 +96,8 @@ const UNITS = new Set([
   'handfuls',
   'pinch',
   'pinches',
+  'knippe',
+  'knippen',
   // Swedish units
   'msk',
   'tsk',
