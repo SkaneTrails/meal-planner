@@ -345,6 +345,18 @@ describe('SettingsProvider', () => {
       expect(result.current.isItemAtHome("2 cucchiai olio d'oliva")).toBe(true);
     });
 
+    it('ignores parenthetical notes and spacing-only differences', async () => {
+      mockItemsAtHome = ['salt', 'japansksoja'];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.isItemAtHome('2 krm salt (till nudelvattnet)')).toBe(true);
+      expect(result.current.isItemAtHome('japansk soja')).toBe(true);
+    });
+
     it('returns false for partial matches', async () => {
       mockItemsAtHome = ['salt', 'olive oil'];
 

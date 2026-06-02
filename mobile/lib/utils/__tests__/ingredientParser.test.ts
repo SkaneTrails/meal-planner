@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   formatQuantity,
+  normalizeIngredientMatchKey,
   parseIngredient,
   scaleIngredient,
   normalizeIngredientName,
@@ -225,5 +226,25 @@ describe('normalizeIngredientName', () => {
     expect(normalizeIngredientName('2 tbsp Olive Oil')).toBe('olive oil');
     expect(normalizeIngredientName('2 stycken Ägg')).toBe('ägg');
     expect(normalizeIngredientName("2 cucchiai Olio d'Oliva")).toBe("olio d'oliva");
+  });
+
+  it('strips parenthetical notes from the normalized name', () => {
+    expect(normalizeIngredientName('2 krm salt (till nudelvattnet)')).toBe('salt');
+  });
+
+  it('treats spacing-only differences as the same normalized name', () => {
+    expect(normalizeIngredientName('japansk soja')).toBe('japansk soja');
+    expect(normalizeIngredientName('japansksoja')).toBe('japansksoja');
+  });
+});
+
+describe('normalizeIngredientMatchKey', () => {
+  it('ignores spacing-only differences', () => {
+    expect(normalizeIngredientMatchKey('japansk soja')).toBe('japansksoja');
+    expect(normalizeIngredientMatchKey('japansksoja')).toBe('japansksoja');
+  });
+
+  it('ignores parenthetical notes and quantity prefixes', () => {
+    expect(normalizeIngredientMatchKey('2 krm salt (till nudelvattnet)')).toBe('salt');
   });
 });

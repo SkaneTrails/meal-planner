@@ -288,5 +288,13 @@ export function scaleIngredient(
  */
 export function normalizeIngredientName(ingredient: string): string {
   const parsed = parseIngredient(ingredient);
-  return parsed.name.toLowerCase().trim();
+  return parsed.name
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function normalizeIngredientMatchKey(ingredient: string): string {
+  return normalizeIngredientName(ingredient).replace(/\s+/g, '');
 }
