@@ -283,6 +283,29 @@ describe('SettingsProvider', () => {
 
       expect(capturedItem).toBe('salt');
     });
+
+    it('removes using normalized ingredient names', async () => {
+      let capturedItem: string | undefined;
+      mockUseRemoveItemAtHome.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          capturedItem = params.item;
+          return { items_at_home: [] };
+        },
+      }));
+
+      mockItemsAtHome = ["olio d'oliva"];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      await act(async () => {
+        await result.current.removeItemAtHome("2 cucchiai olio d'oliva");
+      });
+
+      expect(capturedItem).toBe("olio d'oliva");
+    });
   });
 
   describe('isItemAtHome', () => {

@@ -256,7 +256,9 @@ export const SettingsProvider = ({
         console.warn('Cannot remove item at home: no household');
         return;
       }
-      const normalizedItem = item.toLowerCase().trim();
+      const normalizedItem = normalizeIngredientName(item);
+      if (!normalizedItem) return;
+
       await removeItemMutation.mutateAsync({
         householdId,
         item: normalizedItem,
