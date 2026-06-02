@@ -159,6 +159,20 @@ describe('parseIngredient', () => {
     expect(result.name).toBe('ägg');
   });
 
+  it('handles stycken unit for pieces', () => {
+    const result = parseIngredient('2 stycken ägg');
+    expect(result.quantity).toBe(2);
+    expect(result.unit).toBe('stycken');
+    expect(result.name).toBe('ägg');
+  });
+
+  it('handles Italian units', () => {
+    const result = parseIngredient("2 cucchiai olio d'oliva");
+    expect(result.quantity).toBe(2);
+    expect(result.unit).toBe('cucchiai');
+    expect(result.name).toBe("olio d'oliva");
+  });
+
   it('strips trailing period from unit', () => {
     const result = parseIngredient('2 dl. vatten');
     expect(result.unit).toBe('dl');
@@ -205,5 +219,11 @@ describe('normalizeIngredientName', () => {
 
   it('handles plain text ingredient', () => {
     expect(normalizeIngredientName('salt')).toBe('salt');
+  });
+
+  it('strips quantity and international unit words', () => {
+    expect(normalizeIngredientName('2 tbsp Olive Oil')).toBe('olive oil');
+    expect(normalizeIngredientName('2 stycken Ägg')).toBe('ägg');
+    expect(normalizeIngredientName("2 cucchiai Olio d'Oliva")).toBe("olio d'oliva");
   });
 });
