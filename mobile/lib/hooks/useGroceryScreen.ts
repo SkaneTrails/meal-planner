@@ -72,7 +72,8 @@ export const useGroceryScreen = () => {
   const { isItemAtHome, activeStoreId } = useSettings();
   const { data: mealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
-  const { data: storeOrderData } = useStoreOrder(activeStoreId);
+  const { data: storeOrderData, isPlaceholderData: isStoreOrderPlaceholder } =
+    useStoreOrder(activeStoreId);
 
   const isGeneratedItemAtHome = useCallback(
     (item: GroceryItem) =>
@@ -296,7 +297,7 @@ export const useGroceryScreen = () => {
       const reorderedNames = items.map((i) => i.name);
       setItemOrder(reorderedNames);
 
-      if (activeStoreId) {
+      if (activeStoreId && !isStoreOrderPlaceholder) {
         const existingOrder = storeOrderData?.item_order ?? [];
         const reorderedSet = new Set(reorderedNames);
         const preserved = existingOrder.filter(
@@ -311,7 +312,13 @@ export const useGroceryScreen = () => {
         api.setStoreOrder(activeStoreId, merged).catch(() => {});
       }
     },
-    [setItemOrder, activeStoreId, storeOrderData, queryClient],
+    [
+      setItemOrder,
+      activeStoreId,
+      isStoreOrderPlaceholder,
+      storeOrderData,
+      queryClient,
+    ],
   );
 
   const MIN_TICK_SEQUENCE_LENGTH = 2;

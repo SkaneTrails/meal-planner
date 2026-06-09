@@ -68,7 +68,7 @@ vi.mock('@/lib/hooks/use-grocery', () => ({
     all: ['grocery'] as const,
     storeOrder: (storeId: string) => ['grocery', 'storeOrder', storeId] as const,
   },
-  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
+  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData, isPlaceholderData: !mockStoreOrderData })),
 }));
 
 vi.mock('@/lib/hooks/use-meal-plan', () => ({
