@@ -307,6 +307,8 @@ export const useGroceryScreen = () => {
         queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
           item_order: merged,
         });
+
+        api.setStoreOrder(activeStoreId, merged).catch(() => {});
       }
     },
     [setItemOrder, activeStoreId, storeOrderData, queryClient],

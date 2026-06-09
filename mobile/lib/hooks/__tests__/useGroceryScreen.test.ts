@@ -827,7 +827,7 @@ describe('useGroceryScreen', () => {
       expect(mockSetItemOrder).toHaveBeenCalledWith(['eggs', 'bread', 'milk']);
     });
 
-    it('updates local cache but does not persist to store order on reorder', async () => {
+    it('persists reordered store order to API when store is active', async () => {
       const { useSettings } = await import('@/lib/settings-context');
       vi.mocked(useSettings).mockReturnValue({
         isItemAtHome: vi.fn(() => false),
@@ -847,7 +847,10 @@ describe('useGroceryScreen', () => {
         ]);
       });
 
-      expect(mockSetStoreOrder).not.toHaveBeenCalled();
+      expect(mockSetStoreOrder).toHaveBeenCalledWith(
+        'store_1',
+        ['bread', 'eggs', 'cheese', 'butter'],
+      );
       expect(mockSetQueryData).toHaveBeenCalledWith(
         ['grocery', 'storeOrder', 'store_1'],
         { item_order: ['bread', 'eggs', 'cheese', 'butter'] },
