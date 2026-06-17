@@ -72,7 +72,8 @@ export const useGroceryScreen = () => {
   const { isItemAtHome, activeStoreId } = useSettings();
   const { data: mealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
-  const { data: storeOrderData } = useStoreOrder(activeStoreId);
+  const { data: storeOrderData, isPlaceholderData: isStoreOrderPlaceholder } =
+    useStoreOrder(activeStoreId);
 
   const isGeneratedItemAtHome = useCallback(
     (item: GroceryItem) =>
@@ -296,7 +297,7 @@ export const useGroceryScreen = () => {
       const reorderedNames = items.map((i) => i.name);
       setItemOrder(reorderedNames);
 
-      if (activeStoreId) {
+      if (activeStoreId && !isStoreOrderPlaceholder) {
         const existingOrder = storeOrderData?.item_order ?? [];
         const reorderedSet = new Set(reorderedNames);
         const preserved = existingOrder.filter(
@@ -307,9 +308,17 @@ export const useGroceryScreen = () => {
         queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
           item_order: merged,
         });
+
+        api.setStoreOrder(activeStoreId, merged).catch(() => {});
       }
     },
-    [setItemOrder, activeStoreId, storeOrderData, queryClient],
+    [
+      setItemOrder,
+      activeStoreId,
+      isStoreOrderPlaceholder,
+      storeOrderData,
+      queryClient,
+    ],
   );
 
   const MIN_TICK_SEQUENCE_LENGTH = 2;
@@ -438,8 +447,17 @@ export const useGroceryScreen = () => {
   const checkedCount = checkedItems.size;
 
   const hiddenAtHomeCount = useMemo(
-    () => groceryListWithChecked.items.filter(isGeneratedItemAtHome).length,
-    [groceryListWithChecked.items, isGeneratedItemAtHome],
+    () => visibleGeneratedItems.filter(isGeneratedItemAtHome).length,
+    [visibleGeneratedItems, isGeneratedItemAtHome],
+  );
+
+  const hiddenAtHomeItems = useMemo(
+    () =>
+      visibleGeneratedItems
+        .filter(isGeneratedItemAtHome)
+        .map((item) => item.name)
+        .sort((left, right) => left.localeCompare(right)),
+    [visibleGeneratedItems, isGeneratedItemAtHome],
   );
 
   const itemsToBuy = totalItems - hiddenAtHomeCount;
@@ -474,6 +492,7 @@ export const useGroceryScreen = () => {
     totalItems,
     checkedCount,
     hiddenAtHomeCount,
+    hiddenAtHomeItems,
     itemsToBuy,
     checkedItemsToBuy,
     uncheckedItems,

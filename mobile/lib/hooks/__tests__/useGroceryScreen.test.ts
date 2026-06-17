@@ -68,7 +68,7 @@ vi.mock('@/lib/hooks/use-grocery', () => ({
     all: ['grocery'] as const,
     storeOrder: (storeId: string) => ['grocery', 'storeOrder', storeId] as const,
   },
-  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
+  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData, isPlaceholderData: !mockStoreOrderData })),
 }));
 
 vi.mock('@/lib/hooks/use-meal-plan', () => ({
@@ -827,7 +827,7 @@ describe('useGroceryScreen', () => {
       expect(mockSetItemOrder).toHaveBeenCalledWith(['eggs', 'bread', 'milk']);
     });
 
-    it('updates local cache but does not persist to store order on reorder', async () => {
+    it('persists reordered store order to API when store is active', async () => {
       const { useSettings } = await import('@/lib/settings-context');
       vi.mocked(useSettings).mockReturnValue({
         isItemAtHome: vi.fn(() => false),
@@ -847,7 +847,10 @@ describe('useGroceryScreen', () => {
         ]);
       });
 
-      expect(mockSetStoreOrder).not.toHaveBeenCalled();
+      expect(mockSetStoreOrder).toHaveBeenCalledWith(
+        'store_1',
+        ['bread', 'eggs', 'cheese', 'butter'],
+      );
       expect(mockSetQueryData).toHaveBeenCalledWith(
         ['grocery', 'storeOrder', 'store_1'],
         { item_order: ['bread', 'eggs', 'cheese', 'butter'] },
@@ -1134,6 +1137,19 @@ describe('useGroceryScreen', () => {
       const { result } = renderHook(() => useGroceryScreen());
 
       expect(result.current.hiddenAtHomeCount).toBe(1);
+    });
+
+    it('hiddenAtHomeItems only includes generated items that are at home', async () => {
+      await mockSettingsWithItemAtHome((name) => name === 'salt' || name === 'pepper');
+      setupMealPlanWithSalt();
+      mockContextState.customItems = [
+        { name: 'salt', category: 'pantry' },
+        { name: 'pepper', category: 'pantry' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.hiddenAtHomeItems).toEqual(['salt']);
     });
 
     it('checkedItemsToBuy includes checked manual items even if they match items at home', async () => {

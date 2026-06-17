@@ -449,6 +449,8 @@ const it: Translations = {
     itemsSelected: '{{count}} selezionati',
     dragToReorder: 'Trascina per riordinare',
     hiddenAtHome: '{{count}} articolo/i nascosti (a casa)',
+    hiddenAtHomeDetails:
+      'Questi articoli delle ricette sono nascosti perché segnati in Articoli a casa:\n\n{{items}}\n\nGli articoli aggiunti manualmente restano visibili.',
     addItemPlaceholder: 'Aggiungi un articolo...',
     addButton: 'Aggiungi',
     allStores: 'Nessuno',

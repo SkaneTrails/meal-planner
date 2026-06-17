@@ -33,6 +33,7 @@ export default function GroceryScreen() {
     setNewItemText,
     totalItems,
     hiddenAtHomeCount,
+    hiddenAtHomeItems,
     itemsToBuy,
     checkedItemsToBuy,
     uncheckedItems,
@@ -94,6 +95,7 @@ export default function GroceryScreen() {
             checkedItemsToBuy={checkedItemsToBuy}
             totalItems={totalItems}
             hiddenAtHomeCount={hiddenAtHomeCount}
+            hiddenAtHomeItems={hiddenAtHomeItems}
             showAddItem={showAddItem}
             deleteMode={deleteMode}
             reorderMode={reorderMode}
