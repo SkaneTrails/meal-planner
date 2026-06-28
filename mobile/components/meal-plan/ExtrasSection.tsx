@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { ButtonGroup, IconButton, TerminalFrame } from '@/components';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { IconButton } from '@/components/IconButton';
+import { TerminalFrame } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type { Recipe } from '@/lib/types';

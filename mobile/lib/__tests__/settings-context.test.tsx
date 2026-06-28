@@ -2,9 +2,9 @@
  * Tests for SettingsProvider — verifies settings state management.
  *
  * Real logic tested:
- * - addItemAtHome: normalizes to lowercase, trims whitespace
+ * - addItemAtHome: normalizes pantry entries to exact ingredient names
  * - removeItemAtHome: normalizes before matching
- * - isItemAtHome: partial substring matching (both directions)
+ * - isItemAtHome: exact normalized ingredient-name matching
  * - setLanguage: writes to cloud via household settings
  * - toggleFavorite: adds/removes recipe IDs via cloud
  * - isFavorite: checks membership from cloud data
@@ -217,7 +217,7 @@ describe('SettingsProvider', () => {
   });
 
   describe('addItemAtHome', () => {
-    it('normalizes to lowercase and trims whitespace', async () => {
+    it('normalizes to an ingredient name before saving', async () => {
       let capturedItem: string | undefined;
       mockUseAddItemAtHome.mockImplementation(() => ({
         mutateAsync: async (params: { householdId: string; item: string }) => {
@@ -232,7 +232,7 @@ describe('SettingsProvider', () => {
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
       await act(async () => {
-        await result.current.addItemAtHome('  Olive Oil  ');
+        await result.current.addItemAtHome('  2 tbsp Olive Oil  ');
       });
 
       expect(capturedItem).toBe('olive oil');
@@ -283,6 +283,55 @@ describe('SettingsProvider', () => {
 
       expect(capturedItem).toBe('salt');
     });
+
+    it('removes using normalized ingredient names', async () => {
+      let capturedItem: string | undefined;
+      mockUseRemoveItemAtHome.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          capturedItem = params.item;
+          return { items_at_home: [] };
+        },
+      }));
+
+      mockItemsAtHome = ["olio d'oliva"];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      await act(async () => {
+        await result.current.removeItemAtHome("2 cucchiai olio d'oliva");
+      });
+
+      expect(capturedItem).toBe("olio d'oliva");
+    });
+
+    it('removes using pantry note stripping and spacing-insensitive matching', async () => {
+      const capturedItems: string[] = [];
+      mockUseRemoveItemAtHome.mockImplementation(() => ({
+        mutateAsync: async (params: { householdId: string; item: string }) => {
+          capturedItems.push(params.item);
+          return { items_at_home: [] };
+        },
+      }));
+
+      mockItemsAtHome = ['salt', 'japansksoja'];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      await act(async () => {
+        await result.current.removeItemAtHome('2 krm salt (till nudelvattnet)');
+      });
+      await act(async () => {
+        await result.current.removeItemAtHome('japansk soja');
+      });
+
+      expect(capturedItems).toEqual(['salt', 'japansksoja']);
+    });
   });
 
   describe('isItemAtHome', () => {
@@ -297,7 +346,7 @@ describe('SettingsProvider', () => {
       expect(result.current.isItemAtHome('salt')).toBe(true);
     });
 
-    it('matches when grocery item contains a home item', async () => {
+    it('matches after normalizing case and whitespace', async () => {
       mockItemsAtHome = ['salt'];
 
       const { result } = renderHook(() => useSettings(), {
@@ -305,18 +354,45 @@ describe('SettingsProvider', () => {
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      expect(result.current.isItemAtHome('sea salt')).toBe(true);
+      expect(result.current.isItemAtHome('  SALT  ')).toBe(true);
     });
 
-    it('matches when home item contains the grocery item', async () => {
-      mockItemsAtHome = ['olive oil'];
+    it('matches after stripping quantity and unit words across supported languages', async () => {
+      mockItemsAtHome = ['salt', 'olive oil', 'ägg', "olio d'oliva"];
 
       const { result } = renderHook(() => useSettings(), {
         wrapper: createSettingsWrapper(),
       });
       await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-      expect(result.current.isItemAtHome('oil')).toBe(true);
+      expect(result.current.isItemAtHome('2 krm salt')).toBe(true);
+      expect(result.current.isItemAtHome('2 tbsp olive oil')).toBe(true);
+      expect(result.current.isItemAtHome('2 stycken ägg')).toBe(true);
+      expect(result.current.isItemAtHome("2 cucchiai olio d'oliva")).toBe(true);
+    });
+
+    it('ignores parenthetical notes and spacing-only differences', async () => {
+      mockItemsAtHome = ['salt', 'japansksoja'];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.isItemAtHome('2 krm salt (till nudelvattnet)')).toBe(true);
+      expect(result.current.isItemAtHome('japansk soja')).toBe(true);
+    });
+
+    it('returns false for partial matches', async () => {
+      mockItemsAtHome = ['salt', 'olive oil'];
+
+      const { result } = renderHook(() => useSettings(), {
+        wrapper: createSettingsWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.isItemAtHome('sea salt')).toBe(false);
+      expect(result.current.isItemAtHome('oil')).toBe(false);
     });
 
     it('returns false for non-matching item', async () => {

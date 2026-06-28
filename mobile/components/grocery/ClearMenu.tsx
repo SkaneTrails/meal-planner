@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
-import { ActionButton, ButtonGroup, Chip } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { Chip } from '@/components/Chip';
 import { useTranslation } from '@/lib/i18n';
 import { spacing } from '@/lib/theme';
 

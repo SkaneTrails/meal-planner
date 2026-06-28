@@ -5,14 +5,16 @@
 
 import { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, View } from 'react-native';
-import { ActionButton, Button, Section } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { Button } from '@/components/Button';
+import { Section } from '@/components/Section';
 import { showAlert, showNotification } from '@/lib/alert';
 import { hapticLight } from '@/lib/haptics';
 import {
   useCreateRecipeNote,
   useDeleteRecipeNote,
   useRecipeNotes,
-} from '@/lib/hooks';
+} from '@/lib/hooks/use-recipe-notes';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';
 

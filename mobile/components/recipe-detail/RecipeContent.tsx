@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, View, type ViewStyle } from 'react-native';
-import { ContentCard, Section } from '@/components';
+import { ContentCard } from '@/components/ContentCard';
+import { Section } from '@/components/Section';
 import type { FrameSegment } from '@/components/TerminalFrame';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, letterSpacing, spacing, useTheme } from '@/lib/theme';

@@ -5,13 +5,10 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import {
-  EnhancingOverlay,
-  GradientBackground,
-  IconButton,
-  TerminalFabBar,
-} from '@/components';
 import { EnhancementReviewModal } from '@/components/EnhancementReviewModal';
+import { EnhancingOverlay } from '@/components/EnhancingOverlay';
+import { GradientBackground } from '@/components/GradientBackground';
+import { IconButton } from '@/components/IconButton';
 import { MirroredBackground } from '@/components/MirroredBackground';
 import { EditRecipeModal } from '@/components/recipe-detail/EditRecipeModal';
 import { ImageUrlModal } from '@/components/recipe-detail/ImageUrlModal';
@@ -22,6 +19,7 @@ import {
   RecipeLoading,
   RecipeNotFound,
 } from '@/components/recipe-detail/RecipeLoadingStates';
+import { TerminalFabBar } from '@/components/TerminalFabBar';
 import { hapticLight, hapticSelection } from '@/lib/haptics';
 import {
   useKeepScreenOn,

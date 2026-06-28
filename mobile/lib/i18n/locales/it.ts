@@ -449,6 +449,8 @@ const it: Translations = {
     itemsSelected: '{{count}} selezionati',
     dragToReorder: 'Trascina per riordinare',
     hiddenAtHome: '{{count}} articolo/i nascosti (a casa)',
+    hiddenAtHomeDetails:
+      'Questi articoli delle ricette sono nascosti perché segnati in Articoli a casa:\n\n{{items}}\n\nGli articoli aggiunti manualmente restano visibili.',
     addItemPlaceholder: 'Aggiungi un articolo...',
     addButton: 'Aggiungi',
     allStores: 'Nessuno',
@@ -461,14 +463,15 @@ const it: Translations = {
     selectMealPlanItems: 'Seleziona articoli ricette',
     selectManualItems: 'Seleziona articoli manuali',
     clearChecked: 'Deseleziona tutti',
-    clearPicked: 'Cancellare articoli raccolti',
-    clearPickedButton: 'Cancella raccolti',
-    clearPickedMessage:
-      "Questo rimuoverà gli articoli raccolti dalla lista e aggiornerà l'ordinamento del negozio.",
+    clearPicked: 'Spesa completata?',
+    clearPickedButton: 'Spesa completata',
+    clearPickedMessage: 'Gli articoli raccolti verranno rimossi dalla lista.',
+    clearPickedConfirm: 'Fatto',
     deleteSelected: 'Elimina',
     deleteSelectedMessage:
       'Questo eliminerà gli articoli selezionati dalla lista.',
     selectForDeletion: 'Seleziona {{name}} per eliminazione',
+    renameItem: 'Rinomina {{name}}',
     selectAll: 'Tutti',
     clear: 'Cancella',
     failedToClearList: 'Impossibile cancellare la lista',

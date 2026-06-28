@@ -1,5 +1,5 @@
 import { Linking, View } from 'react-native';
-import { Button } from '@/components';
+import { Button } from '@/components/Button';
 import { showNotification } from '@/lib/alert';
 import type { TFunction } from '@/lib/i18n';
 import { layout, spacing, useTheme } from '@/lib/theme';

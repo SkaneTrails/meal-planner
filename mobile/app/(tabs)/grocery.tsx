@@ -3,12 +3,7 @@
  */
 
 import { View } from 'react-native';
-import {
-  GroceryListSkeleton,
-  GroceryListView,
-  ScreenHeader,
-  ScreenLayout,
-} from '@/components';
+import { GroceryListView } from '@/components/GroceryListView';
 import {
   AddItemCard,
   EmptyGroceryState,
@@ -16,6 +11,9 @@ import {
   StatsCard,
   StoreChips,
 } from '@/components/grocery';
+import { ScreenHeader } from '@/components/ScreenHeader';
+import { ScreenLayout } from '@/components/ScreenLayout';
+import { GroceryListSkeleton } from '@/components/Skeleton';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
@@ -35,6 +33,7 @@ export default function GroceryScreen() {
     setNewItemText,
     totalItems,
     hiddenAtHomeCount,
+    hiddenAtHomeItems,
     itemsToBuy,
     checkedItemsToBuy,
     uncheckedItems,
@@ -43,6 +42,7 @@ export default function GroceryScreen() {
     mealPlanItemNames,
     manualItemNames,
     handleItemToggle,
+    handleItemRename,
     handleAddItem,
     toggleDeleteItem,
     handleToggleAddItem,
@@ -95,6 +95,7 @@ export default function GroceryScreen() {
             checkedItemsToBuy={checkedItemsToBuy}
             totalItems={totalItems}
             hiddenAtHomeCount={hiddenAtHomeCount}
+            hiddenAtHomeItems={hiddenAtHomeItems}
             showAddItem={showAddItem}
             deleteMode={deleteMode}
             reorderMode={reorderMode}
@@ -127,6 +128,7 @@ export default function GroceryScreen() {
           reorderMode={reorderMode}
           deleteSelection={deleteSelection}
           onItemToggle={handleItemToggle}
+          onItemRename={handleItemRename}
           onToggleDeleteItem={toggleDeleteItem}
           filterOutItems={filterOutItemsAtHome}
           onReorder={handleReorder}

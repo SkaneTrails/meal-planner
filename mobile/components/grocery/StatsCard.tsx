@@ -1,8 +1,8 @@
-import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { AnimatedPressable, ButtonGroup, IconButton } from '@/components';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { HelpTipIcon } from '@/components/HelpTip';
+import { IconButton } from '@/components/IconButton';
 import { ThemeIcon } from '@/components/ThemeIcon';
-import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, iconSize, spacing, useTheme } from '@/lib/theme';
 import { ClearMenu } from './ClearMenu';
@@ -115,36 +115,24 @@ const ProgressBar = ({ itemsToBuy, checkedItemsToBuy }: ProgressBarProps) => {
 
 interface ItemsAtHomeIndicatorProps {
   hiddenAtHomeCount: number;
+  hiddenAtHomeItems: string[];
 }
 
 const ItemsAtHomeIndicator = ({
   hiddenAtHomeCount,
+  hiddenAtHomeItems,
 }: ItemsAtHomeIndicatorProps) => {
   const { colors, fonts, borderRadius } = useTheme();
-  const router = useRouter();
   const { t } = useTranslation();
-  const { data: currentUser } = useCurrentUser();
-  const householdId = currentUser?.household_id;
 
   if (hiddenAtHomeCount <= 0) return null;
 
-  const onPress = () => {
-    if (householdId) {
-      router.push(`/household-settings?id=${householdId}&section=pantry`);
-    } else {
-      router.push('/settings');
-    }
-  };
+  const hiddenItemsText = hiddenAtHomeItems
+    .map((item) => `• ${item}`)
+    .join('\n');
 
   return (
-    <AnimatedPressable
-      onPress={onPress}
-      hoverScale={1.02}
-      pressScale={0.98}
-      accessibilityRole="button"
-      accessibilityLabel={t('grocery.hiddenAtHome', {
-        count: hiddenAtHomeCount,
-      })}
+    <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -172,12 +160,12 @@ const ItemsAtHomeIndicator = ({
       >
         {t('grocery.hiddenAtHome', { count: hiddenAtHomeCount })}
       </Text>
-      <ThemeIcon
-        name="chevron-forward"
-        size={iconSize.xs}
-        color={colors.content.subtitle}
+      <HelpTipIcon
+        helpText={t('grocery.hiddenAtHomeDetails', {
+          items: hiddenItemsText,
+        })}
       />
-    </AnimatedPressable>
+    </View>
   );
 };
 
@@ -186,6 +174,7 @@ interface StatsCardProps {
   checkedItemsToBuy: number;
   totalItems: number;
   hiddenAtHomeCount: number;
+  hiddenAtHomeItems: string[];
   showAddItem: boolean;
   deleteMode: boolean;
   reorderMode: boolean;
@@ -204,6 +193,7 @@ export const StatsCard = ({
   checkedItemsToBuy,
   totalItems,
   hiddenAtHomeCount,
+  hiddenAtHomeItems,
   showAddItem,
   deleteMode,
   reorderMode,
@@ -290,7 +280,10 @@ export const StatsCard = ({
         />
       )}
 
-      <ItemsAtHomeIndicator hiddenAtHomeCount={hiddenAtHomeCount} />
+      <ItemsAtHomeIndicator
+        hiddenAtHomeCount={hiddenAtHomeCount}
+        hiddenAtHomeItems={hiddenAtHomeItems}
+      />
     </View>
   );
 };

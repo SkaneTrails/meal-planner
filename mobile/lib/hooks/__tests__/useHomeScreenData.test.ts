@@ -51,7 +51,24 @@ vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({ push: mockRouterPush, back: vi.fn() })),
 }));
 
-vi.mock('@/lib/hooks', () => ({
+vi.mock('@/lib/grocery-context', () => ({
+  useGroceryState: vi.fn(() => ({
+    checkedItems: new Set<string>(),
+    selectedMealKeys: [],
+    customItems: [],
+    refreshFromApi: mockRefreshFromApi,
+  })),
+}));
+
+vi.mock('@/lib/hooks/use-meal-plan', () => ({
+  useMealPlan: vi.fn(() => ({
+    data: mockMealPlan,
+    isLoading: false,
+    refetch: mockRefetchMealPlan,
+  })),
+}));
+
+vi.mock('@/lib/hooks/use-recipes', () => ({
   useAllRecipes: vi.fn(() => ({
     recipes: allRecipes,
     totalCount: allRecipes.length,
@@ -59,17 +76,6 @@ vi.mock('@/lib/hooks', () => ({
     refetch: mockRefetchRecipes,
   })),
   useMealPlanRecipes: vi.fn((recipes: Recipe[]) => Object.fromEntries(recipes.map((r) => [r.id, r]))),
-  useMealPlan: vi.fn(() => ({
-    data: mockMealPlan,
-    isLoading: false,
-    refetch: mockRefetchMealPlan,
-  })),
-  useGroceryState: vi.fn(() => ({
-    checkedItems: new Set<string>(),
-    selectedMealKeys: [],
-    customItems: [],
-    refreshFromApi: mockRefreshFromApi,
-  })),
 }));
 
 vi.mock('@/lib/settings-context', () => ({

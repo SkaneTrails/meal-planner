@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { SettingToggleRow } from '@/components';
+import { SettingToggleRow } from '@/components/SettingToggleRow';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

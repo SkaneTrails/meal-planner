@@ -3,15 +3,35 @@
  *
  * Extracted from index.ts to break the circular dependency:
  * use-auth → i18n/index → settings-context → use-auth
+ *
+ * Non-English locales are loaded dynamically to reduce initial bundle size.
  */
 
 import type { AppLanguage } from '@/lib/language-state';
 import type { Translations } from './locales/en';
 import en from './locales/en';
-import it from './locales/it';
-import sv from './locales/sv';
 
-export const locales: Record<AppLanguage, Translations> = { en, sv, it };
+const localeCache: Partial<Record<AppLanguage, Translations>> = { en };
+
+export const getLocale = async (
+  language: AppLanguage,
+): Promise<Translations> => {
+  if (localeCache[language]) return localeCache[language];
+  if (language === 'sv') {
+    const mod = await import('./locales/sv');
+    localeCache.sv = mod.default;
+    return mod.default;
+  }
+  if (language === 'it') {
+    const mod = await import('./locales/it');
+    localeCache.it = mod.default;
+    return mod.default;
+  }
+  return en;
+};
+
+export const getLocaleSync = (language: AppLanguage): Translations =>
+  localeCache[language] ?? en;
 
 /**
  * Resolve a dot-separated key path (e.g. "recipe.deleteConfirm") to its
@@ -50,13 +70,14 @@ export type TFunction = (
 /**
  * Standalone translate function for use outside React component tree.
  * Falls back to English when the key is missing in the given language.
+ * Uses cached locale (loaded synchronously if already fetched, else English fallback).
  */
 export const translateStandalone = (
   language: AppLanguage,
   key: string,
   params?: Record<string, string | number>,
 ): string => {
-  const translations = locales[language] ?? en;
+  const translations = getLocaleSync(language);
   const value = resolve(translations, key);
   if (value != null && value !== '') {
     return interpolate(value, params);

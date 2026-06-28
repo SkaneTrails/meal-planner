@@ -16,13 +16,10 @@ import React, {
 } from 'react';
 import { showAlert } from '@/lib/alert';
 import { api } from '@/lib/api';
-import {
-  groceryKeys,
-  useAllRecipes,
-  useGroceryState,
-  useMealPlan,
-  useStoreOrder,
-} from '@/lib/hooks';
+import { useGroceryState } from '@/lib/grocery-context';
+import { groceryKeys, useStoreOrder } from '@/lib/hooks/use-grocery';
+import { useMealPlan } from '@/lib/hooks/use-meal-plan';
+import { useAllRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { GroceryItem } from '@/lib/types';
@@ -30,6 +27,14 @@ import {
   aggregateIngredients,
   EXTRAS_KEY_PREFIX,
 } from '@/lib/utils/groceryAggregator';
+
+/** Strip leading digits, fractions, and whitespace, then lowercase for sort matching. */
+function stripQuantity(name: string): string {
+  return name
+    .replace(/^[\d\s.,/½⅓⅔¼¾⅛]+/, '')
+    .trim()
+    .toLowerCase();
+}
 
 export const useGroceryScreen = () => {
   const {
@@ -67,7 +72,8 @@ export const useGroceryScreen = () => {
   const { isItemAtHome, activeStoreId } = useSettings();
   const { data: mealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
-  const { data: storeOrderData } = useStoreOrder(activeStoreId);
+  const { data: storeOrderData, isPlaceholderData: isStoreOrderPlaceholder } =
+    useStoreOrder(activeStoreId);
 
   const isGeneratedItemAtHome = useCallback(
     (item: GroceryItem) =>
@@ -182,19 +188,27 @@ export const useGroceryScreen = () => {
     const effectiveOrder = storeOrder.length > 0 ? storeOrder : itemOrder;
 
     if (effectiveOrder.length === 0) return unordered;
-    const orderIndex = new Map(effectiveOrder.map((name, i) => [name, i]));
+    const orderIndex = new Map(
+      effectiveOrder.map((name, i) => [stripQuantity(name), i]),
+    );
     return [...unordered].sort((a, b) => {
-      const ai = orderIndex.get(a.name) ?? Number.MAX_SAFE_INTEGER;
-      const bi = orderIndex.get(b.name) ?? Number.MAX_SAFE_INTEGER;
+      const ai =
+        orderIndex.get(stripQuantity(a.name)) ?? Number.MAX_SAFE_INTEGER;
+      const bi =
+        orderIndex.get(stripQuantity(b.name)) ?? Number.MAX_SAFE_INTEGER;
       return ai - bi;
     });
   }, [groceryListWithChecked.items, itemOrder, storeOrderData]);
 
   const pickedItems = useMemo(() => {
     const checked = groceryListWithChecked.items.filter((item) => item.checked);
-    const tickIndex = new Map(tickSequence.map((name, i) => [name, i]));
+    const tickIndex = new Map(
+      tickSequence.map((name, i) => [stripQuantity(name), i]),
+    );
     return [...checked].sort(
-      (a, b) => (tickIndex.get(a.name) ?? -1) - (tickIndex.get(b.name) ?? -1),
+      (a, b) =>
+        (tickIndex.get(stripQuantity(a.name)) ?? -1) -
+        (tickIndex.get(stripQuantity(b.name)) ?? -1),
     );
   }, [groceryListWithChecked.items, tickSequence]);
 
@@ -203,6 +217,48 @@ export const useGroceryScreen = () => {
       toggleItem(itemName);
     },
     [toggleItem],
+  );
+
+  const handleItemRename = useCallback(
+    (oldName: string, newName: string) => {
+      if (oldName === newName) return;
+
+      const allNames = groceryListWithChecked.items.map((i) => i.name);
+      if (
+        allNames.some(
+          (n) => n !== oldName && n.toLowerCase() === newName.toLowerCase(),
+        )
+      )
+        return;
+
+      const isCustom = contextCustomItems.some((ci) => ci.name === oldName);
+      if (isCustom) {
+        setContextCustomItems(
+          contextCustomItems.map((ci) =>
+            ci.name === oldName ? { ...ci, name: newName } : ci,
+          ),
+        );
+      } else {
+        setRemovedItems([...removedItems, oldName]);
+        setContextCustomItems([
+          ...contextCustomItems,
+          { name: newName, category: 'other' },
+        ]);
+      }
+
+      if (itemOrder.includes(oldName)) {
+        setItemOrder(itemOrder.map((n) => (n === oldName ? newName : n)));
+      }
+    },
+    [
+      contextCustomItems,
+      groceryListWithChecked.items,
+      removedItems,
+      itemOrder,
+      setContextCustomItems,
+      setRemovedItems,
+      setItemOrder,
+    ],
   );
 
   const toggleDeleteItem = useCallback((itemName: string) => {
@@ -241,7 +297,7 @@ export const useGroceryScreen = () => {
       const reorderedNames = items.map((i) => i.name);
       setItemOrder(reorderedNames);
 
-      if (activeStoreId) {
+      if (activeStoreId && !isStoreOrderPlaceholder) {
         const existingOrder = storeOrderData?.item_order ?? [];
         const reorderedSet = new Set(reorderedNames);
         const preserved = existingOrder.filter(
@@ -253,14 +309,16 @@ export const useGroceryScreen = () => {
           item_order: merged,
         });
 
-        api.setStoreOrder(activeStoreId, merged).catch(() => {
-          queryClient.setQueryData(groceryKeys.storeOrder(activeStoreId), {
-            item_order: existingOrder,
-          });
-        });
+        api.setStoreOrder(activeStoreId, merged).catch(() => {});
       }
     },
-    [setItemOrder, activeStoreId, storeOrderData, queryClient],
+    [
+      setItemOrder,
+      activeStoreId,
+      isStoreOrderPlaceholder,
+      storeOrderData,
+      queryClient,
+    ],
   );
 
   const MIN_TICK_SEQUENCE_LENGTH = 2;
@@ -305,7 +363,11 @@ export const useGroceryScreen = () => {
 
     showAlert(t('grocery.clearPicked'), t('grocery.clearPickedMessage'), [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('grocery.clear'), style: 'destructive', onPress: doClear },
+      {
+        text: t('grocery.clearPickedConfirm'),
+        style: 'destructive',
+        onPress: doClear,
+      },
     ]);
   }, [
     activeStoreId,
@@ -385,8 +447,17 @@ export const useGroceryScreen = () => {
   const checkedCount = checkedItems.size;
 
   const hiddenAtHomeCount = useMemo(
-    () => groceryListWithChecked.items.filter(isGeneratedItemAtHome).length,
-    [groceryListWithChecked.items, isGeneratedItemAtHome],
+    () => visibleGeneratedItems.filter(isGeneratedItemAtHome).length,
+    [visibleGeneratedItems, isGeneratedItemAtHome],
+  );
+
+  const hiddenAtHomeItems = useMemo(
+    () =>
+      visibleGeneratedItems
+        .filter(isGeneratedItemAtHome)
+        .map((item) => item.name)
+        .sort((left, right) => left.localeCompare(right)),
+    [visibleGeneratedItems, isGeneratedItemAtHome],
   );
 
   const itemsToBuy = totalItems - hiddenAtHomeCount;
@@ -421,6 +492,7 @@ export const useGroceryScreen = () => {
     totalItems,
     checkedCount,
     hiddenAtHomeCount,
+    hiddenAtHomeItems,
     itemsToBuy,
     checkedItemsToBuy,
     uncheckedItems,
@@ -429,6 +501,7 @@ export const useGroceryScreen = () => {
     mealPlanItemNames,
     manualItemNames,
     handleItemToggle,
+    handleItemRename,
     handleAddItem,
     toggleDeleteItem,
     handleToggleAddItem,

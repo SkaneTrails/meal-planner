@@ -1,5 +1,6 @@
 """Grocery list API endpoints."""
 
+import re
 from datetime import UTC, date, datetime, timedelta
 from typing import Annotated
 
@@ -28,6 +29,25 @@ from api.storage.store_order_storage import get_store_order, save_store_order
 router = APIRouter(prefix="/grocery", tags=["grocery"])
 
 _MEAL_KEY_PARTS = 2
+
+_LEADING_QUANTITY_RE = re.compile(r"^[\d\s.,/½⅓⅔¼¾⅛]+")
+
+
+def _normalize_item_name(name: str) -> str:
+    """Strip leading quantity and lowercase an item name for order matching."""
+    return _LEADING_QUANTITY_RE.sub("", name).strip().lower()
+
+
+def _dedupe_normalize(items: list[str]) -> list[str]:
+    """Normalize (strip quantity + lowercase) and deduplicate item names."""
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        normalized = _normalize_item_name(item)
+        if normalized and normalized not in seen:
+            seen.add(normalized)
+            result.append(normalized)
+    return result
 
 
 def _get_today() -> date:
@@ -299,9 +319,10 @@ async def learn_store_order(
     Skips the Firestore write entirely when items were already in order.
     """
     household_id = require_household(user)
-    current_order = get_store_order(household_id, store_id)
+    current_order = _dedupe_normalize(get_store_order(household_id, store_id))
+    tick_sequence = _dedupe_normalize(body.tick_sequence)
 
-    updated_order = apply_learned_order(current_order, body.tick_sequence)
+    updated_order = apply_learned_order(current_order, tick_sequence)
     if updated_order != current_order:
         save_store_order(household_id, store_id, updated_order)
         return LearnOrderResponse(updated=True, item_order=updated_order)
@@ -324,5 +345,6 @@ async def set_store_item_order(
     Replaces the entire stored ordering for the given store.
     """
     household_id = require_household(user)
-    save_store_order(household_id, store_id, body.item_order)
-    return StoreOrderResponse(item_order=body.item_order)
+    normalized = _dedupe_normalize(body.item_order)
+    save_store_order(household_id, store_id, normalized)
+    return StoreOrderResponse(item_order=normalized)

@@ -11,12 +11,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import {
-  ContentCard,
-  FullScreenLoading,
-  GradientBackground,
-  Section,
-} from '@/components';
+import { ContentCard } from '@/components/ContentCard';
+import { FullScreenLoading } from '@/components/FullScreenLoading';
+import { GradientBackground } from '@/components/GradientBackground';
 import {
   GeneralSection,
   GroceryStoresSection,
@@ -25,6 +22,7 @@ import {
   ReadOnlyBanner,
   ScreenHeader,
 } from '@/components/household-settings';
+import { Section } from '@/components/Section';
 import { ItemsAtHomeSection, LanguageSection } from '@/components/settings';
 import { showNotification } from '@/lib/alert';
 import { useHouseholdSettingsForm } from '@/lib/hooks/useHouseholdSettingsForm';

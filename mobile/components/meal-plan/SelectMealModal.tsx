@@ -22,14 +22,12 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {
-  ActionButton,
-  BottomSheetModal,
-  Button,
-  IconCircle,
-  RecipeCard,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
+import { IconCircle } from '@/components/IconCircle';
+import { RecipeCard } from '@/components/RecipeCard';
 import { SearchBar } from '@/components/recipes/RecipeFilters';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';

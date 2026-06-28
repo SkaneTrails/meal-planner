@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { ActionButton } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
 import { hapticLight } from '@/lib/haptics';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';

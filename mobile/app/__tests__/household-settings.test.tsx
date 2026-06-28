@@ -12,6 +12,26 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { createQueryWrapper, mockCurrentUser } from '@/test/helpers';
 
+// Mock components that use native APIs (GradientBackground uses Easing animations)
+vi.mock('@/components/GradientBackground', () => ({
+  GradientBackground: ({ children }: any) => children,
+}));
+vi.mock('@/components/ScreenLayout', () => ({
+  ScreenLayout: ({ children }: any) => children,
+}));
+vi.mock('@/components/Section', () => ({
+  Section: ({ title, children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': `section-${title}` }, title, children);
+  },
+}));
+vi.mock('@/components/ContentCard', () => ({
+  ContentCard: ({ children }: any) => {
+    const { createElement } = require('react');
+    return createElement('div', { 'data-testid': 'content-card' }, children);
+  },
+}));
+
 // Control what useLocalSearchParams returns
 const mockSearchParams = { id: 'household-abc' };
 vi.mock('expo-router', async () => ({

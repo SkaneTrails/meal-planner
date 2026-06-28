@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { BottomSheetModal, Button } from '@/components';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
 import { LanguagePicker } from '@/components/settings/LanguagePicker';
 import { useTranslation } from '@/lib/i18n';
 import type { AppLanguage } from '@/lib/settings-context';

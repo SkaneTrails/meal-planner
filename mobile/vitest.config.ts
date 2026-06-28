@@ -73,6 +73,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
+      '@react-native-async-storage/async-storage': path.resolve(
+        __dirname,
+        'test/mocks/async-storage.ts',
+      ),
       'react-native': path.resolve(__dirname, 'test/mocks/react-native.ts'),
       'expo-linear-gradient': path.resolve(
         __dirname,

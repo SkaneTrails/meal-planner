@@ -1,5 +1,7 @@
 import { Text, View } from 'react-native';
-import { BouncingLoader, Button, GradientBackground } from '@/components';
+import { BouncingLoader } from '@/components/BouncingLoader';
+import { Button } from '@/components/Button';
+import { GradientBackground } from '@/components/GradientBackground';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

@@ -1,5 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
-import { ActionButton, BottomSheetModal, Button } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

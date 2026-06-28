@@ -10,16 +10,15 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Image, Text, TextInput, View } from 'react-native';
-import {
-  ActionButton,
-  BottomSheetModal,
-  Button,
-  FormField,
-  NumericField,
-} from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { BottomSheetModal } from '@/components/BottomSheetModal';
+import { Button } from '@/components/Button';
+import { FormField } from '@/components/FormField';
+import { NumericField } from '@/components/NumericField';
 import { showNotification } from '@/lib/alert';
 import { api } from '@/lib/api';
-import { useCreateRecipe, useImagePicker } from '@/lib/hooks';
+import { useCreateRecipe } from '@/lib/hooks/use-recipes';
+import { useImagePicker } from '@/lib/hooks/useImagePicker';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 

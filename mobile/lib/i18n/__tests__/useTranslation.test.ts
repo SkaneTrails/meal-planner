@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useTranslation } from '../index';
 
 // The setup.ts mock already provides useSettings with language: 'en'.
@@ -71,7 +71,7 @@ describe('useTranslation', () => {
     expect(result.current.t('nonexistent.key')).toBe('nonexistent.key');
   });
 
-  it('returns Swedish strings when language is sv', () => {
+  it('returns Swedish strings when language is sv', async () => {
     mockUseSettings.mockReturnValue({
       settings: { language: 'sv', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [], includeBreakfast: false },
       weekStart: 'monday',
@@ -91,11 +91,13 @@ describe('useTranslation', () => {
     });
 
     const { result } = renderHook(() => useTranslation());
-    expect(result.current.t('common.cancel')).toBe('Avbryt');
+    await waitFor(() => {
+      expect(result.current.t('common.cancel')).toBe('Avbryt');
+    });
     expect(result.current.language).toBe('sv');
   });
 
-  it('returns Italian strings when language is it', () => {
+  it('returns Italian strings when language is it', async () => {
     mockUseSettings.mockReturnValue({
       settings: { language: 'it', itemsAtHome: [], favoriteRecipes: [], showHiddenRecipes: false, weekStart: 'monday', aiEnabled: true, noteSuggestions: [], includeBreakfast: false },
       weekStart: 'monday',
@@ -115,7 +117,9 @@ describe('useTranslation', () => {
     });
 
     const { result } = renderHook(() => useTranslation());
-    expect(result.current.t('common.cancel')).toBe('Annulla');
+    await waitFor(() => {
+      expect(result.current.t('common.cancel')).toBe('Annulla');
+    });
     expect(result.current.language).toBe('it');
   });
 

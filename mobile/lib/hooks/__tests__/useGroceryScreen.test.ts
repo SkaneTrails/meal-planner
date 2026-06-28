@@ -59,15 +59,24 @@ const mockRecipes: Recipe[] = [];
 
 let mockStoreOrderData: { item_order: string[] } | undefined = undefined;
 
-vi.mock('@/lib/hooks', () => ({
-  useMealPlan: vi.fn(() => ({ data: mockMealPlan, isLoading: false })),
-  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
+vi.mock('@/lib/grocery-context', () => ({
   useGroceryState: vi.fn(() => mockContextState),
-  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData })),
+}));
+
+vi.mock('@/lib/hooks/use-grocery', () => ({
   groceryKeys: {
     all: ['grocery'] as const,
     storeOrder: (storeId: string) => ['grocery', 'storeOrder', storeId] as const,
   },
+  useStoreOrder: vi.fn(() => ({ data: mockStoreOrderData, isPlaceholderData: !mockStoreOrderData })),
+}));
+
+vi.mock('@/lib/hooks/use-meal-plan', () => ({
+  useMealPlan: vi.fn(() => ({ data: mockMealPlan, isLoading: false })),
+}));
+
+vi.mock('@/lib/hooks/use-recipes', () => ({
+  useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
 }));
 
 let focusCallbacks: (() => (() => void) | void)[] = [];
@@ -818,7 +827,7 @@ describe('useGroceryScreen', () => {
       expect(mockSetItemOrder).toHaveBeenCalledWith(['eggs', 'bread', 'milk']);
     });
 
-    it('saves to store order when active store is set, preserving hidden items', async () => {
+    it('persists reordered store order to API when store is active', async () => {
       const { useSettings } = await import('@/lib/settings-context');
       vi.mocked(useSettings).mockReturnValue({
         isItemAtHome: vi.fn(() => false),
@@ -838,7 +847,10 @@ describe('useGroceryScreen', () => {
         ]);
       });
 
-      expect(mockSetStoreOrder).toHaveBeenCalledWith('store_1', ['bread', 'eggs', 'cheese', 'butter']);
+      expect(mockSetStoreOrder).toHaveBeenCalledWith(
+        'store_1',
+        ['bread', 'eggs', 'cheese', 'butter'],
+      );
       expect(mockSetQueryData).toHaveBeenCalledWith(
         ['grocery', 'storeOrder', 'store_1'],
         { item_order: ['bread', 'eggs', 'cheese', 'butter'] },
@@ -876,6 +888,128 @@ describe('useGroceryScreen', () => {
 
       expect(result.current.uncheckedItems[0].name).toBe('milk');
       expect(result.current.uncheckedItems.length).toBe(3);
+    });
+
+    it('matches store order case-insensitively', () => {
+      mockStoreOrderData = { item_order: ['Milk', 'Bread', 'Eggs'] };
+      mockContextState.customItems = [
+        { name: 'bread', category: 'bakery' },
+        { name: 'eggs', category: 'dairy' },
+        { name: 'milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems.map((i) => i.name)).toEqual([
+        'milk',
+        'bread',
+        'eggs',
+      ]);
+    });
+
+    it('strips leading quantities when matching sort order', () => {
+      mockStoreOrderData = { item_order: ['onion', 'garlic', 'tomato'] };
+      mockContextState.customItems = [
+        { name: '2 onion', category: 'produce' },
+        { name: '3 tomato', category: 'produce' },
+        { name: '1 garlic', category: 'produce' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.uncheckedItems.map((i) => i.name)).toEqual([
+        '2 onion',
+        '1 garlic',
+        '3 tomato',
+      ]);
+    });
+  });
+
+  describe('handleItemRename', () => {
+    it('renames a custom item in-place', () => {
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'oat milk');
+      });
+
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'oat milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ]);
+    });
+
+    it('removes generated item and adds new custom item', () => {
+      mockContextState.customItems = [];
+      mockContextState.removedItems = [];
+      mockContextState.selectedMealKeys = ['mon_dinner_r1'];
+      mockRecipes.length = 0;
+      mockRecipes.push({
+        id: 'r1',
+        title: 'Pasta',
+        ingredients: [{ text: 'onion' }],
+      } as unknown as Recipe);
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('onion', 'red onion');
+      });
+
+      expect(mockSetRemovedItems).toHaveBeenCalledWith(['onion']);
+      expect(mockSetCustomItems).toHaveBeenCalledWith([
+        { name: 'red onion', category: 'other' },
+      ]);
+    });
+
+    it('no-ops when renaming to the same name', () => {
+      mockContextState.customItems = [{ name: 'milk', category: 'dairy' }];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'milk');
+      });
+
+      expect(mockSetCustomItems).not.toHaveBeenCalled();
+      expect(mockSetRemovedItems).not.toHaveBeenCalled();
+    });
+
+    it('no-ops when new name already exists in the list', () => {
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'oat milk', category: 'dairy' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'oat milk');
+      });
+
+      expect(mockSetCustomItems).not.toHaveBeenCalled();
+      expect(mockSetRemovedItems).not.toHaveBeenCalled();
+    });
+
+    it('updates itemOrder when renamed item is in order', () => {
+      mockContextState.customItems = [
+        { name: 'milk', category: 'dairy' },
+        { name: 'bread', category: 'bakery' },
+      ];
+      mockContextState.itemOrder = ['bread', 'milk'];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      act(() => {
+        result.current.handleItemRename('milk', 'oat milk');
+      });
+
+      expect(mockSetItemOrder).toHaveBeenCalledWith(['bread', 'oat milk']);
     });
   });
 
@@ -1003,6 +1137,19 @@ describe('useGroceryScreen', () => {
       const { result } = renderHook(() => useGroceryScreen());
 
       expect(result.current.hiddenAtHomeCount).toBe(1);
+    });
+
+    it('hiddenAtHomeItems only includes generated items that are at home', async () => {
+      await mockSettingsWithItemAtHome((name) => name === 'salt' || name === 'pepper');
+      setupMealPlanWithSalt();
+      mockContextState.customItems = [
+        { name: 'salt', category: 'pantry' },
+        { name: 'pepper', category: 'pantry' },
+      ];
+
+      const { result } = renderHook(() => useGroceryScreen());
+
+      expect(result.current.hiddenAtHomeItems).toEqual(['salt']);
     });
 
     it('checkedItemsToBuy includes checked manual items even if they match items at home', async () => {

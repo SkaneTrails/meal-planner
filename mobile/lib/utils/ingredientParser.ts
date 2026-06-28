@@ -29,35 +29,51 @@ const UNICODE_FRACTIONS: Record<string, string> = {
   '⅞': '7/8',
 };
 
-// Common units (metric, imperial, Swedish)
+// Common units (metric, imperial, Swedish, Italian)
 const UNITS = new Set([
   // Volume - metric
   'ml',
   'milliliter',
   'milliliters',
+  'millilitro',
+  'millilitri',
   'l',
   'liter',
   'liters',
+  'litro',
+  'litri',
   'dl',
   'deciliter',
   'deciliters',
+  'decilitro',
+  'decilitri',
   'cl',
   // Volume - imperial
   'tsp',
   'teaspoon',
   'teaspoons',
+  'cucchiaino',
+  'cucchiaini',
   'tbsp',
   'tablespoon',
   'tablespoons',
+  'cucchiaio',
+  'cucchiai',
   'cup',
   'cups',
+  'tazza',
+  'tazze',
   // Weight - metric
   'g',
   'gram',
   'grams',
+  'grammo',
+  'grammi',
   'kg',
   'kilogram',
   'kilograms',
+  'chilogrammo',
+  'chilogrammi',
   'mg',
   // Weight - imperial
   'oz',
@@ -70,10 +86,14 @@ const UNITS = new Set([
   // Count/pieces
   'piece',
   'pieces',
+  'pezzo',
+  'pezzi',
   'slice',
   'slices',
   'clove',
   'cloves',
+  'spicchio',
+  'spicchi',
   'head',
   'heads',
   'bunch',
@@ -84,23 +104,37 @@ const UNITS = new Set([
   'stalks',
   'can',
   'cans',
+  'lattina',
+  'lattine',
   'jar',
   'jars',
+  'barattolo',
+  'barattoli',
   'package',
   'packages',
+  'confezione',
+  'confezioni',
   // Size descriptors
   'small',
   'medium',
   'large',
   'handful',
   'handfuls',
+  'manciata',
+  'manciate',
   'pinch',
   'pinches',
+  'pizzico',
+  'pizzichi',
+  'knippe',
+  'knippen',
   // Swedish units
   'msk',
   'tsk',
   'krm',
   'st',
+  'styck',
+  'stycken',
   'port',
   'portioner',
 ]);
@@ -254,5 +288,16 @@ export function scaleIngredient(
  */
 export function normalizeIngredientName(ingredient: string): string {
   const parsed = parseIngredient(ingredient);
-  return parsed.name.toLowerCase().trim();
+  return parsed.name.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+export function normalizePantryItemName(ingredient: string): string {
+  return normalizeIngredientName(ingredient)
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function normalizePantryMatchKey(ingredient: string): string {
+  return normalizePantryItemName(ingredient).replace(/\s+/g, '');
 }

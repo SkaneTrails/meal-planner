@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native';
-import { IconCircle, Section } from '@/components';
+import { IconCircle } from '@/components/IconCircle';
+import { Section } from '@/components/Section';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, lineHeight, spacing, useTheme } from '@/lib/theme';

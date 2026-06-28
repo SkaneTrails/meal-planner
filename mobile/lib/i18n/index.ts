@@ -8,10 +8,11 @@
  *     // → 'Are you sure you want to delete "Pasta"?'
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSettings } from '@/lib/settings-context';
+import type { Translations } from './locales/en';
 import en from './locales/en';
-import { interpolate, locales, resolve, type TFunction } from './translate';
+import { getLocale, interpolate, resolve, type TFunction } from './translate';
 
 export type { TFunction };
 export { translateStandalone } from './translate';
@@ -22,6 +23,7 @@ export { translateStandalone } from './translate';
  * Falls back to English when:
  *   - the key does not exist in the active locale
  *   - the resolved value is an empty string (stub translation)
+ *   - the locale hasn't finished loading yet
  *
  * If the key is also missing from English, returns the key itself so missing
  * translations are obvious during development.
@@ -29,8 +31,26 @@ export { translateStandalone } from './translate';
 export const useTranslation = () => {
   const { settings } = useSettings();
   const language = settings.language;
+  const [translations, setTranslations] = useState<Translations>(en);
 
-  const translations = useMemo(() => locales[language] ?? en, [language]);
+  useEffect(() => {
+    if (language === 'en') {
+      setTranslations(en);
+      return;
+    }
+    setTranslations(en);
+    let cancelled = false;
+    getLocale(language)
+      .then((locale) => {
+        if (!cancelled) setTranslations(locale);
+      })
+      .catch(() => {
+        if (!cancelled) setTranslations(en);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [language]);
 
   const t: TFunction = useCallback(
     (key: string, params?: Record<string, string | number>): string => {

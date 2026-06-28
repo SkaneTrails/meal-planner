@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { ActionButton, SectionLabel } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { SectionLabel } from '@/components/SectionLabel';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import type { TFunction } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';

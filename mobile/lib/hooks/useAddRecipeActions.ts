@@ -4,10 +4,10 @@ import { showAlert, showNotification } from '@/lib/alert';
 import { ApiClientError, api } from '@/lib/api';
 import {
   useCreateRecipe,
-  useImagePicker,
   useReviewEnhancement,
   useScrapeRecipe,
-} from '@/lib/hooks';
+} from '@/lib/hooks/use-recipes';
+import { useImagePicker } from '@/lib/hooks/useImagePicker';
 import { useTranslation } from '@/lib/i18n';
 import type { DietLabel, MealLabel, Recipe } from '@/lib/types';
 import { extractHostname, isValidUrl } from '@/lib/utils/urlHelpers';

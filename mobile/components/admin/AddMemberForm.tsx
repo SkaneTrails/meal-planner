@@ -1,5 +1,6 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { ActionButton, Button } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { Button } from '@/components/Button';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, fontWeight, spacing, useTheme } from '@/lib/theme';
 

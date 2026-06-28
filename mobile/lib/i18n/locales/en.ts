@@ -450,6 +450,8 @@ const en = {
     itemsSelected: '{{count}} selected',
     dragToReorder: 'Drag to reorder',
     hiddenAtHome: '{{count}} item(s) hidden (at home)',
+    hiddenAtHomeDetails:
+      'These recipe items are hidden because they are marked under Items at Home:\n\n{{items}}\n\nManually added items stay visible.',
     addItemPlaceholder: 'Add an item...',
     addButton: 'Add',
     allStores: 'None',
@@ -461,14 +463,15 @@ const en = {
     selectMealPlanItems: 'Select Recipe Items',
     selectManualItems: 'Select Manual Items',
     clearChecked: 'Uncheck All',
-    clearPicked: 'Clear Picked Items',
-    clearPickedButton: 'Clear Picked',
-    clearPickedMessage:
-      'This will remove picked items from the list and update store sorting.',
+    clearPicked: 'Done Shopping?',
+    clearPickedButton: 'Done Shopping',
+    clearPickedMessage: 'Picked items will be removed from the list.',
+    clearPickedConfirm: 'Done',
     deleteSelected: 'Delete',
     deleteSelectedMessage:
       'This will delete the selected items from your list.',
     selectForDeletion: 'Select {{name}} for deletion',
+    renameItem: 'Rename {{name}}',
     selectAll: 'All',
     clear: 'Clear',
     failedToClearList: 'Failed to clear list',

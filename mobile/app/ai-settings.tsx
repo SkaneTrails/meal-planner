@@ -6,7 +6,8 @@
 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { FullScreenLoading, GradientBackground } from '@/components';
+import { FullScreenLoading } from '@/components/FullScreenLoading';
+import { GradientBackground } from '@/components/GradientBackground';
 import {
   AiSection,
   ReadOnlyBanner,

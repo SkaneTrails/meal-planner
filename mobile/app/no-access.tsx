@@ -5,7 +5,9 @@
 
 import { Redirect, useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
-import { ActionButton, FullScreenLoading, ScreenLayout } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { FullScreenLoading } from '@/components/FullScreenLoading';
+import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { showNotification } from '@/lib/alert';
 import { useCurrentUser } from '@/lib/hooks/use-admin';

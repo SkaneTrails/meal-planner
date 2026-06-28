@@ -88,6 +88,7 @@ interface GroceryListViewProps {
   reorderMode?: boolean;
   deleteSelection?: Set<string>;
   onItemToggle?: (itemName: string, checked: boolean) => void;
+  onItemRename?: (oldName: string, newName: string) => void;
   onToggleDeleteItem?: (itemName: string) => void;
   filterOutItems?: (item: GroceryItem) => boolean;
   onReorder?: (items: GroceryItem[]) => void;
@@ -101,6 +102,7 @@ export const GroceryListView = ({
   reorderMode = false,
   deleteSelection,
   onItemToggle,
+  onItemRename,
   onToggleDeleteItem,
   filterOutItems,
   onReorder,
@@ -190,6 +192,11 @@ export const GroceryListView = ({
         key={item.name}
         item={item}
         onToggle={(checked) => onItemToggle?.(item.name, checked)}
+        onRename={
+          onItemRename
+            ? (newName) => onItemRename(item.name, newName)
+            : undefined
+        }
         selectedForDelete={deleteSelection?.has(item.name)}
         onToggleDeleteSelection={
           onToggleDeleteItem ? () => onToggleDeleteItem(item.name) : undefined

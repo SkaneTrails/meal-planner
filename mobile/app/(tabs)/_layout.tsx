@@ -6,7 +6,7 @@
  */
 
 import { Redirect, Tabs } from 'expo-router';
-import { FullScreenLoading } from '@/components';
+import { FullScreenLoading } from '@/components/FullScreenLoading';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';

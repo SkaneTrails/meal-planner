@@ -1,15 +1,13 @@
 import { Text, View } from 'react-native';
 import type { DropdownOption } from '@/components';
-import {
-  ContentCard,
-  DropdownPicker,
-  IconButton,
-  Section,
-  SectionLabel,
-  SettingToggleRow,
-  StepperControl,
-  ThemedTextInput,
-} from '@/components';
+import { ContentCard } from '@/components/ContentCard';
+import { DropdownPicker } from '@/components/DropdownPicker';
+import { IconButton } from '@/components/IconButton';
+import { Section } from '@/components/Section';
+import { SectionLabel } from '@/components/SectionLabel';
+import { SettingToggleRow } from '@/components/SettingToggleRow';
+import { StepperControl } from '@/components/StepperControl';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { useTranslation } from '@/lib/i18n';
 import { fontSize, spacing, useTheme } from '@/lib/theme';
 import type {

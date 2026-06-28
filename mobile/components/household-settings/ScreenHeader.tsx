@@ -1,5 +1,6 @@
 import { View } from 'react-native';
-import { ActionButton, Button } from '@/components';
+import { ActionButton } from '@/components/ActionButton';
+import { Button } from '@/components/Button';
 import { ScreenHeaderBar } from '@/components/ScreenHeaderBar';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import { useTranslation } from '@/lib/i18n';
