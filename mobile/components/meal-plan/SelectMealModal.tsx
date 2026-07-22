@@ -50,7 +50,7 @@ import {
 } from '@/lib/theme';
 import type { MealType, Recipe } from '@/lib/types';
 import { formatDateLocal, toBcp47 } from '@/lib/utils/dateFormatter';
-
+import { pickWeightedRandom } from '@/lib/utils/weightedRandom';
 export type SelectMealMode =
   | 'library'
   | 'extras'
@@ -506,9 +506,8 @@ const RandomContent = ({
   // Initialize history with first random recipe
   useEffect(() => {
     if (mealTypeRecipes.length > 0 && history.length === 0) {
-      const picked =
-        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
-      setHistory([picked.id]);
+      const picked = pickWeightedRandom(mealTypeRecipes);
+      if (picked) setHistory([picked.id]);
     }
   }, [mealTypeRecipes, history.length]);
 
@@ -525,10 +524,11 @@ const RandomContent = ({
   // refreshed), reset history with a fresh random pick so the UI never blanks.
   useEffect(() => {
     if (!currentRecipe && mealTypeRecipes.length > 0 && history.length > 0) {
-      const picked =
-        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
-      setHistory([picked.id]);
-      setCurrentIndex(0);
+      const picked = pickWeightedRandom(mealTypeRecipes);
+      if (picked) {
+        setHistory([picked.id]);
+        setCurrentIndex(0);
+      }
     }
   }, [currentRecipe, mealTypeRecipes, history.length]);
 
@@ -549,12 +549,9 @@ const RandomContent = ({
 
   const pickNewRandom = useCallback(() => {
     if (mealTypeRecipes.length <= 1) return;
-    let picked: Recipe;
     const lastId = history[history.length - 1];
-    do {
-      picked =
-        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
-    } while (picked.id === lastId && mealTypeRecipes.length > 1);
+    const picked = pickWeightedRandom(mealTypeRecipes, { excludeId: lastId });
+    if (!picked) return;
     const MAX_HISTORY = 50;
     const trimmed = history.slice(
       Math.max(0, currentIndex + 1 - MAX_HISTORY),
@@ -576,8 +573,7 @@ const RandomContent = ({
     }
     // Also prefetch a random candidate for when user shuffles next
     if (mealTypeRecipes.length > 1) {
-      const candidate =
-        mealTypeRecipes[Math.floor(Math.random() * mealTypeRecipes.length)];
+      const candidate = pickWeightedRandom(mealTypeRecipes);
       const url = candidate?.thumbnail_url || candidate?.image_url;
       if (url) Image.prefetch(url);
     }
@@ -895,18 +891,17 @@ const RandomExtrasContent = ({
     if (extrasRecipes.length === 0) return null;
     const existing = extrasRecipes.find((r) => r.id === randomIdRef.current);
     if (existing) return existing;
-    const picked =
-      extrasRecipes[Math.floor(Math.random() * extrasRecipes.length)];
-    randomIdRef.current = picked.id;
+    const picked = pickWeightedRandom(extrasRecipes);
+    randomIdRef.current = picked?.id ?? null;
     return picked;
   }, [extrasRecipes, shuffleCount]);
 
   const shuffleRandom = useCallback(() => {
     if (extrasRecipes.length <= 1) return;
-    let picked: Recipe;
-    do {
-      picked = extrasRecipes[Math.floor(Math.random() * extrasRecipes.length)];
-    } while (picked.id === randomIdRef.current && extrasRecipes.length > 1);
+    const picked = pickWeightedRandom(extrasRecipes, {
+      excludeId: randomIdRef.current,
+    });
+    if (!picked) return;
     randomIdRef.current = picked.id;
     setShuffleCount((c) => c + 1);
   }, [extrasRecipes]);

@@ -2085,6 +2085,38 @@ class TestStreamUniqueRecipes:
 
         assert len(results) == 2
 
+    def test_collects_from_all_queries_even_when_first_fills_target(self) -> None:
+        """A later query's recipes must not be starved when the first query alone
+        can fill the page target.
+
+        Regression: for household users the owned-recipes query and shared-recipes
+        query share the same page. When the owned query has enough recipes to fill
+        the target, the shared query's (newest) recipes were never streamed on the
+        first page and were then skipped by ``start_after`` on later pages, so they
+        never appeared in the list (e.g. random meal picker never surfaced them).
+        """
+        owned_docs = [self._make_mock_doc(f"o{i}") for i in range(3)]
+        shared_docs = [self._make_mock_doc("s1"), self._make_mock_doc("s2")]
+
+        owned_query = MagicMock()
+        owned_query.limit.return_value = owned_query
+        owned_query.start_after.return_value = owned_query
+        owned_query.stream.return_value = iter(owned_docs)
+
+        shared_query = MagicMock()
+        shared_query.limit.return_value = shared_query
+        shared_query.start_after.return_value = shared_query
+        shared_query.stream.return_value = iter(shared_docs)
+
+        results = _stream_unique_recipes(
+            [owned_query, shared_query], cursor_doc=None, target=3, include_duplicates=True
+        )
+
+        ids = {r.id for r in results}
+        assert "s1" in ids
+        assert "s2" in ids
+        assert len([r for r in results if r.id.startswith("o")]) == 3
+
 
 class TestReviewEnhancement:
     """Tests for review_enhancement function."""
