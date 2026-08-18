@@ -234,7 +234,15 @@ def _stream_unique_recipes(
 ) -> list[Recipe]:
     """Stream recipes from queries, deduplicating by ID and optionally by URL.
 
-    Collects up to `target` unique recipes across all queries.
+    Collects up to `target` unique recipes from *each* query independently so
+    every query contributes its newest candidates. The caller merges the
+    results, sorts by (created_at, id) descending, and trims to the page size.
+
+    Giving each query its own budget (rather than filling a single shared budget
+    from the first query) prevents a later query's newest recipes from being
+    starved: without this, the newest shared recipes would never be returned on
+    the first page and would then be skipped by ``start_after`` on later pages.
+
     Fetches in batches to handle URL deduplication correctly — if a batch
     contains many duplicates, subsequent batches are fetched until `target`
     unique recipes are collected or the query is exhausted.
@@ -249,9 +257,10 @@ def _stream_unique_recipes(
         if cursor_doc is not None:
             q = q.start_after(cursor_doc)
 
+        collected = 0
         last_doc = None
         exhausted = False
-        while not exhausted and len(results) < target:
+        while not exhausted and collected < target:
             batch_query = q.limit(batch_size)
             if last_doc is not None:
                 batch_query = q.start_after(last_doc).limit(batch_size)
@@ -270,8 +279,9 @@ def _stream_unique_recipes(
                     continue
 
                 results.append(recipe)
-                if len(results) >= target:
-                    return results
+                collected += 1
+                if collected >= target:
+                    break
 
             if doc_count < batch_size:
                 exhausted = True

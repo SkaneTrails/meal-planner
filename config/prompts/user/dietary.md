@@ -3,12 +3,15 @@
 ## Household
 
 - **Servings per meal**: {target_servings}
+
 <!-- BEGIN:meat_split -->
+
 - **Setup**: {meat_eaters} of {target_servings} portions contain meat, {vegetarians} are vegetarian
 - **Serving style**: Need to serve both meat and vegetarian at the same meal
   <!-- END:meat_split -->
   <!-- BEGIN:vegetarian -->
 - **Setup**: Fully vegetarian household — no meat in any recipe
+
 <!-- END:vegetarian -->
 
 <!-- BEGIN:seafood_ok -->
@@ -25,6 +28,7 @@
 
 - **No fish or seafood** — replace with vegetarian alternatives
 - Also remove seafood-derived condiments (oyster sauce, fish sauce, shrimp paste)
+
 <!-- END:no_seafood -->
 
 <!-- BEGIN:meat_split -->
@@ -71,6 +75,7 @@ For meat proteins NOT handled by Full replacements:
    - If the meat is seasoned with aromatic fats (sesame oil, herb butter) → apply the same fats to the alternative too
    - Mince/ground-meat substitutes are always bland on their own → ALWAYS add soy sauce or bouillon for umami, plus extra oil for browning (see locale cooking guide)
 6. **Preserve texture**: Do not simmer or stew a product whose appeal is a crispy/seared surface (e.g. halloumi, pan-fried Quorn). Add it at the very end, or plate it alongside the sauce
+
 <!-- END:meat_split -->
 
 <!-- BEGIN:vegetarian -->
@@ -82,6 +87,7 @@ For meat proteins NOT handled by Full replacements:
 - If the recipe is already vegetarian, keep it as-is — do NOT add meat
 - Use the replacement products specified in the Ingredient Substitutions section
 - See locale section for specific alternative products available in your region
+
 <!-- END:vegetarian -->
 
 <!-- BEGIN:lactose_free -->
@@ -134,6 +140,7 @@ Use lactose-free alternatives for:
 - **Gratins/browning**: Plant-based cheese melts differently — add breadcrumbs or nutritional yeast for a golden crust
 - **Richness**: Without butter/cream, compensate with quality olive oil, avocado, tahini, or coconut fat for richness
 - **Umami**: Parmesan substitutes lack depth — add miso paste, nutritional yeast, or soy sauce to boost savory flavor
+
 <!-- END:dairy_free -->
 
 ## Fats
@@ -152,6 +159,7 @@ All butter is already replaced above (plant-based margarine or oil). The rules b
 
 - **Butter → margarine** for regular frying where butter flavor doesn't matter
 - **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing
+
 <!-- END:regular_dairy -->
 
 <!-- BEGIN:lactose_free -->
@@ -160,6 +168,7 @@ All butter is already replaced above (plant-based margarine or oil). The rules b
 
 - **Butter → margarine** for regular frying where butter flavor doesn't matter
 - **Keep butter** for: browned butter, butter sauces, herb butter, baking, finishing (butter is very low in lactose)
+
 <!-- END:lactose_free -->
 
 ### Oil
