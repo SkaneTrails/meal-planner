@@ -61,7 +61,7 @@
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.0",
+    "@babel/core": "^8.0.0",
     "@biomejs/biome": "^2.3.14",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
