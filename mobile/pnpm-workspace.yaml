@@ -4,5 +4,6 @@ allowBuilds:
   protobufjs: true
 
 overrides:
+  "brace-expansion@>=5.0.0 <5.0.9": ">=5.0.9"
   "minimatch@>=3.0.0 <3.1.4": ">=3.1.4"
   "rollup@>=4.0.0 <4.59.0": ">=4.59.0"
