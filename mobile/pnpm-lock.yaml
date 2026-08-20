@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  minimatch@>=3.0.0 <3.1.4: '>=3.1.4'
+  rollup@>=4.0.0 <4.59.0: '>=4.59.0'
+
 importers:
 
   .:
