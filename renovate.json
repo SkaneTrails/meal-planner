@@ -99,6 +99,16 @@
       "allowedVersions": "<4.0.0"
     },
     {
+      "description": "Reanimated 4.5 requires React Native Worklets 0.10.x",
+      "matchPackageNames": [
+        "react-native-worklets"
+      ],
+      "matchFileNames": [
+        "mobile/**"
+      ],
+      "allowedVersions": "<0.11.0"
+    },
+    {
       "description": "setup-trivy digest lookup broken post-compromise; pinned to verified SHA",
       "matchPackageNames": [
         "aquasecurity/setup-trivy"
