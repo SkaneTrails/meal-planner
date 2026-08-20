@@ -55,6 +55,7 @@ dev = [
 
 [tool.uv]
 package = false
+constraint-dependencies = [ "starlette<1" ]
 
 [tool.ruff]
 target-version = "py313" # Ruff doesn't support py314 yet, py313 is compatible
@@ -75,6 +76,7 @@ lint.ignore = [
   "ANN401",  # Any type (acceptable for dynamic types)
   "BLE001",  # Blind exception (acceptable with proper error handling)
   "COM812",  # Trailing comma conflicts with formatter
+  "CPY001",  # Missing copyright notice
   "D",       # Docstring rules (enable if needed)
   "E501",    # Line too long (handled by formatter)
   "INP001",  # Implicit namespace package
