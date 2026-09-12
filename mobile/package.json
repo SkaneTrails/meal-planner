@@ -67,10 +67,10 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.2.3",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^5.0.0",
     "jsdom": "^30.0.0",
     "typescript": "~7.0.0",
-    "vitest": "^4.0.18"
+    "vitest": "^5.0.0"
   },
   "private": true,
   "packageManager": "pnpm@11.26.0+sha512.fc0e2bf890b9f983611f1ab68c0637bce914390653699f83c1a78b005ed25f2c81e77920c8fd8eee2ecf0b58b28cdcb00a84d97f69bcf7c56b2f344710238664"
