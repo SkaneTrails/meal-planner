@@ -50,10 +50,10 @@
     "react-dom": "^19.1.0",
     "react-native": "0.86.2",
     "react-native-css-interop": "^0.2.1",
-    "react-native-gesture-handler": "~3.2.0",
-    "react-native-reanimated": "~4.6.0",
-    "react-native-safe-area-context": "~5.9.0",
-    "react-native-screens": "~4.27.0",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-reanimated": "~4.7.0",
+    "react-native-safe-area-context": "~5.10.0",
+    "react-native-screens": "~4.28.0",
     "react-native-svg": "^15.15.1",
     "react-native-web": "^0.21.2",
     "react-native-worklets": "0.10.4",
@@ -65,7 +65,7 @@
     "@biomejs/biome": "^2.3.14",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.0.18",
     "jsdom": "^30.0.0",
@@ -73,5 +73,5 @@
     "vitest": "^4.0.18"
   },
   "private": true,
-  "packageManager": "pnpm@11.25.0+sha512.5cde925b4f075f725eb71fbae18a42ffe784524789f19b61c731cb8721ec28aaee160e01a8d5af4fedb2a42cdbf300efe23db356b0d4a17b4d63e11f8ab7c956"
+  "packageManager": "pnpm@11.28.0+sha512.8ed239371de82244b6cccf9e2023c18ea8439961f2ec3fe898913b9f7ee2e76ca0a45717580aca3c7997c135f6d4f5de4524cbeee1a2ccac430c03d134e2a48c"
 }
