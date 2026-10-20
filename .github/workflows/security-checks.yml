@@ -26,13 +26,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
-      - name: Install lxml build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y libxml2-dev libxslt1-dev
-
       - name: Install dependencies
-        run: uv sync --frozen --all-extras
+        run: uv sync --frozen --all-extras --python 3.14
 
       - name: Generate SBOM
         run: |
