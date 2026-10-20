@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { type ComponentRef, useEffect, useRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { ContentCard } from '@/components/ContentCard';
@@ -20,7 +20,7 @@ export const AddItemCard = ({
 }: AddItemCardProps) => {
   const { colors, fonts, borderRadius, visibility } = useTheme();
   const { t } = useTranslation();
-  const containerRef = useRef<View>(null);
+  const containerRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
     if (!onDismiss) return;

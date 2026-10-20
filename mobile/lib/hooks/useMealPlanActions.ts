@@ -1,5 +1,12 @@
 import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type ComponentRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Animated, PanResponder, type ScrollView } from 'react-native';
 import type { MealTypeOption } from '@/components/meal-plan/meal-plan-constants';
 import { showConfirmDelete } from '@/components/meal-plan/meal-plan-constants';
@@ -84,7 +91,7 @@ export const useMealPlanActions = () => {
   const [modalDate, setModalDate] = useState('');
   const [modalMealType, setModalMealType] = useState<MealType>('dinner');
   const [modalInitialText, setModalInitialText] = useState('');
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const todayY = useRef(0);
   const jumpButtonOpacity = useRef(new Animated.Value(0)).current;
   const swipeTranslateX = useRef(new Animated.Value(0)).current;

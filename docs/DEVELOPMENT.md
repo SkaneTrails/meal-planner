@@ -44,6 +44,22 @@ uv run uvicorn api.main:app --reload --reload-dir api --reload-dir config --port
 
 ### Mobile App
 
+The app uses Expo SDK 58, React Native 0.88.0, and React 19.3.0. Use Expo's installer
+to keep native libraries and build tools compatible rather than upgrading them independently:
+
+```bash
+cd mobile
+pnpm exec expo install --check
+# After changing the Expo SDK version:
+pnpm exec expo install --fix --pnpm
+```
+
+Expo 58 requires the explicit `expo/tsconfig.base.json` extension in `tsconfig.json`.
+After an SDK upgrade, run type-checking, coverage, and a web export, and test an
+iOS/Android development build on a device. Unit tests mock native modules and do not
+establish native compatibility. Expo's installer also registers required config
+plugins, such as `expo-font`.
+
 ```bash
 cd mobile
 pnpm install

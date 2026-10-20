@@ -91,7 +91,7 @@ export const RecipeGrid = ({
       }}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
-      ListHeaderComponent={listHeader}
+      ListHeaderComponent={listHeader ?? undefined}
       ListHeaderComponentStyle={{ alignSelf: 'stretch' }}
       refreshControl={
         <RefreshControl
@@ -121,7 +121,7 @@ export const RecipeGrid = ({
           <View style={{ paddingVertical: 20, alignItems: 'center' }}>
             <ActivityIndicator size="small" color={colors.text.secondary} />
           </View>
-        ) : null
+        ) : undefined
       }
     />
   );

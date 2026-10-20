@@ -131,7 +131,9 @@ export default function MealPlanScreen() {
             refreshControl={
               <RefreshControl
                 refreshing={mealPlanLoading}
-                onRefresh={() => refetchMealPlan()}
+                onRefresh={async () => {
+                  await refetchMealPlan();
+                }}
                 tintColor={colors.accent}
               />
             }

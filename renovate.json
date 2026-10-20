@@ -99,14 +99,14 @@
       "allowedVersions": "<4.0.0"
     },
     {
-      "description": "Reanimated 4.5 requires React Native Worklets 0.10.x",
+      "description": "Expo 58 and Reanimated 4.7 require React Native Worklets 0.13.x",
       "matchPackageNames": [
         "react-native-worklets"
       ],
       "matchFileNames": [
         "mobile/**"
       ],
-      "allowedVersions": "<0.11.0"
+      "allowedVersions": ">=0.13.0 <0.14.0"
     },
     {
       "description": "setup-trivy digest lookup broken post-compromise; pinned to verified SHA",

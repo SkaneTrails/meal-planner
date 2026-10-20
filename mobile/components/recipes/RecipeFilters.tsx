@@ -19,7 +19,7 @@ interface SearchBarProps {
   onFocus?: () => void;
   onBlur?: () => void;
   onClear?: () => void;
-  searchInputRef?: React.RefObject<TextInput | null>;
+  searchInputRef?: React.RefObject<React.ComponentRef<typeof TextInput> | null>;
   placeholder?: string;
   t: TFunction;
 }

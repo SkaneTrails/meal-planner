@@ -3,7 +3,14 @@
  */
 
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type ComponentRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Platform,
   Pressable,
@@ -144,7 +151,7 @@ export default function RecipesScreen() {
   const [showSortPicker, setShowSortPicker] = useState(false);
   const [showMealTypePicker, setShowMealTypePicker] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const searchInputRef = useRef<TextInput>(null);
+  const searchInputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   const debouncedSearch = useDebouncedValue(searchQuery);
   const apiSearch =
