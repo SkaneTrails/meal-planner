@@ -2,7 +2,7 @@
  * Individual grocery item row with checkbox, quantity display, and optional drag handle.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { type ComponentRef, useEffect, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { ThemeIcon } from '@/components/ThemeIcon';
 import { hapticSelection } from '@/lib/haptics';
@@ -70,7 +70,7 @@ export const GroceryItemRow = ({
   const [checked, setChecked] = useState(item.checked);
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.name);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   // Sync with prop when parent updates (e.g., Firestore refresh, new items generated)
   useEffect(() => {

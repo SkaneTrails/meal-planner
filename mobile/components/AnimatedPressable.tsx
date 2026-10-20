@@ -204,11 +204,13 @@ export const AnimatedPressable = ({
     };
   };
 
-  const removeFlexStyle = (styleObj: StyleProp<ViewStyle>): ViewStyle => {
+  const removeFlexStyle = (
+    styleObj: StyleProp<ViewStyle>,
+  ): StyleProp<ViewStyle> => {
     // Flatten style arrays to handle style={[...styles]} properly
     const flattened = StyleSheet.flatten(styleObj);
     if (!flattened || typeof flattened !== 'object') {
-      return flattened as ViewStyle;
+      return flattened;
     }
     // Keep width/height on inner view for proper sizing, only remove flex participation props
     const {

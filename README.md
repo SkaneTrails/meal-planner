@@ -71,6 +71,8 @@ No credit card surprises — the Terraform configuration is designed to stay wit
 | Scraper        | Google Cloud Function | Serverless recipe extraction        |
 | Infrastructure | Terraform, GCP        | Firestore, Cloud Run, Cloud Storage |
 
+The mobile app uses Expo SDK 58 with React Native 0.88 and React 19.3. Keep native dependencies aligned with Expo's supported versions; see the [development guide](docs/DEVELOPMENT.md#mobile-app).
+
 ## AI-Assisted Development
 
 The project includes [GitHub Copilot](https://github.com/features/copilot) configuration to assist with development. Custom instructions, domain-specific skills, and coding conventions are defined in `.github/` — but none of it is required to contribute. It's there to help, not gatekeep. The configuration has been developed and tested with Claude Opus 4.6; other models may not follow the instructions as reliably.

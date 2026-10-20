@@ -109,7 +109,9 @@ export default function AdminScreen() {
           refreshControl={
             <RefreshControl
               refreshing={householdsLoading}
-              onRefresh={() => refetchHouseholds()}
+              onRefresh={async () => {
+                await refetchHouseholds();
+              }}
               tintColor={colors.primary}
             />
           }

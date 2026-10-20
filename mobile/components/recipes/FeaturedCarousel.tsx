@@ -5,15 +5,8 @@
  * row of recipe cards that can be scrolled sideways.
  */
 
-import { useCallback, useRef, useState } from 'react';
-import {
-  Platform,
-  Pressable,
-  type ScrollView as RNScrollView,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { type ComponentRef, useCallback, useRef, useState } from 'react';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { ContentCard } from '@/components/ContentCard';
 import { RecipeCard } from '@/components/RecipeCard';
 import { ThemeIcon } from '@/components/ThemeIcon';
@@ -85,7 +78,7 @@ export const FeaturedCarousel = ({
   t,
 }: FeaturedCarouselProps) => {
   const { fonts, colors, borderRadius } = useTheme();
-  const scrollRef = useRef<RNScrollView>(null);
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentWidth, setContentWidth] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);

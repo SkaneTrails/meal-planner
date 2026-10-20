@@ -42,7 +42,8 @@
           "photosPermission": "Allow Meal Planner to access your photos to set recipe images.",
           "cameraPermission": "Allow Meal Planner to use your camera to take recipe photos."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
