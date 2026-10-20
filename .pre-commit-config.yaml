@@ -31,6 +31,11 @@ repos:
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: check-yaml
+        exclude: ^mobile/pnpm-lock\.yaml$
+      - id: check-yaml
+        name: check pnpm lockfile yaml
+        files: ^mobile/pnpm-lock\.yaml$
+        args: [--allow-multiple-documents]
       - id: check-toml
       - id: check-json
       - id: check-symlinks
