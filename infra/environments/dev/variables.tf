@@ -33,6 +33,22 @@ variable "oauth_secrets_exist" {
   default     = false
 }
 
+# Android app (native Google Sign-In on Google Play builds)
+variable "android_package_name" {
+  description = "Android application ID; must equal expo.android.package in mobile/app.json and the app in Google Play"
+  type        = string
+}
+
+variable "android_sha1_hashes" {
+  description = "SHA-1 fingerprints (lowercase hex, no colons): Play app signing key (Play Console > Protected with Play > Manage Play app signing)"
+  type        = list(string)
+}
+
+variable "android_sha256_hashes" {
+  description = "SHA-256 fingerprints (lowercase hex, no colons) matching android_sha1_hashes"
+  type        = list(string)
+}
+
 # GitHub repository info for Workload Identity Federation
 variable "github_repository_owner" {
   description = "GitHub repository owner (organization or user)"

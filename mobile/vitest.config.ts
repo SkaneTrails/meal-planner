@@ -42,8 +42,8 @@ export default defineConfig({
         'lib/query-provider.tsx',
         // Barrel re-exports
         'lib/hooks/index.ts',
-        // Firebase auth integration — depends on Firebase SDK, Google Sign-In,
-        // expo-auth-session; would require mocking the entire auth flow
+        // Firebase auth integration — depends on the Firebase SDK and native
+        // Google Sign-In; would require mocking the entire auth flow
         'lib/hooks/use-auth.tsx',
         // React Query hooks wrapping API calls — testing only verifies
         // React Query + mock API wiring, not application logic

@@ -4,8 +4,7 @@
  */
 
 // NOTE: For web, we use Firebase's native signInWithPopup which handles popup
-// communication correctly. The expo-web-browser maybeCompleteAuthSession is only
-// needed for native platforms using expo-auth-session.
+// communication correctly. Native platforms use @react-native-google-signin.
 
 import { NotoEmoji_400Regular } from '@expo-google-fonts/noto-emoji';
 import AsyncStorage from '@react-native-async-storage/async-storage';

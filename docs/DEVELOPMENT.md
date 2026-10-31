@@ -136,11 +136,11 @@ cp .env.example .env.development
 
 Without Firebase/OAuth values, the app runs in dev mode with a mock user (`dev@localhost`).
 
-| Variable                         | Required | Description                                |
-| -------------------------------- | -------- | ------------------------------------------ |
-| `EXPO_PUBLIC_API_URL`            | Yes      | API URL (default: `http://localhost:8000`) |
-| `EXPO_PUBLIC_FIREBASE_*`         | No\*     | Firebase config for authentication         |
-| `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` | No\*     | OAuth client IDs for Google Sign-In        |
+| Variable                           | Required | Description                                             |
+| ---------------------------------- | -------- | ------------------------------------------------------- |
+| `EXPO_PUBLIC_API_URL`              | Yes      | API URL (default: `http://localhost:8000`)              |
+| `EXPO_PUBLIC_FIREBASE_*`           | No\*     | Firebase config for authentication                      |
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | No\*     | OAuth web client ID for Google Sign-In (web and native) |
 
 **\*Authentication in dev mode:** If Firebase/OAuth credentials are not configured, the app runs in "dev mode" with a mock authenticated user (`dev@localhost`). This allows local development without setting up Firebase.
 
@@ -157,12 +157,11 @@ To enable real authentication:
    - Project Settings > General > Your apps > Add Web app
    - Copy the config values to your `.env.development`
 
-3. **Get OAuth Client IDs**
+3. **Get the OAuth web client ID**
    - Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs & Services > Credentials
-   - Create OAuth 2.0 Client IDs for:
-     - Web application (for Expo web)
-     - iOS (for iOS builds)
-     - Android (for Android builds)
+   - Use the Web application client (also in Secret Manager as `meal-planner_oauth_client_id`)
+   - Android and iOS use the same ID; Android also needs its package and signing key
+     registered (see Android Release Pipeline)
 
 4. **Configure Authorized Domains**
    - In Firebase Console > Authentication > Settings > Authorized domains
@@ -438,7 +437,9 @@ manual run from the Actions tab. The Android `versionCode` is incremented by EAS
    EAS keeps one keystore per package name, so never change it after the first upload.
 
 1. **Build-time variables** - cloud builds never see the gitignored `mobile/.env*` files.
-   Fill in `mobile/.env.production` (API URL: `terraform output cloud_run_url`), then:
+   Fill in `mobile/.env.production` with real values, not the `.env.example` placeholders
+   (the Firebase values, API URL and web client ID are in Secret Manager as
+   `github_EXPO_PUBLIC_*` and `meal-planner_oauth_client_id`), then:
 
    ```bash
    eas env:push production --path .env.production
@@ -494,12 +495,27 @@ manual run from the Actions tab. The Android `versionCode` is incremented by EAS
    Then in Play Console, **Users and permissions > Invite new users**: add the service
    account email with permission to release to testing tracks for this app.
 
-1. **Google sign-in on Play-installed builds** - the app signs in with
-   `expo-auth-session` and `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, an Android OAuth client
-   bound to the package name and a signing certificate SHA-1. Testers get a copy that
-   Google re-signs, so the client needs the **Play app signing key** SHA-1 (Play Console:
-   Test and release > App integrity > Play app signing). The client must be for
-   `com.aroma.mealplanner`; one created for an earlier package name does not work.
+1. **Google sign-in on Play-installed builds** - native sign-in uses
+   `@react-native-google-signin/google-signin` with the web client ID, but Google also
+   requires an Android OAuth client for the package and signing certificate. Terraform
+   registers the app in Firebase (`google_firebase_android_app` in `infra/modules/firebase`)
+   and Firebase creates that client itself. Testers get a copy that Google re-signs, so the
+   fingerprints are those of the **Play app signing key** (Play Console: Protected with
+   Play > Play Store protection > Manage Play app signing > App signing key; or download
+   the "Signed, universal APK" under Test and release > Latest releases and bundles >
+   Downloads and run `keytool -printcert -jarfile <apk>`). Put them in
+   `infra/environments/dev/terraform.tfvars` as lowercase hex without colons:
+
+   ```hcl
+   android_package_name  = "com.aroma.mealplanner"
+   android_sha1_hashes   = ["<play-app-signing-sha1>"]
+   android_sha256_hashes = ["<play-app-signing-sha256>"]
+   ```
+
+   CI rebuilds `terraform.tfvars` from the `TF_VARS_FILE` secret, so after any change run
+   `infra/environments/dev/scripts/sync-access-secrets.ps1` (or `.sh`); otherwise plan and
+   apply fail on the missing variables. Then check that **APIs & Services > Credentials**
+   lists an auto-created "Android client for com.aroma.mealplanner".
 
 After setup, a release is one command: `git tag v1.0.1 && git push origin v1.0.1`.
 To widen the beta later, change `submit.production.android.track` in `mobile/eas.json`

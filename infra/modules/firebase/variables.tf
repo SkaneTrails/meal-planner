@@ -60,3 +60,29 @@ variable "github_actions_sa_email" {
   type        = string
   default     = ""
 }
+
+# Android app (native Google Sign-In on Google Play builds)
+variable "android_package_name" {
+  description = "Android application ID; must equal expo.android.package in mobile/app.json and the app in Google Play"
+  type        = string
+}
+
+variable "android_sha1_hashes" {
+  description = "SHA-1 fingerprints (lowercase hex, no colons) of the Play app signing key, optionally also the upload key"
+  type        = list(string)
+
+  validation {
+    condition     = alltrue([for h in var.android_sha1_hashes : can(regex("^[0-9a-f]{40}$", h))])
+    error_message = "SHA-1 fingerprints must be 40 lowercase hex characters without colons."
+  }
+}
+
+variable "android_sha256_hashes" {
+  description = "SHA-256 fingerprints (lowercase hex, no colons) matching android_sha1_hashes"
+  type        = list(string)
+
+  validation {
+    condition     = alltrue([for h in var.android_sha256_hashes : can(regex("^[0-9a-f]{64}$", h))])
+    error_message = "SHA-256 fingerprints must be 64 lowercase hex characters without colons."
+  }
+}
