@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import {
   type ComponentRef,
   useCallback,
@@ -35,6 +35,7 @@ export const useMealPlanActions = () => {
   const { weekStart, settings } = useSettings();
   const {
     saveSelections,
+    refreshFromApi,
     selectedMealKeys: existingMealKeys,
     mealServings: existingServings,
     removedItems,
@@ -125,6 +126,13 @@ export const useMealPlanActions = () => {
   const updateNote = useUpdateNote();
   const removeMeal = useRemoveMeal();
   const updateExtras = useUpdateExtras();
+
+  useFocusEffect(
+    useCallback(() => {
+      void refetchMealPlan?.();
+      void refreshFromApi?.()?.catch(() => {});
+    }, [refetchMealPlan, refreshFromApi]),
+  );
 
   const recipeMap = useMealPlanRecipes(recipes, mealPlan);
 

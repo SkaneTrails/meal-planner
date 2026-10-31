@@ -1,6 +1,7 @@
 """Tests for grocery list state endpoints (GET/PUT/PATCH/DELETE /grocery/state)."""
 
 from collections.abc import Generator
+from typing import Any
 from unittest.mock import patch
 
 import pytest
@@ -92,13 +93,14 @@ class TestSaveGroceryState:
             meal_servings={"2026-02-10_lunch": 2},
             checked_items=["flour"],
             custom_items=[{"name": "Napkins", "category": "other"}],
+            item_order=[],
             removed_items=[],
             created_by="test@example.com",
         )
 
     def test_saves_empty_state(self, client: TestClient) -> None:
         """Should accept empty lists."""
-        body = {"selected_meals": [], "meal_servings": {}, "checked_items": [], "custom_items": []}
+        body: dict[str, Any] = {"selected_meals": [], "meal_servings": {}, "checked_items": [], "custom_items": []}
         saved = {**body, "updated_at": None}
 
         with patch("api.routers.grocery.grocery_list_storage.save_grocery_state", return_value=saved):

@@ -11,6 +11,7 @@ import type {
   MealUpdateRequest,
   NoteUpdateRequest,
 } from '../types';
+import { useAuth } from './use-auth';
 
 // Query keys
 export const mealPlanKeys = {
@@ -20,11 +21,19 @@ export const mealPlanKeys = {
 
 /**
  * Hook to fetch the current household's meal plan.
+ * Always fetches fresh data online once authenticated.
  */
 export const useMealPlan = () => {
+  const { user, loading: authLoading } = useAuth();
+  const isAuthenticated = !authLoading && !!user;
+
   return useQuery({
     queryKey: mealPlanKeys.detail(),
     queryFn: () => api.getMealPlan(),
+    enabled: isAuthenticated,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
 };
 

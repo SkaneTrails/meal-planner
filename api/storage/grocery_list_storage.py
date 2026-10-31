@@ -38,6 +38,7 @@ def save_grocery_state(  # noqa: PLR0913
     meal_servings: dict[str, int],
     checked_items: list[str] | None = None,
     custom_items: list[dict[str, str]] | None = None,
+    item_order: list[str] | None = None,
     removed_items: list[str] | None = None,
     created_by: str | None = None,
 ) -> dict[str, Any]:  # pragma: no cover
@@ -49,6 +50,7 @@ def save_grocery_state(  # noqa: PLR0913
         meal_servings: Servings per meal key, e.g. {"2026-02-10_lunch": 4}.
         checked_items: List of checked item names.
         custom_items: Custom items, each with at least "name" and optionally "category".
+        item_order: User-defined item ordering by name.
         removed_items: Generated item names hidden by the user (cleared/deleted).
         created_by: Email of the user saving the list.
 
@@ -61,6 +63,7 @@ def save_grocery_state(  # noqa: PLR0913
         "meal_servings": meal_servings,
         "checked_items": checked_items or [],
         "custom_items": custom_items or [],
+        "item_order": item_order or [],
         "removed_items": removed_items or [],
         "updated_at": now,
     }

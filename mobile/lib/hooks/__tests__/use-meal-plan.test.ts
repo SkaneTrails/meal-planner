@@ -36,14 +36,25 @@ import {
   useUpdateNote,
   useClearMealPlan,
 } from '@/lib/hooks/use-meal-plan';
+import { useAuth } from '@/lib/hooks/use-auth';
+
+const mockUseAuth = vi.mocked(useAuth);
 
 describe('useMealPlan', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseAuth.mockReturnValue({
+      user: { email: 'test@example.com' } as ReturnType<typeof useAuth>['user'],
+      loading: false,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
     mockGetMealPlan.mockResolvedValue({ meals: { 'monday-dinner': 'recipe-1' } });
   });
 
-  it('fetches the meal plan', async () => {
+  it('fetches the meal plan when authenticated', async () => {
     const { result } = renderHook(() => useMealPlan(), {
       wrapper: createQueryWrapper(),
     });
@@ -51,6 +62,24 @@ describe('useMealPlan', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(mockGetMealPlan).toHaveBeenCalledTimes(1);
     expect(result.current.data?.meals).toBeDefined();
+  });
+
+  it('does not fetch before Firebase auth finishes loading', () => {
+    mockUseAuth.mockReturnValue({
+      user: null,
+      loading: true,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    const { result } = renderHook(() => useMealPlan(), {
+      wrapper: createQueryWrapper(),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockGetMealPlan).not.toHaveBeenCalled();
   });
 });
 

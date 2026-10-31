@@ -55,11 +55,13 @@ const mockRecipes: Recipe[] = [
 ];
 
 const mockSaveSelections = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+const mockRefreshFromApi = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 const mockUpdateExtrasMutate = vi.fn();
 
 vi.mock('@/lib/grocery-context', () => ({
   useGroceryState: vi.fn(() => ({
     saveSelections: mockSaveSelections,
+    refreshFromApi: mockRefreshFromApi,
     selectedMealKeys: [] as string[],
     mealServings: {} as Record<string, number>,
     removedItems: [] as string[],
@@ -84,6 +86,9 @@ vi.mock('@/lib/hooks/use-recipes', () => ({
 
 vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({ push: mockRouterPush, back: vi.fn() })),
+  useFocusEffect: vi.fn((cb: () => void) => {
+    cb();
+  }),
 }));
 
 vi.mock('@/lib/i18n', () => ({

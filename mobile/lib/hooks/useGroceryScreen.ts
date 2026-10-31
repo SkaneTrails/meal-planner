@@ -70,7 +70,7 @@ export const useGroceryScreen = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const { isItemAtHome, activeStoreId } = useSettings();
-  const { data: mealPlan } = useMealPlan();
+  const { data: mealPlan, refetch: refetchMealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
   const { data: storeOrderData, isPlaceholderData: isStoreOrderPlaceholder } =
     useStoreOrder(activeStoreId);
@@ -92,6 +92,7 @@ export const useGroceryScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       void refreshFromApi().catch(() => {});
+      void refetchMealPlan?.();
       if (activeStoreId) {
         void queryClient.invalidateQueries({
           queryKey: groceryKeys.storeOrder(activeStoreId),
@@ -103,7 +104,7 @@ export const useGroceryScreen = () => {
         setReorderMode(false);
         setShowAddItem(false);
       };
-    }, [refreshFromApi, activeStoreId, queryClient]),
+    }, [refreshFromApi, refetchMealPlan, activeStoreId, queryClient]),
   );
 
   // Convert CustomGroceryItem[] from context to GroceryItem[] for display

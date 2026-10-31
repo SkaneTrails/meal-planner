@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useGroceryState } from '@/lib/grocery-context';
 import { useMealPlan } from '@/lib/hooks/use-meal-plan';
@@ -133,6 +133,13 @@ export const useHomeScreenData = () => {
     refetchMealPlan();
     refreshFromApi();
   }, [refetchRecipes, refetchMealPlan, refreshFromApi]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void refetchMealPlan?.();
+      void refreshFromApi?.()?.catch(() => {});
+    }, [refetchMealPlan, refreshFromApi]),
+  );
 
   const groceryItemsCount = useMemo(() => {
     if (!mealPlan || selectedMealKeys.length === 0) {

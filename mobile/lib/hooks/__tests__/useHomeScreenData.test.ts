@@ -49,6 +49,9 @@ let mockMealPlan: { meals?: Record<string, string>; extras?: Record<string, stri
 
 vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({ push: mockRouterPush, back: vi.fn() })),
+  useFocusEffect: vi.fn((cb: () => void) => {
+    cb();
+  }),
 }));
 
 vi.mock('@/lib/grocery-context', () => ({

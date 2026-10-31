@@ -26,6 +26,7 @@ import { useTranslation } from '@/lib/i18n';
 import {
   persistQueryCache,
   QueryProvider,
+  queryClient,
   restoreQueryCache,
 } from '@/lib/query-provider';
 import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
@@ -196,6 +197,8 @@ export default function RootLayout() {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
         persistQueryCache();
+      } else if (nextAppState === 'active') {
+        void queryClient.invalidateQueries({ queryKey: ['meal-plans'] });
       }
     };
 

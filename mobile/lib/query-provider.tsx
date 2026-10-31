@@ -51,6 +51,12 @@ function stripPii(
   return result;
 }
 
+const ONLINE_ONLY_RESOURCES = [
+  'meal-plans',
+  'grocery',
+  'grocery-state',
+] as const;
+
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
   const data = cache
@@ -69,6 +75,13 @@ export async function persistQueryCache(): Promise<void> {
       }
 
       if (resource === 'admin' && type === 'currentUser') {
+        return false;
+      }
+
+      if (
+        typeof resource === 'string' &&
+        (ONLINE_ONLY_RESOURCES as readonly string[]).includes(resource)
+      ) {
         return false;
       }
 
@@ -118,6 +131,15 @@ export async function restoreQueryCache(): Promise<void> {
           data: unknown;
           dataUpdatedAt?: number;
         }) => {
+          const resource = Array.isArray(item.queryKey)
+            ? item.queryKey[0]
+            : undefined;
+          if (
+            typeof resource === 'string' &&
+            (ONLINE_ONLY_RESOURCES as readonly string[]).includes(resource)
+          ) {
+            return;
+          }
           queryClient.setQueryData(item.queryKey, item.data, {
             updatedAt: item.dataUpdatedAt,
           });
