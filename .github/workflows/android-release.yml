@@ -30,6 +30,8 @@ concurrency:
 jobs:
   build-and-submit:
     runs-on: ubuntu-latest
+    # Same environment as the Firebase and Terraform deploys, so its protection rules apply to releases too.
+    environment: production
     defaults:
       run:
         working-directory: mobile
