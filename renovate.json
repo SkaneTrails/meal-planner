@@ -99,14 +99,49 @@
       "allowedVersions": "<4.0.0"
     },
     {
-      "description": "Expo 58 and Reanimated 4.7 require React Native Worklets 0.13.x",
-      "matchPackageNames": [
-        "react-native-worklets"
-      ],
+      "description": "Expo SDK 58 pins these; they only change together via `npx expo install --fix` (an SDK upgrade). Newer versions broke the EAS Android build",
       "matchFileNames": [
         "mobile/**"
       ],
-      "allowedVersions": ">=0.13.0 <0.14.0"
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "react-native",
+        "@react-native-async-storage/async-storage",
+        "react-native-gesture-handler",
+        "react-native-reanimated",
+        "react-native-safe-area-context",
+        "react-native-screens",
+        "react-native-svg",
+        "react-native-worklets",
+        "typescript",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Expo packages track the SDK major (58); moving to 59 is an SDK upgrade, not a routine bump",
+      "matchFileNames": [
+        "mobile/**"
+      ],
+      "matchPackageNames": [
+        "expo",
+        "/^expo-/",
+        "/^@expo\\//",
+        "babel-preset-expo"
+      ],
+      "allowedVersions": "<59.0.0"
+    },
+    {
+      "description": "Expo SDK 58 accepts @expo/vector-icons ^15 (own version line, not the SDK major). Must stay after the Expo cap above so it overrides it",
+      "matchFileNames": [
+        "mobile/**"
+      ],
+      "matchPackageNames": [
+        "@expo/vector-icons"
+      ],
+      "allowedVersions": "<16.0.0"
     },
     {
       "description": "The NativeWind, css-interop and Worklets Babel plugins Expo 58 bundles with only accept Babel 7; Babel 8 breaks the native (EAS) bundle",
