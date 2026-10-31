@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Meal Planner",
+    "name": "Aroma",
     "slug": "meal-planner",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,14 +15,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mealplanner.app"
+      "bundleIdentifier": "com.aroma.mealplanner"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#E8A87C"
       },
-      "package": "com.mealplanner.app",
+      "package": "com.aroma.mealplanner",
       "blockedPermissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
@@ -40,8 +40,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Meal Planner to access your photos to set recipe images.",
-          "cameraPermission": "Allow Meal Planner to use your camera to take recipe photos.",
+          "photosPermission": "Allow Aroma to access your photos to set recipe images.",
+          "cameraPermission": "Allow Aroma to use your camera to take recipe photos.",
           "microphonePermission": false
         }
       ],
