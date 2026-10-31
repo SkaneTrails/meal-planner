@@ -433,9 +433,9 @@ manual run from the Actions tab. The Android `versionCode` is incremented by EAS
 
 **One-time setup** (order matters; run `eas` commands from `mobile/`):
 
-1. **Package name** - `expo.android.package` in `mobile/app.json` must equal the app in
-   Play Console. Google Play fixes it when the app is created, and EAS keeps one
-   keystore per package name, so settle it before the first build.
+1. **Package name** - `com.aroma.mealplanner` (`expo.android.package` in `mobile/app.json`)
+   must equal the app in Play Console. Google Play fixes it when the app is created, and
+   EAS keeps one keystore per package name, so never change it after the first upload.
 
 1. **Build-time variables** - cloud builds never see the gitignored `mobile/.env*` files.
    Fill in `mobile/.env.production` (API URL: `terraform output cloud_run_url`), then:
@@ -456,7 +456,8 @@ manual run from the Actions tab. The Android `versionCode` is incremented by EAS
    Google Play Android Developer API and creates the Play publisher service account:
    `terraform output play_publisher_sa`.
 
-1. **Play Console app** - create the app with the package name above, complete the **App
+1. **Play Console app** - create the app with the package name above and the store title
+   "Aroma Meal Planner" (the launcher shows `expo.name`, "Aroma"), complete the **App
    content** declarations (privacy policy, data safety, content rating, target audience,
    app access), and under **Testing > Internal testing** create the track and add the
    testers' emails.
@@ -497,7 +498,8 @@ manual run from the Actions tab. The Android `versionCode` is incremented by EAS
    `expo-auth-session` and `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, an Android OAuth client
    bound to the package name and a signing certificate SHA-1. Testers get a copy that
    Google re-signs, so the client needs the **Play app signing key** SHA-1 (Play Console:
-   Test and release > App integrity > Play app signing).
+   Test and release > App integrity > Play app signing). The client must be for
+   `com.aroma.mealplanner`; one created for an earlier package name does not work.
 
 After setup, a release is one command: `git tag v1.0.1 && git push origin v1.0.1`.
 To widen the beta later, change `submit.production.android.track` in `mobile/eas.json`
