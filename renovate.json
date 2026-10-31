@@ -109,6 +109,16 @@
       "allowedVersions": ">=0.13.0 <0.14.0"
     },
     {
+      "description": "The NativeWind, css-interop and Worklets Babel plugins Expo 58 bundles with only accept Babel 7; Babel 8 breaks the native (EAS) bundle",
+      "matchPackageNames": [
+        "@babel/core"
+      ],
+      "matchFileNames": [
+        "mobile/**"
+      ],
+      "allowedVersions": "<8.0.0"
+    },
+    {
       "description": "setup-trivy digest lookup broken post-compromise; pinned to verified SHA",
       "matchPackageNames": [
         "aquasecurity/setup-trivy"
