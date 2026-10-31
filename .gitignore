@@ -82,6 +82,10 @@ infra/**/access/allowed_users.txt
 # credentials.json
 # key.json
 
+# Google Play publisher key (written by the release workflow, created once during setup)
+mobile/play-service-account.json
+play-key.json
+
 # Logs
 *.log
 .mypy_cache/

@@ -61,3 +61,8 @@ output "local_dev_email" {
   description = "Email of the local development service account"
   value       = google_service_account.local_dev.email
 }
+
+output "play_publisher_email" {
+  description = "Email of the Google Play publisher service account (invite it in Play Console)"
+  value       = google_service_account.play_publisher.email
+}

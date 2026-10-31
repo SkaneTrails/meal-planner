@@ -97,3 +97,13 @@ resource "google_project_service" "storage" {
 
   disable_on_destroy = false
 }
+
+# Google Play Android Developer API - EAS Submit publishes app bundles to Google Play
+# through the Play publisher service account (see modules/iam). Free: no charge for
+# enabling it or for publishing calls.
+resource "google_project_service" "androidpublisher" {
+  project = var.project
+  service = "androidpublisher.googleapis.com"
+
+  disable_on_destroy = false
+}

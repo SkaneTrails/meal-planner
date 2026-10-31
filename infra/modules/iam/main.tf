@@ -203,6 +203,23 @@ resource "google_project_iam_member" "github_actions_viewer" {
 }
 
 # -----------------------------------------------------------------------------
+# Google Play Publisher Service Account
+# -----------------------------------------------------------------------------
+
+# Identity EAS Submit uses to publish app bundles to Google Play. It has NO GCP IAM
+# roles: Play Console grants its permissions (Users and permissions > invite its email).
+# Its JSON key is created by hand, not here, so the private key never enters the
+# Terraform state (docs/DEVELOPMENT.md > Android release pipeline).
+resource "google_service_account" "play_publisher" {
+  project      = var.project
+  account_id   = var.play_publisher_account_id
+  display_name = "Meal Planner Google Play Publisher"
+  description  = "Used by EAS Submit (GitHub Actions) to publish Android app bundles to Google Play"
+
+  depends_on = [var.iam_api_service]
+}
+
+# -----------------------------------------------------------------------------
 # Local Development Service Account
 # -----------------------------------------------------------------------------
 
