@@ -1,0 +1,68 @@
+name: Android Release
+
+# Builds a signed Android App Bundle with EAS Build (Expo cloud) and submits it
+# to the Google Play "internal testing" track (invited testers only).
+#
+# Triggers:
+#   - push of a version tag (e.g. v1.0.1)
+#   - manual run via the Actions tab (workflow_dispatch)
+#
+# Requires repository secrets:
+#   - EXPO_TOKEN                  Expo robot access token (expo.dev > aroma-team > Settings > Robot users)
+#   - PLAY_SERVICE_ACCOUNT_JSON   Google Play service-account JSON key (full file contents)
+#
+# EAS manages the Android signing keystore in the cloud, so no keystore secret is needed.
+# See docs/DEVELOPMENT.md > "Android Release Pipeline" for the one-time setup.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
+jobs:
+  build-and-submit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "26"
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      # EAS resolves the Expo config plugins (expo-router, ...) locally before it uploads.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@eab7a230208c952974db8c3245cfd78402c7b385 # v9.0.0
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Write Google Play service account key
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: printf '%s' "$PLAY_SERVICE_ACCOUNT_JSON" > play-service-account.json
+
+      - name: Build app bundle and submit to Google Play
+        run: eas build --platform android --profile production --non-interactive --auto-submit
+
+      - name: Remove service account key
+        if: always()
+        run: rm -f play-service-account.json

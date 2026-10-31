@@ -40,3 +40,8 @@ output "scrape_function_url" {
   description = "The URL of the recipe scraping Cloud Function"
   value       = module.cloud_function.function_url
 }
+
+output "play_publisher_sa" {
+  description = "Service account EAS Submit uses for Google Play (create its key by hand, invite it in Play Console)"
+  value       = module.iam.play_publisher_email
+}

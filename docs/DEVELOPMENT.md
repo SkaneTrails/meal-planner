@@ -317,7 +317,7 @@ tests/                   # API test files (pytest)
 docs/                    # Documentation
 
 .github/
-├── workflows/           # CI/CD (tests.yml, security-checks.yml)
+├── workflows/           # CI/CD (tests.yml, security-checks.yml, android-release.yml)
 ├── skills/              # AI agent instructions
 │   ├── recipe-improvement/
 │   ├── pr-review-workflow/
@@ -409,6 +409,103 @@ uv run python scripts/batch_test.py
 
 Household preferences are configured in the system prompt within `scripts/recipe_enhancer.py`.
 See `.github/copilot-instructions.md` for the multi-tenant architecture plan.
+
+---
+
+## Android Release Pipeline
+
+`.github/workflows/android-release.yml` builds a signed Android App Bundle with **EAS
+Build** (Expo cloud, free monthly build quota per Expo account) and submits it to the
+Google Play **internal testing** track (invited testers only). EAS stores the signing
+keystore, so no keystore is kept in the repo. The Expo project belongs to the
+`aroma-team` organization (`owner` and `extra.eas.projectId` in `mobile/app.json`).
+
+**Triggers:** pushing a version tag (`git tag v1.0.1 && git push origin v1.0.1`) or a
+manual run from the Actions tab. The Android `versionCode` is incremented by EAS
+(`appVersionSource: "remote"` + `autoIncrement` in `mobile/eas.json`).
+
+| Part                                                      | How                                                     |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| Google Play Android Developer API, Play publisher account | Terraform (`infra/modules/apis`, `infra/modules/iam`)   |
+| Play publisher JSON key                                   | One-time manual step (kept out of the Terraform state)  |
+| Play Console app, declarations, testers, account invite   | Manual in Play Console (no API)                         |
+| Build-time `EXPO_PUBLIC_*` values, keystore               | `eas` CLI (the keystore is generated and stored by EAS) |
+
+**One-time setup** (order matters; run `eas` commands from `mobile/`):
+
+1. **Package name** - `expo.android.package` in `mobile/app.json` must equal the app in
+   Play Console. Google Play fixes it when the app is created, and EAS keeps one
+   keystore per package name, so settle it before the first build.
+
+1. **Build-time variables** - cloud builds never see the gitignored `mobile/.env*` files.
+   Fill in `mobile/.env.production` (API URL: `terraform output cloud_run_url`), then:
+
+   ```bash
+   eas env:push production --path .env.production
+   eas env:list production     # every EXPO_PUBLIC_* name should be listed
+   ```
+
+   The `production` build profile uses this environment. The values are public by
+   design (they are embedded in the app).
+
+1. **Expo token** - in the `aroma-team` organization on expo.dev, create a robot user
+   with an access token and store it as the `EXPO_TOKEN` repository secret
+   (`gh secret set EXPO_TOKEN`). A robot token does not depend on anyone's login.
+
+1. **Terraform** - apply `infra/environments/dev` (or merge to `main`). This enables the
+   Google Play Android Developer API and creates the Play publisher service account:
+   `terraform output play_publisher_sa`.
+
+1. **Play Console app** - create the app with the package name above, complete the **App
+   content** declarations (privacy policy, data safety, content rating, target audience,
+   app access), and under **Testing > Internal testing** create the track and add the
+   testers' emails.
+
+1. **First build and upload (manual, once)** - Google Play requires the first bundle of
+   a new app to be uploaded in the Console. On a clean working tree:
+
+   ```bash
+   eas build --platform android --profile production
+   ```
+
+   Answer **yes** when asked to generate an Android keystore (run interactively). Download
+   the `.aab`, then in Play Console create an Internal testing release, accept Play App
+   Signing, upload the file and roll it out. This build's certificate becomes the app's
+   upload key; every later bundle must be signed with the same keystore.
+
+1. **Play publisher key and permission** - create a key, store it as a secret, delete the
+   local copy:
+
+   ```powershell
+   # PowerShell
+   gcloud iam service-accounts keys create play-key.json --iam-account=<play_publisher_sa> --project=<PROJECT_ID>
+   Get-Content play-key.json -Raw | gh secret set PLAY_SERVICE_ACCOUNT_JSON
+   Remove-Item play-key.json
+   ```
+
+   ```bash
+   # bash
+   gcloud iam service-accounts keys create play-key.json --iam-account=<play_publisher_sa> --project=<PROJECT_ID>
+   gh secret set PLAY_SERVICE_ACCOUNT_JSON < play-key.json
+   rm play-key.json
+   ```
+
+   Then in Play Console, **Users and permissions > Invite new users**: add the service
+   account email with permission to release to testing tracks for this app.
+
+1. **Google sign-in on Play-installed builds** - the app signs in with
+   `expo-auth-session` and `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`, an Android OAuth client
+   bound to the package name and a signing certificate SHA-1. Testers get a copy that
+   Google re-signs, so the client needs the **Play app signing key** SHA-1 (Play Console:
+   Test and release > App integrity > Play app signing).
+
+After setup, a release is one command: `git tag v1.0.1 && git push origin v1.0.1`.
+To widen the beta later, change `submit.production.android.track` in `mobile/eas.json`
+from `internal` to a closed-testing track (e.g. `alpha`).
+
+The app requests no microphone access: `expo-image-picker` would add `RECORD_AUDIO` for
+video capture, so `mobile/app.json` sets `microphonePermission: false` and blocks the
+permission.
 
 ---
 
