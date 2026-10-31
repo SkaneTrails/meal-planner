@@ -3,7 +3,9 @@
  * Provides user state and sign-in/sign-out methods.
  *
  * Web: signInWithPopup for all browsers (including iOS Safari).
- * Native: expo-auth-session.
+ * Native: @react-native-google-signin (the OS account picker), then the ID token is
+ * handed to Firebase. Only the web client ID is needed; Google matches the Android app
+ * through the Android OAuth client Firebase creates for the package and signing key.
  *
  * Note: signInWithRedirect was previously used for iOS Safari, but Safari's
  * ITP blocks cross-origin storage after the redirect through firebaseapp.com,
@@ -12,7 +14,12 @@
  * BroadcastChannel / localStorage events.
  */
 
-import * as Google from 'expo-auth-session/providers/google';
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import {
   signOut as firebaseSignOut,
   GoogleAuthProvider,
@@ -54,12 +61,7 @@ interface AuthProviderProps {
 }
 
 const isAuthConfigured =
-  isFirebaseConfigured &&
-  Boolean(
-    process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
-      process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
-      process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-  );
+  isFirebaseConfigured && Boolean(process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
@@ -102,17 +104,13 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
   const googleProvider =
     Platform.OS === 'web' ? new GoogleAuthProvider() : null;
 
-  const [_request, response, promptAsync] = Google.useAuthRequest(
-    Platform.OS !== 'web'
-      ? {
-          iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-          androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-          responseType: 'id_token',
-        }
-      : {
-          webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-        },
-  );
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      GoogleSignin.configure({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      });
+    }
+  }, []);
 
   // Uses userRef to avoid stale closure issues - the ref is always current
   useEffect(() => {
@@ -175,39 +173,19 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    if (Platform.OS === 'web') return;
-
-    if (response?.type === 'success') {
-      const { id_token, access_token } = response.params;
-
-      if (!id_token) {
-        if (__DEV__) {
-          console.error(
-            'No id_token in response. Received:',
-            Object.keys(response.params),
-          );
-        }
-        setError('noIdToken');
-        return;
-      }
-
-      const credential = GoogleAuthProvider.credential(id_token, access_token);
-
-      signInWithCredential(auth as NonNullable<typeof auth>, credential)
-        .then(() => {
-          setError(null);
-        })
-        .catch((err) => {
-          if (__DEV__) {
-            console.error('signInWithCredential error:', err);
-          }
-          setError('signInFailed');
-        });
-    } else if (response?.type === 'error') {
-      setError(response.error?.message || 'Sign-in failed');
+  const signInNative = useCallback(async () => {
+    const result = await GoogleSignin.signIn();
+    if (!isSuccessResponse(result)) return;
+    const idToken = result.data.idToken;
+    if (!idToken) {
+      setError('noIdToken');
+      return;
     }
-  }, [response]);
+    await signInWithCredential(
+      auth as NonNullable<typeof auth>,
+      GoogleAuthProvider.credential(idToken),
+    );
+  }, []);
 
   const signIn = useCallback(async () => {
     setError(null);
@@ -215,21 +193,27 @@ const AuthProviderImpl = ({ children }: AuthProviderProps) => {
       if (Platform.OS === 'web' && googleProvider) {
         await signInWithPopup(auth as NonNullable<typeof auth>, googleProvider);
       } else {
-        await promptAsync();
+        await signInNative();
       }
     } catch (err) {
       if (__DEV__) {
         console.error('signIn error:', err);
       }
-      const errorMessage = err instanceof Error ? err.message : '';
-      if (!errorMessage.includes('popup-closed-by-user')) {
+      const isWebPopupClosed =
+        err instanceof Error && err.message.includes('popup-closed-by-user');
+      const isNativeCancelled =
+        isErrorWithCode(err) && err.code === statusCodes.SIGN_IN_CANCELLED;
+      if (!isWebPopupClosed && !isNativeCancelled) {
         setError('signInFailed');
       }
     }
-  }, [promptAsync, googleProvider]);
+  }, [googleProvider, signInNative]);
 
   const signOut = useCallback(async () => {
     try {
+      if (Platform.OS !== 'web') {
+        await GoogleSignin.signOut();
+      }
       await firebaseSignOut(auth as NonNullable<typeof auth>);
       setError(null);
     } catch (_err) {

@@ -126,6 +126,11 @@ module "firebase" {
   # GitHub Actions SA for per-secret IAM bindings (least privilege)
   github_actions_sa_email = module.iam.github_actions_firebase_email
 
+  # Android app: registering the Play signing fingerprints creates the Android OAuth client
+  android_package_name  = var.android_package_name
+  android_sha1_hashes   = var.android_sha1_hashes
+  android_sha256_hashes = var.android_sha256_hashes
+
   firebase_api_service        = module.apis.firebase_service
   identitytoolkit_api_service = module.apis.identitytoolkit_service
   secretmanager_api_service   = module.apis.secretmanager_service
