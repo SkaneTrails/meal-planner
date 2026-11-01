@@ -2,7 +2,7 @@
  * Global grocery state context.
  * Source of truth: Firestore via API. AsyncStorage used as offline cache.
  *
- * On mount: loads from API, falls back to AsyncStorage if offline.
+ * On sign-in: loads from API, falls back to AsyncStorage if offline.
  * On change: writes to API (debounced) and AsyncStorage (immediate).
  */
 
@@ -18,6 +18,7 @@ import {
 } from 'react';
 
 import { api } from './api';
+import { useAuth } from './hooks/use-auth';
 import type { CustomGroceryItem, GroceryListState } from './types';
 
 interface GroceryContextValue {
@@ -135,6 +136,8 @@ function safeJsonParse<T>(raw: string, fallback: T): T {
 }
 
 export const GroceryProvider = ({ children }: { children: ReactNode }) => {
+  const { user, loading: authLoading } = useAuth();
+  const userId = user?.uid;
   const [checkedItems, setCheckedItemsState] = useState<Set<string>>(new Set());
   const [customItems, setCustomItemsState] = useState<CustomGroceryItem[]>([]);
   const [itemOrder, setItemOrderState] = useState<string[]>([]);
@@ -256,8 +259,9 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   }, [applyState]);
 
   useEffect(() => {
+    if (authLoading || !userId) return;
     loadFromApi();
-  }, [loadFromApi]);
+  }, [authLoading, userId, loadFromApi]);
 
   useEffect(() => {
     return () => {

@@ -57,6 +57,14 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
+const mockAuth: { user: { uid: string } | null; loading: boolean } = {
+  user: { uid: 'user-1' },
+  loading: false,
+};
+vi.mock('@/lib/hooks/use-auth', () => ({
+  useAuth: () => mockAuth,
+}));
+
 import { GroceryProvider, useGroceryState } from '@/lib/grocery-context';
 
 function createGroceryWrapper() {
@@ -71,10 +79,56 @@ describe('GroceryProvider', () => {
     for (const key of Object.keys(mockStorage)) {
       delete mockStorage[key];
     }
+    mockAuth.user = { uid: 'user-1' };
+    mockAuth.loading = false;
     mockGetGroceryState.mockResolvedValue(emptyState);
     mockPatchGroceryState.mockResolvedValue(emptyState);
     mockSaveGroceryState.mockResolvedValue(emptyState);
     mockClearGroceryState.mockResolvedValue(undefined);
+  });
+
+  it('does not fetch from API while auth is loading', async () => {
+    mockAuth.user = null;
+    mockAuth.loading = true;
+
+    const { result } = renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+
+    await act(async () => {});
+
+    expect(mockGetGroceryState).not.toHaveBeenCalled();
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it('does not fetch from API when signed out', async () => {
+    mockAuth.user = null;
+
+    renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+
+    await act(async () => {});
+
+    expect(mockGetGroceryState).not.toHaveBeenCalled();
+  });
+
+  it('fetches from API once auth resolves to a user', async () => {
+    mockAuth.user = null;
+    mockAuth.loading = true;
+
+    const { result, rerender } = renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+    await act(async () => {});
+    expect(mockGetGroceryState).not.toHaveBeenCalled();
+
+    mockAuth.user = { uid: 'user-1' };
+    mockAuth.loading = false;
+    rerender();
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(mockGetGroceryState).toHaveBeenCalledOnce();
   });
 
   it('starts with empty state from API', async () => {

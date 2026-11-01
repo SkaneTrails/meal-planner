@@ -47,14 +47,8 @@ export default function TabLayout() {
       <Tabs.Screen name="recipes" options={{ title: t('tabs.recipes') }} />
       <Tabs.Screen name="meal-plan" options={{ title: t('tabs.mealPlan') }} />
       <Tabs.Screen name="grocery" options={{ title: t('tabs.grocery') }} />
-      <Tabs.Screen
-        name="settings"
-        options={{ title: t('tabs.settings'), href: null }}
-      />
-      <Tabs.Screen
-        name="admin"
-        options={{ title: t('tabs.admin'), href: null }}
-      />
+      <Tabs.Screen name="settings" options={{ title: t('tabs.settings') }} />
+      <Tabs.Screen name="admin" options={{ title: t('tabs.admin') }} />
     </Tabs>
   );
 }
