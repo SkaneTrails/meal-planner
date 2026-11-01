@@ -217,18 +217,9 @@ async def patch_grocery_state(
     if "custom_items" in updates:
         updates["custom_items"] = [item.model_dump() for item in body.custom_items]  # type: ignore[union-attr]
 
-    result = grocery_list_storage.update_grocery_state(household_id, updates, check=check, uncheck=uncheck)
-    if result is None:
-        data = grocery_list_storage.save_grocery_state(
-            household_id,
-            selected_meals=body.selected_meals or [],
-            meal_servings=body.meal_servings or {},
-            checked_items=body.checked_items or grocery_list_storage.merge_checked_items([], check, uncheck),
-            custom_items=[item.model_dump() for item in (body.custom_items or [])],
-            removed_items=body.removed_items or [],
-            created_by=user.email,
-        )
-        return GroceryListState(**data)
+    result = grocery_list_storage.update_grocery_state(
+        household_id, updates, check=check, uncheck=uncheck, created_by=user.email
+    )
     return GroceryListState(**result)
 
 

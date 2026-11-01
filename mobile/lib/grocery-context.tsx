@@ -104,6 +104,13 @@ const removeLegacyCache = () =>
     Object.values(STORAGE_KEYS).map((key) => AsyncStorage.removeItem(key)),
   ).catch(() => {});
 
+const removeDeviceCopy = (uid: string) =>
+  Promise.all(
+    (Object.keys(STORAGE_KEYS) as StorageField[]).map((field) =>
+      AsyncStorage.removeItem(groceryStorageKey(field, uid)),
+    ),
+  ).catch(() => {});
+
 const normalizeCustomItems = (raw: unknown[]): CustomGroceryItem[] =>
   raw.map((item) =>
     typeof item === 'string'
@@ -163,6 +170,7 @@ function safeJsonParse<T>(raw: string, fallback: T): T {
 }
 
 let serverRefresh: (() => Promise<void>) | null = null;
+let scopeReset: (() => void) | null = null;
 
 /**
  * Pull the server's grocery state into the open app (sync status poll). Rejects when it could
@@ -170,6 +178,14 @@ let serverRefresh: (() => Promise<void>) | null = null;
  */
 export const refreshGroceryFromServer = async (): Promise<void> => {
   await serverRefresh?.();
+};
+
+/**
+ * Forget the list of the previous household or role: shown state, unsent changes, the device
+ * copy, and the results of writes still on their way. The sync poll then loads the new one.
+ */
+export const resetGroceryForNewScope = (): void => {
+  scopeReset?.();
 };
 
 export const GroceryProvider = ({ children }: { children: ReactNode }) => {
@@ -188,6 +204,10 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const patchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingPatchRef = useRef<GroceryListStatePatch>({});
   const patchesInFlightRef = useRef(0);
+  // Writes run one after another, so an older change can never land after a newer one.
+  const writeChainRef = useRef<Promise<void>>(Promise.resolve());
+  // Replaced when the user or household changes; results of writes made for the old one are dropped.
+  const writeScopeRef = useRef<object>({});
   const checkedRef = useRef<Set<string>>(checkedItems);
   const customItemsRef = useRef<CustomGroceryItem[]>(customItems);
   const itemOrderRef = useRef<string[]>(itemOrder);
@@ -239,25 +259,36 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     [applyState],
   );
 
-  const flushPatch = useCallback((): Promise<void> => {
+  const enqueueWrite = useCallback((write: () => Promise<void>) => {
+    const run = writeChainRef.current.then(write);
+    writeChainRef.current = run.catch(() => {});
+    return run;
+  }, []);
+
+  /** Send the unsent changes as they are when the write's turn comes. Never rejects. */
+  const sendPending = useCallback(async () => {
     const patch = pendingPatchRef.current;
     pendingPatchRef.current = {};
-    if (isEmptyPatch(patch)) return Promise.resolve();
+    if (isEmptyPatch(patch)) return;
+    const scope = writeScopeRef.current;
     patchesInFlightRef.current += 1;
-    return api
-      .patchGroceryState(patch)
-      .then((response) => {
-        if (!isMountedRef.current) return;
-        applyServerState(response);
-      })
-      .catch((err: unknown) => {
-        console.warn('[GroceryContext] Patch failed, will retry:', err);
-        pendingPatchRef.current = mergePatches(patch, pendingPatchRef.current);
-      })
-      .finally(() => {
-        patchesInFlightRef.current -= 1;
-      });
+    try {
+      const response = await api.patchGroceryState(patch);
+      if (!isMountedRef.current || writeScopeRef.current !== scope) return;
+      applyServerState(response);
+    } catch (err) {
+      if (writeScopeRef.current !== scope) return;
+      console.warn('[GroceryContext] Patch failed, will retry:', err);
+      pendingPatchRef.current = mergePatches(patch, pendingPatchRef.current);
+    } finally {
+      patchesInFlightRef.current -= 1;
+    }
   }, [applyServerState]);
+
+  const flushPatch = useCallback(
+    (): Promise<void> => enqueueWrite(sendPending),
+    [enqueueWrite, sendPending],
+  );
 
   const scheduleFlush = useCallback(() => {
     if (patchTimerRef.current) clearTimeout(patchTimerRef.current);
@@ -301,7 +332,12 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   const loadFromCache = useCallback(
     async (uid: string): Promise<boolean> => {
-      const cached = await loadFromAsyncStorage(uid);
+      let cached: GroceryListState | null;
+      try {
+        cached = await loadFromAsyncStorage(uid);
+      } catch {
+        return false;
+      }
       if (!cached || userIdRef.current !== uid) return false;
       applyState(cached);
       applyTicks(cached.tick_sequence ?? [], cached.checked_items);
@@ -316,6 +352,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       patchTimerRef.current = null;
     }
     pendingPatchRef.current = {};
+    writeScopeRef.current = {};
     applyState({
       selected_meals: [],
       meal_servings: {},
@@ -355,10 +392,16 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       }
       await fetchFromServer();
     };
+    scopeReset = () => {
+      resetState();
+      const uid = userIdRef.current;
+      if (uid) removeDeviceCopy(uid);
+    };
     return () => {
       serverRefresh = null;
+      scopeReset = null;
     };
-  }, [fetchFromServer]);
+  }, [fetchFromServer, resetState]);
 
   useEffect(() => {
     return () => {
@@ -477,37 +520,40 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
         clearTimeout(patchTimerRef.current);
         patchTimerRef.current = null;
       }
-      await flushPatch();
-
+      const scope = writeScopeRef.current;
       setSelectedMealKeys(meals);
       setMealServings(servings);
       storeField(userIdRef.current, 'meals', meals);
       storeField(userIdRef.current, 'servings', servings);
 
-      const response = await api.patchGroceryState({
-        selected_meals: meals,
-        meal_servings: servings,
-        ...(removedItemsOverride !== undefined
-          ? { removed_items: removedItemsOverride }
-          : {}),
+      await enqueueWrite(async () => {
+        await sendPending();
+        if (writeScopeRef.current !== scope) return;
+        patchesInFlightRef.current += 1;
+        try {
+          const response = await api.patchGroceryState({
+            selected_meals: meals,
+            meal_servings: servings,
+            ...(removedItemsOverride !== undefined
+              ? { removed_items: removedItemsOverride }
+              : {}),
+          });
+          if (!isMountedRef.current || writeScopeRef.current !== scope) return;
+          applyServerState(response);
+        } finally {
+          patchesInFlightRef.current -= 1;
+        }
       });
-      applyServerState(response);
     },
-    [applyServerState, flushPatch],
+    [applyServerState, enqueueWrite, sendPending],
   );
 
   const clearAll = useCallback(async () => {
     resetState();
     const uid = userIdRef.current;
-    if (uid) {
-      await Promise.all(
-        (Object.keys(STORAGE_KEYS) as StorageField[]).map((field) =>
-          AsyncStorage.removeItem(groceryStorageKey(field, uid)),
-        ),
-      ).catch(() => {});
-    }
-    api.clearGroceryState().catch(() => {});
-  }, [resetState]);
+    if (uid) await removeDeviceCopy(uid);
+    enqueueWrite(() => api.clearGroceryState()).catch(() => {});
+  }, [enqueueWrite, resetState]);
 
   const refreshFromApi = useCallback(async () => {
     setIsLoading(true);

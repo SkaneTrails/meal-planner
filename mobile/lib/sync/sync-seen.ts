@@ -1,35 +1,29 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { QueryClient } from '@tanstack/react-query';
 import type { SyncKind } from '@/lib/types';
 
-const KEY = '@sync_seen';
+/**
+ * Kept in the query cache, so it is saved in the same snapshot as the data it describes:
+ * after a restart the remembered versions never claim data newer than what was restored.
+ */
+const SEEN_KEY = ['sync', 'seen'] as const;
 
-/** The versions of each data kind this device last synced, and whose they are. */
+/** The versions of each data kind this device last synced, when, and whose they are. */
 export interface SeenState {
   ownerUid: string | null;
   /** Role and household at the last sync, or null before the first one. */
   scope: string | null;
   seen: Partial<Record<SyncKind, string | null>>;
+  refreshedAt?: Partial<Record<SyncKind, number>>;
 }
 
 const NOTHING_SEEN: SeenState = { ownerUid: null, scope: null, seen: {} };
 
 export const syncSeen = {
-  async get(): Promise<SeenState> {
-    try {
-      const raw = await AsyncStorage.getItem(KEY);
-      return raw
-        ? { ...NOTHING_SEEN, ...(JSON.parse(raw) as Partial<SeenState>) }
-        : NOTHING_SEEN;
-    } catch {
-      return NOTHING_SEEN;
-    }
+  get(queryClient: QueryClient): SeenState {
+    return queryClient.getQueryData<SeenState>(SEEN_KEY) ?? NOTHING_SEEN;
   },
 
-  async set(state: SeenState): Promise<void> {
-    try {
-      await AsyncStorage.setItem(KEY, JSON.stringify(state));
-    } catch {
-      // Not remembering only means refetching everything at the next poll.
-    }
+  set(queryClient: QueryClient, state: SeenState): void {
+    queryClient.setQueryData(SEEN_KEY, state);
   },
 };

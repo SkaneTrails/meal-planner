@@ -7,7 +7,6 @@
  * - A 403 (no household) redirects to /no-access, even with a cached user
  * - No cached user and an error redirects to /no-access
  * - Waits until the device data is claimed for the signed-in user
- * - Sync polling only starts once the user is known
  */
 
 import { render, screen } from '@testing-library/react';
@@ -41,10 +40,8 @@ let mockCurrentUser: { data?: unknown; error: unknown };
 vi.mock('@/lib/hooks/use-admin', () => ({ useCurrentUser: () => mockCurrentUser }));
 
 let mockLocalDataReady = true;
-const mockUseSyncPolling = vi.fn();
-vi.mock('@/lib/hooks/use-sync-polling', () => ({
+vi.mock('@/lib/local-data-context', () => ({
   useLocalDataReady: () => mockLocalDataReady,
-  useSyncPolling: (enabled: boolean) => mockUseSyncPolling(enabled),
 }));
 
 import TabLayout from '../(tabs)/_layout';
@@ -63,7 +60,6 @@ describe('TabLayout access gate', () => {
     render(React.createElement(TabLayout));
 
     expect(screen.getByTestId('tabs')).toBeDefined();
-    expect(mockUseSyncPolling).toHaveBeenCalledWith(true);
   });
 
   it('keeps the tabs when the background check fails offline', () => {
@@ -96,7 +92,6 @@ describe('TabLayout access gate', () => {
     render(React.createElement(TabLayout));
 
     expect(screen.getByTestId('loading')).toBeDefined();
-    expect(mockUseSyncPolling).toHaveBeenCalledWith(false);
   });
 
   it('redirects to sign-in when signed out', () => {

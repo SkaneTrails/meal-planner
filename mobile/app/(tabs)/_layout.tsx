@@ -3,7 +3,7 @@
  * Tab bar rendering is handled by FloatingTabBar in the root layout.
  * Requires authentication - redirects to sign-in if not authenticated.
  * Requires household membership - redirects to no-access if not in a household (except superusers).
- * Renders from the cached user at once; the server check and sync polling run in the background.
+ * Renders from the cached user at once; the server check runs in the background.
  */
 
 import { Redirect, Tabs } from 'expo-router';
@@ -11,20 +11,16 @@ import { FullScreenLoading } from '@/components/FullScreenLoading';
 import { ApiClientError } from '@/lib/api';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
 import { useAuth } from '@/lib/hooks/use-auth';
-import {
-  useLocalDataReady,
-  useSyncPolling,
-} from '@/lib/hooks/use-sync-polling';
 import { useTranslation } from '@/lib/i18n';
+import { useLocalDataReady } from '@/lib/local-data-context';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
   const { t } = useTranslation();
-  const localDataReady = useLocalDataReady(user?.uid);
+  const localDataReady = useLocalDataReady();
   const { data: currentUser, error } = useCurrentUser({
     enabled: !loading && !!user && localDataReady,
   });
-  useSyncPolling(localDataReady && !!currentUser);
 
   if (loading) {
     return <FullScreenLoading />;
@@ -34,6 +30,10 @@ export default function TabLayout() {
     return <Redirect href="/sign-in" />;
   }
 
+  if (!localDataReady) {
+    return <FullScreenLoading />;
+  }
+
   // A failed background check of a cached user (e.g. offline) keeps the app usable;
   // only a definite 403 (user not in any household) or no user at all means no access.
   const isForbidden = error instanceof ApiClientError && error.status === 403;
@@ -41,7 +41,7 @@ export default function TabLayout() {
     return <Redirect href="/no-access" />;
   }
 
-  if (!localDataReady || !currentUser) {
+  if (!currentUser) {
     return <FullScreenLoading />;
   }
 

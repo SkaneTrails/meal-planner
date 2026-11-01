@@ -67,6 +67,18 @@ class TestTouch:
         written = db.collection.return_value.document.return_value.set.call_args.args[0]
         assert list(written) == ["recipes"]
 
+    def test_failed_marker_write_does_not_fail_the_data_write(
+        self, mock_sync_status_client: MagicMock, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """The data is already written; raising would make clients repeat a non-idempotent write."""
+        doc = mock_sync_status_client.return_value.collection.return_value.document.return_value
+        doc.set.side_effect = RuntimeError("firestore down")
+
+        touch_recipes()
+        touch_household("hh1", "grocery")
+
+        assert "Failed to bump sync version" in caplog.text
+
 
 class TestGetStatus:
     """Reading the versions for a household."""
