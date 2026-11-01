@@ -1,6 +1,6 @@
 output "iam_bindings_complete" {
   description = "Marker output to ensure IAM bindings are complete before dependent resources"
-  value       = google_project_iam_binding.user_access
+  value       = google_project_iam_member.user_roles
 }
 
 output "infrastructure_manager_role" {
