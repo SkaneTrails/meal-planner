@@ -268,10 +268,17 @@ export interface GroceryListStatePatch {
   selected_meals?: string[];
   meal_servings?: Record<string, number>;
   checked_items?: string[];
+  /** Ticked one by one server-side; cannot be combined with checked_items. */
+  check_items?: string[];
+  uncheck_items?: string[];
   custom_items?: CustomGroceryItem[];
   item_order?: string[];
   removed_items?: string[];
 }
+
+export type SyncKind = 'recipes' | 'meal_plan' | 'grocery' | 'settings';
+
+export type SyncStatus = { scope: string } & Record<SyncKind, string | null>;
 
 // API Response types
 export interface ApiError {

@@ -270,6 +270,29 @@ Both endpoints accept:
 
 - `enhance=true` - Enhance recipe with AI after saving (requires Gemini API key)
 
+### Sync Status
+
+```
+GET /api/v1/sync/status
+```
+
+One small request that tells clients which data changed. Returns an opaque version per
+kind (`recipes`, `meal_plan`, `grocery`, `settings`) plus a `scope` (role and household).
+Versions live in the `sync_status` collection: `sync_status/{household_id}` per household,
+`sync_status/_global` for recipes (sharing makes any recipe write visible to everyone).
+Every write path bumps its kind (`touch_household` / `touch_recipes` in
+`api/storage/sync_status.py`), including `scripts/` and `tools/`.
+
+The app polls it after startup, on returning to the foreground, every 5 minutes, and every
+15 seconds while the grocery list is open, and refetches only the kinds whose version
+changed (`mobile/lib/sync/poll-sync-status.ts`). Same design as Skåne Trails.
+
+### Grocery Ticks
+
+`PATCH /api/v1/grocery/state` accepts `check_items` / `uncheck_items` lists, merged
+server-side, so several devices can tick at once without overwriting each other. They
+cannot be combined with a full `checked_items` list in the same request.
+
 ## Project Structure
 
 The project is a multi-platform meal planning system:
