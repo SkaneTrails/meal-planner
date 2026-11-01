@@ -41,6 +41,7 @@ import {
 import { Platform } from 'react-native';
 import { showNotification } from '../alert';
 import { setAuthTokenGetter, setOnUnauthorized } from '../api';
+import { DEV_USER_ID } from '../auth-scope';
 import { auth, isFirebaseConfigured } from '../firebase';
 import { translateStandalone } from '../i18n/translate';
 import { getCurrentLanguage } from '../language-state';
@@ -66,7 +67,7 @@ const isAuthConfigured =
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!isAuthConfigured) {
     const shouldUseMockUser = __DEV__;
-    const mockUser = { email: 'dev@localhost' } as User;
+    const mockUser = { uid: DEV_USER_ID, email: 'dev@localhost' } as User;
     const authError = shouldUseMockUser
       ? null
       : 'Authentication is not configured. Please set Firebase and Google OAuth environment variables.';

@@ -253,7 +253,6 @@ export const useItemsAtHome = (householdId: string | null | undefined) => {
     queryKey: adminKeys.itemsAtHome(householdId ?? ''),
     queryFn: () => api.getItemsAtHome(householdId ?? ''),
     enabled: !!householdId,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 };
 
@@ -310,7 +309,6 @@ export const useFavoriteRecipes = (householdId: string | null | undefined) => {
     queryKey: adminKeys.favorites(householdId ?? ''),
     queryFn: () => api.getFavoriteRecipes(householdId ?? ''),
     enabled: !!householdId,
-    staleTime: 5 * 60 * 1000,
   });
 };
 

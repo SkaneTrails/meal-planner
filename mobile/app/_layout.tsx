@@ -13,7 +13,7 @@ import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import { AppState, type AppStateStatus, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { ThemedAlert } from '@/components/ThemedAlert';
@@ -22,11 +22,7 @@ import { AlertProvider } from '@/lib/alert-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
-import {
-  persistQueryCache,
-  QueryProvider,
-  restoreQueryCache,
-} from '@/lib/query-provider';
+import { QueryProvider } from '@/lib/query-provider';
 import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
 import {
   type AppLanguage,
@@ -182,28 +178,10 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    restoreQueryCache();
-  }, []);
-
-  useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync().catch(() => {});
     }
   }, [fontsLoaded, fontError]);
-
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'background' || nextAppState === 'inactive') {
-        persistQueryCache();
-      }
-    };
-
-    const subscription = AppState.addEventListener(
-      'change',
-      handleAppStateChange,
-    );
-    return () => subscription.remove();
-  }, []);
 
   if (!fontsLoaded && !fontError) {
     return null;
