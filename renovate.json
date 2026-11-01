@@ -154,6 +154,16 @@
       "allowedVersions": "<8.0.0"
     },
     {
+      "description": "The API image must run the Python minor the project and CI use (requires-python, uv python install 3.14); 3.15 broke the build (no msgpack wheel, no gcc in slim)",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "python"
+      ],
+      "allowedVersions": "<3.15"
+    },
+    {
       "description": "setup-trivy digest lookup broken post-compromise; pinned to verified SHA",
       "matchPackageNames": [
         "aquasecurity/setup-trivy"
