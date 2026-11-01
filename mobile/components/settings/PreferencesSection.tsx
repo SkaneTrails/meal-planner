@@ -9,13 +9,11 @@ import { ThemePicker } from './ThemePicker';
 interface PersonalPreferencesSectionProps {
   showHiddenRecipes: boolean;
   onToggleShowHidden: () => void;
-  canManageAppearance: boolean;
 }
 
 export const PersonalPreferencesSection = ({
   showHiddenRecipes,
   onToggleShowHidden,
-  canManageAppearance,
 }: PersonalPreferencesSectionProps) => {
   const { colors, fonts, themeName, setThemeName } = useTheme();
   const { t } = useTranslation();
@@ -29,21 +27,19 @@ export const PersonalPreferencesSection = ({
         onValueChange={onToggleShowHidden}
       />
 
-      {canManageAppearance ? (
-        <View testID="appearance-section" style={{ marginTop: spacing.lg }}>
-          <Text
-            style={{
-              fontFamily: fonts.bodySemibold,
-              fontSize: fontSize.sm,
-              color: colors.content.strong,
-              marginBottom: spacing.xs,
-            }}
-          >
-            {t('settings.appearance')}
-          </Text>
-          <ThemePicker currentTheme={themeName} onChangeTheme={setThemeName} />
-        </View>
-      ) : null}
+      <View testID="appearance-section" style={{ marginTop: spacing.lg }}>
+        <Text
+          style={{
+            fontFamily: fonts.bodySemibold,
+            fontSize: fontSize.sm,
+            color: colors.content.strong,
+            marginBottom: spacing.xs,
+          }}
+        >
+          {t('settings.appearance')}
+        </Text>
+        <ThemePicker currentTheme={themeName} onChangeTheme={setThemeName} />
+      </View>
     </View>
   );
 };
