@@ -12,6 +12,7 @@ from google.cloud.firestore_v1 import DELETE_FIELD, DocumentSnapshot, FieldFilte
 
 from api.models.recipe import DietLabel, MealLabel, OriginalRecipe, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
+from api.storage.sync_status import touch_recipes
 
 
 @dataclass
@@ -235,6 +236,7 @@ def save_recipe(
         data["original"] = original_snapshot.model_dump()
 
     doc_ref.set(data, merge=True)
+    touch_recipes()
 
     # Type cast visibility to match Recipe model's Literal type
     visibility_value = data["visibility"]
@@ -305,6 +307,7 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
         update_data["title_lower"] = title_value.lower() if title_value else ""
 
     doc_ref.update(update_data)
+    touch_recipes()
 
     # Return the updated recipe
     return get_recipe(recipe_id)
@@ -361,6 +364,7 @@ def delete_recipe(recipe_id: str, *, household_id: str | None = None) -> bool:
             return False
 
     doc_ref.delete()
+    touch_recipes()
     return True
 
 
@@ -398,6 +402,7 @@ def review_enhancement(recipe_id: str, *, approve: bool, household_id: str) -> R
     # Update the review status
     update_data = {"enhancement_reviewed": True, "show_enhanced": approve, "updated_at": datetime.now(tz=UTC)}
     doc_ref.update(update_data)
+    touch_recipes()
     data.update(update_data)
 
     return _doc_to_recipe(recipe_id, data)
@@ -460,6 +465,7 @@ def remove_enhancement(recipe_id: str, *, household_id: str) -> Recipe | None:
     }
 
     doc_ref.update(update_data)
+    touch_recipes()
 
     restored_data = {
         k: v
@@ -696,5 +702,6 @@ def transfer_recipe_to_household(recipe_id: str, to_household_id: str) -> Recipe
 
     # Update household_id
     doc_ref.update({"household_id": to_household_id, "updated_at": datetime.now(tz=UTC)})
+    touch_recipes()
 
     return get_recipe(recipe_id)

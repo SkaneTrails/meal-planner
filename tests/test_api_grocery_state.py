@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from api.routers.grocery import router
+from api.storage.grocery_list_storage import merge_checked_items
 
 app = FastAPI()
 app.include_router(router)
@@ -204,6 +205,32 @@ class TestPatchGroceryState:
         assert response.status_code == 400
         assert "No fields to update" in response.json()["detail"]
 
+    def test_passes_per_item_ticks_to_storage(self, client: TestClient) -> None:
+        """Per-item ticks are merged server-side, not sent as a replacement list."""
+        result = {"checked_items": ["eggs"], "updated_at": None}
+        with patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=result) as mock_update:
+            response = client.patch("/grocery/state", json={"check_items": ["eggs"], "uncheck_items": ["milk"]})
+
+        assert response.status_code == 200
+        mock_update.assert_called_once_with("test_household", {}, check=["eggs"], uncheck=["milk"])
+
+    def test_rejects_ticks_combined_with_full_checked_list(self, client: TestClient) -> None:
+        """A full list and per-item ticks contradict each other."""
+        response = client.patch("/grocery/state", json={"checked_items": ["eggs"], "check_items": ["milk"]})
+        assert response.status_code == 400
+
+    def test_per_item_ticks_create_state_when_none_exists(self, client: TestClient) -> None:
+        """The first tick on a household without a list creates it with that item checked."""
+        saved = {"checked_items": ["eggs"], "updated_at": None}
+        with (
+            patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=None),
+            patch("api.routers.grocery.grocery_list_storage.save_grocery_state", return_value=saved) as mock_save,
+        ):
+            response = client.patch("/grocery/state", json={"check_items": ["eggs"]})
+
+        assert response.status_code == 200
+        assert mock_save.call_args.kwargs["checked_items"] == ["eggs"]
+
     def test_requires_household(self, client_no_household: TestClient) -> None:
         """Should return 403 if user has no household."""
         response = client_no_household.patch("/grocery/state", json={"checked_items": []})
@@ -231,3 +258,21 @@ class TestClearGroceryState:
         """Should return 403 if user has no household."""
         response = client_no_household.delete("/grocery/state")
         assert response.status_code == 403
+
+
+class TestMergeCheckedItems:
+    """Per-item tick merge used by PATCH /grocery/state."""
+
+    def test_ticks_from_two_devices_both_survive(self) -> None:
+        """Device A checks eggs, device B checks milk: both stay checked."""
+        after_a = merge_checked_items(["bread"], ["eggs"], [])
+        assert merge_checked_items(after_a, ["milk"], []) == ["bread", "eggs", "milk"]
+
+    def test_uncheck_removes_only_that_item(self) -> None:
+        assert merge_checked_items(["bread", "eggs"], [], ["bread"]) == ["eggs"]
+
+    def test_checking_an_already_checked_item_is_a_no_op(self) -> None:
+        assert merge_checked_items(["eggs"], ["eggs", "eggs"], []) == ["eggs"]
+
+    def test_unchecking_a_missing_item_is_a_no_op(self) -> None:
+        assert merge_checked_items(["eggs"], [], ["milk"]) == ["eggs"]
