@@ -49,6 +49,7 @@ from pathlib import Path
 
 from google.cloud import firestore
 
+from api.storage.sync_status import touch_recipes
 from tools import admin_commands
 
 PROGRESS_FILE = Path(__file__).parent.parent / "data" / "recipe_review_progress.json"
@@ -297,6 +298,7 @@ def delete_enhanced_recipe(recipe_id: str, *, force: bool = False) -> None:
             return
 
     doc_ref.delete()
+    touch_recipes(db)
     print(f"\U0001f5d1\ufe0f Deleted enhanced recipe: {recipe_id}")
 
     progress = load_progress()
@@ -391,6 +393,7 @@ def update_recipe(recipe_id: str, updates: dict) -> None:
             update_payload[legacy_field] = DELETE_FIELD
 
     doc_ref.update(update_payload)
+    touch_recipes(db)
     print(f"\u2705 Enhanced recipe: {recipe_id}")
     print(f"   Updated fields: {list(safe_updates.keys())}")
     stripped = set(updates) - set(safe_updates)
@@ -536,6 +539,7 @@ def reenhance_recipe(recipe_id: str, household_id: str, *, output_path: str | No
 
         doc_ref = db.collection(RECIPES_COLLECTION).document(recipe_id)
         doc_ref.update({"enhancement_reviewed": True, "show_enhanced": True})
+        touch_recipes(db)
         print("\u2705 Marked as reviewed and approved")
 
         _update_review_file(recipe_id)

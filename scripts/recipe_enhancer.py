@@ -43,6 +43,7 @@ except ImportError as exc:
 from google.cloud import firestore
 
 from api.services.prompt_loader import DEFAULT_LANGUAGE, load_system_prompt
+from api.storage.sync_status import touch_recipes
 
 # Default Gemini model for recipe enhancement
 DEFAULT_MODEL = "gemini-2.5-flash"
@@ -198,6 +199,7 @@ def save_recipe(recipe_id: str, enhanced: dict) -> bool:
 
     try:
         db.collection("recipes").document(recipe_id).set(doc_data, merge=True)
+        touch_recipes(db)
         return True
     except Exception as e:
         print(f"❌ Firestore error: {e}")

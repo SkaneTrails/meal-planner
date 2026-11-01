@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Callable, Generator
+from unittest.mock import MagicMock, patch
 
 from dotenv import load_dotenv
 
@@ -23,6 +24,13 @@ from api.auth.models import AuthenticatedUser  # noqa: E402
 from api.models.recipe import Recipe  # noqa: E402
 
 type TestClientFactory = Callable[..., Generator[TestClient]]
+
+
+@pytest.fixture(autouse=True)
+def mock_sync_status_client() -> Generator[MagicMock]:
+    """Keep sync version bumps from storage writes off real Firestore in every test."""
+    with patch("api.storage.sync_status.get_firestore_client") as mock_client:
+        yield mock_client
 
 
 def _create_test_client(

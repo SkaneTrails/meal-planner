@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from google.cloud.firestore_v1 import DocumentSnapshot
 
 from api.storage.firestore_client import MEAL_PLANS_COLLECTION, get_firestore_client
+from api.storage.sync_status import touch_household
 
 # Expected number of parts when splitting meal key (date_str, meal_type_str)
 _MEAL_KEY_PARTS = 2
@@ -47,6 +48,7 @@ def save_meal_plan(
         data["extras"] = extras
 
     doc_ref.set(data)
+    touch_household(household_id, "meal_plan")
 
 
 def load_meal_plan(
@@ -96,6 +98,7 @@ def update_meal(
     doc_ref.set(
         {"meals": {key: value}, "last_modified_by": {key: modified_by}, "updated_at": datetime.now(tz=UTC)}, merge=True
     )
+    touch_household(household_id, "meal_plan")
 
 
 def delete_meal(household_id: str, date_str: str, meal_type_str: str) -> None:  # pragma: no cover
@@ -119,6 +122,7 @@ def delete_meal(household_id: str, date_str: str, meal_type_str: str) -> None:  
     key = f"meals.{date_str}_{meal_type_str}"
     meta_key = f"last_modified_by.{date_str}_{meal_type_str}"
     doc_ref.update({key: DELETE_FIELD, meta_key: DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
+    touch_household(household_id, "meal_plan")
 
 
 def update_day_note(household_id: str, date_str: str, note: str) -> None:  # pragma: no cover
@@ -139,8 +143,10 @@ def update_day_note(household_id: str, date_str: str, note: str) -> None:  # pra
         doc_ref.set({"notes": {date_str: note}, "updated_at": datetime.now(tz=UTC)}, merge=True)
     else:
         doc = cast("DocumentSnapshot", doc_ref.get())
-        if doc.exists:
-            doc_ref.update({f"notes.{date_str}": DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
+        if not doc.exists:
+            return
+        doc_ref.update({f"notes.{date_str}": DELETE_FIELD, "updated_at": datetime.now(tz=UTC)})
+    touch_household(household_id, "meal_plan")
 
 
 def update_extras(household_id: str, week: str, extras: list[str]) -> None:  # pragma: no cover
@@ -155,3 +161,4 @@ def update_extras(household_id: str, week: str, extras: list[str]) -> None:  # p
     db = get_firestore_client()
     doc_ref = db.collection(MEAL_PLANS_COLLECTION).document(_get_meal_plan_doc_id(household_id))
     doc_ref.set({"extras": {week: extras}, "updated_at": datetime.now(tz=UTC)}, merge=True)
+    touch_household(household_id, "meal_plan")

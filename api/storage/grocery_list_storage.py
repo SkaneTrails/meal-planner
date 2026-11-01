@@ -7,9 +7,35 @@ checked items, and custom items. All household members share the same list.
 from datetime import UTC, datetime
 from typing import Any
 
+from google.cloud import firestore
+
 from api.storage.firestore_client import GROCERY_LISTS_COLLECTION, get_firestore_client
+from api.storage.sync_status import touch_household
 
 _DOC_ID = "current"
+
+
+def merge_checked_items(current: list[str], check: list[str], uncheck: list[str]) -> list[str]:
+    """Apply per-item check/uncheck operations to a checked list.
+
+    Unchecks are applied before checks; existing order is kept and new items are appended once.
+
+    Args:
+        current: The stored checked item names.
+        check: Item names to mark checked.
+        uncheck: Item names to mark unchecked.
+
+    Returns:
+        The merged checked item names.
+    """
+    removed = set(uncheck)
+    merged = [item for item in current if item not in removed]
+    present = set(merged)
+    for item in check:
+        if item not in present:
+            merged.append(item)
+            present.add(item)
+    return merged
 
 
 def _doc_ref(household_id: str) -> Any:  # pragma: no cover
@@ -68,29 +94,46 @@ def save_grocery_state(  # noqa: PLR0913
         data["created_by"] = created_by
 
     _doc_ref(household_id).set(data)
+    touch_household(household_id, "grocery")
     return data
 
 
-def update_grocery_state(household_id: str, updates: dict[str, Any]) -> dict[str, Any] | None:  # pragma: no cover
+def update_grocery_state(
+    household_id: str, updates: dict[str, Any], *, check: list[str] | None = None, uncheck: list[str] | None = None
+) -> dict[str, Any] | None:  # pragma: no cover
     """Merge-update specific fields of the grocery list state.
+
+    Per-item check/uncheck operations are applied to the stored checked items in a transaction,
+    so ticks from several devices are combined instead of the last full list winning.
 
     Args:
         household_id: The household identifier.
-        updates: Fields to merge (e.g. checked_items, custom_items).
+        updates: Fields to merge (e.g. custom_items, item_order).
+        check: Item names to mark checked.
+        uncheck: Item names to mark unchecked.
 
     Returns:
         The full updated state, or None if no state existed.
     """
     ref = _doc_ref(household_id)
-    doc = ref.get()
-    if not doc.exists:
-        return None
 
-    updates["updated_at"] = datetime.now(tz=UTC)
-    ref.update(updates)
+    @firestore.transactional  # type: ignore[misc]
+    def apply(transaction: Any) -> dict[str, Any] | None:
+        doc = ref.get(transaction=transaction)
+        if not doc.exists:
+            return None
+        data = doc.to_dict() or {}
+        changes = dict(updates)
+        if check or uncheck:
+            changes["checked_items"] = merge_checked_items(data.get("checked_items", []), check or [], uncheck or [])
+        changes["updated_at"] = datetime.now(tz=UTC)
+        transaction.update(ref, changes)
+        return {**data, **changes}
 
-    updated_doc = ref.get()
-    return updated_doc.to_dict()
+    result = apply(get_firestore_client().transaction())
+    if result is not None:
+        touch_household(household_id, "grocery")
+    return result
 
 
 def delete_grocery_state(household_id: str) -> bool:  # pragma: no cover
@@ -104,4 +147,5 @@ def delete_grocery_state(household_id: str) -> bool:  # pragma: no cover
     if not doc.exists:
         return False
     ref.delete()
+    touch_household(household_id, "grocery")
     return True

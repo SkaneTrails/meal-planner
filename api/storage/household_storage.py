@@ -8,6 +8,7 @@ from google.cloud.firestore_v1 import FieldFilter
 from google.cloud.firestore_v1.transaction import Transaction
 
 from api.storage.firestore_client import get_firestore_client
+from api.storage.sync_status import touch_household
 
 HOUSEHOLDS_COLLECTION = "households"
 HOUSEHOLD_MEMBERS_COLLECTION = "household_members"
@@ -323,6 +324,7 @@ def update_household_settings(household_id: str, settings: dict) -> bool:
     settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
 
     settings_ref.set(settings, merge=True)
+    touch_household(household_id, "settings")
     return True
 
 
@@ -370,7 +372,9 @@ def add_item_at_home(household_id: str, item: str) -> list[str]:
         return current_items
 
     transaction = db.transaction()
-    return update_in_transaction(transaction)
+    items = update_in_transaction(transaction)
+    touch_household(household_id, "settings")
+    return items
 
 
 def remove_item_at_home(household_id: str, item: str) -> list[str]:
@@ -411,7 +415,9 @@ def remove_item_at_home(household_id: str, item: str) -> list[str]:
         return current_items
 
     transaction = db.transaction()
-    return update_in_transaction(transaction)
+    items = update_in_transaction(transaction)
+    touch_household(household_id, "settings")
+    return items
 
 
 def get_items_at_home(household_id: str) -> list[str]:
@@ -473,7 +479,9 @@ def add_favorite_recipe(household_id: str, recipe_id: str) -> list[str]:
         return current_favorites
 
     transaction = db.transaction()
-    return update_in_transaction(transaction)
+    favorites = update_in_transaction(transaction)
+    touch_household(household_id, "settings")
+    return favorites
 
 
 def remove_favorite_recipe(household_id: str, recipe_id: str) -> list[str]:
@@ -511,4 +519,6 @@ def remove_favorite_recipe(household_id: str, recipe_id: str) -> list[str]:
         return current_favorites
 
     transaction = db.transaction()
-    return update_in_transaction(transaction)
+    favorites = update_in_transaction(transaction)
+    touch_household(household_id, "settings")
+    return favorites
