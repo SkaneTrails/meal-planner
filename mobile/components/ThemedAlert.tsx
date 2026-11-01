@@ -192,7 +192,7 @@ export const ThemedAlert = ({ alert, onDismiss }: ThemedAlertProps) => {
                     tone={buttonTone(button.style)}
                     size="md"
                     onPress={() => handlePress(button)}
-                    style={styles.alertButton}
+                    style={shouldStackButtons ? undefined : styles.alertButton}
                     testID={`alert-button-${button.text}`}
                   />
                 ))

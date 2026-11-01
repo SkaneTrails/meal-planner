@@ -236,6 +236,14 @@ export const AnimatedPressable = ({
     return rest as ViewStyle;
   };
 
+  const resolveStyle = (state: { pressed: boolean; hovered: boolean }) =>
+    typeof style === 'function' ? style(state) : style;
+
+  const outerStyle = extractFlexStyle(
+    resolveStyle({ pressed: false, hovered: false }),
+  );
+  const fillsWrapper = outerStyle.flex != null || outerStyle.flexGrow != null;
+
   return (
     <Pressable
       onPressIn={handlePressIn}
@@ -243,20 +251,20 @@ export const AnimatedPressable = ({
       onHoverIn={Platform.OS === 'web' ? handleHoverIn : undefined}
       onHoverOut={Platform.OS === 'web' ? handleHoverOut : undefined}
       {...props}
-      style={typeof style === 'function' ? undefined : extractFlexStyle(style)}
+      style={outerStyle}
     >
       {({ pressed }) => {
-        const hovered = isHovered.current;
-        const resolvedStyle =
-          typeof style === 'function' ? style({ pressed, hovered }) : style;
-        const innerStyle =
-          typeof style === 'function'
-            ? resolvedStyle
-            : removeFlexStyle(resolvedStyle);
+        const innerStyle = removeFlexStyle(
+          resolveStyle({ pressed, hovered: isHovered.current }),
+        );
 
         return (
           <Animated.View
-            style={[innerStyle, { transform: [{ scale: scaleAnim }] }]}
+            style={[
+              innerStyle,
+              fillsWrapper && innerFillStyle,
+              { transform: [{ scale: scaleAnim }] },
+            ]}
           >
             {children}
           </Animated.View>
@@ -265,5 +273,7 @@ export const AnimatedPressable = ({
     </Pressable>
   );
 };
+
+const innerFillStyle: ViewStyle = { flexGrow: 1 };
 
 export default AnimatedPressable;
