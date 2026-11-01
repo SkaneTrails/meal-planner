@@ -315,15 +315,25 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     [scheduleFlush],
   );
 
-  /** Load the server's state; throws when it can't, so callers decide how to degrade. */
+  /**
+   * Load the server's state; throws when it can't, so callers decide how to degrade. A response
+   * that arrives after the user or household changed is discarded and rejects, so it is not
+   * mistaken for a successful sync.
+   */
   const fetchFromServer = useCallback(async () => {
     const uid = userIdRef.current;
+    if (!uid) throw new Error('Not signed in');
+    const scope = writeScopeRef.current;
+    const isStale = () =>
+      userIdRef.current !== uid || writeScopeRef.current !== scope;
     const state = await api.getGroceryState();
-    if (!isMountedRef.current || !uid || userIdRef.current !== uid) return;
+    if (!isMountedRef.current) return;
+    if (isStale()) throw new Error('Grocery list changed owner while loading');
     const effective = applyServerState(state);
     const tickData = await AsyncStorage.getItem(
       groceryStorageKey('ticks', uid),
     );
+    if (isStale()) throw new Error('Grocery list changed owner while loading');
     applyTicks(
       safeJsonParse<string[]>(tickData ?? '[]', []),
       effective.checked_items,
@@ -550,9 +560,14 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   const clearAll = useCallback(async () => {
     resetState();
+    const scope = writeScopeRef.current;
     const uid = userIdRef.current;
     if (uid) await removeDeviceCopy(uid);
-    enqueueWrite(() => api.clearGroceryState()).catch(() => {});
+    // Queued behind other writes: by then another user may have signed in.
+    enqueueWrite(async () => {
+      if (writeScopeRef.current !== scope || userIdRef.current !== uid) return;
+      await api.clearGroceryState();
+    }).catch(() => {});
   }, [enqueueWrite, resetState]);
 
   const refreshFromApi = useCallback(async () => {

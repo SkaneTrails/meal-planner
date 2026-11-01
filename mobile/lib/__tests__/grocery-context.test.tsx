@@ -818,6 +818,61 @@ describe('GroceryProvider', () => {
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(result.current.checkedItems.has('eggs')).toBe(true);
     });
+
+    it('rejects a refresh whose response arrives after the household changed', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      let finishOld: (state: GroceryListState) => void = () => {};
+      mockGetGroceryState.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishOld = resolve;
+        }),
+      );
+      const refresh = refreshGroceryFromServer();
+      act(() => {
+        resetGroceryForNewScope();
+      });
+      finishOld({ ...emptyState, checked_items: ['old-household-item'] });
+
+      await expect(refresh).rejects.toThrow('changed owner');
+      expect(result.current.checkedItems.has('old-household-item')).toBe(false);
+    });
+
+    it('does not send a queued clear after the household changed', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      let finishPatch: (state: GroceryListState) => void = () => {};
+      mockPatchGroceryState.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishPatch = resolve;
+        }),
+      );
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      act(() => {
+        void result.current.refreshFromApi();
+      });
+      await waitFor(() => expect(mockPatchGroceryState).toHaveBeenCalled());
+
+      await act(async () => {
+        await result.current.clearAll();
+      });
+      act(() => {
+        resetGroceryForNewScope();
+      });
+      await act(async () => {
+        finishPatch(emptyState);
+      });
+
+      expect(mockClearGroceryState).not.toHaveBeenCalled();
+    });
   });
 });
 
