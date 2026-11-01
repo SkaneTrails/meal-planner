@@ -36,6 +36,10 @@ vi.mock('@/lib/hooks/useImagePicker', () => ({
   useImagePicker: vi.fn(() => ({ pickImage: mockPickImage })),
 }));
 
+vi.mock('@/lib/api', () => ({
+  api: { uploadRecipeImage: vi.fn() },
+}));
+
 vi.mock('@/lib/hooks/use-admin', () => ({
   useCurrentUser: vi.fn(() => ({ data: mockCurrentUser() })),
   useHouseholds: vi.fn(() => ({ data: undefined })),
@@ -78,12 +82,18 @@ vi.mock('@/lib/haptics', () => ({
 }));
 
 import { showAlert, showNotification } from '@/lib/alert';
+import { api } from '@/lib/api';
 import { useCurrentUser } from '@/lib/hooks/use-admin';
+import { useImagePicker } from '@/lib/hooks/useImagePicker';
 import { useRecipeActions } from '../useRecipeActions';
 
 const mockShowAlert = vi.mocked(showAlert);
 const mockShowNotification = vi.mocked(showNotification);
 const mockUseCurrentUser = vi.mocked(useCurrentUser);
+const mockUploadRecipeImage = vi.mocked(api.uploadRecipeImage);
+
+const pickedImageCallback = () =>
+  vi.mocked(useImagePicker).mock.calls.at(-1)?.[0] as (uri: string) => Promise<void>;
 
 const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   id: 'recipe-1',
@@ -328,6 +338,29 @@ describe('useRecipeActions', () => {
         updates: { image_url: 'https://example.com/new.jpg' },
       });
       expect(mockShowNotification).toHaveBeenCalledWith('common.success', 'recipe.photoUpdated');
+    });
+  });
+
+  describe('picked image upload', () => {
+    it('uploads the image and refreshes the recipe', async () => {
+      mockUploadRecipeImage.mockResolvedValue(makeRecipe());
+      renderHook(() => useRecipeActions('recipe-1', makeRecipe()), { wrapper });
+
+      await act(async () => pickedImageCallback()('file:///cache/photo.jpg'));
+
+      expect(mockUploadRecipeImage).toHaveBeenCalledWith('recipe-1', 'file:///cache/photo.jpg');
+      expect(mockShowNotification).toHaveBeenCalledWith('common.success', 'recipe.photoUploaded');
+    });
+
+    it('shows an error and never saves the device-local URI when upload fails', async () => {
+      mockUploadRecipeImage.mockRejectedValue(new Error('network'));
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      renderHook(() => useRecipeActions('recipe-1', makeRecipe()), { wrapper });
+
+      await act(async () => pickedImageCallback()('file:///cache/photo.jpg'));
+
+      expect(mockMutateAsync).not.toHaveBeenCalled();
+      expect(mockShowNotification).toHaveBeenCalledWith('common.error', 'recipe.failedToUpdatePhoto');
     });
   });
 

@@ -88,19 +88,8 @@ export const useRecipeActions = (
       await updateRecipe.mutateAsync({ id: id ?? '', updates: {} });
       showNotification(t('common.success'), t('recipe.photoUploaded'));
     } catch (err) {
-      console.warn('Upload failed, saving local URI:', err);
-      try {
-        await updateRecipe.mutateAsync({
-          id: id ?? '',
-          updates: { image_url: localUri },
-        });
-        showNotification(
-          t('recipe.savedLocally'),
-          t('recipe.savedLocallyMessage'),
-        );
-      } catch {
-        showNotification(t('common.error'), t('recipe.failedToUpdatePhoto'));
-      }
+      console.warn('Recipe image upload failed:', err);
+      showNotification(t('common.error'), t('recipe.failedToUpdatePhoto'));
     } finally {
       setIsUpdatingImage(false);
     }

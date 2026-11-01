@@ -257,8 +257,6 @@ const sv: Translations = {
     cameraPermission: 'Kamerabehörighet krävs för att ta foton',
     libraryPermission: 'Fotobiblioteksbehörighet krävs',
     photoUploaded: 'Receptfoto uppladdat!',
-    savedLocally: 'Sparat lokalt',
-    savedLocallyMessage: 'Foto sparat lokalt (uppladdning misslyckades)',
     failedToUpdatePhoto: 'Kunde inte uppdatera foto',
     photoUpdated: 'Receptfoto uppdaterat!',
     addedToMealPlan: 'Tillagt!',
