@@ -263,9 +263,6 @@ const it: Translations = {
       'Il permesso della fotocamera è necessario per scattare foto',
     libraryPermission: 'Il permesso della libreria foto è necessario',
     photoUploaded: 'Foto ricetta caricata!',
-    savedLocally: 'Salvato localmente',
-    savedLocallyMessage:
-      'Foto salvata localmente (caricamento nel cloud fallito)',
     failedToUpdatePhoto: 'Impossibile aggiornare la foto',
     photoUpdated: 'Foto ricetta aggiornata!',
     addedToMealPlan: 'Aggiunto!',
