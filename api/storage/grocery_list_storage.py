@@ -38,6 +38,45 @@ def merge_checked_items(current: list[str], check: list[str], uncheck: list[str]
     return merged
 
 
+def apply_grocery_patch(  # noqa: PLR0913
+    current: dict[str, Any] | None,
+    updates: dict[str, Any],
+    *,
+    check: list[str],
+    uncheck: list[str],
+    created_by: str | None,
+    now: datetime,
+) -> dict[str, Any]:
+    """Compute the grocery state after a patch; a missing state starts empty, so the patch creates it.
+
+    Args:
+        current: The stored state, or None if the household has none yet.
+        updates: Fields to replace.
+        check: Item names to mark checked.
+        uncheck: Item names to mark unchecked.
+        created_by: Email recorded when the state is created.
+        now: Time to record as updated_at.
+
+    Returns:
+        The full new state.
+    """
+    if current is None:
+        current = {
+            "selected_meals": [],
+            "meal_servings": {},
+            "checked_items": [],
+            "custom_items": [],
+            "item_order": [],
+            "removed_items": [],
+            **({"created_by": created_by} if created_by else {}),
+        }
+    result = {**current, **updates}
+    if check or uncheck:
+        result["checked_items"] = merge_checked_items(current.get("checked_items", []), check, uncheck)
+    result["updated_at"] = now
+    return result
+
+
 def _doc_ref(household_id: str) -> Any:  # pragma: no cover
     """Get the document reference for a household's grocery list."""
     db = get_firestore_client()
@@ -99,40 +138,46 @@ def save_grocery_state(  # noqa: PLR0913
 
 
 def update_grocery_state(
-    household_id: str, updates: dict[str, Any], *, check: list[str] | None = None, uncheck: list[str] | None = None
-) -> dict[str, Any] | None:  # pragma: no cover
-    """Merge-update specific fields of the grocery list state.
+    household_id: str,
+    updates: dict[str, Any],
+    *,
+    check: list[str] | None = None,
+    uncheck: list[str] | None = None,
+    created_by: str | None = None,
+) -> dict[str, Any]:  # pragma: no cover
+    """Merge-update the grocery list state, creating it if the household has none yet.
 
-    Per-item check/uncheck operations are applied to the stored checked items in a transaction,
-    so ticks from several devices are combined instead of the last full list winning.
+    Runs in one transaction, including the creation, so ticks from several devices are combined
+    (a concurrent request retries against the other's result) instead of the last write winning.
 
     Args:
         household_id: The household identifier.
         updates: Fields to merge (e.g. custom_items, item_order).
         check: Item names to mark checked.
         uncheck: Item names to mark unchecked.
+        created_by: Email recorded if the state is created.
 
     Returns:
-        The full updated state, or None if no state existed.
+        The full updated state.
     """
     ref = _doc_ref(household_id)
 
     @firestore.transactional  # type: ignore[misc]
-    def apply(transaction: Any) -> dict[str, Any] | None:
+    def apply(transaction: Any) -> dict[str, Any]:
         doc = ref.get(transaction=transaction)
-        if not doc.exists:
-            return None
-        data = doc.to_dict() or {}
-        changes = dict(updates)
-        if check or uncheck:
-            changes["checked_items"] = merge_checked_items(data.get("checked_items", []), check or [], uncheck or [])
-        changes["updated_at"] = datetime.now(tz=UTC)
-        transaction.update(ref, changes)
-        return {**data, **changes}
+        result = apply_grocery_patch(
+            (doc.to_dict() or {}) if doc.exists else None,
+            updates,
+            check=check or [],
+            uncheck=uncheck or [],
+            created_by=created_by,
+            now=datetime.now(tz=UTC),
+        )
+        transaction.set(ref, result)
+        return result
 
     result = apply(get_firestore_client().transaction())
-    if result is not None:
-        touch_household(household_id, "grocery")
+    touch_household(household_id, "grocery")
     return result
 
 

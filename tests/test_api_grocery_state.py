@@ -1,6 +1,7 @@
 """Tests for grocery list state endpoints (GET/PUT/PATCH/DELETE /grocery/state)."""
 
 from collections.abc import Generator
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from api.routers.grocery import router
-from api.storage.grocery_list_storage import merge_checked_items
+from api.storage.grocery_list_storage import apply_grocery_patch, merge_checked_items
 
 app = FastAPI()
 app.include_router(router)
@@ -181,23 +182,15 @@ class TestPatchGroceryState:
         assert response.status_code == 200
         assert response.json()["removed_items"] == ["tomatoes", "onions"]
 
-    def test_creates_state_if_none_exists(self, client: TestClient) -> None:
-        """Should create a new state when patch finds no existing state."""
-        saved = {
-            "selected_meals": [],
-            "meal_servings": {},
-            "checked_items": ["butter"],
-            "custom_items": [],
-            "updated_at": None,
-        }
-        with (
-            patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=None),
-            patch("api.routers.grocery.grocery_list_storage.save_grocery_state", return_value=saved),
-        ):
+    def test_records_the_patching_user_as_creator(self, client: TestClient) -> None:
+        """The storage layer creates the state if missing, recording who created it."""
+        result = {"checked_items": ["butter"], "updated_at": None}
+        with patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=result) as mock_update:
             response = client.patch("/grocery/state", json={"checked_items": ["butter"]})
 
         assert response.status_code == 200
         assert response.json()["checked_items"] == ["butter"]
+        assert mock_update.call_args.kwargs["created_by"]
 
     def test_rejects_empty_patch(self, client: TestClient) -> None:
         """Should return 400 when no fields provided."""
@@ -212,24 +205,40 @@ class TestPatchGroceryState:
             response = client.patch("/grocery/state", json={"check_items": ["eggs"], "uncheck_items": ["milk"]})
 
         assert response.status_code == 200
-        mock_update.assert_called_once_with("test_household", {}, check=["eggs"], uncheck=["milk"])
+        assert mock_update.call_args.args == ("test_household", {})
+        assert mock_update.call_args.kwargs["check"] == ["eggs"]
+        assert mock_update.call_args.kwargs["uncheck"] == ["milk"]
 
     def test_rejects_ticks_combined_with_full_checked_list(self, client: TestClient) -> None:
         """A full list and per-item ticks contradict each other."""
         response = client.patch("/grocery/state", json={"checked_items": ["eggs"], "check_items": ["milk"]})
         assert response.status_code == 400
 
-    def test_per_item_ticks_create_state_when_none_exists(self, client: TestClient) -> None:
-        """The first tick on a household without a list creates it with that item checked."""
-        saved = {"checked_items": ["eggs"], "updated_at": None}
-        with (
-            patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=None),
-            patch("api.routers.grocery.grocery_list_storage.save_grocery_state", return_value=saved) as mock_save,
-        ):
-            response = client.patch("/grocery/state", json={"check_items": ["eggs"]})
+    def test_per_item_ticks_create_state_when_none_exists(self) -> None:
+        """The first tick on a household without a list creates it, in the same transaction."""
+        now = datetime(2026, 11, 1, tzinfo=UTC)
+        result = apply_grocery_patch(None, {}, check=["eggs"], uncheck=[], created_by="a@b.c", now=now)
 
-        assert response.status_code == 200
-        assert mock_save.call_args.kwargs["checked_items"] == ["eggs"]
+        assert result["checked_items"] == ["eggs"]
+        assert result["selected_meals"] == []
+        assert result["created_by"] == "a@b.c"
+        assert result["updated_at"] == now
+
+    def test_patch_merges_ticks_into_existing_state(self) -> None:
+        """Ticks merge into the stored list; other fields are replaced; the creator is kept."""
+        current = {"checked_items": ["milk"], "item_order": ["a"], "created_by": "first@b.c"}
+        result = apply_grocery_patch(
+            current,
+            {"item_order": ["b"]},
+            check=["eggs"],
+            uncheck=["milk"],
+            created_by="second@b.c",
+            now=datetime(2026, 11, 1, tzinfo=UTC),
+        )
+
+        assert result["checked_items"] == ["eggs"]
+        assert result["item_order"] == ["b"]
+        assert result["created_by"] == "first@b.c"
 
     def test_requires_household(self, client_no_household: TestClient) -> None:
         """Should return 403 if user has no household."""

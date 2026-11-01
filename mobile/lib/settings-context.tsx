@@ -33,6 +33,7 @@ import {
   useUpdateHouseholdSettings,
 } from './hooks/use-admin';
 import { useAuth } from './hooks/use-auth';
+import { useLocalDataReady } from './local-data-context';
 import type { GroceryStore, HouseholdSettings } from './types';
 import {
   normalizePantryItemName,
@@ -119,14 +120,16 @@ export const SettingsProvider = ({
     useState<LocalSettings>(defaultLocalSettings);
   const [isLocalLoading, setIsLocalLoading] = useState(true);
 
-  // Wait for Firebase auth before firing API calls
+  // Wait for Firebase auth, and for the device cache to be confirmed as this user's
   const { user, loading: authLoading } = useAuth();
-  const isAuthenticated = !authLoading && !!user;
+  const localDataReady = useLocalDataReady();
+  const isAuthenticated = !authLoading && !!user && localDataReady;
 
   // Cloud state — only fetch when authenticated
-  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser({
+  const { data: cachedUser, isLoading: isUserLoading } = useCurrentUser({
     enabled: isAuthenticated,
   });
+  const currentUser = isAuthenticated ? cachedUser : undefined;
   const householdId = currentUser?.household_id ?? null;
   const { data: itemsAtHomeData, isLoading: isItemsLoading } =
     useItemsAtHome(householdId);

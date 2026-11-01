@@ -3,6 +3,7 @@
  */
 
 import {
+  type QueryClient,
   useInfiniteQuery,
   useMutation,
   useQueries,
@@ -36,6 +37,13 @@ export const recipeKeys = {
   details: () => [...recipeKeys.all, 'detail'] as const,
   detail: (id: string) => [...recipeKeys.details(), id] as const,
 };
+
+/** After a recipe write: the paged library and the full list (home, meal plan, grocery). */
+const invalidateRecipeLists = (queryClient: QueryClient) =>
+  Promise.all([
+    queryClient.invalidateQueries({ queryKey: recipeKeys.lists() }),
+    queryClient.invalidateQueries({ queryKey: [...recipeKeys.all, 'all'] }),
+  ]);
 
 /**
  * Hook to fetch recipes with infinite scrolling (cursor-based pagination).
@@ -190,8 +198,7 @@ export const useCreateRecipe = () => {
   return useMutation({
     mutationFn: (recipe: RecipeCreate) => api.createRecipe(recipe),
     onSuccess: () => {
-      // Invalidate recipe lists to refetch
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -215,7 +222,7 @@ export const useScrapeRecipe = () => {
       mealLabel?: MealLabel | null;
     }) => api.scrapeRecipe(url, enhance, dietLabel, mealLabel),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -246,7 +253,7 @@ export const useUpdateRecipe = () => {
       api.updateRecipe(id, updates),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -263,7 +270,7 @@ export const useDeleteRecipe = () => {
       queryClient.removeQueries({
         queryKey: recipeKeys.detail(id),
       });
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -284,7 +291,7 @@ export const useReviewEnhancement = () => {
     }) => api.reviewEnhancement(id, action),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -299,7 +306,7 @@ export const useRemoveEnhancement = () => {
     mutationFn: (id: string) => api.removeEnhancement(id),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -314,7 +321,7 @@ export const useEnhanceRecipe = () => {
     mutationFn: (id: string) => api.enhanceRecipe(id),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -336,7 +343,7 @@ export const useCopyRecipe = () => {
     }) => api.copyRecipe(id, { keepEnhanced }),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };

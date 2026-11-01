@@ -18,6 +18,7 @@ import sys
 from google.cloud.firestore_v1 import DELETE_FIELD
 
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
+from api.storage.sync_status import touch_recipes
 
 db = get_firestore_client()
 
@@ -161,6 +162,7 @@ def apply_pair(base_id: str, *, dry_run: bool = False) -> bool:
         db.collection(RECIPES_COLLECTION).document(base_id).update(updates)
         # Delete original doc
         db.collection(RECIPES_COLLECTION).document(orig_id).delete()
+        touch_recipes()
         print(f"  ✅ Merged {orig_id} → {base_id} ({title})")
         return True
     except Exception as e:

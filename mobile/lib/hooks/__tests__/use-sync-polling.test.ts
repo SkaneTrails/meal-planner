@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createQueryWrapper } from '@/test/helpers';
 
@@ -20,15 +20,13 @@ vi.mock('expo-router', async () => {
 
 vi.mock('@/lib/sync/poll-sync-status', () => ({
   pollSyncStatus: vi.fn().mockResolvedValue(undefined),
-  claimLocalData: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { claimLocalData, pollSyncStatus } from '@/lib/sync/poll-sync-status';
+import { pollSyncStatus } from '@/lib/sync/poll-sync-status';
 import {
   GROCERY_POLL_INTERVAL,
   SYNC_POLL_INTERVAL,
   useFocusedSyncPolling,
-  useLocalDataReady,
   useSyncPolling,
 } from '../use-sync-polling';
 
@@ -73,27 +71,5 @@ describe('useFocusedSyncPolling', () => {
     act(() => vi.advanceTimersByTime(GROCERY_POLL_INTERVAL * 2));
     expect(pollSyncStatus).toHaveBeenCalledTimes(3);
     vi.useRealTimers();
-  });
-});
-
-describe('useLocalDataReady', () => {
-  beforeEach(() => vi.clearAllMocks());
-
-  it('is false while signed out', () => {
-    const { result } = renderHook(() => useLocalDataReady(undefined), {
-      wrapper: createQueryWrapper(),
-    });
-
-    expect(result.current).toBe(false);
-    expect(claimLocalData).not.toHaveBeenCalled();
-  });
-
-  it('becomes true once the device data is claimed for the user', async () => {
-    const { result } = renderHook(() => useLocalDataReady('user-1'), {
-      wrapper: createQueryWrapper(),
-    });
-
-    await waitFor(() => expect(result.current).toBe(true));
-    expect(claimLocalData).toHaveBeenCalledOnce();
   });
 });

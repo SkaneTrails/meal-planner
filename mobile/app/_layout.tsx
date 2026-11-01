@@ -22,6 +22,7 @@ import { AlertProvider } from '@/lib/alert-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import { useTranslation } from '@/lib/i18n';
+import { LocalDataProvider } from '@/lib/local-data-context';
 import { QueryProvider } from '@/lib/query-provider';
 import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
 import {
@@ -201,11 +202,13 @@ export default function RootLayout() {
         >
           <AuthProvider>
             <QueryProvider>
-              <SettingsProvider>
-                <GroceryProvider>
-                  <AppContent />
-                </GroceryProvider>
-              </SettingsProvider>
+              <LocalDataProvider>
+                <SettingsProvider>
+                  <GroceryProvider>
+                    <AppContent />
+                  </GroceryProvider>
+                </SettingsProvider>
+              </LocalDataProvider>
             </QueryProvider>
           </AuthProvider>
         </AlertProvider>
