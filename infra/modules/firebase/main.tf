@@ -35,6 +35,22 @@ data "google_firebase_web_app_config" "mobile" {
   web_app_id = google_firebase_web_app.mobile.app_id
 }
 
+# Firebase Android App - registering the Play signing certificate fingerprints makes
+# Firebase create the Android OAuth client (Google Cloud > Credentials) that native
+# Google Sign-In requires. Free: registering an app costs nothing.
+resource "google_firebase_android_app" "mobile" {
+  provider      = google-beta
+  project       = var.project
+  display_name  = "Aroma Android"
+  package_name  = var.android_package_name
+  sha1_hashes   = var.android_sha1_hashes
+  sha256_hashes = var.android_sha256_hashes
+
+  deletion_policy = "DELETE"
+
+  depends_on = [google_firebase_project.default]
+}
+
 # Read OAuth credentials from Secret Manager (created by create-oauth-client script)
 data "google_secret_manager_secret_version" "oauth_client_id" {
   count = var.oauth_secrets_exist ? 1 : 0

@@ -19,3 +19,9 @@ variable "iam_api_service" {
   description = "IAM API service resource (for dependency ordering)"
   type        = any
 }
+
+variable "play_publisher_account_id" {
+  description = "Account ID of the service account EAS Submit uses to publish to Google Play"
+  type        = string
+  default     = "mp-play-publisher"
+}

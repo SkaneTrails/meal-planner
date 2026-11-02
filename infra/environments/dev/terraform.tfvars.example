@@ -31,6 +31,13 @@ tfstate_bucket_name = "your-tfstate-bucket-name"
 # GCS bucket for backups (must be globally unique)
 backup_bucket_name = "your-project-firestore-backups"
 
+# Android app for native Google Sign-In (must equal expo.android.package in mobile/app.json).
+# Fingerprints of the Play app signing key: Play Console > Protected with Play >
+# Manage Play app signing. Lowercase hex, no colons.
+android_package_name  = "com.example.app"
+android_sha1_hashes   = ["<play-app-signing-sha1>"]
+android_sha256_hashes = ["<play-app-signing-sha256>"]
+
 # External repos granted viewer-only WIF access (for terraform plan)
 # Format: label = "owner/repo"
 # external_wif_repos = {

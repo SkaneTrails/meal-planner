@@ -10,6 +10,7 @@ import type {
   MealLabel,
   PaginatedRecipeList,
   Recipe,
+  RecipeChanges,
   RecipeCreate,
   RecipeNote,
   RecipeNoteCreate,
@@ -26,6 +27,12 @@ import {
   apiRequest,
   getAuthTokenFn,
 } from './client';
+
+const NATIVE_USER_AGENT =
+  'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36';
+
+const isBlockedStatus = (status: number) =>
+  status === 403 || status === 429 || status >= 500;
 
 export const recipeApi = {
   getRecipes: (
@@ -47,6 +54,12 @@ export const recipeApi = {
 
   getRecipe: (id: string): Promise<Recipe> => {
     return apiRequest<Recipe>(`/recipes/${id}`);
+  },
+
+  /** Without `since`, every recipe the user can see (hidden ones too). */
+  getRecipeChanges: (since?: string): Promise<RecipeChanges> => {
+    const query = since ? `?since=${encodeURIComponent(since)}` : '';
+    return apiRequest<RecipeChanges>(`/recipes/changes${query}`);
   },
 
   createRecipe: (recipe: RecipeCreate): Promise<Recipe> => {
@@ -79,47 +92,52 @@ export const recipeApi = {
       if (enhance) params.set('enhance', 'true');
       if (dietLabel) params.set('diet_label', dietLabel);
       if (mealLabel) params.set('meal_label', mealLabel);
-      return params.toString();
+      const query = params.toString();
+      return query ? `?${query}` : '';
     };
 
+    const scrapeOnServer = () => {
+      const request: RecipeScrapeRequest = { url };
+      return apiRequest<Recipe>(`/recipes/scrape${buildParams()}`, {
+        method: 'POST',
+        body: JSON.stringify(request),
+      });
+    };
+
+    let htmlResponse: Response;
     try {
-      const htmlResponse = await fetch(url, {
+      htmlResponse = await fetch(url, {
         headers: {
           Accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5,sv;q=0.3',
+          // Browsers forbid overriding User-Agent; native defaults to okhttp, which bot filters block.
+          ...(Platform.OS !== 'web' && { 'User-Agent': NATIVE_USER_AGENT }),
         },
       });
-
-      if (!htmlResponse.ok) {
-        throw new ApiClientError(
-          `Failed to fetch recipe page: ${htmlResponse.status}`,
-          htmlResponse.status,
-        );
-      }
-
-      const html = await htmlResponse.text();
-
-      const request: RecipeParseRequest = { url, html };
-      const query = buildParams();
-
-      return apiRequest<Recipe>(`/recipes/parse${query ? `?${query}` : ''}`, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      });
-    } catch (error) {
-      if (error instanceof ApiClientError) {
-        throw error;
-      }
-      // TypeError from fetch means CORS or network error — fall through
-      // to server-side scraping. Invalid URLs are already caught above.
-      const request: RecipeScrapeRequest = { url };
-      const query = buildParams();
-      return apiRequest<Recipe>(`/recipes/scrape${query ? `?${query}` : ''}`, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      });
+    } catch {
+      // CORS (web) or network error
+      return scrapeOnServer();
     }
+
+    if (!htmlResponse.ok) {
+      if (isBlockedStatus(htmlResponse.status)) {
+        return scrapeOnServer();
+      }
+      throw new ApiClientError(
+        `Failed to fetch recipe page: ${htmlResponse.status}`,
+        htmlResponse.status,
+      );
+    }
+
+    const request: RecipeParseRequest = {
+      url,
+      html: await htmlResponse.text(),
+    };
+    return apiRequest<Recipe>(`/recipes/parse${buildParams()}`, {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
   },
 
   previewRecipe: async (

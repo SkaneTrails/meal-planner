@@ -14,6 +14,7 @@ import {
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { GroceryListSkeleton } from '@/components/Skeleton';
+import { useFocusedSyncPolling } from '@/lib/hooks/use-sync-polling';
 import { useGroceryScreen } from '@/lib/hooks/useGroceryScreen';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
@@ -21,6 +22,7 @@ import { spacing } from '@/lib/theme';
 
 export default function GroceryScreen() {
   const { t } = useTranslation();
+  useFocusedSyncPolling();
   const { groceryStores, activeStoreId, setActiveStoreId } = useSettings();
   const {
     isLoading,

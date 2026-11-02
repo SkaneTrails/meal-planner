@@ -263,8 +263,6 @@ const en = {
     cameraPermission: 'Camera permission is required to take photos',
     libraryPermission: 'Photo library permission is required',
     photoUploaded: 'Recipe photo uploaded!',
-    savedLocally: 'Saved Locally',
-    savedLocallyMessage: 'Photo saved locally (upload to cloud failed)',
     failedToUpdatePhoto: 'Failed to update photo',
     photoUpdated: 'Recipe photo updated!',
     addedToMealPlan: 'Added!',

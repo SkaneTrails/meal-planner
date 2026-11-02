@@ -54,6 +54,16 @@ resource "google_project_iam_member" "github_actions_firebase_hosting" {
   depends_on = [google_service_account.github_actions_firebase]
 }
 
+# The Firebase CLI checks that the Hosting API is enabled before it deploys
+# (serviceusage.services.get); without this the deploy fails with a 403.
+resource "google_project_iam_member" "github_actions_firebase_service_usage" {
+  project = var.project
+  role    = "roles/serviceusage.serviceUsageConsumer"
+  member  = "serviceAccount:${google_service_account.github_actions_firebase.email}"
+
+  depends_on = [google_service_account.github_actions_firebase]
+}
+
 # Service account for GitHub Actions to deploy to Cloud Run
 resource "google_service_account" "github_actions_cloudrun" {
   project      = var.project
@@ -114,10 +124,8 @@ resource "google_project_iam_member" "github_actions_terraform_editor" {
   depends_on = [google_service_account.github_actions_terraform]
 }
 
-# Grant prerequisite roles to the terraform SA via additive iam_member.
-# The prerequisite_roles binding (authoritative) also includes the SA, but if
-# external drift removes it from the binding, these additive grants ensure the
-# SA can still reconcile the drift on the next apply.
+# Grant prerequisite roles to the terraform SA via additive iam_member, so it can always
+# create custom roles and manage IAM, whatever else holds these roles in the shared project.
 resource "google_project_iam_member" "github_actions_terraform_role_admin" {
   project = var.project
   role    = "roles/iam.roleAdmin"
@@ -203,6 +211,23 @@ resource "google_project_iam_member" "github_actions_viewer" {
 }
 
 # -----------------------------------------------------------------------------
+# Google Play Publisher Service Account
+# -----------------------------------------------------------------------------
+
+# Identity EAS Submit uses to publish app bundles to Google Play. It has NO GCP IAM
+# roles: Play Console grants its permissions (Users and permissions > invite its email).
+# Its JSON key is created by hand, not here, so the private key never enters the
+# Terraform state (docs/DEVELOPMENT.md > Android release pipeline).
+resource "google_service_account" "play_publisher" {
+  project      = var.project
+  account_id   = var.play_publisher_account_id
+  display_name = "Meal Planner Google Play Publisher"
+  description  = "Used by EAS Submit (GitHub Actions) to publish Android app bundles to Google Play"
+
+  depends_on = [var.iam_api_service]
+}
+
+# -----------------------------------------------------------------------------
 # Local Development Service Account
 # -----------------------------------------------------------------------------
 
@@ -243,33 +268,19 @@ resource "google_project_iam_member" "local_dev_secrets" {
   depends_on = [google_service_account.local_dev]
 }
 
-# Grant prerequisite roles needed to create custom roles.
-# Uses iam_binding (authoritative) — must include ALL members for these roles.
-# The terraform SA is also granted these roles via separate iam_member resources
-# (additive) above, so even if external drift removes the SA from this binding,
-# the SA retains access and can reconcile the drift on the next apply.
-resource "google_project_iam_binding" "prerequisite_roles" {
-  for_each = toset(local.prerequisite_roles)
+# Grant prerequisite roles needed to create custom roles, and each user role, to every user.
+# Additive (iam_member): the GCP project is shared with Skåne Trails, whose Terraform grants
+# some of the same roles, so an authoritative binding here (or there) would remove the other
+# app's members on every apply.
+resource "google_project_iam_member" "user_roles" {
+  for_each = {
+    for pair in setproduct(distinct(concat(local.prerequisite_roles, local.user_roles)), local.user_members) :
+    "${pair[0]} ${pair[1]}" => { role = pair[0], member = pair[1] }
+  }
 
   project = var.project
-  role    = each.value
-  members = concat(local.user_members, [
-    "serviceAccount:${google_service_account.github_actions_terraform.email}",
-  ])
-
-  depends_on = [
-    var.iam_api_service,
-    google_service_account.github_actions_terraform,
-  ]
-}
-
-# Grant each role to all users (including superusers)
-resource "google_project_iam_binding" "user_access" {
-  for_each = length(local.all_users) > 0 ? toset(local.user_roles) : toset([])
-
-  project = var.project
-  role    = each.value
-  members = local.user_members
+  role    = each.value.role
+  member  = each.value.member
 
   # Explicit dependencies: ensure IAM API is enabled and custom roles exist
   depends_on = [
@@ -277,4 +288,16 @@ resource "google_project_iam_binding" "user_access" {
     google_project_iam_custom_role.infrastructure_manager,
     google_project_iam_custom_role.app_user,
   ]
+}
+
+# The former authoritative bindings: forget them without revoking anything, so the switch to
+# the additive grants above never strips a role from its current members.
+removed {
+  from = google_project_iam_binding.prerequisite_roles
+  lifecycle { destroy = false }
+}
+
+removed {
+  from = google_project_iam_binding.user_access
+  lifecycle { destroy = false }
 }

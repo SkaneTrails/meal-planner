@@ -5,6 +5,7 @@ respective sub-modules and merged into this router at import time.
 """
 
 import logging
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,12 +18,17 @@ from api.models.recipe import (
     MAX_PAGE_LIMIT,
     PaginatedRecipeList,
     Recipe,
+    RecipeChanges,
     RecipeCreate,
     RecipeUpdate,
 )
 from api.routers.recipe_enhancement import HouseholdConfig  # re-export for tests
 from api.storage import recipe_storage
-from api.storage.recipe_queries import count_recipes, get_recipes_paginated
+from api.storage.recipe_queries import (
+    count_recipes,
+    get_recipe_changes as get_recipe_changes_storage,
+    get_recipes_paginated,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +81,31 @@ async def list_recipes(  # noqa: PLR0913
     )
     return PaginatedRecipeList(
         items=recipes, total_count=total, next_cursor=next_cursor, has_more=next_cursor is not None
+    )
+
+
+# Writes that commit just after their own timestamp are picked up by the next sync; a few recent
+# changes are delivered twice.
+CHANGES_CURSOR_OVERLAP = timedelta(minutes=2)
+
+
+@router.get("/changes")
+async def get_recipe_changes(
+    user: Annotated[AuthenticatedUser, Depends(require_auth)],
+    since: Annotated[datetime | None, Query(description="server_time of the previous response; omit for all")] = None,
+) -> RecipeChanges:
+    """Get recipes changed and removed since a time, for keeping a copy on the device.
+
+    Includes hidden recipes and is not de-duplicated: clients apply the recipe list's rules.
+    """
+    household_id = None if user.role == "superuser" else user.household_id
+    server_time = datetime.now(UTC) - CHANGES_CURSOR_OVERLAP
+    recipes, deleted_ids = get_recipe_changes_storage(since, household_id)
+    return RecipeChanges(
+        recipes=recipes,
+        deleted_ids=deleted_ids,
+        server_time=server_time.isoformat().replace("+00:00", "Z"),
+        scope=f"{user.role}:{user.household_id or '-'}",
     )
 
 

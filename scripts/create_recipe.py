@@ -6,6 +6,8 @@ from pathlib import Path
 
 from google.cloud import firestore
 
+from api.storage.sync_status import touch_recipes
+
 
 def main() -> None:
     db = firestore.Client(database="meal-planner")
@@ -18,6 +20,7 @@ def main() -> None:
 
     doc_ref = db.collection("recipes").document()
     doc_ref.set(recipe)
+    touch_recipes(db)
 
     print(f"✅ Created new recipe: {doc_ref.id}")
     print(f"   Title: {recipe['title']}")

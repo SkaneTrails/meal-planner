@@ -1,6 +1,6 @@
 output "iam_bindings_complete" {
   description = "Marker output to ensure IAM bindings are complete before dependent resources"
-  value       = google_project_iam_binding.user_access
+  value       = google_project_iam_member.user_roles
 }
 
 output "infrastructure_manager_role" {
@@ -60,4 +60,9 @@ output "local_dev_service_account" {
 output "local_dev_email" {
   description = "Email of the local development service account"
   value       = google_service_account.local_dev.email
+}
+
+output "play_publisher_email" {
+  description = "Email of the Google Play publisher service account (invite it in Play Console)"
+  value       = google_service_account.play_publisher.email
 }
