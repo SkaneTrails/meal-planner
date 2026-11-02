@@ -47,7 +47,10 @@ async function refreshFullRecipeList(queryClient: QueryClient): Promise<void> {
     return;
   }
   const ownerUid = currentUserId();
-  const recipes = await syncRecipes(() => undefined, { strict: true });
+  const recipes = await syncRecipes(
+    (local) => queryClient.setQueryData(['recipes', 'local'], local),
+    { strict: true },
+  );
   if (currentUserId() === ownerUid) {
     queryClient.setQueryData(['recipes', 'local'], recipes);
   }

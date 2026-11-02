@@ -150,3 +150,11 @@ class TestBuildRecipeCreateFromEnhanced:
 
         assert result.diet_label == "fish"
         assert result.meal_label == "dessert"
+
+    def test_sharing_fields_preserved(self) -> None:
+        """Enhancing must not unshare a recipe or turn a copy into an original."""
+        fallback = Recipe(id="r1", title="T", url="https://example.com", visibility="shared", copied_from="orig")
+        result = build_recipe_create_from_enhanced({"title": "Better"}, fallback)
+
+        assert result.visibility == "shared"
+        assert result.copied_from == "orig"

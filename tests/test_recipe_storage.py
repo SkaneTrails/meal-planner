@@ -3,6 +3,8 @@
 from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from api.models.recipe import DietLabel, MealLabel, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.recipe_queries import (
     _build_household_query,
@@ -749,8 +751,9 @@ class TestUpdateRecipe:
         assert result is not None
         mock_db.batch.return_value.update.assert_called_once()
 
-    def test_unsharing_leaves_a_tombstone_for_other_households(self) -> None:
-        """Other households lose an unshared recipe; the tombstone tells their devices."""
+    @pytest.mark.parametrize("visibility", ["household", None])
+    def test_unsharing_leaves_a_tombstone_for_other_households(self, visibility: str | None) -> None:
+        """Other households lose an unshared recipe (null reads as household); the tombstone tells their devices."""
         mock_db = MagicMock()
         mock_doc_ref = MagicMock()
         mock_doc = MagicMock()
@@ -766,12 +769,33 @@ class TestUpdateRecipe:
                 return_value=Recipe(id="doc123", title="T", url="https://example.com"),
             ),
         ):
-            update_recipe("doc123", RecipeUpdate(visibility="household"), household_id="h1")
+            update_recipe("doc123", RecipeUpdate(visibility=visibility), household_id="h1")
 
         tombstone = mock_db.batch.return_value.set.call_args[0][1]
         assert tombstone["recipe_id"] == "doc123"
         assert tombstone["household_id"] == "h1"
         assert tombstone["was_shared"] is True
+
+    def test_shared_recipe_update_without_visibility_leaves_no_tombstone(self) -> None:
+        """Editing a shared recipe keeps it shared, so no device should drop it."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "h1", "visibility": "shared"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch(
+                "api.storage.recipe_storage.get_recipe",
+                return_value=Recipe(id="doc123", title="T", url="https://example.com"),
+            ),
+        ):
+            update_recipe("doc123", RecipeUpdate(title="New"), household_id="h1")
+
+        mock_db.batch.return_value.set.assert_not_called()
 
     def test_syncs_normalized_url_on_url_change(self) -> None:
         """Should update normalized_url when URL is changed."""
