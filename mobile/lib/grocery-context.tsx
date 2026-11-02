@@ -537,25 +537,37 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       storeField(userIdRef.current, 'servings', servings);
 
       await enqueueWrite(async () => {
-        await sendPending();
         if (writeScopeRef.current !== scope) return;
+        // Unsent changes go in the same write, so an older queued value can't later overwrite this one.
+        const unsent = pendingPatchRef.current;
+        pendingPatchRef.current = {};
         patchesInFlightRef.current += 1;
         try {
-          const response = await api.patchGroceryState({
-            selected_meals: meals,
-            meal_servings: servings,
-            ...(removedItemsOverride !== undefined
-              ? { removed_items: removedItemsOverride }
-              : {}),
-          });
+          const response = await api.patchGroceryState(
+            mergePatches(unsent, {
+              selected_meals: meals,
+              meal_servings: servings,
+              ...(removedItemsOverride !== undefined
+                ? { removed_items: removedItemsOverride }
+                : {}),
+            }),
+          );
           if (!isMountedRef.current || writeScopeRef.current !== scope) return;
           applyServerState(response);
+        } catch (err) {
+          if (writeScopeRef.current === scope) {
+            pendingPatchRef.current = mergePatches(
+              unsent,
+              pendingPatchRef.current,
+            );
+          }
+          throw err;
         } finally {
           patchesInFlightRef.current -= 1;
         }
       });
     },
-    [applyServerState, enqueueWrite, sendPending],
+    [applyServerState, enqueueWrite],
   );
 
   const clearAll = useCallback(async () => {

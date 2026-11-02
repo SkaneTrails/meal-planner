@@ -386,7 +386,7 @@ export const useGroceryScreen = () => {
         if (hiddenChanged) setRemovedItems(pruned.removedItems);
         return;
       }
-      // Sent before the selection save, so bought items stay hidden if that save fails.
+      // Shown now; if the selection save fails, this is what is retried with the old meals.
       if (generatedToRemove.length > 0) setRemovedItems([...hidden]);
       const keptServings = Object.fromEntries(
         Object.entries(mealServings).filter(([key]) => keptMeals.has(key)),

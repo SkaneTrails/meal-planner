@@ -420,6 +420,85 @@ describe('GroceryProvider', () => {
         removed_items: ['milk'],
       });
     });
+
+    it('sends unsent changes in the same request, the selection winning', async () => {
+      mockPatchGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['milk'] });
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setRemovedItems(['butter', 'milk']);
+        result.current.toggleItem('flour');
+      });
+      await act(async () => {
+        await result.current.saveSelections(['tuesday-dinner'], { 'tuesday-dinner': 4 }, ['milk']);
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledOnce();
+      expect(mockPatchGroceryState).toHaveBeenCalledWith(
+        expect.objectContaining({
+          check_items: ['flour'],
+          selected_meals: ['tuesday-dinner'],
+          meal_servings: { 'tuesday-dinner': 4 },
+          removed_items: ['milk'],
+        }),
+      );
+    });
+
+    it('does not resend an older failed change after the selection saved', async () => {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      mockPatchGroceryState.mockRejectedValueOnce(new Error('offline'));
+      act(() => {
+        result.current.setRemovedItems(['butter', 'milk']);
+      });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      mockPatchGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['milk'] });
+      mockGetGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['milk'] });
+      await act(async () => {
+        await result.current.saveSelections(['tuesday-dinner'], { 'tuesday-dinner': 4 }, ['milk']);
+      });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledTimes(2);
+      expect(result.current.removedItems).toEqual(['milk']);
+      spy.mockRestore();
+    });
+
+    it('keeps unsent changes queued when the selection save fails', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setRemovedItems(['butter']);
+      });
+      mockPatchGroceryState.mockRejectedValueOnce(new Error('offline'));
+      await act(async () => {
+        await expect(
+          result.current.saveSelections(['tuesday-dinner'], { 'tuesday-dinner': 4 }),
+        ).rejects.toThrow('offline');
+      });
+
+      mockPatchGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['butter'] });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenLastCalledWith({ removed_items: ['butter'] });
+    });
   });
 
   describe('legacy custom items normalization', () => {
