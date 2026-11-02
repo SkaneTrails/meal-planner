@@ -11,14 +11,55 @@ from typing import TYPE_CHECKING, Any, cast
 from google.cloud.firestore_v1 import FieldFilter
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from google.cloud.firestore_v1.client import Client as FirestoreClient
 
     from api.models.recipe import Recipe
 
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
 from api.storage.recipe_storage import _doc_to_recipe, normalize_url
+from api.storage.recipe_tombstones import get_removed_recipe_ids
 
 _HIDDEN_FILTER = FieldFilter("hidden", "==", False)  # noqa: FBT003
+
+
+def get_recipe_changes(since: datetime | None, household_id: str | None) -> tuple[list[Recipe], list[str]]:
+    """Get the recipes a caller can see that changed since a time, and the ones it can no longer see.
+
+    Hidden recipes are included (clients filter them), and so are a household's copies of shared
+    recipes and their originals; clients apply the same de-duplication as the recipe list.
+
+    Args:
+        since: A previous sync's server time; None returns every visible recipe.
+        household_id: The caller's household (own plus shared recipes), or None for a superuser.
+
+    Returns:
+        Changed recipes, and removed recipe IDs (never also in the changed list).
+    """
+    db = get_firestore_client()
+    collection = db.collection(RECIPES_COLLECTION)
+    queries = (
+        [collection]
+        if household_id is None
+        else [
+            collection.where(filter=FieldFilter("household_id", "==", household_id)),
+            collection.where(filter=FieldFilter("visibility", "==", "shared")),
+        ]
+    )
+    if since is not None:
+        queries = [q.where(filter=FieldFilter("updated_at", ">", since)) for q in queries]
+
+    changed: dict[str, Recipe] = {}
+    for query in queries:
+        for doc in query.stream():
+            if doc.id not in changed:
+                changed[doc.id] = _doc_to_recipe(doc.id, doc.to_dict() or {})
+
+    removed = (
+        [] if since is None else [rid for rid in get_removed_recipe_ids(db, since, household_id) if rid not in changed]
+    )
+    return list(changed.values()), removed
 
 
 def get_recipes_by_ids(recipe_ids: set[str]) -> dict[str, Recipe]:

@@ -293,6 +293,27 @@ changed (`mobile/lib/sync/poll-sync-status.ts`). Same design as Skåne Trails.
 server-side, so several devices can tick at once without overwriting each other. They
 cannot be combined with a full `checked_items` list in the same request.
 
+### Recipe Changes (device copy)
+
+```
+GET /api/v1/recipes/changes?since=<server_time>
+```
+
+Returns `{recipes, deleted_ids, server_time, scope}` for keeping every visible recipe on the
+device. Without `since` it returns all of them. Hidden recipes are included and nothing is
+de-duplicated; the app applies the recipe list rules itself
+(`mobile/lib/recipes/visible-recipes.ts`, mirroring `recipe_queries.py`). `server_time` is 2
+minutes in the past so writes committing during a sync are picked up next time.
+
+Removals come from the `recipe_tombstones` collection, written in the same batch as a delete,
+a transfer to another household, or a shared recipe becoming household-only.
+
+The native app keeps the copy as one JSON file per recipe
+(`mobile/lib/storage/recipe-store.native.ts`) and syncs it local-first
+(`mobile/lib/recipes/recipe-sync.ts`): on start, when the sync status reports a recipe change,
+and after its own recipe writes. It downloads everything again after 7 days or a scope change.
+Web reads recipes from the paged API.
+
 ## Project Structure
 
 The project is a multi-platform meal planning system:
