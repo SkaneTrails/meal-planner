@@ -611,7 +611,8 @@ class TestDeleteRecipe:
             result = delete_recipe("doc123")
 
         assert result is True
-        mock_doc_ref.delete.assert_called_once()
+        mock_db.batch.return_value.delete.assert_called_once_with(mock_doc_ref)
+        mock_db.batch.return_value.commit.assert_called_once()
 
     def test_returns_false_when_not_found(self) -> None:
         """Should return False when recipe doesn't exist."""
@@ -626,7 +627,7 @@ class TestDeleteRecipe:
             result = delete_recipe("nonexistent")
 
         assert result is False
-        mock_doc_ref.delete.assert_not_called()
+        mock_db.batch.return_value.delete.assert_not_called()
 
     def test_returns_false_when_not_owned_by_household(self) -> None:
         """Should return False when recipe is owned by different household."""
@@ -642,15 +643,15 @@ class TestDeleteRecipe:
             result = delete_recipe("doc123", household_id="my-household")
 
         assert result is False
-        mock_doc_ref.delete.assert_not_called()
+        mock_db.batch.return_value.delete.assert_not_called()
 
     def test_deletes_when_owned_by_household(self) -> None:
-        """Should delete when recipe is owned by the specified household."""
+        """Should delete when recipe is owned by the specified household, leaving a tombstone."""
         mock_db = MagicMock()
         mock_doc_ref = MagicMock()
         mock_doc = MagicMock()
         mock_doc.exists = True
-        mock_doc.to_dict.return_value = {"household_id": "my-household"}
+        mock_doc.to_dict.return_value = {"household_id": "my-household", "visibility": "shared"}
         mock_doc_ref.get.return_value = mock_doc
         mock_db.collection.return_value.document.return_value = mock_doc_ref
 
@@ -658,7 +659,12 @@ class TestDeleteRecipe:
             result = delete_recipe("doc123", household_id="my-household")
 
         assert result is True
-        mock_doc_ref.delete.assert_called_once()
+        batch = mock_db.batch.return_value
+        batch.delete.assert_called_once_with(mock_doc_ref)
+        tombstone = batch.set.call_args[0][1]
+        assert tombstone["recipe_id"] == "doc123"
+        assert tombstone["household_id"] == "my-household"
+        assert tombstone["was_shared"] is True
 
 
 class TestUpdateRecipe:
@@ -696,11 +702,14 @@ class TestUpdateRecipe:
             update_recipe("doc123", RecipeUpdate(title="Updated"))
 
         # Verify update was called
-        mock_doc_ref.update.assert_called_once()
-        update_data = mock_doc_ref.update.call_args[0][0]
+        batch = mock_db.batch.return_value
+        batch.update.assert_called_once()
+        update_data = batch.update.call_args[0][1]
         assert update_data["title"] == "Updated"
         assert update_data["title_lower"] == "updated"
         assert "updated_at" in update_data
+        batch.set.assert_not_called()
+        batch.commit.assert_called_once()
 
     def test_returns_none_when_not_owned_by_household(self) -> None:
         """Should return None when recipe is owned by different household."""
@@ -716,7 +725,7 @@ class TestUpdateRecipe:
             result = update_recipe("doc123", RecipeUpdate(title="New"), household_id="my-household")
 
         assert result is None
-        mock_doc_ref.update.assert_not_called()
+        mock_db.batch.return_value.update.assert_not_called()
 
     def test_updates_when_owned_by_household(self) -> None:
         """Should update when recipe is owned by the specified household."""
@@ -738,7 +747,31 @@ class TestUpdateRecipe:
             result = update_recipe("doc123", RecipeUpdate(title="Updated"), household_id="my-household")
 
         assert result is not None
-        mock_doc_ref.update.assert_called_once()
+        mock_db.batch.return_value.update.assert_called_once()
+
+    def test_unsharing_leaves_a_tombstone_for_other_households(self) -> None:
+        """Other households lose an unshared recipe; the tombstone tells their devices."""
+        mock_db = MagicMock()
+        mock_doc_ref = MagicMock()
+        mock_doc = MagicMock()
+        mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "h1", "visibility": "shared"}
+        mock_doc_ref.get.return_value = mock_doc
+        mock_db.collection.return_value.document.return_value = mock_doc_ref
+
+        with (
+            patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db),
+            patch(
+                "api.storage.recipe_storage.get_recipe",
+                return_value=Recipe(id="doc123", title="T", url="https://example.com"),
+            ),
+        ):
+            update_recipe("doc123", RecipeUpdate(visibility="household"), household_id="h1")
+
+        tombstone = mock_db.batch.return_value.set.call_args[0][1]
+        assert tombstone["recipe_id"] == "doc123"
+        assert tombstone["household_id"] == "h1"
+        assert tombstone["was_shared"] is True
 
     def test_syncs_normalized_url_on_url_change(self) -> None:
         """Should update normalized_url when URL is changed."""
@@ -759,7 +792,7 @@ class TestUpdateRecipe:
         ):
             update_recipe("doc123", RecipeUpdate(url="https://new.example.com/recipe/"), household_id="h1")
 
-        update_data = mock_doc_ref.update.call_args[0][0]
+        update_data = mock_db.batch.return_value.update.call_args[0][1]
         assert update_data["url"] == "https://new.example.com/recipe/"
         assert update_data["normalized_url"] == "https://new.example.com/recipe"
 
@@ -782,7 +815,7 @@ class TestUpdateRecipe:
         ):
             update_recipe("doc123", RecipeUpdate(diet_label=DietLabel.VEGGIE), household_id="h1")
 
-        update_data = mock_doc_ref.update.call_args[0][0]
+        update_data = mock_db.batch.return_value.update.call_args[0][1]
         assert update_data["diet_label"] == "veggie"
         assert isinstance(update_data["diet_label"], str)
 
@@ -805,7 +838,7 @@ class TestUpdateRecipe:
         ):
             update_recipe("doc123", RecipeUpdate(meal_label=MealLabel.DESSERT), household_id="h1")
 
-        update_data = mock_doc_ref.update.call_args[0][0]
+        update_data = mock_db.batch.return_value.update.call_args[0][1]
         assert update_data["meal_label"] == "dessert"
         assert isinstance(update_data["meal_label"], str)
 
@@ -1463,6 +1496,7 @@ class TestTransferRecipeToHousehold:
 
         mock_doc = MagicMock()
         mock_doc.exists = True
+        mock_doc.to_dict.return_value = {"household_id": "old_household"}
         mock_doc_ref = MagicMock()
         mock_doc_ref.get.return_value = mock_doc
 
@@ -1476,11 +1510,15 @@ class TestTransferRecipeToHousehold:
 
         assert result is not None
         assert result.household_id == "new_household"
-        mock_doc_ref.update.assert_called_once()
+        batch = mock_client.return_value.batch.return_value
+        batch.update.assert_called_once()
         # Verify household_id and updated_at were set
-        update_call = mock_doc_ref.update.call_args[0][0]
+        update_call = batch.update.call_args[0][1]
         assert update_call["household_id"] == "new_household"
         assert "updated_at" in update_call
+        tombstone = batch.set.call_args[0][1]
+        assert tombstone["household_id"] == "old_household"
+        assert tombstone["was_shared"] is False
 
     def test_returns_none_for_missing_recipe(self) -> None:
         """Should return None if recipe doesn't exist."""
@@ -1497,7 +1535,7 @@ class TestTransferRecipeToHousehold:
             result = transfer_recipe_to_household("nonexistent", "new_household")
 
         assert result is None
-        mock_doc_ref.update.assert_not_called()
+        mock_client.return_value.batch.return_value.update.assert_not_called()
 
 
 class TestGetRecipesByIds:

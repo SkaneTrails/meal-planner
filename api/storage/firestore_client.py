@@ -40,6 +40,7 @@ def reset_client() -> None:  # pragma: no cover
 
 # Collection names
 RECIPES_COLLECTION = "recipes"
+RECIPE_TOMBSTONES_COLLECTION = "recipe_tombstones"
 MEAL_PLANS_COLLECTION = "meal_plans"
 GROCERY_LISTS_COLLECTION = "grocery_lists"
 RECIPE_NOTES_COLLECTION = "recipe_notes"

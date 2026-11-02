@@ -139,6 +139,40 @@ resource "google_firestore_index" "recipes_by_visibility" {
   }
 }
 
+# Recipes collection — device delta sync: a household's recipes changed since a time
+resource "google_firestore_index" "recipes_by_household_updated" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "household_id"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "updated_at"
+    order      = "ASCENDING"
+  }
+}
+
+# Recipes collection — device delta sync: shared recipes changed since a time
+resource "google_firestore_index" "recipes_by_visibility_updated" {
+  project    = var.project
+  database   = google_firestore_database.meal_planner.name
+  collection = "recipes"
+
+  fields {
+    field_path = "visibility"
+    order      = "ASCENDING"
+  }
+
+  fields {
+    field_path = "updated_at"
+    order      = "ASCENDING"
+  }
+}
+
 # Recipes collection — shared recipe count excluding own household
 resource "google_firestore_index" "recipes_shared_not_owned" {
   project    = var.project
