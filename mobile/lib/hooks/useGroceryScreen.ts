@@ -14,7 +14,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { showAlert } from '@/lib/alert';
+import { showAlert, showNotification } from '@/lib/alert';
 import { api } from '@/lib/api';
 import { useGroceryState } from '@/lib/grocery-context';
 import { groceryKeys, useStoreOrder } from '@/lib/hooks/use-grocery';
@@ -23,9 +23,11 @@ import { useAllRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { GroceryItem } from '@/lib/types';
+import { getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import {
+  activeMealKeys,
   aggregateIngredients,
-  EXTRAS_KEY_PREFIX,
+  pruneShoppedMeals,
 } from '@/lib/utils/groceryAggregator';
 
 /** Strip leading digits, fractions, and whitespace, then lowercase for sort matching. */
@@ -54,6 +56,7 @@ export const useGroceryScreen = () => {
     toggleItem,
     resetTickSequence,
     refreshFromApi,
+    saveSelections,
     isLoading: contextLoading,
   } = useGroceryState();
 
@@ -69,7 +72,7 @@ export const useGroceryScreen = () => {
 
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { isItemAtHome, activeStoreId } = useSettings();
+  const { isItemAtHome, activeStoreId, weekStart } = useSettings();
   const { data: mealPlan } = useMealPlan();
   const { recipes } = useAllRecipes();
   const { data: storeOrderData, isPlaceholderData: isStoreOrderPlaceholder } =
@@ -124,43 +127,47 @@ export const useGroceryScreen = () => {
   const prevGeneratedItemsLengthRef = useRef(0);
   prevGeneratedItemsLengthRef.current = generatedItems.length;
 
-  useEffect(() => {
-    if (!mealPlan || !selectedMealKeys.length) {
-      if (prevGeneratedItemsLengthRef.current > 0) {
-        setGeneratedItems([]);
-      }
-      return;
-    }
-
-    // Filter out stale extras keys whose recipes were removed from the meal plan
-    const allExtrasIds = new Set(Object.values(mealPlan.extras ?? {}).flat());
-    const activeKeys = selectedMealKeys.filter(
-      (key) =>
-        !key.startsWith(EXTRAS_KEY_PREFIX) ||
-        allExtrasIds.has(key.slice(EXTRAS_KEY_PREFIX.length)),
-    );
-
-    const items = aggregateIngredients(
-      activeKeys,
-      mealPlan.meals,
+  const recipesForAggregation = useMemo(
+    () =>
       recipes.map((r) => ({
         id: r.id,
         title: r.title,
         ingredients: r.ingredients,
         servings: r.servings ?? undefined,
       })),
-      mealServings,
+    [recipes],
+  );
+
+  // Meals from before the current week, and extras of weeks that have ended, are left out.
+  const activeKeys = useMemo(
+    () =>
+      mealPlan
+        ? activeMealKeys(
+            selectedMealKeys,
+            mealPlan.extras ?? {},
+            getWeekDatesArray(0, weekStart)[0],
+          )
+        : [],
+    [mealPlan, selectedMealKeys, weekStart],
+  );
+
+  useEffect(() => {
+    if (!mealPlan || !activeKeys.length) {
+      if (prevGeneratedItemsLengthRef.current > 0) {
+        setGeneratedItems([]);
+      }
+      return;
+    }
+
+    setGeneratedItems(
+      aggregateIngredients(
+        activeKeys,
+        mealPlan.meals,
+        recipesForAggregation,
+        mealServings,
+      ),
     );
-    setGeneratedItems(items);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    recipes.length,
-    mealPlan?.meals,
-    mealPlan,
-    recipes,
-    mealServings,
-    selectedMealKeys,
-  ]);
+  }, [mealPlan, activeKeys, recipesForAggregation, mealServings]);
 
   const removedSet = useMemo(() => new Set(removedItems), [removedItems]);
 
@@ -353,12 +360,40 @@ export const useGroceryScreen = () => {
           generatedToRemove.push(name);
         }
       }
-      if (generatedToRemove.length > 0) {
-        setRemovedItems([...removedItems, ...generatedToRemove]);
-      }
+      const hidden = new Set([...removedItems, ...generatedToRemove]);
 
       resetTickSequence();
       clearChecked();
+
+      if (!mealPlan) {
+        if (generatedToRemove.length > 0) setRemovedItems([...hidden]);
+        return;
+      }
+
+      // Past and fully shopped meals leave the list, so it does not grow week after week.
+      const pruned = pruneShoppedMeals(
+        activeKeys,
+        mealPlan.meals,
+        recipesForAggregation,
+        mealServings,
+        hidden,
+      );
+      const hiddenChanged =
+        pruned.removedItems.length !== removedItems.length ||
+        pruned.removedItems.some((name, i) => name !== removedItems[i]);
+      if (hiddenChanged) setRemovedItems(pruned.removedItems);
+      const keptMeals = new Set(pruned.mealKeys);
+      if (selectedMealKeys.every((key) => keptMeals.has(key))) return;
+      const keptServings = Object.fromEntries(
+        Object.entries(mealServings).filter(([key]) => keptMeals.has(key)),
+      );
+      saveSelections(pruned.mealKeys, keptServings, pruned.removedItems).catch(
+        () =>
+          showNotification(
+            t('common.error'),
+            t('mealPlan.failedToSaveSelections'),
+          ),
+      );
     };
 
     showAlert(t('grocery.clearPicked'), t('grocery.clearPickedMessage'), [
@@ -376,6 +411,12 @@ export const useGroceryScreen = () => {
     contextCustomItems,
     visibleGeneratedItems,
     removedItems,
+    mealPlan,
+    activeKeys,
+    recipesForAggregation,
+    mealServings,
+    selectedMealKeys,
+    saveSelections,
     setContextCustomItems,
     setRemovedItems,
     resetTickSequence,
