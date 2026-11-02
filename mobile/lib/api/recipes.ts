@@ -10,6 +10,7 @@ import type {
   MealLabel,
   PaginatedRecipeList,
   Recipe,
+  RecipeChanges,
   RecipeCreate,
   RecipeNote,
   RecipeNoteCreate,
@@ -53,6 +54,12 @@ export const recipeApi = {
 
   getRecipe: (id: string): Promise<Recipe> => {
     return apiRequest<Recipe>(`/recipes/${id}`);
+  },
+
+  /** Without `since`, every recipe the user can see (hidden ones too). */
+  getRecipeChanges: (since?: string): Promise<RecipeChanges> => {
+    const query = since ? `?since=${encodeURIComponent(since)}` : '';
+    return apiRequest<RecipeChanges>(`/recipes/changes${query}`);
   },
 
   createRecipe: (recipe: RecipeCreate): Promise<Recipe> => {

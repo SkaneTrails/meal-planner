@@ -5,10 +5,15 @@ import {
   refreshGroceryFromServer,
   resetGroceryForNewScope,
 } from '@/lib/grocery-context';
+import { syncRecipes } from '@/lib/recipes/recipe-sync';
+import { recipeStore } from '@/lib/storage/recipe-store';
 import type { SyncKind, SyncStatus } from '@/lib/types';
 import { type SeenState, syncSeen } from './sync-seen';
 
 const SYNC_KINDS: SyncKind[] = ['recipes', 'meal_plan', 'grocery', 'settings'];
+
+// Recipe queries holding the whole list ('all' on web, 'local' on native).
+const FULL_LIST_KEYS = new Set(['all', 'local']);
 
 /** Refresh every kind at least this often, repairing a change whose version bump was lost. */
 export const MAX_SYNC_AGE = 6 * 60 * 60 * 1000;
@@ -30,13 +35,35 @@ const refetch =
   };
 
 /**
- * Recipes: the full list is refetched in the background so the recipe screens open with fresh
+ * The full recipe list behind home, meal plan, grocery and the library: on native the copy on
+ * the device is synced (changes only), on web the API list is refetched.
+ */
+async function refreshFullRecipeList(queryClient: QueryClient): Promise<void> {
+  if (!recipeStore.isAvailable) {
+    await queryClient.invalidateQueries(
+      { queryKey: ['recipes', 'all'], refetchType: 'all' },
+      { throwOnError: true },
+    );
+    return;
+  }
+  const ownerUid = currentUserId();
+  const recipes = await syncRecipes(
+    (local) => queryClient.setQueryData(['recipes', 'local'], local),
+    { strict: true },
+  );
+  if (currentUserId() === ownerUid) {
+    queryClient.setQueryData(['recipes', 'local'], recipes);
+  }
+}
+
+/**
+ * Recipes: the full list is refreshed in the background so the recipe screens open with fresh
  * data; other shown recipe queries are refetched too and inactive ones refetch when next shown.
  * A shown recipe that was deleted (404) is not a failed sync.
  */
 async function refreshRecipes(queryClient: QueryClient): Promise<void> {
   const others = (query: { queryKey: readonly unknown[] }) =>
-    query.queryKey[1] !== 'all';
+    !FULL_LIST_KEYS.has(query.queryKey[1] as string);
   await queryClient.invalidateQueries({
     queryKey: ['recipes'],
     predicate: others,
@@ -46,10 +73,8 @@ async function refreshRecipes(queryClient: QueryClient): Promise<void> {
     .getQueryCache()
     .findAll({ queryKey: ['recipes'], type: 'active', predicate: others });
   await Promise.all([
-    queryClient.invalidateQueries(
-      { queryKey: ['recipes', 'all'], refetchType: 'all' },
-      { throwOnError: true },
-    ),
+    refreshFullRecipeList(queryClient),
+    queryClient.invalidateQueries({ queryKey: ['featured'] }),
     ...active.map((query) =>
       query.fetch().catch((error: unknown) => {
         if (!isNotFound(error)) throw error;

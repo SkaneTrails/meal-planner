@@ -12,6 +12,7 @@ from google.cloud.firestore_v1 import DELETE_FIELD, DocumentSnapshot, FieldFilte
 
 from api.models.recipe import DietLabel, MealLabel, OriginalRecipe, Recipe, RecipeCreate, RecipeUpdate
 from api.storage.firestore_client import RECIPES_COLLECTION, get_firestore_client
+from api.storage.recipe_tombstones import add_tombstone
 from api.storage.sync_status import touch_recipes
 
 
@@ -289,7 +290,8 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
             return None
 
     # Only update fields that are set
-    update_data = {"updated_at": datetime.now(tz=UTC)}
+    now = datetime.now(tz=UTC)
+    update_data = {"updated_at": now}
     for field_name, value in updates.model_dump(exclude_unset=True).items():
         if field_name in ("diet_label", "meal_label") and value is not None:
             update_data[field_name] = value.value if hasattr(value, "value") else value
@@ -306,7 +308,15 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
         title_value = update_data["title"]
         update_data["title_lower"] = title_value.lower() if title_value else ""
 
-    doc_ref.update(update_data)
+    batch = db.batch()
+    batch.update(doc_ref, update_data)
+    was_shared = (data or {}).get("visibility") == "shared"
+    if was_shared and "visibility" in update_data and update_data["visibility"] != "shared":
+        # Other households lose it; the owner gets it as a change (updated_at moved).
+        add_tombstone(
+            batch, db, recipe_id, household_id=(data or {}).get("household_id"), was_shared=True, removed_at=now
+        )
+    batch.commit()
     touch_recipes()
 
     # Return the updated recipe
@@ -363,7 +373,17 @@ def delete_recipe(recipe_id: str, *, household_id: str | None = None) -> bool:
         if recipe_household != household_id:
             return False
 
-    doc_ref.delete()
+    batch = db.batch()
+    batch.delete(doc_ref)
+    add_tombstone(
+        batch,
+        db,
+        recipe_id,
+        household_id=(data or {}).get("household_id"),
+        was_shared=(data or {}).get("visibility") == "shared",
+        removed_at=datetime.now(tz=UTC),
+    )
+    batch.commit()
     touch_recipes()
     return True
 
@@ -700,8 +720,14 @@ def transfer_recipe_to_household(recipe_id: str, to_household_id: str) -> Recipe
     if not doc.exists:
         return None
 
-    # Update household_id
-    doc_ref.update({"household_id": to_household_id, "updated_at": datetime.now(tz=UTC)})
+    now = datetime.now(tz=UTC)
+    batch = db.batch()
+    batch.update(doc_ref, {"household_id": to_household_id, "updated_at": now})
+    # Only the previous household loses it; if it is shared, it reaches them again as a change.
+    add_tombstone(
+        batch, db, recipe_id, household_id=(doc.to_dict() or {}).get("household_id"), was_shared=False, removed_at=now
+    )
+    batch.commit()
     touch_recipes()
 
     return get_recipe(recipe_id)

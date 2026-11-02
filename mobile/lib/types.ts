@@ -151,6 +151,16 @@ export interface PaginatedRecipeList {
   has_more: boolean;
 }
 
+/** Recipes changed and removed since a time, for the copy kept on the device. */
+export interface RecipeChanges {
+  recipes: Recipe[];
+  deleted_ids: string[];
+  /** Pass as `since` next time. */
+  server_time: string;
+  /** Role and household; a change means the device copy no longer applies. */
+  scope: string;
+}
+
 // Recipe Note types
 export interface RecipeNote {
   id: string;

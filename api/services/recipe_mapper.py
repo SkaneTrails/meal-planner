@@ -61,4 +61,6 @@ def build_recipe_create_from_enhanced(enhanced_data: dict[str, Any], fallback: R
         category=enhanced_data.get("category"),
         tags=enhanced_data.get("tags", []),
         tips=enhanced_data.get("tips"),
+        visibility=fallback.visibility,
+        copied_from=fallback.copied_from,
     )

@@ -35,9 +35,9 @@ vi.mock('@/lib/settings-context', () => ({
 import { api } from '@/lib/api';
 import { ApiClientError } from '@/lib/api/client';
 import {
-  useRecipes,
+  useRecipesFromApi as useRecipes,
   useRecipe,
-  useAllRecipes,
+  useAllRecipesFromApi as useAllRecipes,
   useMealPlanRecipes,
   useCreateRecipe,
   useScrapeRecipe,
