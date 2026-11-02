@@ -1,5 +1,5 @@
 import { QueryClient, QueryObserver } from '@tanstack/react-query';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/api', async () => ({
   api: { getSyncStatus: vi.fn() },
@@ -10,6 +10,9 @@ vi.mock('@/lib/grocery-context', () => ({
   refreshGroceryFromServer: vi.fn().mockResolvedValue(undefined),
   resetGroceryForNewScope: vi.fn(),
 }));
+const mockRecipeStore = vi.hoisted(() => ({ isAvailable: false }));
+vi.mock('@/lib/storage/recipe-store', () => ({ recipeStore: mockRecipeStore }));
+vi.mock('@/lib/recipes/recipe-sync', () => ({ syncRecipes: vi.fn() }));
 
 import { api } from '@/lib/api';
 import { ApiClientError } from '@/lib/api/client';
@@ -18,6 +21,7 @@ import {
   refreshGroceryFromServer,
   resetGroceryForNewScope,
 } from '@/lib/grocery-context';
+import { syncRecipes } from '@/lib/recipes/recipe-sync';
 import type { SyncKind, SyncStatus } from '@/lib/types';
 import { claimLocalData, MAX_SYNC_AGE, pollSyncStatus } from '../poll-sync-status';
 import { type SeenState, syncSeen } from '../sync-seen';
@@ -122,6 +126,39 @@ describe('pollSyncStatus', () => {
       { queryKey: ['recipes', 'all'], refetchType: 'all' },
       { throwOnError: true },
     );
+  });
+
+  describe('on native (recipes kept on the device)', () => {
+    beforeEach(() => {
+      mockRecipeStore.isAvailable = true;
+    });
+    afterEach(() => {
+      mockRecipeStore.isAvailable = false;
+    });
+
+    it('syncs the device copy instead of refetching the API list', async () => {
+      vi.mocked(api.getSyncStatus).mockResolvedValue(status({ recipes: 'r2' }));
+      vi.mocked(syncRecipes).mockResolvedValue([{ id: 'x' } as never]);
+      const client = makeClient(seenAll());
+
+      await pollSyncStatus(client);
+
+      expect(vi.mocked(syncRecipes).mock.calls[0][1]).toEqual({ strict: true });
+      expect(client.getQueryData(['recipes', 'local'])).toEqual([{ id: 'x' }]);
+      expect(invalidatedKeys(client)).not.toContainEqual(['recipes', 'all']);
+      expect(syncSeen.get(client).seen.recipes).toBe('r2');
+    });
+
+    it('keeps the recipe version for retry when the device sync failed', async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.mocked(api.getSyncStatus).mockResolvedValue(status({ recipes: 'r2' }));
+      vi.mocked(syncRecipes).mockRejectedValue(new Error('offline'));
+      const client = makeClient(seenAll());
+
+      await pollSyncStatus(client);
+
+      expect(syncSeen.get(client).seen.recipes).toBe('r1');
+    });
   });
 
   describe('shown recipe queries', () => {

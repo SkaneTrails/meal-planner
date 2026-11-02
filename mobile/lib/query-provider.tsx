@@ -76,11 +76,14 @@ export function stripPii(
   return result;
 }
 
-/** Paged search results are short-lived; everything else is kept for a fast next start. */
+/**
+ * Paged search results are short-lived, and the native recipe copy has its own file store
+ * (too big for AsyncStorage); everything else is kept for a fast next start.
+ */
 export function shouldPersistQuery(query: Query): boolean {
   if (!defaultShouldDehydrateQuery(query)) return false;
   const [resource, type] = query.queryKey;
-  return !(resource === 'recipes' && type === 'list');
+  return !(resource === 'recipes' && (type === 'list' || type === 'local'));
 }
 
 const persister = createAsyncStoragePersister({
