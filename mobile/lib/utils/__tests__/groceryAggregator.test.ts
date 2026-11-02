@@ -1,8 +1,10 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
 import {
+  activeMealKeys,
   aggregateIngredients,
   EXTRAS_KEY_PREFIX,
+  pruneShoppedMeals,
   type RecipeForAggregation,
 } from '../groceryAggregator';
 
@@ -294,5 +296,102 @@ describe('aggregateIngredients', () => {
     const tomat = result.find((r) => r.name === 'tomat');
     expect(tomat?.quantity).toBe('300');
     expect(tomat?.recipe_sources).toEqual(['Pasta', 'Salsa']);
+  });
+});
+
+describe('activeMealKeys', () => {
+  const weekStart = new Date(2026, 4, 11); // Monday 2026-05-11
+
+  it('drops day meals from before the current week', () => {
+    const keys = [
+      '2026-05-10_dinner',
+      '2026-05-11_lunch',
+      '2026-05-20_dinner',
+    ];
+    expect(activeMealKeys(keys, {}, weekStart)).toEqual([
+      '2026-05-11_lunch',
+      '2026-05-20_dinner',
+    ]);
+  });
+
+  it('keeps keys without a date', () => {
+    expect(activeMealKeys(['mon_dinner'], {}, weekStart)).toEqual([
+      'mon_dinner',
+    ]);
+  });
+
+  it('keeps extras only from weeks that have not ended', () => {
+    const extras = {
+      '2026-05-04': ['last-week'],
+      '2026-05-05': ['ends-today'],
+      '2026-05-11': ['this-week'],
+      '2026-05-18': ['next-week'],
+    };
+    const keys = [
+      'last-week',
+      'ends-today',
+      'this-week',
+      'next-week',
+      'removed',
+    ].map((id) => `${EXTRAS_KEY_PREFIX}${id}`);
+    expect(activeMealKeys(keys, extras, weekStart)).toEqual([
+      `${EXTRAS_KEY_PREFIX}ends-today`,
+      `${EXTRAS_KEY_PREFIX}this-week`,
+      `${EXTRAS_KEY_PREFIX}next-week`,
+    ]);
+  });
+});
+
+describe('pruneShoppedMeals', () => {
+  const recipes = [
+    makeRecipe({ id: 'pasta', title: 'Pasta', ingredients: ['200 g pasta', '1 tsk salt'] }),
+    makeRecipe({ id: 'soup', title: 'Soup', ingredients: ['2 morötter', '1 tsk salt'] }),
+  ];
+  const meals = { mon_dinner: 'pasta', tue_dinner: 'soup' };
+
+  it('drops meals whose items are all picked and keeps the rest', () => {
+    const result = pruneShoppedMeals(
+      ['mon_dinner', 'tue_dinner'],
+      meals,
+      recipes,
+      {},
+      new Set(['pasta', 'salt', 'old item']),
+    );
+    expect(result.mealKeys).toEqual(['tue_dinner']);
+    expect(result.removedItems).toEqual(['salt']);
+  });
+
+  it('keeps a meal that shares an item still to buy', () => {
+    const result = pruneShoppedMeals(
+      ['mon_dinner', 'tue_dinner'],
+      meals,
+      recipes,
+      {},
+      new Set(['pasta', 'morötter']),
+    );
+    expect(result.mealKeys).toEqual(['mon_dinner', 'tue_dinner']);
+    expect(result.removedItems).toEqual(['pasta', 'morötter']);
+  });
+
+  it('keeps meals whose recipe is not loaded', () => {
+    const result = pruneShoppedMeals(
+      ['wed_dinner'],
+      { wed_dinner: 'missing' },
+      recipes,
+      {},
+      new Set(),
+    );
+    expect(result.mealKeys).toEqual(['wed_dinner']);
+  });
+
+  it('drops a picked quick meal', () => {
+    const result = pruneShoppedMeals(
+      ['thu_dinner'],
+      { thu_dinner: 'custom:Tacos' },
+      recipes,
+      {},
+      new Set(['Tacos']),
+    );
+    expect(result).toEqual({ mealKeys: [], removedItems: [] });
   });
 });

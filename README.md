@@ -28,7 +28,7 @@ Organize recipes into a weekly calendar. Everyone in the household sees the same
 
 ### 🛒 Grocery Lists
 
-Generate a combined shopping list from your planned meals, with ingredients grouped by category.
+Generate a combined shopping list from your planned meals, with ingredients grouped by category. Meals from earlier weeks drop off the list, and "Clear picked" also removes meals you have fully shopped for.
 
 ### 👨‍👩‍👧‍👦 Households & Sharing
 
