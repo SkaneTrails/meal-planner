@@ -3,8 +3,8 @@ import { mockRecipe } from '@/test/helpers';
 import type { RecipeChanges } from '@/lib/types';
 import type { CachedRecipes } from '@/lib/storage/recipe-store';
 
-vi.mock('@/lib/api', () => ({ api: { getRecipeChanges: vi.fn() } }));
-vi.mock('@/lib/auth-scope', () => ({ currentUserId: () => 'user-1' }));
+vi.mock('@/lib/api', () => ({ api: { getRecipeChanges: vi.fn(), getRecipe: vi.fn() } }));
+vi.mock('@/lib/auth-scope', () => ({ currentUserId: vi.fn(() => 'user-1') }));
 vi.mock('@/lib/storage/recipe-store', () => ({
   recipeStore: {
     isAvailable: true,
@@ -15,8 +15,15 @@ vi.mock('@/lib/storage/recipe-store', () => ({
 }));
 
 import { api } from '@/lib/api';
+import { ApiClientError } from '@/lib/api/client';
+import { currentUserId } from '@/lib/auth-scope';
 import { recipeStore } from '@/lib/storage/recipe-store';
-import { FULL_SYNC_MAX_AGE, syncRecipes } from '../recipe-sync';
+import {
+  FULL_SYNC_MAX_AGE,
+  fetchRecipeOrDeviceCopy,
+  RecipeSyncCancelled,
+  syncRecipes,
+} from '../recipe-sync';
 
 const SCOPE = 'member:hh1';
 const copy = (overrides: Partial<CachedRecipes> = {}): CachedRecipes => ({
@@ -37,7 +44,10 @@ const NO_COPY: CachedRecipes = { recipes: [], lastSyncTime: null, lastFullSyncAt
 const ids = (recipes: { id: string }[]) => recipes.map((r) => r.id).sort();
 
 describe('syncRecipes', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(currentUserId).mockReturnValue('user-1');
+  });
 
   it('downloads everything once when there is no copy, replacing whatever was stored', async () => {
     vi.mocked(recipeStore.get).mockResolvedValue(NO_COPY);
@@ -128,5 +138,73 @@ describe('syncRecipes', () => {
 
     vi.mocked(recipeStore.get).mockResolvedValue(NO_COPY);
     await expect(syncRecipes(() => {})).rejects.toThrow('offline');
+  });
+
+  it('stops before showing or fetching anything when another user signed in during the read', async () => {
+    vi.mocked(recipeStore.get).mockImplementation(async () => {
+      vi.mocked(currentUserId).mockReturnValue('user-2');
+      return copy();
+    });
+    const onLocal = vi.fn();
+
+    await expect(syncRecipes(onLocal)).rejects.toBeInstanceOf(RecipeSyncCancelled);
+    expect(onLocal).not.toHaveBeenCalled();
+    expect(api.getRecipeChanges).not.toHaveBeenCalled();
+  });
+
+  it('does not store changes fetched after another user signed in', async () => {
+    vi.mocked(recipeStore.get).mockResolvedValue(copy());
+    vi.mocked(api.getRecipeChanges).mockImplementation(async () => {
+      vi.mocked(currentUserId).mockReturnValue('user-2');
+      return changes({ recipes: [mockRecipe({ id: 'c' })] });
+    });
+
+    await expect(syncRecipes(() => {})).rejects.toBeInstanceOf(RecipeSyncCancelled);
+    expect(recipeStore.apply).not.toHaveBeenCalled();
+  });
+
+  it('does not fall back to the old user copy when the request failed after a switch', async () => {
+    vi.mocked(recipeStore.get).mockResolvedValue(copy());
+    vi.mocked(api.getRecipeChanges).mockImplementation(async () => {
+      vi.mocked(currentUserId).mockReturnValue('user-2');
+      throw new Error('offline');
+    });
+
+    await expect(syncRecipes(() => {})).rejects.toBeInstanceOf(RecipeSyncCancelled);
+  });
+});
+
+describe('fetchRecipeOrDeviceCopy', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(currentUserId).mockReturnValue('user-1');
+    vi.mocked(recipeStore.get).mockResolvedValue(copy());
+  });
+
+  it('returns the server recipe when reachable', async () => {
+    vi.mocked(api.getRecipe).mockResolvedValue(mockRecipe({ id: 'a', title: 'Fresh' }));
+
+    expect((await fetchRecipeOrDeviceCopy('a')).title).toBe('Fresh');
+    expect(recipeStore.get).not.toHaveBeenCalled();
+  });
+
+  it('opens the device copy when the server cannot be reached', async () => {
+    vi.mocked(api.getRecipe).mockRejectedValue(new TypeError('Network request failed'));
+
+    expect((await fetchRecipeOrDeviceCopy('b')).id).toBe('b');
+    expect(recipeStore.get).toHaveBeenCalledWith('user-1');
+  });
+
+  it('keeps the server answer when the recipe is gone or not allowed', async () => {
+    vi.mocked(api.getRecipe).mockRejectedValue(new ApiClientError('Not found', 404));
+
+    await expect(fetchRecipeOrDeviceCopy('a')).rejects.toBeInstanceOf(ApiClientError);
+    expect(recipeStore.get).not.toHaveBeenCalled();
+  });
+
+  it('fails when the device copy does not have it either', async () => {
+    vi.mocked(api.getRecipe).mockRejectedValue(new ApiClientError('Unavailable', 503));
+
+    await expect(fetchRecipeOrDeviceCopy('missing')).rejects.toThrow('Unavailable');
   });
 });

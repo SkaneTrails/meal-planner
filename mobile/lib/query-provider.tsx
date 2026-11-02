@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import type React from 'react';
+import { recipeStore } from '@/lib/storage/recipe-store';
 
 export const PERSIST_MAX_AGE = 1000 * 60 * 60 * 24 * 30;
 const CACHE_KEY = 'meal-planner-query-cache-v2';
@@ -78,13 +79,27 @@ export function stripPii(
 
 /**
  * Paged search results are short-lived, and the native recipe copy has its own file store
- * (too big for AsyncStorage); everything else is kept for a fast next start.
+ * (too big for AsyncStorage), which also replaces the full API list there; everything else is
+ * kept for a fast next start.
  */
+const UNPERSISTED_RECIPE_QUERIES = new Set(
+  recipeStore.isAvailable ? ['list', 'local', 'all'] : ['list', 'local'],
+);
+
 export function shouldPersistQuery(query: Query): boolean {
   if (!defaultShouldDehydrateQuery(query)) return false;
   const [resource, type] = query.queryKey;
-  return !(resource === 'recipes' && (type === 'list' || type === 'local'));
+  return !(
+    resource === 'recipes' && UNPERSISTED_RECIPE_QUERIES.has(type as string)
+  );
 }
+
+// Full API lists saved by app versions before the device copy existed.
+const dropLegacyRecipeLists = () => {
+  if (recipeStore.isAvailable) {
+    queryClient.removeQueries({ queryKey: ['recipes', 'all'] });
+  }
+};
 
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
@@ -108,6 +123,7 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
         maxAge: PERSIST_MAX_AGE,
         dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
       }}
+      onSuccess={dropLegacyRecipeLists}
     >
       {children}
     </PersistQueryClientProvider>

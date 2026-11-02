@@ -310,7 +310,8 @@ def update_recipe(recipe_id: str, updates: RecipeUpdate, *, household_id: str | 
 
     batch = db.batch()
     batch.update(doc_ref, update_data)
-    if (data or {}).get("visibility") == "shared" and update_data.get("visibility") == "household":
+    was_shared = (data or {}).get("visibility") == "shared"
+    if was_shared and "visibility" in update_data and update_data["visibility"] != "shared":
         # Other households lose it; the owner gets it as a change (updated_at moved).
         add_tombstone(
             batch, db, recipe_id, household_id=(data or {}).get("household_id"), was_shared=True, removed_at=now

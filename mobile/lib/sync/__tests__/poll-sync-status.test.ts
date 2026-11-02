@@ -149,6 +149,26 @@ describe('pollSyncStatus', () => {
       expect(syncSeen.get(client).seen.recipes).toBe('r2');
     });
 
+    it('shows the device copy while the changes are being fetched', async () => {
+      vi.mocked(api.getSyncStatus).mockResolvedValue(status({ recipes: 'r2' }));
+      vi.mocked(syncRecipes).mockImplementation(async (onLocal) => {
+        onLocal([{ id: 'on-disk' } as never]);
+        return [{ id: 'x' } as never];
+      });
+      const client = makeClient(seenAll());
+      const shown: unknown[] = [];
+      client.getQueryCache().subscribe((event) => {
+        if (event.type === 'updated' && event.query.queryKey[1] === 'local') {
+          shown.push(event.query.state.data);
+        }
+      });
+
+      await pollSyncStatus(client);
+
+      expect(shown[0]).toEqual([{ id: 'on-disk' }]);
+      expect(client.getQueryData(['recipes', 'local'])).toEqual([{ id: 'x' }]);
+    });
+
     it('keeps the recipe version for retry when the device sync failed', async () => {
       vi.spyOn(console, 'warn').mockImplementation(() => {});
       vi.mocked(api.getSyncStatus).mockResolvedValue(status({ recipes: 'r2' }));

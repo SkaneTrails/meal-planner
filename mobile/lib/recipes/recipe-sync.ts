@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { ApiClientError } from '@/lib/api/client';
 import { currentUserId } from '@/lib/auth-scope';
 import { recipeStore } from '@/lib/storage/recipe-store';
 import { createSerialQueue } from '@/lib/storage/serial-queue';
@@ -10,6 +11,14 @@ export const FULL_SYNC_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 // One sync at a time: each reads the stored cursor first, so overlapping ones (the query on mount
 // and the status poll) could otherwise finish out of order and let an older result replace a newer.
 const serialize = createSerialQueue();
+
+/** Another user signed in while a sync ran; nothing of it may reach the new user's screens or copy. */
+export class RecipeSyncCancelled extends Error {
+  constructor() {
+    super('Recipe sync cancelled: the signed-in user changed');
+    this.name = 'RecipeSyncCancelled';
+  }
+}
 
 const mergeRecipes = (
   existing: Recipe[],
@@ -46,7 +55,11 @@ async function runSync(
   options: { strict?: boolean },
 ): Promise<Recipe[]> {
   const ownerUid = currentUserId();
+  const ensureSameUser = () => {
+    if (currentUserId() !== ownerUid) throw new RecipeSyncCancelled();
+  };
   const local = await recipeStore.get(ownerUid);
+  ensureSameUser();
   const hasCopy = local.lastSyncTime !== null;
   if (hasCopy) onLocal(local.recipes);
 
@@ -61,10 +74,12 @@ async function runSync(
       fullSyncDue ? undefined : (local.lastSyncTime ?? undefined),
     );
   } catch (error) {
+    ensureSameUser();
     if (!hasCopy || options.strict) throw error;
     console.warn('Recipe sync failed, using the copy on the device', error);
     return local.recipes;
   }
+  ensureSameUser();
 
   let full = fullSyncDue;
   if (!full && local.scope !== null && local.scope !== changes.scope) {
@@ -72,6 +87,7 @@ async function runSync(
     onLocal([]);
     await recipeStore.clear();
     changes = await api.getRecipeChanges();
+    ensureSameUser();
     full = true;
   }
 
@@ -99,4 +115,20 @@ async function runSync(
   return full
     ? changes.recipes
     : mergeRecipes(local.recipes, changes.recipes, changes.deleted_ids);
+}
+
+/**
+ * One recipe from the server, or from the copy on the device when the server cannot be reached
+ * (offline, server error), so a recipe link opens without the network.
+ */
+export async function fetchRecipeOrDeviceCopy(id: string): Promise<Recipe> {
+  try {
+    return await api.getRecipe(id);
+  } catch (error) {
+    if (error instanceof ApiClientError && error.status < 500) throw error;
+    const local = await recipeStore.get(currentUserId());
+    const recipe = local.recipes.find((candidate) => candidate.id === id);
+    if (!recipe) throw error;
+    return recipe;
+  }
 }

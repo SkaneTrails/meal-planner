@@ -13,7 +13,7 @@ import {
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import { ApiClientError } from '../api/client';
-import { syncRecipes } from '../recipes/recipe-sync';
+import { fetchRecipeOrDeviceCopy, syncRecipes } from '../recipes/recipe-sync';
 import { searchRecipes, visibleRecipes } from '../recipes/visible-recipes';
 import { useSettings } from '../settings-context';
 import { recipeStore } from '../storage/recipe-store';
@@ -273,7 +273,8 @@ export const useRecipe = (id: string) => {
   const queryClient = useQueryClient();
   return useQuery({
     queryKey: recipeKeys.detail(id),
-    queryFn: () => api.getRecipe(id),
+    queryFn: () =>
+      recipeStore.isAvailable ? fetchRecipeOrDeviceCopy(id) : api.getRecipe(id),
     enabled: !!id,
     initialData: () =>
       queryClient
