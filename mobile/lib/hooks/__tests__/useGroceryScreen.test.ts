@@ -637,13 +637,28 @@ describe('useGroceryScreen', () => {
 
         confirmClearPicked();
 
-        expect(mockSetRemovedItems).toHaveBeenCalledWith([]);
+        expect(mockSetRemovedItems).toHaveBeenCalledWith(['old item', 'pasta', 'salt']);
         expect(mockSaveSelections).toHaveBeenCalledWith(
           [`${day(1)}_lunch`],
           { [`${day(1)}_lunch`]: 4 },
           [],
         );
         expect(mockClearChecked).toHaveBeenCalledOnce();
+      });
+
+      it('keeps bought items hidden on the server when the selection save fails', async () => {
+        mockSaveSelections.mockRejectedValueOnce(new Error('offline'));
+        mockMealPlan.meals = { [`${day(0)}_dinner`]: 'r1' };
+        mockContextState.selectedMealKeys = [`${day(0)}_dinner`];
+        mockContextState.checkedItems = new Set(['pasta', 'salt']);
+
+        confirmClearPicked();
+
+        await vi.waitFor(() => expect(showNotification).toHaveBeenCalled());
+        expect(mockSetRemovedItems).toHaveBeenCalledWith(['pasta', 'salt']);
+        expect(mockSetRemovedItems.mock.invocationCallOrder[0]).toBeLessThan(
+          mockSaveSelections.mock.invocationCallOrder[0],
+        );
       });
 
       it('keeps meals with items left to buy without saving selections', () => {

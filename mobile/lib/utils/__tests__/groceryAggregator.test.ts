@@ -384,6 +384,18 @@ describe('pruneShoppedMeals', () => {
     expect(result.mealKeys).toEqual(['wed_dinner']);
   });
 
+  it('keeps every hidden name while a kept recipe is not loaded', () => {
+    const result = pruneShoppedMeals(
+      ['mon_dinner', 'wed_dinner'],
+      { ...meals, wed_dinner: 'missing' },
+      recipes,
+      {},
+      new Set(['pasta', 'salt', 'saffron']),
+    );
+    expect(result.mealKeys).toEqual(['wed_dinner']);
+    expect(result.removedItems).toEqual(['pasta', 'salt', 'saffron']);
+  });
+
   it('drops a picked quick meal', () => {
     const result = pruneShoppedMeals(
       ['thu_dinner'],

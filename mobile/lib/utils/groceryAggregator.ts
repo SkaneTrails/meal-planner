@@ -141,8 +141,9 @@ const visibleSignature = (items: GroceryItem[], hidden: Set<string>) =>
 
 /**
  * Drop meals that are fully shopped: a meal whose removal changes nothing still to buy (every
- * item it adds is picked or hidden). Meals whose recipe is not loaded are kept. The hidden list
- * is reduced to names the remaining meals still produce.
+ * item it adds is picked or hidden). Meals whose recipe is not loaded are kept, and while any
+ * is, every hidden name is kept too (its ingredients are unknown). Otherwise the hidden list is
+ * reduced to names the remaining meals still produce.
  */
 export const pruneShoppedMeals = (
   mealKeys: string[],
@@ -154,8 +155,12 @@ export const pruneShoppedMeals = (
   const aggregate = (keys: string[]) =>
     aggregateIngredients(keys, meals, recipes, mealServings);
   let remaining = [...mealKeys];
+  let someNotLoaded = false;
   for (const key of mealKeys) {
-    if (aggregate([key]).length === 0) continue;
+    if (aggregate([key]).length === 0) {
+      someNotLoaded = true;
+      continue;
+    }
     const without = remaining.filter((k) => k !== key);
     if (
       visibleSignature(aggregate(remaining), hidden) ===
@@ -164,6 +169,7 @@ export const pruneShoppedMeals = (
       remaining = without;
     }
   }
+  if (someNotLoaded) return { mealKeys: remaining, removedItems: [...hidden] };
   const stillProduced = new Set(aggregate(remaining).map((item) => item.name));
   return {
     mealKeys: remaining,

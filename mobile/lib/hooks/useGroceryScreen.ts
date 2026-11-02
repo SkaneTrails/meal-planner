@@ -378,12 +378,16 @@ export const useGroceryScreen = () => {
         mealServings,
         hidden,
       );
-      const hiddenChanged =
-        pruned.removedItems.length !== removedItems.length ||
-        pruned.removedItems.some((name, i) => name !== removedItems[i]);
-      if (hiddenChanged) setRemovedItems(pruned.removedItems);
       const keptMeals = new Set(pruned.mealKeys);
-      if (selectedMealKeys.every((key) => keptMeals.has(key))) return;
+      if (selectedMealKeys.every((key) => keptMeals.has(key))) {
+        const hiddenChanged =
+          pruned.removedItems.length !== removedItems.length ||
+          pruned.removedItems.some((name, i) => name !== removedItems[i]);
+        if (hiddenChanged) setRemovedItems(pruned.removedItems);
+        return;
+      }
+      // Sent before the selection save, so bought items stay hidden if that save fails.
+      if (generatedToRemove.length > 0) setRemovedItems([...hidden]);
       const keptServings = Object.fromEntries(
         Object.entries(mealServings).filter(([key]) => keptMeals.has(key)),
       );
