@@ -36,6 +36,10 @@ console.warn = (...args: unknown[]) => {
 };
 
 // Mock expo-router
+vi.mock('expo-constants', () => ({
+  default: { expoConfig: { version: '1.2.3' } },
+}));
+
 vi.mock('expo-router', () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
