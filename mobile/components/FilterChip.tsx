@@ -89,5 +89,5 @@ const FilterChip = ({
   );
 };
 
-export { FilterChip };
 export type { FilterChipProps };
+export { FilterChip };

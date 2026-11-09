@@ -114,5 +114,5 @@ const ChipPicker = <T,>({
   );
 };
 
-export { ChipPicker };
 export type { ChipOption, ChipPickerProps };
+export { ChipPicker };
