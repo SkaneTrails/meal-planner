@@ -80,6 +80,7 @@ class TestSaveGroceryState:
             "meal_servings": {"2026-02-10_lunch": 2},
             "checked_items": ["flour"],
             "custom_items": [{"name": "Napkins", "category": "other"}],
+            "item_order": ["flour", "Napkins"],
         }
         saved = {**body, "custom_items": [{"name": "Napkins", "category": "other"}], "updated_at": None}
 
@@ -93,7 +94,7 @@ class TestSaveGroceryState:
             meal_servings={"2026-02-10_lunch": 2},
             checked_items=["flour"],
             custom_items=[{"name": "Napkins", "category": "other"}],
-            item_order=[],
+            item_order=["flour", "Napkins"],
             removed_items=[],
             created_by="test@example.com",
         )

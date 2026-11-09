@@ -33,7 +33,6 @@ export const useMealPlan = () => {
     enabled: isAuthenticated,
     staleTime: 0,
     refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
   });
 };
 

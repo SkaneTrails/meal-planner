@@ -27,6 +27,9 @@ const AsyncStorage = {
   multiSet: async (pairs: [string, string][]) => {
     for (const [k, v] of pairs) store[k] = v;
   },
+  removeMany: async (keys: string[]) => {
+    for (const k of keys) delete store[k];
+  },
   multiRemove: async (keys: string[]) => {
     for (const k of keys) delete store[k];
   },

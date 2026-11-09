@@ -6,6 +6,7 @@
  * On change: writes to API (debounced for item-level changes, immediate for selections).
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createContext,
   type ReactNode,
@@ -50,6 +51,17 @@ interface GroceryContextValue {
 const GroceryContext = createContext<GroceryContextValue | null>(null);
 
 const DEBOUNCE_MS = 500;
+
+// Keys written by the pre-online-only cache; removed once so old installs don't keep stale data.
+const LEGACY_STORAGE_KEYS = [
+  'grocery_checked_items',
+  'grocery_custom_items',
+  'grocery_selected_meals',
+  'grocery_meal_servings',
+  'grocery_item_order',
+  'grocery_removed_items',
+  'grocery_tick_sequence',
+];
 
 const EMPTY_GROCERY_STATE: GroceryListState = {
   selected_meals: [],
@@ -179,6 +191,10 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     void loadFromApi();
   }, [authLoading, sessionKey, loadFromApi, applyState]);
+
+  useEffect(() => {
+    AsyncStorage.removeMany(LEGACY_STORAGE_KEYS).catch(() => {});
+  }, []);
 
   useEffect(() => {
     return () => {

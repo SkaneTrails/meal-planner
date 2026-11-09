@@ -57,6 +57,15 @@ const ONLINE_ONLY_RESOURCES = [
   'grocery-state',
 ] as const;
 
+// Store order is slow-changing and stays cached for offline use.
+const isOnlineOnly = (key: unknown): boolean => {
+  if (!Array.isArray(key)) return false;
+  return (
+    (ONLINE_ONLY_RESOURCES as readonly string[]).includes(String(key[0])) &&
+    key[1] !== 'storeOrder'
+  );
+};
+
 export async function persistQueryCache(): Promise<void> {
   const cache = queryClient.getQueryCache().getAll();
   const data = cache
@@ -78,10 +87,7 @@ export async function persistQueryCache(): Promise<void> {
         return false;
       }
 
-      if (
-        typeof resource === 'string' &&
-        (ONLINE_ONLY_RESOURCES as readonly string[]).includes(resource)
-      ) {
+      if (isOnlineOnly(query.queryKey)) {
         return false;
       }
 
@@ -131,13 +137,7 @@ export async function restoreQueryCache(): Promise<void> {
           data: unknown;
           dataUpdatedAt?: number;
         }) => {
-          const resource = Array.isArray(item.queryKey)
-            ? item.queryKey[0]
-            : undefined;
-          if (
-            typeof resource === 'string' &&
-            (ONLINE_ONLY_RESOURCES as readonly string[]).includes(resource)
-          ) {
+          if (isOnlineOnly(item.queryKey)) {
             return;
           }
           queryClient.setQueryData(item.queryKey, item.data, {
