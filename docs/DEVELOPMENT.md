@@ -464,7 +464,9 @@ keystore, so no keystore is kept in the repo. The Expo project belongs to the
 `aroma-team` organization (`owner` and `extra.eas.projectId` in `mobile/app.json`).
 
 **Triggers:** pushing a version tag (`git tag v1.0.1 && git push origin v1.0.1`) or a
-manual run from the Actions tab. The Android `versionCode` is incremented by EAS
+manual run from the Actions tab. The tag must start with `v`. The workflow sets the app
+version (shown in Settings and Google Play) from it: `v1.0.3` builds version `1.0.3`. A manual run
+uses the `version` in `mobile/app.json`. The Android `versionCode` is incremented by EAS
 (`appVersionSource: "remote"` + `autoIncrement` in `mobile/eas.json`).
 
 | Part                                                      | How                                                     |
