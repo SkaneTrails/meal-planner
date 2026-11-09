@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from api.routers.grocery import router
-from api.storage.grocery_list_storage import apply_grocery_patch, merge_checked_items
+from api.storage.grocery_list_storage import apply_grocery_patch, merge_checked_items, save_grocery_state
 
 app = FastAPI()
 app.include_router(router)
@@ -269,6 +269,33 @@ class TestClearGroceryState:
         """Should return 403 if user has no household."""
         response = client_no_household.delete("/grocery/state")
         assert response.status_code == 403
+
+
+class TestSaveGroceryStateStorage:
+    """The storage helper behind PUT /grocery/state, run for real against a mocked document."""
+
+    def test_persists_item_order(self) -> None:
+        """item_order must reach the stored document and the returned state."""
+        with (
+            patch("api.storage.grocery_list_storage._doc_ref") as doc_ref,
+            patch("api.storage.grocery_list_storage.touch_household"),
+        ):
+            result = save_grocery_state(
+                "hh1", selected_meals=[], meal_servings={}, item_order=["flour", "milk"], created_by="a@b.c"
+            )
+
+        assert doc_ref.return_value.set.call_args.args[0]["item_order"] == ["flour", "milk"]
+        assert result["item_order"] == ["flour", "milk"]
+
+    def test_defaults_item_order_to_empty(self) -> None:
+        """Omitted item_order is stored as an empty list."""
+        with (
+            patch("api.storage.grocery_list_storage._doc_ref"),
+            patch("api.storage.grocery_list_storage.touch_household"),
+        ):
+            result = save_grocery_state("hh1", selected_meals=[], meal_servings={})
+
+        assert result["item_order"] == []
 
 
 class TestMergeCheckedItems:

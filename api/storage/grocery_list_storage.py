@@ -106,7 +106,7 @@ def save_grocery_state(  # noqa: PLR0913
     item_order: list[str] | None = None,
     removed_items: list[str] | None = None,
     created_by: str | None = None,
-) -> dict[str, Any]:  # pragma: no cover
+) -> dict[str, Any]:
     """Save or replace the grocery list state for a household.
 
     Args:
