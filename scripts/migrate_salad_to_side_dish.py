@@ -22,7 +22,11 @@ def migrate(*, dry_run: bool = False) -> None:
     updated = 0
 
     for doc in docs:
-        title = doc.to_dict().get("title", "(untitled)")
+        data = doc.to_dict()
+        if data is None:
+            msg = f"Missing document data: {doc.id}"
+            raise ValueError(msg)
+        title = data.get("title", "(untitled)")
 
         if dry_run:
             print(f"  [DRY RUN] {doc.id} ({title}): would change salad → side_dish")

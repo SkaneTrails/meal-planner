@@ -53,6 +53,9 @@ def get_external_image_recipes(db: firestore.Client, bucket_name: str, limit: in
     results = []
     for doc in docs:
         data = doc.to_dict()
+        if data is None:
+            msg = f"Missing document data: {doc.id}"
+            raise ValueError(msg)
         image_url = data.get("image_url", "")
         if image_url and not is_gcs_url(image_url, bucket_name):
             results.append({"id": doc.id, "title": data.get("title", ""), "image_url": image_url})

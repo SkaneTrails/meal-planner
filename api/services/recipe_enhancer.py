@@ -58,7 +58,7 @@ class EnhancementConfigError(EnhancementError):
 
 def get_genai_client() -> genai_module.Client:
     """Get configured Gemini client."""
-    if not GENAI_AVAILABLE:
+    if not GENAI_AVAILABLE or genai is None:
         msg = "google-genai is not installed. Install with: uv add google-genai"
         raise EnhancementConfigError(msg)
 
@@ -158,6 +158,9 @@ def _flatten_metadata(enhanced: dict[str, Any]) -> None:
 
 def _call_gemini_with_retry(client: Any, model: str, recipe_text: str, system_prompt: str) -> dict[str, Any]:
     """Call Gemini and parse JSON response, retrying on parse errors."""
+    if types is None:
+        msg = "google-genai is not installed. Install with: uv add google-genai"
+        raise EnhancementConfigError(msg)
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             response = client.models.generate_content(

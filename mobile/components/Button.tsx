@@ -344,4 +344,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export type { ButtonProps, ButtonVariant, ButtonSize };
+export type { ButtonProps, ButtonSize, ButtonVariant };

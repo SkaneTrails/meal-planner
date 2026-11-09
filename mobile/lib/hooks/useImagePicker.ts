@@ -83,5 +83,5 @@ const useImagePicker = (
   return { pickImage };
 };
 
-export { useImagePicker };
 export type { ImagePickerOptions, UseImagePickerReturn };
+export { useImagePicker };

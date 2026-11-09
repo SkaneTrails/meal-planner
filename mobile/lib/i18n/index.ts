@@ -14,8 +14,8 @@ import type { Translations } from './locales/en';
 import en from './locales/en';
 import { getLocale, interpolate, resolve, type TFunction } from './translate';
 
-export type { TFunction };
 export { translateStandalone } from './translate';
+export type { TFunction };
 
 /**
  * React hook that returns a `t()` function bound to the current app language.

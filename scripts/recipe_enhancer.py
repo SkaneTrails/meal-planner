@@ -70,6 +70,9 @@ def get_unenhanced_recipes(limit: int | None = None, *, include_enhanced: bool =
     recipes: list[tuple[str, dict]] = []
     for doc in query.stream():
         data = doc.to_dict()
+        if data is None:
+            msg = f"Missing document data: {doc.id}"
+            raise ValueError(msg)
         data["id"] = doc.id
 
         # Client-side filtering: include if enhanced=False or field missing
@@ -94,6 +97,9 @@ def list_recipes(limit: int = 20) -> None:
     print("-" * 60)
     for doc in recipes:
         data = doc.to_dict()
+        if data is None:
+            msg = f"Missing document data: {doc.id}"
+            raise ValueError(msg)
         title = data.get("title", "Untitled")[:50]
         print(f"  {doc.id}: {title}")
     print("-" * 60)

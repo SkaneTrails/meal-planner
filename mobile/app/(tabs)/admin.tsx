@@ -50,7 +50,7 @@ export default function AdminScreen() {
     return <FullScreenLoading />;
   }
 
-  if (!currentUser || currentUser.role !== 'superuser') {
+  if (currentUser?.role !== 'superuser') {
     return (
       <FullScreenLoading
         icon="lock-closed"

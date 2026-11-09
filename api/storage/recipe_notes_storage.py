@@ -66,9 +66,9 @@ def delete_note(note_id: str, household_id: str, recipe_id: str) -> bool:
         return False
 
     data = doc.to_dict()  # type: ignore[union-attr]
-    if data.get("household_id") != household_id:  # type: ignore[union-attr]
+    if data is None or data.get("household_id") != household_id:
         return False
-    if data.get("recipe_id") != recipe_id:  # type: ignore[union-attr]
+    if data.get("recipe_id") != recipe_id:
         return False
 
     doc_ref.delete()

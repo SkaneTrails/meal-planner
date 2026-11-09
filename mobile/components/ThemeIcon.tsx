@@ -207,5 +207,5 @@ export const ThemeIcon = ({
   );
 };
 
-export { BASE_GLYPHS, GLYPH_OVERRIDES, resolveGlyph };
 export type { IoniconName, TerminalGlyph };
+export { BASE_GLYPHS, GLYPH_OVERRIDES, resolveGlyph };

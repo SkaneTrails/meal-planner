@@ -1040,6 +1040,15 @@ class TestFindRecipeByUrl:
         result = find_recipe_by_url("")
         assert result is None
 
+    def test_skips_snapshots_without_data(self) -> None:
+        mock_db = MagicMock()
+        doc = MagicMock()
+        doc.to_dict.return_value = None
+        mock_db.collection.return_value.where.return_value.limit.return_value.stream.return_value = [doc]
+
+        with patch("api.storage.recipe_storage.get_firestore_client", return_value=mock_db):
+            assert find_recipe_by_url("https://example.com/recipe") is None
+
     def test_finds_exact_match(self) -> None:
         """Should find recipe with exact URL match."""
         mock_db = MagicMock()

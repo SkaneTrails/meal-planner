@@ -15,6 +15,10 @@
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "🤖 Renovate Dependency Dashboard",
   "minimumReleaseAge": "3 days",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": false
+  },
   "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "packageRules": [

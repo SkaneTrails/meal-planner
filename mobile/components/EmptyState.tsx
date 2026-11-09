@@ -140,5 +140,5 @@ const EmptyState = ({
   );
 };
 
+export type { EmptyStateAction, EmptyStateProps };
 export { EmptyState };
-export type { EmptyStateProps, EmptyStateAction };
