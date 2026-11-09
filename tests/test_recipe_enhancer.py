@@ -12,6 +12,7 @@ from api.services.recipe_enhancer import (
     DEFAULT_MODEL,
     EnhancementConfigError,
     EnhancementError,
+    _call_gemini_with_retry,
     _flatten_metadata,
     _format_recipe_text,
     _normalize_ingredients,
@@ -33,6 +34,21 @@ class TestGetGenaiClient:
             pytest.raises(EnhancementConfigError, match="google-genai is not installed"),
         ):
             get_genai_client()
+
+    def test_missing_genai_module_raises_configuration_error(self) -> None:
+        with (
+            patch("api.services.recipe_enhancer.GENAI_AVAILABLE", new=True),
+            patch("api.services.recipe_enhancer.genai", new=None),
+            pytest.raises(EnhancementConfigError, match="google-genai is not installed"),
+        ):
+            get_genai_client()
+
+    def test_missing_types_raises_configuration_error(self) -> None:
+        with (
+            patch("api.services.recipe_enhancer.types", new=None),
+            pytest.raises(EnhancementConfigError, match="google-genai is not installed"),
+        ):
+            _call_gemini_with_retry(MagicMock(), "model", "recipe", "prompt")
 
     def test_raises_error_when_api_key_missing(self) -> None:
         """Should raise EnhancementConfigError if GOOGLE_API_KEY not set."""

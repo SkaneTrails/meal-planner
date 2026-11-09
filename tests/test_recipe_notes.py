@@ -226,6 +226,18 @@ class TestStorageDeleteNote:
     """Tests for recipe_notes_storage.delete_note."""
 
     @patch("api.storage.recipe_notes_storage._get_collection")
+    def test_missing_document_data_is_not_deleted(self, mock_coll: MagicMock) -> None:
+        """A missing snapshot must not bypass household and recipe checks."""
+        from api.storage.recipe_notes_storage import delete_note
+
+        doc_ref = mock_coll.return_value.document.return_value
+        doc_ref.get.return_value.exists = True
+        doc_ref.get.return_value.to_dict.return_value = None
+
+        assert delete_note("n1", "hh1", "r1") is False
+        doc_ref.delete.assert_not_called()
+
+    @patch("api.storage.recipe_notes_storage._get_collection")
     def test_deletes_matching_note(self, mock_coll: MagicMock) -> None:
         """Should delete note when household matches."""
         from api.storage.recipe_notes_storage import delete_note

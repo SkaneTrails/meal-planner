@@ -95,6 +95,48 @@ interface GroceryListViewProps {
   onClearPicked?: () => void;
 }
 
+const SectionHeader = ({
+  label,
+  collapsed,
+  onToggle,
+}: {
+  label: string;
+  collapsed: boolean;
+  onToggle: () => void;
+}) => {
+  const { colors, fonts } = useTheme();
+  return (
+    <Pressable
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityState={{ expanded: !collapsed }}
+      accessibilityLabel={label}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: spacing.xs,
+      }}
+    >
+      <Text
+        style={{
+          fontFamily: fonts.bodySemibold,
+          fontSize: fontSize.sm,
+          color: colors.content.heading,
+          textTransform: 'uppercase',
+        }}
+      >
+        {label}
+      </Text>
+      <ThemeIcon
+        name={collapsed ? 'chevron-down' : 'chevron-up'}
+        size={iconSize.sm}
+        color={colors.content.subtitle}
+      />
+    </Pressable>
+  );
+};
+
 export const GroceryListView = ({
   uncheckedItems,
   pickedItems,
@@ -249,45 +291,6 @@ export const GroceryListView = ({
     }
     return renderItemList(displayUnchecked);
   };
-
-  const SectionHeader = ({
-    label,
-    collapsed,
-    onToggle,
-  }: {
-    label: string;
-    collapsed: boolean;
-    onToggle: () => void;
-  }) => (
-    <Pressable
-      onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityState={{ expanded: !collapsed }}
-      accessibilityLabel={label}
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: spacing.xs,
-      }}
-    >
-      <Text
-        style={{
-          fontFamily: fonts.bodySemibold,
-          fontSize: fontSize.sm,
-          color: colors.content.heading,
-          textTransform: 'uppercase',
-        }}
-      >
-        {label}
-      </Text>
-      <ThemeIcon
-        name={collapsed ? 'chevron-down' : 'chevron-up'}
-        size={iconSize.sm}
-        color={colors.content.subtitle}
-      />
-    </Pressable>
-  );
 
   return (
     <ScrollView

@@ -180,6 +180,8 @@ def list_household_members(household_id: str) -> list[HouseholdMember]:
     members = []
     for doc in query.stream():
         data = doc.to_dict()
+        if data is None:
+            continue
         members.append(
             HouseholdMember(
                 email=doc.id,
@@ -201,6 +203,8 @@ def list_all_households() -> list[Household]:
 
     for doc in db.collection(HOUSEHOLDS_COLLECTION).stream():
         data = doc.to_dict()
+        if data is None:
+            continue
         households.append(
             Household(
                 id=doc.id,
