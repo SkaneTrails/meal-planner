@@ -1,5 +1,5 @@
 import { type ComponentRef, useEffect, useRef } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Platform, Text, TextInput, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { ContentCard } from '@/components/ContentCard';
 import { useTranslation } from '@/lib/i18n';
@@ -23,7 +23,7 @@ export const AddItemCard = ({
   const containerRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
-    if (!onDismiss) return;
+    if (!onDismiss || Platform.OS !== 'web') return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onDismiss();
