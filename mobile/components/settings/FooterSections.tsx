@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { Text, View } from 'react-native';
 import { Section } from '@/components/Section';
 import { useTranslation } from '@/lib/i18n';
@@ -39,7 +40,7 @@ export const AboutSection = () => {
               fontWeight: fontWeight.medium,
             }}
           >
-            1.0.0
+            {Constants.expoConfig?.version}
           </Text>
         </View>
         <View
