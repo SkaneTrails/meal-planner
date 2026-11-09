@@ -40,6 +40,7 @@ optional-dependencies.dev = [
   "ty>=0.0.5",
 ]
 optional-dependencies.test = [
+  "httpx2>=2",
   "pytest>=8",
   "pytest-asyncio>=0.24",
   "pytest-cov>=4.1",
@@ -55,7 +56,6 @@ dev = [
 
 [tool.uv]
 package = false
-constraint-dependencies = [ "starlette<1" ]
 
 [tool.ruff]
 target-version = "py313" # Ruff doesn't support py314 yet, py313 is compatible
