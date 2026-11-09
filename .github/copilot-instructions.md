@@ -165,7 +165,7 @@ infra/                   # Terraform infrastructure
 | Component | Key Packages |
 | --------- | ------------ |
 | API (`api/`) | fastapi, uvicorn, pydantic, google-cloud-firestore, google-cloud-storage, google-genai, recipe-scrapers, pillow |
-| Mobile (`mobile/`) | expo, expo-router, @tanstack/react-query, nativewind, vitest, @testing-library/react |
+| Mobile (`mobile/`) | expo, expo-router, expo-file-system, @tanstack/react-query (+ react-query-persist-client, query-async-storage-persister), nativewind, vitest, @testing-library/react |
 | Functions (`functions/`) | functions-framework, recipe-scrapers |
 
 ### Data Flow
@@ -175,6 +175,8 @@ infra/                   # Terraform infrastructure
 3. Recipe saved to Firestore → user plans meals → grocery list generated
 4. (Optional) `recipe_enhancer.py` enhances recipes with Gemini AI
 5. (Optional) User uploads custom recipe image → stored in GCS bucket
+6. App start: screens draw from the saved query cache and the per-user grocery copy; `GET /sync/status` then refetches only kinds whose version changed (every write path must bump its kind via `api/storage/sync_status.py`)
+7. Native keeps every visible recipe on the device and syncs it with `GET /recipes/changes?since=` (removals via `recipe_tombstones`, written in the same batch as delete / transfer / unshare); web reads the paged API
 
 ### Firestore Schema
 

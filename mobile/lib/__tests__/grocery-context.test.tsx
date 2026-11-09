@@ -1,9 +1,8 @@
 /**
- * Tests for GroceryProvider — verifies online-only grocery state management.
+ * Tests for GroceryProvider — verifies grocery state management.
  *
  * Real logic tested:
- * - Initial load: waits for Firebase auth, loads from API (no AsyncStorage fallback)
- * - Unauthenticated state: resets to empty state when signed out
+ * - Initial load: API first, AsyncStorage fallback on error
  * - toggleItem: adds item if not checked, removes if already checked
  * - setCheckedItems: replaces the full checked set
  * - clearChecked: resets all checked items
@@ -43,10 +42,36 @@ vi.mock('@/lib/api', () => ({
   },
 }));
 
-import { useAuth } from '@/lib/hooks/use-auth';
-import { GroceryProvider, useGroceryState } from '@/lib/grocery-context';
+const mockStorage: Record<string, string> = {};
+vi.mock('@react-native-async-storage/async-storage', () => ({
+  default: {
+    getItem: vi.fn((key: string) => Promise.resolve(mockStorage[key] ?? null)),
+    setItem: vi.fn((key: string, value: string) => {
+      mockStorage[key] = value;
+      return Promise.resolve();
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete mockStorage[key];
+      return Promise.resolve();
+    }),
+  },
+}));
 
-const mockUseAuth = vi.mocked(useAuth);
+const mockAuth: { user: { uid: string } | null; loading: boolean } = {
+  user: { uid: 'user-1' },
+  loading: false,
+};
+vi.mock('@/lib/hooks/use-auth', () => ({
+  useAuth: () => mockAuth,
+}));
+
+import {
+  GroceryProvider,
+  refreshGroceryFromServer,
+  resetGroceryForNewScope,
+  useGroceryState,
+} from '@/lib/grocery-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function createGroceryWrapper() {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -57,18 +82,59 @@ function createGroceryWrapper() {
 describe('GroceryProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuth.mockReturnValue({
-      user: { email: 'test@example.com' } as ReturnType<typeof useAuth>['user'],
-      loading: false,
-      error: null,
-      signIn: vi.fn(),
-      signOut: vi.fn(),
-      getIdToken: vi.fn(),
-    });
+    for (const key of Object.keys(mockStorage)) {
+      delete mockStorage[key];
+    }
+    mockAuth.user = { uid: 'user-1' };
+    mockAuth.loading = false;
     mockGetGroceryState.mockResolvedValue(emptyState);
     mockPatchGroceryState.mockResolvedValue(emptyState);
     mockSaveGroceryState.mockResolvedValue(emptyState);
     mockClearGroceryState.mockResolvedValue(undefined);
+  });
+
+  it('does not fetch from API while auth is loading', async () => {
+    mockAuth.user = null;
+    mockAuth.loading = true;
+
+    const { result } = renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+
+    await act(async () => {});
+
+    expect(mockGetGroceryState).not.toHaveBeenCalled();
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it('does not fetch from API when signed out', async () => {
+    mockAuth.user = null;
+
+    renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+
+    await act(async () => {});
+
+    expect(mockGetGroceryState).not.toHaveBeenCalled();
+  });
+
+  it('fetches from API once auth resolves to a user', async () => {
+    mockAuth.user = null;
+    mockAuth.loading = true;
+
+    const { result, rerender } = renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+    await act(async () => {});
+    expect(mockGetGroceryState).not.toHaveBeenCalled();
+
+    mockAuth.user = { uid: 'user-1' };
+    mockAuth.loading = false;
+    rerender();
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(mockGetGroceryState).toHaveBeenCalledOnce();
   });
 
   it('starts with empty state from API', async () => {
@@ -85,43 +151,6 @@ describe('GroceryProvider', () => {
     expect(result.current.selectedMealKeys).toEqual([]);
     expect(result.current.mealServings).toEqual({});
     expect(mockGetGroceryState).toHaveBeenCalledOnce();
-  });
-
-  it('waits for Firebase auth before loading from API', async () => {
-    mockUseAuth.mockReturnValue({
-      user: null,
-      loading: true,
-      error: null,
-      signIn: vi.fn(),
-      signOut: vi.fn(),
-      getIdToken: vi.fn(),
-    });
-
-    const { result, rerender } = renderHook(() => useGroceryState(), {
-      wrapper: createGroceryWrapper(),
-    });
-
-    expect(mockGetGroceryState).not.toHaveBeenCalled();
-    expect(result.current.isLoading).toBe(true);
-
-    mockUseAuth.mockReturnValue({
-      user: { email: 'test@example.com' } as ReturnType<typeof useAuth>['user'],
-      loading: false,
-      error: null,
-      signIn: vi.fn(),
-      signOut: vi.fn(),
-      getIdToken: vi.fn(),
-    });
-    mockGetGroceryState.mockResolvedValue({
-      ...emptyState,
-      checked_items: ['apples'],
-    });
-
-    rerender();
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(mockGetGroceryState).toHaveBeenCalledOnce();
-    expect(result.current.checkedItems.has('apples')).toBe(true);
   });
 
   it('loads persisted state from API', async () => {
@@ -147,8 +176,12 @@ describe('GroceryProvider', () => {
     expect(result.current.mealServings).toEqual({ 'monday-lunch': 4 });
   });
 
-  it('does not fall back to local storage when API fails', async () => {
+  it('falls back to AsyncStorage when API fails', async () => {
     mockGetGroceryState.mockRejectedValue(new Error('offline'));
+    mockStorage['grocery_checked_items:user-1'] = JSON.stringify(['butter']);
+    mockStorage['grocery_custom_items:user-1'] = JSON.stringify([{ name: 'jam', category: 'other' }]);
+    mockStorage['grocery_selected_meals:user-1'] = JSON.stringify(['tuesday-dinner']);
+    mockStorage['grocery_meal_servings:user-1'] = JSON.stringify({ 'tuesday-dinner': 2 });
 
     const { result } = renderHook(() => useGroceryState(), {
       wrapper: createGroceryWrapper(),
@@ -156,10 +189,10 @@ describe('GroceryProvider', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.checkedItems.size).toBe(0);
-    expect(result.current.customItems).toEqual([]);
-    expect(result.current.selectedMealKeys).toEqual([]);
-    expect(result.current.mealServings).toEqual({});
+    expect(result.current.checkedItems.has('butter')).toBe(true);
+    expect(result.current.customItems).toEqual([{ name: 'jam', category: 'other' }]);
+    expect(result.current.selectedMealKeys).toEqual(['tuesday-dinner']);
+    expect(result.current.mealServings).toEqual({ 'tuesday-dinner': 2 });
   });
 
   describe('toggleItem', () => {
@@ -387,36 +420,102 @@ describe('GroceryProvider', () => {
         removed_items: ['milk'],
       });
     });
-  });
 
-  describe('unauthenticated state', () => {
-    it('resets state to empty when user is signed out', async () => {
-      mockGetGroceryState.mockResolvedValue({
-        ...emptyState,
-        checked_items: ['milk'],
-        custom_items: [{ name: 'bread', category: 'other' }],
+    it('sends unsent changes in the same request, the selection winning', async () => {
+      mockPatchGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['milk'] });
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setRemovedItems(['butter', 'milk']);
+        result.current.toggleItem('flour');
+      });
+      await act(async () => {
+        await result.current.saveSelections(['tuesday-dinner'], { 'tuesday-dinner': 4 }, ['milk']);
       });
 
-      const { result, rerender } = renderHook(() => useGroceryState(), {
+      expect(mockPatchGroceryState).toHaveBeenCalledOnce();
+      expect(mockPatchGroceryState).toHaveBeenCalledWith(
+        expect.objectContaining({
+          check_items: ['flour'],
+          selected_meals: ['tuesday-dinner'],
+          meal_servings: { 'tuesday-dinner': 4 },
+          removed_items: ['milk'],
+        }),
+      );
+    });
+
+    it('does not resend an older failed change after the selection saved', async () => {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      mockPatchGroceryState.mockRejectedValueOnce(new Error('offline'));
+      act(() => {
+        result.current.setRemovedItems(['butter', 'milk']);
+      });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      mockPatchGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['milk'] });
+      mockGetGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['milk'] });
+      await act(async () => {
+        await result.current.saveSelections(['tuesday-dinner'], { 'tuesday-dinner': 4 }, ['milk']);
+      });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledTimes(2);
+      expect(result.current.removedItems).toEqual(['milk']);
+      spy.mockRestore();
+    });
+
+    it('keeps unsent changes queued when the selection save fails', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setRemovedItems(['butter']);
+      });
+      mockPatchGroceryState.mockRejectedValueOnce(new Error('offline'));
+      await act(async () => {
+        await expect(
+          result.current.saveSelections(['tuesday-dinner'], { 'tuesday-dinner': 4 }),
+        ).rejects.toThrow('offline');
+      });
+
+      mockPatchGroceryState.mockResolvedValue({ ...emptyState, removed_items: ['butter'] });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenLastCalledWith({ removed_items: ['butter'] });
+    });
+  });
+
+  describe('legacy custom items normalization', () => {
+    it('converts string[] from AsyncStorage to CustomGroceryItem[]', async () => {
+      mockGetGroceryState.mockRejectedValue(new Error('offline'));
+      mockStorage['grocery_custom_items:user-1'] = JSON.stringify(['bread', 'milk']);
+
+      const { result } = renderHook(() => useGroceryState(), {
         wrapper: createGroceryWrapper(),
       });
 
       await waitFor(() => expect(result.current.isLoading).toBe(false));
-      expect(result.current.checkedItems.has('milk')).toBe(true);
 
-      mockUseAuth.mockReturnValue({
-        user: null,
-        loading: false,
-        error: null,
-        signIn: vi.fn(),
-        signOut: vi.fn(),
-        getIdToken: vi.fn(),
-      });
-
-      rerender();
-
-      await waitFor(() => expect(result.current.checkedItems.size).toBe(0));
-      expect(result.current.customItems).toEqual([]);
+      expect(result.current.customItems).toEqual([
+        { name: 'bread', category: 'other' },
+        { name: 'milk', category: 'other' },
+      ]);
     });
   });
 
@@ -539,7 +638,7 @@ describe('GroceryProvider', () => {
       spy.mockRestore();
     });
 
-    it('applies server response on successful patch', async () => {
+    it('caches server response to AsyncStorage on successful patch', async () => {
       const { result } = renderHook(() => useGroceryState(), {
         wrapper: createGroceryWrapper(),
       });
@@ -562,10 +661,296 @@ describe('GroceryProvider', () => {
         await result.current.refreshFromApi();
       });
 
+      // AsyncStorage should have the server-confirmed state from the PATCH response
+      expect(mockStorage['grocery_checked_items:user-1']).toBe(
+        JSON.stringify(['milk']),
+      );
+    });
+  });
+
+  describe('device copy per user', () => {
+    it('shows the device copy before the server answers', async () => {
+      mockStorage['grocery_checked_items:user-1'] = JSON.stringify(['butter']);
+      let resolveServer: (state: GroceryListState) => void = () => {};
+      mockGetGroceryState.mockReturnValue(
+        new Promise((resolve) => {
+          resolveServer = resolve;
+        }),
+      );
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.checkedItems.has('butter')).toBe(true);
+
+      await act(async () => {
+        resolveServer({ ...emptyState, checked_items: ['eggs'] });
+      });
+      expect(result.current.checkedItems.has('eggs')).toBe(true);
+      expect(result.current.checkedItems.has('butter')).toBe(false);
+    });
+
+    it("never shows another user's device copy", async () => {
+      mockGetGroceryState.mockRejectedValue(new Error('offline'));
+      mockStorage['grocery_checked_items:someone-else'] = JSON.stringify(['secret']);
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.checkedItems.size).toBe(0);
+    });
+
+    it('removes the device copy of older app versions, which had no owner', async () => {
+      mockStorage['grocery_checked_items'] = JSON.stringify(['legacy']);
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(mockStorage['grocery_checked_items']).toBeUndefined();
+      expect(result.current.checkedItems.has('legacy')).toBe(false);
+    });
+  });
+
+  describe('per-item ticks', () => {
+    it('sends ticks one by one instead of the whole checked list', async () => {
+      mockGetGroceryState.mockResolvedValue({ ...emptyState, checked_items: ['eggs'] });
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      act(() => {
+        result.current.toggleItem('eggs');
+      });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledWith({
+        check_items: ['milk'],
+        uncheck_items: ['eggs'],
+      });
+    });
+
+    it('folds ticks into a pending full list', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.setCheckedItems(new Set(['flour']));
+      });
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      await act(async () => {
+        await result.current.refreshFromApi();
+      });
+
+      expect(mockPatchGroceryState).toHaveBeenCalledWith({
+        checked_items: ['flour', 'milk'],
+      });
+    });
+  });
+
+  describe('refreshGroceryFromServer (sync poll)', () => {
+    it("applies another device's changes", async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      mockGetGroceryState.mockResolvedValue({ ...emptyState, checked_items: ['from-phone'] });
+      await act(async () => {
+        await refreshGroceryFromServer();
+      });
+
+      expect(result.current.checkedItems.has('from-phone')).toBe(true);
+    });
+
+    it('keeps ticks that are not saved yet on top of the server state', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      mockGetGroceryState.mockResolvedValue({ ...emptyState, checked_items: ['from-phone'] });
+      await act(async () => {
+        await refreshGroceryFromServer();
+      });
+
       expect(result.current.checkedItems.has('milk')).toBe(true);
-      expect(result.current.customItems).toEqual([
-        { name: 'bread', category: 'other' },
-      ]);
+      expect(result.current.checkedItems.has('from-phone')).toBe(true);
+    });
+
+    it('rejects while a change is being saved, so the poll retries', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      mockPatchGroceryState.mockReturnValue(new Promise(() => {}));
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      act(() => {
+        void result.current.refreshFromApi();
+      });
+      await waitFor(() => expect(mockPatchGroceryState).toHaveBeenCalled());
+
+      await expect(refreshGroceryFromServer()).rejects.toThrow('being saved');
+    });
+  });
+
+  describe('write ordering and scope', () => {
+    it('sends writes one after another, so an older change cannot land after a newer one', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      let finishFirst: (state: GroceryListState) => void = () => {};
+      mockPatchGroceryState.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishFirst = resolve;
+        }),
+      );
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      act(() => {
+        void result.current.refreshFromApi();
+      });
+      await waitFor(() => expect(mockPatchGroceryState).toHaveBeenCalledTimes(1));
+
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      act(() => {
+        void result.current.refreshFromApi();
+      });
+      await act(async () => {});
+      expect(mockPatchGroceryState).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        finishFirst({ ...emptyState, checked_items: ['milk'] });
+      });
+      await waitFor(() => expect(mockPatchGroceryState).toHaveBeenCalledTimes(2));
+      expect(mockPatchGroceryState).toHaveBeenLastCalledWith({
+        check_items: [],
+        uncheck_items: ['milk'],
+      });
+    });
+
+    it("drops the result of a write made for the previous household", async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      let finishOld: (state: GroceryListState) => void = () => {};
+      mockPatchGroceryState.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishOld = resolve;
+        }),
+      );
+      act(() => {
+        result.current.toggleItem('old-household-item');
+      });
+      act(() => {
+        void result.current.refreshFromApi();
+      });
+      await waitFor(() => expect(mockPatchGroceryState).toHaveBeenCalled());
+
+      act(() => {
+        resetGroceryForNewScope();
+      });
+      await act(async () => {
+        finishOld({ ...emptyState, checked_items: ['old-household-item'] });
+      });
+
+      expect(result.current.checkedItems.has('old-household-item')).toBe(false);
+      expect(mockStorage['grocery_checked_items:user-1'] ?? '').not.toContain('old-household-item');
+    });
+
+    it('still loads from the server when the device copy cannot be read', async () => {
+      vi.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk'));
+      mockGetGroceryState.mockResolvedValue({ ...emptyState, checked_items: ['eggs'] });
+
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(result.current.checkedItems.has('eggs')).toBe(true);
+    });
+
+    it('rejects a refresh whose response arrives after the household changed', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      let finishOld: (state: GroceryListState) => void = () => {};
+      mockGetGroceryState.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishOld = resolve;
+        }),
+      );
+      const refresh = refreshGroceryFromServer();
+      act(() => {
+        resetGroceryForNewScope();
+      });
+      finishOld({ ...emptyState, checked_items: ['old-household-item'] });
+
+      await expect(refresh).rejects.toThrow('changed owner');
+      expect(result.current.checkedItems.has('old-household-item')).toBe(false);
+    });
+
+    it('does not send a queued clear after the household changed', async () => {
+      const { result } = renderHook(() => useGroceryState(), {
+        wrapper: createGroceryWrapper(),
+      });
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      let finishPatch: (state: GroceryListState) => void = () => {};
+      mockPatchGroceryState.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishPatch = resolve;
+        }),
+      );
+      act(() => {
+        result.current.toggleItem('milk');
+      });
+      act(() => {
+        void result.current.refreshFromApi();
+      });
+      await waitFor(() => expect(mockPatchGroceryState).toHaveBeenCalled());
+
+      await act(async () => {
+        await result.current.clearAll();
+      });
+      act(() => {
+        resetGroceryForNewScope();
+      });
+      await act(async () => {
+        finishPatch(emptyState);
+      });
+
+      expect(mockClearGroceryState).not.toHaveBeenCalled();
     });
   });
 });
@@ -577,62 +962,5 @@ describe('useGroceryState', () => {
       renderHook(() => useGroceryState());
     }).toThrow('useGroceryState must be used within a GroceryProvider');
     spy.mockRestore();
-  });
-});
-
-
-describe('GroceryProvider session safety', () => {
-  const authAs = (email: string | null) =>
-    mockUseAuth.mockReturnValue({
-      user: email ? ({ email } as ReturnType<typeof useAuth>['user']) : null,
-      loading: false,
-      error: null,
-      signIn: vi.fn(),
-      signOut: vi.fn(),
-      getIdToken: vi.fn(),
-    });
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockPatchGroceryState.mockResolvedValue(emptyState);
-  });
-
-  it('discards a GET that resolves after sign-out', async () => {
-    let resolveGet!: (s: GroceryListState) => void;
-    mockGetGroceryState.mockReturnValue(new Promise((r) => (resolveGet = r)));
-    authAs('a@example.com');
-
-    const { result, rerender } = renderHook(() => useGroceryState(), {
-      wrapper: createGroceryWrapper(),
-    });
-
-    authAs(null);
-    rerender();
-    await act(async () => {
-      resolveGet({ ...emptyState, custom_items: [{ name: 'Old', category: 'other' }] });
-    });
-
-    expect(result.current.customItems).toEqual([]);
-    expect(result.current.isLoading).toBe(false);
-  });
-
-  it('does not PATCH after a failed initial load', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    mockGetGroceryState.mockRejectedValue(new Error('offline'));
-    authAs('a@example.com');
-
-    const { result } = renderHook(() => useGroceryState(), {
-      wrapper: createGroceryWrapper(),
-    });
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    act(() => result.current.addCustomItem({ name: 'New', category: 'other' }));
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000);
-    });
-    vi.useRealTimers();
-
-    expect(mockPatchGroceryState).not.toHaveBeenCalled();
-    await expect(result.current.saveSelections([], {})).rejects.toThrow();
   });
 });

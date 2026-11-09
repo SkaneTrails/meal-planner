@@ -1,9 +1,9 @@
 /**
  * Global grocery state context.
- * Source of truth: Firestore via API (online-only, synced across household devices).
- *
- * Waits for Firebase Auth to resolve before loading from the API.
- * On change: writes to API (debounced for item-level changes, immediate for selections).
+ * Source of truth: Firestore via API. The signed-in user's last known state is kept on the
+ * device, so the list shows at once on startup (and offline) while the server copy loads in
+ * the background. Ticks are sent one by one (see utils/groceryPatch), so several devices can
+ * tick at once; the sync status poll pulls other devices' changes via refreshGroceryFromServer.
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,11 +16,20 @@ import {
   useRef,
   useState,
 } from 'react';
-import { AppState } from 'react-native';
 
 import { api } from './api';
 import { useAuth } from './hooks/use-auth';
-import type { CustomGroceryItem, GroceryListState } from './types';
+import type {
+  CustomGroceryItem,
+  GroceryListState,
+  GroceryListStatePatch,
+} from './types';
+import {
+  addCheckDelta,
+  applyPendingChecks,
+  isEmptyPatch,
+  mergePatches,
+} from './utils/groceryPatch';
 
 interface GroceryContextValue {
   checkedItems: Set<string>;
@@ -52,30 +61,138 @@ const GroceryContext = createContext<GroceryContextValue | null>(null);
 
 const DEBOUNCE_MS = 500;
 
-// Keys written by the pre-online-only cache; removed once so old installs don't keep stale data.
-const LEGACY_STORAGE_KEYS = [
-  'grocery_checked_items',
-  'grocery_custom_items',
-  'grocery_selected_meals',
-  'grocery_meal_servings',
-  'grocery_item_order',
-  'grocery_removed_items',
-  'grocery_tick_sequence',
-];
+const STORAGE_KEYS = {
+  checked: 'grocery_checked_items',
+  custom: 'grocery_custom_items',
+  meals: 'grocery_selected_meals',
+  servings: 'grocery_meal_servings',
+  order: 'grocery_item_order',
+  removed: 'grocery_removed_items',
+  ticks: 'grocery_tick_sequence',
+} as const;
 
-const EMPTY_GROCERY_STATE: GroceryListState = {
-  selected_meals: [],
-  meal_servings: {},
-  checked_items: [],
-  custom_items: [],
-  item_order: [],
-  removed_items: [],
+type StorageField = keyof typeof STORAGE_KEYS;
+
+/** Kept per user, so nobody sees another user's list on a shared device. */
+export const groceryStorageKey = (field: StorageField, uid: string) =>
+  `${STORAGE_KEYS[field]}:${uid}`;
+
+const storeField = (
+  uid: string | undefined,
+  field: StorageField,
+  value: unknown,
+) => {
+  if (!uid) return;
+  AsyncStorage.setItem(
+    groceryStorageKey(field, uid),
+    JSON.stringify(value),
+  ).catch(() => {});
+};
+
+const cacheState = (uid: string, state: GroceryListState) => {
+  storeField(uid, 'checked', state.checked_items);
+  storeField(uid, 'custom', state.custom_items || []);
+  storeField(uid, 'meals', state.selected_meals || []);
+  storeField(uid, 'servings', state.meal_servings || {});
+  storeField(uid, 'order', state.item_order || []);
+  storeField(uid, 'removed', state.removed_items || []);
+};
+
+// Device copy of app versions before it was kept per user.
+const removeLegacyCache = () =>
+  Promise.all(
+    Object.values(STORAGE_KEYS).map((key) => AsyncStorage.removeItem(key)),
+  ).catch(() => {});
+
+const removeDeviceCopy = (uid: string) =>
+  Promise.all(
+    (Object.keys(STORAGE_KEYS) as StorageField[]).map((field) =>
+      AsyncStorage.removeItem(groceryStorageKey(field, uid)),
+    ),
+  ).catch(() => {});
+
+const normalizeCustomItems = (raw: unknown[]): CustomGroceryItem[] =>
+  raw.map((item) =>
+    typeof item === 'string'
+      ? { name: item, category: 'other' as const }
+      : (item as CustomGroceryItem),
+  );
+
+const loadFromAsyncStorage = async (
+  uid: string,
+): Promise<GroceryListState | null> => {
+  const [
+    checkedData,
+    customData,
+    mealsData,
+    servingsData,
+    orderData,
+    removedData,
+    tickData,
+  ] = await Promise.all(
+    (Object.keys(STORAGE_KEYS) as StorageField[]).map((field) =>
+      AsyncStorage.getItem(groceryStorageKey(field, uid)),
+    ),
+  );
+  const cachedFields = [
+    checkedData,
+    customData,
+    mealsData,
+    servingsData,
+    orderData,
+    removedData,
+  ];
+  if (cachedFields.every((value) => value === null)) {
+    return null;
+  }
+
+  const rawCustom = safeJsonParse<unknown>(customData ?? '[]', []);
+
+  return {
+    checked_items: safeJsonParse(checkedData ?? '[]', []),
+    custom_items: Array.isArray(rawCustom)
+      ? normalizeCustomItems(rawCustom)
+      : [],
+    selected_meals: safeJsonParse(mealsData ?? '[]', []),
+    meal_servings: safeJsonParse(servingsData ?? '{}', {}),
+    item_order: safeJsonParse(orderData ?? '[]', []),
+    removed_items: safeJsonParse(removedData ?? '[]', []),
+    tick_sequence: safeJsonParse(tickData ?? '[]', []),
+  };
+};
+
+function safeJsonParse<T>(raw: string, fallback: T): T {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+let serverRefresh: (() => Promise<void>) | null = null;
+let scopeReset: (() => void) | null = null;
+
+/**
+ * Pull the server's grocery state into the open app (sync status poll). Rejects when it could
+ * not be applied (a change is still being saved, or the request failed), so it is retried.
+ */
+export const refreshGroceryFromServer = async (): Promise<void> => {
+  await serverRefresh?.();
+};
+
+/**
+ * Forget the list of the previous household or role: shown state, unsent changes, the device
+ * copy, and the results of writes still on their way. The sync poll then loads the new one.
+ */
+export const resetGroceryForNewScope = (): void => {
+  scopeReset?.();
 };
 
 export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
-  const isAuthenticated = !authLoading && !!user;
-
+  const userId = user?.uid;
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
   const [checkedItems, setCheckedItemsState] = useState<Set<string>>(new Set());
   const [customItems, setCustomItemsState] = useState<CustomGroceryItem[]>([]);
   const [itemOrder, setItemOrderState] = useState<string[]>([]);
@@ -85,7 +202,12 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const patchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingPatchRef = useRef<Record<string, unknown>>({});
+  const pendingPatchRef = useRef<GroceryListStatePatch>({});
+  const patchesInFlightRef = useRef(0);
+  // Writes run one after another, so an older change can never land after a newer one.
+  const writeChainRef = useRef<Promise<void>>(Promise.resolve());
+  // Replaced when the user or household changes; results of writes made for the old one are dropped.
+  const writeScopeRef = useRef<object>({});
   const checkedRef = useRef<Set<string>>(checkedItems);
   const customItemsRef = useRef<CustomGroceryItem[]>(customItems);
   const itemOrderRef = useRef<string[]>(itemOrder);
@@ -93,13 +215,6 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const tickSequenceRef = useRef<string[]>([]);
   const [tickSequence, setTickSequence] = useState<string[]>([]);
   const isMountedRef = useRef(true);
-  // Bumped on every auth identity change; async completions from older sessions are dropped.
-  const sessionRef = useRef(0);
-  // Mutations are blocked until server state loaded, else a PATCH would overwrite household data.
-  const hasLoadedRef = useRef(false);
-  const sessionKey = isAuthenticated
-    ? (user?.uid ?? user?.email ?? 'user')
-    : null;
 
   const applyState = useCallback((state: GroceryListState) => {
     const checked = new Set(state.checked_items);
@@ -118,83 +233,185 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     setMealServings(state.meal_servings || {});
   }, []);
 
-  const flushPatch = useCallback((): Promise<void> => {
-    const patch = { ...pendingPatchRef.current };
-    pendingPatchRef.current = {};
-    if (Object.keys(patch).length === 0) return Promise.resolve();
-    const session = sessionRef.current;
-    return api
-      .patchGroceryState(patch)
-      .then((response) => {
-        if (!isMountedRef.current || session !== sessionRef.current) return;
-        const hasPending = Object.keys(pendingPatchRef.current).length > 0;
-        const effective = hasPending
-          ? { ...response, ...pendingPatchRef.current }
-          : response;
-        applyState(effective as GroceryListState);
-      })
-      .catch((err: unknown) => {
-        console.warn('[GroceryContext] Patch failed, will retry:', err);
-        if (session !== sessionRef.current) return;
-        pendingPatchRef.current = { ...patch, ...pendingPatchRef.current };
-      });
-  }, [applyState]);
-
-  const enqueuePatch = useCallback(
-    (fields: Record<string, unknown>) => {
-      if (!hasLoadedRef.current) return;
-      pendingPatchRef.current = { ...pendingPatchRef.current, ...fields };
-      if (patchTimerRef.current) clearTimeout(patchTimerRef.current);
-      patchTimerRef.current = setTimeout(flushPatch, DEBOUNCE_MS);
+  const applyTicks = useCallback(
+    (ticks: string[], checked: readonly string[]) => {
+      const checkedSet = new Set(checked);
+      const reconciled = ticks.filter((t) => checkedSet.has(t));
+      tickSequenceRef.current = reconciled;
+      setTickSequence(reconciled);
     },
-    [flushPatch],
+    [],
   );
 
-  const loadFromApi = useCallback(async () => {
-    const session = sessionRef.current;
-    try {
-      const state = await api.getGroceryState();
-      if (!isMountedRef.current || session !== sessionRef.current) return;
-      applyState(state);
-      hasLoadedRef.current = true;
-      const checkedSet = new Set(state.checked_items || []);
-      const reconciledTicks = tickSequenceRef.current.filter((t) =>
-        checkedSet.has(t),
-      );
-      tickSequenceRef.current = reconciledTicks;
-      setTickSequence(reconciledTicks);
-    } catch {
-      // Online-only: do not fall back to local storage on error
-    } finally {
-      if (isMountedRef.current && session === sessionRef.current) {
-        setIsLoading(false);
-      }
-    }
-  }, [applyState]);
+  /** Show the server's state with changes that are not saved yet on top, and keep a copy. */
+  const applyServerState = useCallback(
+    (state: GroceryListState): GroceryListState => {
+      const pending = pendingPatchRef.current;
+      const effective: GroceryListState = {
+        ...state,
+        ...pending,
+        checked_items: applyPendingChecks(state.checked_items, pending),
+      };
+      applyState(effective);
+      if (userIdRef.current) cacheState(userIdRef.current, effective);
+      return effective;
+    },
+    [applyState],
+  );
 
-  useEffect(() => {
-    if (authLoading) return;
-    sessionRef.current += 1;
-    hasLoadedRef.current = false;
+  const enqueueWrite = useCallback((write: () => Promise<void>) => {
+    const run = writeChainRef.current.then(write);
+    writeChainRef.current = run.catch(() => {});
+    return run;
+  }, []);
+
+  /** Send the unsent changes as they are when the write's turn comes. Never rejects. */
+  const sendPending = useCallback(async () => {
+    const patch = pendingPatchRef.current;
+    pendingPatchRef.current = {};
+    if (isEmptyPatch(patch)) return;
+    const scope = writeScopeRef.current;
+    patchesInFlightRef.current += 1;
+    try {
+      const response = await api.patchGroceryState(patch);
+      if (!isMountedRef.current || writeScopeRef.current !== scope) return;
+      applyServerState(response);
+    } catch (err) {
+      if (writeScopeRef.current !== scope) return;
+      console.warn('[GroceryContext] Patch failed, will retry:', err);
+      pendingPatchRef.current = mergePatches(patch, pendingPatchRef.current);
+    } finally {
+      patchesInFlightRef.current -= 1;
+    }
+  }, [applyServerState]);
+
+  const flushPatch = useCallback(
+    (): Promise<void> => enqueueWrite(sendPending),
+    [enqueueWrite, sendPending],
+  );
+
+  const scheduleFlush = useCallback(() => {
+    if (patchTimerRef.current) clearTimeout(patchTimerRef.current);
+    patchTimerRef.current = setTimeout(flushPatch, DEBOUNCE_MS);
+  }, [flushPatch]);
+
+  const enqueuePatch = useCallback(
+    (fields: GroceryListStatePatch) => {
+      pendingPatchRef.current = mergePatches(pendingPatchRef.current, fields);
+      scheduleFlush();
+    },
+    [scheduleFlush],
+  );
+
+  const enqueueCheck = useCallback(
+    (item: string, checked: boolean) => {
+      pendingPatchRef.current = addCheckDelta(
+        pendingPatchRef.current,
+        item,
+        checked,
+      );
+      scheduleFlush();
+    },
+    [scheduleFlush],
+  );
+
+  /**
+   * Load the server's state; throws when it can't, so callers decide how to degrade. A response
+   * that arrives after the user or household changed is discarded and rejects, so it is not
+   * mistaken for a successful sync.
+   */
+  const fetchFromServer = useCallback(async () => {
+    const uid = userIdRef.current;
+    if (!uid) throw new Error('Not signed in');
+    const scope = writeScopeRef.current;
+    const isStale = () =>
+      userIdRef.current !== uid || writeScopeRef.current !== scope;
+    const state = await api.getGroceryState();
+    if (!isMountedRef.current) return;
+    if (isStale()) throw new Error('Grocery list changed owner while loading');
+    const effective = applyServerState(state);
+    const tickData = await AsyncStorage.getItem(
+      groceryStorageKey('ticks', uid),
+    );
+    if (isStale()) throw new Error('Grocery list changed owner while loading');
+    applyTicks(
+      safeJsonParse<string[]>(tickData ?? '[]', []),
+      effective.checked_items,
+    );
+  }, [applyServerState, applyTicks]);
+
+  const loadFromCache = useCallback(
+    async (uid: string): Promise<boolean> => {
+      let cached: GroceryListState | null;
+      try {
+        cached = await loadFromAsyncStorage(uid);
+      } catch {
+        return false;
+      }
+      if (!cached || userIdRef.current !== uid) return false;
+      applyState(cached);
+      applyTicks(cached.tick_sequence ?? [], cached.checked_items);
+      return true;
+    },
+    [applyState, applyTicks],
+  );
+
+  const resetState = useCallback(() => {
     if (patchTimerRef.current) {
       clearTimeout(patchTimerRef.current);
       patchTimerRef.current = null;
     }
     pendingPatchRef.current = {};
-    applyState(EMPTY_GROCERY_STATE);
-    tickSequenceRef.current = [];
-    setTickSequence([]);
-    if (!sessionKey) {
-      setIsLoading(false);
-      return;
-    }
-    setIsLoading(true);
-    void loadFromApi();
-  }, [authLoading, sessionKey, loadFromApi, applyState]);
+    writeScopeRef.current = {};
+    applyState({
+      selected_meals: [],
+      meal_servings: {},
+      checked_items: [],
+      custom_items: [],
+      item_order: [],
+      removed_items: [],
+    });
+    applyTicks([], []);
+  }, [applyState, applyTicks]);
 
   useEffect(() => {
-    AsyncStorage.removeMany(LEGACY_STORAGE_KEYS).catch(() => {});
-  }, []);
+    if (authLoading || !userId) return;
+    let cancelled = false;
+    resetState();
+    setIsLoading(true);
+    removeLegacyCache();
+    void (async () => {
+      if ((await loadFromCache(userId)) && !cancelled) setIsLoading(false);
+      try {
+        await fetchFromServer();
+      } catch {
+        // Offline or server unavailable: keep showing the device copy.
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, userId, resetState, loadFromCache, fetchFromServer]);
+
+  useEffect(() => {
+    serverRefresh = async () => {
+      if (patchesInFlightRef.current > 0) {
+        throw new Error('A grocery change is still being saved');
+      }
+      await fetchFromServer();
+    };
+    scopeReset = () => {
+      resetState();
+      const uid = userIdRef.current;
+      if (uid) removeDeviceCopy(uid);
+    };
+    return () => {
+      serverRefresh = null;
+      scopeReset = null;
+    };
+  }, [fetchFromServer, resetState]);
 
   useEffect(() => {
     return () => {
@@ -211,6 +428,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       setCheckedItemsState(items);
       checkedRef.current = items;
       const arr = Array.from(items);
+      storeField(userIdRef.current, 'checked', arr);
       enqueuePatch({ checked_items: arr });
     },
     [enqueuePatch],
@@ -220,37 +438,42 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     (itemName: string) => {
       setCheckedItemsState((prev) => {
         const newSet = new Set(prev);
-        if (newSet.has(itemName)) {
-          newSet.delete(itemName);
-          // Remove from tick sequence when unchecked
-          const updated = tickSequenceRef.current.filter((n) => n !== itemName);
-          tickSequenceRef.current = updated;
-          setTickSequence(updated);
-        } else {
+        const checked = !newSet.has(itemName);
+        const updated = checked
+          ? // Track tick order for store layout learning
+            [...tickSequenceRef.current, itemName]
+          : tickSequenceRef.current.filter((n) => n !== itemName);
+        if (checked) {
           newSet.add(itemName);
-          // Track tick order for store layout learning
-          const updated = [...tickSequenceRef.current, itemName];
-          tickSequenceRef.current = updated;
-          setTickSequence(updated);
+        } else {
+          newSet.delete(itemName);
         }
+        tickSequenceRef.current = updated;
+        setTickSequence(updated);
+        storeField(userIdRef.current, 'ticks', updated);
         checkedRef.current = newSet;
-        const arr = Array.from(newSet);
-        enqueuePatch({ checked_items: arr });
+        storeField(userIdRef.current, 'checked', Array.from(newSet));
+        enqueueCheck(itemName, checked);
         return newSet;
       });
     },
-    [enqueuePatch],
+    [enqueueCheck],
   );
 
   const clearChecked = useCallback(() => {
     setCheckedItemsState(new Set());
     checkedRef.current = new Set();
+    storeField(userIdRef.current, 'checked', []);
     enqueuePatch({ checked_items: [] });
   }, [enqueuePatch]);
 
   const resetTickSequence = useCallback(() => {
     tickSequenceRef.current = [];
     setTickSequence([]);
+    const uid = userIdRef.current;
+    if (uid) {
+      AsyncStorage.removeItem(groceryStorageKey('ticks', uid)).catch(() => {});
+    }
   }, []);
 
   const addCustomItem = useCallback(
@@ -258,6 +481,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       setCustomItemsState((prev) => {
         const updated = [...prev, item];
         customItemsRef.current = updated;
+        storeField(userIdRef.current, 'custom', updated);
         enqueuePatch({ custom_items: updated });
         return updated;
       });
@@ -269,6 +493,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     (items: CustomGroceryItem[]) => {
       setCustomItemsState(items);
       customItemsRef.current = items;
+      storeField(userIdRef.current, 'custom', items);
       enqueuePatch({ custom_items: items });
     },
     [enqueuePatch],
@@ -278,6 +503,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     (order: string[]) => {
       setItemOrderState(order);
       itemOrderRef.current = order;
+      storeField(userIdRef.current, 'order', order);
       enqueuePatch({ item_order: order });
     },
     [enqueuePatch],
@@ -288,6 +514,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       const deduped = [...new Set(items)];
       setRemovedItemsState(deduped);
       removedItemsRef.current = deduped;
+      storeField(userIdRef.current, 'removed', deduped);
       enqueuePatch({ removed_items: deduped });
     },
     [enqueuePatch],
@@ -299,65 +526,77 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       servings: Record<string, number>,
       removedItemsOverride?: string[],
     ) => {
-      if (!hasLoadedRef.current) {
-        throw new Error('Grocery state not loaded yet');
-      }
-      const session = sessionRef.current;
       if (patchTimerRef.current) {
         clearTimeout(patchTimerRef.current);
         patchTimerRef.current = null;
       }
-      await flushPatch();
-      if (session !== sessionRef.current) return;
-
+      const scope = writeScopeRef.current;
       setSelectedMealKeys(meals);
       setMealServings(servings);
+      storeField(userIdRef.current, 'meals', meals);
+      storeField(userIdRef.current, 'servings', servings);
 
-      const response = await api.patchGroceryState({
-        selected_meals: meals,
-        meal_servings: servings,
-        ...(removedItemsOverride !== undefined
-          ? { removed_items: removedItemsOverride }
-          : {}),
+      await enqueueWrite(async () => {
+        if (writeScopeRef.current !== scope) return;
+        // Unsent changes go in the same write, so an older queued value can't later overwrite this one.
+        const unsent = pendingPatchRef.current;
+        pendingPatchRef.current = {};
+        patchesInFlightRef.current += 1;
+        try {
+          const response = await api.patchGroceryState(
+            mergePatches(unsent, {
+              selected_meals: meals,
+              meal_servings: servings,
+              ...(removedItemsOverride !== undefined
+                ? { removed_items: removedItemsOverride }
+                : {}),
+            }),
+          );
+          if (!isMountedRef.current || writeScopeRef.current !== scope) return;
+          applyServerState(response);
+        } catch (err) {
+          if (writeScopeRef.current === scope) {
+            pendingPatchRef.current = mergePatches(
+              unsent,
+              pendingPatchRef.current,
+            );
+          }
+          throw err;
+        } finally {
+          patchesInFlightRef.current -= 1;
+        }
       });
-      if (session !== sessionRef.current) return;
-      applyState(response);
     },
-    [applyState, flushPatch],
+    [applyServerState, enqueueWrite],
   );
 
   const clearAll = useCallback(async () => {
-    if (patchTimerRef.current) {
-      clearTimeout(patchTimerRef.current);
-      patchTimerRef.current = null;
-    }
-    pendingPatchRef.current = {};
-    applyState(EMPTY_GROCERY_STATE);
-    tickSequenceRef.current = [];
-    setTickSequence([]);
-    api.clearGroceryState().catch(() => {});
-  }, [applyState]);
+    resetState();
+    const scope = writeScopeRef.current;
+    const uid = userIdRef.current;
+    if (uid) await removeDeviceCopy(uid);
+    // Queued behind other writes: by then another user may have signed in.
+    enqueueWrite(async () => {
+      if (writeScopeRef.current !== scope || userIdRef.current !== uid) return;
+      await api.clearGroceryState();
+    }).catch(() => {});
+  }, [enqueueWrite, resetState]);
 
   const refreshFromApi = useCallback(async () => {
-    if (!isAuthenticated) {
-      setIsLoading(false);
-      return;
-    }
     setIsLoading(true);
     if (patchTimerRef.current) {
       clearTimeout(patchTimerRef.current);
       patchTimerRef.current = null;
     }
     await flushPatch();
-    await loadFromApi();
-  }, [isAuthenticated, loadFromApi, flushPatch]);
-
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (next) => {
-      if (next === 'active') void refreshFromApi().catch(() => {});
-    });
-    return () => sub.remove();
-  }, [refreshFromApi]);
+    try {
+      await fetchFromServer();
+    } catch {
+      // Keep what is shown; the next refresh or sync poll tries again.
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchFromServer, flushPatch]);
 
   return (
     <GroceryContext.Provider

@@ -16,6 +16,8 @@ from typing import TYPE_CHECKING, cast
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 
+from api.storage.sync_status import touch_household
+
 if TYPE_CHECKING:
     from google.cloud.firestore_v1.base_document import DocumentSnapshot
 
@@ -324,6 +326,7 @@ def household_set(household_id: str, field: str, value: str) -> None:
 
     settings_ref = db.collection(HOUSEHOLDS_COLLECTION).document(household_id).collection("settings").document("config")
     settings_ref.set({field: parsed}, merge=True)
+    touch_household(household_id, "settings", db=db)
 
     household_name = (h_doc.to_dict() or {}).get("name", "")
     print(f"\u2705 Set {field}={parsed} on {household_name} ({household_id})")

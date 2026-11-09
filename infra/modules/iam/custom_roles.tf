@@ -82,7 +82,10 @@ resource "google_project_iam_custom_role" "infrastructure_manager" {
   project = var.project
 
   # Must wait for prerequisite roles to be granted
-  depends_on = [google_project_iam_binding.prerequisite_roles]
+  depends_on = [
+    google_project_iam_member.github_actions_terraform_role_admin,
+    google_project_iam_member.github_actions_terraform_project_iam_admin,
+  ]
 }
 
 # App User Role
@@ -122,5 +125,8 @@ resource "google_project_iam_custom_role" "app_user" {
   project = var.project
 
   # Must wait for prerequisite roles to be granted
-  depends_on = [google_project_iam_binding.prerequisite_roles]
+  depends_on = [
+    google_project_iam_member.github_actions_terraform_role_admin,
+    google_project_iam_member.github_actions_terraform_project_iam_admin,
+  ]
 }

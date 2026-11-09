@@ -166,3 +166,9 @@ class GroceryListStatePatch(BaseModel):
     custom_items: list[CustomGroceryItem] | None = None
     item_order: list[str] | None = None
     removed_items: list[str] | None = None
+    check_items: list[str] | None = Field(
+        default=None, description="Items to mark checked, merged server-side (cannot combine with checked_items)"
+    )
+    uncheck_items: list[str] | None = Field(
+        default=None, description="Items to mark unchecked, merged server-side (cannot combine with checked_items)"
+    )

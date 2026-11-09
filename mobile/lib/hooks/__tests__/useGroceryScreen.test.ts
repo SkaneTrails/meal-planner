@@ -76,7 +76,6 @@ vi.mock('@/lib/hooks/use-meal-plan', () => ({
 }));
 
 vi.mock('@/lib/hooks/use-recipes', () => ({
-  recipeKeys: { all: ['recipes'] },
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
 }));
 
@@ -127,7 +126,8 @@ vi.mock('@/lib/settings-context', () => ({
   })),
 }));
 
-import { showAlert } from '@/lib/alert';
+import { showAlert, showNotification } from '@/lib/alert';
+import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import { useGroceryScreen } from '../useGroceryScreen';
 
 describe('useGroceryScreen', () => {
@@ -198,9 +198,7 @@ describe('useGroceryScreen', () => {
       } as unknown as ReturnType<typeof useSettings>);
 
       renderHook(() => useGroceryScreen());
-      expect(mockInvalidateQueries).not.toHaveBeenCalledWith(
-        expect.objectContaining({ queryKey: expect.arrayContaining(['storeOrder']) }),
-      );
+      expect(mockInvalidateQueries).not.toHaveBeenCalled();
     });
 
     it('resets all modes on blur (tab leave)', () => {
@@ -593,6 +591,124 @@ describe('useGroceryScreen', () => {
       });
 
       expect(mockLearnStoreOrder).not.toHaveBeenCalled();
+    });
+
+    describe('meal tidy-up', () => {
+      const day = (offset: number) => {
+        const date = getWeekDatesArray(0, 'monday')[0];
+        date.setDate(date.getDate() + offset);
+        return formatDateLocal(date);
+      };
+
+      const confirmClearPicked = () => {
+        const { result } = renderHook(() => useGroceryScreen());
+        act(() => {
+          result.current.handleClearPicked();
+        });
+        const destructiveAction = vi.mocked(showAlert).mock.calls[0][2]!.find(
+          (b) => b.style === 'destructive',
+        );
+        act(() => {
+          destructiveAction!.onPress!();
+        });
+      };
+
+      beforeEach(() => {
+        mockRecipes.length = 0;
+        mockRecipes.push(
+          { id: 'r1', title: 'Pasta', ingredients: ['200g pasta', '1 tsp salt'] } as Recipe,
+          { id: 'r2', title: 'Rice', ingredients: ['300g rice'] } as Recipe,
+        );
+      });
+
+      it('drops past and fully shopped meals and their hidden items', () => {
+        mockMealPlan.meals = {
+          [`${day(-7)}_dinner`]: 'r2',
+          [`${day(0)}_dinner`]: 'r1',
+          [`${day(1)}_lunch`]: 'r2',
+        };
+        mockContextState.selectedMealKeys = Object.keys(mockMealPlan.meals);
+        mockContextState.mealServings = {
+          [`${day(0)}_dinner`]: 2,
+          [`${day(1)}_lunch`]: 4,
+        };
+        mockContextState.removedItems = ['old item'];
+        mockContextState.checkedItems = new Set(['pasta', 'salt']);
+
+        confirmClearPicked();
+
+        expect(mockSetRemovedItems).toHaveBeenCalledWith(['old item', 'pasta', 'salt']);
+        expect(mockSaveSelections).toHaveBeenCalledWith(
+          [`${day(1)}_lunch`],
+          { [`${day(1)}_lunch`]: 4 },
+          [],
+        );
+        expect(mockClearChecked).toHaveBeenCalledOnce();
+      });
+
+      it('keeps bought items hidden on the server when the selection save fails', async () => {
+        mockSaveSelections.mockRejectedValueOnce(new Error('offline'));
+        mockMealPlan.meals = { [`${day(0)}_dinner`]: 'r1' };
+        mockContextState.selectedMealKeys = [`${day(0)}_dinner`];
+        mockContextState.checkedItems = new Set(['pasta', 'salt']);
+
+        confirmClearPicked();
+
+        await vi.waitFor(() => expect(showNotification).toHaveBeenCalled());
+        expect(mockSetRemovedItems).toHaveBeenCalledWith(['pasta', 'salt']);
+        expect(mockSetRemovedItems.mock.invocationCallOrder[0]).toBeLessThan(
+          mockSaveSelections.mock.invocationCallOrder[0],
+        );
+      });
+
+      it('keeps meals with items left to buy without saving selections', () => {
+        mockMealPlan.meals = { [`${day(0)}_dinner`]: 'r1' };
+        mockContextState.selectedMealKeys = [`${day(0)}_dinner`];
+        mockContextState.checkedItems = new Set(['pasta']);
+
+        confirmClearPicked();
+
+        expect(mockSetRemovedItems).toHaveBeenCalledWith(['pasta']);
+        expect(mockSaveSelections).not.toHaveBeenCalled();
+      });
+
+      it('shows an error when saving selections fails', async () => {
+        mockSaveSelections.mockRejectedValueOnce(new Error('offline'));
+        mockMealPlan.meals = { [`${day(-7)}_dinner`]: 'r1' };
+        mockContextState.selectedMealKeys = [`${day(-7)}_dinner`];
+
+        confirmClearPicked();
+
+        await vi.waitFor(() => {
+          expect(showNotification).toHaveBeenCalledWith(
+            'common.error',
+            'mealPlan.failedToSaveSelections',
+          );
+        });
+      });
+
+      it('only hides picked items while the meal plan is loading', async () => {
+        const { useMealPlan } = await import('@/lib/hooks/use-meal-plan');
+        vi.mocked(useMealPlan).mockReturnValue({
+          data: undefined,
+          isLoading: true,
+        } as unknown as ReturnType<typeof useMealPlan>);
+        mockContextState.customItems = [{ name: 'bread', category: 'bakery' }];
+        mockContextState.checkedItems = new Set(['bread']);
+
+        try {
+          confirmClearPicked();
+        } finally {
+          vi.mocked(useMealPlan).mockReturnValue({
+            data: mockMealPlan,
+            isLoading: false,
+          } as unknown as ReturnType<typeof useMealPlan>);
+        }
+
+        expect(mockSetCustomItems).toHaveBeenCalledWith([]);
+        expect(mockSetRemovedItems).not.toHaveBeenCalled();
+        expect(mockSaveSelections).not.toHaveBeenCalled();
+      });
     });
   });
 

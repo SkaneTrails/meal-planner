@@ -42,9 +42,6 @@ vi.mock('expo-router', () => ({
     back: vi.fn(),
     replace: vi.fn(),
   })),
-  useFocusEffect: vi.fn((cb: () => void) => {
-    cb();
-  }),
   useLocalSearchParams: vi.fn(() => ({})),
   Stack: {
     Screen: ({ options }: any) => null,

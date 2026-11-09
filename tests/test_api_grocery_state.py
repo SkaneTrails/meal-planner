@@ -1,7 +1,7 @@
 """Tests for grocery list state endpoints (GET/PUT/PATCH/DELETE /grocery/state)."""
 
 from collections.abc import Generator
-from typing import Any
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from api.routers.grocery import router
+from api.storage.grocery_list_storage import apply_grocery_patch, merge_checked_items
 
 app = FastAPI()
 app.include_router(router)
@@ -101,7 +102,7 @@ class TestSaveGroceryState:
 
     def test_saves_empty_state(self, client: TestClient) -> None:
         """Should accept empty lists."""
-        body: dict[str, Any] = {"selected_meals": [], "meal_servings": {}, "checked_items": [], "custom_items": []}
+        body = {"selected_meals": [], "meal_servings": {}, "checked_items": [], "custom_items": []}
         saved = {**body, "updated_at": None}
 
         with patch("api.routers.grocery.grocery_list_storage.save_grocery_state", return_value=saved):
@@ -183,29 +184,63 @@ class TestPatchGroceryState:
         assert response.status_code == 200
         assert response.json()["removed_items"] == ["tomatoes", "onions"]
 
-    def test_creates_state_if_none_exists(self, client: TestClient) -> None:
-        """Should create a new state when patch finds no existing state."""
-        saved = {
-            "selected_meals": [],
-            "meal_servings": {},
-            "checked_items": ["butter"],
-            "custom_items": [],
-            "updated_at": None,
-        }
-        with (
-            patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=None),
-            patch("api.routers.grocery.grocery_list_storage.save_grocery_state", return_value=saved),
-        ):
+    def test_records_the_patching_user_as_creator(self, client: TestClient) -> None:
+        """The storage layer creates the state if missing, recording who created it."""
+        result = {"checked_items": ["butter"], "updated_at": None}
+        with patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=result) as mock_update:
             response = client.patch("/grocery/state", json={"checked_items": ["butter"]})
 
         assert response.status_code == 200
         assert response.json()["checked_items"] == ["butter"]
+        assert mock_update.call_args.kwargs["created_by"]
 
     def test_rejects_empty_patch(self, client: TestClient) -> None:
         """Should return 400 when no fields provided."""
         response = client.patch("/grocery/state", json={})
         assert response.status_code == 400
         assert "No fields to update" in response.json()["detail"]
+
+    def test_passes_per_item_ticks_to_storage(self, client: TestClient) -> None:
+        """Per-item ticks are merged server-side, not sent as a replacement list."""
+        result = {"checked_items": ["eggs"], "updated_at": None}
+        with patch("api.routers.grocery.grocery_list_storage.update_grocery_state", return_value=result) as mock_update:
+            response = client.patch("/grocery/state", json={"check_items": ["eggs"], "uncheck_items": ["milk"]})
+
+        assert response.status_code == 200
+        assert mock_update.call_args.args == ("test_household", {})
+        assert mock_update.call_args.kwargs["check"] == ["eggs"]
+        assert mock_update.call_args.kwargs["uncheck"] == ["milk"]
+
+    def test_rejects_ticks_combined_with_full_checked_list(self, client: TestClient) -> None:
+        """A full list and per-item ticks contradict each other."""
+        response = client.patch("/grocery/state", json={"checked_items": ["eggs"], "check_items": ["milk"]})
+        assert response.status_code == 400
+
+    def test_per_item_ticks_create_state_when_none_exists(self) -> None:
+        """The first tick on a household without a list creates it, in the same transaction."""
+        now = datetime(2026, 11, 1, tzinfo=UTC)
+        result = apply_grocery_patch(None, {}, check=["eggs"], uncheck=[], created_by="a@b.c", now=now)
+
+        assert result["checked_items"] == ["eggs"]
+        assert result["selected_meals"] == []
+        assert result["created_by"] == "a@b.c"
+        assert result["updated_at"] == now
+
+    def test_patch_merges_ticks_into_existing_state(self) -> None:
+        """Ticks merge into the stored list; other fields are replaced; the creator is kept."""
+        current = {"checked_items": ["milk"], "item_order": ["a"], "created_by": "first@b.c"}
+        result = apply_grocery_patch(
+            current,
+            {"item_order": ["b"]},
+            check=["eggs"],
+            uncheck=["milk"],
+            created_by="second@b.c",
+            now=datetime(2026, 11, 1, tzinfo=UTC),
+        )
+
+        assert result["checked_items"] == ["eggs"]
+        assert result["item_order"] == ["b"]
+        assert result["created_by"] == "first@b.c"
 
     def test_requires_household(self, client_no_household: TestClient) -> None:
         """Should return 403 if user has no household."""
@@ -234,3 +269,21 @@ class TestClearGroceryState:
         """Should return 403 if user has no household."""
         response = client_no_household.delete("/grocery/state")
         assert response.status_code == 403
+
+
+class TestMergeCheckedItems:
+    """Per-item tick merge used by PATCH /grocery/state."""
+
+    def test_ticks_from_two_devices_both_survive(self) -> None:
+        """Device A checks eggs, device B checks milk: both stay checked."""
+        after_a = merge_checked_items(["bread"], ["eggs"], [])
+        assert merge_checked_items(after_a, ["milk"], []) == ["bread", "eggs", "milk"]
+
+    def test_uncheck_removes_only_that_item(self) -> None:
+        assert merge_checked_items(["bread", "eggs"], [], ["bread"]) == ["eggs"]
+
+    def test_checking_an_already_checked_item_is_a_no_op(self) -> None:
+        assert merge_checked_items(["eggs"], ["eggs", "eggs"], []) == ["eggs"]
+
+    def test_unchecking_a_missing_item_is_a_no_op(self) -> None:
+        assert merge_checked_items(["eggs"], [], ["milk"]) == ["eggs"]

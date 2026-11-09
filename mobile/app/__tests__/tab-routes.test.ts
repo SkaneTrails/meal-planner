@@ -7,7 +7,7 @@
  * placed in subdirectories inside app/(tabs)/, causing phantom nav entries.
  */
 
-import { readdirSync, statSync } from 'fs';
+import { readdirSync, readFileSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { describe, it, expect } from 'vitest';
@@ -69,5 +69,11 @@ describe('tab route structure', () => {
 
       expect(unexpectedFiles, `Unexpected files in app/(tabs)/${dir}/`).toEqual([]);
     }
+  });
+
+  it('should not hide tabs with href: null (Expo Router redirects hidden tabs to index)', () => {
+    const layout = readFileSync(join(TABS_DIR, '_layout.tsx'), 'utf-8');
+
+    expect(layout).not.toMatch(/href:\s*null/);
   });
 });

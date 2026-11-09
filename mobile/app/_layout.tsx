@@ -4,8 +4,7 @@
  */
 
 // NOTE: For web, we use Firebase's native signInWithPopup which handles popup
-// communication correctly. The expo-web-browser maybeCompleteAuthSession is only
-// needed for native platforms using expo-auth-session.
+// communication correctly. Native platforms use @react-native-google-signin.
 
 import { NotoEmoji_400Regular } from '@expo-google-fonts/noto-emoji';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,7 +13,7 @@ import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import { AppState, type AppStateStatus, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { FloatingTabBar } from '@/components/FloatingTabBar';
 import { ThemedAlert } from '@/components/ThemedAlert';
@@ -22,14 +21,9 @@ import { showNotification } from '@/lib/alert';
 import { AlertProvider } from '@/lib/alert-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
-import { recipeKeys } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
-import {
-  persistQueryCache,
-  QueryProvider,
-  queryClient,
-  restoreQueryCache,
-} from '@/lib/query-provider';
+import { LocalDataProvider } from '@/lib/local-data-context';
+import { QueryProvider } from '@/lib/query-provider';
 import { resetRecipeFilterCache } from '@/lib/recipes/filterCache';
 import {
   type AppLanguage,
@@ -185,33 +179,10 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    restoreQueryCache();
-  }, []);
-
-  useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync().catch(() => {});
     }
   }, [fontsLoaded, fontError]);
-
-  useEffect(() => {
-    const handleAppStateChange = (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'background' || nextAppState === 'inactive') {
-        persistQueryCache();
-      } else if (nextAppState === 'active') {
-        void queryClient.invalidateQueries({ queryKey: ['meal-plans'] });
-        void queryClient.invalidateQueries({
-          queryKey: [...recipeKeys.all, 'all'],
-        });
-      }
-    };
-
-    const subscription = AppState.addEventListener(
-      'change',
-      handleAppStateChange,
-    );
-    return () => subscription.remove();
-  }, []);
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -231,11 +202,13 @@ export default function RootLayout() {
         >
           <AuthProvider>
             <QueryProvider>
-              <SettingsProvider>
-                <GroceryProvider>
-                  <AppContent />
-                </GroceryProvider>
-              </SettingsProvider>
+              <LocalDataProvider>
+                <SettingsProvider>
+                  <GroceryProvider>
+                    <AppContent />
+                  </GroceryProvider>
+                </SettingsProvider>
+              </LocalDataProvider>
             </QueryProvider>
           </AuthProvider>
         </AlertProvider>

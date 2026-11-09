@@ -136,11 +136,11 @@ cp .env.example .env.development
 
 Without Firebase/OAuth values, the app runs in dev mode with a mock user (`dev@localhost`).
 
-| Variable                         | Required | Description                                |
-| -------------------------------- | -------- | ------------------------------------------ |
-| `EXPO_PUBLIC_API_URL`            | Yes      | API URL (default: `http://localhost:8000`) |
-| `EXPO_PUBLIC_FIREBASE_*`         | No\*     | Firebase config for authentication         |
-| `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` | No\*     | OAuth client IDs for Google Sign-In        |
+| Variable                           | Required | Description                                             |
+| ---------------------------------- | -------- | ------------------------------------------------------- |
+| `EXPO_PUBLIC_API_URL`              | Yes      | API URL (default: `http://localhost:8000`)              |
+| `EXPO_PUBLIC_FIREBASE_*`           | No\*     | Firebase config for authentication                      |
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | No\*     | OAuth web client ID for Google Sign-In (web and native) |
 
 **\*Authentication in dev mode:** If Firebase/OAuth credentials are not configured, the app runs in "dev mode" with a mock authenticated user (`dev@localhost`). This allows local development without setting up Firebase.
 
@@ -157,12 +157,11 @@ To enable real authentication:
    - Project Settings > General > Your apps > Add Web app
    - Copy the config values to your `.env.development`
 
-3. **Get OAuth Client IDs**
+3. **Get the OAuth web client ID**
    - Go to [Google Cloud Console](https://console.cloud.google.com/) > APIs & Services > Credentials
-   - Create OAuth 2.0 Client IDs for:
-     - Web application (for Expo web)
-     - iOS (for iOS builds)
-     - Android (for Android builds)
+   - Use the Web application client (also in Secret Manager as `meal-planner_oauth_client_id`)
+   - Android and iOS use the same ID; Android also needs its package and signing key
+     registered (see Android Release Pipeline)
 
 4. **Configure Authorized Domains**
    - In Firebase Console > Authentication > Settings > Authorized domains
@@ -271,6 +270,50 @@ Both endpoints accept:
 
 - `enhance=true` - Enhance recipe with AI after saving (requires Gemini API key)
 
+### Sync Status
+
+```
+GET /api/v1/sync/status
+```
+
+One small request that tells clients which data changed. Returns an opaque version per
+kind (`recipes`, `meal_plan`, `grocery`, `settings`) plus a `scope` (role and household).
+Versions live in the `sync_status` collection: `sync_status/{household_id}` per household,
+`sync_status/_global` for recipes (sharing makes any recipe write visible to everyone).
+Every write path bumps its kind (`touch_household` / `touch_recipes` in
+`api/storage/sync_status.py`), including `scripts/` and `tools/`.
+
+The app polls it after startup, on returning to the foreground, every 5 minutes, and every
+15 seconds while the grocery list is open, and refetches only the kinds whose version
+changed (`mobile/lib/sync/poll-sync-status.ts`). Same design as Skåne Trails.
+
+### Grocery Ticks
+
+`PATCH /api/v1/grocery/state` accepts `check_items` / `uncheck_items` lists, merged
+server-side, so several devices can tick at once without overwriting each other. They
+cannot be combined with a full `checked_items` list in the same request.
+
+### Recipe Changes (device copy)
+
+```
+GET /api/v1/recipes/changes?since=<server_time>
+```
+
+Returns `{recipes, deleted_ids, server_time, scope}` for keeping every visible recipe on the
+device. Without `since` it returns all of them. Hidden recipes are included and nothing is
+de-duplicated; the app applies the recipe list rules itself
+(`mobile/lib/recipes/visible-recipes.ts`, mirroring `recipe_queries.py`). `server_time` is 2
+minutes in the past so writes committing during a sync are picked up next time.
+
+Removals come from the `recipe_tombstones` collection, written in the same batch as a delete,
+a transfer to another household, or a shared recipe becoming household-only.
+
+The native app keeps the copy as one JSON file per recipe
+(`mobile/lib/storage/recipe-store.native.ts`) and syncs it local-first
+(`mobile/lib/recipes/recipe-sync.ts`): on start, when the sync status reports a recipe change,
+and after its own recipe writes. It downloads everything again after 7 days or a scope change.
+Web reads recipes from the paged API.
+
 ## Project Structure
 
 The project is a multi-platform meal planning system:
@@ -317,7 +360,7 @@ tests/                   # API test files (pytest)
 docs/                    # Documentation
 
 .github/
-├── workflows/           # CI/CD (tests.yml, security-checks.yml)
+├── workflows/           # CI/CD (tests.yml, security-checks.yml, android-release.yml)
 ├── skills/              # AI agent instructions
 │   ├── recipe-improvement/
 │   ├── pr-review-workflow/
@@ -409,6 +452,122 @@ uv run python scripts/batch_test.py
 
 Household preferences are configured in the system prompt within `scripts/recipe_enhancer.py`.
 See `.github/copilot-instructions.md` for the multi-tenant architecture plan.
+
+---
+
+## Android Release Pipeline
+
+`.github/workflows/android-release.yml` builds a signed Android App Bundle with **EAS
+Build** (Expo cloud, free monthly build quota per Expo account) and submits it to the
+Google Play **internal testing** track (invited testers only). EAS stores the signing
+keystore, so no keystore is kept in the repo. The Expo project belongs to the
+`aroma-team` organization (`owner` and `extra.eas.projectId` in `mobile/app.json`).
+
+**Triggers:** pushing a version tag (`git tag v1.0.1 && git push origin v1.0.1`) or a
+manual run from the Actions tab. The Android `versionCode` is incremented by EAS
+(`appVersionSource: "remote"` + `autoIncrement` in `mobile/eas.json`).
+
+| Part                                                      | How                                                     |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| Google Play Android Developer API, Play publisher account | Terraform (`infra/modules/apis`, `infra/modules/iam`)   |
+| Play publisher JSON key                                   | One-time manual step (kept out of the Terraform state)  |
+| Play Console app, declarations, testers, account invite   | Manual in Play Console (no API)                         |
+| Build-time `EXPO_PUBLIC_*` values, keystore               | `eas` CLI (the keystore is generated and stored by EAS) |
+
+**One-time setup** (order matters; run `eas` commands from `mobile/`):
+
+1. **Package name** - `com.aroma.mealplanner` (`expo.android.package` in `mobile/app.json`)
+   must equal the app in Play Console. Google Play fixes it when the app is created, and
+   EAS keeps one keystore per package name, so never change it after the first upload.
+
+1. **Build-time variables** - cloud builds never see the gitignored `mobile/.env*` files.
+   Fill in `mobile/.env.production` with real values, not the `.env.example` placeholders
+   (the Firebase values, API URL and web client ID are in Secret Manager as
+   `github_EXPO_PUBLIC_*` and `meal-planner_oauth_client_id`), then:
+
+   ```bash
+   eas env:push production --path .env.production
+   eas env:list production     # every EXPO_PUBLIC_* name should be listed
+   ```
+
+   The `production` build profile uses this environment. The values are public by
+   design (they are embedded in the app).
+
+1. **Expo token** - in the `aroma-team` organization on expo.dev, create a robot user
+   with an access token and store it as the `EXPO_TOKEN` repository secret
+   (`gh secret set EXPO_TOKEN`). A robot token does not depend on anyone's login.
+
+1. **Terraform** - apply `infra/environments/dev` (or merge to `main`). This enables the
+   Google Play Android Developer API and creates the Play publisher service account:
+   `terraform output play_publisher_sa`.
+
+1. **Play Console app** - create the app with the package name above and the store title
+   "Aroma Meal Planner" (the launcher shows `expo.name`, "Aroma"), complete the **App
+   content** declarations (privacy policy, data safety, content rating, target audience,
+   app access), and under **Testing > Internal testing** create the track and add the
+   testers' emails.
+
+1. **First build and upload (manual, once)** - Google Play requires the first bundle of
+   a new app to be uploaded in the Console. On a clean working tree:
+
+   ```bash
+   eas build --platform android --profile production
+   ```
+
+   Answer **yes** when asked to generate an Android keystore (run interactively). Download
+   the `.aab`, then in Play Console create an Internal testing release, accept Play App
+   Signing, upload the file and roll it out. This build's certificate becomes the app's
+   upload key; every later bundle must be signed with the same keystore.
+
+1. **Play publisher key and permission** - create a key, store it as a secret, delete the
+   local copy:
+
+   ```powershell
+   # PowerShell
+   gcloud iam service-accounts keys create play-key.json --iam-account=<play_publisher_sa> --project=<PROJECT_ID>
+   Get-Content play-key.json -Raw | gh secret set PLAY_SERVICE_ACCOUNT_JSON
+   Remove-Item play-key.json
+   ```
+
+   ```bash
+   # bash
+   gcloud iam service-accounts keys create play-key.json --iam-account=<play_publisher_sa> --project=<PROJECT_ID>
+   gh secret set PLAY_SERVICE_ACCOUNT_JSON < play-key.json
+   rm play-key.json
+   ```
+
+   Then in Play Console, **Users and permissions > Invite new users**: add the service
+   account email with permission to release to testing tracks for this app.
+
+1. **Google sign-in on Play-installed builds** - native sign-in uses
+   `@react-native-google-signin/google-signin` with the web client ID, but Google also
+   requires an Android OAuth client for the package and signing certificate. Terraform
+   registers the app in Firebase (`google_firebase_android_app` in `infra/modules/firebase`)
+   and Firebase creates that client itself. Testers get a copy that Google re-signs, so the
+   fingerprints are those of the **Play app signing key** (Play Console: Protected with
+   Play > Play Store protection > Manage Play app signing > App signing key; or download
+   the "Signed, universal APK" under Test and release > Latest releases and bundles >
+   Downloads and run `keytool -printcert -jarfile <apk>`). Put them in
+   `infra/environments/dev/terraform.tfvars` as lowercase hex without colons:
+
+   ```hcl
+   android_package_name  = "com.aroma.mealplanner"
+   android_sha1_hashes   = ["<play-app-signing-sha1>"]
+   android_sha256_hashes = ["<play-app-signing-sha256>"]
+   ```
+
+   CI rebuilds `terraform.tfvars` from the `TF_VARS_FILE` secret, so after any change run
+   `infra/environments/dev/scripts/sync-access-secrets.ps1` (or `.sh`); otherwise plan and
+   apply fail on the missing variables. Then check that **APIs & Services > Credentials**
+   lists an auto-created "Android client for com.aroma.mealplanner".
+
+After setup, a release is one command: `git tag v1.0.1 && git push origin v1.0.1`.
+To widen the beta later, change `submit.production.android.track` in `mobile/eas.json`
+from `internal` to a closed-testing track (e.g. `alpha`).
+
+The app requests no microphone access: `expo-image-picker` would add `RECORD_AUDIO` for
+video capture, so `mobile/app.json` sets `microphonePermission: false` and blocks the
+permission.
 
 ---
 

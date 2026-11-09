@@ -64,6 +64,11 @@ vi.mock('@/lib/hooks/use-admin', () => ({
 // Unmock @/lib/settings-context so we test the real implementation
 vi.unmock('@/lib/settings-context');
 
+let mockLocalDataReady = true;
+vi.mock('@/lib/local-data-context', () => ({
+  useLocalDataReady: () => mockLocalDataReady,
+}));
+
 // Must import AFTER mocks are set up
 import { SettingsProvider, useSettings } from '@/lib/settings-context';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -561,6 +566,7 @@ describe('SettingsProvider auth gate', () => {
   });
 
   it('enables useCurrentUser when authenticated', async () => {
+    mockLocalDataReady = true;
     mockUseAuth.mockReturnValue({
       user: { email: 'test@example.com' } as any,
       loading: false,
@@ -579,6 +585,30 @@ describe('SettingsProvider auth gate', () => {
         expect.objectContaining({ enabled: true }),
       );
     });
+  });
+
+  it("ignores cached data until the device data is confirmed as this user's", async () => {
+    mockLocalDataReady = false;
+    mockUseAuth.mockReturnValue({
+      user: { email: 'test@example.com' } as any,
+      loading: false,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+    renderHook(() => useSettings(), {
+      wrapper: createSettingsWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(mockUseCurrentUser).toHaveBeenCalledWith(
+        expect.objectContaining({ enabled: false }),
+      );
+    });
+    expect(mockUseHouseholdSettings).not.toHaveBeenCalledWith('test-household');
+    mockLocalDataReady = true;
   });
 
   it('reports loading while auth is resolving', async () => {

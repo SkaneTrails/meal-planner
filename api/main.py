@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import admin, featured, grocery, meal_plans, recipes
+from api.routers import admin, featured, grocery, meal_plans, recipes, sync
 
 load_dotenv()
 
@@ -38,6 +38,7 @@ app.include_router(recipes.router, prefix="/api/v1")
 app.include_router(meal_plans.router, prefix="/api/v1")
 app.include_router(grocery.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+app.include_router(sync.router, prefix="/api/v1")
 
 
 @app.middleware("http")

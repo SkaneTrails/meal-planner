@@ -8,8 +8,17 @@
  * and the app runs in "dev mode" with a mock authenticated user.
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type FirebaseApp, getApps, initializeApp } from 'firebase/app';
-import { type Auth, GoogleAuthProvider, getAuth } from 'firebase/auth';
+import {
+  type Auth,
+  GoogleAuthProvider,
+  getAuth,
+  // @ts-expect-error — exported by the React Native build, missing from the web typings
+  getReactNativePersistence,
+  initializeAuth,
+} from 'firebase/auth';
+import { Platform } from 'react-native';
 
 export const isFirebaseConfigured = Boolean(
   process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -27,9 +36,20 @@ const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
+const initNativeAuth = (firebaseApp: FirebaseApp): Auth => {
+  try {
+    return initializeAuth(firebaseApp, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch {
+    // Already initialized (Fast Refresh)
+    return getAuth(firebaseApp);
+  }
+};
+
 if (isFirebaseConfigured) {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  auth = getAuth(app);
+  auth = Platform.OS === 'web' ? getAuth(app) : initNativeAuth(app);
 }
 
 export const googleProvider = new GoogleAuthProvider();

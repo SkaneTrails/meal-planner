@@ -341,6 +341,15 @@ class PaginatedRecipeList(BaseModel):
     has_more: bool = Field(default=False, description="Whether more results exist beyond this page")
 
 
+class RecipeChanges(BaseModel):
+    """Recipes changed and removed since a time, for client delta sync."""
+
+    recipes: list[Recipe] = Field(description="Recipes created or changed (all visible ones without `since`)")
+    deleted_ids: list[str] = Field(description="IDs of recipes the caller can no longer see")
+    server_time: str = Field(description="Pass as `since` next time (ISO, UTC)")
+    scope: str = Field(description="Role and household the result applies to; a change means start over")
+
+
 class RecipeScrapeRequest(BaseModel):
     """Request body for recipe scraping."""
 

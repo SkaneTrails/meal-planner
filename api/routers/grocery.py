@@ -196,31 +196,31 @@ async def patch_grocery_state(
 ) -> GroceryListState:
     """Partially update the household's grocery list state.
 
-    Only provided fields are merged; omitted fields stay unchanged.
+    Only provided fields are merged; omitted fields stay unchanged. `check_items` and
+    `uncheck_items` tick items one by one, so several devices can tick at once without
+    overwriting each other; they cannot be combined with a full `checked_items` list.
     Creates a new state with the provided fields if none exists yet.
     """
     household_id = require_household(user)
 
-    updates = body.model_dump(exclude_none=True)
-    if not updates:
+    check = body.check_items or []
+    uncheck = body.uncheck_items or []
+    if (check or uncheck) and body.checked_items is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="checked_items cannot be combined with check_items or uncheck_items",
+        )
+
+    updates = body.model_dump(exclude_none=True, exclude={"check_items", "uncheck_items"})
+    if not updates and not check and not uncheck:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update")
 
     if "custom_items" in updates:
         updates["custom_items"] = [item.model_dump() for item in body.custom_items]  # type: ignore[union-attr]
 
-    result = grocery_list_storage.update_grocery_state(household_id, updates)
-    if result is None:
-        data = grocery_list_storage.save_grocery_state(
-            household_id,
-            selected_meals=body.selected_meals or [],
-            meal_servings=body.meal_servings or {},
-            checked_items=body.checked_items or [],
-            custom_items=[item.model_dump() for item in (body.custom_items or [])],
-            item_order=body.item_order or [],
-            removed_items=body.removed_items or [],
-            created_by=user.email,
-        )
-        return GroceryListState(**data)
+    result = grocery_list_storage.update_grocery_state(
+        household_id, updates, check=check, uncheck=uncheck, created_by=user.email
+    )
     return GroceryListState(**result)
 
 

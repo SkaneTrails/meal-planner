@@ -123,6 +123,3 @@ const Modal = ({ visible, children, testID, transparent, animationType, onReques
   visible ? React.createElement('div', { 'data-testid': testID, 'data-component': 'Modal', ...props }, children) : null;
 
 export { Pressable, Switch, TextInput, Modal };
-export const AppState = {
-  addEventListener: () => ({ remove: () => {} }),
-};

@@ -1,19 +1,41 @@
 /**
- * React Query provider with AsyncStorage persistence for offline support.
+ * React Query provider with the cache saved on the device, so screens draw from the last
+ * known data at startup and refresh in the background. The sync status poll decides when
+ * synced data is refetched (see lib/sync).
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import {
+  defaultShouldDehydrateQuery,
+  type Query,
+  QueryClient,
+} from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import type React from 'react';
+import { recipeStore } from '@/lib/storage/recipe-store';
 
-const queryClient = new QueryClient({
+export const PERSIST_MAX_AGE = 1000 * 60 * 60 * 24 * 30;
+const CACHE_KEY = 'meal-planner-query-cache-v2';
+const LEGACY_CACHE_KEY = 'meal-planner-query-cache';
+
+/** Refetched only when the sync status poll reports a change (or after own mutations). */
+const SYNCED_QUERY_PREFIXES: readonly (readonly string[])[] = [
+  ['recipes'],
+  ['meal-plans'],
+  ['admin', 'settings'],
+  ['admin', 'itemsAtHome'],
+  ['admin', 'favorites'],
+];
+
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 60 * 24,
+      gcTime: PERSIST_MAX_AGE,
       retry: 3,
-      refetchOnWindowFocus: true,
-      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      networkMode: 'offlineFirst',
     },
     mutations: {
       retry: 1,
@@ -21,11 +43,15 @@ const queryClient = new QueryClient({
   },
 });
 
-const CACHE_KEY = 'meal-planner-query-cache';
+for (const prefix of SYNCED_QUERY_PREFIXES) {
+  queryClient.setQueryDefaults(prefix, {
+    staleTime: Number.POSITIVE_INFINITY,
+  });
+}
 
 const PII_FIELDS = ['created_by'] as const;
 
-function stripPii(
+export function stripPii(
   data: unknown,
   seen: WeakSet<object> = new WeakSet(),
 ): unknown {
@@ -51,105 +77,38 @@ function stripPii(
   return result;
 }
 
-const ONLINE_ONLY_RESOURCES = [
-  'meal-plans',
-  'grocery',
-  'grocery-state',
-] as const;
+/**
+ * Paged search results are short-lived, and the native recipe copy has its own file store
+ * (too big for AsyncStorage), which also replaces the full API list there; everything else is
+ * kept for a fast next start.
+ */
+const UNPERSISTED_RECIPE_QUERIES = new Set(
+  recipeStore.isAvailable ? ['list', 'local', 'all'] : ['list', 'local'],
+);
 
-// Store order is slow-changing and stays cached for offline use.
-const isOnlineOnly = (key: unknown): boolean => {
-  if (!Array.isArray(key)) return false;
-  return (
-    (ONLINE_ONLY_RESOURCES as readonly string[]).includes(String(key[0])) &&
-    key[1] !== 'storeOrder'
+export function shouldPersistQuery(query: Query): boolean {
+  if (!defaultShouldDehydrateQuery(query)) return false;
+  const [resource, type] = query.queryKey;
+  return !(
+    resource === 'recipes' && UNPERSISTED_RECIPE_QUERIES.has(type as string)
   );
+}
+
+// Full API lists saved by app versions before the device copy existed.
+const dropLegacyRecipeLists = () => {
+  if (recipeStore.isAvailable) {
+    queryClient.removeQueries({ queryKey: ['recipes', 'all'] });
+  }
 };
 
-export async function persistQueryCache(): Promise<void> {
-  const cache = queryClient.getQueryCache().getAll();
-  const data = cache
-    .filter((query) => query.state.data !== undefined)
-    .filter((query) => {
-      const key = query.queryKey;
-      if (!Array.isArray(key)) {
-        return true;
-      }
+const persister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+  key: CACHE_KEY,
+  throttleTime: 2000,
+  serialize: (client) => JSON.stringify(stripPii(client)),
+});
 
-      const resource = key[0];
-      const type = key[1];
-
-      if (resource === 'recipes' && type === 'list') {
-        return false;
-      }
-
-      if (resource === 'admin' && type === 'currentUser') {
-        return false;
-      }
-
-      if (isOnlineOnly(query.queryKey)) {
-        return false;
-      }
-
-      return true;
-    })
-    .map((query) => ({
-      queryKey: query.queryKey,
-      data: stripPii(query.state.data),
-      dataUpdatedAt: query.state.dataUpdatedAt,
-    }));
-
-  try {
-    const serialized = JSON.stringify(data);
-    // Let AsyncStorage handle quota - catch will handle QuotaExceededError
-    await AsyncStorage.setItem(CACHE_KEY, serialized);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    const name = error instanceof Error ? error.name : 'UnknownError';
-
-    console.warn('Failed to persist query cache', {
-      name,
-      message,
-    });
-
-    const isQuotaOrStorageError = /quota|storage|capacity/i.test(message);
-
-    if (isQuotaOrStorageError) {
-      try {
-        await AsyncStorage.removeItem(CACHE_KEY);
-      } catch (cleanupError) {
-        console.warn('Failed to clear persisted query cache after error', {
-          error: cleanupError,
-        });
-      }
-    }
-  }
-}
-
-export async function restoreQueryCache(): Promise<void> {
-  try {
-    const cached = await AsyncStorage.getItem(CACHE_KEY);
-    if (cached) {
-      const data = JSON.parse(cached);
-      data.forEach(
-        (item: {
-          queryKey: unknown[];
-          data: unknown;
-          dataUpdatedAt?: number;
-        }) => {
-          if (isOnlineOnly(item.queryKey)) {
-            return;
-          }
-          queryClient.setQueryData(item.queryKey, item.data, {
-            updatedAt: item.dataUpdatedAt,
-          });
-        },
-      );
-    }
-  } catch (error) {
-    console.warn('Failed to restore query cache:', error);
-  }
-}
+AsyncStorage.removeItem(LEGACY_CACHE_KEY).catch(() => {});
 
 interface QueryProviderProps {
   children: React.ReactNode;
@@ -157,8 +116,16 @@ interface QueryProviderProps {
 
 export const QueryProvider = ({ children }: QueryProviderProps) => {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        maxAge: PERSIST_MAX_AGE,
+        dehydrateOptions: { shouldDehydrateQuery: shouldPersistQuery },
+      }}
+      onSuccess={dropLegacyRecipeLists}
+    >
+      {children}
+    </PersistQueryClientProvider>
   );
 };
-
-export { queryClient };

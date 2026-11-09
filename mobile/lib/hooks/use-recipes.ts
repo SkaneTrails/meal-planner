@@ -3,6 +3,7 @@
  */
 
 import {
+  type QueryClient,
   useInfiniteQuery,
   useMutation,
   useQueries,
@@ -12,7 +13,10 @@ import {
 import { useEffect, useMemo } from 'react';
 import { api } from '../api';
 import { ApiClientError } from '../api/client';
+import { fetchRecipeOrDeviceCopy, syncRecipes } from '../recipes/recipe-sync';
+import { searchRecipes, visibleRecipes } from '../recipes/visible-recipes';
 import { useSettings } from '../settings-context';
+import { recipeStore } from '../storage/recipe-store';
 import type {
   DietLabel,
   EnhancementReviewAction,
@@ -24,6 +28,7 @@ import type {
   RecipePreview,
   RecipeUpdate,
 } from '../types';
+import { useCurrentUser } from './use-admin';
 
 // Query keys
 export const recipeKeys = {
@@ -33,8 +38,91 @@ export const recipeKeys = {
     [...recipeKeys.lists(), { search, showHidden }] as const,
   allRecipes: (showHidden?: boolean) =>
     [...recipeKeys.all, 'all', { showHidden }] as const,
+  /** Every recipe the user can see, from the copy on the device (native only). */
+  local: () => [...recipeKeys.all, 'local'] as const,
   details: () => [...recipeKeys.all, 'detail'] as const,
   detail: (id: string) => [...recipeKeys.details(), id] as const,
+};
+
+/** After a recipe write: the paged library, the full list (home, meal plan, grocery) and the device copy. */
+const invalidateRecipeLists = (queryClient: QueryClient) =>
+  Promise.all([
+    queryClient.invalidateQueries({ queryKey: recipeKeys.lists() }),
+    queryClient.invalidateQueries({ queryKey: [...recipeKeys.all, 'all'] }),
+    queryClient.invalidateQueries({ queryKey: recipeKeys.local() }),
+  ]);
+
+/**
+ * Every recipe the user can see, read from the copy on the device and brought up to date with
+ * only the changes since the last sync. Draws from the copy before the server answers.
+ */
+export const useDeviceRecipes = () => {
+  const queryClient = useQueryClient();
+  return useQuery<Recipe[]>({
+    queryKey: recipeKeys.local(),
+    queryFn: () =>
+      syncRecipes((recipes) =>
+        queryClient.setQueryData(recipeKeys.local(), recipes),
+      ),
+  });
+};
+
+/** The device copy with the recipe list rules applied (hidden setting, copies, duplicates). */
+const useVisibleDeviceRecipes = () => {
+  const { settings } = useSettings();
+  const { data: currentUser } = useCurrentUser();
+  const query = useDeviceRecipes();
+  const householdId =
+    currentUser?.role === 'superuser'
+      ? null
+      : (currentUser?.household_id ?? null);
+  const showHidden = settings.showHiddenRecipes;
+  const recipes = useMemo(
+    () => visibleRecipes(query.data ?? [], { householdId, showHidden }),
+    [query.data, householdId, showHidden],
+  );
+  return { query, recipes };
+};
+
+export const useAllRecipesFromDevice = () => {
+  const { query, recipes } = useVisibleDeviceRecipes();
+  return {
+    recipes,
+    totalCount: recipes.length,
+    isLoading: query.isLoading,
+    refetch: query.refetch,
+  };
+};
+
+/** The recipe library from the device copy: search, filters and sorting over every recipe. */
+export const useRecipesFromDevice = (search?: string) => {
+  const { query, recipes } = useVisibleDeviceRecipes();
+  const items = useMemo(
+    () => (search ? searchRecipes(recipes, search) : recipes),
+    [recipes, search],
+  );
+  const data = useMemo(
+    () => ({
+      pages: [
+        {
+          items,
+          total_count: items.length,
+          next_cursor: null,
+          has_more: false,
+        } satisfies PaginatedRecipeList,
+      ],
+      pageParams: [undefined],
+    }),
+    [items],
+  );
+  return {
+    data,
+    isLoading: query.isLoading,
+    refetch: query.refetch,
+    fetchNextPage: async () => {},
+    hasNextPage: false,
+    isFetchingNextPage: false,
+  };
 };
 
 /**
@@ -42,7 +130,7 @@ export const recipeKeys = {
  * Used by the recipe library screen for paginated browsing.
  * Respects the showHiddenRecipes setting from settings context.
  */
-export const useRecipes = (search?: string) => {
+export const useRecipesFromApi = (search?: string) => {
   const { settings } = useSettings();
   const showHidden = settings.showHiddenRecipes;
 
@@ -68,7 +156,7 @@ export const useRecipes = (search?: string) => {
  * Auto-fetches subsequent pages until all recipes are loaded.
  * Respects the showHiddenRecipes setting from settings context.
  */
-export const useAllRecipes = () => {
+export const useAllRecipesFromApi = () => {
   const { settings } = useSettings();
   const showHidden = settings.showHiddenRecipes;
 
@@ -108,6 +196,14 @@ export const useAllRecipes = () => {
     totalCount,
   };
 };
+
+// Native keeps a copy of every recipe on the device; web reads from the API.
+export const useRecipes = recipeStore.isAvailable
+  ? useRecipesFromDevice
+  : useRecipesFromApi;
+export const useAllRecipes = recipeStore.isAvailable
+  ? useAllRecipesFromDevice
+  : useAllRecipesFromApi;
 
 /**
  * Build a recipe lookup map that includes both paginated recipes and
@@ -171,13 +267,21 @@ export const useMealPlanRecipes = (
 };
 
 /**
- * Hook to fetch a single recipe by ID.
+ * Hook to fetch a single recipe by ID. On native it opens straight from the device copy.
  */
 export const useRecipe = (id: string) => {
+  const queryClient = useQueryClient();
   return useQuery({
     queryKey: recipeKeys.detail(id),
-    queryFn: () => api.getRecipe(id),
+    queryFn: () =>
+      recipeStore.isAvailable ? fetchRecipeOrDeviceCopy(id) : api.getRecipe(id),
     enabled: !!id,
+    initialData: () =>
+      queryClient
+        .getQueryData<Recipe[]>(recipeKeys.local())
+        ?.find((recipe) => recipe.id === id),
+    initialDataUpdatedAt: () =>
+      queryClient.getQueryState(recipeKeys.local())?.dataUpdatedAt,
   });
 };
 
@@ -190,8 +294,7 @@ export const useCreateRecipe = () => {
   return useMutation({
     mutationFn: (recipe: RecipeCreate) => api.createRecipe(recipe),
     onSuccess: () => {
-      // Invalidate recipe lists to refetch
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -215,7 +318,7 @@ export const useScrapeRecipe = () => {
       mealLabel?: MealLabel | null;
     }) => api.scrapeRecipe(url, enhance, dietLabel, mealLabel),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -246,7 +349,7 @@ export const useUpdateRecipe = () => {
       api.updateRecipe(id, updates),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -263,7 +366,7 @@ export const useDeleteRecipe = () => {
       queryClient.removeQueries({
         queryKey: recipeKeys.detail(id),
       });
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -284,7 +387,7 @@ export const useReviewEnhancement = () => {
     }) => api.reviewEnhancement(id, action),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -299,7 +402,7 @@ export const useRemoveEnhancement = () => {
     mutationFn: (id: string) => api.removeEnhancement(id),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -314,7 +417,7 @@ export const useEnhanceRecipe = () => {
     mutationFn: (id: string) => api.enhanceRecipe(id),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };
@@ -336,7 +439,7 @@ export const useCopyRecipe = () => {
     }) => api.copyRecipe(id, { keepEnhanced }),
     onSuccess: (data) => {
       queryClient.setQueryData(recipeKeys.detail(data.id), data);
-      queryClient.invalidateQueries({ queryKey: recipeKeys.lists() });
+      invalidateRecipeLists(queryClient);
     },
   });
 };

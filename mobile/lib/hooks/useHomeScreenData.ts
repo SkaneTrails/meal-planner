@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useGroceryState } from '@/lib/grocery-context';
 import { useMealPlan } from '@/lib/hooks/use-meal-plan';
@@ -8,8 +8,8 @@ import { useSettings } from '@/lib/settings-context';
 import type { Recipe } from '@/lib/types';
 import { formatDateLocal, getWeekDatesArray } from '@/lib/utils/dateFormatter';
 import {
+  activeMealKeys,
   aggregateIngredients,
-  EXTRAS_KEY_PREFIX,
 } from '@/lib/utils/groceryAggregator';
 
 /** 7 days x 2 tracked meals (lunch + dinner) = 14 slots per week. */
@@ -134,13 +134,6 @@ export const useHomeScreenData = () => {
     refreshFromApi();
   }, [refetchRecipes, refetchMealPlan, refreshFromApi]);
 
-  useFocusEffect(
-    useCallback(() => {
-      void refetchMealPlan?.();
-      void refreshFromApi?.()?.catch(() => {});
-    }, [refetchMealPlan, refreshFromApi]),
-  );
-
   const groceryItemsCount = useMemo(() => {
     if (!mealPlan || selectedMealKeys.length === 0) {
       return customItems.filter(
@@ -148,12 +141,10 @@ export const useHomeScreenData = () => {
       ).length;
     }
 
-    // Filter out stale extras keys whose recipes were removed from the meal plan
-    const allExtrasIds = new Set(Object.values(mealPlan.extras ?? {}).flat());
-    const activeKeys = selectedMealKeys.filter(
-      (key) =>
-        !key.startsWith(EXTRAS_KEY_PREFIX) ||
-        allExtrasIds.has(key.slice(EXTRAS_KEY_PREFIX.length)),
+    const activeKeys = activeMealKeys(
+      selectedMealKeys,
+      mealPlan.extras ?? {},
+      getWeekDatesArray(0, weekStart)[0],
     );
 
     const generatedItems = aggregateIngredients(
@@ -188,6 +179,7 @@ export const useHomeScreenData = () => {
     isItemAtHome,
     removedItems,
     mealServings,
+    weekStart,
   ]);
 
   const inspirationRecipes = useMemo(() => {
