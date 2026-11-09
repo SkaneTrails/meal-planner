@@ -215,8 +215,8 @@ async def patch_grocery_state(
     if not updates and not check and not uncheck:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields to update")
 
-    if "custom_items" in updates:
-        updates["custom_items"] = [item.model_dump() for item in body.custom_items]  # type: ignore[union-attr]
+    if body.custom_items is not None:
+        updates["custom_items"] = [item.model_dump() for item in body.custom_items]
 
     result = grocery_list_storage.update_grocery_state(
         household_id, updates, check=check, uncheck=uncheck, created_by=user.email

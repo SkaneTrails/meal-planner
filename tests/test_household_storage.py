@@ -217,6 +217,13 @@ class TestListHouseholdMembers:
 
         assert result == []
 
+    def test_skips_snapshot_without_data(self, mock_db) -> None:
+        doc = MagicMock()
+        doc.to_dict.return_value = None
+        mock_db.collection.return_value.where.return_value.stream.return_value = [doc]
+
+        assert list_household_members("household-123") == []
+
     def test_returns_list_of_members(self, mock_db) -> None:
         mock_doc1 = MagicMock()
         mock_doc1.id = "user1@example.com"
@@ -241,6 +248,13 @@ class TestListHouseholdMembers:
 
 class TestListAllHouseholds:
     """Tests for list_all_households function."""
+
+    def test_skips_snapshot_without_data(self, mock_db) -> None:
+        doc = MagicMock()
+        doc.to_dict.return_value = None
+        mock_db.collection.return_value.stream.return_value = [doc]
+
+        assert list_all_households() == []
 
     def test_returns_all_households(self, mock_db) -> None:
         mock_doc1 = MagicMock()

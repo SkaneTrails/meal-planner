@@ -113,7 +113,8 @@ def find_recipe_by_url(url: str) -> Recipe | None:
 
     for doc in docs:
         data = doc.to_dict()
-        return _doc_to_recipe(doc.id, data)
+        if data is not None:
+            return _doc_to_recipe(doc.id, data)
 
     # Step 2: normalized URL match (handles trailing slashes, case differences)
     if normalized:
@@ -125,7 +126,8 @@ def find_recipe_by_url(url: str) -> Recipe | None:
         )
         for doc in docs:
             data = doc.to_dict()
-            return _doc_to_recipe(doc.id, data)
+            if data is not None:
+                return _doc_to_recipe(doc.id, data)
 
     return None
 

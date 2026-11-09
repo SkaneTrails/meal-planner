@@ -25,6 +25,9 @@ def backfill(project: str, *, dry_run: bool = False) -> None:
 
     for doc in docs:
         data = doc.to_dict()
+        if data is None:
+            msg = f"Missing document data: {doc.id}"
+            raise ValueError(msg)
         title = str(data.get("title") or "")
         existing_lower = data.get("title_lower")
 

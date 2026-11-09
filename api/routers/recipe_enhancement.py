@@ -5,7 +5,7 @@ enhancement helper functions used by both enhance and scraping endpoints.
 """
 
 import logging
-from typing import Annotated
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -51,7 +51,7 @@ class HouseholdConfig:
         if isinstance(value, bool) or value is None:
             return max(default, min_value)
         try:
-            result = int(value)  # type: ignore[arg-type]
+            result = int(cast("Any", value))
         except (TypeError, ValueError):
             return max(default, min_value)
         return max(result, min_value)
