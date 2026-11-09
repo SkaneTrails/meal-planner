@@ -15,6 +15,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { AppState } from 'react-native';
 
 import { api } from './api';
 import { useAuth } from './hooks/use-auth';
@@ -80,6 +81,13 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   const tickSequenceRef = useRef<string[]>([]);
   const [tickSequence, setTickSequence] = useState<string[]>([]);
   const isMountedRef = useRef(true);
+  // Bumped on every auth identity change; async completions from older sessions are dropped.
+  const sessionRef = useRef(0);
+  // Mutations are blocked until server state loaded, else a PATCH would overwrite household data.
+  const hasLoadedRef = useRef(false);
+  const sessionKey = isAuthenticated
+    ? (user?.uid ?? user?.email ?? 'user')
+    : null;
 
   const applyState = useCallback((state: GroceryListState) => {
     const checked = new Set(state.checked_items);
@@ -102,10 +110,11 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     const patch = { ...pendingPatchRef.current };
     pendingPatchRef.current = {};
     if (Object.keys(patch).length === 0) return Promise.resolve();
+    const session = sessionRef.current;
     return api
       .patchGroceryState(patch)
       .then((response) => {
-        if (!isMountedRef.current) return;
+        if (!isMountedRef.current || session !== sessionRef.current) return;
         const hasPending = Object.keys(pendingPatchRef.current).length > 0;
         const effective = hasPending
           ? { ...response, ...pendingPatchRef.current }
@@ -114,12 +123,14 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       })
       .catch((err: unknown) => {
         console.warn('[GroceryContext] Patch failed, will retry:', err);
+        if (session !== sessionRef.current) return;
         pendingPatchRef.current = { ...patch, ...pendingPatchRef.current };
       });
   }, [applyState]);
 
   const enqueuePatch = useCallback(
     (fields: Record<string, unknown>) => {
+      if (!hasLoadedRef.current) return;
       pendingPatchRef.current = { ...pendingPatchRef.current, ...fields };
       if (patchTimerRef.current) clearTimeout(patchTimerRef.current);
       patchTimerRef.current = setTimeout(flushPatch, DEBOUNCE_MS);
@@ -128,10 +139,12 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const loadFromApi = useCallback(async () => {
+    const session = sessionRef.current;
     try {
       const state = await api.getGroceryState();
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current || session !== sessionRef.current) return;
       applyState(state);
+      hasLoadedRef.current = true;
       const checkedSet = new Set(state.checked_items || []);
       const reconciledTicks = tickSequenceRef.current.filter((t) =>
         checkedSet.has(t),
@@ -141,7 +154,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     } catch {
       // Online-only: do not fall back to local storage on error
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && session === sessionRef.current) {
         setIsLoading(false);
       }
     }
@@ -149,15 +162,23 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!isAuthenticated) {
-      applyState(EMPTY_GROCERY_STATE);
-      tickSequenceRef.current = [];
-      setTickSequence([]);
+    sessionRef.current += 1;
+    hasLoadedRef.current = false;
+    if (patchTimerRef.current) {
+      clearTimeout(patchTimerRef.current);
+      patchTimerRef.current = null;
+    }
+    pendingPatchRef.current = {};
+    applyState(EMPTY_GROCERY_STATE);
+    tickSequenceRef.current = [];
+    setTickSequence([]);
+    if (!sessionKey) {
       setIsLoading(false);
       return;
     }
+    setIsLoading(true);
     void loadFromApi();
-  }, [authLoading, isAuthenticated, loadFromApi, applyState]);
+  }, [authLoading, sessionKey, loadFromApi, applyState]);
 
   useEffect(() => {
     return () => {
@@ -262,11 +283,16 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
       servings: Record<string, number>,
       removedItemsOverride?: string[],
     ) => {
+      if (!hasLoadedRef.current) {
+        throw new Error('Grocery state not loaded yet');
+      }
+      const session = sessionRef.current;
       if (patchTimerRef.current) {
         clearTimeout(patchTimerRef.current);
         patchTimerRef.current = null;
       }
       await flushPatch();
+      if (session !== sessionRef.current) return;
 
       setSelectedMealKeys(meals);
       setMealServings(servings);
@@ -278,6 +304,7 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
           ? { removed_items: removedItemsOverride }
           : {}),
       });
+      if (session !== sessionRef.current) return;
       applyState(response);
     },
     [applyState, flushPatch],
@@ -308,6 +335,13 @@ export const GroceryProvider = ({ children }: { children: ReactNode }) => {
     await flushPatch();
     await loadFromApi();
   }, [isAuthenticated, loadFromApi, flushPatch]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') void refreshFromApi().catch(() => {});
+    });
+    return () => sub.remove();
+  }, [refreshFromApi]);
 
   return (
     <GroceryContext.Provider

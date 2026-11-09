@@ -19,7 +19,7 @@ import { api } from '@/lib/api';
 import { useGroceryState } from '@/lib/grocery-context';
 import { groceryKeys, useStoreOrder } from '@/lib/hooks/use-grocery';
 import { useMealPlan } from '@/lib/hooks/use-meal-plan';
-import { useAllRecipes } from '@/lib/hooks/use-recipes';
+import { recipeKeys, useAllRecipes } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import { useSettings } from '@/lib/settings-context';
 import type { GroceryItem } from '@/lib/types';
@@ -93,6 +93,9 @@ export const useGroceryScreen = () => {
     React.useCallback(() => {
       void refreshFromApi().catch(() => {});
       void refetchMealPlan?.();
+      void queryClient.invalidateQueries({
+        queryKey: [...recipeKeys.all, 'all'],
+      });
       if (activeStoreId) {
         void queryClient.invalidateQueries({
           queryKey: groceryKeys.storeOrder(activeStoreId),

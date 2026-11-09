@@ -22,6 +22,7 @@ import { showNotification } from '@/lib/alert';
 import { AlertProvider } from '@/lib/alert-context';
 import { GroceryProvider } from '@/lib/grocery-context';
 import { AuthProvider } from '@/lib/hooks/use-auth';
+import { recipeKeys } from '@/lib/hooks/use-recipes';
 import { useTranslation } from '@/lib/i18n';
 import {
   persistQueryCache,
@@ -199,6 +200,9 @@ export default function RootLayout() {
         persistQueryCache();
       } else if (nextAppState === 'active') {
         void queryClient.invalidateQueries({ queryKey: ['meal-plans'] });
+        void queryClient.invalidateQueries({
+          queryKey: [...recipeKeys.all, 'all'],
+        });
       }
     };
 

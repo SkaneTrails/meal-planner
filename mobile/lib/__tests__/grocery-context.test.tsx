@@ -579,3 +579,60 @@ describe('useGroceryState', () => {
     spy.mockRestore();
   });
 });
+
+
+describe('GroceryProvider session safety', () => {
+  const authAs = (email: string | null) =>
+    mockUseAuth.mockReturnValue({
+      user: email ? ({ email } as ReturnType<typeof useAuth>['user']) : null,
+      loading: false,
+      error: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      getIdToken: vi.fn(),
+    });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPatchGroceryState.mockResolvedValue(emptyState);
+  });
+
+  it('discards a GET that resolves after sign-out', async () => {
+    let resolveGet!: (s: GroceryListState) => void;
+    mockGetGroceryState.mockReturnValue(new Promise((r) => (resolveGet = r)));
+    authAs('a@example.com');
+
+    const { result, rerender } = renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+
+    authAs(null);
+    rerender();
+    await act(async () => {
+      resolveGet({ ...emptyState, custom_items: [{ name: 'Old', category: 'other' }] });
+    });
+
+    expect(result.current.customItems).toEqual([]);
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it('does not PATCH after a failed initial load', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    mockGetGroceryState.mockRejectedValue(new Error('offline'));
+    authAs('a@example.com');
+
+    const { result } = renderHook(() => useGroceryState(), {
+      wrapper: createGroceryWrapper(),
+    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    act(() => result.current.addCustomItem({ name: 'New', category: 'other' }));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    vi.useRealTimers();
+
+    expect(mockPatchGroceryState).not.toHaveBeenCalled();
+    await expect(result.current.saveSelections([], {})).rejects.toThrow();
+  });
+});

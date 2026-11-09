@@ -76,6 +76,7 @@ vi.mock('@/lib/hooks/use-meal-plan', () => ({
 }));
 
 vi.mock('@/lib/hooks/use-recipes', () => ({
+  recipeKeys: { all: ['recipes'] },
   useAllRecipes: vi.fn(() => ({ recipes: mockRecipes, totalCount: 0 })),
 }));
 
@@ -197,7 +198,9 @@ describe('useGroceryScreen', () => {
       } as unknown as ReturnType<typeof useSettings>);
 
       renderHook(() => useGroceryScreen());
-      expect(mockInvalidateQueries).not.toHaveBeenCalled();
+      expect(mockInvalidateQueries).not.toHaveBeenCalledWith(
+        expect.objectContaining({ queryKey: expect.arrayContaining(['storeOrder']) }),
+      );
     });
 
     it('resets all modes on blur (tab leave)', () => {
