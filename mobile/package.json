@@ -64,7 +64,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@biomejs/biome": "^2.3.14",
-    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/jest-dom": "^8.0.0",
     "@testing-library/react": "^16.3.2",
     "@types/react": "~19.3.0",
     "@types/react-dom": "~19.3.0",
